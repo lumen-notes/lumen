@@ -4,16 +4,16 @@ export interface Typegen0 {
   "@@xstate/typegen": true;
   eventsCausingActions: {
     setContext: "done.invoke.loadContext";
-    saveContext: "done.invoke.loadContext" | "done.invoke.loadNotes";
     setDirectoryHandle: "done.invoke.showDirectoryPicker";
     setNotes: "done.invoke.loadNotes";
+    setContextInIndexedDB: "done.invoke.loadNotes";
     clearContext:
       | "error.platform.loadContext"
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
       | "CLOSE";
-    unsaveContext:
+    clearContextInIndexedDB:
       | "error.platform.loadContext"
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
@@ -26,13 +26,13 @@ export interface Typegen0 {
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "done.invoke.loadNotes": {
-      type: "done.invoke.loadNotes";
+    "done.invoke.showDirectoryPicker": {
+      type: "done.invoke.showDirectoryPicker";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "done.invoke.showDirectoryPicker": {
-      type: "done.invoke.showDirectoryPicker";
+    "done.invoke.loadNotes": {
+      type: "done.invoke.loadNotes";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };

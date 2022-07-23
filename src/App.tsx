@@ -10,7 +10,7 @@ type Context = {
 
 const machine = createMachine(
   {
-    id: "notes",
+    context: { directoryHandle: null, notes: {} },
     tsTypes: {} as import("./App.typegen").Typegen0,
     schema: {
       context: {} as Context,
@@ -29,79 +29,117 @@ const machine = createMachine(
         };
       },
     },
-    context: {
-      directoryHandle: null,
-      notes: {},
-    },
+    id: "notes",
     initial: "loadingContext",
     states: {
       loadingContext: {
         invoke: {
-          id: "loadContext",
           src: "loadContext",
-          onDone: {
-            target: "queryingPermission",
-            actions: ["setContext", "saveContext"],
-          },
-          onError: "empty",
+          id: "loadContext",
+          onDone: [
+            {
+              actions: ["setContext"],
+              target: "queryingPermission",
+            },
+          ],
+          onError: [
+            {
+              target: "empty",
+            },
+          ],
         },
       },
       queryingPermission: {
         invoke: {
-          id: "queryPermission",
           src: "queryPermission",
+          id: "queryPermission",
           onDone: [
-            { cond: "isGranted", target: "loadingNotes" },
-            { cond: "isPrompt", target: "prompt" },
-            { cond: "isDenied", target: "empty" },
+            {
+              cond: "isGranted",
+              target: "loadingNotes",
+            },
+            {
+              cond: "isPrompt",
+              target: "prompt",
+            },
+            {
+              cond: "isDenied",
+              target: "empty",
+            },
           ],
-          onError: "empty",
+          onError: [
+            {
+              target: "empty",
+            },
+          ],
         },
       },
       empty: {
-        entry: ["clearContext", "unsaveContext"],
+        entry: ["clearContext", "clearContextInIndexedDB"],
         on: {
-          SHOW_DIRECTORY_PICKER: "showingDirectoryPicker",
+          SHOW_DIRECTORY_PICKER: {
+            target: "showingDirectoryPicker",
+          },
         },
       },
       prompt: {
         on: {
-          REQUEST_PERMISSION: "requestingPermission",
+          REQUEST_PERMISSION: {
+            target: "requestingPermission",
+          },
         },
       },
       requestingPermission: {
         invoke: {
-          id: "requestPermission",
           src: "requestPermission",
-          onDone: "loadingNotes",
-          onError: "empty",
+          id: "requestPermission",
+          onDone: [
+            {
+              target: "loadingNotes",
+            },
+          ],
+          onError: [
+            {
+              target: "empty",
+            },
+          ],
         },
       },
       showingDirectoryPicker: {
         invoke: {
-          id: "showDirectoryPicker",
           src: "showDirectoryPicker",
-          onDone: {
-            target: "loadingNotes",
-            actions: ["setDirectoryHandle"],
-          },
+          id: "showDirectoryPicker",
+          onDone: [
+            {
+              actions: "setDirectoryHandle",
+              target: "loadingNotes",
+            },
+          ],
         },
       },
       loadingNotes: {
         invoke: {
-          id: "loadNotes",
           src: "loadNotes",
-          onDone: {
-            target: "ready",
-            actions: ["setNotes", "saveContext"],
-          },
+          id: "loadNotes",
+          onDone: [
+            {
+              actions: ["setNotes", "setContextInIndexedDB"],
+              target: "ready",
+            },
+          ],
         },
       },
       ready: {
         on: {
-          SHOW_DIRECTORY_PICKER: "showingDirectoryPicker",
-          RELOAD: "queryingPermission",
-          CLOSE: "empty",
+          SHOW_DIRECTORY_PICKER: {
+            target: "showingDirectoryPicker",
+          },
+          RELOAD: {
+            target: "queryingPermission",
+          },
+          CLOSE: {
+            target: "empty",
+          },
         },
       },
     },
@@ -122,10 +160,10 @@ const machine = createMachine(
         directoryHandle: (context, event) => null,
         notes: (context, event) => ({}),
       }),
-      saveContext: async (context, event) => {
+      setContextInIndexedDB: async (context, event) => {
         await set("context", context);
       },
-      unsaveContext: async (context, event) => {
+      clearContextInIndexedDB: async (context, event) => {
         await set("context", null);
       },
     },
@@ -155,7 +193,9 @@ const machine = createMachine(
           throw new Error("Not found");
         }
 
-        const permission = await context.directoryHandle.queryPermission();
+        const permission = await context.directoryHandle.queryPermission({
+          mode: "readwrite",
+        });
 
         return permission;
       },
@@ -183,7 +223,8 @@ const machine = createMachine(
           return {};
         }
 
-        console.time("load");
+        // Start timer
+        console.time("loadNotes");
 
         const entries: Array<Promise<[number, string]>> = [];
 
@@ -205,7 +246,8 @@ const machine = createMachine(
 
         const notes = Object.fromEntries(await Promise.all(entries));
 
-        console.timeEnd("load");
+        // End timer
+        console.timeEnd("loadNotes");
 
         return notes;
       },
@@ -245,7 +287,12 @@ export function App() {
           }}
         >
           <div>{state.context.directoryHandle?.name}</div>
-          <button onClick={() => send("RELOAD")}>Reload</button>
+          <button
+            onClick={() => send("RELOAD")}
+            disabled={state.matches("loadingNotes")}
+          >
+            {state.matches("loadingNotes") ? "Loading" : "Reload"}
+          </button>
           <button onClick={() => send("CLOSE")}>Close</button>
         </div>
       ) : null}
@@ -263,8 +310,10 @@ export function App() {
             style={{
               border: "1px solid gray",
               padding: 16,
-              display: "grid",
+              display: "flex",
+              flexDirection: "column",
               gap: 16,
+              overflow: "auto",
             }}
           >
             <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{body}</pre>
