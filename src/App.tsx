@@ -8,6 +8,13 @@ type Context = {
   notes: Record<string, string>;
 };
 
+type Event =
+  | { type: "SHOW_DIRECTORY_PICKER" }
+  | { type: "REQUEST_PERMISSION" }
+  | { type: "RELOAD" }
+  | { type: "CLOSE" }
+  | { type: "ADD_NOTE"; id: number; body: string };
+
 const machine = createMachine(
   {
     context: { directoryHandle: null, notes: {} },
@@ -28,6 +35,7 @@ const machine = createMachine(
           data: Record<string, string>;
         };
       },
+      events: {} as Event,
     },
     id: "notes",
     initial: "loadingContext",
@@ -140,6 +148,9 @@ const machine = createMachine(
           CLOSE: {
             target: "empty",
           },
+          ADD_NOTE: {
+            actions: ["addNote", "addNoteFile", "setContextInIndexedDB"],
+          },
         },
       },
     },
@@ -165,6 +176,31 @@ const machine = createMachine(
       },
       clearContextInIndexedDB: async (context, event) => {
         await set("context", null);
+      },
+      addNote: assign({
+        notes: (context, event) => ({
+          ...context.notes,
+          [event.id]: event.body,
+        }),
+      }),
+      addNoteFile: async (context, event) => {
+        if (!context.directoryHandle) {
+          throw new Error("Not found");
+        }
+
+        const fileHandle = await context.directoryHandle.getFileHandle(
+          `${event.id}.md`,
+          { create: true }
+        );
+
+        // Create a FileSystemWritableFileStream to write to
+        const writeableStream = await fileHandle.createWritable();
+
+        // Write the contents of the file
+        await writeableStream.write(event.body);
+
+        // Close the stream
+        await writeableStream.close();
       },
     },
     guards: {
@@ -257,6 +293,7 @@ const machine = createMachine(
 
 export function App() {
   const [state, send] = useMachine(machine);
+  const [textareaValue, setTextareaValue] = React.useState("");
   const sortedNotes = React.useMemo(
     () =>
       Object.entries(state.context.notes).sort(
@@ -304,6 +341,35 @@ export function App() {
           padding: 16,
         }}
       >
+        <div
+          style={{
+            border: "1px solid gray",
+            padding: 16,
+          }}
+        >
+          <form
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
+            onSubmit={event => {
+              event.preventDefault();
+              const id = Date.now();
+              const body = textareaValue;
+              send({ type: "ADD_NOTE", id, body });
+              setTextareaValue("");
+            }}
+          >
+            <textarea
+              rows={3}
+              placeholder="Write something..."
+              value={textareaValue}
+              onChange={event => setTextareaValue(event.target.value)}
+            />
+            <button style={{ alignSelf: "end" }}>Add</button>
+          </form>
+        </div>
         {sortedNotes.map(([id, body]) => (
           <div
             key={id}
@@ -317,10 +383,6 @@ export function App() {
             }}
           >
             <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{body}</pre>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button>Edit</button>
-              <button>Delete</button>
-            </div>
           </div>
         ))}
       </div>
