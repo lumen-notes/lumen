@@ -1,7 +1,8 @@
+import { useMachine } from "@xstate/react";
 import { get, set } from "idb-keyval";
 import React from "react";
-import { createMachine, assign } from "xstate";
-import { useMachine } from "@xstate/react";
+import { assign, createMachine } from "xstate";
+import { NoteForm } from "./NoteForm";
 
 type Context = {
   directoryHandle: FileSystemDirectoryHandle | null;
@@ -13,7 +14,7 @@ type Event =
   | { type: "REQUEST_PERMISSION" }
   | { type: "RELOAD" }
   | { type: "CLOSE" }
-  | { type: "ADD_NOTE"; id: number; body: string };
+  | { type: "UPSERT_NOTE"; id: number; body: string };
 
 const machine = createMachine(
   {
@@ -148,8 +149,8 @@ const machine = createMachine(
           CLOSE: {
             target: "empty",
           },
-          ADD_NOTE: {
-            actions: ["addNote", "addNoteFile", "setContextInIndexedDB"],
+          UPSERT_NOTE: {
+            actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
           },
         },
       },
@@ -177,13 +178,13 @@ const machine = createMachine(
       clearContextInIndexedDB: async (context, event) => {
         await set("context", null);
       },
-      addNote: assign({
+      upsertNote: assign({
         notes: (context, event) => ({
           ...context.notes,
           [event.id]: event.body,
         }),
       }),
-      addNoteFile: async (context, event) => {
+      upsertNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
           throw new Error("Not found");
         }
@@ -293,7 +294,6 @@ const machine = createMachine(
 
 export function App() {
   const [state, send] = useMachine(machine);
-  const [textareaValue, setTextareaValue] = React.useState("");
   const sortedNotes = React.useMemo(
     () =>
       Object.entries(state.context.notes).sort(
@@ -347,28 +347,11 @@ export function App() {
             padding: 16,
           }}
         >
-          <form
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
+          <NoteForm
+            onSubmit={note => {
+              send({ type: "UPSERT_NOTE", id: note.id, body: note.body });
             }}
-            onSubmit={event => {
-              event.preventDefault();
-              const id = Date.now();
-              const body = textareaValue;
-              send({ type: "ADD_NOTE", id, body });
-              setTextareaValue("");
-            }}
-          >
-            <textarea
-              rows={3}
-              placeholder="Write something..."
-              value={textareaValue}
-              onChange={event => setTextareaValue(event.target.value)}
-            />
-            <button style={{ alignSelf: "end" }}>Add</button>
-          </form>
+          />
         </div>
         {sortedNotes.map(([id, body]) => (
           <div
@@ -376,13 +359,16 @@ export function App() {
             style={{
               border: "1px solid gray",
               padding: 16,
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-              overflow: "auto",
             }}
           >
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{body}</pre>
+            <NoteForm
+              key={body}
+              id={Number(id)}
+              defaultBody={body}
+              onSubmit={note => {
+                send({ type: "UPSERT_NOTE", id: note.id, body: note.body });
+              }}
+            />
           </div>
         ))}
       </div>

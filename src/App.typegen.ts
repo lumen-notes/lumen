@@ -6,9 +6,9 @@ export interface Typegen0 {
     setContext: "done.invoke.loadContext";
     setDirectoryHandle: "done.invoke.showDirectoryPicker";
     setNotes: "done.invoke.loadNotes";
-    setContextInIndexedDB: "done.invoke.loadNotes" | "ADD_NOTE";
-    addNote: "ADD_NOTE";
-    addNoteFile: "ADD_NOTE";
+    setContextInIndexedDB: "done.invoke.loadNotes" | "UPSERT_NOTE";
+    upsertNote: "UPSERT_NOTE";
+    upsertNoteFile: "UPSERT_NOTE";
     clearContext:
       | "error.platform.loadContext"
       | "done.invoke.queryPermission"
