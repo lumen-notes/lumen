@@ -1,9 +1,16 @@
-import { closeBrackets } from "@codemirror/autocomplete";
+import {
+  autocompletion,
+  closeBrackets,
+  CompletionContext,
+  CompletionResult,
+} from "@codemirror/autocomplete";
 import { history } from "@codemirror/commands";
 import { EditorState } from "@codemirror/state";
 import { EditorView, placeholder } from "@codemirror/view";
+import { parseDate } from "chrono-node";
 import React from "react";
 import { GlobalStateContext } from "../global-state";
+import { formatDate } from "../utils/format-date";
 
 type NoteFormProps = {
   id?: number;
@@ -128,10 +135,10 @@ function useCodeMirror({
           setValue(value);
         }),
         closeBrackets(),
-        // autocompletion({
-        //   override: [],
-        //   icons: false,
-        // }),
+        autocompletion({
+          override: [dateCompletion],
+          icons: false,
+        }),
       ],
     });
 
@@ -148,4 +155,39 @@ function useCodeMirror({
   }, [editorElement]);
 
   return { editorRef, view: viewRef.current, value };
+}
+
+function dateCompletion(context: CompletionContext): CompletionResult | null {
+  const word = context.matchBefore(/(\[\[)?\w*/);
+
+  if (!word) {
+    return null;
+  }
+
+  // Ignore words inside internal links
+  if (word.text.startsWith("[[")) {
+    return null;
+  }
+
+  const date = parseDate(word.text);
+
+  if (!date) {
+    return null;
+  }
+
+  const year = String(date.getFullYear()).padStart(4, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const dateString = `${year}-${month}-${day}`;
+
+  return {
+    from: word.from,
+    options: [
+      {
+        label: formatDate(dateString),
+        apply: `[[${dateString}]]`,
+      },
+    ],
+    filter: false,
+  };
 }

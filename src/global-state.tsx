@@ -285,6 +285,7 @@ const machine = createMachine(
 
         const entries: Array<Promise<[number, string]>> = [];
 
+        // TODO: Read files in a worker to avoid blocking the main thread
         for await (const [name, handle] of context.directoryHandle.entries()) {
           // Only markdown files
           if (handle.kind === "file" && name.endsWith(".md")) {
