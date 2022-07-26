@@ -5,9 +5,15 @@ type NoteFormProps = {
   id?: number;
   defaultBody?: string;
   onSubmit?: (note: { id: number; body: string }) => void;
+  onCancel?: () => void;
 };
 
-export function NoteForm({ id, defaultBody = "", onSubmit }: NoteFormProps) {
+export function NoteForm({
+  id,
+  defaultBody = "",
+  onSubmit,
+  onCancel,
+}: NoteFormProps) {
   const globalState = React.useContext(GlobalStateContext);
   const [body, setBody] = React.useState(defaultBody);
 
@@ -55,7 +61,14 @@ export function NoteForm({ id, defaultBody = "", onSubmit }: NoteFormProps) {
           }
         }}
       />
-      <button style={{ alignSelf: "end" }}>{id ? "Save" : "Add"}</button>
+      <div style={{ alignSelf: "end", display: "flex", gap: 8 }}>
+        {onCancel ? (
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        ) : null}
+        <button type="submit">{id ? "Save" : "Add"}</button>
+      </div>
     </form>
   );
 }
