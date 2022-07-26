@@ -61,11 +61,7 @@ export function App() {
             padding: 16,
           }}
         >
-          <NoteForm
-            onSubmit={note => {
-              send({ type: "UPSERT_NOTE", id: note.id, body: note.body });
-            }}
-          />
+          <NoteForm />
         </div>
         {sortedNotes.map(([id, body]) => (
           <div
@@ -75,14 +71,7 @@ export function App() {
               padding: 16,
             }}
           >
-            <NoteForm
-              key={body}
-              id={Number(id)}
-              defaultBody={body}
-              onSubmit={note => {
-                send({ type: "UPSERT_NOTE", id: note.id, body: note.body });
-              }}
-            />
+            <NoteForm key={body} id={Number(id)} defaultBody={body} />
           </div>
         ))}
       </div>

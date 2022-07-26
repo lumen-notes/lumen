@@ -1,4 +1,5 @@
 import React from "react";
+import { GlobalStateContext } from "../global-state";
 
 type NoteFormProps = {
   id?: number;
@@ -7,12 +8,23 @@ type NoteFormProps = {
 };
 
 export function NoteForm({ id, defaultBody = "", onSubmit }: NoteFormProps) {
+  const globalState = React.useContext(GlobalStateContext);
   const [body, setBody] = React.useState(defaultBody);
 
   function handleSubmit() {
-    onSubmit?.({ id: id ?? Date.now(), body });
+    const note = {
+      id: id ?? Date.now(),
+      body,
+    };
 
-    // If we're creating a new note, reset the form on submit
+    globalState.service?.send({
+      type: "UPSERT_NOTE",
+      ...note,
+    });
+
+    onSubmit?.(note);
+
+    // If we're creating a new note, reset the form after submitting
     if (!id) {
       setBody("");
     }
