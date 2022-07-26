@@ -14,13 +14,13 @@ export interface Typegen0 {
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
-      | "CLOSE";
+      | "DISCONNECT";
     clearContextInIndexedDB:
       | "error.platform.loadContext"
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
-      | "CLOSE";
+      | "DISCONNECT";
   };
   internalEvents: {
     "done.invoke.loadContext": {

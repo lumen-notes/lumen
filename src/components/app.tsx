@@ -43,7 +43,7 @@ export function App() {
           >
             {state.matches("loadingNotes") ? "Loading" : "Reload"}
           </button>
-          <button onClick={() => send("CLOSE")}>Close</button>
+          <button onClick={() => send("DISCONNECT")}>Disconnect</button>
         </div>
       ) : null}
       <div

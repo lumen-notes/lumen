@@ -12,7 +12,7 @@ type Event =
   | { type: "SHOW_DIRECTORY_PICKER" }
   | { type: "REQUEST_PERMISSION" }
   | { type: "RELOAD" }
-  | { type: "CLOSE" }
+  | { type: "DISCONNECT" }
   | { type: "UPSERT_NOTE"; id: number; body: string };
 
 const machine = createMachine(
@@ -148,7 +148,7 @@ const machine = createMachine(
           RELOAD: {
             target: "queryingPermission",
           },
-          CLOSE: {
+          DISCONNECT: {
             target: "empty",
           },
           UPSERT_NOTE: {
