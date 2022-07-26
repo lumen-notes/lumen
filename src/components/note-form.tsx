@@ -1,3 +1,7 @@
+import { closeBrackets } from "@codemirror/autocomplete";
+import { history } from "@codemirror/commands";
+import { EditorState } from "@codemirror/state";
+import { EditorView, placeholder } from "@codemirror/view";
 import React from "react";
 import { GlobalStateContext } from "../global-state";
 
@@ -15,12 +19,20 @@ export function NoteForm({
   onCancel,
 }: NoteFormProps) {
   const globalState = React.useContext(GlobalStateContext);
-  const [body, setBody] = React.useState(defaultBody);
+
+  const {
+    editorRef,
+    view,
+    value: body = "",
+  } = useCodeMirror({
+    defaultValue: defaultBody,
+    placeholder: "Write something...",
+  });
 
   function handleSubmit() {
     const note = {
       id: id ?? Date.now(),
-      body,
+      body: body,
     };
 
     globalState.service?.send({
@@ -32,7 +44,9 @@ export function NoteForm({
 
     // If we're creating a new note, reset the form after submitting
     if (!id) {
-      setBody("");
+      view?.dispatch({
+        changes: [{ from: 0, to: body.length, insert: defaultBody }],
+      });
     }
   }
 
@@ -48,11 +62,8 @@ export function NoteForm({
         event.preventDefault();
       }}
     >
-      <textarea
-        rows={3}
-        placeholder="Write something..."
-        value={body}
-        onChange={event => setBody(event.target.value)}
+      <div
+        ref={editorRef}
         onKeyDown={event => {
           // Submit on `command + enter`
           if (event.key === "Enter" && event.metaKey) {
@@ -71,4 +82,61 @@ export function NoteForm({
       </div>
     </form>
   );
+}
+
+// Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
+function useCodeMirror({
+  defaultValue,
+  placeholder: placeholderValue = "",
+  viewRef: providedViewRef,
+}: {
+  defaultValue?: string;
+  placeholder?: string;
+  viewRef?: React.MutableRefObject<EditorView | null>;
+}) {
+  const [editorElement, setEditorElement] = React.useState<HTMLElement>();
+  const editorRef = React.useCallback((node: HTMLElement | null) => {
+    if (!node) return;
+
+    setEditorElement(node);
+  }, []);
+
+  const newViewRef = React.useRef<EditorView>();
+  const viewRef = providedViewRef ?? newViewRef;
+
+  const [value, setValue] = React.useState(defaultValue);
+
+  React.useEffect(() => {
+    if (!editorElement) return;
+
+    const state = EditorState.create({
+      doc: defaultValue,
+      extensions: [
+        placeholder(placeholderValue),
+        history(),
+        EditorView.updateListener.of(event => {
+          const value = event.view.state.doc.sliceString(0);
+          setValue(value);
+        }),
+        closeBrackets(),
+        // autocompletion({
+        //   override: [],
+        //   icons: false,
+        // }),
+      ],
+    });
+
+    const view = new EditorView({
+      state,
+      parent: editorElement,
+    });
+
+    viewRef.current = view;
+
+    return () => {
+      view.destroy();
+    };
+  }, [editorElement]);
+
+  return { editorRef, view: viewRef.current, value };
 }
