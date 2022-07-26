@@ -34,12 +34,16 @@ export function NoteCard({ id }: NoteCardProps) {
           <div style={{ overflow: "auto" }}>
             <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{body}</pre>
           </div>
-          <button
-            style={{ alignSelf: "end" }}
-            onClick={() => setIsEditing(true)}
-          >
-            Edit
-          </button>
+          <div style={{ alignSelf: "end", display: "flex", gap: 8 }}>
+            <button
+              onClick={() =>
+                globalState.service.send({ type: "DELETE_NOTE", id })
+              }
+            >
+              Delete
+            </button>
+            <button onClick={() => setIsEditing(true)}>Edit</button>
+          </div>
         </div>
       ) : (
         // Edit mode

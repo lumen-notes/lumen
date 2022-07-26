@@ -13,7 +13,8 @@ type Event =
   | { type: "REQUEST_PERMISSION" }
   | { type: "RELOAD" }
   | { type: "DISCONNECT" }
-  | { type: "UPSERT_NOTE"; id: number; body: string };
+  | { type: "UPSERT_NOTE"; id: number; body: string }
+  | { type: "DELETE_NOTE"; id: number };
 
 const machine = createMachine(
   {
@@ -154,6 +155,9 @@ const machine = createMachine(
           UPSERT_NOTE: {
             actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
           },
+          DELETE_NOTE: {
+            actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
+          },
         },
       },
     },
@@ -188,7 +192,7 @@ const machine = createMachine(
       }),
       upsertNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
-          throw new Error("Not found");
+          throw new Error("Directory not found");
         }
 
         const fileHandle = await context.directoryHandle.getFileHandle(
@@ -204,6 +208,20 @@ const machine = createMachine(
 
         // Close the stream
         await writeableStream.close();
+      },
+      deleteNote: assign({
+        notes: (context, event) => {
+          const { [event.id]: _, ...rest } = context.notes;
+          return rest;
+        },
+      }),
+      deleteNoteFile: async (context, event) => {
+        if (!context.directoryHandle) {
+          throw new Error("Directory not found");
+        }
+
+        // Delete the file
+        await context.directoryHandle.removeEntry(`${event.id}.md`);
       },
     },
     guards: {
@@ -229,7 +247,7 @@ const machine = createMachine(
       },
       queryPermission: async context => {
         if (!context.directoryHandle) {
-          throw new Error("Not found");
+          throw new Error("Directory not found");
         }
 
         const permission = await context.directoryHandle.queryPermission({
@@ -240,7 +258,7 @@ const machine = createMachine(
       },
       requestPermission: async context => {
         if (!context.directoryHandle) {
-          throw new Error("Not found");
+          throw new Error("Directory not found");
         }
 
         const permission = await context.directoryHandle.requestPermission({
@@ -248,7 +266,7 @@ const machine = createMachine(
         });
 
         if (permission !== "granted") {
-          throw new Error("Not granted");
+          throw new Error("Permission denied");
         }
       },
       showDirectoryPicker: async () => {
