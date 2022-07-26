@@ -67,7 +67,9 @@ export function NoteCard({ id }: NoteCardProps) {
           }}
         >
           <div style={{ overflow: "auto" }}>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>{body}</pre>
+            <pre style={{ margin: 0, whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
+              {body}
+            </pre>
           </div>
           <div
             style={{

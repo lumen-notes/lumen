@@ -4,8 +4,18 @@ body {
 }
 
 /* Codemirror styles */
+
 .cm-editor .cm-content {
   width: 100%;
+  padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.cm-editor .cm-line {
+  padding: 0;
+}
+
+.cm-editor .cm-scroller {
+  line-height: 1.5;
 }
