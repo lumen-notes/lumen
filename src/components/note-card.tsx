@@ -25,7 +25,6 @@ export function NoteCard({ id }: NoteCardProps) {
     setIsEditing(true);
     setTimeout(() => {
       const view = codeMirrorViewRef.current;
-      console.log(view);
       if (view) {
         view.focus();
         view.dispatch({
