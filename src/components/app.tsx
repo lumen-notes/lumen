@@ -1,5 +1,6 @@
 import { useActor } from "@xstate/react";
 import React from "react";
+import { useInView } from "react-intersection-observer";
 import { GlobalStateContext, GlobalStateContextValue } from "../global-state";
 import { NoteCard } from "./note-card";
 import { NoteForm } from "./note-form";
@@ -7,6 +8,8 @@ import { NoteForm } from "./note-form";
 export function App() {
   const globalState = React.useContext(GlobalStateContext);
   const [state, send] = useActor(globalState.service);
+
+  // Sort notes by when they were created in descending order
   const sortedNoteIds = React.useMemo(
     () =>
       Object.keys(state.context.notes).sort(
@@ -14,6 +17,18 @@ export function App() {
       ),
     [state.context.notes]
   );
+
+  // Only render the first 10 notes when the page loads
+  const [numVisibleNotes, setNumVisibleNotes] = React.useState(10);
+
+  const { ref: bottomRef, inView: bottomInView } = useInView();
+
+  React.useEffect(() => {
+    if (bottomInView) {
+      // Render 10 more notes when the user scrolls to the bottom of the list
+      setNumVisibleNotes(num => Math.min(num + 10, sortedNoteIds.length));
+    }
+  }, [bottomInView, sortedNoteIds.length]);
 
   return (
     <div>
@@ -62,9 +77,10 @@ export function App() {
         >
           <NoteForm />
         </div>
-        {sortedNoteIds.map(id => (
+        {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
           <NoteCard key={id} id={Number(id)} />
         ))}
+        <div ref={bottomRef} />
       </div>
     </div>
   );
