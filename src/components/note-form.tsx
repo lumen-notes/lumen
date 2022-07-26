@@ -8,6 +8,7 @@ import { GlobalStateContext } from "../global-state";
 type NoteFormProps = {
   id?: number;
   defaultBody?: string;
+  codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>;
   onSubmit?: (note: { id: number; body: string }) => void;
   onCancel?: () => void;
 };
@@ -15,6 +16,7 @@ type NoteFormProps = {
 export function NoteForm({
   id,
   defaultBody = "",
+  codeMirrorViewRef,
   onSubmit,
   onCancel,
 }: NoteFormProps) {
@@ -27,6 +29,7 @@ export function NoteForm({
   } = useCodeMirror({
     defaultValue: defaultBody,
     placeholder: "Write something...",
+    viewRef: codeMirrorViewRef,
   });
 
   function handleSubmit() {
@@ -61,6 +64,12 @@ export function NoteForm({
         handleSubmit();
         event.preventDefault();
       }}
+      onKeyDown={event => {
+        // Cancel on `escape`
+        if (event.key === "Escape") {
+          onCancel?.();
+        }
+      }}
     >
       <div
         ref={editorRef}
@@ -92,7 +101,7 @@ function useCodeMirror({
 }: {
   defaultValue?: string;
   placeholder?: string;
-  viewRef?: React.MutableRefObject<EditorView | null>;
+  viewRef?: React.MutableRefObject<EditorView | undefined>;
 }) {
   const [editorElement, setEditorElement] = React.useState<HTMLElement>();
   const editorRef = React.useCallback((node: HTMLElement | null) => {
