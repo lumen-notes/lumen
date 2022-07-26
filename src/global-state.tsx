@@ -295,10 +295,11 @@ const machine = createMachine(
 );
 
 export type GlobalStateContextValue = {
-  service?: InterpreterFrom<typeof machine>;
+  service: InterpreterFrom<typeof machine>;
 };
 
 export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
+  // @ts-ignore
   {}
 );
 

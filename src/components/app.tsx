@@ -1,17 +1,16 @@
 import { useActor } from "@xstate/react";
 import React from "react";
 import { GlobalStateContext, GlobalStateContextValue } from "../global-state";
+import { NoteCard } from "./note-card";
 import { NoteForm } from "./note-form";
 
 export function App() {
   const globalState = React.useContext(GlobalStateContext);
-  const [state, send] = useActor(
-    globalState.service as NonNullable<GlobalStateContextValue["service"]>
-  );
-  const sortedNotes = React.useMemo(
+  const [state, send] = useActor(globalState.service);
+  const sortedNoteIds = React.useMemo(
     () =>
-      Object.entries(state.context.notes).sort(
-        (a, b) => parseInt(b[0]) - parseInt(a[0])
+      Object.keys(state.context.notes).sort(
+        (a, b) => parseInt(b) - parseInt(a)
       ),
     [state.context.notes]
   );
@@ -63,16 +62,8 @@ export function App() {
         >
           <NoteForm />
         </div>
-        {sortedNotes.map(([id, body]) => (
-          <div
-            key={id}
-            style={{
-              border: "1px solid gray",
-              padding: 16,
-            }}
-          >
-            <NoteForm key={body} id={Number(id)} defaultBody={body} />
-          </div>
+        {sortedNoteIds.map(id => (
+          <NoteCard key={id} id={Number(id)} />
         ))}
       </div>
     </div>
