@@ -45,10 +45,7 @@ export function NoteCard({ id }: NoteCardProps) {
   return (
     <div
       ref={cardRef}
-      style={{
-        border: "1px solid gray",
-        padding: 16,
-      }}
+      className="border border-[gray] p-4"
       tabIndex={0}
       onKeyDown={event => {
         // Switch to editing with `e`
@@ -60,23 +57,11 @@ export function NoteCard({ id }: NoteCardProps) {
     >
       {!isEditing ? (
         // View mode
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
+        <div className="flex flex-col gap-4">
           <ReactMarkdown>{body}</ReactMarkdown>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className="flex justify-between items-center">
             <span>{id}</span>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="flex gap-2">
               <button
                 onClick={() =>
                   globalState.service.send({ type: "DELETE_NOTE", id })

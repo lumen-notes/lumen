@@ -1,7 +1,6 @@
-body {
-  margin: 0;
-  font-family: monospace;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Codemirror styles */
 
@@ -18,4 +17,5 @@ body {
 
 .cm-editor .cm-scroller {
   line-height: 1.5;
+  font-family: unset;
 }

@@ -62,11 +62,7 @@ export function NoteForm({
 
   return (
     <form
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-      }}
+      className="flex flex-col gap-4"
       onSubmit={event => {
         handleSubmit();
         event.preventDefault();
@@ -88,7 +84,7 @@ export function NoteForm({
           }
         }}
       />
-      <div style={{ alignSelf: "end", display: "flex", gap: 8 }}>
+      <div className="self-end flex gap-2">
         {onCancel ? (
           <button type="button" onClick={onCancel}>
             Cancel

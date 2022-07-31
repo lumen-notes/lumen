@@ -32,7 +32,7 @@ export function App() {
 
   return (
     <div>
-      <div style={{ padding: 16 }}>{JSON.stringify(state.value)}</div>
+      <div className="p-4">{JSON.stringify(state.value)}</div>
       {state.matches("prompt") ? (
         <dialog open>
           <button onClick={() => send("REQUEST_PERMISSION")}>Grant</button>
@@ -44,13 +44,7 @@ export function App() {
         </button>
       ) : null}
       {state.context.directoryHandle ? (
-        <div
-          style={{
-            padding: 16,
-            display: "flex",
-            gap: 8,
-          }}
-        >
+        <div className="p-4 flex gap-2">
           <div>{state.context.directoryHandle?.name}</div>
           <button
             onClick={() => send("RELOAD")}
@@ -61,20 +55,8 @@ export function App() {
           <button onClick={() => send("DISCONNECT")}>Disconnect</button>
         </div>
       ) : null}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          padding: 16,
-        }}
-      >
-        <div
-          style={{
-            border: "1px solid gray",
-            padding: 16,
-          }}
-        >
+      <div className="flex flex-col gap-4 p-4">
+        <div className="border border-[gray] p-4">
           <NoteForm />
         </div>
         {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
