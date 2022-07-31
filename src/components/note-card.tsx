@@ -2,6 +2,7 @@ import { EditorSelection } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useSelector } from "@xstate/react";
 import React from "react";
+import ReactMarkdown from "react-markdown";
 import { GlobalStateContext } from "../global-state";
 import { NoteForm } from "./note-form";
 
@@ -66,11 +67,7 @@ export function NoteCard({ id }: NoteCardProps) {
             gap: 16,
           }}
         >
-          <div style={{ overflow: "auto" }}>
-            <pre style={{ margin: 0, whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
-              {body}
-            </pre>
-          </div>
+          <ReactMarkdown>{body}</ReactMarkdown>
           <div
             style={{
               display: "flex",
