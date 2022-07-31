@@ -2,31 +2,6 @@
 
 export interface Typegen0 {
   "@@xstate/typegen": true;
-  eventsCausingActions: {
-    setContext: "done.invoke.loadContext";
-    setDirectoryHandle: "done.invoke.showDirectoryPicker";
-    setNotes: "done.invoke.loadNotes";
-    setContextInIndexedDB:
-      | "done.invoke.loadNotes"
-      | "UPSERT_NOTE"
-      | "DELETE_NOTE";
-    upsertNote: "UPSERT_NOTE";
-    upsertNoteFile: "UPSERT_NOTE";
-    deleteNote: "DELETE_NOTE";
-    deleteNoteFile: "DELETE_NOTE";
-    clearContext:
-      | "error.platform.loadContext"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "DISCONNECT";
-    clearContextInIndexedDB:
-      | "error.platform.loadContext"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "DISCONNECT";
-  };
   internalEvents: {
     "done.invoke.loadContext": {
       type: "done.invoke.loadContext";
@@ -60,12 +35,12 @@ export interface Typegen0 {
       type: "error.platform.requestPermission";
       data: unknown;
     };
+    "xstate.init": { type: "xstate.init" };
     "done.invoke.requestPermission": {
       type: "done.invoke.requestPermission";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "xstate.init": { type: "xstate.init" };
     "error.platform.showDirectoryPicker": {
       type: "error.platform.showDirectoryPicker";
       data: unknown;
@@ -88,15 +63,40 @@ export interface Typegen0 {
     guards: never;
     delays: never;
   };
+  eventsCausingActions: {
+    setContext: "done.invoke.loadContext";
+    setDirectoryHandle: "done.invoke.showDirectoryPicker";
+    setNotes: "done.invoke.loadNotes";
+    setContextInIndexedDB:
+      | "done.invoke.loadNotes"
+      | "UPSERT_NOTE"
+      | "DELETE_NOTE";
+    upsertNote: "UPSERT_NOTE";
+    upsertNoteFile: "UPSERT_NOTE";
+    deleteNote: "DELETE_NOTE";
+    deleteNoteFile: "DELETE_NOTE";
+    clearContext:
+      | "error.platform.loadContext"
+      | "done.invoke.queryPermission"
+      | "error.platform.queryPermission"
+      | "error.platform.requestPermission"
+      | "DISCONNECT";
+    clearContextInIndexedDB:
+      | "error.platform.loadContext"
+      | "done.invoke.queryPermission"
+      | "error.platform.queryPermission"
+      | "error.platform.requestPermission"
+      | "DISCONNECT";
+  };
   eventsCausingServices: {
     loadContext: "xstate.init";
     queryPermission: "done.invoke.loadContext" | "RELOAD";
+    requestPermission: "REQUEST_PERMISSION";
+    showDirectoryPicker: "SHOW_DIRECTORY_PICKER";
     loadNotes:
       | "done.invoke.queryPermission"
       | "done.invoke.requestPermission"
       | "done.invoke.showDirectoryPicker";
-    showDirectoryPicker: "SHOW_DIRECTORY_PICKER";
-    requestPermission: "REQUEST_PERMISSION";
   };
   eventsCausingGuards: {
     isGranted: "done.invoke.queryPermission";
