@@ -19,3 +19,9 @@
   line-height: 1.5;
   font-family: unset;
 }
+
+/* Markdown styles */
+
+.markdown a {
+  @apply underline underline-offset-1;
+}

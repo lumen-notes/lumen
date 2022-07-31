@@ -58,7 +58,7 @@ export function NoteCard({ id }: NoteCardProps) {
       {!isEditing ? (
         // View mode
         <div className="flex flex-col gap-4">
-          <ReactMarkdown>{body}</ReactMarkdown>
+          <ReactMarkdown className="markdown">{body}</ReactMarkdown>
           <div className="flex justify-between items-center">
             <span>{id}</span>
             <div className="flex gap-2">
