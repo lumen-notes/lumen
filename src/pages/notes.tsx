@@ -1,13 +1,13 @@
 import { useActor } from "@xstate/react";
 import React from "react";
 import { useInView } from "react-intersection-observer";
-import { GlobalStateContext, GlobalStateContextValue } from "../global-state";
 import { NoteCard } from "../components/note-card";
 import { NoteForm } from "../components/note-form";
+import { GlobalStateContext } from "../global-state";
 
 export function NotesPage() {
   const globalState = React.useContext(GlobalStateContext);
-  const [state, send] = useActor(globalState.service);
+  const [state] = useActor(globalState.service);
 
   // Sort notes by when they were created in descending order
   const sortedNoteIds = React.useMemo(
@@ -32,29 +32,6 @@ export function NotesPage() {
 
   return (
     <div>
-      <div className="p-4">{JSON.stringify(state.value)}</div>
-      {state.matches("prompt") ? (
-        <dialog open>
-          <button onClick={() => send("REQUEST_PERMISSION")}>Grant</button>
-        </dialog>
-      ) : null}
-      {state.matches("empty") ? (
-        <button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
-          Open folder
-        </button>
-      ) : null}
-      {state.context.directoryHandle ? (
-        <div className="p-4 flex gap-2">
-          <div>{state.context.directoryHandle?.name}</div>
-          <button
-            onClick={() => send("RELOAD")}
-            disabled={state.matches("loadingNotes")}
-          >
-            {state.matches("loadingNotes") ? "Loading" : "Reload"}
-          </button>
-          <button onClick={() => send("DISCONNECT")}>Disconnect</button>
-        </div>
-      ) : null}
       <div className="flex flex-col gap-4 p-4">
         <div className="border border-[gray] p-4">
           <NoteForm />
