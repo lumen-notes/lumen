@@ -3,6 +3,7 @@ import { EditorView } from "@codemirror/view";
 import { useSelector } from "@xstate/react";
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
 import { GlobalStateContext } from "../global-state";
 import { NoteForm } from "./note-form";
 
@@ -60,7 +61,12 @@ export function NoteCard({ id }: NoteCardProps) {
         <div className="flex flex-col gap-4">
           <ReactMarkdown className="markdown">{body}</ReactMarkdown>
           <div className="flex justify-between items-center">
-            <span>{id}</span>
+            <Link
+              to={`/${id}`}
+              className="hover:underline hover:underline-offset-1"
+            >
+              {id}
+            </Link>
             <div className="flex gap-2">
               <button
                 onClick={() =>

@@ -2,10 +2,10 @@ import { useActor } from "@xstate/react";
 import React from "react";
 import { useInView } from "react-intersection-observer";
 import { GlobalStateContext, GlobalStateContextValue } from "../global-state";
-import { NoteCard } from "./note-card";
-import { NoteForm } from "./note-form";
+import { NoteCard } from "../components/note-card";
+import { NoteForm } from "../components/note-form";
 
-export function App() {
+export function NotesPage() {
   const globalState = React.useContext(GlobalStateContext);
   const [state, send] = useActor(globalState.service);
 
