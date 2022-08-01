@@ -1,6 +1,6 @@
 import { EditorSelection } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { useSelector } from "@xstate/react";
+import { useActor } from "@xstate/react";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
@@ -13,15 +13,17 @@ type NoteCardProps = {
 
 export function NoteCard({ id }: NoteCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null);
+
   const codeMirrorViewRef = React.useRef<EditorView>();
 
   const [isEditing, setIsEditing] = React.useState(false);
 
   const globalState = React.useContext(GlobalStateContext);
-  const body = useSelector(
-    globalState.service,
-    state => state.context.notes[id]
-  );
+
+  // TODO: Use selectors to avoid unnecessary rerenders
+  const [state] = useActor(globalState.service);
+
+  const body = state.context.notes[id];
 
   function switchToEditing() {
     setIsEditing(true);
@@ -41,6 +43,14 @@ export function NoteCard({ id }: NoteCardProps) {
   function switchToViewing() {
     setIsEditing(false);
     cardRef.current?.focus();
+  }
+
+  if (state.matches("loadingContext")) {
+    return <div>Loading...</div>;
+  }
+
+  if (body === undefined) {
+    return <div>Not found</div>;
   }
 
   return (
