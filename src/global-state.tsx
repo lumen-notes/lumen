@@ -127,6 +127,7 @@ const machine = createMachine(
               target: "loadingNotes",
             },
           ],
+          onError: "empty",
         },
       },
       loadingNotes: {

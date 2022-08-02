@@ -44,12 +44,16 @@
   --l-bg: 100%;
   --l-bg-inset: 97.5%;
   --a-border: 0.25;
+  --a-border-divider: 0.15;
 
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
+  --color-border-divider: hsla(
+    var(--h) var(--s) var(--l-text) / var(--a-border-divider)
+  );
 }
 
 @media (prefers-color-scheme: dark) {

@@ -13,6 +13,7 @@ module.exports = {
       bg: "var(--color-bg)",
       "bg-inset": "var(--color-bg-inset)",
       border: "var(--color-border)",
+      "border-divider": "var(--color-border-divider)",
     },
   },
   plugins: [],

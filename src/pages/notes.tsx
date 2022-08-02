@@ -32,16 +32,14 @@ export function NotesPage() {
   }, [bottomInView, sortedNoteIds.length]);
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 p-4">
-        <Card className="p-2">
-          <NoteForm />
-        </Card>
-        {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
-          <NoteCard key={id} id={Number(id)} />
-        ))}
-        <div ref={bottomRef} />
-      </div>
+    <div className="flex flex-col gap-4 p-4">
+      <Card className="p-2">
+        <NoteForm />
+      </Card>
+      {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
+        <NoteCard key={id} id={Number(id)} />
+      ))}
+      <div ref={bottomRef} />
     </div>
   );
 }

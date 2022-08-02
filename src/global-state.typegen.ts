@@ -35,15 +35,15 @@ export interface Typegen0 {
       type: "error.platform.requestPermission";
       data: unknown;
     };
+    "error.platform.showDirectoryPicker": {
+      type: "error.platform.showDirectoryPicker";
+      data: unknown;
+    };
     "xstate.init": { type: "xstate.init" };
     "done.invoke.requestPermission": {
       type: "done.invoke.requestPermission";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
-    };
-    "error.platform.showDirectoryPicker": {
-      type: "error.platform.showDirectoryPicker";
-      data: unknown;
     };
     "error.platform.loadNotes": {
       type: "error.platform.loadNotes";
@@ -80,12 +80,14 @@ export interface Typegen0 {
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
+      | "error.platform.showDirectoryPicker"
       | "DISCONNECT";
     clearContextInIndexedDB:
       | "error.platform.loadContext"
       | "done.invoke.queryPermission"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
+      | "error.platform.showDirectoryPicker"
       | "DISCONNECT";
   };
   eventsCausingServices: {
