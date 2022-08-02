@@ -11,6 +11,7 @@ import { parseDate } from "chrono-node";
 import React from "react";
 import { GlobalStateContext } from "../global-state";
 import { formatDate } from "../utils/format-date";
+import { Button } from "./button";
 
 type NoteFormProps = {
   id?: number;
@@ -62,7 +63,7 @@ export function NoteForm({
 
   return (
     <form
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-2"
       onSubmit={event => {
         handleSubmit();
         event.preventDefault();
@@ -76,6 +77,7 @@ export function NoteForm({
     >
       <div
         ref={editorRef}
+        className="p-2"
         onKeyDown={event => {
           // Submit on `command + enter`
           if (event.key === "Enter" && event.metaKey) {
@@ -86,11 +88,13 @@ export function NoteForm({
       />
       <div className="self-end flex gap-2">
         {onCancel ? (
-          <button type="button" onClick={onCancel}>
+          <Button type="button" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         ) : null}
-        <button type="submit">{id ? "Save" : "Add"}</button>
+        <Button type="submit" variant="primary">
+          {id ? "Save" : "Add"}
+        </Button>
       </div>
     </form>
   );

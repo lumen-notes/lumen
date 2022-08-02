@@ -34,7 +34,7 @@ export function NotesPage() {
   return (
     <div>
       <div className="flex flex-col gap-4 p-4">
-        <Card className="p-4">
+        <Card className="p-2">
           <NoteForm />
         </Card>
         {sortedNoteIds.slice(0, numVisibleNotes).map(id => (

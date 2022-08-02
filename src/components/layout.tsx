@@ -2,6 +2,7 @@ import { useActor } from "@xstate/react";
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { GlobalStateContext } from "../global-state";
+import { Button } from "./button";
 
 export function Layout() {
   const globalState = React.useContext(GlobalStateContext);
@@ -11,7 +12,7 @@ export function Layout() {
       <div className="p-4">{JSON.stringify(state.value)}</div>
       {state.matches("prompt") ? (
         <dialog open>
-          <button onClick={() => send("REQUEST_PERMISSION")}>Grant</button>
+          <Button onClick={() => send("REQUEST_PERMISSION")}>Grant</Button>
         </dialog>
       ) : null}
       {state.matches("empty") ? (
