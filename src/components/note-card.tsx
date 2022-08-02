@@ -74,7 +74,7 @@ export function NoteCard({ id }: NoteCardProps) {
           <div className="flex justify-between items-center h-4">
             <Link
               to={`/${id}`}
-              className="hover:underline hover:underline-offset-1 text-text-muted"
+              className="hover:underline hover:underline-offset-1 text-text-muted tracking-wide"
             >
               {id}
             </Link>

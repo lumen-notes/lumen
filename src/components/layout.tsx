@@ -22,16 +22,26 @@ export function Layout() {
 
   if (!state.context.directoryHandle) {
     return (
-      <div className="grid place-items-center h-screen p-4">
-        <div className="max-w-xs  flex flex-col gap-6 items-center">
+      <div
+        className="grid place-items-center h-screen p-4"
+        style={{ height: "100svh" }}
+      >
+        <div className="flex flex-col gap-6 items-center">
           <div className="text-center flex flex-col gap-3 items-center">
             <Logo />
-            <h1 className="font-medium text-3xl leading-none">lumen</h1>
+            <h1 className="font-medium text-3xl leading-none lowercase">
+              Lumen
+            </h1>
             <p className="text-text-muted text-base">
-              A system for thinking, writing, learning & mindfulness
+              A tool for thinking, writing,
+              <br />
+              learning &amp; mindfulness
             </p>
           </div>
-          <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
+          <Button
+            variant="primary"
+            onClick={() => send("SHOW_DIRECTORY_PICKER")}
+          >
             Connect a local folder
           </Button>
         </div>
