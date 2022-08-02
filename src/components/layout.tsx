@@ -26,12 +26,14 @@ export function Layout() {
         className="grid place-items-center h-screen p-4"
         style={{ height: "100svh" }}
       >
-        <div className="flex flex-col gap-6 items-center">
-          <div className="text-center flex flex-col gap-3 items-center">
-            <Logo />
-            <h1 className="font-medium text-3xl leading-none lowercase">
-              Lumen
-            </h1>
+        <div className="flex flex-col gap-8 items-center">
+          <div className="text-center flex flex-col gap-4">
+            <div className="flex flex-col gap-2 items-center">
+              <Logo />
+              <h1 className="font-medium text-3xl leading-none lowercase">
+                Lumen
+              </h1>
+            </div>
             <p className="text-text-muted text-base">
               A tool for thinking, writing,
               <br />
