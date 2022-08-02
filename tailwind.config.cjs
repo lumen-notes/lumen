@@ -6,6 +6,14 @@ module.exports = {
       body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],
       mono: ['"iA Writer Mono"', "monospace"],
     },
+    colors: {
+      transparent: "transparent",
+      text: "var(--color-text)",
+      "text-muted": "var(--color-text-muted)",
+      bg: "var(--color-bg)",
+      "bg-inset": "var(--color-bg-inset)",
+      border: "var(--color-border)",
+    },
   },
   plugins: [],
 };

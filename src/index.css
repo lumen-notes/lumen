@@ -32,10 +32,39 @@
   font-style: italic;
 }
 
+/* Variables */
+
+:root {
+  color-scheme: light dark;
+
+  --h: 220deg;
+  --s: 10%;
+  --l-text: 10%;
+  --l-text-muted: 45%;
+  --l-bg: 100%;
+  --l-bg-inset: 97.5%;
+  --a-border: 0.25;
+
+  --color-text: hsl(var(--h) var(--s) var(--l-text));
+  --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
+  --color-bg: hsl(var(--h) var(--s) var(--l-bg));
+  --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
+  --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --l-text: 90%;
+    --l-text-muted: 60%;
+    --l-bg: 10%;
+    --l-bg-inset: 5%;
+  }
+}
+
 /* Global styles */
 
 body {
-  @apply font-body text-sm;
+  @apply font-body text-sm bg-bg-inset text-text;
 }
 
 /* Codemirror styles */
