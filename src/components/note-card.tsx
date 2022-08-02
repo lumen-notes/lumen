@@ -5,6 +5,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import { Link } from "react-router-dom";
 import { GlobalStateContext } from "../global-state";
+import { Card } from "./card";
 import { NoteForm } from "./note-form";
 
 type NoteCardProps = {
@@ -54,9 +55,9 @@ export function NoteCard({ id }: NoteCardProps) {
   }
 
   return (
-    <div
+    <Card
       ref={cardRef}
-      className="border border-[gray] p-4"
+      className="p-4"
       tabIndex={0}
       onKeyDown={event => {
         // Switch to editing with `e`
@@ -73,7 +74,7 @@ export function NoteCard({ id }: NoteCardProps) {
           <div className="flex justify-between items-center">
             <Link
               to={`/${id}`}
-              className="hover:underline hover:underline-offset-1"
+              className="hover:underline hover:underline-offset-1 text-text-muted"
             >
               {id}
             </Link>
@@ -100,6 +101,6 @@ export function NoteCard({ id }: NoteCardProps) {
           onCancel={switchToViewing}
         />
       )}
-    </div>
+    </Card>
   );
 }

@@ -1,6 +1,7 @@
 import { useActor } from "@xstate/react";
 import React from "react";
 import { useInView } from "react-intersection-observer";
+import { Card } from "../components/card";
 import { NoteCard } from "../components/note-card";
 import { NoteForm } from "../components/note-form";
 import { GlobalStateContext } from "../global-state";
@@ -33,9 +34,9 @@ export function NotesPage() {
   return (
     <div>
       <div className="flex flex-col gap-4 p-4">
-        <div className="border border-[gray] p-4">
+        <Card className="p-4">
           <NoteForm />
-        </div>
+        </Card>
         {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
           <NoteCard key={id} id={Number(id)} />
         ))}

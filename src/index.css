@@ -69,11 +69,16 @@ body {
 
 /* Codemirror styles */
 
+.cm-editor.cm-editor.cm-focused {
+  @apply outline-none;
+}
+
 .cm-editor .cm-content {
   width: 100%;
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  caret-color: currentColor;
 }
 
 .cm-editor .cm-line {
@@ -81,7 +86,7 @@ body {
 }
 
 .cm-editor .cm-scroller {
-  line-height: 1.5;
+  line-height: 1.25rem;
   font-family: unset;
 }
 
