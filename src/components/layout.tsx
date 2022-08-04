@@ -3,7 +3,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { GlobalStateContext } from "../global-state";
 import { Button } from "./button";
-import { DisconnectIcon } from "./icons";
+import { DisconnectIcon24 } from "./icons";
 
 function Logo() {
   return (
@@ -70,7 +70,7 @@ export function Layout() {
             className="p-2 text-text-muted hover:bg-bg-hover rounded"
             onClick={() => send("DISCONNECT")}
           >
-            <DisconnectIcon />
+            <DisconnectIcon24 />
           </button>
         </div>
         <div className="overflow-auto flex-grow flex-shrink">

@@ -1,4 +1,4 @@
-export function DisconnectIcon() {
+export function DisconnectIcon24() {
   return (
     <svg
       width="24"
