@@ -1,3 +1,15 @@
+export function NoteIcon24() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M4 4.5h16A1.5 1.5 0 0 1 21.5 6v12a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V6A1.5 1.5 0 0 1 4 4.5ZM1 6a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V6Zm6 3h10v1.5H7V9Zm0 4h7v1.5H7V13Z"
+      />
+    </svg>
+  );
+}
+
 export function DisconnectIcon24() {
   return (
     <svg

@@ -2,6 +2,7 @@ import { useActor } from "@xstate/react";
 import React from "react";
 import { useInView } from "react-intersection-observer";
 import { Card } from "../components/card";
+import { NoteIcon24 } from "../components/icons";
 import { NoteCard } from "../components/note-card";
 import { NoteForm } from "../components/note-form";
 import { GlobalStateContext } from "../global-state";
@@ -32,7 +33,11 @@ export function NotesPage() {
   }, [bottomInView, sortedNoteIds.length]);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="max-w-lg mx-auto flex flex-col gap-4 p-4">
+      <div className="flex gap-2">
+        <NoteIcon24 />
+        <h1 className="text-lg font-semibold leading-[24px]">Notes</h1>
+      </div>
       <Card className="p-2">
         <NoteForm />
       </Card>
