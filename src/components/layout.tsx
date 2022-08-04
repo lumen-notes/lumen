@@ -3,6 +3,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { GlobalStateContext } from "../global-state";
 import { Button } from "./button";
+import { DisconnectIcon } from "./icons";
 
 function Logo() {
   return (
@@ -19,6 +20,10 @@ function Logo() {
 export function Layout() {
   const globalState = React.useContext(GlobalStateContext);
   const [state, send] = useActor(globalState.service);
+
+  if (state.matches("loadingContext")) {
+    return null;
+  }
 
   if (!state.context.directoryHandle) {
     return (
@@ -58,19 +63,20 @@ export function Layout() {
           <Button onClick={() => send("REQUEST_PERMISSION")}>Grant</Button>
         </dialog>
       ) : null}
-      <div className="p-4 flex justify-between items-center border-b border-border-divider h-[56px]">
-        <div>{state.context.directoryHandle?.name}</div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => send("RELOAD")}
-            disabled={state.matches("loadingNotes")}
+      <div className="flex h-screen">
+        <div className="p-2 flex flex-col justify-end items-center border-r border-border-divider">
+          <button
+            aria-label="Disconnect"
+            className="p-2 text-text-muted hover:bg-bg-hover rounded"
+            onClick={() => send("DISCONNECT")}
           >
-            {state.matches("loadingNotes") ? "Loading..." : "Reload"}
-          </Button>
-          <Button onClick={() => send("DISCONNECT")}>Disconnect</Button>
+            <DisconnectIcon />
+          </button>
+        </div>
+        <div className="overflow-auto flex-grow flex-shrink">
+          <Outlet />
         </div>
       </div>
-      <Outlet />
     </div>
   );
 }
