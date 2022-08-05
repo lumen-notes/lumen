@@ -31,7 +31,7 @@ const Item = React.forwardRef<
   <RadixDropdownMenu.Item
     ref={ref}
     className={clsx(
-      "block cursor-pointer rounded py-2 px-3 leading-[16px] outline-none focus:bg-bg-hover",
+      "block cursor-default rounded py-2 px-3 leading-[16px] outline-none focus:bg-bg-hover",
       className,
     )}
     {...props}
