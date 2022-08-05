@@ -8,7 +8,10 @@ export const Card = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={clsx("rounded-lg bg-bg border border-border", className)}
+      className={clsx(
+        "rounded-lg bg-bg ring-1 ring-border-divider dark:ring-inset",
+        className,
+      )}
       {...props}
     />
   )
