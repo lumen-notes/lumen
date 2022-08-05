@@ -4,8 +4,9 @@ import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
+import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
-import { Button, IconButton } from "./button"
+import { IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
@@ -72,7 +73,9 @@ export function NoteCard({ id }: NoteCardProps) {
       {!isEditing ? (
         // View mode
         <div className="flex flex-col gap-6 p-4">
-          <ReactMarkdown className="markdown">{body}</ReactMarkdown>
+          <ReactMarkdown className="markdown" remarkPlugins={[remarkGfm]}>
+            {body}
+          </ReactMarkdown>
 
           <div className="flex h-4 items-center justify-between">
             <Link
