@@ -12,6 +12,7 @@ module.exports = {
       "text-muted": "var(--color-text-muted)",
       bg: "var(--color-bg)",
       "bg-inset": "var(--color-bg-inset)",
+      "bg-overlay": "var(--color-bg-overlay)",
       "bg-hover": "var(--color-bg-hover)",
       border: "var(--color-border)",
       "border-divider": "var(--color-border-divider)",

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
 import { Button } from "./button"
 import { Card } from "./card"
+import { DropdownMenu } from "./dropdown-menu"
 import { NoteForm } from "./note-form"
 
 type NoteCardProps = {
@@ -71,6 +72,7 @@ export function NoteCard({ id }: NoteCardProps) {
         // View mode
         <div className="flex flex-col gap-6 p-4">
           <ReactMarkdown className="markdown">{body}</ReactMarkdown>
+
           <div className="flex h-4 items-center justify-between">
             <Link
               to={`/${id}`}
@@ -78,15 +80,24 @@ export function NoteCard({ id }: NoteCardProps) {
             >
               {id}
             </Link>
-            <div className="-m-2 flex gap-2">
-              <Button
-                onClick={() =>
-                  globalState.service.send({ type: "DELETE_NOTE", id })
-                }
-              >
-                Delete
-              </Button>
-              <Button onClick={switchToEditing}>Edit</Button>
+            <div className="-m-2">
+              <DropdownMenu>
+                <DropdownMenu.Trigger asChild>
+                  <Button>More</Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item onSelect={switchToEditing}>
+                    Edit
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onSelect={() => {
+                      globalState.service.send({ type: "DELETE_NOTE", id })
+                    }}
+                  >
+                    Delete
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu>
             </div>
           </div>
         </div>

@@ -43,6 +43,7 @@
   --l-text-muted: 45%;
   --l-bg: 100%;
   --l-bg-inset: 97.5%;
+  --l-bg-overlay: 100%;
   --a-bg-hover: 0.075;
   --a-border: 0.25;
   --a-border-divider: 0.15;
@@ -51,6 +52,7 @@
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
+  --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-divider: hsla(
@@ -64,7 +66,8 @@
     --l-text-muted: 60%;
     --l-bg: 10%;
     --l-bg-inset: 5%;
-    --alpha-bg-hover: 0.1;
+    --l-bg-overlay: 15%;
+    --a-bg-hover: 0.1;
   }
 }
 
