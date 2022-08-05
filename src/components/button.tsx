@@ -11,8 +11,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          "rounded px-3 py-2 font-semibold leading-[16px] disabled:pointer-events-none disabled:opacity-50 ring-1 ring-inset ring-border bg-bg",
-          variant === "primary" && "text-bg bg-text ring-0",
+          "rounded bg-bg px-3 py-2 font-semibold leading-[16px] ring-1 ring-inset ring-border disabled:pointer-events-none disabled:opacity-50",
+          variant === "primary" && "bg-text text-bg ring-0",
           className,
         )}
         {...props}

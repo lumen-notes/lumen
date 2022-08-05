@@ -86,7 +86,7 @@ export function NoteForm({
           }
         }}
       />
-      <div className="self-end flex gap-2">
+      <div className="flex gap-2 self-end">
         {onCancel ? (
           <Button type="button" onClick={onCancel}>
             Cancel

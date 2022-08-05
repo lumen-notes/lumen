@@ -28,18 +28,18 @@ export function Root() {
   if (!state.context.directoryHandle) {
     return (
       <div
-        className="grid place-items-center h-screen p-4"
+        className="grid h-screen place-items-center p-4"
         style={{ height: "100svh" }}
       >
-        <div className="flex flex-col gap-8 items-center">
-          <div className="text-center flex flex-col gap-4">
-            <div className="flex flex-col gap-2 items-center">
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col gap-4 text-center">
+            <div className="flex flex-col items-center gap-2">
               <Logo />
-              <h1 className="font-medium text-3xl leading-none lowercase">
+              <h1 className="text-3xl font-medium lowercase leading-none">
                 Lumen
               </h1>
             </div>
-            <p className="text-text-muted text-base">
+            <p className="text-base text-text-muted">
               A tool for thinking, writing,
               <br />
               learning &amp; mindfulness
@@ -64,16 +64,16 @@ export function Root() {
         </dialog>
       ) : null}
       <div className="flex h-screen">
-        <div className="p-2 flex flex-col justify-end items-center border-r border-border-divider">
+        <div className="flex flex-col items-center justify-end border-r border-border-divider p-2">
           <button
             aria-label="Disconnect"
-            className="p-2 text-text-muted hover:bg-bg-hover rounded"
+            className="rounded p-2 text-text-muted hover:bg-bg-hover"
             onClick={() => send("DISCONNECT")}
           >
             <DisconnectIcon24 />
           </button>
         </div>
-        <div className="overflow-auto flex-grow flex-shrink">
+        <div className="flex-shrink flex-grow overflow-auto">
           <Outlet />
         </div>
       </div>

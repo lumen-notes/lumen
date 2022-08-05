@@ -71,7 +71,7 @@
 /* Global styles */
 
 body {
-  @apply font-body text-sm bg-bg-inset text-text;
+  @apply bg-bg-inset font-body text-sm text-text;
 }
 
 /* Codemirror styles */

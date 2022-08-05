@@ -71,14 +71,14 @@ export function NoteCard({ id }: NoteCardProps) {
         // View mode
         <div className="flex flex-col gap-6 p-4">
           <ReactMarkdown className="markdown">{body}</ReactMarkdown>
-          <div className="flex justify-between items-center h-4">
+          <div className="flex h-4 items-center justify-between">
             <Link
               to={`/${id}`}
-              className="hover:underline hover:underline-offset-1 text-text-muted tracking-wide"
+              className="tracking-wide text-text-muted hover:underline hover:underline-offset-1"
             >
               {id}
             </Link>
-            <div className="flex gap-2 -m-2">
+            <div className="-m-2 flex gap-2">
               <Button
                 onClick={() =>
                   globalState.service.send({ type: "DELETE_NOTE", id })
