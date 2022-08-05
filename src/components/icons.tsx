@@ -1,3 +1,15 @@
+export function MoreIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M8 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm13 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
+      />
+    </svg>
+  )
+}
+
 export function NoteIcon24() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">

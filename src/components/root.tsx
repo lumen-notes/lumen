@@ -2,7 +2,7 @@ import { useActor } from "@xstate/react"
 import React from "react"
 import { Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
-import { Button } from "./button"
+import { Button, IconButton } from "./button"
 import { DisconnectIcon24 } from "./icons"
 
 function Logo() {
@@ -65,13 +65,12 @@ export function Root() {
       ) : null}
       <div className="flex h-screen">
         <div className="flex flex-col items-center justify-end border-r border-border-divider p-2">
-          <button
+          <IconButton
             aria-label="Disconnect"
-            className="rounded p-2 text-text-muted hover:bg-bg-hover"
             onClick={() => send("DISCONNECT")}
           >
             <DisconnectIcon24 />
-          </button>
+          </IconButton>
         </div>
         <div className="flex-shrink flex-grow overflow-auto">
           <Outlet />

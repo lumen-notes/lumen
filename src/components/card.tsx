@@ -3,22 +3,21 @@ import React from "react"
 
 type CardProps = {
   elevation?: 0 | 1
-}
+} & React.ComponentPropsWithoutRef<"div">
 
-export const Card = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<"div"> & CardProps
->(({ className, elevation = 0, ...props }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={clsx(
-        "rounded-lg ring-1 ring-border-divider dark:ring-inset",
-        elevation === 0 && "bg-bg shadow-sm",
-        elevation === 1 && "bg-bg-overlay shadow-lg",
-        className,
-      )}
-      {...props}
-    />
-  )
-})
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, elevation = 0, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={clsx(
+          "rounded-lg ring-1 ring-border-divider dark:ring-inset",
+          elevation === 0 && "bg-bg shadow-sm",
+          elevation === 1 && "bg-bg-overlay shadow-lg",
+          className,
+        )}
+        {...props}
+      />
+    )
+  },
+)

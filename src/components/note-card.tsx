@@ -5,9 +5,10 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
-import { Button } from "./button"
+import { Button, IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
+import { MoreIcon16 } from "./icons"
 import { NoteForm } from "./note-form"
 
 type NoteCardProps = {
@@ -83,7 +84,9 @@ export function NoteCard({ id }: NoteCardProps) {
             <div className="-m-2">
               <DropdownMenu>
                 <DropdownMenu.Trigger asChild>
-                  <Button>More</Button>
+                  <IconButton aria-label="More actions">
+                    <MoreIcon16 />
+                  </IconButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   <DropdownMenu.Item onSelect={switchToEditing}>
