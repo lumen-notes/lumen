@@ -11,6 +11,7 @@ import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
 import { NoteForm } from "./note-form"
+import copy from "copy-to-clipboard"
 
 type NoteCardProps = {
   id: string
@@ -92,6 +93,12 @@ export function NoteCard({ id }: NoteCardProps) {
                   </IconButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
+                  <DropdownMenu.Item onSelect={() => copy(id)}>
+                    Copy ID
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onSelect={() => copy(body)}>
+                    Copy markdown
+                  </DropdownMenu.Item>
                   <DropdownMenu.Item onSelect={switchToEditing}>
                     Edit
                   </DropdownMenu.Item>
