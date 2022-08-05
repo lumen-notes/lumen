@@ -1,5 +1,5 @@
-import { clsx } from "clsx";
-import React from "react";
+import { clsx } from "clsx"
+import React from "react"
 
 export const Card = React.forwardRef<
   HTMLDivElement,
@@ -11,5 +11,5 @@ export const Card = React.forwardRef<
       className={clsx("rounded-lg bg-bg border border-border", className)}
       {...props}
     />
-  );
-});
+  )
+})

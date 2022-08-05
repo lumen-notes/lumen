@@ -3,23 +3,23 @@ import {
   closeBrackets,
   CompletionContext,
   CompletionResult,
-} from "@codemirror/autocomplete";
-import { history } from "@codemirror/commands";
-import { EditorState } from "@codemirror/state";
-import { EditorView, placeholder } from "@codemirror/view";
-import { parseDate } from "chrono-node";
-import React from "react";
-import { GlobalStateContext } from "../global-state";
-import { formatDate } from "../utils/format-date";
-import { Button } from "./button";
+} from "@codemirror/autocomplete"
+import { history } from "@codemirror/commands"
+import { EditorState } from "@codemirror/state"
+import { EditorView, placeholder } from "@codemirror/view"
+import { parseDate } from "chrono-node"
+import React from "react"
+import { GlobalStateContext } from "../global-state"
+import { formatDate } from "../utils/format-date"
+import { Button } from "./button"
 
 type NoteFormProps = {
-  id?: string;
-  defaultBody?: string;
-  codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>;
-  onSubmit?: (note: { id: string; body: string }) => void;
-  onCancel?: () => void;
-};
+  id?: string
+  defaultBody?: string
+  codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
+  onSubmit?: (note: { id: string; body: string }) => void
+  onCancel?: () => void
+}
 
 export function NoteForm({
   id,
@@ -28,7 +28,7 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
-  const globalState = React.useContext(GlobalStateContext);
+  const globalState = React.useContext(GlobalStateContext)
 
   const {
     editorRef,
@@ -38,51 +38,51 @@ export function NoteForm({
     defaultValue: defaultBody,
     placeholder: "Write something...",
     viewRef: codeMirrorViewRef,
-  });
+  })
 
   function handleSubmit() {
     const note = {
       id: id ?? Date.now().toString(),
       body: body,
-    };
+    }
 
     globalState.service?.send({
       type: "UPSERT_NOTE",
       ...note,
-    });
+    })
 
-    onSubmit?.(note);
+    onSubmit?.(note)
 
     // If we're creating a new note, reset the form after submitting
     if (!id) {
       view?.dispatch({
         changes: [{ from: 0, to: body.length, insert: defaultBody }],
-      });
+      })
     }
   }
 
   return (
     <form
       className="flex flex-col gap-2"
-      onSubmit={event => {
-        handleSubmit();
-        event.preventDefault();
+      onSubmit={(event) => {
+        handleSubmit()
+        event.preventDefault()
       }}
-      onKeyDown={event => {
+      onKeyDown={(event) => {
         // Cancel on `escape`
         if (event.key === "Escape") {
-          onCancel?.();
+          onCancel?.()
         }
       }}
     >
       <div
         ref={editorRef}
         className="p-2"
-        onKeyDown={event => {
+        onKeyDown={(event) => {
           // Submit on `command + enter`
           if (event.key === "Enter" && event.metaKey) {
-            handleSubmit();
-            event.preventDefault();
+            handleSubmit()
+            event.preventDefault()
           }
         }}
       />
@@ -97,7 +97,7 @@ export function NoteForm({
         </Button>
       </div>
     </form>
-  );
+  )
 }
 
 // Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
@@ -106,33 +106,33 @@ function useCodeMirror({
   placeholder: placeholderValue = "",
   viewRef: providedViewRef,
 }: {
-  defaultValue?: string;
-  placeholder?: string;
-  viewRef?: React.MutableRefObject<EditorView | undefined>;
+  defaultValue?: string
+  placeholder?: string
+  viewRef?: React.MutableRefObject<EditorView | undefined>
 }) {
-  const [editorElement, setEditorElement] = React.useState<HTMLElement>();
+  const [editorElement, setEditorElement] = React.useState<HTMLElement>()
   const editorRef = React.useCallback((node: HTMLElement | null) => {
-    if (!node) return;
+    if (!node) return
 
-    setEditorElement(node);
-  }, []);
+    setEditorElement(node)
+  }, [])
 
-  const newViewRef = React.useRef<EditorView>();
-  const viewRef = providedViewRef ?? newViewRef;
+  const newViewRef = React.useRef<EditorView>()
+  const viewRef = providedViewRef ?? newViewRef
 
-  const [value, setValue] = React.useState(defaultValue);
+  const [value, setValue] = React.useState(defaultValue)
 
   React.useEffect(() => {
-    if (!editorElement) return;
+    if (!editorElement) return
 
     const state = EditorState.create({
       doc: defaultValue,
       extensions: [
         placeholder(placeholderValue),
         history(),
-        EditorView.updateListener.of(event => {
-          const value = event.view.state.doc.sliceString(0);
-          setValue(value);
+        EditorView.updateListener.of((event) => {
+          const value = event.view.state.doc.sliceString(0)
+          setValue(value)
         }),
         closeBrackets(),
         autocompletion({
@@ -140,45 +140,45 @@ function useCodeMirror({
           icons: false,
         }),
       ],
-    });
+    })
 
     const view = new EditorView({
       state,
       parent: editorElement,
-    });
+    })
 
-    viewRef.current = view;
+    viewRef.current = view
 
     return () => {
-      view.destroy();
-    };
-  }, [editorElement]);
+      view.destroy()
+    }
+  }, [editorElement])
 
-  return { editorRef, view: viewRef.current, value };
+  return { editorRef, view: viewRef.current, value }
 }
 
 function dateCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/(\[\[)?\w*/);
+  const word = context.matchBefore(/(\[\[)?\w*/)
 
   if (!word) {
-    return null;
+    return null
   }
 
   // Ignore words inside internal links
   if (word.text.startsWith("[[")) {
-    return null;
+    return null
   }
 
-  const date = parseDate(word.text);
+  const date = parseDate(word.text)
 
   if (!date) {
-    return null;
+    return null
   }
 
-  const year = String(date.getFullYear()).padStart(4, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const dateString = `${year}-${month}-${day}`;
+  const year = String(date.getFullYear()).padStart(4, "0")
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  const dateString = `${year}-${month}-${day}`
 
   return {
     from: word.from,
@@ -189,5 +189,5 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
       },
     ],
     filter: false,
-  };
+  }
 }

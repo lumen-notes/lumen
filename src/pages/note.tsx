@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
-import { NoteIcon24 } from "../components/icons";
-import { NoteCard } from "../components/note-card";
+import { useParams } from "react-router-dom"
+import { NoteIcon24 } from "../components/icons"
+import { NoteCard } from "../components/note-card"
 
 export function NotePage() {
-  const { id = "" } = useParams();
+  const { id = "" } = useParams()
 
   return (
     <div className="max-w-lg mx-auto flex flex-col gap-4 p-4 ">
@@ -13,5 +13,5 @@ export function NotePage() {
       </div>
       <NoteCard id={id} />
     </div>
-  );
+  )
 }

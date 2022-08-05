@@ -1,12 +1,12 @@
-import { useInterpret } from "@xstate/react";
-import { get, set } from "idb-keyval";
-import React from "react";
-import { assign, createMachine, InterpreterFrom } from "xstate";
+import { useInterpret } from "@xstate/react"
+import { get, set } from "idb-keyval"
+import React from "react"
+import { assign, createMachine, InterpreterFrom } from "xstate"
 
 type Context = {
-  directoryHandle: FileSystemDirectoryHandle | null;
-  notes: Record<string, string>;
-};
+  directoryHandle: FileSystemDirectoryHandle | null
+  notes: Record<string, string>
+}
 
 type Event =
   | { type: "SHOW_DIRECTORY_PICKER" }
@@ -14,7 +14,7 @@ type Event =
   | { type: "RELOAD" }
   | { type: "DISCONNECT" }
   | { type: "UPSERT_NOTE"; id: string; body: string }
-  | { type: "DELETE_NOTE"; id: string };
+  | { type: "DELETE_NOTE"; id: string }
 
 const machine = createMachine(
   {
@@ -27,17 +27,17 @@ const machine = createMachine(
       context: {} as Context,
       services: {} as {
         loadContext: {
-          data: Context;
-        };
+          data: Context
+        }
         queryPermission: {
-          data: PermissionState;
-        };
+          data: PermissionState
+        }
         showDirectoryPicker: {
-          data: FileSystemDirectoryHandle;
-        };
+          data: FileSystemDirectoryHandle
+        }
         loadNotes: {
-          data: Record<string, string>;
-        };
+          data: Record<string, string>
+        }
       },
       events: {} as Event,
     },
@@ -180,10 +180,10 @@ const machine = createMachine(
         notes: (context, event) => ({}),
       }),
       setContextInIndexedDB: async (context, event) => {
-        await set("context", context);
+        await set("context", context)
       },
       clearContextInIndexedDB: async (context, event) => {
-        await set("context", null);
+        await set("context", null)
       },
       upsertNote: assign({
         notes: (context, event) => ({
@@ -193,98 +193,98 @@ const machine = createMachine(
       }),
       upsertNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
-          throw new Error("Directory not found");
+          throw new Error("Directory not found")
         }
 
         const fileHandle = await context.directoryHandle.getFileHandle(
           `${event.id}.md`,
-          { create: true }
-        );
+          { create: true },
+        )
 
         // Create a FileSystemWritableFileStream to write to
-        const writeableStream = await fileHandle.createWritable();
+        const writeableStream = await fileHandle.createWritable()
 
         // Write the contents of the file
-        await writeableStream.write(event.body);
+        await writeableStream.write(event.body)
 
         // Close the stream
-        await writeableStream.close();
+        await writeableStream.close()
       },
       deleteNote: assign({
         notes: (context, event) => {
-          const { [event.id]: _, ...rest } = context.notes;
-          return rest;
+          const { [event.id]: _, ...rest } = context.notes
+          return rest
         },
       }),
       deleteNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
-          throw new Error("Directory not found");
+          throw new Error("Directory not found")
         }
 
         // Delete the file
-        await context.directoryHandle.removeEntry(`${event.id}.md`);
+        await context.directoryHandle.removeEntry(`${event.id}.md`)
       },
     },
     guards: {
       isGranted: (context, event) => {
-        return event.data === "granted";
+        return event.data === "granted"
       },
       isPrompt: (context, event) => {
-        return event.data === "prompt";
+        return event.data === "prompt"
       },
       isDenied: (context, event) => {
-        return event.data === "denied";
+        return event.data === "denied"
       },
     },
     services: {
       loadContext: async () => {
-        const context = await get<Context>("context");
+        const context = await get<Context>("context")
 
         if (!context) {
-          throw new Error("Not found");
+          throw new Error("Not found")
         }
 
-        return context;
+        return context
       },
-      queryPermission: async context => {
+      queryPermission: async (context) => {
         if (!context.directoryHandle) {
-          throw new Error("Directory not found");
+          throw new Error("Directory not found")
         }
 
         const permission = await context.directoryHandle.queryPermission({
           mode: "readwrite",
-        });
+        })
 
-        return permission;
+        return permission
       },
-      requestPermission: async context => {
+      requestPermission: async (context) => {
         if (!context.directoryHandle) {
-          throw new Error("Directory not found");
+          throw new Error("Directory not found")
         }
 
         const permission = await context.directoryHandle.requestPermission({
           mode: "readwrite",
-        });
+        })
 
         if (permission !== "granted") {
-          throw new Error("Permission denied");
+          throw new Error("Permission denied")
         }
       },
       showDirectoryPicker: async () => {
         return await window.showDirectoryPicker({
           id: "notes",
           mode: "readwrite",
-        });
+        })
       },
-      loadNotes: async context => {
+      loadNotes: async (context) => {
         if (!context.directoryHandle) {
-          return {};
+          return {}
         }
 
         // Start timer
-        console.time("loadNotes");
+        console.time("loadNotes")
 
-        const entries: Array<Promise<[string, string]>> = [];
+        const entries: Array<Promise<[string, string]>> = []
 
         // TODO: Read files in a worker to avoid blocking the main thread
         for await (const [name, handle] of context.directoryHandle.entries()) {
@@ -297,38 +297,38 @@ const machine = createMachine(
                   async (file): Promise<[string, string]> => [
                     file.name.replace(/\.md$/, ""),
                     await file.text(),
-                  ]
-                )
-            );
+                  ],
+                ),
+            )
           }
         }
 
-        const notes = Object.fromEntries(await Promise.all(entries));
+        const notes = Object.fromEntries(await Promise.all(entries))
 
         // End timer
-        console.timeEnd("loadNotes");
+        console.timeEnd("loadNotes")
 
-        return notes;
+        return notes
       },
     },
-  }
-);
+  },
+)
 
 export type GlobalStateContextValue = {
-  service: InterpreterFrom<typeof machine>;
-};
+  service: InterpreterFrom<typeof machine>
+}
 
 export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
   // @ts-ignore
-  {}
-);
+  {},
+)
 
 export function GlobalStateProvider({ children }: React.PropsWithChildren<{}>) {
-  const service = useInterpret(machine);
+  const service = useInterpret(machine)
 
   return (
     <GlobalStateContext.Provider value={{ service }}>
       {children}
     </GlobalStateContext.Provider>
-  );
+  )
 }

@@ -1,11 +1,11 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Layout } from "./components/layout";
-import { GlobalStateProvider } from "./global-state";
-import "./index.css";
-import { NotePage } from "./pages/note";
-import { NotesPage } from "./pages/notes";
+import React from "react"
+import ReactDOM from "react-dom/client"
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Layout } from "./components/layout"
+import { GlobalStateProvider } from "./global-state"
+import "./index.css"
+import { NotePage } from "./pages/note"
+import { NotesPage } from "./pages/notes"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -19,5 +19,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         </Routes>
       </BrowserRouter>
     </GlobalStateProvider>
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+)

@@ -1,69 +1,69 @@
-import { EditorSelection } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
-import { useActor } from "@xstate/react";
-import React from "react";
-import ReactMarkdown from "react-markdown";
-import { Link } from "react-router-dom";
-import { GlobalStateContext } from "../global-state";
-import { Button } from "./button";
-import { Card } from "./card";
-import { NoteForm } from "./note-form";
+import { EditorSelection } from "@codemirror/state"
+import { EditorView } from "@codemirror/view"
+import { useActor } from "@xstate/react"
+import React from "react"
+import ReactMarkdown from "react-markdown"
+import { Link } from "react-router-dom"
+import { GlobalStateContext } from "../global-state"
+import { Button } from "./button"
+import { Card } from "./card"
+import { NoteForm } from "./note-form"
 
 type NoteCardProps = {
-  id: string;
-};
+  id: string
+}
 
 export function NoteCard({ id }: NoteCardProps) {
-  const cardRef = React.useRef<HTMLDivElement>(null);
+  const cardRef = React.useRef<HTMLDivElement>(null)
 
-  const codeMirrorViewRef = React.useRef<EditorView>();
+  const codeMirrorViewRef = React.useRef<EditorView>()
 
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false)
 
-  const globalState = React.useContext(GlobalStateContext);
+  const globalState = React.useContext(GlobalStateContext)
 
   // TODO: Use selectors to avoid unnecessary rerenders
-  const [state] = useActor(globalState.service);
+  const [state] = useActor(globalState.service)
 
-  const body = state.context.notes[id];
+  const body = state.context.notes[id]
 
   function switchToEditing() {
-    setIsEditing(true);
+    setIsEditing(true)
     setTimeout(() => {
-      const view = codeMirrorViewRef.current;
+      const view = codeMirrorViewRef.current
       if (view) {
-        view.focus();
+        view.focus()
         view.dispatch({
           selection: EditorSelection.cursor(
-            view.state.doc.sliceString(0).length
+            view.state.doc.sliceString(0).length,
           ),
-        });
+        })
       }
-    });
+    })
   }
 
   function switchToViewing() {
-    setIsEditing(false);
-    cardRef.current?.focus();
+    setIsEditing(false)
+    cardRef.current?.focus()
   }
 
   if (state.matches("loadingContext")) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (body === undefined) {
-    return <div>Not found</div>;
+    return <div>Not found</div>
   }
 
   return (
     <Card
       ref={cardRef}
       tabIndex={0}
-      onKeyDown={event => {
+      onKeyDown={(event) => {
         // Switch to editing with `e`
         if (!isEditing && event.key === "e") {
-          switchToEditing();
-          event.preventDefault();
+          switchToEditing()
+          event.preventDefault()
         }
       }}
     >
@@ -104,5 +104,5 @@ export function NoteCard({ id }: NoteCardProps) {
         </div>
       )}
     </Card>
-  );
+  )
 }
