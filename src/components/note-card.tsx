@@ -10,7 +10,7 @@ import { Card } from "./card";
 import { NoteForm } from "./note-form";
 
 type NoteCardProps = {
-  id: number;
+  id: string;
 };
 
 export function NoteCard({ id }: NoteCardProps) {

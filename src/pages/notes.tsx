@@ -42,7 +42,7 @@ export function NotesPage() {
         <NoteForm />
       </Card>
       {sortedNoteIds.slice(0, numVisibleNotes).map(id => (
-        <NoteCard key={id} id={Number(id)} />
+        <NoteCard key={id} id={id} />
       ))}
       <div ref={bottomRef} />
     </div>

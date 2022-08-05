@@ -8,13 +8,23 @@ export interface Typegen0 {
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "done.invoke.showDirectoryPicker": {
-      type: "done.invoke.showDirectoryPicker";
+    "done.invoke.loadNotes": {
+      type: "done.invoke.loadNotes";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
-    "done.invoke.loadNotes": {
-      type: "done.invoke.loadNotes";
+    "done.invoke.queryPermission": {
+      type: "done.invoke.queryPermission";
+      data: unknown;
+      __tip: "See the XState TS docs to learn how to strongly type this.";
+    };
+    "done.invoke.requestPermission": {
+      type: "done.invoke.requestPermission";
+      data: unknown;
+      __tip: "See the XState TS docs to learn how to strongly type this.";
+    };
+    "done.invoke.showDirectoryPicker": {
+      type: "done.invoke.showDirectoryPicker";
       data: unknown;
       __tip: "See the XState TS docs to learn how to strongly type this.";
     };
@@ -22,10 +32,9 @@ export interface Typegen0 {
       type: "error.platform.loadContext";
       data: unknown;
     };
-    "done.invoke.queryPermission": {
-      type: "done.invoke.queryPermission";
+    "error.platform.loadNotes": {
+      type: "error.platform.loadNotes";
       data: unknown;
-      __tip: "See the XState TS docs to learn how to strongly type this.";
     };
     "error.platform.queryPermission": {
       type: "error.platform.queryPermission";
@@ -40,22 +49,13 @@ export interface Typegen0 {
       data: unknown;
     };
     "xstate.init": { type: "xstate.init" };
-    "done.invoke.requestPermission": {
-      type: "done.invoke.requestPermission";
-      data: unknown;
-      __tip: "See the XState TS docs to learn how to strongly type this.";
-    };
-    "error.platform.loadNotes": {
-      type: "error.platform.loadNotes";
-      data: unknown;
-    };
   };
   invokeSrcNameMap: {
     loadContext: "done.invoke.loadContext";
+    loadNotes: "done.invoke.loadNotes";
     queryPermission: "done.invoke.queryPermission";
     requestPermission: "done.invoke.requestPermission";
     showDirectoryPicker: "done.invoke.showDirectoryPicker";
-    loadNotes: "done.invoke.loadNotes";
   };
   missingImplementations: {
     actions: never;
@@ -64,56 +64,56 @@ export interface Typegen0 {
     delays: never;
   };
   eventsCausingActions: {
-    setContext: "done.invoke.loadContext";
-    setDirectoryHandle: "done.invoke.showDirectoryPicker";
-    setNotes: "done.invoke.loadNotes";
-    setContextInIndexedDB:
-      | "done.invoke.loadNotes"
-      | "UPSERT_NOTE"
-      | "DELETE_NOTE";
-    upsertNote: "UPSERT_NOTE";
-    upsertNoteFile: "UPSERT_NOTE";
+    clearContext:
+      | "DISCONNECT"
+      | "done.invoke.queryPermission"
+      | "error.platform.loadContext"
+      | "error.platform.queryPermission"
+      | "error.platform.requestPermission"
+      | "error.platform.showDirectoryPicker";
+    clearContextInIndexedDB:
+      | "DISCONNECT"
+      | "done.invoke.queryPermission"
+      | "error.platform.loadContext"
+      | "error.platform.queryPermission"
+      | "error.platform.requestPermission"
+      | "error.platform.showDirectoryPicker";
     deleteNote: "DELETE_NOTE";
     deleteNoteFile: "DELETE_NOTE";
-    clearContext:
-      | "error.platform.loadContext"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "error.platform.showDirectoryPicker"
-      | "DISCONNECT";
-    clearContextInIndexedDB:
-      | "error.platform.loadContext"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "error.platform.showDirectoryPicker"
-      | "DISCONNECT";
+    setContext: "done.invoke.loadContext";
+    setContextInIndexedDB:
+      | "DELETE_NOTE"
+      | "UPSERT_NOTE"
+      | "done.invoke.loadNotes";
+    setDirectoryHandle: "done.invoke.showDirectoryPicker";
+    setNotes: "done.invoke.loadNotes";
+    upsertNote: "UPSERT_NOTE";
+    upsertNoteFile: "UPSERT_NOTE";
   };
   eventsCausingServices: {
     loadContext: "xstate.init";
-    queryPermission: "done.invoke.loadContext" | "RELOAD";
-    requestPermission: "REQUEST_PERMISSION";
-    showDirectoryPicker: "SHOW_DIRECTORY_PICKER";
     loadNotes:
       | "done.invoke.queryPermission"
       | "done.invoke.requestPermission"
       | "done.invoke.showDirectoryPicker";
+    queryPermission: "RELOAD" | "done.invoke.loadContext";
+    requestPermission: "REQUEST_PERMISSION";
+    showDirectoryPicker: "SHOW_DIRECTORY_PICKER";
   };
   eventsCausingGuards: {
+    isDenied: "done.invoke.queryPermission";
     isGranted: "done.invoke.queryPermission";
     isPrompt: "done.invoke.queryPermission";
-    isDenied: "done.invoke.queryPermission";
   };
   eventsCausingDelays: {};
   matchesStates:
-    | "loadingContext"
-    | "queryingPermission"
     | "empty"
-    | "prompt"
-    | "requestingPermission"
-    | "showingDirectoryPicker"
+    | "loadingContext"
     | "loadingNotes"
-    | "ready";
+    | "prompt"
+    | "queryingPermission"
+    | "ready"
+    | "requestingPermission"
+    | "showingDirectoryPicker";
   tags: never;
 }

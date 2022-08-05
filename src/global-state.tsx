@@ -13,8 +13,8 @@ type Event =
   | { type: "REQUEST_PERMISSION" }
   | { type: "RELOAD" }
   | { type: "DISCONNECT" }
-  | { type: "UPSERT_NOTE"; id: number; body: string }
-  | { type: "DELETE_NOTE"; id: number };
+  | { type: "UPSERT_NOTE"; id: string; body: string }
+  | { type: "DELETE_NOTE"; id: string };
 
 const machine = createMachine(
   {
@@ -284,7 +284,7 @@ const machine = createMachine(
         // Start timer
         console.time("loadNotes");
 
-        const entries: Array<Promise<[number, string]>> = [];
+        const entries: Array<Promise<[string, string]>> = [];
 
         // TODO: Read files in a worker to avoid blocking the main thread
         for await (const [name, handle] of context.directoryHandle.entries()) {
@@ -294,8 +294,8 @@ const machine = createMachine(
               handle
                 .getFile()
                 .then(
-                  async (file): Promise<[number, string]> => [
-                    parseInt(file.name),
+                  async (file): Promise<[string, string]> => [
+                    file.name.replace(/\.md$/, ""),
                     await file.text(),
                   ]
                 )

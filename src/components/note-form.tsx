@@ -14,10 +14,10 @@ import { formatDate } from "../utils/format-date";
 import { Button } from "./button";
 
 type NoteFormProps = {
-  id?: number;
+  id?: string;
   defaultBody?: string;
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>;
-  onSubmit?: (note: { id: number; body: string }) => void;
+  onSubmit?: (note: { id: string; body: string }) => void;
   onCancel?: () => void;
 };
 
@@ -42,7 +42,7 @@ export function NoteForm({
 
   function handleSubmit() {
     const note = {
-      id: id ?? Date.now(),
+      id: id ?? Date.now().toString(),
       body: body,
     };
 
