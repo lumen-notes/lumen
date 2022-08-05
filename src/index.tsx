@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { Layout } from "./components/layout"
+import { Root } from "./components/root"
 import { GlobalStateProvider } from "./global-state"
 import "./index.css"
 import { NotePage } from "./pages/note"
@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <GlobalStateProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Root />}>
             <Route index element={<NotesPage />} />
             <Route path=":id" element={<NotePage />} />
           </Route>

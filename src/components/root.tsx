@@ -17,7 +17,7 @@ function Logo() {
   )
 }
 
-export function Layout() {
+export function Root() {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
 
