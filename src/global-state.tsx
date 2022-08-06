@@ -288,8 +288,8 @@ const machine = createMachine(
 
         // TODO: Read files in a worker to avoid blocking the main thread
         for await (const [name, handle] of context.directoryHandle.entries()) {
-          // Only markdown files
-          if (handle.kind === "file" && name.endsWith(".md")) {
+          // Only load markdown files with numeric names (example: "123.md")
+          if (handle.kind === "file" && /^\d+\.md$/.test(name)) {
             entries.push(
               handle
                 .getFile()
