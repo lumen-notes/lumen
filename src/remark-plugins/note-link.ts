@@ -13,6 +13,8 @@ const types = {
   noteLink: "noteLink",
   noteLinkMarker: "noteLinkMarker",
   noteLinkId: "noteLinkId",
+  noteLinkSeparator: "noteLinkSeparator",
+  noteLinkText: "noteLinkText",
 }
 
 const noteLinkMachine = createMachine(
@@ -44,7 +46,7 @@ const noteLinkMachine = createMachine(
             },
             initial: "1",
             states: {
-              "1": {
+              1: {
                 on: {
                   CHAR: [
                     {
@@ -97,7 +99,7 @@ const noteLinkMachine = createMachine(
             },
             initial: "1",
             states: {
-              "1": {
+              1: {
                 on: {
                   CHAR: [
                     {
@@ -116,6 +118,117 @@ const noteLinkMachine = createMachine(
                   CHAR: [
                     {
                       cond: "isNumberChar",
+                      actions: "consume",
+                    },
+                    {
+                      actions: "forwardChar",
+                      target: "ok",
+                    },
+                  ],
+                },
+              },
+              ok: {
+                type: "final",
+              },
+              nok: {
+                type: "final",
+              },
+            },
+            onDone: [
+              {
+                cond: "isOk",
+                target: "checkNextChar",
+              },
+            ],
+          },
+          checkNextChar: {
+            on: {
+              CHAR: [
+                {
+                  cond: "isSeparatorChar",
+                  actions: "forwardChar",
+                  target: "separator",
+                },
+                {
+                  cond: "isClosingMarkerChar",
+                  actions: "forwardChar",
+                  target: "closingMarker",
+                },
+                {
+                  target: "nok",
+                },
+              ],
+            },
+          },
+          separator: {
+            entry: {
+              type: "enter",
+              tokenType: types.noteLinkSeparator,
+            },
+            exit: {
+              type: "exit",
+              tokenType: types.noteLinkSeparator,
+            },
+            initial: "1",
+            states: {
+              1: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isSeparatorChar",
+                      actions: "consume",
+                      target: "ok",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              ok: {
+                type: "final",
+              },
+              nok: {
+                type: "final",
+              },
+            },
+            onDone: [
+              {
+                cond: "isOk",
+                target: "text",
+              },
+            ],
+          },
+          text: {
+            entry: {
+              type: "enter",
+              tokenType: types.noteLinkText,
+            },
+            exit: {
+              type: "exit",
+              tokenType: types.noteLinkText,
+            },
+            initial: "1",
+            states: {
+              1: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isTextChar",
+                      actions: "consume",
+                      target: "2",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              2: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isTextChar",
                       actions: "consume",
                     },
                     {
@@ -195,6 +308,9 @@ const noteLinkMachine = createMachine(
           ok: {
             type: "final",
           },
+          nok: {
+            type: "final",
+          },
         },
         onDone: [
           {
@@ -222,6 +338,18 @@ const noteLinkMachine = createMachine(
       isNumberChar: (context, event) => {
         if (event.code === null) return false
         return event.code >= codes.digit0 && event.code <= codes.digit9
+      },
+      isSeparatorChar: (context, event) => {
+        return event.code === codes.verticalBar
+      },
+      isTextChar: (context, event) => {
+        return (
+          event.code !== codes.eof &&
+          event.code !== codes.carriageReturn &&
+          event.code !== codes.lineFeed &&
+          event.code !== codes.carriageReturnLineFeed &&
+          event.code !== codes.rightSquareBracket
+        )
       },
     },
     actions: {
@@ -298,6 +426,9 @@ export function noteLinkHtml(): HtmlExtension {
     enter: {
       [types.noteLinkId](token) {
         id = this.sliceSerialize(token)
+      },
+      [types.noteLinkText](token) {
+        text = this.sliceSerialize(token)
       },
     },
     exit: {
