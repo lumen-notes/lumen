@@ -18,16 +18,37 @@ export interface Typegen0 {
   }
   eventsCausingServices: {}
   eventsCausingGuards: {
+    isClosingMarkerChar: "CHAR"
+    isOk:
+      | "done.state.noteLink.noteLink"
+      | "done.state.noteLink.noteLink.closingMarker"
+      | "done.state.noteLink.noteLink.openingMarker"
     isOpeningMarkerChar: "CHAR"
   }
   eventsCausingDelays: {}
   matchesStates:
-    | "nok"
     | "noteLink"
-    | "noteLink.1"
-    | "noteLink.2"
-    | "noteLink.done"
+    | "noteLink.closingMarker"
+    | "noteLink.closingMarker.1"
+    | "noteLink.closingMarker.2"
+    | "noteLink.closingMarker.nok"
+    | "noteLink.closingMarker.ok"
+    | "noteLink.ok"
+    | "noteLink.openingMarker"
+    | "noteLink.openingMarker.1"
+    | "noteLink.openingMarker.2"
+    | "noteLink.openingMarker.nok"
+    | "noteLink.openingMarker.ok"
     | "ok"
-    | { noteLink?: "1" | "2" | "done" }
+    | {
+        noteLink?:
+          | "closingMarker"
+          | "ok"
+          | "openingMarker"
+          | {
+              closingMarker?: "1" | "2" | "nok" | "ok"
+              openingMarker?: "1" | "2" | "nok" | "ok"
+            }
+      }
   tags: never
 }

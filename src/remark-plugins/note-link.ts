@@ -11,6 +11,7 @@ import { createMachine, interpret } from "xstate"
 
 const types = {
   noteLink: "noteLink",
+  noteLinkMarker: "noteLinkMarker",
 }
 
 const noteLinkMachine = createMachine(
@@ -29,48 +30,126 @@ const noteLinkMachine = createMachine(
           type: "exit",
           tokenType: types.noteLink,
         },
-        initial: "1",
+        initial: "openingMarker",
         states: {
-          "1": {
-            on: {
-              CHAR: [
-                {
-                  cond: "isOpeningMarkerChar",
-                  actions: "consume",
-                  target: "2",
-                },
-                {
-                  target: "#noteLink.nok",
-                },
-              ],
+          openingMarker: {
+            entry: {
+              type: "enter",
+              tokenType: types.noteLinkMarker,
             },
-          },
-          2: {
-            on: {
-              CHAR: [
-                {
-                  cond: "isOpeningMarkerChar",
-                  actions: "consume",
-                  target: "done",
-                },
-                {
-                  target: "#noteLink.nok",
-                },
-              ],
+            exit: {
+              type: "exit",
+              tokenType: types.noteLinkMarker,
             },
+            initial: "1",
+            states: {
+              "1": {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isOpeningMarkerChar",
+                      actions: "consume",
+                      target: "2",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              2: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isOpeningMarkerChar",
+                      actions: "consume",
+                      target: "ok",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              ok: {
+                type: "final",
+              },
+              nok: {
+                type: "final",
+              },
+            },
+            onDone: [
+              {
+                cond: "isOk",
+                target: "closingMarker",
+              },
+            ],
           },
-          done: {
+          closingMarker: {
+            entry: {
+              type: "enter",
+              tokenType: types.noteLinkMarker,
+            },
+            exit: {
+              type: "exit",
+              tokenType: types.noteLinkMarker,
+            },
+            initial: "1",
+            states: {
+              "1": {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isClosingMarkerChar",
+                      actions: "consume",
+                      target: "2",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              2: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isClosingMarkerChar",
+                      actions: "consume",
+                      target: "ok",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              ok: {
+                type: "final",
+              },
+              nok: {
+                type: "final",
+              },
+            },
+            onDone: [
+              {
+                cond: "isOk",
+                target: "ok",
+              },
+            ],
+          },
+          ok: {
             type: "final",
           },
         },
-        onDone: {
-          target: "ok",
-        },
+        onDone: [
+          {
+            cond: "isOk",
+            target: "ok",
+          },
+        ],
       },
       ok: {
-        type: "final",
-      },
-      nok: {
         type: "final",
       },
     },
@@ -79,6 +158,12 @@ const noteLinkMachine = createMachine(
     guards: {
       isOpeningMarkerChar: (context, event) => {
         return event.code === codes.leftSquareBracket
+      },
+      isClosingMarkerChar: (context, event) => {
+        return event.code === codes.rightSquareBracket
+      },
+      isOk: (context, event, { state }) => {
+        return state.toStrings().some((s) => /\.ok$/.test(s))
       },
     },
   },
@@ -109,8 +194,16 @@ export function noteLink(): Extension {
 
     function nextState(code: Code): State | void {
       service.send({ type: "CHAR", code })
-      if (service.state.value === "ok") return ok(code)
-      if (service.state.value === "nok") return nok(code)
+
+      if (service.state.value === "ok") {
+        return ok(code)
+      }
+
+      if (service.state.toStrings().some((s) => /nok$/.test(s))) {
+        console.log("nok")
+        return nok(code)
+      }
+
       return nextState
     }
 
