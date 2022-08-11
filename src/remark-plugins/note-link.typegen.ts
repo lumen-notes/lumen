@@ -15,13 +15,16 @@ export interface Typegen0 {
   }
   eventsCausingActions: {
     consume: "CHAR"
+    forwardChar: "CHAR"
   }
   eventsCausingServices: {}
   eventsCausingGuards: {
     isClosingMarkerChar: "CHAR"
+    isNumberChar: "CHAR"
     isOk:
       | "done.state.noteLink.noteLink"
       | "done.state.noteLink.noteLink.closingMarker"
+      | "done.state.noteLink.noteLink.id"
       | "done.state.noteLink.noteLink.openingMarker"
     isOpeningMarkerChar: "CHAR"
   }
@@ -33,6 +36,11 @@ export interface Typegen0 {
     | "noteLink.closingMarker.2"
     | "noteLink.closingMarker.nok"
     | "noteLink.closingMarker.ok"
+    | "noteLink.id"
+    | "noteLink.id.1"
+    | "noteLink.id.2"
+    | "noteLink.id.nok"
+    | "noteLink.id.ok"
     | "noteLink.ok"
     | "noteLink.openingMarker"
     | "noteLink.openingMarker.1"
@@ -43,10 +51,12 @@ export interface Typegen0 {
     | {
         noteLink?:
           | "closingMarker"
+          | "id"
           | "ok"
           | "openingMarker"
           | {
               closingMarker?: "1" | "2" | "nok" | "ok"
+              id?: "1" | "2" | "nok" | "ok"
               openingMarker?: "1" | "2" | "nok" | "ok"
             }
       }

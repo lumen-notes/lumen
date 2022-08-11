@@ -7,11 +7,12 @@ import {
   State,
   Tokenizer,
 } from "micromark-util-types"
-import { createMachine, interpret } from "xstate"
+import { createMachine, interpret, send } from "xstate"
 
 const types = {
   noteLink: "noteLink",
   noteLinkMarker: "noteLinkMarker",
+  noteLinkId: "noteLinkId",
 }
 
 const noteLinkMachine = createMachine(
@@ -67,6 +68,59 @@ const noteLinkMachine = createMachine(
                     },
                     {
                       target: "nok",
+                    },
+                  ],
+                },
+              },
+              ok: {
+                type: "final",
+              },
+              nok: {
+                type: "final",
+              },
+            },
+            onDone: [
+              {
+                cond: "isOk",
+                target: "id",
+              },
+            ],
+          },
+          id: {
+            entry: {
+              type: "enter",
+              tokenType: types.noteLinkId,
+            },
+            exit: {
+              type: "exit",
+              tokenType: types.noteLinkId,
+            },
+            initial: "1",
+            states: {
+              "1": {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isNumberChar",
+                      actions: "consume",
+                      target: "2",
+                    },
+                    {
+                      target: "nok",
+                    },
+                  ],
+                },
+              },
+              2: {
+                on: {
+                  CHAR: [
+                    {
+                      cond: "isNumberChar",
+                      actions: "consume",
+                    },
+                    {
+                      actions: "forwardChar",
+                      target: "ok",
                     },
                   ],
                 },
@@ -156,15 +210,25 @@ const noteLinkMachine = createMachine(
   },
   {
     guards: {
+      isOk: (context, event, { state }) => {
+        return state.toStrings().some((s) => /\.ok$/.test(s))
+      },
       isOpeningMarkerChar: (context, event) => {
         return event.code === codes.leftSquareBracket
       },
       isClosingMarkerChar: (context, event) => {
         return event.code === codes.rightSquareBracket
       },
-      isOk: (context, event, { state }) => {
-        return state.toStrings().some((s) => /\.ok$/.test(s))
+      isNumberChar: (context, event) => {
+        if (event.code === null) return false
+        return event.code >= codes.digit0 && event.code <= codes.digit9
       },
+    },
+    actions: {
+      forwardChar: send((context, event) => ({
+        type: "CHAR",
+        code: event.code,
+      })),
     },
   },
 )
@@ -176,14 +240,17 @@ export function noteLink(): Extension {
       noteLinkMachine.withConfig({
         actions: {
           consume: (context, event) => {
+            // console.log("consume", String.fromCharCode(Number(event.code)))
             effects.consume(event.code)
           },
           // @ts-ignore XState typegen doesn't detect actions with metadata
           enter: (context, event, { action }) => {
+            // console.log("enter", action.tokenType)
             effects.enter(action.tokenType)
           },
           // @ts-ignore XState typegen doesn't detect actions with metadata
           exit: (context, event, { action }) => {
+            // console.log("exit", action.tokenType)
             effects.exit(action.tokenType)
           },
         },
