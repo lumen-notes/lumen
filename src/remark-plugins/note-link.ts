@@ -1,3 +1,5 @@
+import { Root } from "mdast"
+import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
 import {
   Code,
@@ -7,6 +9,8 @@ import {
   State,
   Tokenizer,
 } from "micromark-util-types"
+import { Plugin } from "unified"
+import { Node } from "unist"
 import { createMachine, interpret, send } from "xstate"
 
 const types = {
@@ -440,5 +444,69 @@ export function noteLinkHtml(): HtmlExtension {
         text = undefined
       },
     },
+  }
+}
+
+// Register noteLink as an mdast node type
+interface NoteLink extends Node {
+  type: "noteLink"
+  data: { id: number; text: string }
+}
+
+declare module "mdast" {
+  interface StaticPhrasingContentMap {
+    noteLink: NoteLink
+  }
+}
+
+// MDAST extension
+export function noteLinkFromMarkdown(): FromMarkdownExtension {
+  // Initialize state
+  let id: string | undefined
+  let text: string | undefined
+
+  return {
+    enter: {
+      [types.noteLink](token) {
+        this.enter({ type: "noteLink", data: { id: 0, text: "" } }, token)
+      },
+      [types.noteLinkId](token) {
+        id = this.sliceSerialize(token)
+      },
+      [types.noteLinkText](token) {
+        text = this.sliceSerialize(token)
+      },
+    },
+    exit: {
+      [types.noteLink](token) {
+        const node = this.stack[this.stack.length - 1]
+
+        if (node.type === "noteLink") {
+          node.data.id = Number(id)
+          node.data.text = text || id || ""
+        }
+
+        this.exit(token)
+
+        // Reset state
+        id = undefined
+        text = undefined
+      },
+    },
+  }
+}
+
+// Remark plugin
+// Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+export function remarkNoteLink(): ReturnType<Plugin<[], Root>> {
+  // @ts-ignore I'm not sure how to type `this`
+  const data = this.data()
+
+  add("micromarkExtensions", noteLink())
+  add("fromMarkdownExtensions", noteLinkFromMarkdown())
+
+  function add(field: string, value: unknown) {
+    const list = data[field] ? data[field] : (data[field] = [])
+    list.push(value)
   }
 }
