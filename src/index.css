@@ -105,3 +105,14 @@ body {
 .markdown a {
   @apply underline;
 }
+
+.markdown a[href^="http"]::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background-color: var(--color-text);
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDggMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yIDJoNXY1SDZWMy43MDdsLTQuNSA0LjVMLjc5MyA3LjVsNC41LTQuNUgyVjJaIiBmaWxsPSIjMDAwIi8+PC9zdmc+");
+  vertical-align: middle;
+  margin-left: 2px;
+}
