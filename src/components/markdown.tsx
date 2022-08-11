@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown"
+import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 
@@ -25,7 +26,7 @@ export function Markdown({ children }: MarkdownProps) {
       components={{
         // @ts-ignore I'm not sure how to extend the list of accepted component keys
         noteLink({ id, text }) {
-          return <a href={`/${id}`}>{text}</a>
+          return <Link to={`/${id}`}>{text}</Link>
         },
       }}
     >
