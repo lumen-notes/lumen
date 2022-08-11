@@ -42,6 +42,7 @@
   --l-text: 10%;
   --l-text-muted: 45%;
   --l-bg: 100%;
+  --l-bg-wash: 95%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
   --a-bg-hover: 0.075;
@@ -51,6 +52,7 @@
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
+  --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
@@ -65,6 +67,7 @@
     --l-text: 90%;
     --l-text-muted: 60%;
     --l-bg: 10%;
+    --l-bg-wash: 20%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
     --a-bg-hover: 0.1;
@@ -96,11 +99,114 @@ body {
 }
 
 .cm-editor .cm-scroller {
-  line-height: 1.25rem;
+  @apply leading-normal;
   font-family: unset;
 }
 
 /* Markdown styles */
+
+.markdown {
+  @apply leading-normal;
+}
+
+.markdown > :first-child,
+.markdown li:first-child,
+.markdown p:first-child {
+  @apply mt-0;
+}
+
+.markdown > :last-child,
+.markdown li:last-child,
+.markdown p:last-child {
+  @apply mb-0;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown p,
+.markdown pre,
+.markdown ul,
+.markdown ol,
+.markdown hr,
+.markdown table,
+.markdown blockquote {
+  @apply my-3;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown strong,
+.markdown th {
+  @apply font-semibold;
+}
+
+.markdown h1 {
+  @apply text-base;
+}
+
+.markdown h2 {
+  @apply text-sm;
+}
+
+.markdown pre {
+  @apply overflow-auto rounded bg-bg-wash p-3;
+}
+
+.markdown code {
+  @apply rounded bg-bg-wash px-1;
+}
+
+.markdown pre > code {
+  @apply rounded-none bg-transparent p-0;
+  font-style: unset;
+}
+
+.markdown pre > code::before,
+.markdown pre > code::after {
+  content: "";
+}
+
+.markdown hr {
+  @apply border-border;
+}
+
+.markdown ul {
+  @apply list-disc;
+}
+
+.markdown ol {
+  @apply list-decimal;
+}
+
+.markdown ul,
+.markdown ol {
+  @apply pl-6;
+}
+
+.markdown li [type="checkbox"] {
+  @apply align-middle;
+}
+
+.markdown table {
+  @apply block overflow-auto;
+}
+
+.markdown th,
+.markdown td {
+  @apply border border-border px-2 py-1;
+}
+
+.markdown blockquote {
+  @apply border-l-2 border-border pl-3;
+}
 
 .markdown a {
   @apply underline;

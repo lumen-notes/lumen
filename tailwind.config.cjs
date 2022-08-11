@@ -11,6 +11,7 @@ module.exports = {
       text: "var(--color-text)",
       "text-muted": "var(--color-text-muted)",
       bg: "var(--color-bg)",
+      "bg-wash": "var(--color-bg-wash)",
       "bg-inset": "var(--color-bg-inset)",
       "bg-overlay": "var(--color-bg-overlay)",
       "bg-hover": "var(--color-bg-hover)",
