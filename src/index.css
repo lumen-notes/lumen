@@ -103,5 +103,5 @@ body {
 /* Markdown styles */
 
 .markdown a {
-  @apply underline underline-offset-1;
+  @apply underline;
 }
