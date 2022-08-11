@@ -18,7 +18,7 @@ const Content = React.forwardRef<
     sideOffset={4}
     {...props}
   >
-    <Card elevation={1} className="min-w-[160px] p-1">
+    <Card elevation={1} className="z-10 min-w-[160px] p-1">
       {children}
     </Card>
   </RadixDropdownMenu.Content>
