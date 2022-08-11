@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.1.0",
@@ -20,6 +22,9 @@
     "clsx": "^1.2.1",
     "copy-to-clipboard": "^3.3.2",
     "idb-keyval": "^6.2.0",
+    "micromark": "^3.0.10",
+    "micromark-util-symbol": "^1.0.1",
+    "micromark-util-types": "^1.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intersection-observer": "^9.4.0",
@@ -39,7 +44,8 @@
     "prettier-plugin-tailwindcss": "^0.1.13",
     "tailwindcss": "^3.1.7",
     "typescript": "^4.6.4",
-    "vite": "^3.0.0"
+    "vite": "^3.0.0",
+    "vitest": "^0.21.1"
   },
   "prettier": {
     "semi": false,
