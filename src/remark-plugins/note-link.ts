@@ -13,43 +13,47 @@ const types = {
   noteLink: "noteLink",
 }
 
-const noteLinkMachine =
-  /** @xstate-layout N4IgpgJg5mDOIC5QDsD2AXMAZAlsg1gHRqa4GECMAxAMIASAggEqKgAOqsO6OqyrIAB6IKAVlGFRABhkAmCrNkBOAGwUlolQBoQAT0SzRAFkJKzSgBxGpAdjsXRAZhsBfFzpLY8RT2XxUIPjBCWHQAQ0xiDC9yX28BDi4ePgFhBCNHJUJrFXkLMXEbKW09A2LTc1yrfJVRCzd3EDQIOAE42Oi-SgTObl5+JCFEG1kdfQRZFQtsyvzxUSLXRvafTu9CQOQwHqT+1IMLR0pHWXzDMYMVGwqzK1t7JyWPNY7SeMHEvpTBtKMLC4QGhulmsdhsDkcRjczze5FQ+B2XwGoDSCwBtSkwKMFDUDiMKihyxeqwRH16yWRQ3So1KCEcFkx5lUpz+OLq0KaxMRFP2CAo-1pshMMhFotFFEJbiAA */
-  createMachine({
-    tsTypes: {} as import("./note-link.typegen").Typegen0,
-    schema: { events: {} as { type: "CHAR"; code: Code } },
-    id: "noteLink",
-    initial: "noteLink",
-    states: {
-      noteLink: {
-        entry: "enterNoteLink",
-        exit: "exitNoteLink",
-        initial: "1",
-        states: {
-          "1": {
-            on: {
-              CHAR: {
-                actions: "consume",
-                target: "done",
-              },
+const noteLinkMachine = createMachine({
+  tsTypes: {} as import("./note-link.typegen").Typegen0,
+  schema: { events: {} as { type: "CHAR"; code: Code } },
+  id: "noteLink",
+  initial: "noteLink",
+  states: {
+    noteLink: {
+      entry: {
+        type: "enter",
+        tokenType: types.noteLink,
+      },
+      exit: {
+        type: "exit",
+        tokenType: types.noteLink,
+      },
+      initial: "1",
+      states: {
+        "1": {
+          on: {
+            CHAR: {
+              actions: "consume",
+              target: "done",
             },
           },
-          done: {
-            type: "final",
-          },
         },
-        onDone: {
-          target: "ok",
+        done: {
+          type: "final",
         },
       },
-      ok: {
-        type: "final",
-      },
-      nok: {
-        type: "final",
+      onDone: {
+        target: "ok",
       },
     },
-  })
+    ok: {
+      type: "final",
+    },
+    nok: {
+      type: "final",
+    },
+  },
+})
 
 // Syntax extension
 export function noteLink(): Extension {
@@ -57,9 +61,17 @@ export function noteLink(): Extension {
     const service = interpret(
       noteLinkMachine.withConfig({
         actions: {
-          consume: (context, event) => effects.consume(event.code),
-          enterNoteLink: () => effects.enter(types.noteLink),
-          exitNoteLink: () => effects.exit(types.noteLink),
+          consume: (context, event) => {
+            effects.consume(event.code)
+          },
+          // @ts-ignore XState typegen doesn't detect actions with metadata
+          enter: (context, event, { action }) => {
+            effects.enter(action.tokenType)
+          },
+          // @ts-ignore XState typegen doesn't detect actions with metadata
+          exit: (context, event, { action }) => {
+            effects.exit(action.tokenType)
+          },
         },
       }),
     )
@@ -68,11 +80,8 @@ export function noteLink(): Extension {
 
     function nextState(code: Code): State | void {
       service.send({ type: "CHAR", code })
-
       if (service.state.value === "ok") return ok(code)
-
       if (service.state.value === "nok") return nok(code)
-
       return nextState
     }
 

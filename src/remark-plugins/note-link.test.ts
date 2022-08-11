@@ -2,11 +2,25 @@ import { micromark } from "micromark"
 import { expect, test } from "vitest"
 import { noteLink, noteLinkHtml } from "./note-link"
 
-test("noteLink", () => {
-  const html = micromark("hello [", {
-    extensions: [noteLink()],
-    htmlExtensions: [noteLinkHtml()],
-  })
+function runTests(tests: Array<{ input: string; output: string }>) {
+  for (const { input, output } of tests) {
+    test(input, () => {
+      const html = micromark(input, {
+        extensions: [noteLink()],
+        htmlExtensions: [noteLinkHtml()],
+      })
+      expect(html).toBe(output)
+    })
+  }
+}
 
-  expect(html).toBe("<p>hello <note-link></note-link></p>")
-})
+runTests([
+  {
+    input: `hello`,
+    output: `<p>hello</p>`,
+  },
+  {
+    input: `[[123]]`,
+    output: `<p><note-link id="123" text="123" /></p>`,
+  },
+])

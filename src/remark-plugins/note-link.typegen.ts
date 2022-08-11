@@ -8,15 +8,13 @@ export interface Typegen0 {
   }
   invokeSrcNameMap: {}
   missingImplementations: {
-    actions: "exitNoteLink" | "consume" | "enterNoteLink"
+    actions: "consume"
     services: never
     guards: never
     delays: never
   }
   eventsCausingActions: {
     consume: "CHAR"
-    enterNoteLink: "xstate.init"
-    exitNoteLink: "CHAR" | "done.state.noteLink.noteLink" | "xstate.stop"
   }
   eventsCausingServices: {}
   eventsCausingGuards: {}
