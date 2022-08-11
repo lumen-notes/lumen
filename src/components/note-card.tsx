@@ -1,17 +1,16 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import { useActor } from "@xstate/react"
+import copy from "copy-to-clipboard"
 import React from "react"
-import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
-import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
 import { IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
+import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
-import copy from "copy-to-clipboard"
 
 type NoteCardProps = {
   id: string
@@ -74,9 +73,7 @@ export function NoteCard({ id }: NoteCardProps) {
       {!isEditing ? (
         // View mode
         <div className="flex flex-col gap-6 p-4">
-          <ReactMarkdown className="markdown" remarkPlugins={[remarkGfm]}>
-            {body}
-          </ReactMarkdown>
+          <Markdown>{body}</Markdown>
 
           <div className="flex h-4 items-center justify-between">
             <Link
