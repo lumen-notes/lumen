@@ -35,4 +35,8 @@ runTests([
     input: `[[123]]`,
     output: `<p><note-link id="123" text="123" /></p>`,
   },
+  {
+    input: `[[123x]]`,
+    output: `<p>[[123x]]</p>`,
+  },
 ])
