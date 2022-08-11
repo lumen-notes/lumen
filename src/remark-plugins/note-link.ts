@@ -365,7 +365,7 @@ const noteLinkMachine = createMachine(
   },
 )
 
-// Syntax extension
+// Syntax extension (text -> tokens)
 export function noteLink(): Extension {
   const tokenize: Tokenizer = (effects, ok, nok) => {
     const service = interpret(
@@ -420,7 +420,8 @@ export function noteLink(): Extension {
   }
 }
 
-// HTML extension (for testing purposes)
+// HTML extension (tokens -> HTML)
+// This is only used for unit testing
 export function noteLinkHtml(): HtmlExtension {
   // Initialize state
   let id: string | undefined
@@ -459,7 +460,7 @@ declare module "mdast" {
   }
 }
 
-// MDAST extension
+// MDAST extension (tokens -> MDAST)
 export function noteLinkFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let id: string | undefined
