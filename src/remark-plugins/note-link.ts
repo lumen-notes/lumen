@@ -267,7 +267,6 @@ export function noteLink(): Extension {
       }
 
       if (service.state.toStrings().some((s) => /nok$/.test(s))) {
-        console.log("nok")
         return nok(code)
       }
 
@@ -291,11 +290,23 @@ export function noteLink(): Extension {
 
 // HTML extension (for testing purposes)
 export function noteLinkHtml(): HtmlExtension {
+  // Initialize state
+  let id: string | undefined
+  let text: string | undefined
+
   return {
-    enter: {},
+    enter: {
+      [types.noteLinkId](token) {
+        id = this.sliceSerialize(token)
+      },
+    },
     exit: {
       [types.noteLink]() {
-        this.tag("<note-link></note-link>")
+        this.tag(`<note-link id="${id}" text="${text || id}" />`)
+
+        // Reset state
+        id = undefined
+        text = undefined
       },
     },
   }
