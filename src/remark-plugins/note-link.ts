@@ -13,47 +13,76 @@ const types = {
   noteLink: "noteLink",
 }
 
-const noteLinkMachine = createMachine({
-  tsTypes: {} as import("./note-link.typegen").Typegen0,
-  schema: { events: {} as { type: "CHAR"; code: Code } },
-  id: "noteLink",
-  initial: "noteLink",
-  states: {
-    noteLink: {
-      entry: {
-        type: "enter",
-        tokenType: types.noteLink,
-      },
-      exit: {
-        type: "exit",
-        tokenType: types.noteLink,
-      },
-      initial: "1",
-      states: {
-        "1": {
-          on: {
-            CHAR: {
-              actions: "consume",
-              target: "done",
+const noteLinkMachine = createMachine(
+  {
+    tsTypes: {} as import("./note-link.typegen").Typegen0,
+    schema: { events: {} as { type: "CHAR"; code: Code } },
+    id: "noteLink",
+    initial: "noteLink",
+    states: {
+      noteLink: {
+        entry: {
+          type: "enter",
+          tokenType: types.noteLink,
+        },
+        exit: {
+          type: "exit",
+          tokenType: types.noteLink,
+        },
+        initial: "1",
+        states: {
+          "1": {
+            on: {
+              CHAR: [
+                {
+                  cond: "isOpeningMarkerChar",
+                  actions: "consume",
+                  target: "2",
+                },
+                {
+                  target: "#noteLink.nok",
+                },
+              ],
             },
           },
+          2: {
+            on: {
+              CHAR: [
+                {
+                  cond: "isOpeningMarkerChar",
+                  actions: "consume",
+                  target: "done",
+                },
+                {
+                  target: "#noteLink.nok",
+                },
+              ],
+            },
+          },
+          done: {
+            type: "final",
+          },
         },
-        done: {
-          type: "final",
+        onDone: {
+          target: "ok",
         },
       },
-      onDone: {
-        target: "ok",
+      ok: {
+        type: "final",
       },
-    },
-    ok: {
-      type: "final",
-    },
-    nok: {
-      type: "final",
+      nok: {
+        type: "final",
+      },
     },
   },
-})
+  {
+    guards: {
+      isOpeningMarkerChar: (context, event) => {
+        return event.code === codes.leftSquareBracket
+      },
+    },
+  },
+)
 
 // Syntax extension
 export function noteLink(): Extension {

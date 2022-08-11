@@ -17,14 +17,17 @@ export interface Typegen0 {
     consume: "CHAR"
   }
   eventsCausingServices: {}
-  eventsCausingGuards: {}
+  eventsCausingGuards: {
+    isOpeningMarkerChar: "CHAR"
+  }
   eventsCausingDelays: {}
   matchesStates:
     | "nok"
     | "noteLink"
     | "noteLink.1"
+    | "noteLink.2"
     | "noteLink.done"
     | "ok"
-    | { noteLink?: "1" | "done" }
+    | { noteLink?: "1" | "2" | "done" }
   tags: never
 }
