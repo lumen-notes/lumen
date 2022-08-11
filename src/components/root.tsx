@@ -40,7 +40,7 @@ export function Root() {
               </h1>
             </div>
             <p className="text-base text-text-muted">
-              A tool for thinking, writing,
+              A system for thinking, writing,
               <br />
               learning &amp; mindfulness
             </p>
