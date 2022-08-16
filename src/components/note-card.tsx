@@ -4,7 +4,7 @@ import { useActor } from "@xstate/react"
 import copy from "copy-to-clipboard"
 import React from "react"
 import { Link } from "react-router-dom"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext, NoteId } from "../global-state"
 import { IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -13,7 +13,7 @@ import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 
 type NoteCardProps = {
-  id: string
+  id: NoteId
 }
 
 export function NoteCard({ id }: NoteCardProps) {
@@ -29,6 +29,7 @@ export function NoteCard({ id }: NoteCardProps) {
   const [state] = useActor(globalState.service)
 
   const body = state.context.notes[id]
+  const backlinks = state.context.backlinks[id]
 
   function switchToEditing() {
     setIsEditing(true)
@@ -76,12 +77,18 @@ export function NoteCard({ id }: NoteCardProps) {
           <Markdown>{body}</Markdown>
 
           <div className="flex h-4 items-center justify-between">
-            <Link
-              to={`/${id}`}
-              className="tracking-wide text-text-muted hover:underline"
-            >
-              {id}
-            </Link>
+            <span className="text-text-muted">
+              <Link to={`/${id}`} className="tracking-wide  hover:underline">
+                {id}
+              </Link>
+              {backlinks ? (
+                <span>
+                  {" · "}
+                  {backlinks.length}{" "}
+                  {backlinks.length === 1 ? "backlink" : "backlinks"}
+                </span>
+              ) : null}
+            </span>
             <div className="-m-2">
               <DropdownMenu>
                 <DropdownMenu.Trigger asChild>

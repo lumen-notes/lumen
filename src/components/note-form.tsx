@@ -9,15 +9,15 @@ import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import React from "react"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/format-date"
 import { Button } from "./button"
 
 type NoteFormProps = {
-  id?: string
+  id?: NoteId
   defaultBody?: string
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
-  onSubmit?: (note: { id: string; body: string }) => void
+  onSubmit?: (note: { id: NoteId; body: string }) => void
   onCancel?: () => void
 }
 

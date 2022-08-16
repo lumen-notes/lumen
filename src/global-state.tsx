@@ -2,10 +2,16 @@ import { useInterpret } from "@xstate/react"
 import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
+import { fromMarkdown } from "mdast-util-from-markdown"
+import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
+import { visit } from "unist-util-visit"
+
+export type NoteId = string
 
 type Context = {
   directoryHandle: FileSystemDirectoryHandle | null
-  notes: Record<string, string>
+  notes: Record<NoteId, string>
+  backlinks: Record<NoteId, NoteId[]>
 }
 
 type Event =
@@ -13,14 +19,15 @@ type Event =
   | { type: "REQUEST_PERMISSION" }
   | { type: "RELOAD" }
   | { type: "DISCONNECT" }
-  | { type: "UPSERT_NOTE"; id: string; body: string }
-  | { type: "DELETE_NOTE"; id: string }
+  | { type: "UPSERT_NOTE"; id: NoteId; body: string }
+  | { type: "DELETE_NOTE"; id: NoteId }
 
 const machine = createMachine(
   {
     context: {
       directoryHandle: null,
       notes: {},
+      backlinks: {},
     },
     tsTypes: {} as import("./global-state.typegen").Typegen0,
     schema: {
@@ -36,7 +43,10 @@ const machine = createMachine(
           data: FileSystemDirectoryHandle
         }
         loadNotes: {
-          data: Record<string, string>
+          data: {
+            notes: Record<NoteId, string>
+            backlinks: Record<NoteId, NoteId[]>
+          }
         }
       },
       events: {} as Event,
@@ -136,7 +146,7 @@ const machine = createMachine(
           id: "loadNotes",
           onDone: [
             {
-              actions: ["setNotes", "setContextInIndexedDB"],
+              actions: ["setNotes", "setBacklinks", "setContextInIndexedDB"],
               target: "ready",
             },
           ],
@@ -169,11 +179,15 @@ const machine = createMachine(
         directoryHandle: (context, event) => event.data,
       }),
       setNotes: assign({
-        notes: (context, event) => event.data,
+        notes: (context, event) => event.data.notes,
+      }),
+      setBacklinks: assign({
+        backlinks: (context, event) => event.data.backlinks,
       }),
       setContext: assign({
         directoryHandle: (context, event) => event.data.directoryHandle,
         notes: (context, event) => event.data.notes,
+        backlinks: (context, event) => event.data.backlinks,
       }),
       clearContext: assign({
         directoryHandle: (context, event) => null,
@@ -278,41 +292,86 @@ const machine = createMachine(
       },
       loadNotes: async (context) => {
         if (!context.directoryHandle) {
-          return {}
+          throw new Error("Directory not found")
         }
+
+        const data = []
+        const notes: Record<NoteId, string> = {}
+        const backlinks: Record<NoteId, NoteId[]> = {}
 
         // Start timer
         console.time("loadNotes")
 
-        const entries: Array<Promise<[string, string]>> = []
-
-        // TODO: Read files in a worker to avoid blocking the main thread
+        // Parse every note file in the directory
         for await (const [name, handle] of context.directoryHandle.entries()) {
           // Only load markdown files with numeric names (example: "123.md")
           if (handle.kind === "file" && /^\d+\.md$/.test(name)) {
-            entries.push(
-              handle
-                .getFile()
-                .then(
-                  async (file): Promise<[string, string]> => [
-                    file.name.replace(/\.md$/, ""),
-                    await file.text(),
-                  ],
-                ),
-            )
+            data.push(handle.getFile().then(parseFile))
           }
         }
 
-        const notes = Object.fromEntries(await Promise.all(entries))
+        for (const { id, body, noteLinks } of await Promise.all(data)) {
+          notes[id] = body
+
+          for (const noteLink of noteLinks) {
+            push(backlinks, noteLink, id)
+          }
+        }
 
         // End timer
         console.timeEnd("loadNotes")
 
-        return notes
+        return { notes, backlinks }
       },
     },
   },
 )
+
+/** Extracts metadata from a note file */
+async function parseFile(file: File) {
+  if (!/^\d+\.md$/.test(file.name)) {
+    throw new Error(`Invalid file name: ${file.name}`)
+  }
+
+  const id = file.name.replace(/\.md$/, "")
+  const body = await file.text()
+  const { noteLinks } = parseBody(body)
+
+  return { id, body, noteLinks }
+}
+
+/** Extracts metadata from a note body */
+function parseBody(body: string) {
+  const noteLinks: NoteId[] = []
+
+  const mdast = fromMarkdown(body, {
+    extensions: [noteLink()],
+    mdastExtensions: [noteLinkFromMarkdown()],
+  })
+
+  visit(mdast, (node) => {
+    switch (node.type) {
+      case "noteLink": {
+        noteLinks.push(node.data.id.toString())
+      }
+    }
+  })
+
+  return { noteLinks }
+}
+
+/**
+ * Pushes a value to an array in an object.
+ * If the array doesn't exist, it will be created.
+ */
+function push<Key extends string | number, Value>(
+  obj: Record<Key, Value[]>,
+  property: Key,
+  value: Value,
+) {
+  const list = obj[property] ? obj[property] : (obj[property] = [])
+  list.push(value)
+}
 
 export type GlobalStateContextValue = {
   service: InterpreterFrom<typeof machine>
