@@ -81,7 +81,7 @@ export function NoteCard({ id }: NoteCardProps) {
               <Link to={`/${id}`} className="tracking-wide  hover:underline">
                 {id}
               </Link>
-              {backlinks ? (
+              {backlinks?.length ? (
                 <span>
                   {" · "}
                   {backlinks.length}{" "}

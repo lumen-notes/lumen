@@ -1,9 +1,11 @@
+import { useActor } from "@xstate/react"
+import React from "react"
 import { useParams } from "react-router-dom"
+import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
+import { NoteForm } from "../components/note-form"
 import { GlobalStateContext } from "../global-state"
-import React from "react"
-import { useActor } from "@xstate/react"
 
 export function NotePage() {
   const { id = "" } = useParams()
@@ -29,6 +31,10 @@ export function NotePage() {
       {backlinks?.map((id) => (
         <NoteCard key={id} id={id} />
       ))}
+
+      <Card className="p-2">
+        <NoteForm defaultBody={`[[${id}]]`} />
+      </Card>
     </div>
   )
 }

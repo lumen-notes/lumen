@@ -199,11 +199,24 @@ const machine = createMachine(
       clearContextInIndexedDB: async (context, event) => {
         await set("context", null)
       },
-      upsertNote: assign({
-        notes: (context, event) => ({
-          ...context.notes,
-          [event.id]: event.body,
-        }),
+      upsertNote: assign((context, event) => {
+        const { noteLinks } = parseBody(event.body)
+
+        const backlinks = noteLinks.reduce((acc, id) => {
+          if (!acc[id]) {
+            acc[id] = []
+          }
+          acc[id].push(event.id)
+          return acc
+        }, context.backlinks)
+
+        return {
+          notes: {
+            ...context.notes,
+            [event.id]: event.body,
+          },
+          backlinks,
+        }
       }),
       upsertNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
@@ -224,11 +237,25 @@ const machine = createMachine(
         // Close the stream
         await writeableStream.close()
       },
-      deleteNote: assign({
-        notes: (context, event) => {
-          const { [event.id]: _, ...rest } = context.notes
-          return rest
-        },
+      deleteNote: assign((context, event) => {
+        const { [event.id]: _, ...rest } = context.notes
+
+        const backlinks = Object.entries(context.backlinks).reduce(
+          (acc, [id, links]) => {
+            if (links.includes(event.id)) {
+              acc[id] = links.filter((link) => link !== event.id)
+            } else {
+              acc[id] = links
+            }
+            return acc
+          },
+          {} as Record<NoteId, NoteId[]>,
+        )
+
+        return {
+          notes: rest,
+          backlinks,
+        }
       }),
       deleteNoteFile: async (context, event) => {
         if (!context.directoryHandle) {
