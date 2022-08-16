@@ -209,7 +209,7 @@ body {
 }
 
 .markdown a {
-  @apply underline;
+  @apply underline underline-offset-2;
 }
 
 .markdown a[href^="http"]::after {

@@ -78,7 +78,10 @@ export function NoteCard({ id }: NoteCardProps) {
 
           <div className="flex h-4 items-center justify-between">
             <span className="text-text-muted">
-              <Link to={`/${id}`} className="tracking-wide  hover:underline">
+              <Link
+                to={`/${id}`}
+                className="tracking-wide  hover:underline hover:underline-offset-2"
+              >
                 {id}
               </Link>
               {backlinks?.length ? (
