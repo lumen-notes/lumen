@@ -6,6 +6,7 @@ import { visit } from "unist-util-visit"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
+import produce from "immer"
 
 export type NoteId = string
 
@@ -204,15 +205,31 @@ const machine = createMachine(
         await set("context", null)
       },
       upsertNote: assign((context, event) => {
+        const existingNote = context.notes[event.id]
+        const { noteLinks: existingNoteLinks } = parseBody(existingNote ?? "")
         const { noteLinks } = parseBody(event.body)
 
-        const backlinks = noteLinks.reduce((acc, id) => {
-          if (!acc[id]) {
-            acc[id] = []
-          }
-          acc[id].push(event.id)
-          return acc
-        }, context.backlinks)
+        const noteLinksAdded = noteLinks.filter(
+          (noteId) => !existingNoteLinks.includes(noteId),
+        )
+        const noteLinksRemoved = existingNoteLinks.filter(
+          (noteId) => !noteLinks.includes(noteId),
+        )
+
+        const backlinks = produce(context.backlinks, (draft) => {
+          noteLinksAdded.forEach((noteId) => {
+            if (!draft[noteId]) {
+              draft[noteId] = []
+            }
+            draft[noteId].push(event.id)
+          })
+
+          noteLinksRemoved.forEach((noteId) => {
+            draft[noteId] = draft[noteId].filter(
+              (noteId) => noteId !== event.id,
+            )
+          })
+        })
 
         return {
           notes: {
