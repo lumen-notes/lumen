@@ -206,14 +206,22 @@ const machine = createMachine(
       },
       upsertNote: assign((context, event) => {
         const existingNote = context.notes[event.id]
-        const { noteLinks: existingNoteLinks } = parseBody(existingNote ?? "")
-        const { noteLinks } = parseBody(event.body)
+        const { noteLinks: existingNoteLinks, tagLinks: existingTagLinks } =
+          parseBody(existingNote ?? "")
+        const { noteLinks, tagLinks } = parseBody(event.body)
 
         const noteLinksAdded = noteLinks.filter(
           (noteId) => !existingNoteLinks.includes(noteId),
         )
         const noteLinksRemoved = existingNoteLinks.filter(
           (noteId) => !noteLinks.includes(noteId),
+        )
+
+        const tagLinksAdded = tagLinks.filter(
+          (tagName) => !existingTagLinks.includes(tagName),
+        )
+        const tagLinksRemoved = existingTagLinks.filter(
+          (tagName) => !tagLinks.includes(tagName),
         )
 
         const backlinks = produce(context.backlinks, (draft) => {
@@ -231,12 +239,36 @@ const machine = createMachine(
           })
         })
 
+        // Add new tags
+        let tags = tagLinksAdded.reduce((acc, tagName) => {
+          if (!acc[tagName]) {
+            acc[tagName] = []
+          }
+          acc[tagName].push(event.id)
+          return acc
+        }, context.tags)
+
+        // Remove old tags
+        tags = Object.entries(tags).reduce((acc, [tagName, noteIds]) => {
+          if (tagLinksRemoved.includes(tagName)) {
+            acc[tagName] = noteIds.filter((noteId) => noteId !== event.id)
+
+            if (acc[tagName].length === 0) {
+              return acc
+            }
+          } else {
+            acc[tagName] = noteIds
+          }
+          return acc
+        }, {} as Record<string, NoteId[]>)
+
         return {
           notes: {
             ...context.notes,
             [event.id]: event.body,
           },
           backlinks,
+          tags,
         }
       }),
       upsertNoteFile: async (context, event) => {
