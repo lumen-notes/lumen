@@ -45,10 +45,7 @@ export function Root() {
               learning &amp; mindfulness
             </p>
           </div>
-          <Button
-            variant="primary"
-            onClick={() => send("SHOW_DIRECTORY_PICKER")}
-          >
+          <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
             Connect a local folder
           </Button>
         </div>
