@@ -36,7 +36,7 @@ export function NotesPage() {
     <div className="flex max-w-lg flex-col gap-4 p-4">
       <div className="flex gap-2">
         <NoteIcon24 />
-        <h1 className="text-lg font-semibold leading-[24px]">Notes</h1>
+        <h2 className="text-lg font-semibold leading-[24px]">Notes</h2>
       </div>
       <Card className="p-2">
         <NoteForm />
