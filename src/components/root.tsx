@@ -71,9 +71,9 @@ export function Root() {
             <DisconnectIcon24 />
           </IconButton>
         </div>
-        <div className="flex-shrink flex-grow overflow-auto">
+        <main className="flex-shrink flex-grow overflow-auto">
           <Outlet />
-        </div>
+        </main>
       </div>
       {import.meta.env.DEV ? <CurrentState /> : null}
     </div>

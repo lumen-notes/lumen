@@ -1,6 +1,12 @@
 export function MoreIcon16() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -12,7 +18,13 @@ export function MoreIcon16() {
 
 export function NoteIcon24() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -35,6 +47,24 @@ export function DisconnectIcon24() {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M5 3.5h8A1.5 1.5 0 0 1 14.5 5v4H16V5a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4.5h-1.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V5A1.5 1.5 0 0 1 5 3.5ZM21.19 11H9v1.5h12.19l-3.22 3.22 1.06 1.06 4.5-4.5a.75.75 0 0 0 0-1.06l-4.5-4.5-1.06 1.06L21.19 11Z"
+      />
+    </svg>
+  )
+}
+
+export function TagIcon24() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M20.5 5v6.757a1.5 1.5 0 0 1-.44 1.061l-8 8a1.5 1.5 0 0 1-2.12 0l-6.758-6.757a1.5 1.5 0 0 1 0-2.122l8-8a1.5 1.5 0 0 1 1.06-.439H19A1.5 1.5 0 0 1 20.5 5Zm1.5 6.757V5a3 3 0 0 0-3-3h-6.757a3 3 0 0 0-2.122.879l-8 8a3 3 0 0 0 0 4.242L8.88 21.88a3 3 0 0 0 4.242 0l8-8A3 3 0 0 0 22 11.757ZM15.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
       />
     </svg>
   )
