@@ -108,12 +108,12 @@ export interface Typegen0 {
   }
   eventsCausingDelays: {}
   matchesStates:
-    | "empty"
+    | "connected"
+    | "disconnected"
     | "loadingContext"
     | "loadingNotes"
     | "prompt"
     | "queryingPermission"
-    | "ready"
     | "requestingPermission"
     | "showingDirectoryPicker"
   tags: never

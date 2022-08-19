@@ -66,7 +66,7 @@ const machine = createMachine(
           ],
           onError: [
             {
-              target: "empty",
+              target: "disconnected",
             },
           ],
         },
@@ -86,17 +86,17 @@ const machine = createMachine(
             },
             {
               cond: "isDenied",
-              target: "empty",
+              target: "disconnected",
             },
           ],
           onError: [
             {
-              target: "empty",
+              target: "disconnected",
             },
           ],
         },
       },
-      empty: {
+      disconnected: {
         entry: ["clearContext", "clearContextInIndexedDB"],
         on: {
           SHOW_DIRECTORY_PICKER: {
@@ -122,7 +122,7 @@ const machine = createMachine(
           ],
           onError: [
             {
-              target: "empty",
+              target: "disconnected",
             },
           ],
         },
@@ -137,7 +137,7 @@ const machine = createMachine(
               target: "loadingNotes",
             },
           ],
-          onError: "empty",
+          onError: "disconnected",
         },
       },
       loadingNotes: {
@@ -147,12 +147,12 @@ const machine = createMachine(
           onDone: [
             {
               actions: ["setNotes", "setBacklinks", "setContextInIndexedDB"],
-              target: "ready",
+              target: "connected",
             },
           ],
         },
       },
-      ready: {
+      connected: {
         on: {
           SHOW_DIRECTORY_PICKER: {
             target: "showingDirectoryPicker",
@@ -161,7 +161,7 @@ const machine = createMachine(
             target: "queryingPermission",
           },
           DISCONNECT: {
-            target: "empty",
+            target: "disconnected",
           },
           UPSERT_NOTE: {
             actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
