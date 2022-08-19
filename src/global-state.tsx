@@ -322,7 +322,7 @@ const machine = createMachine(
           throw new Error("Directory not found")
         }
 
-        const data = []
+        const data: ReturnType<typeof parseFile>[] = []
         const notes: Record<NoteId, string> = {}
         const backlinks: Record<NoteId, NoteId[]> = {}
 
@@ -357,7 +357,7 @@ const machine = createMachine(
 /** Extracts metadata from a note file */
 async function parseFile(file: File) {
   if (!/^\d+\.md$/.test(file.name)) {
-    throw new Error(`Invalid file name: ${file.name}`)
+    throw new Error(`Invalid note filename: ${file.name}`)
   }
 
   const id = file.name.replace(/\.md$/, "")
@@ -389,7 +389,7 @@ function parseBody(body: string) {
 
 /**
  * Pushes a value to an array in an object.
- * If the array doesn't exist, it will be created.
+ * If the array doesn't exist, this function creates it.
  */
 function push<Key extends string | number, Value>(
   obj: Record<Key, Value[]>,
