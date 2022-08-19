@@ -80,14 +80,14 @@ export interface Typegen0 {
       | "error.platform.showDirectoryPicker"
     deleteNote: "DELETE_NOTE"
     deleteNoteFile: "DELETE_NOTE"
-    setBacklinks: "done.invoke.loadNotes"
-    setContext: "done.invoke.loadContext"
+    setContext:
+      | "done.invoke.loadContext"
+      | "done.invoke.loadNotes"
+      | "done.invoke.showDirectoryPicker"
     setContextInIndexedDB:
       | "DELETE_NOTE"
       | "UPSERT_NOTE"
       | "done.invoke.loadNotes"
-    setDirectoryHandle: "done.invoke.showDirectoryPicker"
-    setNotes: "done.invoke.loadNotes"
     upsertNote: "UPSERT_NOTE"
     upsertNoteFile: "UPSERT_NOTE"
   }
