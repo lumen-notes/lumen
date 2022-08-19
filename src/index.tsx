@@ -6,6 +6,7 @@ import { GlobalStateProvider } from "./global-state"
 import "./index.css"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
+import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route index element={<NotesPage />} />
             <Route path=":id" element={<NotePage />} />
             <Route path="tags" element={<TagsPage />} />
+            <Route path="tags/:name" element={<TagPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

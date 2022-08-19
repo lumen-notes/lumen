@@ -21,10 +21,18 @@ export function TagsPage() {
     <div className="flex max-w-lg flex-col gap-4 p-4">
       <div className="flex gap-2">
         <TagIcon24 />
-        <h2 className="text-lg font-semibold leading-[24px]">Tags</h2>
+        <div className="flex items-baseline gap-1">
+          <h2 className="text-lg font-semibold leading-[24px]">Tags</h2>
+          <span className="text-text-muted" aria-hidden>
+            ·
+          </span>
+          <span className="text-text-muted">
+            {sortedTags.length} {sortedTags.length === 1 ? "note" : "notes"}
+          </span>
+        </div>
       </div>
       <ul className="flex flex-col">
-        {sortedTags.map(([name, ids]) => (
+        {sortedTags.map(([name, noteIds]) => (
           <li
             key={name}
             className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
@@ -33,7 +41,7 @@ export function TagsPage() {
               #{name}
             </Link>
             <span className="text-text-muted">
-              {ids.length} {ids.length === 1 ? "note" : "notes"}
+              {noteIds.length} {noteIds.length === 1 ? "note" : "notes"}
             </span>
           </li>
         ))}
