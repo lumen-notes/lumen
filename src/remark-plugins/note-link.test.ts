@@ -15,7 +15,7 @@ function runTests(tests: Array<{ input: string; output: string }>) {
 }
 
 runTests([
-  // Valid
+  // Valid note links
   {
     input: `[[123]]`,
     output: `<p><note-link id="123" text="123" /></p>`,
@@ -62,7 +62,7 @@ runTests([
     output: `<p><note-link id="123" text="hello" /> <note-link id="456" text="456" /></p>`,
   },
 
-  // Invalid
+  // Invalid note links
   {
     input: `hello`,
     output: `<p>hello</p>`,
