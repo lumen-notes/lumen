@@ -17,10 +17,8 @@ export function TagPage() {
   const [state] = useActor(globalState.service)
 
   // Sort notes by when they were created in descending order
-  const sortedNoteIds = React.useMemo(() => {
-    const noteIds = state.context.tags[name] || []
-    return noteIds.sort((a, b) => parseInt(b) - parseInt(a))
-  }, [state.context.tags])
+  const noteIds = state.context.tags[name] || []
+  const sortedNoteIds = noteIds.sort((a, b) => parseInt(b) - parseInt(a))
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
