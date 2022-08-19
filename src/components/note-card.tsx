@@ -51,12 +51,8 @@ export function NoteCard({ id }: NoteCardProps) {
     cardRef.current?.focus()
   }
 
-  if (state.matches("loadingContext")) {
-    return <div>Loading...</div>
-  }
-
   if (body === undefined) {
-    return <div>Not found</div>
+    return <Card className="p-4 text-center">Note not found</Card>
   }
 
   return (
