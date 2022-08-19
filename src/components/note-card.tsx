@@ -80,7 +80,7 @@ export function NoteCard({ id }: NoteCardProps) {
             <span className="text-text-muted">
               <Link
                 to={`/${id}`}
-                className="tracking-wide  hover:underline hover:underline-offset-2"
+                className="tracking-wide  underline underline-offset-2"
               >
                 {id}
               </Link>
