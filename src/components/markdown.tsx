@@ -2,6 +2,7 @@ import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { remarkNoteLink } from "../remark-plugins/note-link"
+import { remarkTagLink } from "../remark-plugins/tag-link"
 
 type MarkdownProps = {
   children: string
@@ -11,7 +12,7 @@ export function Markdown({ children }: MarkdownProps) {
   return (
     <ReactMarkdown
       className="markdown"
-      remarkPlugins={[remarkGfm, remarkNoteLink]}
+      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink]}
       remarkRehypeOptions={{
         handlers: {
           // TODO: Improve type-safety of `node`
@@ -21,12 +22,25 @@ export function Markdown({ children }: MarkdownProps) {
               text: node.data.text,
             })
           },
+          tagLink(h, node) {
+            return h(node, "tagLink", {
+              name: node.data.name,
+            })
+          },
         },
       }}
       components={{
         // @ts-ignore I'm not sure how to extend the list of accepted component keys
         noteLink({ id, text }) {
           return <Link to={`/${id}`}>{text}</Link>
+        },
+        // @ts-ignore
+        tagLink({ name }) {
+          return (
+            <Link className="text-text-muted" to={`/tags/${name}`}>
+              #{name}
+            </Link>
+          )
         },
       }}
     >
