@@ -3,6 +3,7 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
 import { Button, IconButton } from "./button"
+import { Card } from "./card"
 import { DisconnectIcon24 } from "./icons"
 
 function Logo() {
@@ -49,6 +50,7 @@ export function Root() {
             Connect a local folder
           </Button>
         </div>
+        {import.meta.env.DEV ? <CurrentState /> : null}
       </div>
     )
   }
@@ -73,6 +75,18 @@ export function Root() {
           <Outlet />
         </div>
       </div>
+      {import.meta.env.DEV ? <CurrentState /> : null}
     </div>
+  )
+}
+
+/** Shows the current state of the global state machine */
+function CurrentState() {
+  const globalState = React.useContext(GlobalStateContext)
+  const [state] = useActor(globalState.service)
+  return (
+    <Card elevation={1} className="fixed bottom-2 right-2 px-2 py-1 font-mono">
+      {JSON.stringify(state.value)}
+    </Card>
   )
 }
