@@ -7,7 +7,7 @@ import { TagIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
 import { GlobalStateContext } from "../global-state"
-import { formatNumber } from "../utils/format-number"
+import { pluralize } from "../utils/pluralize"
 
 export function TagPage() {
   const { name = "" } = useParams()
@@ -43,8 +43,7 @@ export function TagPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {formatNumber(sortedNoteIds.length)}{" "}
-            {sortedNoteIds.length === 1 ? "note" : "notes"}
+            {pluralize(sortedNoteIds.length, "note")}
           </span>
         </div>
       </div>
