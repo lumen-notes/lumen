@@ -6,7 +6,6 @@ import { visit } from "unist-util-visit"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
-import produce from "immer"
 
 export type NoteId = string
 
@@ -205,70 +204,65 @@ const machine = createMachine(
         await set("context", null)
       },
       upsertNote: assign((context, event) => {
-        const existingNote = context.notes[event.id]
-        const { noteLinks: existingNoteLinks, tagLinks: existingTagLinks } =
-          parseBody(existingNote ?? "")
         const { noteLinks, tagLinks } = parseBody(event.body)
 
-        const noteLinksAdded = noteLinks.filter(
-          (noteId) => !existingNoteLinks.includes(noteId),
-        )
-        const noteLinksRemoved = existingNoteLinks.filter(
-          (noteId) => !noteLinks.includes(noteId),
-        )
-
-        const tagLinksAdded = tagLinks.filter(
-          (tagName) => !existingTagLinks.includes(tagName),
-        )
-        const tagLinksRemoved = existingTagLinks.filter(
-          (tagName) => !tagLinks.includes(tagName),
-        )
-
-        const backlinks = produce(context.backlinks, (draft) => {
-          noteLinksAdded.forEach((noteId) => {
-            if (!draft[noteId]) {
-              draft[noteId] = []
+        const backlinkEntries = Object.entries(context.backlinks).map(
+          ([noteId, backlinks]) => {
+            // If the note is listed as a backlink but shouldn't be, remove it
+            if (backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
+              return [
+                noteId,
+                backlinks.filter((backlink) => backlink !== event.id),
+              ]
             }
-            draft[noteId].push(event.id)
+
+            // If the note is not listed as a backlink but should be, add it
+            if (!backlinks.includes(event.id) && noteLinks.includes(noteId)) {
+              return [noteId, [...backlinks, event.id]]
+            }
+
+            return [noteId, backlinks]
+          },
+        )
+
+        noteLinks
+          .filter((noteId) => !Object.keys(context.backlinks).includes(noteId))
+          .forEach((noteId) => {
+            // If the note contains a link to a note that isn't already listed, add it
+            backlinkEntries.push([noteId, [event.id]])
           })
 
-          noteLinksRemoved.forEach((noteId) => {
-            draft[noteId] = draft[noteId].filter(
-              (noteId) => noteId !== event.id,
-            )
-          })
-        })
-
-        // Add new tags
-        let tags = tagLinksAdded.reduce((acc, tagName) => {
-          if (!acc[tagName]) {
-            acc[tagName] = []
-          }
-          acc[tagName].push(event.id)
-          return acc
-        }, context.tags)
-
-        // Remove old tags
-        tags = Object.entries(tags).reduce((acc, [tagName, noteIds]) => {
-          if (tagLinksRemoved.includes(tagName)) {
-            acc[tagName] = noteIds.filter((noteId) => noteId !== event.id)
-
-            if (acc[tagName].length === 0) {
-              return acc
+        const tagEntries = Object.entries(context.tags)
+          .map(([tagName, noteIds]) => {
+            // If the note is listed with a tag but shouldn't be, remove it
+            if (noteIds.includes(event.id) && !tagLinks.includes(tagName)) {
+              return [tagName, noteIds.filter((noteId) => noteId !== event.id)]
             }
-          } else {
-            acc[tagName] = noteIds
-          }
-          return acc
-        }, {} as Record<string, NoteId[]>)
+
+            // If the note is not listed with a tag but should be, add it
+            if (!noteIds.includes(event.id) && tagLinks.includes(tagName)) {
+              return [tagName, [...noteIds, event.id]]
+            }
+
+            return [tagName, noteIds]
+          })
+          // Remove tags that don't have any notes
+          .filter(([tagName, noteIds]) => noteIds.length > 0)
+
+        tagLinks
+          .filter((tag) => !Object.keys(context.tags).includes(tag))
+          .forEach((tag) => {
+            // If the note contains a tag that isn't already listed, add it
+            tagEntries.push([tag, [event.id]])
+          })
 
         return {
           notes: {
             ...context.notes,
             [event.id]: event.body,
           },
-          backlinks,
-          tags,
+          backlinks: Object.fromEntries(backlinkEntries),
+          tags: Object.fromEntries(tagEntries),
         }
       }),
       upsertNoteFile: async (context, event) => {
@@ -293,21 +287,23 @@ const machine = createMachine(
       deleteNote: assign((context, event) => {
         const { [event.id]: _, ...rest } = context.notes
 
-        const backlinks = Object.entries(context.backlinks).reduce(
-          (acc, [id, links]) => {
-            if (links.includes(event.id)) {
-              acc[id] = links.filter((link) => link !== event.id)
-            } else {
-              acc[id] = links
-            }
-            return acc
+        const backlinkEntries = Object.entries(context.backlinks).map(
+          ([noteId, backlinks]) => {
+            return [noteId, backlinks.filter((noteId) => noteId !== event.id)]
           },
-          {} as Record<NoteId, NoteId[]>,
         )
+
+        const tagEntries = Object.entries(context.tags)
+          .map(([tagName, noteIds]) => {
+            return [tagName, noteIds.filter((noteId) => noteId !== event.id)]
+          })
+          // Remove tags that don't have any notes
+          .filter(([tagName, noteIds]) => noteIds.length > 0)
 
         return {
           notes: rest,
-          backlinks,
+          backlinks: Object.fromEntries(backlinkEntries),
+          tags: Object.fromEntries(tagEntries),
         }
       }),
       deleteNoteFile: async (context, event) => {
