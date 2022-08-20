@@ -9,11 +9,11 @@ export function TagsPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  // Sort tags by number of notes in descending order
+  // Sort tags by number of notes (descending) then alphabetically
   const sortedTags = React.useMemo(
     () =>
       Object.entries(state.context.tags).sort(
-        (a, b) => b[1].length - a[1].length,
+        (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]),
       ),
     [state.context.tags],
   )
@@ -28,7 +28,7 @@ export function TagsPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {pluralize(sortedTags.length, "notes")}
+            {pluralize(sortedTags.length, "note")}
           </span>
         </div>
       </div>
@@ -42,7 +42,7 @@ export function TagsPage() {
               #{name}
             </Link>
             <span className="text-text-muted">
-              {noteIds.length} {noteIds.length === 1 ? "note" : "notes"}
+              {pluralize(noteIds.length, "note")}
             </span>
           </li>
         ))}

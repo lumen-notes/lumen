@@ -34,6 +34,24 @@ export function NoteIcon24() {
   )
 }
 
+export function NoteFillIcon24() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.5 3C2.11929 3 1 4.11929 1 5.5V18.5C1 19.8807 2.11929 21 3.5 21H20.5C21.8807 21 23 19.8807 23 18.5V5.5C23 4.11929 21.8807 3 20.5 3H3.5ZM7 9H17V10.5H7V9ZM7 13H14V14.5H7V13Z"
+      />
+    </svg>
+  )
+}
+
 export function DisconnectIcon24() {
   return (
     <svg
@@ -65,6 +83,24 @@ export function TagIcon24() {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M20.5 5v6.757a1.5 1.5 0 0 1-.44 1.061l-8 8a1.5 1.5 0 0 1-2.12 0l-6.758-6.757a1.5 1.5 0 0 1 0-2.122l8-8a1.5 1.5 0 0 1 1.06-.439H19A1.5 1.5 0 0 1 20.5 5Zm1.5 6.757V5a3 3 0 0 0-3-3h-6.757a3 3 0 0 0-2.122.879l-8 8a3 3 0 0 0 0 4.242L8.88 21.88a3 3 0 0 0 4.242 0l8-8A3 3 0 0 0 22 11.757ZM15.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+      />
+    </svg>
+  )
+}
+
+export function TagFillIcon24() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M22 5v6.757a3 3 0 0 1-.879 2.122l-8 8a3 3 0 0 1-4.242 0L2.12 15.12a3 3 0 0 1 0-4.242l8-8A3 3 0 0 1 12.243 2H19a3 3 0 0 1 3 3Zm-6.5 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
       />
     </svg>
   )
