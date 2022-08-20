@@ -6,6 +6,7 @@ import { NoteIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
 import { GlobalStateContext } from "../global-state"
+import { formatNumber } from "../utils/format-number"
 
 export function NotesPage() {
   const globalState = React.useContext(GlobalStateContext)
@@ -42,7 +43,7 @@ export function NotesPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {sortedNoteIds.length}{" "}
+            {formatNumber(sortedNoteIds.length)}{" "}
             {sortedNoteIds.length === 1 ? "note" : "notes"}
           </span>
         </div>

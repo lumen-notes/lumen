@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard"
 import React from "react"
 import { Link } from "react-router-dom"
 import { GlobalStateContext, NoteId } from "../global-state"
+import { formatNumber } from "../utils/format-number"
 import { IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -83,7 +84,7 @@ export function NoteCard({ id }: NoteCardProps) {
               {backlinks?.length ? (
                 <span>
                   {" · "}
-                  {backlinks.length}{" "}
+                  {formatNumber(backlinks.length)}{" "}
                   {backlinks.length === 1 ? "backlink" : "backlinks"}
                 </span>
               ) : null}

@@ -3,6 +3,7 @@ import React from "react"
 import { Link } from "react-router-dom"
 import { TagIcon24 } from "../components/icons"
 import { GlobalStateContext } from "../global-state"
+import { formatNumber } from "../utils/format-number"
 
 export function TagsPage() {
   const globalState = React.useContext(GlobalStateContext)
@@ -27,7 +28,8 @@ export function TagsPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {sortedTags.length} {sortedTags.length === 1 ? "note" : "notes"}
+            {formatNumber(sortedTags.length)}{" "}
+            {sortedTags.length === 1 ? "note" : "notes"}
           </span>
         </div>
       </div>
