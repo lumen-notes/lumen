@@ -28,7 +28,7 @@ export function TagsPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {pluralize(sortedTags.length, "note")}
+            {pluralize(sortedTags.length, "tag")}
           </span>
         </div>
       </div>
