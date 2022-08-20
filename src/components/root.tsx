@@ -92,14 +92,14 @@ export function Root() {
           <nav>
             <ul className="flex flex-col gap-2">
               <li>
-                <NavLink to="/" aria-label="Notes">
+                <NavLink to="/" aria-label="Notes" end>
                   {({ isActive }) =>
                     isActive ? <NoteFillIcon24 /> : <NoteIcon24 />
                   }
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/tags" aria-label="Tags">
+                <NavLink to="/tags" aria-label="Tags" end>
                   {({ isActive }) =>
                     isActive ? <TagFillIcon24 /> : <TagIcon24 />
                   }
