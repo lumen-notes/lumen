@@ -1,8 +1,10 @@
 import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
+import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
+import { formatDate } from "../utils/format-date"
 
 type MarkdownProps = {
   children: string
@@ -12,7 +14,7 @@ export function Markdown({ children }: MarkdownProps) {
   return (
     <ReactMarkdown
       className="markdown"
-      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink]}
+      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
       remarkRehypeOptions={{
         handlers: {
           // TODO: Improve type-safety of `node`
@@ -25,6 +27,11 @@ export function Markdown({ children }: MarkdownProps) {
           tagLink(h, node) {
             return h(node, "tagLink", {
               name: node.data.name,
+            })
+          },
+          dateLink(h, node) {
+            return h(node, "dateLink", {
+              date: node.data.date,
             })
           },
         },
@@ -41,6 +48,10 @@ export function Markdown({ children }: MarkdownProps) {
               #{name}
             </Link>
           )
+        },
+        // @ts-ignore
+        dateLink({ date }) {
+          return <Link to={`/log/${date}`}>{formatDate(date)}</Link>
         },
       }}
     >
