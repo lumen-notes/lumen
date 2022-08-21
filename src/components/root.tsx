@@ -10,6 +10,8 @@ import { GlobalStateContext } from "../global-state"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
 import {
+  CalendarFillIcon24,
+  CalendarIcon24,
   DisconnectIcon24,
   NoteFillIcon24,
   NoteIcon24,
@@ -41,6 +43,14 @@ function NavLink(props: NavLinkProps) {
       {...props}
     />
   )
+}
+
+function getCurrentDateString() {
+  const now = new Date()
+  const year = now.getFullYear().toString().padStart(4, "0")
+  const month = (now.getMonth() + 1).toString().padStart(2, "0")
+  const day = now.getDate().toString().padStart(2, "0")
+  return `${year}-${month}-${day}`
 }
 
 export function Root() {
@@ -95,6 +105,21 @@ export function Root() {
                 <NavLink to="/" aria-label="Notes" end>
                   {({ isActive }) =>
                     isActive ? <NoteFillIcon24 /> : <NoteIcon24 />
+                  }
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={`/dates/${getCurrentDateString()}`}
+                  aria-label="Today"
+                  end
+                >
+                  {({ isActive }) =>
+                    isActive ? (
+                      <CalendarFillIcon24 date={new Date().getDate()} />
+                    ) : (
+                      <CalendarIcon24 date={new Date().getDate()} />
+                    )
                   }
                 </NavLink>
               </li>

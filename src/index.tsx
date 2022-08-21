@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Root } from "./components/root"
 import { GlobalStateProvider } from "./global-state"
 import "./index.css"
+import { DatePage } from "./pages/date"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { TagPage } from "./pages/tag"
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path=":id" element={<NotePage />} />
             <Route path="tags" element={<TagsPage />} />
             <Route path="tags/:name" element={<TagPage />} />
+            <Route path="dates/:date" element={<DatePage />} />
           </Route>
         </Routes>
       </BrowserRouter>

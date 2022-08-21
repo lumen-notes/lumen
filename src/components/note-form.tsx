@@ -10,7 +10,7 @@ import { EditorView, placeholder } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import React from "react"
 import { GlobalStateContext, NoteId } from "../global-state"
-import { formatDate } from "../utils/format-date"
+import { formatDate } from "../utils/date"
 import { Button } from "./button"
 
 type NoteFormProps = {

@@ -28,13 +28,13 @@ export function NotePage() {
 
       <h3 className="leading-none">Backlinks</h3>
 
-      {backlinks?.map((id) => (
-        <NoteCard key={id} id={id} />
-      ))}
-
       <Card className="p-2">
         <NoteForm defaultBody={`[[${id}]]`} />
       </Card>
+
+      {backlinks?.map((id) => (
+        <NoteCard key={id} id={id} />
+      ))}
     </div>
   )
 }

@@ -1,3 +1,5 @@
+import { addDays, formatDistance, isSameDay, subDays } from "date-fns"
+
 const MONTHS = {
   1: "Jan",
   2: "Feb",
@@ -39,4 +41,34 @@ export function formatDate(dateString: string) {
   }
 
   return formattedDate
+}
+
+export function formatDateDistance(dateString: string) {
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth()
+  const currentDay = now.getDate()
+
+  const nowUtc = new Date(Date.UTC(currentYear, currentMonth, currentDay))
+
+  const then = new Date(dateString)
+
+  // Is today?
+  if (isSameDay(nowUtc, then)) {
+    return "Today"
+  }
+
+  // Is tomorrow?
+  if (isSameDay(addDays(nowUtc, 1), then)) {
+    return "Tomorrow"
+  }
+
+  // Is yesterday?
+  if (isSameDay(subDays(nowUtc, 1), then)) {
+    return "Yesterday"
+  }
+
+  return formatDistance(then, nowUtc, {
+    addSuffix: true,
+  })
 }

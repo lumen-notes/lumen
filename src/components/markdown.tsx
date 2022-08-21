@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { formatDate } from "../utils/format-date"
+import { formatDate } from "../utils/date"
 
 type MarkdownProps = {
   children: string
