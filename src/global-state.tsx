@@ -213,8 +213,9 @@ const machine = createMachine(
         await set("context", null)
       },
       upsertNote: assign((context, event) => {
-        const { noteLinks, tagLinks } = parseBody(event.body)
+        const { noteLinks, tagLinks, dateLinks } = parseBody(event.body)
 
+        // Update backlinks
         const backlinkEntries = Object.entries(context.backlinks).map(
           ([noteId, backlinks]) => {
             // If the note is listed as a backlink but shouldn't be, remove it
@@ -241,6 +242,7 @@ const machine = createMachine(
             backlinkEntries.push([noteId, [event.id]])
           })
 
+        // Update tags
         const tagEntries = Object.entries(context.tags)
           .map(([tagName, noteIds]) => {
             // If the note is listed with a tag but shouldn't be, remove it
@@ -265,13 +267,36 @@ const machine = createMachine(
             tagEntries.push([tag, [event.id]])
           })
 
+        // Update dates
+        const dateEntries = Object.entries(context.dates)
+          .map(([date, noteIds]) => {
+            // If the note is listed with a date but shouldn't be, remove it
+            if (noteIds.includes(event.id) && !dateLinks.includes(date)) {
+              return [date, noteIds.filter((noteId) => noteId !== event.id)]
+            }
+
+            // If the note is not listed with a date but should be, add it
+            if (!noteIds.includes(event.id) && dateLinks.includes(date)) {
+              return [date, [...noteIds, event.id]]
+            }
+
+            return [date, noteIds]
+          })
+          // Remove dates that don't have any notes
+          .filter(([date, noteIds]) => noteIds.length > 0)
+
+        dateLinks
+          .filter((date) => !Object.keys(context.dates).includes(date))
+          .forEach((date) => {
+            // If the note contains a date that isn't already listed, add it
+            dateEntries.push([date, [event.id]])
+          })
+
         return {
-          notes: {
-            ...context.notes,
-            [event.id]: event.body,
-          },
+          notes: { ...context.notes, [event.id]: event.body },
           backlinks: Object.fromEntries(backlinkEntries),
           tags: Object.fromEntries(tagEntries),
+          dates: Object.fromEntries(dateEntries),
         }
       }),
       upsertNoteFile: async (context, event) => {
@@ -296,11 +321,12 @@ const machine = createMachine(
       deleteNote: assign((context, event) => {
         const { [event.id]: _, ...rest } = context.notes
 
-        const backlinkEntries = Object.entries(context.backlinks).map(
-          ([noteId, backlinks]) => {
+        const backlinkEntries = Object.entries(context.backlinks)
+          .map(([noteId, backlinks]) => {
             return [noteId, backlinks.filter((noteId) => noteId !== event.id)]
-          },
-        )
+          })
+          // Remove backlinks that don't have any notes
+          .filter(([noteId, backlinks]) => backlinks.length > 0)
 
         const tagEntries = Object.entries(context.tags)
           .map(([tagName, noteIds]) => {
@@ -309,10 +335,18 @@ const machine = createMachine(
           // Remove tags that don't have any notes
           .filter(([tagName, noteIds]) => noteIds.length > 0)
 
+        const dateEntries = Object.entries(context.dates)
+          .map(([date, noteIds]) => {
+            return [date, noteIds.filter((noteId) => noteId !== event.id)]
+          })
+          // Remove dates that don't have any notes
+          .filter(([date, noteIds]) => noteIds.length > 0)
+
         return {
           notes: rest,
           backlinks: Object.fromEntries(backlinkEntries),
           tags: Object.fromEntries(tagEntries),
+          dates: Object.fromEntries(dateEntries),
         }
       }),
       deleteNoteFile: async (context, event) => {
