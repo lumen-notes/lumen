@@ -51,7 +51,7 @@ export function Markdown({ children }: MarkdownProps) {
         },
         // @ts-ignore
         dateLink({ date }) {
-          return <Link to={`/log/${date}`}>{formatDate(date)}</Link>
+          return <Link to={`/dates/${date}`}>{formatDate(date)}</Link>
         },
       }}
     >
