@@ -4,6 +4,7 @@ import { fromMarkdown } from "mdast-util-from-markdown"
 import React from "react"
 import { visit } from "unist-util-visit"
 import { assign, createMachine, InterpreterFrom } from "xstate"
+import { dateLink, dateLinkFromMarkdown } from "./remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
 
@@ -14,6 +15,7 @@ type Context = {
   notes: Record<NoteId, string>
   backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
+  dates: Record<string, NoteId[]>
 }
 
 type Event =
@@ -31,6 +33,7 @@ const machine = createMachine(
       notes: {},
       backlinks: {},
       tags: {},
+      dates: {},
     },
     tsTypes: {} as import("./global-state.typegen").Typegen0,
     schema: {
@@ -52,6 +55,7 @@ const machine = createMachine(
             notes: Record<NoteId, string>
             backlinks: Record<NoteId, NoteId[]>
             tags: Record<string, NoteId[]>
+            dates: Record<string, NoteId[]>
           }
         }
       },
@@ -192,10 +196,15 @@ const machine = createMachine(
           "backlinks" in event.data ? event.data.backlinks : context.backlinks,
         tags: (context, event) =>
           "tags" in event.data ? event.data.tags : context.tags,
+        dates: (context, event) =>
+          "dates" in event.data ? event.data.dates : context.dates,
       }),
       clearContext: assign({
         directoryHandle: (context, event) => null,
         notes: (context, event) => ({}),
+        backlinks: (context, event) => ({}),
+        tags: (context, event) => ({}),
+        dates: (context, event) => ({}),
       }),
       setContextInIndexedDB: async (context, event) => {
         await set("context", context)
@@ -377,6 +386,7 @@ const machine = createMachine(
         const notes: Record<NoteId, string> = {}
         const backlinks: Record<NoteId, NoteId[]> = {}
         const tags: Record<string, NoteId[]> = {}
+        const dates: Record<string, NoteId[]> = {}
 
         // Start timer
         console.time("loadNotes")
@@ -389,9 +399,13 @@ const machine = createMachine(
           }
         }
 
-        for (const { id, body, noteLinks, tagLinks } of await Promise.all(
-          data,
-        )) {
+        for (const {
+          id,
+          body,
+          noteLinks,
+          tagLinks,
+          dateLinks,
+        } of await Promise.all(data)) {
           notes[id] = body
 
           for (const noteLink of noteLinks) {
@@ -401,12 +415,16 @@ const machine = createMachine(
           for (const tagLink of tagLinks) {
             push(tags, tagLink, id)
           }
+
+          for (const dateLink of dateLinks) {
+            push(dates, dateLink, id)
+          }
         }
 
         // End timer
         console.timeEnd("loadNotes")
 
-        return { notes, backlinks, tags }
+        return { notes, backlinks, tags, dates }
       },
     },
   },
@@ -428,10 +446,15 @@ async function parseFile(file: File) {
 function parseBody(body: string) {
   const noteLinks: NoteId[] = []
   const tagLinks: string[] = []
+  const dateLinks: string[] = []
 
   const mdast = fromMarkdown(body, {
-    extensions: [noteLink(), tagLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown()],
+    extensions: [noteLink(), tagLink(), dateLink()],
+    mdastExtensions: [
+      noteLinkFromMarkdown(),
+      tagLinkFromMarkdown(),
+      dateLinkFromMarkdown(),
+    ],
   })
 
   visit(mdast, (node) => {
@@ -444,10 +467,14 @@ function parseBody(body: string) {
         tagLinks.push(node.data.name)
         break
       }
+      case "dateLink": {
+        dateLinks.push(node.data.date)
+        break
+      }
     }
   })
 
-  return { noteLinks, tagLinks }
+  return { noteLinks, tagLinks, dateLinks }
 }
 
 /**
