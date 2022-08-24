@@ -9,7 +9,11 @@ import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import React from "react"
-import { GlobalStateContext, NoteId } from "../global-state"
+import {
+  GlobalStateContext,
+  GlobalStateContextValue,
+  NoteId,
+} from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button } from "./button"
 
@@ -122,6 +126,9 @@ function useCodeMirror({
 
   const [value, setValue] = React.useState(defaultValue)
 
+  const globalState = React.useContext(GlobalStateContext)
+  const tagCompletion = createTagCompletion(globalState)
+
   React.useEffect(() => {
     if (!editorElement) return
 
@@ -136,7 +143,7 @@ function useCodeMirror({
         }),
         closeBrackets(),
         autocompletion({
-          override: [dateCompletion],
+          override: [dateCompletion, tagCompletion],
           icons: false,
         }),
       ],
@@ -189,5 +196,24 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
       },
     ],
     filter: false,
+  }
+}
+
+function createTagCompletion(globalState: GlobalStateContextValue) {
+  return async function tagCompletion(
+    context: CompletionContext,
+  ): Promise<CompletionResult | null> {
+    const word = context.matchBefore(/#[\w\-_\d]*/)
+
+    if (!word) {
+      return null
+    }
+
+    const tags = Object.keys(globalState.service.getSnapshot().context.tags)
+
+    return {
+      from: word.from + 1,
+      options: tags.map((name) => ({ label: name })),
+    }
   }
 }

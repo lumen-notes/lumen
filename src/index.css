@@ -69,7 +69,7 @@
     --l-bg: 10%;
     --l-bg-wash: 20%;
     --l-bg-inset: 5%;
-    --l-bg-overlay: 15%;
+    --l-bg-overlay: 12.5%;
     --a-bg-hover: 0.1;
   }
 }
@@ -119,6 +119,10 @@ body {
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
   @apply bg-bg-hover text-text;
+}
+
+.cm-editor .cm-completionMatchedText {
+  @apply no-underline;
 }
 
 /* Markdown styles */
