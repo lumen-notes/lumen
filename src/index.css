@@ -103,6 +103,24 @@ body {
   font-family: unset;
 }
 
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete,
+.cm-editor .cm-completionInfo {
+  @apply rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-divider dark:ring-inset;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul,
+.cm-editor .cm-tooltip.cm-completionInfo {
+  @apply font-body text-sm;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
+  @apply flex rounded px-2 py-1;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  @apply bg-bg-hover text-text;
+}
+
 /* Markdown styles */
 
 .markdown {
