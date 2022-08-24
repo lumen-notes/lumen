@@ -19,8 +19,8 @@ export function DatePage() {
   // TODO: Use selectors to avoid unnecessary rerenders
   const [state] = useActor(globalState.service)
   const noteIds = state.context.dates[date] || []
-  // Sort notes by when they were created in ascending order
-  const sortedNoteIds = noteIds.sort((a, b) => parseInt(a) - parseInt(b))
+  // Sort notes by when they were created in descending order
+  const sortedNoteIds = noteIds.sort((a, b) => parseInt(b) - parseInt(a))
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
