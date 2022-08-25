@@ -5,16 +5,13 @@ import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
+import { NoteList } from "../components/note-list"
 import { GlobalStateContext } from "../global-state"
 
 export function NotePage() {
   const { id = "" } = useParams()
-
   const globalState = React.useContext(GlobalStateContext)
-
-  // TODO: Use selectors to avoid unnecessary rerenders
   const [state] = useActor(globalState.service)
-
   const backlinks = state.context.backlinks[id]
 
   return (
@@ -32,9 +29,7 @@ export function NotePage() {
         <NoteForm defaultBody={`[[${id}]]`} />
       </Card>
 
-      {backlinks?.map((id) => (
-        <NoteCard key={id} id={id} />
-      ))}
+      <NoteList ids={backlinks || []} />
     </div>
   )
 }

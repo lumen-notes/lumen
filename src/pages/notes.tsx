@@ -1,37 +1,16 @@
 import { useActor } from "@xstate/react"
 import React from "react"
-import { useInView } from "react-intersection-observer"
 import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
-import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
+import { NoteList } from "../components/note-list"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 
 export function NotesPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-
-  // Sort notes by when they were created in descending order
-  const sortedNoteIds = React.useMemo(
-    () =>
-      Object.keys(state.context.notes).sort(
-        (a, b) => parseInt(b) - parseInt(a),
-      ),
-    [state.context.notes],
-  )
-
-  // Only render the first 10 notes when the page loads
-  const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
-
-  const { ref: bottomRef, inView: bottomInView } = useInView()
-
-  React.useEffect(() => {
-    if (bottomInView) {
-      // Render 10 more notes when the user scrolls to the bottom of the list
-      setNumVisibleNotes((num) => Math.min(num + 10, sortedNoteIds.length))
-    }
-  }, [bottomInView, sortedNoteIds.length])
+  const noteIds = Object.keys(state.context.notes)
 
   return (
     <div className="flex max-w-lg flex-col gap-4 p-4">
@@ -43,17 +22,14 @@ export function NotesPage() {
             ·
           </span>
           <span className="text-text-muted">
-            {pluralize(sortedNoteIds.length, "note")}
+            {pluralize(noteIds.length, "note")}
           </span>
         </div>
       </div>
       <Card className="p-2">
         <NoteForm />
       </Card>
-      {sortedNoteIds.slice(0, numVisibleNotes).map((id) => (
-        <NoteCard key={id} id={id} />
-      ))}
-      <div ref={bottomRef} />
+      <NoteList ids={noteIds} />
     </div>
   )
 }
