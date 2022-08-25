@@ -32,6 +32,10 @@ export function NoteCard({ id }: NoteCardProps) {
   const body = state.context.notes[id]
   const backlinks = state.context.backlinks[id]
 
+  if (typeof body === "undefined") {
+    return <Card className="p-4">Not found</Card>
+  }
+
   function switchToEditing() {
     setIsEditing(true)
     setTimeout(() => {
@@ -50,10 +54,6 @@ export function NoteCard({ id }: NoteCardProps) {
   function switchToViewing() {
     setIsEditing(false)
     cardRef.current?.focus()
-  }
-
-  if (body === undefined) {
-    return <Card className="p-4 text-center">Note not found</Card>
   }
 
   return (
