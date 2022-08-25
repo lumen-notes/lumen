@@ -110,8 +110,8 @@ export function CalendarIcon24({ date }: { date?: number }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M5 3.5h14A1.5 1.5 0 0 1 20.5 5v14a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V5A1.5 1.5 0 0 1 5 3.5ZM2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5Zm16 2H6v1.5h12V7Z"
       />
       <text
@@ -131,8 +131,8 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M5 2C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V5C22 3.34315 20.6569 2 19 2H5ZM18 7H6V8.5H18V7Z"
       />
       <text
