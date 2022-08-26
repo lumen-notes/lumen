@@ -1,3 +1,4 @@
+import React from "react"
 import ReactMarkdown from "react-markdown"
 import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
@@ -10,7 +11,7 @@ type MarkdownProps = {
   children: string
 }
 
-export function Markdown({ children }: MarkdownProps) {
+export const Markdown = React.memo(({ children }: MarkdownProps) => {
   return (
     <ReactMarkdown
       className="markdown"
@@ -58,4 +59,4 @@ export function Markdown({ children }: MarkdownProps) {
       {children}
     </ReactMarkdown>
   )
-}
+})

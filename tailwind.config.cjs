@@ -10,6 +10,7 @@ module.exports = {
       transparent: "transparent",
       text: "var(--color-text)",
       "text-muted": "var(--color-text-muted)",
+      "text-placeholder": "var(--color-text-placeholder)",
       bg: "var(--color-bg)",
       "bg-wash": "var(--color-bg-wash)",
       "bg-inset": "var(--color-bg-inset)",

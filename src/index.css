@@ -41,6 +41,7 @@
   --s: 10%;
   --l-text: 10%;
   --l-text-muted: 45%;
+  --l-text-placeholder: 55%;
   --l-bg: 100%;
   --l-bg-wash: 95%;
   --l-bg-inset: 97.5%;
@@ -51,6 +52,7 @@
 
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
+  --color-text-placeholder: hsl(var(--h) var(--s) var(--l-text-placeholder));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
@@ -66,6 +68,7 @@
   :root {
     --l-text: 90%;
     --l-text-muted: 60%;
+    --l-text-placeholder: 50%;
     --l-bg: 10%;
     --l-bg-wash: 20%;
     --l-bg-inset: 5%;
@@ -78,6 +81,11 @@
 
 body {
   @apply bg-bg-inset font-body text-sm text-text;
+}
+
+/* Hide the browser's default cancel button on search inputs */
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
 }
 
 /* Codemirror styles */
@@ -123,6 +131,10 @@ body {
 
 .cm-editor .cm-completionMatchedText {
   @apply no-underline;
+}
+
+.cm-editor .cm-placeholder {
+  @apply text-text-placeholder;
 }
 
 /* Markdown styles */
