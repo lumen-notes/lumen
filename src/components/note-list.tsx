@@ -17,10 +17,11 @@ export function NoteList({ ids }: NoteListProps) {
   const [state] = useActor(globalState.service)
 
   const searcher = React.useMemo(() => {
-    return new Searcher(Object.entries(state.context.notes), {
+    const entries = ids.map((id) => [id, state.context.notes[id]])
+    return new Searcher(entries, {
       keySelector: (entry) => entry[1],
     })
-  }, [state.context.notes])
+  }, [ids, state.context.notes])
 
   // Sort notes by when they were created in descending order
   const sortedIds = React.useMemo(
