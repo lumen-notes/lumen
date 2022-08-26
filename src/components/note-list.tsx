@@ -1,6 +1,5 @@
 import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
-import debounce from "lodash.debounce"
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
@@ -16,12 +15,8 @@ export function NoteList({ ids }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const searcher = React.useMemo(() => {
-    const entries = ids.map((id) => [id, state.context.notes[id]])
-    return new Searcher(entries, {
-      keySelector: (entry) => entry[1],
-    })
-  }, [ids, state.context.notes])
+  const [query, setQuery] = React.useState("")
+  const debouncedQuery = useDebounce(query)
 
   // Sort notes by when they were created in descending order
   const sortedIds = React.useMemo(
@@ -29,16 +24,21 @@ export function NoteList({ ids }: NoteListProps) {
     [ids],
   )
 
-  const [results, setResults] = React.useState<NoteId[]>(sortedIds)
+  // Create a search index
+  const searcher = React.useMemo(() => {
+    const entries = sortedIds.map((id) => [id, state.context.notes[id]])
+    return new Searcher(entries, {
+      keySelector: (entry) => entry[1],
+    })
+  }, [sortedIds, state.context.notes])
 
-  const search = debounce((value: string) => {
-    if (value) {
-      setResults(searcher.search(value).map(([id]) => id))
-    } else {
-      // If the search value is empty, show all notes in sorted order
-      setResults(sortedIds)
+  const results = React.useMemo(() => {
+    if (!debouncedQuery) {
+      return sortedIds
     }
-  }, 300)
+
+    return searcher.search(debouncedQuery).map(([id]) => id)
+  }, [debouncedQuery, sortedIds, searcher])
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
@@ -59,7 +59,8 @@ export function NoteList({ ids }: NoteListProps) {
           className="w-full rounded-lg bg-transparent px-4 py-3 placeholder:text-text-placeholder"
           type="search"
           placeholder={`Search ${pluralize(ids.length, "note")}`}
-          onChange={(event) => search(event.target.value)}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
         />
       </Card>
       {results.slice(0, numVisibleNotes).map((id) => (
@@ -68,4 +69,19 @@ export function NoteList({ ids }: NoteListProps) {
       <div ref={bottomRef} />
     </div>
   )
+}
+
+// Copied from https://usehooks-ts.com/react-hook/use-debounce
+function useDebounce<T>(value: T, delay: number = 300): T {
+  const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay)
+
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [value, delay])
+
+  return debouncedValue
 }
