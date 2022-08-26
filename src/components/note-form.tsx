@@ -40,7 +40,7 @@ export function NoteForm({
     value: body = "",
   } = useCodeMirror({
     defaultValue: defaultBody,
-    placeholder: "Write something...",
+    placeholder: "Write something",
     viewRef: codeMirrorViewRef,
   })
 
