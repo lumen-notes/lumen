@@ -1,5 +1,6 @@
 import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
+import debounce from "lodash.debounce"
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
@@ -15,9 +16,6 @@ export function NoteList({ ids }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [searchValue, setSearchValue] = React.useState("")
-  const debouncedSearchValue = useDebounce(searchValue, 300)
-
   const searcher = React.useMemo(() => {
     return new Searcher(Object.entries(state.context.notes), {
       keySelector: (entry) => entry[1],
@@ -30,13 +28,16 @@ export function NoteList({ ids }: NoteListProps) {
     [ids],
   )
 
-  const results = React.useMemo(() => {
-    if (!debouncedSearchValue) {
-      return sortedIds
-    }
+  const [results, setResults] = React.useState<NoteId[]>(sortedIds)
 
-    return searcher.search(debouncedSearchValue).map(([id]) => id)
-  }, [debouncedSearchValue, sortedIds, searcher])
+  const search = debounce((value: string) => {
+    if (value) {
+      setResults(searcher.search(value).map(([id]) => id))
+    } else {
+      // If the search value is empty, show all notes in sorted order
+      setResults(sortedIds)
+    }
+  }, 300)
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
@@ -57,9 +58,7 @@ export function NoteList({ ids }: NoteListProps) {
           className="w-full rounded-lg bg-transparent px-4 py-3 placeholder:text-text-placeholder"
           type="search"
           placeholder={`Search ${pluralize(ids.length, "note")}`}
-          value={searchValue}
-          // TODO: Call debounced search function on change
-          onChange={(event) => setSearchValue(event.target.value)}
+          onChange={(event) => search(event.target.value)}
         />
       </Card>
       {results.slice(0, numVisibleNotes).map((id) => (
@@ -68,19 +67,4 @@ export function NoteList({ ids }: NoteListProps) {
       <div ref={bottomRef} />
     </div>
   )
-}
-
-// Copied from https://usehooks-ts.com/react-hook/use-debounce
-function useDebounce<T>(value: T, delay?: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay || 500)
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [value, delay])
-
-  return debouncedValue
 }
