@@ -43,7 +43,7 @@ export function DatePage() {
         <NoteForm defaultBody={`[[${date}]]`} />
       </Card>
 
-      <NoteList ids={noteIds} />
+      <NoteList key={date} ids={noteIds} />
     </div>
   )
 }

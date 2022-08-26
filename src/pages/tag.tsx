@@ -33,7 +33,7 @@ export function TagPage() {
         <NoteForm defaultBody={`#${name}`} />
       </Card>
 
-      <NoteList ids={noteIds} />
+      <NoteList key={name} ids={noteIds} />
     </div>
   )
 }

@@ -29,7 +29,7 @@ export function NotePage() {
         <NoteForm defaultBody={`[[${id}]]`} />
       </Card>
 
-      <NoteList ids={backlinks || []} />
+      <NoteList key={id} ids={backlinks || []} />
     </div>
   )
 }
