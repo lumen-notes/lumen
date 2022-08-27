@@ -147,3 +147,15 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
     </svg>
   )
 }
+
+export function SearchIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M10.73 11.436a6.5 6.5 0 1 1 .707-.707l4.417 4.417-.707.708-4.418-4.418ZM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+      />
+    </svg>
+  )
+}

@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
+import { SearchIcon16 } from "./icons"
 import { NoteCard } from "./note-card"
 
 type NoteListProps = {
@@ -54,9 +55,12 @@ export function NoteList({ ids }: NoteListProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Card>
+      <Card className="relative">
+        <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-muted">
+          <SearchIcon16 />
+        </div>
         <input
-          className="w-full rounded-lg bg-transparent px-4 py-3 placeholder:text-text-placeholder"
+          className="w-full rounded-lg bg-transparent px-4 py-3 pl-[40px] placeholder:text-text-placeholder"
           type="search"
           placeholder={`Search ${pluralize(ids.length, "note")}`}
           value={query}
