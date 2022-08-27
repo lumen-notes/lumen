@@ -1,4 +1,5 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import * as Tooltip from "@radix-ui/react-tooltip"
 import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
@@ -8,7 +9,8 @@ import { GlobalStateContext } from "../global-state"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { formatDate } from "../utils/date"
+import { formatDate, formatDateDistance } from "../utils/date"
+import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
 
 type MarkdownProps = {
@@ -45,17 +47,9 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         // @ts-ignore I'm not sure how to extend the list of accepted component keys
         noteLink: NoteLink,
         // @ts-ignore
-        tagLink({ name }) {
-          return (
-            <Link className="text-text-muted" to={`/tags/${name}`}>
-              #{name}
-            </Link>
-          )
-        },
+        tagLink: TagLink,
         // @ts-ignore
-        dateLink({ date }) {
-          return <Link to={`/dates/${date}`}>{formatDate(date)}</Link>
-        },
+        dateLink: DateLink,
       }}
     >
       {children}
@@ -77,11 +71,58 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Trigger asChild>
         <Link to={`/${id}`}>{text}</Link>
       </HoverCard.Trigger>
-      <HoverCard.Content side="top" sideOffset={4} asChild>
-        <Card className="w-96 px-4 py-3" elevation={1}>
-          <Markdown>{body ?? "Not found"}</Markdown>
-        </Card>
-      </HoverCard.Content>
+      <HoverCard.Portal>
+        <HoverCard.Content side="top" sideOffset={4} asChild>
+          <Card className="w-96 px-4 py-3" elevation={1}>
+            <Markdown>{body ?? "Not found"}</Markdown>
+          </Card>
+        </HoverCard.Content>
+      </HoverCard.Portal>
     </HoverCard.Root>
+  )
+}
+
+type TagLinkProps = {
+  name: string
+}
+
+function TagLink({ name }: TagLinkProps) {
+  const globalState = React.useContext(GlobalStateContext)
+  const [state] = useActor(globalState.service)
+  const notesCount = state.context.tags[name]?.length ?? 0
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <Link className="text-text-muted" to={`/tags/${name}`}>
+          #{name}
+        </Link>
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content side="top" sideOffset={4} asChild>
+          <Card elevation={1} className="py-2 px-3">
+            {pluralize(notesCount, "note")}
+          </Card>
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  )
+}
+
+type DateLinkProps = {
+  date: string
+}
+
+function DateLink({ date }: DateLinkProps) {
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <Link to={`/dates/${date}`}>{formatDate(date)}</Link>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="top" sideOffset={4} asChild>
+        <Card elevation={1} className="py-2 px-3">
+          {formatDateDistance(date)}
+        </Card>
+      </Tooltip.Content>
+    </Tooltip.Root>
   )
 }
