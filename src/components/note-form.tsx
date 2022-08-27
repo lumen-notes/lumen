@@ -126,8 +126,7 @@ function useCodeMirror({
 
   const [value, setValue] = React.useState(defaultValue)
 
-  const globalState = React.useContext(GlobalStateContext)
-  const tagCompletion = createTagCompletion(globalState)
+  const tagCompletion = useTagCompletion()
 
   React.useEffect(() => {
     if (!editorElement) return
@@ -199,21 +198,26 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
   }
 }
 
-function createTagCompletion(globalState: GlobalStateContextValue) {
-  return async function tagCompletion(
-    context: CompletionContext,
-  ): Promise<CompletionResult | null> {
-    const word = context.matchBefore(/#[\w\-_\d]*/)
+function useTagCompletion() {
+  const globalState = React.useContext(GlobalStateContext)
 
-    if (!word) {
-      return null
-    }
+  const tagCompletion = React.useCallback(
+    async (context: CompletionContext): Promise<CompletionResult | null> => {
+      const word = context.matchBefore(/#[\w\-_\d]*/)
 
-    const tags = Object.keys(globalState.service.getSnapshot().context.tags)
+      if (!word) {
+        return null
+      }
 
-    return {
-      from: word.from + 1,
-      options: tags.map((name) => ({ label: name })),
-    }
-  }
+      const tags = Object.keys(globalState.service.getSnapshot().context.tags)
+
+      return {
+        from: word.from + 1,
+        options: tags.map((name) => ({ label: name })),
+      }
+    },
+    [globalState],
+  )
+
+  return tagCompletion
 }
