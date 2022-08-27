@@ -111,14 +111,16 @@ input[type="search"]::-webkit-search-cancel-button {
   font-family: unset;
 }
 
-.cm-editor .cm-tooltip.cm-tooltip-autocomplete,
-.cm-editor .cm-completionInfo {
-  @apply rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-divider dark:ring-inset;
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete {
+  @apply max-w-sm rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-divider dark:ring-inset;
 }
 
-.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul,
-.cm-editor .cm-tooltip.cm-completionInfo {
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
   @apply font-body text-sm;
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo {
+  @apply w-96 max-w-none rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-divider dark:ring-inset;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {

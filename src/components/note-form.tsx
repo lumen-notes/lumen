@@ -8,12 +8,9 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder } from "@codemirror/view"
 import { parseDate } from "chrono-node"
+import { Searcher } from "fast-fuzzy"
 import React from "react"
-import {
-  GlobalStateContext,
-  GlobalStateContextValue,
-  NoteId,
-} from "../global-state"
+import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button } from "./button"
 
@@ -126,6 +123,7 @@ function useCodeMirror({
 
   const [value, setValue] = React.useState(defaultValue)
 
+  const noteCompletion = useNoteCompletion()
   const tagCompletion = useTagCompletion()
 
   React.useEffect(() => {
@@ -142,7 +140,7 @@ function useCodeMirror({
         }),
         closeBrackets(),
         autocompletion({
-          override: [dateCompletion, tagCompletion],
+          override: [noteCompletion, dateCompletion, tagCompletion],
           icons: false,
         }),
       ],
@@ -220,4 +218,46 @@ function useTagCompletion() {
   )
 
   return tagCompletion
+}
+
+function useNoteCompletion() {
+  const globalState = React.useContext(GlobalStateContext)
+
+  const noteCompletion = React.useCallback(
+    async (context: CompletionContext): Promise<CompletionResult | null> => {
+      const word = context.matchBefore(/\[\[[^\]|^|]*/)
+
+      if (!word) {
+        return null
+      }
+
+      // "[[<query>" -> "<query>"
+      const query = word.text.slice(2)
+
+      const entries = Object.entries(
+        globalState.service.getSnapshot().context.notes,
+      )
+
+      // Create a search index
+      const searcher = new Searcher(entries, {
+        keySelector: (entry) => entry[1],
+        threshold: 0.7,
+      })
+
+      const results = searcher.search(query)
+
+      return {
+        from: word.from + 2,
+        options: results.slice(0, 10).map(([id, body]) => ({
+          label: body,
+          info: body,
+          apply: `${id}|${query}`,
+        })),
+        filter: false,
+      }
+    },
+    [globalState],
+  )
+
+  return noteCompletion
 }

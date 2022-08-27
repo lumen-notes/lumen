@@ -30,6 +30,7 @@ export function NoteList({ ids }: NoteListProps) {
     const entries = sortedIds.map((id) => [id, state.context.notes[id]])
     return new Searcher(entries, {
       keySelector: (entry) => entry[1],
+      threshold: 0.7,
     })
   }, [sortedIds, state.context.notes])
 
