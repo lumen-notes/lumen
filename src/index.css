@@ -120,7 +120,8 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .cm-editor .cm-tooltip.cm-completionInfo {
-  @apply w-96 max-w-none rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-divider dark:ring-inset;
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-divider dark:ring-inset;
+  word-break: break-word;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
