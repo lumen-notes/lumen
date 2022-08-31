@@ -73,7 +73,7 @@ export function Root() {
           <div className="flex flex-col gap-4 text-center">
             <div className="flex flex-col items-center gap-2">
               <Logo />
-              <h1 className="text-3xl font-medium lowercase leading-none">
+              <h1 className="text-2xl font-medium lowercase leading-none">
                 Lumen
               </h1>
             </div>
