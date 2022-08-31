@@ -86,7 +86,6 @@ export function Root() {
             Connect a local folder
           </Button>
         </div>
-        {import.meta.env.DEV ? <CurrentState /> : null}
       </div>
     )
   }
@@ -155,18 +154,26 @@ export function Root() {
           <Outlet />
         </main>
       </div>
-      {import.meta.env.DEV ? <CurrentState /> : null}
+      {state.matches("loadingNotes") ? (
+      <Card
+        elevation={1}
+        className="fixed bottom-2 right-2 p-2"
+        role="status"
+        aria-label="Loading notes"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          className="animate-spin"
+          aria-hidden
+        >
+          <path d="M8 1a7 7 0 1 0 7 7h-1a6 6 0 1 1-6-6V1Z" />
+        </svg>
+      </Card>
+      ) : null} */}
     </div>
   )
 }
 
-/** Shows the current state of the global state machine */
-function CurrentState() {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
-  return (
-    <Card elevation={1} className="fixed bottom-2 right-2 px-2 py-1 font-mono">
-      {JSON.stringify(state.value)}
-    </Card>
-  )
-}
