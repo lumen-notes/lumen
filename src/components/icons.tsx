@@ -16,6 +16,22 @@ export function MoreIcon16() {
   )
 }
 
+export function MoreIcon24() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <circle cx="4" cy="12" r="2" />
+      <circle cx="12" cy="12" r="2" />
+      <circle cx="20" cy="12" r="2" />
+    </svg>
+  )
+}
+
 export function NoteIcon24() {
   return (
     <svg
@@ -47,24 +63,6 @@ export function NoteFillIcon24() {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M3.5 3C2.11929 3 1 4.11929 1 5.5V18.5C1 19.8807 2.11929 21 3.5 21H20.5C21.8807 21 23 19.8807 23 18.5V5.5C23 4.11929 21.8807 3 20.5 3H3.5ZM7 9H17V10.5H7V9ZM7 13H14V14.5H7V13Z"
-      />
-    </svg>
-  )
-}
-
-export function DisconnectIcon24() {
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M5 3.5h8A1.5 1.5 0 0 1 14.5 5v4H16V5a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4.5h-1.5V19a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V5A1.5 1.5 0 0 1 5 3.5ZM21.19 11H9v1.5h12.19l-3.22 3.22 1.06 1.06 4.5-4.5a.75.75 0 0 0 0-1.06l-4.5-4.5-1.06 1.06L21.19 11Z"
       />
     </svg>
   )
@@ -108,7 +106,13 @@ export function TagFillIcon24() {
 
 export function CalendarIcon24({ date }: { date?: number }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -129,7 +133,13 @@ export function CalendarIcon24({ date }: { date?: number }) {
 
 export function CalendarFillIcon24({ date }: { date?: number }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -150,7 +160,13 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
 
 export function SearchIcon16() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden
+    >
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"

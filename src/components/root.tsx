@@ -9,10 +9,11 @@ import {
 import { GlobalStateContext } from "../global-state"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
+import { DropdownMenu } from "./dropdown-menu"
 import {
   CalendarFillIcon24,
   CalendarIcon24,
-  DisconnectIcon24,
+  MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
   TagFillIcon24,
@@ -132,12 +133,23 @@ export function Root() {
               </li>
             </ul>
           </nav>
-          <IconButton
-            aria-label="Disconnect"
-            onClick={() => send("DISCONNECT")}
-          >
-            <DisconnectIcon24 />
-          </IconButton>
+          <div className="flex flex-col gap-2">
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton aria-label="More actions">
+                  <MoreIcon24 />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content side="right" align="end">
+                <DropdownMenu.Item onClick={() => send("RELOAD")}>
+                  Reload
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => send("DISCONNECT")}>
+                  Disconnect
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          </div>
         </div>
         <main className="flex-shrink flex-grow overflow-auto">
           <Outlet />
