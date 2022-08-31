@@ -66,6 +66,7 @@ export interface Typegen0 {
   eventsCausingActions: {
     clearContext:
       | "DISCONNECT"
+      | "PERMISSION_DENIED"
       | "done.invoke.queryPermission"
       | "error.platform.loadContext"
       | "error.platform.queryPermission"
@@ -73,6 +74,7 @@ export interface Typegen0 {
       | "error.platform.showDirectoryPicker"
     clearContextInIndexedDB:
       | "DISCONNECT"
+      | "PERMISSION_DENIED"
       | "done.invoke.queryPermission"
       | "error.platform.loadContext"
       | "error.platform.queryPermission"

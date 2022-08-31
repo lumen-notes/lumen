@@ -1,3 +1,4 @@
+import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
@@ -94,9 +95,48 @@ export function Root() {
   return (
     <div>
       {state.matches("prompt") ? (
-        <dialog open>
-          <Button onClick={() => send("REQUEST_PERMISSION")}>Grant</Button>
-        </dialog>
+        <AlertDialog.Root
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              send("PERMISSION_DENIED")
+            }
+          }}
+        >
+          <AlertDialog.Portal>
+            <AlertDialog.Overlay className="fixed inset-0 bg-bg-backdrop" />
+            <AlertDialog.Content asChild>
+              <Card
+                elevation={1}
+                className="fixed top-1/2 left-1/2 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-5 p-4"
+              >
+                <div className="flex flex-col gap-2">
+                  <AlertDialog.Title className="text-base font-semibold leading-none">
+                    Allow access to {state.context.directoryHandle.name}?
+                  </AlertDialog.Title>
+                  <AlertDialog.Description className="text-text-muted">
+                    Lumen needs permission to access your local{" "}
+                    {state.context.directoryHandle.name} folder
+                  </AlertDialog.Description>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <AlertDialog.Cancel asChild>
+                    <Button>Deny</Button>
+                  </AlertDialog.Cancel>
+                  <AlertDialog.Action asChild>
+                    <Button
+                      variant="primary"
+                      onClick={() => send("REQUEST_PERMISSION")}
+                      autoFocus
+                    >
+                      Allow
+                    </Button>
+                  </AlertDialog.Action>
+                </div>
+              </Card>
+            </AlertDialog.Content>
+          </AlertDialog.Portal>
+        </AlertDialog.Root>
       ) : null}
       <div className="flex h-screen">
         <div className="flex flex-col items-center justify-between border-r border-border-divider p-2">
@@ -158,7 +198,7 @@ export function Root() {
       {state.matches("loadingNotes") ? (
         <Card
           elevation={1}
-          className="fixed bottom-2 right-2 p-2"
+          className="fixed bottom-2 right-2 p-2 text-text-muted"
           role="status"
           aria-label="Loading notes"
         >

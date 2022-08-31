@@ -46,6 +46,7 @@
   --l-bg-wash: 95%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
+  --a-bg-backdrop: 0.75;
   --a-bg-hover: 0.075;
   --a-border: 0.25;
   --a-border-divider: 0.15;
@@ -57,6 +58,9 @@
   --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
+  --color-bg-backdrop: hsla(
+    var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop)
+  );
   --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-divider: hsla(

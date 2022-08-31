@@ -21,6 +21,7 @@ type Context = {
 type Event =
   | { type: "SHOW_DIRECTORY_PICKER" }
   | { type: "REQUEST_PERMISSION" }
+  | { type: "PERMISSION_DENIED" }
   | { type: "RELOAD" }
   | { type: "DISCONNECT" }
   | { type: "UPSERT_NOTE"; id: NoteId; body: string }
@@ -109,16 +110,13 @@ const machine = createMachine(
       disconnected: {
         entry: ["clearContext", "clearContextInIndexedDB"],
         on: {
-          SHOW_DIRECTORY_PICKER: {
-            target: "showingDirectoryPicker",
-          },
+          SHOW_DIRECTORY_PICKER: "showingDirectoryPicker",
         },
       },
       prompt: {
         on: {
-          REQUEST_PERMISSION: {
-            target: "requestingPermission",
-          },
+          REQUEST_PERMISSION: "requestingPermission",
+          PERMISSION_DENIED: "disconnected",
         },
       },
       requestingPermission: {

@@ -13,7 +13,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={clsx(
           "cursor-default rounded px-3 py-2 font-semibold leading-[16px] disabled:pointer-events-none disabled:opacity-50",
           variant === "default" &&
-            "bg-bg ring-1 ring-inset ring-border hover:bg-bg-hover",
+            "ring-1 ring-inset ring-border hover:bg-bg-hover",
           variant === "primary" && "bg-text text-bg",
           className,
         )}
