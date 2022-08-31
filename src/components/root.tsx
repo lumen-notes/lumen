@@ -66,28 +66,10 @@ export function Root() {
 
   if (!state.context.directoryHandle) {
     return (
-      <div
-        className="grid h-screen place-items-center p-4"
-        style={{ height: "100svh" }}
-      >
-        <div className="flex flex-col items-center gap-8">
-          <div className="flex flex-col gap-4 text-center">
-            <div className="flex flex-col items-center gap-2">
-              <Logo />
-              <h1 className="text-2xl font-medium lowercase leading-none">
-                Lumen
-              </h1>
-            </div>
-            <p className="text-base text-text-muted">
-              A system for thinking, writing,
-              <br />
-              learning &amp; mindfulness
-            </p>
-          </div>
-          <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
-            Connect a local folder
-          </Button>
-        </div>
+      <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">
+        <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
+          Connect a local folder
+        </Button>
       </div>
     )
   }
