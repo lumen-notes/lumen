@@ -155,25 +155,24 @@ export function Root() {
         </main>
       </div>
       {state.matches("loadingNotes") ? (
-      <Card
-        elevation={1}
-        className="fixed bottom-2 right-2 p-2"
-        role="status"
-        aria-label="Loading notes"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          className="animate-spin"
-          aria-hidden
+        <Card
+          elevation={1}
+          className="fixed bottom-2 right-2 p-2"
+          role="status"
+          aria-label="Loading notes"
         >
-          <path d="M8 1a7 7 0 1 0 7 7h-1a6 6 0 1 1-6-6V1Z" />
-        </svg>
-      </Card>
-      ) : null} */}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            className="animate-spin"
+            aria-hidden
+          >
+            <path d="M8 1a7 7 0 1 0 7 7h-1a6 6 0 1 1-6-6V1Z" />
+          </svg>
+        </Card>
+      ) : null}
     </div>
   )
 }
-
