@@ -168,8 +168,8 @@ export function SearchIcon16() {
       aria-hidden
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M10.73 11.436a6.5 6.5 0 1 1 .707-.707l4.417 4.417-.707.708-4.418-4.418ZM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
       />
     </svg>
