@@ -175,3 +175,18 @@ export function SearchIcon16() {
     </svg>
   )
 }
+
+export const LoadingIcon16 = () => {
+  return (
+    <svg
+      className="animate-spin"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M8 1a7 7 0 1 0 7 7h-1a6 6 0 1 1-6-6V1Z" />
+    </svg>
+  )
+}
