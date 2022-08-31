@@ -107,7 +107,7 @@ export function Root() {
             <AlertDialog.Overlay className="fixed inset-0 bg-bg-backdrop" />
             <AlertDialog.Content asChild>
               <Card
-                elevation={1}
+                elevation={2}
                 className="fixed top-1/2 left-1/2 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-5 p-4"
               >
                 <div className="flex flex-col gap-2">
