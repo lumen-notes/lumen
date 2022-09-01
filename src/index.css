@@ -86,7 +86,7 @@ body {
 }
 
 *:focus-visible {
-  @apply outline-2 outline-border-focus;
+  @apply outline outline-2 outline-offset-[-1px] outline-border-focus;
 }
 
 /* Hide the browser's default cancel button on search inputs */

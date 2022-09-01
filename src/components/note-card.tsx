@@ -1,6 +1,7 @@
 import { EditorSelection } from "@codemirror/state"
-import { EditorView } from "@codemirror/view"
+import { EditorView, ViewUpdate } from "@codemirror/view"
 import { useActor } from "@xstate/react"
+import clsx from "clsx"
 import copy from "copy-to-clipboard"
 import React from "react"
 import { Link } from "react-router-dom"
@@ -51,13 +52,14 @@ export function NoteCard({ id }: NoteCardProps) {
 
   function switchToViewing() {
     setIsEditing(false)
-    cardRef.current?.focus()
+    setTimeout(() => cardRef.current?.focus())
   }
-
-  return (
+  return !isEditing ? (
+    // View mode
     <Card
       ref={cardRef}
       tabIndex={0}
+      className="flex flex-col gap-6 p-4"
       onKeyDown={(event) => {
         // Switch to editing with `e`
         if (!isEditing && event.key === "e") {
@@ -66,59 +68,52 @@ export function NoteCard({ id }: NoteCardProps) {
         }
       }}
     >
-      {!isEditing ? (
-        // View mode
-        <div className="flex flex-col gap-6 p-4">
-          <Markdown>{body}</Markdown>
+      <Markdown>{body}</Markdown>
 
-          <div className="flex h-4 items-center justify-between">
-            <span className="text-text-muted">
-              <Link to={`/${id}`} className="tracking-wide  underline underline-offset-2">
-                {id}
-              </Link>
-              {backlinks?.length ? (
-                <span>
-                  {" · "}
-                  {pluralize(backlinks.length, "backlink")}
-                </span>
-              ) : null}
+      <div className="flex h-4 items-center justify-between">
+        <span className="text-text-muted">
+          <Link to={`/${id}`} className="tracking-wide underline underline-offset-2">
+            {id}
+          </Link>
+          {backlinks?.length ? (
+            <span>
+              {" · "}
+              {pluralize(backlinks.length, "backlink")}
             </span>
-            <div className="-m-2">
-              <DropdownMenu>
-                <DropdownMenu.Trigger asChild>
-                  <IconButton aria-label="More actions">
-                    <MoreIcon16 />
-                  </IconButton>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item onSelect={() => copy(id)}>Copy ID</DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={() => copy(body)}>Copy markdown</DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={switchToEditing}>Edit</DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    onSelect={() => {
-                      globalState.service.send({ type: "DELETE_NOTE", id })
-                    }}
-                  >
-                    Delete
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu>
-            </div>
-          </div>
+          ) : null}
+        </span>
+        <div className="-m-2">
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild>
+              <IconButton aria-label="More actions">
+                <MoreIcon16 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item onSelect={() => copy(id)}>Copy ID</DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => copy(body)}>Copy markdown</DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={switchToEditing}>Edit</DropdownMenu.Item>
+              <DropdownMenu.Item
+                onSelect={() => {
+                  globalState.service.send({ type: "DELETE_NOTE", id })
+                }}
+              >
+                Delete
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
         </div>
-      ) : (
-        // Edit mode
-        <div className="p-2">
-          <NoteForm
-            key={body}
-            id={id}
-            defaultBody={body}
-            codeMirrorViewRef={codeMirrorViewRef}
-            onSubmit={switchToViewing}
-            onCancel={switchToViewing}
-          />
-        </div>
-      )}
+      </div>
     </Card>
+  ) : (
+    // Edit mode
+    <NoteForm
+      key={body}
+      id={id}
+      defaultBody={body}
+      codeMirrorViewRef={codeMirrorViewRef}
+      onSubmit={switchToViewing}
+      onCancel={switchToViewing}
+    />
   )
 }

@@ -27,10 +27,7 @@ export function TagPage() {
         </div>
       </div>
 
-      <Card className="p-2">
-        <NoteForm defaultBody={`#${name}`} />
-      </Card>
-
+      <NoteForm defaultBody={`#${name}`} />
       <NoteList key={name} ids={noteIds} />
     </div>
   )

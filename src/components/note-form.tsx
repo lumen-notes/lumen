@@ -6,13 +6,15 @@ import {
 } from "@codemirror/autocomplete"
 import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
-import { EditorView, placeholder } from "@codemirror/view"
+import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
+import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button } from "./button"
+import { Card } from "./card"
 
 type NoteFormProps = {
   id?: NoteId
@@ -31,6 +33,8 @@ export function NoteForm({
 }: NoteFormProps) {
   const globalState = React.useContext(GlobalStateContext)
 
+  const [editorHasFocus, setEditorHasFocus] = React.useState(false)
+
   const {
     editorRef,
     view,
@@ -39,6 +43,7 @@ export function NoteForm({
     defaultValue: defaultBody,
     placeholder: "Write something",
     viewRef: codeMirrorViewRef,
+    onStateChange: (event) => setEditorHasFocus(event.view.hasFocus),
   })
 
   function handleSubmit() {
@@ -63,41 +68,48 @@ export function NoteForm({
   }
 
   return (
-    <form
-      className="flex flex-col gap-2"
-      onSubmit={(event) => {
-        handleSubmit()
-        event.preventDefault()
-      }}
-      onKeyDown={(event) => {
-        // Cancel on `escape`
-        if (event.key === "Escape") {
-          onCancel?.()
-        }
-      }}
+    <Card
+      className={clsx(
+        "p-2",
+        editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
+      )}
     >
-      <div
-        ref={editorRef}
-        className="p-2"
+      <form
+        className="flex flex-col gap-2"
+        onSubmit={(event) => {
+          handleSubmit()
+          event.preventDefault()
+        }}
         onKeyDown={(event) => {
-          // Submit on `command + enter`
-          if (event.key === "Enter" && event.metaKey) {
-            handleSubmit()
-            event.preventDefault()
+          // Cancel on `escape`
+          if (event.key === "Escape") {
+            onCancel?.()
           }
         }}
-      />
-      <div className="flex gap-2 self-end">
-        {onCancel ? (
-          <Button type="button" onClick={onCancel}>
-            Cancel
+      >
+        <div
+          ref={editorRef}
+          className="p-2"
+          onKeyDown={(event) => {
+            // Submit on `command + enter`
+            if (event.key === "Enter" && event.metaKey) {
+              handleSubmit()
+              event.preventDefault()
+            }
+          }}
+        />
+        <div className="flex gap-2 self-end">
+          {onCancel ? (
+            <Button type="button" onClick={onCancel}>
+              Cancel
+            </Button>
+          ) : null}
+          <Button type="submit" variant="primary">
+            {id ? "Save" : "Add"}
           </Button>
-        ) : null}
-        <Button type="submit" variant="primary">
-          {id ? "Save" : "Add"}
-        </Button>
-      </div>
-    </form>
+        </div>
+      </form>
+    </Card>
   )
 }
 
@@ -106,10 +118,12 @@ function useCodeMirror({
   defaultValue,
   placeholder: placeholderValue = "",
   viewRef: providedViewRef,
+  onStateChange,
 }: {
   defaultValue?: string
   placeholder?: string
   viewRef?: React.MutableRefObject<EditorView | undefined>
+  onStateChange?: (event: ViewUpdate) => void
 }) {
   const [editorElement, setEditorElement] = React.useState<HTMLElement>()
   const editorRef = React.useCallback((node: HTMLElement | null) => {
@@ -137,6 +151,7 @@ function useCodeMirror({
         EditorView.updateListener.of((event) => {
           const value = event.view.state.doc.sliceString(0)
           setValue(value)
+          onStateChange?.(event)
         }),
         closeBrackets(),
         autocompletion({

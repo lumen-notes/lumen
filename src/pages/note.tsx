@@ -25,10 +25,7 @@ export function NotePage() {
 
       <h3 className="leading-none">Backlinks</h3>
 
-      <Card className="p-2">
-        <NoteForm defaultBody={`[[${id}]]`} />
-      </Card>
-
+      <NoteForm defaultBody={`[[${id}]]`} />
       <NoteList key={id} ids={backlinks || []} />
     </div>
   )

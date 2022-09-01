@@ -24,9 +24,7 @@ export function NotesPage() {
           <span className="text-text-muted">{pluralize(noteIds.length, "note")}</span>
         </div>
       </div>
-      <Card className="p-2">
-        <NoteForm />
-      </Card>
+      <NoteForm />
       <NoteList ids={noteIds} />
     </div>
   )

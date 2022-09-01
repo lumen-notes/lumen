@@ -37,10 +37,7 @@ export function DatePage() {
         </div>
       </div>
 
-      <Card className="p-2">
-        <NoteForm defaultBody={`[[${date}]]`} />
-      </Card>
-
+      <NoteForm defaultBody={`[[${date}]]`} />
       <NoteList key={date} ids={noteIds} />
     </div>
   )
