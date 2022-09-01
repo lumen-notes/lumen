@@ -53,18 +53,6 @@ export function Root() {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
 
-  if (state.matches("loadingContext")) {
-    return null
-  }
-
-  if (!state.context.directoryHandle) {
-    return (
-      <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">
-        <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>Connect a local folder</Button>
-      </div>
-    )
-  }
-
   function onKeyDown(event: KeyboardEvent) {
     // Reload with `command + r`
     if (event.metaKey && event.key === "r") {
@@ -77,6 +65,18 @@ export function Root() {
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [])
+
+  if (state.matches("loadingContext")) {
+    return null
+  }
+
+  if (!state.context.directoryHandle) {
+    return (
+      <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">
+        <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>Connect a local folder</Button>
+      </div>
+    )
+  }
 
   return (
     <div>
