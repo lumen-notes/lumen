@@ -27,9 +27,7 @@ export function TagsPage() {
           <span className="text-text-muted" aria-hidden>
             ·
           </span>
-          <span className="text-text-muted">
-            {pluralize(sortedTags.length, "tag")}
-          </span>
+          <span className="text-text-muted">{pluralize(sortedTags.length, "tag")}</span>
         </div>
       </div>
       <ul className="flex flex-col">
@@ -41,9 +39,7 @@ export function TagsPage() {
             <Link className="underline underline-offset-2" to={`/tags/${name}`}>
               #{name}
             </Link>
-            <span className="text-text-muted">
-              {pluralize(noteIds.length, "note")}
-            </span>
+            <span className="text-text-muted">{pluralize(noteIds.length, "note")}</span>
           </li>
         ))}
       </ul>

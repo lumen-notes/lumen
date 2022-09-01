@@ -234,9 +234,7 @@ function useNoteCompletion() {
       // "[[<query>" -> "<query>"
       const query = word.text.slice(2)
 
-      const entries = Object.entries(
-        globalState.service.getSnapshot().context.notes,
-      )
+      const entries = Object.entries(globalState.service.getSnapshot().context.notes)
 
       // Create a search index
       const searcher = new Searcher(entries, {

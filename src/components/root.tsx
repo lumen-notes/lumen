@@ -2,11 +2,7 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
-import {
-  NavLink as RouterNavLink,
-  NavLinkProps,
-  Outlet,
-} from "react-router-dom"
+import { NavLink as RouterNavLink, NavLinkProps, Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
@@ -38,10 +34,7 @@ function NavLink(props: NavLinkProps) {
   return (
     <RouterNavLink
       className={({ isActive }) =>
-        clsx(
-          "flex rounded py-2 px-2 hover:bg-bg-hover",
-          isActive ? "text-text" : "text-text-muted",
-        )
+        clsx("flex rounded py-2 px-2 hover:bg-bg-hover", isActive ? "text-text" : "text-text-muted")
       }
       {...props}
     />
@@ -67,9 +60,7 @@ export function Root() {
   if (!state.context.directoryHandle) {
     return (
       <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">
-        <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>
-          Connect a local folder
-        </Button>
+        <Button onClick={() => send("SHOW_DIRECTORY_PICKER")}>Connect a local folder</Button>
       </div>
     )
   }
@@ -97,8 +88,8 @@ export function Root() {
                     Allow access to {state.context.directoryHandle.name}?
                   </AlertDialog.Title>
                   <AlertDialog.Description className="text-text-muted">
-                    Lumen needs permission to access your local{" "}
-                    {state.context.directoryHandle.name} folder
+                    Lumen needs permission to access your local {state.context.directoryHandle.name}{" "}
+                    folder
                   </AlertDialog.Description>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -106,11 +97,7 @@ export function Root() {
                     <Button>Deny</Button>
                   </AlertDialog.Cancel>
                   <AlertDialog.Action asChild>
-                    <Button
-                      variant="primary"
-                      onClick={() => send("REQUEST_PERMISSION")}
-                      autoFocus
-                    >
+                    <Button variant="primary" onClick={() => send("REQUEST_PERMISSION")} autoFocus>
                       Allow
                     </Button>
                   </AlertDialog.Action>
@@ -126,17 +113,11 @@ export function Root() {
             <ul className="flex flex-col gap-2">
               <li>
                 <NavLink to="/" aria-label="Notes" end>
-                  {({ isActive }) =>
-                    isActive ? <NoteFillIcon24 /> : <NoteIcon24 />
-                  }
+                  {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
                 </NavLink>
               </li>
               <li>
-                <NavLink
-                  to={`/dates/${getCurrentDateString()}`}
-                  aria-label="Today"
-                  end
-                >
+                <NavLink to={`/dates/${getCurrentDateString()}`} aria-label="Today" end>
                   {({ isActive }) =>
                     isActive ? (
                       <CalendarFillIcon24 date={new Date().getDate()} />
@@ -148,9 +129,7 @@ export function Root() {
               </li>
               <li>
                 <NavLink to="/tags" aria-label="Tags" end>
-                  {({ isActive }) =>
-                    isActive ? <TagFillIcon24 /> : <TagIcon24 />
-                  }
+                  {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
                 </NavLink>
               </li>
             </ul>
@@ -163,12 +142,8 @@ export function Root() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content side="right" align="end">
-                <DropdownMenu.Item onClick={() => send("RELOAD")}>
-                  Reload
-                </DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => send("DISCONNECT")}>
-                  Disconnect
-                </DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => send("RELOAD")}>Reload</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => send("DISCONNECT")}>Disconnect</DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
           </div>

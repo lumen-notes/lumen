@@ -20,10 +20,7 @@ export function NoteList({ ids }: NoteListProps) {
   const debouncedQuery = useDebounce(query)
 
   // Sort notes by when they were created in descending order
-  const sortedIds = React.useMemo(
-    () => ids.sort((a, b) => parseInt(b) - parseInt(a)),
-    [ids],
-  )
+  const sortedIds = React.useMemo(() => ids.sort((a, b) => parseInt(b) - parseInt(a)), [ids])
 
   // Create a search index
   const searcher = React.useMemo(() => {

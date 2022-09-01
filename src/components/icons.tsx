@@ -1,12 +1,6 @@
 export function MoreIcon16() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -18,13 +12,7 @@ export function MoreIcon16() {
 
 export function MoreIcon24() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <circle cx="4" cy="12" r="2" />
       <circle cx="12" cy="12" r="2" />
       <circle cx="20" cy="12" r="2" />
@@ -34,13 +22,7 @@ export function MoreIcon24() {
 
 export function NoteIcon24() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -52,13 +34,7 @@ export function NoteIcon24() {
 
 export function NoteFillIcon24() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -70,13 +46,7 @@ export function NoteFillIcon24() {
 
 export function TagIcon24() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -88,13 +58,7 @@ export function TagIcon24() {
 
 export function TagFillIcon24() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -106,13 +70,7 @@ export function TagFillIcon24() {
 
 export function CalendarIcon24({ date }: { date?: number }) {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -133,13 +91,7 @@ export function CalendarIcon24({ date }: { date?: number }) {
 
 export function CalendarFillIcon24({ date }: { date?: number }) {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -160,13 +112,7 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
 
 export function SearchIcon16() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden
-    >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path
         fillRule="evenodd"
         clipRule="evenodd"

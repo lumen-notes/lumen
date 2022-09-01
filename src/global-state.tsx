@@ -185,17 +185,12 @@ const machine = createMachine(
     actions: {
       setContext: assign({
         directoryHandle: (context, event) =>
-          "directoryHandle" in event.data
-            ? event.data.directoryHandle
-            : context.directoryHandle,
-        notes: (context, event) =>
-          "notes" in event.data ? event.data.notes : context.notes,
+          "directoryHandle" in event.data ? event.data.directoryHandle : context.directoryHandle,
+        notes: (context, event) => ("notes" in event.data ? event.data.notes : context.notes),
         backlinks: (context, event) =>
           "backlinks" in event.data ? event.data.backlinks : context.backlinks,
-        tags: (context, event) =>
-          "tags" in event.data ? event.data.tags : context.tags,
-        dates: (context, event) =>
-          "dates" in event.data ? event.data.dates : context.dates,
+        tags: (context, event) => ("tags" in event.data ? event.data.tags : context.tags),
+        dates: (context, event) => ("dates" in event.data ? event.data.dates : context.dates),
       }),
       clearContext: assign({
         directoryHandle: (context, event) => null,
@@ -214,24 +209,19 @@ const machine = createMachine(
         const { noteLinks, tagLinks, dateLinks } = parseBody(event.body)
 
         // Update backlinks
-        const backlinkEntries = Object.entries(context.backlinks).map(
-          ([noteId, backlinks]) => {
-            // If the note is listed as a backlink but shouldn't be, remove it
-            if (backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
-              return [
-                noteId,
-                backlinks.filter((backlink) => backlink !== event.id),
-              ]
-            }
+        const backlinkEntries = Object.entries(context.backlinks).map(([noteId, backlinks]) => {
+          // If the note is listed as a backlink but shouldn't be, remove it
+          if (backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
+            return [noteId, backlinks.filter((backlink) => backlink !== event.id)]
+          }
 
-            // If the note is not listed as a backlink but should be, add it
-            if (!backlinks.includes(event.id) && noteLinks.includes(noteId)) {
-              return [noteId, [...backlinks, event.id]]
-            }
+          // If the note is not listed as a backlink but should be, add it
+          if (!backlinks.includes(event.id) && noteLinks.includes(noteId)) {
+            return [noteId, [...backlinks, event.id]]
+          }
 
-            return [noteId, backlinks]
-          },
-        )
+          return [noteId, backlinks]
+        })
 
         noteLinks
           .filter((noteId) => !Object.keys(context.backlinks).includes(noteId))
@@ -302,10 +292,9 @@ const machine = createMachine(
           throw new Error("Directory not found")
         }
 
-        const fileHandle = await context.directoryHandle.getFileHandle(
-          `${event.id}.md`,
-          { create: true },
-        )
+        const fileHandle = await context.directoryHandle.getFileHandle(`${event.id}.md`, {
+          create: true,
+        })
 
         // Create a FileSystemWritableFileStream to write to
         const writeableStream = await fileHandle.createWritable()
@@ -431,13 +420,7 @@ const machine = createMachine(
           }
         }
 
-        for (const {
-          id,
-          body,
-          noteLinks,
-          tagLinks,
-          dateLinks,
-        } of await Promise.all(data)) {
+        for (const { id, body, noteLinks, tagLinks, dateLinks } of await Promise.all(data)) {
           notes[id] = body
 
           for (const noteLink of noteLinks) {
@@ -482,11 +465,7 @@ function parseBody(body: string) {
 
   const mdast = fromMarkdown(body, {
     extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [
-      noteLinkFromMarkdown(),
-      tagLinkFromMarkdown(),
-      dateLinkFromMarkdown(),
-    ],
+    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
   })
 
   visit(mdast, (node) => {
@@ -534,9 +513,5 @@ export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
 export function GlobalStateProvider({ children }: React.PropsWithChildren<{}>) {
   const service = useInterpret(machine)
 
-  return (
-    <GlobalStateContext.Provider value={{ service }}>
-      {children}
-    </GlobalStateContext.Provider>
-  )
+  return <GlobalStateContext.Provider value={{ service }}>{children}</GlobalStateContext.Provider>
 }

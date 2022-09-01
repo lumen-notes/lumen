@@ -29,9 +29,7 @@ export function DatePage() {
       <div className="flex gap-2">
         <CalendarIcon24 date={new Date(date).getUTCDate()} />
         <div className="flex items-baseline gap-1">
-          <h2 className="text-lg font-semibold leading-[24px]">
-            {formatDate(date)}
-          </h2>
+          <h2 className="text-lg font-semibold leading-[24px]">{formatDate(date)}</h2>
           <span className="text-text-muted" aria-hidden>
             ·
           </span>

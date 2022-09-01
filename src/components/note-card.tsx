@@ -43,9 +43,7 @@ export function NoteCard({ id }: NoteCardProps) {
       if (view) {
         view.focus()
         view.dispatch({
-          selection: EditorSelection.cursor(
-            view.state.doc.sliceString(0).length,
-          ),
+          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
         })
       }
     })
@@ -75,10 +73,7 @@ export function NoteCard({ id }: NoteCardProps) {
 
           <div className="flex h-4 items-center justify-between">
             <span className="text-text-muted">
-              <Link
-                to={`/${id}`}
-                className="tracking-wide  underline underline-offset-2"
-              >
+              <Link to={`/${id}`} className="tracking-wide  underline underline-offset-2">
                 {id}
               </Link>
               {backlinks?.length ? (
@@ -96,15 +91,9 @@ export function NoteCard({ id }: NoteCardProps) {
                   </IconButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
-                  <DropdownMenu.Item onSelect={() => copy(id)}>
-                    Copy ID
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={() => copy(body)}>
-                    Copy markdown
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onSelect={switchToEditing}>
-                    Edit
-                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onSelect={() => copy(id)}>Copy ID</DropdownMenu.Item>
+                  <DropdownMenu.Item onSelect={() => copy(body)}>Copy markdown</DropdownMenu.Item>
+                  <DropdownMenu.Item onSelect={switchToEditing}>Edit</DropdownMenu.Item>
                   <DropdownMenu.Item
                     onSelect={() => {
                       globalState.service.send({ type: "DELETE_NOTE", id })

@@ -1,14 +1,7 @@
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
-import {
-  Code,
-  Construct,
-  Extension,
-  HtmlExtension,
-  State,
-  Tokenizer,
-} from "micromark-util-types"
+import { Code, Construct, Extension, HtmlExtension, State, Tokenizer } from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
 import { createMachine, interpret, send } from "xstate"
