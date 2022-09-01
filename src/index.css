@@ -50,7 +50,6 @@
   --a-bg-hover: 0.075;
   --a-border: 0.25;
   --a-border-divider: 0.15;
-
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
   --color-text-placeholder: hsl(var(--h) var(--s) var(--l-text-placeholder));
@@ -58,14 +57,11 @@
   --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
-  --color-bg-backdrop: hsla(
-    var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop)
-  );
+  --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
   --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
-  --color-border-divider: hsla(
-    var(--h) var(--s) var(--l-text) / var(--a-border-divider)
-  );
+  --color-border-divider: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-divider));
+  --color-border-focus: hsl(200deg 100% 40%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -79,6 +75,7 @@
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
     --a-bg-hover: 0.1;
+    --color-border-focus: hsl(200deg 100% 70%);
   }
 }
 
@@ -86,6 +83,10 @@
 
 body {
   @apply bg-bg-inset font-body text-sm text-text;
+}
+
+*:focus-visible {
+  @apply outline-2 outline-border-focus;
 }
 
 /* Hide the browser's default cancel button on search inputs */

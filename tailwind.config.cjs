@@ -19,6 +19,7 @@ module.exports = {
       "bg-hover": "var(--color-bg-hover)",
       border: "var(--color-border)",
       "border-divider": "var(--color-border-divider)",
+      "border-focus": "var(--color-border-focus)",
     },
   },
   plugins: [],
