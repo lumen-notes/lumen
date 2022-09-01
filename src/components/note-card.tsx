@@ -84,6 +84,12 @@ export function NoteCard({ id }: NoteCardProps) {
           setIsDropdownOpen(true)
           event.preventDefault()
         }
+
+        // Delete note with `command + backspace`
+        if (event.metaKey && event.key === "Backspace") {
+          globalState.service.send("DELETE_NOTE", { id })
+          event.preventDefault()
+        }
       }}
     >
       <Markdown>{body}</Markdown>
@@ -108,19 +114,22 @@ export function NoteCard({ id }: NoteCardProps) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
+              <DropdownMenu.Item onSelect={switchToEditing} shortcut="⌘E">
+                Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
               <DropdownMenu.Item onSelect={() => copy(body)} shortcut="⌘C">
                 Copy markdown
               </DropdownMenu.Item>
               <DropdownMenu.Item onSelect={() => copy(id)} shortcut="⌘⇧C">
                 Copy ID
               </DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={switchToEditing} shortcut="⌘E">
-                Edit
-              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
               <DropdownMenu.Item
                 onSelect={() => {
                   globalState.service.send({ type: "DELETE_NOTE", id })
                 }}
+                shortcut="⌘⌫"
               >
                 Delete
               </DropdownMenu.Item>
