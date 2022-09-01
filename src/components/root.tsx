@@ -65,6 +65,19 @@ export function Root() {
     )
   }
 
+  function onKeyDown(event: KeyboardEvent) {
+    // Reload with `command + r`
+    if (event.metaKey && event.key === "r") {
+      send("RELOAD")
+      event.preventDefault()
+    }
+  }
+
+  React.useEffect(() => {
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
+
   return (
     <div>
       {state.matches("prompt") ? (
@@ -142,7 +155,9 @@ export function Root() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content side="right" align="end">
-                <DropdownMenu.Item onClick={() => send("RELOAD")}>Reload</DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => send("RELOAD")} shortcut="⌘R">
+                  Reload
+                </DropdownMenu.Item>
                 <DropdownMenu.Item onClick={() => send("DISCONNECT")}>Disconnect</DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>

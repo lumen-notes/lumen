@@ -1,7 +1,6 @@
 import { EditorSelection } from "@codemirror/state"
-import { EditorView, ViewUpdate } from "@codemirror/view"
+import { EditorView } from "@codemirror/view"
 import { useActor } from "@xstate/react"
-import clsx from "clsx"
 import copy from "copy-to-clipboard"
 import React from "react"
 import { Link } from "react-router-dom"
@@ -24,6 +23,7 @@ export function NoteCard({ id }: NoteCardProps) {
   const codeMirrorViewRef = React.useRef<EditorView>()
 
   const [isEditing, setIsEditing] = React.useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
   const globalState = React.useContext(GlobalStateContext)
 
@@ -61,9 +61,27 @@ export function NoteCard({ id }: NoteCardProps) {
       tabIndex={0}
       className="flex flex-col gap-6 p-4"
       onKeyDown={(event) => {
-        // Switch to editing with `e`
-        if (!isEditing && event.key === "e") {
+        // Switch to editing with `command + e`
+        if (event.metaKey && event.key === "e") {
           switchToEditing()
+          event.preventDefault()
+        }
+
+        // Copy markdown with `command + c`
+        if (event.metaKey && event.key == "c") {
+          copy(body)
+          event.preventDefault()
+        }
+
+        // Copy id with `command + shift + c`
+        if (event.metaKey && event.shiftKey && event.key == "c") {
+          copy(id)
+          event.preventDefault()
+        }
+
+        // Open dropdown with `command + .`
+        if (event.metaKey && event.key === ".") {
+          setIsDropdownOpen(true)
           event.preventDefault()
         }
       }}
@@ -83,16 +101,22 @@ export function NoteCard({ id }: NoteCardProps) {
           ) : null}
         </span>
         <div className="-m-2">
-          <DropdownMenu>
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenu.Trigger asChild>
               <IconButton aria-label="More actions">
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item onSelect={() => copy(id)}>Copy ID</DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={() => copy(body)}>Copy markdown</DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={switchToEditing}>Edit</DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => copy(body)} shortcut="⌘C">
+                Copy markdown
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={() => copy(id)} shortcut="⌘⇧C">
+                Copy ID
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onSelect={switchToEditing} shortcut="⌘E">
+                Edit
+              </DropdownMenu.Item>
               <DropdownMenu.Item
                 onSelect={() => {
                   globalState.service.send({ type: "DELETE_NOTE", id })
