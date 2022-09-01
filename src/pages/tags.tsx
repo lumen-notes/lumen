@@ -9,12 +9,9 @@ export function TagsPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  // Sort tags by number of notes (descending) then alphabetically
+  // Sort tags alphabetically
   const sortedTags = React.useMemo(
-    () =>
-      Object.entries(state.context.tags).sort(
-        (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]),
-      ),
+    () => Object.entries(state.context.tags).sort((a, b) => a[0].localeCompare(b[0])),
     [state.context.tags],
   )
 
