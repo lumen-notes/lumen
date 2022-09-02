@@ -61,14 +61,14 @@ export function NoteCard({ id }: NoteCardProps) {
       tabIndex={0}
       className="flex flex-col gap-6 p-4"
       onKeyDown={(event) => {
-        // Switch to editing with `command + e`
-        if (event.metaKey && event.key === "e") {
+        // Switch to editing with `e`
+        if (event.key === "e") {
           switchToEditing()
           event.preventDefault()
         }
 
-        // Copy markdown with `command + c`
-        if (event.metaKey && event.key == "c") {
+        // Copy markdown with `command + c` if no text is selected
+        if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
           copy(body)
           event.preventDefault()
         }
@@ -114,7 +114,7 @@ export function NoteCard({ id }: NoteCardProps) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item onSelect={switchToEditing} shortcut="⌘E">
+              <DropdownMenu.Item onSelect={switchToEditing} shortcut="E">
                 Edit
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
