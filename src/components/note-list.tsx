@@ -4,6 +4,7 @@ import React from "react"
 import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
+import { useDebounce } from "../utils/use-debounce"
 import { NoteCard } from "./note-card"
 import { SearchInput } from "./search-input"
 
@@ -25,7 +26,7 @@ export function NoteList({ ids }: NoteListProps) {
   const searcher = React.useMemo(() => {
     const entries = sortedIds.map((id) => [id, state.context.notes[id]])
     return new Searcher(entries, {
-      keySelector: (entry) => entry[1],
+      keySelector: ([id, body]) => body,
       threshold: 0.7,
     })
   }, [sortedIds, state.context.notes])
@@ -76,19 +77,4 @@ export function NoteList({ ids }: NoteListProps) {
       <div ref={bottomRef} />
     </div>
   )
-}
-
-// Copied from https://usehooks-ts.com/react-hook/use-debounce
-function useDebounce<T>(value: T, delay: number = 300): T {
-  const [debouncedValue, setDebouncedValue] = React.useState<T>(value)
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay)
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [value, delay])
-
-  return debouncedValue
 }
