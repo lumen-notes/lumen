@@ -28,22 +28,10 @@ export interface Typegen0 {
       data: unknown
       __tip: "See the XState TS docs to learn how to strongly type this."
     }
-    "error.platform.loadContext": {
-      type: "error.platform.loadContext"
-      data: unknown
-    }
-    "error.platform.loadNotes": {
-      type: "error.platform.loadNotes"
-      data: unknown
-    }
-    "error.platform.queryPermission": {
-      type: "error.platform.queryPermission"
-      data: unknown
-    }
-    "error.platform.requestPermission": {
-      type: "error.platform.requestPermission"
-      data: unknown
-    }
+    "error.platform.loadContext": { type: "error.platform.loadContext"; data: unknown }
+    "error.platform.loadNotes": { type: "error.platform.loadNotes"; data: unknown }
+    "error.platform.queryPermission": { type: "error.platform.queryPermission"; data: unknown }
+    "error.platform.requestPermission": { type: "error.platform.requestPermission"; data: unknown }
     "error.platform.showDirectoryPicker": {
       type: "error.platform.showDirectoryPicker"
       data: unknown
@@ -86,10 +74,7 @@ export interface Typegen0 {
       | "done.invoke.loadContext"
       | "done.invoke.loadNotes"
       | "done.invoke.showDirectoryPicker"
-    setContextInIndexedDB:
-      | "DELETE_NOTE"
-      | "UPSERT_NOTE"
-      | "done.invoke.loadNotes"
+    setContextInIndexedDB: "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.loadNotes"
     upsertNote: "UPSERT_NOTE"
     upsertNoteFile: "UPSERT_NOTE"
   }
