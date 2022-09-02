@@ -51,23 +51,10 @@ export function NoteList({ ids }: NoteListProps) {
     }
   }, [bottomInView, results.length])
 
-  const searchInputRef = React.useRef<HTMLInputElement>(null)
-
   return (
-    <div
-      className="flex flex-col gap-4"
-      onKeyDown={(event) => {
-        // Focus the search input with `command + f`
-        if (event.metaKey && event.key === "f") {
-          searchInputRef.current?.focus()
-          event.preventDefault()
-        }
-      }}
-    >
+    <div className="flex flex-col gap-4">
       <SearchInput
-        ref={searchInputRef}
         placeholder={`Search ${pluralize(ids.length, "note")}`}
-        shortcut="⌘F"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
