@@ -4,9 +4,8 @@ import React from "react"
 import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
-import { Card } from "./card"
-import { SearchIcon16 } from "./icons"
 import { NoteCard } from "./note-card"
+import { SearchInput } from "./search-input"
 
 type NoteListProps = {
   ids: NoteId[]
@@ -51,20 +50,26 @@ export function NoteList({ ids }: NoteListProps) {
     }
   }, [bottomInView, results.length])
 
+  const searchInputRef = React.useRef<HTMLInputElement>(null)
+
   return (
-    <div className="flex flex-col gap-4">
-      <Card className="relative">
-        <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-muted">
-          <SearchIcon16 />
-        </div>
-        <input
-          className="w-full rounded-lg bg-transparent px-4 py-3 pl-[40px] placeholder:text-text-placeholder"
-          type="search"
-          placeholder={`Search ${pluralize(ids.length, "note")}`}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-      </Card>
+    <div
+      className="flex flex-col gap-4"
+      onKeyDown={(event) => {
+        // Focus the search input with `command + f`
+        if (event.metaKey && event.key === "f") {
+          searchInputRef.current?.focus()
+          event.preventDefault()
+        }
+      }}
+    >
+      <SearchInput
+        ref={searchInputRef}
+        placeholder={`Search ${pluralize(ids.length, "note")}`}
+        shortcut="⌘F"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
       {results.slice(0, numVisibleNotes).map((id) => (
         <NoteCard key={id} id={id} />
       ))}

@@ -1,9 +1,9 @@
 import { clsx } from "clsx"
 import React from "react"
 
-type CardProps = {
+type CardProps = React.ComponentPropsWithoutRef<"div"> & {
   elevation?: 0 | 1 | 2
-} & React.ComponentPropsWithoutRef<"div">
+}
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, elevation = 0, ...props }, ref) => {
