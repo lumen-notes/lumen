@@ -7,6 +7,7 @@ import { assign, createMachine, InterpreterFrom } from "xstate"
 import { dateLink, dateLinkFromMarkdown } from "./remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
+import { isSupported } from "./utils/is-supported"
 
 export type NoteId = string
 
@@ -63,8 +64,23 @@ const machine = createMachine(
       events: {} as Event,
     },
     id: "global",
-    initial: "loadingContext",
+    initial: "initial",
     states: {
+      initial: {
+        always: [
+          {
+            cond: "isSupported",
+            target: "loadingContext",
+          },
+          {
+            target: "notSupported",
+          },
+        ],
+      },
+      // Browser does not support the File System Access API
+      notSupported: {
+        type: "final",
+      },
       loadingContext: {
         invoke: {
           src: "loadContext",
@@ -346,6 +362,9 @@ const machine = createMachine(
       },
     },
     guards: {
+      isSupported: (context, event) => {
+        return isSupported()
+      },
       isGranted: (context, event) => {
         return event.data === "granted"
       },

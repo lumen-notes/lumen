@@ -70,6 +70,23 @@ export function Root() {
     return null
   }
 
+  if (state.matches("notSupported")) {
+    return (
+      <div className="p-4">
+        <p>
+          This browser is not supported. Please open Lumen in a browser that supports the{" "}
+          <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API#browser_compatibility"
+            className="underline underline-offset-2"
+          >
+            File System Access API
+          </a>
+          .
+        </p>
+      </div>
+    )
+  }
+
   if (!state.context.directoryHandle) {
     return (
       <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">

@@ -3,6 +3,7 @@
 export interface Typegen0 {
   "@@xstate/typegen": true
   internalEvents: {
+    "": { type: "" }
     "done.invoke.loadContext": {
       type: "done.invoke.loadContext"
       data: unknown
@@ -79,7 +80,7 @@ export interface Typegen0 {
     upsertNoteFile: "UPSERT_NOTE"
   }
   eventsCausingServices: {
-    loadContext: "xstate.init"
+    loadContext: ""
     loadNotes:
       | "done.invoke.queryPermission"
       | "done.invoke.requestPermission"
@@ -92,13 +93,16 @@ export interface Typegen0 {
     isDenied: "done.invoke.queryPermission"
     isGranted: "done.invoke.queryPermission"
     isPrompt: "done.invoke.queryPermission"
+    isSupported: ""
   }
   eventsCausingDelays: {}
   matchesStates:
     | "connected"
     | "disconnected"
+    | "initial"
     | "loadingContext"
     | "loadingNotes"
+    | "notSupported"
     | "prompt"
     | "queryingPermission"
     | "requestingPermission"
