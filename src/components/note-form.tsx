@@ -1,6 +1,7 @@
 import {
   autocompletion,
   closeBrackets,
+  Completion,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete"
@@ -249,23 +250,70 @@ function useNoteCompletion() {
       // "[[<query>" -> "<query>"
       const query = word.text.slice(2)
 
+      if (!query) {
+        return null
+      }
+
       const entries = Object.entries(globalState.service.getSnapshot().context.notes)
 
       // Create a search index
       const searcher = new Searcher(entries, {
         keySelector: (entry) => entry[1],
-        threshold: 0.7,
+        threshold: 0.8,
       })
 
       const results = searcher.search(query)
 
+      const createNewNoteOption: Completion = {
+        label: `Create new note "${query}"`,
+        apply: (view, completion, from, to) => {
+          const note = {
+            id: Date.now().toString(),
+            body: query,
+          }
+
+          // Create new note
+          globalState.service.send({
+            type: "UPSERT_NOTE",
+            ...note,
+          })
+
+          // Insert link to new note
+          const text = `${note.id}|${query}`
+          const anchor = from + text.length
+          const head = anchor - query.length
+
+          view.dispatch({
+            changes: { from, to, insert: text },
+            selection: { anchor, head },
+          })
+        },
+      }
+
+      const options = [
+        ...results.slice(0, 6).map(
+          ([id, body]): Completion => ({
+            label: body,
+            info: body,
+            apply: (view, completion, from, to) => {
+              // Insert link to note
+              const text = `${id}|${query}`
+              const anchor = from + text.length
+              const head = anchor - query.length
+
+              view.dispatch({
+                changes: { from, to, insert: text },
+                selection: { anchor, head },
+              })
+            },
+          }),
+        ),
+        createNewNoteOption,
+      ]
+
       return {
-        from: word.from + 2,
-        options: results.slice(0, 10).map(([id, body]) => ({
-          label: body,
-          info: body,
-          apply: `${id}|${query}`,
-        })),
+        from: word.from + 2, // Insert after "[["
+        options,
         filter: false,
       }
     },
