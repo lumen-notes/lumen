@@ -7,12 +7,13 @@ import { SearchInput } from "../components/search-input"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
+import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [query, setQuery] = React.useState("")
+  const [query, setQuery] = useSearchParam("q")
   const debouncedQuery = useDebounce(query)
 
   // Sort tags alphabetically
@@ -25,7 +26,7 @@ export function TagsPage() {
   const searcher = React.useMemo(() => {
     return new Searcher(sortedTags, {
       keySelector: ([name]) => name,
-      threshold: 0.9,
+      threshold: 0.8,
     })
   }, [sortedTags])
 

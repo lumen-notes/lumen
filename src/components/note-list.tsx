@@ -5,6 +5,7 @@ import { useInView } from "react-intersection-observer"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
+import { useSearchParam } from "../utils/use-search-param"
 import { NoteCard } from "./note-card"
 import { SearchInput } from "./search-input"
 
@@ -16,7 +17,7 @@ export function NoteList({ ids }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [query, setQuery] = React.useState("")
+  const [query, setQuery] = useSearchParam("q")
   const debouncedQuery = useDebounce(query)
 
   // Sort notes by when they were created in descending order
