@@ -2,6 +2,7 @@ import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { useInView } from "react-intersection-observer"
+import { z } from "zod"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
@@ -17,7 +18,7 @@ export function NoteList({ ids }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [query, setQuery] = useSearchParam("q")
+  const [query, setQuery] = useSearchParam("q", { defaultValue: "", schema: z.string() })
   const debouncedQuery = useDebounce(query)
 
   // Sort notes by when they were created in descending order
