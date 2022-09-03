@@ -6,6 +6,7 @@ import { NoteIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
+import { Panel } from "../components/panel"
 import { GlobalStateContext } from "../global-state"
 
 export function NotePage() {
@@ -15,18 +16,15 @@ export function NotePage() {
   const backlinks = state.context.backlinks[id]
 
   return (
-    <div className="flex max-w-lg flex-col gap-4 p-4">
-      <div className="flex gap-2">
-        <NoteIcon24 />
-        <h2 className="text-lg font-semibold leading-[24px]">Note</h2>
+    <Panel title="Note" icon={<NoteIcon24 />}>
+      <div className="flex flex-col gap-4 px-4 pb-4">
+        <NoteCard id={id} />
+
+        <h3 className="leading-none">Backlinks</h3>
+
+        <NoteForm defaultBody={`[[${id}]]`} />
+        <NoteList key={id} ids={backlinks || []} />
       </div>
-
-      <NoteCard id={id} />
-
-      <h3 className="leading-none">Backlinks</h3>
-
-      <NoteForm defaultBody={`[[${id}]]`} />
-      <NoteList key={id} ids={backlinks || []} />
-    </div>
+    </Panel>
   )
 }

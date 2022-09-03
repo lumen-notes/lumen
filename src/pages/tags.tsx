@@ -3,6 +3,7 @@ import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { Link } from "react-router-dom"
 import { TagIcon24 } from "../components/icons"
+import { Panel } from "../components/panel"
 import { SearchInput } from "../components/search-input"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
@@ -39,18 +40,8 @@ export function TagsPage() {
   }, [debouncedQuery, sortedTags, searcher])
 
   return (
-    <div className="flex max-w-lg flex-col gap-4 p-4">
-      <div className="flex gap-2">
-        <TagIcon24 />
-        <div className="flex items-baseline gap-1">
-          <h2 className="text-lg font-semibold leading-[24px]">Tags</h2>
-          <span className="text-text-muted" aria-hidden>
-            ·
-          </span>
-          <span className="text-text-muted">{pluralize(sortedTags.length, "tag")}</span>
-        </div>
-      </div>
-      <div className="flex flex-col gap-2">
+    <Panel title="Tags" description={pluralize(sortedTags.length, "tag")} icon={<TagIcon24 />}>
+      <div className="flex flex-col gap-2 px-4 pb-4">
         <SearchInput
           placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
           value={query}
@@ -70,6 +61,6 @@ export function TagsPage() {
           ))}
         </ul>
       </div>
-    </div>
+    </Panel>
   )
 }

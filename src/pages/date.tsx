@@ -1,10 +1,10 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { useParams } from "react-router-dom"
-import { Card } from "../components/card"
 import { CalendarIcon24 } from "../components/icons"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
+import { Panel } from "../components/panel"
 import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 
@@ -25,20 +25,15 @@ export function DatePage() {
   const noteIds = state.context.dates[date] || []
 
   return (
-    <div className="flex max-w-lg flex-col gap-4 p-4">
-      <div className="flex gap-2">
-        <CalendarIcon24 date={new Date(date).getUTCDate()} />
-        <div className="flex items-baseline gap-1">
-          <h2 className="text-lg font-semibold leading-[24px]">{formatDate(date)}</h2>
-          <span className="text-text-muted" aria-hidden>
-            ·
-          </span>
-          <span className="text-text-muted">{formatDateDistance(date)}</span>
-        </div>
+    <Panel
+      title={formatDate(date)}
+      description={formatDateDistance(date)}
+      icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
+    >
+      <div className="flex flex-col gap-4 px-4 pb-4">
+        <NoteForm defaultBody={`[[${date}]]`} />
+        <NoteList key={date} ids={noteIds} />
       </div>
-
-      <NoteForm defaultBody={`[[${date}]]`} />
-      <NoteList key={date} ids={noteIds} />
-    </div>
+    </Panel>
   )
 }
