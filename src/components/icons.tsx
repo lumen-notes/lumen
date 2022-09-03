@@ -122,7 +122,7 @@ export function SearchIcon16() {
   )
 }
 
-export const LoadingIcon16 = () => {
+export function LoadingIcon16() {
   return (
     <svg
       className="animate-spin"
