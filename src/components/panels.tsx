@@ -4,11 +4,12 @@ import { z } from "zod"
 import { DatePanel } from "../panels/date"
 import { NotePanel } from "../panels/note"
 import { TagPanel } from "../panels/tag"
+import { insertAt } from "../utils/insert-at"
 import { useSearchParam } from "../utils/use-search-param"
 
 const PanelsContext = React.createContext<{
   panels: string[]
-  openPanel?: (url: string) => void
+  openPanel?: (url: string, afterIndex?: number) => void
 }>({
   panels: [],
 })
@@ -25,8 +26,10 @@ type PanelsProps = {
 function Root({ children }: PanelsProps) {
   const [panels, setPanels] = useSearchParam("p", { defaultValue: [], schema: z.array(z.string()) })
 
-  function openPanel(url: string) {
-    setPanels([url, ...panels])
+  function openPanel(url: string, afterIndex?: number) {
+    // Add to the beginning of the list by default
+    const index = afterIndex !== undefined ? afterIndex + 1 : 0
+    setPanels(insertAt(panels, index, url))
   }
 
   return (
@@ -38,13 +41,14 @@ function Root({ children }: PanelsProps) {
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {
   const { openPanel } = React.useContext(PanelsContext)
+  const { index } = React.useContext(PanelContext)
   return (
     <RouterLink
       {...props}
       ref={ref}
       onClick={(event) => {
         if (openPanel && props.to && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
-          openPanel(props.to)
+          openPanel(props.to, index)
           event.preventDefault()
         }
       }}
