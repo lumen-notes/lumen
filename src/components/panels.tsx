@@ -10,6 +10,7 @@ import { useSearchParam } from "../utils/use-search-param"
 const PanelsContext = React.createContext<{
   panels: string[]
   openPanel?: (url: string, afterIndex?: number) => void
+  closePanel?: (index: number) => void
 }>({
   panels: [],
 })
@@ -32,8 +33,12 @@ function Root({ children }: PanelsProps) {
     setPanels(insertAt(panels, index, url))
   }
 
+  function closePanel(index: number) {
+    setPanels(panels.filter((_, i) => i !== index))
+  }
+
   return (
-    <PanelsContext.Provider value={{ panels, openPanel }}>
+    <PanelsContext.Provider value={{ panels, openPanel, closePanel }}>
       <div className="flex h-full overflow-y-hidden">{children}</div>
     </PanelsContext.Provider>
   )
@@ -71,19 +76,34 @@ function Outlet() {
   )
 }
 
+export type PanelProps = {
+  params: Params<string>
+  onClose: () => void
+}
+
 type PanelRouteProps = {
   pattern: string
-  panel: React.ComponentType<{ params: Params<string> }>
+  panel: React.ComponentType<PanelProps>
 }
 
 function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
-  const { url } = React.useContext(PanelContext)
+  const { closePanel } = React.useContext(PanelsContext)
+  const { url, index } = React.useContext(PanelContext)
 
   if (!url) return null
 
   const match = matchPath(pattern, url)
 
-  return match ? <Panel params={match.params} /> : null
+  return match ? (
+    <Panel
+      params={match.params}
+      onClose={() => {
+        if (index !== undefined) {
+          closePanel?.(index)
+        }
+      }}
+    />
+  ) : null
 }
 
 export const Panels = Object.assign(Root, { Link, Outlet })

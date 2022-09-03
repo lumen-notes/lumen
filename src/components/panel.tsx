@@ -1,14 +1,17 @@
 import clsx from "clsx"
 import { useInView } from "react-intersection-observer"
+import { IconButton } from "./button"
+import { CloseIcon16 } from "./icons"
 
 type PanelProps = {
   title: string
   description?: string
   icon?: React.ReactNode
   children?: React.ReactNode
+  onClose?: () => void
 }
 
-export function Panel({ title, description, icon, children }: PanelProps) {
+export function Panel({ title, description, icon, children, onClose }: PanelProps) {
   const [topRef, topInView] = useInView()
   return (
     <div className="flex h-full w-screen max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider">
@@ -33,6 +36,11 @@ export function Panel({ title, description, icon, children }: PanelProps) {
             ) : null}
           </div>
         </div>
+        {onClose ? (
+          <IconButton aria-label="Close panel" onClick={() => onClose()}>
+            <CloseIcon16 />
+          </IconButton>
+        ) : null}
       </div>
       {children}
     </div>

@@ -136,3 +136,11 @@ export function LoadingIcon16() {
     </svg>
   )
 }
+
+export function CloseIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="m2.5 1.793 5.5 5.5 5.5-5.5.707.707-5.5 5.5 5.5 5.5-.707.707-5.5-5.5-5.5 5.5-.707-.707 5.5-5.5-5.5-5.5.707-.707Z" />
+    </svg>
+  )
+}
