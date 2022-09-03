@@ -18,7 +18,12 @@ export function NoteList({ ids }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [query, setQuery] = useSearchParam("q", { defaultValue: "", schema: z.string() })
+  const [query, setQuery] = useSearchParam("q", {
+    defaultValue: "",
+    schema: z.string(),
+    replace: true,
+  })
+
   const debouncedQuery = useDebounce(query)
 
   // Sort notes by when they were created in descending order

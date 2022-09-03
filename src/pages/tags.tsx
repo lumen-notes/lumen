@@ -2,8 +2,10 @@ import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { Link } from "react-router-dom"
+import { z } from "zod"
 import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
+import { Panels } from "../components/panels"
 import { SearchInput } from "../components/search-input"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
@@ -14,7 +16,12 @@ export function TagsPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const [query, setQuery] = useSearchParam("q")
+  const [query, setQuery] = useSearchParam("q", {
+    defaultValue: "",
+    schema: z.string(),
+    replace: true,
+  })
+
   const debouncedQuery = useDebounce(query)
 
   // Sort tags alphabetically
@@ -40,27 +47,30 @@ export function TagsPage() {
   }, [debouncedQuery, sortedTags, searcher])
 
   return (
-    <Panel title="Tags" description={pluralize(sortedTags.length, "tag")} icon={<TagIcon24 />}>
-      <div className="flex flex-col gap-2 px-4 pb-4">
-        <SearchInput
-          placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-        <ul className="flex flex-col">
-          {results.map(([name, noteIds]) => (
-            <li
-              key={name}
-              className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
-            >
-              <Link className="underline underline-offset-2" to={`/tags/${name}`}>
-                #{name}
-              </Link>
-              <span className="text-text-muted">{pluralize(noteIds.length, "note")}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </Panel>
+    <Panels>
+      <Panel title="Tags" description={pluralize(sortedTags.length, "tag")} icon={<TagIcon24 />}>
+        <div className="flex flex-col gap-2 px-4 pb-4">
+          <SearchInput
+            placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          <ul className="flex flex-col">
+            {results.map(([name, noteIds]) => (
+              <li
+                key={name}
+                className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
+              >
+                <Panels.Link className="underline underline-offset-2" to={`/tags/${name}`}>
+                  #{name}
+                </Panels.Link>
+                <span className="text-text-muted">{pluralize(noteIds.length, "note")}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Panel>
+      <Panels.Outlet />
+    </Panels>
   )
 }

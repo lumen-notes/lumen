@@ -3,7 +3,6 @@ import * as Tooltip from "@radix-ui/react-tooltip"
 import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -12,6 +11,7 @@ import { remarkTagLink } from "../remark-plugins/tag-link"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
+import { Panels } from "./panels"
 
 type MarkdownProps = {
   children: string
@@ -69,7 +69,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link to={`/${id}`}>{text}</Link>
+        <Panels.Link to={`/${id}`}>{text}</Panels.Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
@@ -93,9 +93,9 @@ function TagLink({ name }: TagLinkProps) {
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
-        <Link className="text-text-muted" to={`/tags/${name}`}>
+        <Panels.Link className="text-text-muted" to={`/tags/${name}`}>
           #{name}
-        </Link>
+        </Panels.Link>
       </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content side="top" sideOffset={4} asChild>
@@ -116,7 +116,7 @@ function DateLink({ date }: DateLinkProps) {
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
-        <Link to={`/dates/${date}`}>{formatDate(date)}</Link>
+        <Panels.Link to={`/dates/${date}`}>{formatDate(date)}</Panels.Link>
       </Tooltip.Trigger>
       <Tooltip.Content side="top" sideOffset={4} asChild>
         <Card elevation={1} className="py-2 px-3">

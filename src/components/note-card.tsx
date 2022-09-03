@@ -12,6 +12,7 @@ import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
+import { Panels } from "./panels"
 
 type NoteCardProps = {
   id: NoteId
@@ -96,9 +97,9 @@ export function NoteCard({ id }: NoteCardProps) {
 
       <div className="flex h-4 items-center justify-between">
         <span className="text-text-muted">
-          <Link to={`/${id}`} className="tracking-wide underline underline-offset-2">
+          <Panels.Link to={`/${id}`} className="tracking-wide underline underline-offset-2">
             {id}
-          </Link>
+          </Panels.Link>
           {backlinks?.length ? (
             <span>
               {" · "}
