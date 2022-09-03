@@ -48,6 +48,9 @@ export function NoteForm({
   })
 
   function handleSubmit() {
+    // Don't create empty notes
+    if (!body) return
+
     const note = {
       id: id ?? Date.now().toString(),
       body: body,
