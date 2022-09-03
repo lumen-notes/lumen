@@ -18,25 +18,6 @@ import {
   TagIcon24,
 } from "./icons"
 
-function NavLink(props: NavLinkProps) {
-  return (
-    <RouterNavLink
-      className={({ isActive }) =>
-        clsx("flex rounded py-2 px-2 hover:bg-bg-hover", isActive ? "text-text" : "text-text-muted")
-      }
-      {...props}
-    />
-  )
-}
-
-function getCurrentDateString() {
-  const now = new Date()
-  const year = now.getFullYear().toString().padStart(4, "0")
-  const month = (now.getMonth() + 1).toString().padStart(2, "0")
-  const day = now.getDate().toString().padStart(2, "0")
-  return `${year}-${month}-${day}`
-}
-
 export function Root() {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
@@ -184,4 +165,23 @@ export function Root() {
       ) : null}
     </div>
   )
+}
+
+function NavLink(props: NavLinkProps) {
+  return (
+    <RouterNavLink
+      className={({ isActive }) =>
+        clsx("flex rounded py-2 px-2 hover:bg-bg-hover", isActive ? "text-text" : "text-text-muted")
+      }
+      {...props}
+    />
+  )
+}
+
+function getCurrentDateString() {
+  const now = new Date()
+  const year = now.getFullYear().toString().padStart(4, "0")
+  const month = (now.getMonth() + 1).toString().padStart(2, "0")
+  const day = now.getDate().toString().padStart(2, "0")
+  return `${year}-${month}-${day}`
 }
