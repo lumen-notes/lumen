@@ -95,11 +95,11 @@ export function Root() {
           }}
         >
           <AlertDialog.Portal>
-            <AlertDialog.Overlay className="fixed inset-0 bg-bg-backdrop" />
+            <AlertDialog.Overlay className="fixed inset-0 z-10 bg-bg-backdrop" />
             <AlertDialog.Content asChild>
               <Card
                 elevation={2}
-                className="fixed top-1/2 left-1/2 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-4 p-4"
+                className="fixed top-1/2 left-1/2 z-10 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-4 p-4"
               >
                 <div className="flex flex-col gap-2">
                   <AlertDialog.Title className="text-base font-semibold leading-none">
