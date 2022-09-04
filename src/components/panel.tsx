@@ -14,7 +14,16 @@ type PanelProps = {
 export function Panel({ title, description, icon, children, onClose }: PanelProps) {
   const [topRef, topInView] = useInView()
   return (
-    <div className="flex h-full w-screen max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider">
+    <div
+      className="flex h-full w-screen max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider"
+      onKeyDown={(event) => {
+        // Close with `command + x` if no text is selected
+        if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
+          onClose?.()
+          event.preventDefault()
+        }
+      }}
+    >
       <div ref={topRef} />
       <div
         className={clsx(
