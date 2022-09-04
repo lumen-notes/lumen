@@ -7,6 +7,12 @@ import { TagPanel } from "../panels/tag"
 import { insertAt } from "../utils/insert-at"
 import { useSearchParam } from "../utils/use-search-param"
 
+type PanelValue = {
+  id: string
+  pathname: string
+  search: string
+}
+
 const PanelsContext = React.createContext<{
   panels: string[]
   openPanel?: (url: string, afterIndex?: number) => void
@@ -15,33 +21,55 @@ const PanelsContext = React.createContext<{
   panels: [],
 })
 
-const PanelContext = React.createContext<{
-  url?: string
-  index?: number
-}>({})
+const PanelContext = React.createContext<Partial<PanelValue> & { index?: number }>({})
 
-type PanelsProps = {
-  children?: React.ReactNode
-}
+function Root({ children }: React.PropsWithChildren) {
+  const [panels, setPanels] = useSearchParam("p", {
+    defaultValue: [],
+    schema: z.array(z.string()),
+  })
 
-function Root({ children }: PanelsProps) {
-  const [panels, setPanels] = useSearchParam("p", { defaultValue: [], schema: z.array(z.string()) })
+  const openPanel = React.useCallback(
+    (url: string, afterIndex?: number) => {
+      // Add to the beginning of the list by default
+      const index = afterIndex !== undefined ? afterIndex + 1 : 0
 
-  function openPanel(url: string, afterIndex?: number) {
-    // Add to the beginning of the list by default
-    const index = afterIndex !== undefined ? afterIndex + 1 : 0
-    setPanels(insertAt(panels, index, url))
-  }
+      const id = generateId()
+      const [pathname, search] = url.split("?")
+      const value = serializePanelValue({ id, pathname, search })
 
-  function closePanel(index: number) {
-    setPanels(panels.filter((_, i) => i !== index))
-  }
+      setPanels(insertAt(panels, index, value))
+    },
+    [panels, setPanels],
+  )
+
+  const closePanel = React.useCallback(
+    (index: number) => {
+      setPanels(panels.filter((_, i) => i !== index))
+    },
+    [panels, setPanels],
+  )
 
   return (
     <PanelsContext.Provider value={{ panels, openPanel, closePanel }}>
       <div className="flex h-full overflow-y-hidden">{children}</div>
     </PanelsContext.Provider>
   )
+}
+
+function generateId() {
+  return Date.now().toString(16).slice(-4)
+}
+
+const SEPARATOR = ":"
+
+function serializePanelValue({ id, pathname, search }: PanelValue) {
+  return [id, pathname, search].join(SEPARATOR)
+}
+
+function deserializePanelValue(value: string): PanelValue {
+  const [id, pathname, search] = value.split(SEPARATOR)
+  return { id, pathname, search }
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {
@@ -65,13 +93,16 @@ function Outlet() {
   const { panels } = React.useContext(PanelsContext)
   return (
     <>
-      {panels.map((url, index) => (
-        <PanelContext.Provider key={index} value={{ url, index }}>
-          <PanelRoute pattern="/:id" panel={NotePanel} />
-          <PanelRoute pattern="/tags/:name" panel={TagPanel} />
-          <PanelRoute pattern="/dates/:date" panel={DatePanel} />
-        </PanelContext.Provider>
-      ))}
+      {panels.map((value, index) => {
+        const { id, pathname, search } = deserializePanelValue(value)
+        return (
+          <PanelContext.Provider key={id} value={{ id, pathname, search, index }}>
+            <PanelRoute pattern="/:id" panel={NotePanel} />
+            <PanelRoute pattern="/tags/:name" panel={TagPanel} />
+            <PanelRoute pattern="/dates/:date" panel={DatePanel} />
+          </PanelContext.Provider>
+        )
+      })}
     </>
   )
 }
@@ -88,11 +119,11 @@ type PanelRouteProps = {
 
 function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
   const { closePanel } = React.useContext(PanelsContext)
-  const { url, index } = React.useContext(PanelContext)
+  const { pathname, index } = React.useContext(PanelContext)
 
-  if (!url) return null
+  if (!pathname) return null
 
-  const match = matchPath(pattern, url)
+  const match = matchPath(pattern, pathname)
 
   return match ? (
     <Panel
