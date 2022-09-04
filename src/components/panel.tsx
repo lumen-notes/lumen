@@ -15,7 +15,7 @@ export function Panel({ title, description, icon, children, onClose }: PanelProp
   const [topRef, topInView] = useInView()
   return (
     <div
-      className="flex h-full w-screen max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider focus:outline-none"
+      className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider focus:outline-none"
       tabIndex={0}
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
