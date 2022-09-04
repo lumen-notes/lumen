@@ -1,6 +1,5 @@
 import { useActor } from "@xstate/react"
 import React from "react"
-import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"

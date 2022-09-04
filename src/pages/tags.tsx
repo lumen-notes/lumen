@@ -1,7 +1,6 @@
 import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
-import { Link } from "react-router-dom"
 import { z } from "zod"
 import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"

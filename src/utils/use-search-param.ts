@@ -2,6 +2,7 @@ import qs from "qs"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Schema } from "zod"
+import { PanelContext, PanelsContext } from "../components/panels"
 
 type UseSearchParamOptions<T = string> = {
   defaultValue: T
@@ -16,7 +17,9 @@ export function useSearchParam<T = string>(
 ): [T, (value: T) => void] {
   const location = useLocation()
   const navigate = useNavigate()
-  const searchParams = qs.parse(location.search, { ignoreQueryPrefix: true })
+  const { updatePanel } = React.useContext(PanelsContext)
+  const panel = React.useContext(PanelContext)
+  const searchParams = qs.parse(panel ? panel.search : location.search, { ignoreQueryPrefix: true })
 
   let value: T
 
@@ -29,7 +32,11 @@ export function useSearchParam<T = string>(
   const setValue = React.useCallback(
     (value: T) => {
       const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
-      navigate(`${location.pathname}?${searchString}`, { replace })
+      if (panel && updatePanel) {
+        updatePanel(panel.index, { search: searchString })
+      } else {
+        navigate(`${location.pathname}?${searchString}`, { replace })
+      }
     },
     [searchParams, key, navigate],
   )

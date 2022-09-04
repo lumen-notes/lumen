@@ -13,15 +13,16 @@ type PanelValue = {
   search: string
 }
 
-const PanelsContext = React.createContext<{
+export const PanelsContext = React.createContext<{
   panels: string[]
   openPanel?: (url: string, afterIndex?: number) => void
   closePanel?: (index: number) => void
+  updatePanel?: (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => void
 }>({
   panels: [],
 })
 
-const PanelContext = React.createContext<Partial<PanelValue> & { index?: number }>({})
+export const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
 
 function Root({ children }: React.PropsWithChildren) {
   const [panels, setPanels] = useSearchParam("p", {
@@ -50,13 +51,28 @@ function Root({ children }: React.PropsWithChildren) {
     [panels, setPanels],
   )
 
+  const updatePanel = React.useCallback(
+    (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => {
+      const oldValue = deserializePanelValue(panels[index])
+      const newValue = serializePanelValue({ ...oldValue, ...partialValue })
+      setPanels(panels.map((value, i) => (i === index ? newValue : value)))
+    },
+    [panels, setPanels],
+  )
+
   return (
-    <PanelsContext.Provider value={{ panels, openPanel, closePanel }}>
+    <PanelsContext.Provider
+      value={{
+        panels,
+        openPanel,
+        closePanel,
+        updatePanel,
+      }}
+    >
       <div className="flex h-full overflow-y-hidden">{children}</div>
     </PanelsContext.Provider>
   )
 }
-
 function generateId() {
   return Date.now().toString(16).slice(-4)
 }
@@ -74,14 +90,14 @@ function deserializePanelValue(value: string): PanelValue {
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {
   const { openPanel } = React.useContext(PanelsContext)
-  const { index } = React.useContext(PanelContext)
+  const panel = React.useContext(PanelContext)
   return (
     <RouterLink
       {...props}
       ref={ref}
       onClick={(event) => {
         if (openPanel && props.to && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
-          openPanel(props.to, index)
+          openPanel(props.to, panel?.index)
           event.preventDefault()
         }
       }}
@@ -109,7 +125,7 @@ function Outlet() {
 
 export type PanelProps = {
   params: Params<string>
-  onClose: () => void
+  onClose?: () => void
 }
 
 type PanelRouteProps = {
@@ -119,19 +135,17 @@ type PanelRouteProps = {
 
 function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
   const { closePanel } = React.useContext(PanelsContext)
-  const { pathname, index } = React.useContext(PanelContext)
+  const panel = React.useContext(PanelContext)
 
-  if (!pathname) return null
+  if (!panel) return null
 
-  const match = matchPath(pattern, pathname)
+  const match = matchPath(pattern, panel.pathname)
 
   return match ? (
     <Panel
       params={match.params}
       onClose={() => {
-        if (index !== undefined) {
-          closePanel?.(index)
-        }
+        closePanel?.(panel.index)
       }}
     />
   ) : null
