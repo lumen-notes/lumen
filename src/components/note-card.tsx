@@ -108,7 +108,7 @@ export function NoteCard({ id }: NoteCardProps) {
           ) : null}
         </span>
         <div className="-m-2">
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
               <IconButton aria-label="More actions">
                 <MoreIcon16 />

@@ -99,7 +99,7 @@ function TagLink({ name }: TagLinkProps) {
       </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content side="top" sideOffset={4} asChild>
-          <Card elevation={1} className="py-2 px-3">
+          <Card elevation={1} className="py-1 px-2 text-text-muted">
             {pluralize(notesCount, "note")}
           </Card>
         </Tooltip.Content>
@@ -119,7 +119,7 @@ function DateLink({ date }: DateLinkProps) {
         <Panels.Link to={`/dates/${date}`}>{formatDate(date)}</Panels.Link>
       </Tooltip.Trigger>
       <Tooltip.Content side="top" sideOffset={4} asChild>
-        <Card elevation={1} className="py-2 px-3">
+        <Card elevation={1} className="py-1 px-2 text-text-muted">
           {formatDateDistance(date)}
         </Card>
       </Tooltip.Content>
