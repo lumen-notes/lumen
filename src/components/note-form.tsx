@@ -16,6 +16,7 @@ import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button } from "./button"
 import { Card } from "./card"
+import { Tooltip } from "./tooltip"
 
 type NoteFormProps = {
   id?: NoteId
@@ -85,32 +86,38 @@ export function NoteForm({
           event.preventDefault()
         }}
         onKeyDown={(event) => {
+          // Submit on `command + enter`
+          if (event.key === "Enter" && event.metaKey) {
+            handleSubmit()
+            event.preventDefault()
+          }
+
           // Cancel on `escape`
           if (event.key === "Escape") {
             onCancel?.()
           }
         }}
       >
-        <div
-          ref={editorRef}
-          className="p-2"
-          onKeyDown={(event) => {
-            // Submit on `command + enter`
-            if (event.key === "Enter" && event.metaKey) {
-              handleSubmit()
-              event.preventDefault()
-            }
-          }}
-        />
+        <div ref={editorRef} className="p-2" />
         <div className="flex gap-2 self-end">
           {onCancel ? (
-            <Button type="button" onClick={onCancel}>
-              Cancel
-            </Button>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <Button type="button" onClick={onCancel}>
+                  Cancel
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content side="bottom">esc</Tooltip.Content>
+            </Tooltip>
           ) : null}
-          <Button type="submit" variant="primary">
-            {id ? "Save" : "Add"}
-          </Button>
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <Button type="submit" variant="primary">
+                {id ? "Save" : "Add"}
+              </Button>
+            </Tooltip.Trigger>
+            <Tooltip.Content side="bottom">⌘⏎</Tooltip.Content>
+          </Tooltip>
         </div>
       </form>
     </Card>
