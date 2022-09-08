@@ -273,7 +273,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-dialog] {
-  @apply fixed top-32 left-1/2 z-10 w-[90vw] max-w-lg -translate-x-1/2 rounded-lg bg-bg-overlay shadow-xl ring-1 ring-border-divider dark:ring-inset;
+  @apply fixed top-32 left-1/2 z-10 w-[90vw] max-w-lg -translate-x-1/2;
 }
 
 [cmdk-input] {

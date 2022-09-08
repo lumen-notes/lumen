@@ -1,18 +1,19 @@
 import { useActor } from "@xstate/react"
+import { parseDate } from "chrono-node"
+import { Command } from "cmdk"
+import { Searcher } from "fast-fuzzy"
 import React from "react"
+import { useNavigate } from "react-router-dom"
+import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { Panels, PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
-import { pluralize } from "../utils/pluralize"
-import { Command } from "cmdk"
-import { parseDate } from "chrono-node"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { useNavigate } from "react-router-dom"
+import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
-import { Searcher } from "fast-fuzzy"
 
 export function NotesPage() {
   const globalState = React.useContext(GlobalStateContext)
@@ -34,19 +35,29 @@ export function NotesPage() {
 }
 
 function CommandMenu() {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
   const debouncedValue = useDebounce(value)
-  const navigate = useNavigate()
   const { panels, openPanel } = React.useContext(PanelsContext)
+
+  function openMenu() {
+    setOpen(true)
+  }
+
+  function closeMenu() {
+    setOpen(false)
+    setValue("")
+  }
 
   // Toggle the menu with `command + k`
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
-        setOpen((open) => !open)
+        if (open) {
+          closeMenu()
+        } else {
+          openMenu()
+        }
       }
     }
 
@@ -66,67 +77,34 @@ function CommandMenu() {
     return `${year}-${month}-${day}`
   }, [debouncedValue])
 
-  // Sort tags alphabetically
-  const sortedTags = React.useMemo(
-    () => Object.entries(state.context.tags).sort((a, b) => a[0].localeCompare(b[0])),
-    [state.context.tags],
-  )
-
-  // Create a search index
-  const searcher = React.useMemo(() => {
-    return new Searcher(sortedTags, {
-      keySelector: ([name]) => name,
-      threshold: 0.8,
-    })
-  }, [sortedTags])
-
-  const tagResults = React.useMemo(() => {
-    return searcher.search(debouncedValue)
-  }, [debouncedValue, sortedTags, searcher])
-
   return (
     <Command.Dialog
       label="Global command menu"
       open={open}
-      onOpenChange={(open) => {
-        setOpen(open)
-        setValue("")
-      }}
+      onOpenChange={(open) => (open ? openMenu() : closeMenu())}
       shouldFilter={false}
     >
-      <Command.Input value={value} onValueChange={setValue} />
-      <Command.List>
-        {dateString ? (
-          <Command.Group heading="Date">
-            <Command.Item
-              onSelect={() => {
-                openPanel?.(`/dates/${dateString}`, panels.length - 1)
-                setOpen(false)
-              }}
-            >
-              <div className="flex justify-between">
-                <span>{formatDate(dateString)}</span>
-
-                <span className="text-text-muted">{formatDateDistance(dateString)}</span>
-              </div>
-            </Command.Item>
-          </Command.Group>
-        ) : null}
-        {tagResults.length > 0 ? (
-          <Command.Group heading="Tags">
-            {tagResults.map(([name, noteIds]) => (
+      <Card elevation={2}>
+        <Command.Input value={value} onValueChange={setValue} />
+        <Command.List>
+          {dateString ? (
+            <Command.Group heading="Date">
               <Command.Item
                 onSelect={() => {
-                  openPanel?.(`/tags/${name}`, panels.length - 1)
+                  openPanel?.(`/dates/${dateString}`, panels.length - 1)
                   setOpen(false)
                 }}
               >
-                {name}
+                <div className="flex justify-between">
+                  <span>{formatDate(dateString)}</span>
+
+                  <span className="text-text-muted">{formatDateDistance(dateString)}</span>
+                </div>
               </Command.Item>
-            ))}
-          </Command.Group>
-        ) : null}
-      </Command.List>
+            </Command.Group>
+          ) : null}
+        </Command.List>
+      </Card>
     </Command.Dialog>
   )
 }
