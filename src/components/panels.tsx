@@ -40,6 +40,22 @@ function Root({ children }: React.PropsWithChildren) {
       const value = serializePanelValue({ id, pathname, search })
 
       setPanels(insertAt(panels, index, value))
+
+      setTimeout(() => {
+        const panelElement = document.getElementById(id)
+
+        // Scroll the new panel into view
+        panelElement?.scrollIntoView({ block: "center", inline: "center" })
+
+        // Focus the first focusable element in the new panel
+        const firstFocusableElement = panelElement?.querySelector(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        )
+
+        if (firstFocusableElement instanceof HTMLElement) {
+          firstFocusableElement.focus()
+        }
+      })
     },
     [panels, setPanels],
   )
@@ -124,6 +140,7 @@ function Outlet() {
 }
 
 export type PanelProps = {
+  id: string
   params: Params<string>
   onClose?: () => void
 }
@@ -143,6 +160,7 @@ function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
 
   return match ? (
     <Panel
+      id={panel.id}
       params={match.params}
       onClose={() => {
         closePanel?.(panel.index)

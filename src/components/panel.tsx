@@ -4,6 +4,7 @@ import { IconButton } from "./button"
 import { CloseIcon16 } from "./icons"
 
 type PanelProps = {
+  id?: string
   title: string
   description?: string
   icon?: React.ReactNode
@@ -11,12 +12,12 @@ type PanelProps = {
   onClose?: () => void
 }
 
-export function Panel({ title, description, icon, children, onClose }: PanelProps) {
+export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
   const [topRef, topInView] = useInView()
   return (
     <div
-      className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider focus:outline-none"
-      tabIndex={0}
+      id={id}
+      className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider"
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
         if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {

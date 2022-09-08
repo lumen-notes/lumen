@@ -8,7 +8,7 @@ import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 
-export function TagPanel({ params, onClose }: PanelProps) {
+export function TagPanel({ id, params, onClose }: PanelProps) {
   const { name = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
@@ -16,6 +16,7 @@ export function TagPanel({ params, onClose }: PanelProps) {
 
   return (
     <Panel
+      id={id}
       title={`#${name}`}
       description={pluralize(noteIds.length, "note")}
       icon={<TagIcon24 />}
