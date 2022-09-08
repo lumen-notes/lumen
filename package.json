@@ -24,6 +24,7 @@
     "@xstate/react": "^3.0.0",
     "chrono-node": "^2.3.9",
     "clsx": "^1.2.1",
+    "cmdk": "^0.1.19",
     "copy-to-clipboard": "^3.3.2",
     "date-fns": "^2.29.2",
     "fast-fuzzy": "^1.11.2",
