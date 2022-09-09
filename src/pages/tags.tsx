@@ -2,6 +2,7 @@ import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { z } from "zod"
+import { CommandMenu } from "../components/command-menu"
 import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { Panels } from "../components/panels"
@@ -47,6 +48,7 @@ export function TagsPage() {
 
   return (
     <Panels>
+      <CommandMenu />
       <Panel title="Tags" icon={<TagIcon24 />}>
         <div className="flex flex-col gap-2 px-4 pb-4">
           <SearchInput
