@@ -20,11 +20,10 @@ A system for thinking, writing, learning &amp; mindfulness
 
 **With focus inside a note card...**
 
-| Action           | Shortcut                               |
-| ---------------- | -------------------------------------- |
-| Open action menu | <kbd>⌘</kbd> <kbd>.</kbd>              |
-| Edit             | <kbd>E</kbd>                           |
-| Copy markdown    | <kbd>⌘</kbd> <kbd>C</kbd>              |
-| Copy ID          | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
-| Delete           | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
-
+| Action                | Shortcut                               |
+| --------------------- | -------------------------------------- |
+| Open note action menu | <kbd>⌘</kbd> <kbd>.</kbd>              |
+| Edit note             | <kbd>E</kbd>                           |
+| Copy note markdown    | <kbd>⌘</kbd> <kbd>C</kbd>              |
+| Copy note ID          | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
+| Delete note           | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
