@@ -3,10 +3,12 @@ import { Command } from "cmdk"
 import React from "react"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
+import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { useDebounce } from "../utils/use-debounce"
 
 export function CommandMenu() {
+  const globalState = React.useContext(GlobalStateContext)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const debouncedQuery = useDebounce(query)
@@ -69,6 +71,30 @@ export function CommandMenu() {
                   <span>{formatDate(dateString)}</span>
                   <span className="text-text-muted">{formatDateDistance(dateString)}</span>
                 </div>
+              </Command.Item>
+            </Command.Group>
+          ) : null}
+          {debouncedQuery ? (
+            <Command.Group heading="Notes">
+              <Command.Item
+                key={debouncedQuery}
+                onSelect={() => {
+                  const note = {
+                    id: Date.now().toString(),
+                    body: debouncedQuery,
+                  }
+
+                  // Create new note
+                  globalState.service.send({
+                    type: "UPSERT_NOTE",
+                    ...note,
+                  })
+
+                  // Navigate to new note
+                  navigate(`/${note.id}`)
+                }}
+              >
+                Create new note "{debouncedQuery}"
               </Command.Item>
             </Command.Group>
           ) : null}
