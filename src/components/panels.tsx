@@ -48,13 +48,7 @@ function Root({ children }: React.PropsWithChildren) {
         panelElement?.scrollIntoView({ block: "center", inline: "center" })
 
         // Focus the first focusable element in the new panel
-        const firstFocusableElement = panelElement?.querySelector(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        )
-
-        if (firstFocusableElement instanceof HTMLElement) {
-          firstFocusableElement.focus()
-        }
+        focusFirstFocusableElement(panelElement)
       })
     },
     [panels, setPanels],
@@ -62,6 +56,16 @@ function Root({ children }: React.PropsWithChildren) {
 
   const closePanel = React.useCallback(
     (index: number) => {
+      const panel = deserializePanelValue(panels[index])
+
+      const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
+
+      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
+
+      // Focus the first focusable element in the previous panel
+      focusFirstFocusableElement(panelElements[currentIndex - 1])
+
+      // Update state
       setPanels(panels.filter((_, i) => i !== index))
     },
     [panels, setPanels],
@@ -89,6 +93,7 @@ function Root({ children }: React.PropsWithChildren) {
     </PanelsContext.Provider>
   )
 }
+
 function generateId() {
   return Date.now().toString(16).slice(-4)
 }
@@ -102,6 +107,16 @@ function serializePanelValue({ id, pathname, search }: PanelValue) {
 function deserializePanelValue(value: string): PanelValue {
   const [id, pathname, search] = value.split(SEPARATOR)
   return { id, pathname, search }
+}
+
+function focusFirstFocusableElement(element: HTMLElement | null) {
+  const firstFocusableElement = element?.querySelector(
+    'button, [href], input, select, textarea, [role=textbox], [tabindex]:not([tabindex="-1"])',
+  )
+
+  if (firstFocusableElement instanceof HTMLElement) {
+    firstFocusableElement.focus()
+  }
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {

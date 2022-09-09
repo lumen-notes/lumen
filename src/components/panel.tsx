@@ -16,6 +16,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
   const [topRef, topInView] = useInView()
   return (
     <div
+      data-panel // Data attribute used to manage focus
       id={id}
       className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider"
       onKeyDown={(event) => {
