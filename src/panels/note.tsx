@@ -14,7 +14,7 @@ export function NotePanel({ id, params, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const backlinks = state.context.backlinks[id]
+  const backlinks = state.context.backlinks[noteId]
 
   return (
     <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
