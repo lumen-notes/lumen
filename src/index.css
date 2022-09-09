@@ -277,11 +277,15 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-input] {
-  @apply w-full bg-transparent p-4 text-base outline-none;
+  @apply w-full bg-transparent p-4 text-base leading-none outline-none;
 }
 
 [cmdk-list] {
-  @apply max-h-[400px] overflow-auto border-t border-border-divider p-1;
+  @apply max-h-[400px] overflow-auto;
+}
+
+[cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
+  @apply border-t border-border-divider p-1;
 }
 
 [cmdk-group-heading] {

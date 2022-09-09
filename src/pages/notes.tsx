@@ -36,28 +36,24 @@ export function NotesPage() {
 
 function CommandMenu() {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
-  const debouncedValue = useDebounce(value)
+  const [query, setQuery] = React.useState("")
+  const debouncedQuery = useDebounce(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
 
-  function openMenu() {
-    setOpen(true)
-  }
-
-  function closeMenu() {
-    setOpen(false)
-    setValue("")
-  }
+  const navigate = React.useCallback(
+    (url: string) => {
+      openPanel?.(url, panels.length - 1)
+      setOpen(false)
+      setQuery("")
+    },
+    [openPanel, panels, setOpen, setQuery],
+  )
 
   // Toggle the menu with `command + k`
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
-        if (open) {
-          closeMenu()
-        } else {
-          openMenu()
-        }
+        setOpen((open) => !open)
       }
     }
 
@@ -66,7 +62,7 @@ function CommandMenu() {
   }, [])
 
   const dateString = React.useMemo(() => {
-    const date = parseDate(debouncedValue)
+    const date = parseDate(debouncedQuery)
 
     if (!date) return ""
 
@@ -75,29 +71,30 @@ function CommandMenu() {
     const day = String(date.getDate()).padStart(2, "0")
 
     return `${year}-${month}-${day}`
-  }, [debouncedValue])
+  }, [debouncedQuery])
 
   return (
     <Command.Dialog
       label="Global command menu"
       open={open}
-      onOpenChange={(open) => (open ? openMenu() : closeMenu())}
+      onOpenChange={setOpen}
       shouldFilter={false}
+      onKeyDown={(event) => {
+        // Clear input with `esc`
+        if (event.key === "Escape" && query) {
+          setQuery("")
+          event.preventDefault()
+        }
+      }}
     >
       <Card elevation={2}>
-        <Command.Input value={value} onValueChange={setValue} />
+        <Command.Input placeholder="Search" value={query} onValueChange={setQuery} />
         <Command.List>
           {dateString ? (
             <Command.Group heading="Date">
-              <Command.Item
-                onSelect={() => {
-                  openPanel?.(`/dates/${dateString}`, panels.length - 1)
-                  setOpen(false)
-                }}
-              >
+              <Command.Item onSelect={() => navigate(`/dates/${dateString}`)}>
                 <div className="flex justify-between">
                   <span>{formatDate(dateString)}</span>
-
                   <span className="text-text-muted">{formatDateDistance(dateString)}</span>
                 </div>
               </Command.Item>

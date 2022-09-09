@@ -37,7 +37,7 @@ export function formatDate(dateString: string) {
 
   // Only show the year if it's not the current year
   if (year !== currentYear) {
-    formattedDate += `, ${year}`
+    formattedDate += ` ${year}`
   }
 
   return formattedDate
