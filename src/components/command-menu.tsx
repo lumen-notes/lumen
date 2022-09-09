@@ -6,7 +6,7 @@ import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { useDebounce } from "../utils/use-debounce"
-import { CalendarIcon16, PlusIcon16 } from "./icons"
+import { CalendarIcon16, PlusIcon16, SearchIcon16 } from "./icons"
 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
@@ -99,7 +99,16 @@ export function CommandMenu() {
           {debouncedQuery ? (
             <Command.Group heading="Notes">
               <CommandItem
-                key={debouncedQuery}
+                key={`Show all notes matching "${debouncedQuery}"`}
+                icon={<SearchIcon16 />}
+                onSelect={() => {
+                  // TODO
+                }}
+              >
+                Show all notes matching "{debouncedQuery}"
+              </CommandItem>
+              <CommandItem
+                key={`Create new note "${debouncedQuery}"`}
                 icon={<PlusIcon16 />}
                 onSelect={() => {
                   const note = {
