@@ -6,6 +6,7 @@ import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { useDebounce } from "../utils/use-debounce"
+import { CalendarIcon16, PlusIcon16 } from "./icons"
 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
@@ -85,18 +86,21 @@ export function CommandMenu() {
         <Command.List>
           {dateString ? (
             <Command.Group heading="Date">
-              <Command.Item key={dateString} onSelect={() => navigate(`/dates/${dateString}`)}>
-                <div className="flex justify-between">
-                  <span>{formatDate(dateString)}</span>
-                  <span className="text-text-muted">{formatDateDistance(dateString)}</span>
-                </div>
-              </Command.Item>
+              <CommandItem
+                key={dateString}
+                icon={<CalendarIcon16 />}
+                description={formatDateDistance(dateString)}
+                onSelect={() => navigate(`/dates/${dateString}`)}
+              >
+                {formatDate(dateString)}
+              </CommandItem>
             </Command.Group>
           ) : null}
           {debouncedQuery ? (
             <Command.Group heading="Notes">
-              <Command.Item
+              <CommandItem
                 key={debouncedQuery}
+                icon={<PlusIcon16 />}
                 onSelect={() => {
                   const note = {
                     id: Date.now().toString(),
@@ -114,11 +118,32 @@ export function CommandMenu() {
                 }}
               >
                 Create new note "{debouncedQuery}"
-              </Command.Item>
+              </CommandItem>
             </Command.Group>
           ) : null}
         </Command.List>
       </Card>
     </Command.Dialog>
+  )
+}
+
+type CommandItemProps = {
+  children: React.ReactNode
+  icon?: React.ReactNode
+  description?: string
+  onSelect?: () => void
+}
+
+function CommandItem({ children, icon, description, onSelect }: CommandItemProps) {
+  return (
+    <Command.Item onSelect={onSelect}>
+      <div className="flex justify-between">
+        <div className="flex gap-2">
+          {icon ? <div className="text-text-muted">{icon}</div> : null}
+          <span>{children}</span>
+        </div>
+        {description ? <span className="text-text-muted">{description}</span> : null}
+      </div>
+    </Command.Item>
   )
 }
