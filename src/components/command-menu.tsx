@@ -9,10 +9,25 @@ import { useDebounce } from "../utils/use-debounce"
 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
+  const [previouslyActiveElement, setPreviouslyActiveElement] = React.useState<Element | null>(null)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const debouncedQuery = useDebounce(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
+
+  const openMenu = React.useCallback(() => {
+    setPreviouslyActiveElement(document.activeElement)
+    setOpen(true)
+  }, [])
+
+  const closeMenu = React.useCallback(() => {
+    setOpen(false)
+
+    // Focus the previously active element
+    if (previouslyActiveElement instanceof HTMLElement) {
+      setTimeout(() => previouslyActiveElement.focus())
+    }
+  }, [previouslyActiveElement])
 
   const navigate = React.useCallback(
     (url: string) => {
@@ -27,13 +42,17 @@ export function CommandMenu() {
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
-        setOpen((open) => !open)
+        if (open) {
+          closeMenu()
+        } else {
+          openMenu()
+        }
       }
     }
 
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [open, openMenu, closeMenu])
 
   const dateString = React.useMemo(() => {
     const date = parseDate(debouncedQuery)
@@ -51,7 +70,7 @@ export function CommandMenu() {
     <Command.Dialog
       label="Global command menu"
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(open) => (open ? openMenu() : closeMenu())}
       shouldFilter={false}
       onKeyDown={(event) => {
         // Clear input with `esc`
