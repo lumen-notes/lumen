@@ -297,7 +297,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-item] {
-  @apply rounded py-2 px-3 leading-[16px];
+  @apply rounded py-3 px-3 leading-[16px];
 }
 
 [cmdk-item][aria-selected] {
