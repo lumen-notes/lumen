@@ -12,13 +12,13 @@ A system for thinking, writing, learning &amp; mindfulness
 | ------------------- | ------------------------- |
 | Toggle command menu | <kbd>⌘</kbd> <kbd>K</kbd> |
 
-### With focus inside a panel...
+**With focus inside a panel...**
 
 | Action      | Shortcut                  |
 | ----------- | ------------------------- |
 | Close panel | <kbd>⌘</kbd> <kbd>X</kbd> |
 
-### With focus inside a note card...
+**With focus inside a note card...**
 
 | Action           | Shortcut                               |
 | ---------------- | -------------------------------------- |
