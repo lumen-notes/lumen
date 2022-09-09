@@ -8,19 +8,14 @@ import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
 
-export function TagPanel({ params, onClose }: PanelProps) {
+export function TagPanel({ id, params, onClose }: PanelProps) {
   const { name = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const noteIds = state.context.tags[name] || []
 
   return (
-    <Panel
-      title={`#${name}`}
-      description={pluralize(noteIds.length, "note")}
-      icon={<TagIcon24 />}
-      onClose={onClose}
-    >
+    <Panel id={id} title={`#${name}`} icon={<TagIcon24 />} onClose={onClose}>
       <div className="flex flex-col gap-4 px-4 pb-4">
         <NoteForm defaultBody={`#${name}`} />
         <NoteList key={name} ids={noteIds} />

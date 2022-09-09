@@ -23,7 +23,7 @@ export function NotesPage() {
   return (
     <Panels>
       <CommandMenu />
-      <Panel title="Notes" description={pluralize(noteIds.length, "note")} icon={<NoteIcon24 />}>
+      <Panel title="Notes" icon={<NoteIcon24 />}>
         <div className="flex flex-col gap-4 px-4 pb-4">
           <NoteForm />
           <NoteList ids={noteIds} />

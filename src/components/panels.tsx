@@ -40,12 +40,32 @@ function Root({ children }: React.PropsWithChildren) {
       const value = serializePanelValue({ id, pathname, search })
 
       setPanels(insertAt(panels, index, value))
+
+      setTimeout(() => {
+        const panelElement = document.getElementById(id)
+
+        // Scroll the new panel into view
+        panelElement?.scrollIntoView({ block: "center", inline: "center" })
+
+        // Focus the first focusable element in the new panel
+        focusFirstFocusableElement(panelElement)
+      })
     },
     [panels, setPanels],
   )
 
   const closePanel = React.useCallback(
     (index: number) => {
+      const panel = deserializePanelValue(panels[index])
+
+      const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
+
+      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
+
+      // Focus the first focusable element in the previous panel
+      focusFirstFocusableElement(panelElements[currentIndex - 1])
+
+      // Update state
       setPanels(panels.filter((_, i) => i !== index))
     },
     [panels, setPanels],
@@ -73,6 +93,7 @@ function Root({ children }: React.PropsWithChildren) {
     </PanelsContext.Provider>
   )
 }
+
 function generateId() {
   return Date.now().toString(16).slice(-4)
 }
@@ -86,6 +107,16 @@ function serializePanelValue({ id, pathname, search }: PanelValue) {
 function deserializePanelValue(value: string): PanelValue {
   const [id, pathname, search] = value.split(SEPARATOR)
   return { id, pathname, search }
+}
+
+function focusFirstFocusableElement(element: HTMLElement | null) {
+  const firstFocusableElement = element?.querySelector(
+    'button, [href], input, select, textarea, [role=textbox], [tabindex]:not([tabindex="-1"])',
+  )
+
+  if (firstFocusableElement instanceof HTMLElement) {
+    firstFocusableElement.focus()
+  }
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {
@@ -124,6 +155,7 @@ function Outlet() {
 }
 
 export type PanelProps = {
+  id?: string
   params: Params<string>
   onClose?: () => void
 }
@@ -143,6 +175,7 @@ function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
 
   return match ? (
     <Panel
+      id={panel.id}
       params={match.params}
       onClose={() => {
         closePanel?.(panel.index)

@@ -10,21 +10,21 @@ import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 
-export function NotePanel({ params, onClose }: PanelProps) {
-  const { id = "" } = params
+export function NotePanel({ id, params, onClose }: PanelProps) {
+  const { id: noteId = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const backlinks = state.context.backlinks[id]
 
   return (
-    <Panel title="Note" icon={<NoteIcon24 />} onClose={onClose}>
+    <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="flex flex-col gap-4 px-4 pb-4">
-        <NoteCard id={id} />
+        <NoteCard id={noteId} />
 
         <h3 className="leading-none">Backlinks</h3>
 
-        <NoteForm defaultBody={`[[${id}]]`} />
-        <NoteList key={id} ids={backlinks || []} />
+        <NoteForm defaultBody={`[[${noteId}]]`} />
+        <NoteList key={noteId} ids={backlinks || []} />
       </div>
     </Panel>
   )
