@@ -30,22 +30,15 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       <div ref={topRef} />
       <div
         className={clsx(
-          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between border-b p-4",
+          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b p-4",
           topInView ? "border-transparent" : "border-border-divider bg-bg-inset",
         )}
       >
-        <div className="flex gap-2">
-          {icon}
-          <div className="flex items-baseline gap-1">
-            <h2 className="text-lg font-semibold leading-[24px]">{title}</h2>
-            {description ? (
-              <>
-                <span className="text-text-muted" aria-hidden>
-                  ·
-                </span>
-                <span className="text-text-muted">{description}</span>
-              </>
-            ) : null}
+        <div className="flex flex-shrink gap-2">
+          <div className="flex-shrink-0">{icon}</div>
+          <div className="flex items-baseline gap-3">
+            <h2 className="flex-shrink-0 text-lg font-semibold leading-[24px]">{title}</h2>
+            {description ? <span className="truncate text-text-muted">{description}</span> : null}
           </div>
         </div>
         {onClose ? (

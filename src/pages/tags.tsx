@@ -47,7 +47,7 @@ export function TagsPage() {
 
   return (
     <Panels>
-      <Panel title="Tags" description={pluralize(sortedTags.length, "tag")} icon={<TagIcon24 />}>
+      <Panel title="Tags" icon={<TagIcon24 />}>
         <div className="flex flex-col gap-2 px-4 pb-4">
           <SearchInput
             placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
