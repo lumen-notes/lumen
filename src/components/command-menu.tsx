@@ -64,7 +64,7 @@ export function CommandMenu() {
         <Command.List>
           {dateString ? (
             <Command.Group heading="Date">
-              <Command.Item onSelect={() => navigate(`/dates/${dateString}`)}>
+              <Command.Item key={dateString} onSelect={() => navigate(`/dates/${dateString}`)}>
                 <div className="flex justify-between">
                   <span>{formatDate(dateString)}</span>
                   <span className="text-text-muted">{formatDateDistance(dateString)}</span>
