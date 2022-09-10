@@ -6,9 +6,8 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
-import { pluralize } from "../utils/pluralize"
 
-export function TagPanel({ id, params, onClose }: PanelProps) {
+export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { name = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)

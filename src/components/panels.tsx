@@ -156,7 +156,7 @@ function Outlet() {
 
 export type PanelProps = {
   id?: string
-  params: Params<string>
+  params?: Params<string>
   onClose?: () => void
 }
 

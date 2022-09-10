@@ -10,7 +10,7 @@ import { formatDate, formatDateDistance } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
-export function DatePanel({ id, params, onClose }: PanelProps) {
+export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)

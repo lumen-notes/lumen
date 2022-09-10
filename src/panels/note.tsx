@@ -10,7 +10,7 @@ import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 
-export function NotePanel({ id, params, onClose }: PanelProps) {
+export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
