@@ -148,7 +148,7 @@ function CommandItem({ children, icon, description, onSelect }: CommandItemProps
     <Command.Item onSelect={onSelect}>
       <div className="flex justify-between">
         <div className="flex gap-2">
-          {icon ? <div className="text-text-muted">{icon}</div> : null}
+          {icon}
           <span>{children}</span>
         </div>
         {description ? <span className="text-text-muted">{description}</span> : null}
