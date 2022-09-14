@@ -1,7 +1,5 @@
 import { useActor } from "@xstate/react"
 import React from "react"
-import { Params, useParams } from "react-router-dom"
-import { Card } from "../components/card"
 import { NoteIcon24 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"

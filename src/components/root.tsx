@@ -96,7 +96,12 @@ export function Root() {
                     <Button>Deny</Button>
                   </AlertDialog.Cancel>
                   <AlertDialog.Action asChild>
-                    <Button variant="primary" onClick={() => send("REQUEST_PERMISSION")} autoFocus>
+                    <Button
+                      variant="primary"
+                      onClick={() => send("REQUEST_PERMISSION")}
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus
+                    >
                       Allow
                     </Button>
                   </AlertDialog.Action>

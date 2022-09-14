@@ -79,6 +79,7 @@ export function NoteForm({
         editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
       )}
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <form
         className="flex flex-col gap-2"
         onSubmit={(event) => {

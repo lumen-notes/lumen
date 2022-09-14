@@ -4,7 +4,7 @@ import { codes } from "micromark-util-symbol/codes"
 import { Code, Construct, Extension, HtmlExtension, State, Tokenizer } from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
-import { assign, createMachine, interpret, send } from "xstate"
+import { assign, createMachine, interpret } from "xstate"
 
 const tokenTypes = {
   dateLink: "dateLink",

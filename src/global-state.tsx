@@ -529,7 +529,7 @@ export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
   {},
 )
 
-export function GlobalStateProvider({ children }: React.PropsWithChildren<{}>) {
+export function GlobalStateProvider({ children }: React.PropsWithChildren) {
   const service = useInterpret(machine)
 
   return <GlobalStateContext.Provider value={{ service }}>{children}</GlobalStateContext.Provider>
