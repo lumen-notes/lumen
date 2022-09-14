@@ -285,7 +285,9 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-list] {
-  @apply max-h-[400px] overflow-auto;
+  @apply max-h-[400px] overflow-y-auto overflow-x-hidden;
+  scroll-padding-block-start: 8px;
+  scroll-padding-block-end: 8px;
 }
 
 [cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
@@ -301,7 +303,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-item] {
-  @apply rounded py-3 px-3 leading-[16px];
+  @apply cursor-default rounded py-3 px-3 leading-[16px];
 }
 
 [cmdk-item][aria-selected] {

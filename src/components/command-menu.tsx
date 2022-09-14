@@ -1,16 +1,20 @@
+import { useActor } from "@xstate/react"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
+import { Searcher } from "fast-fuzzy"
 import qs from "qs"
 import React from "react"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
-import { CalendarIcon16, PlusIcon16, SearchIcon16 } from "./icons"
+import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16 } from "./icons"
 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
+  const [state] = useActor(globalState.service)
   const [previouslyActiveElement, setPreviouslyActiveElement] = React.useState<Element | null>(null)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
@@ -68,6 +72,25 @@ export function CommandMenu() {
     return `${year}-${month}-${day}`
   }, [debouncedQuery])
 
+  // Create note search index
+  const noteSearcher = React.useMemo(() => {
+    // Sort notes by when they were created in descending order
+    const entries = Object.entries(state.context.notes).sort(
+      (a, b) => parseInt(b[0]) - parseInt(a[0]),
+    )
+    return new Searcher(entries, {
+      keySelector: ([id, body]) => body,
+      threshold: 0.8,
+    })
+  }, [state.context.notes])
+
+  // Search notes
+  const noteResults = React.useMemo(() => {
+    return noteSearcher.search(debouncedQuery)
+  }, [noteSearcher, debouncedQuery])
+
+  const numVisibleNotes = 6
+
   return (
     <Command.Dialog
       label="Global command menu"
@@ -99,13 +122,25 @@ export function CommandMenu() {
           ) : null}
           {debouncedQuery ? (
             <Command.Group heading="Notes">
-              <CommandItem
-                key={`Show all notes matching "${debouncedQuery}"`}
-                icon={<SearchIcon16 />}
-                onSelect={() => navigate(`/?${qs.stringify({ q: debouncedQuery })}`)}
-              >
-                Show all notes matching "{debouncedQuery}"
-              </CommandItem>
+              {noteResults.slice(0, numVisibleNotes).map(([id, body]) => (
+                <CommandItem
+                  key={id}
+                  value={id}
+                  icon={<NoteIcon16 />}
+                  onSelect={() => navigate(`/${id}`)}
+                >
+                  {body}
+                </CommandItem>
+              ))}
+              {noteResults.length > numVisibleNotes ? (
+                <CommandItem
+                  key={`Show all notes matching "${debouncedQuery}"`}
+                  icon={<SearchIcon16 />}
+                  onSelect={() => navigate(`/?${qs.stringify({ q: debouncedQuery })}`)}
+                >
+                  Show all {pluralize(noteResults.length, "note")} matching "{debouncedQuery}"
+                </CommandItem>
+              ) : null}
               <CommandItem
                 key={`Create new note "${debouncedQuery}"`}
                 icon={<PlusIcon16 />}
@@ -137,19 +172,18 @@ export function CommandMenu() {
 
 type CommandItemProps = {
   children: React.ReactNode
+  value?: string
   icon?: React.ReactNode
   description?: string
   onSelect?: () => void
 }
 
-function CommandItem({ children, icon, description, onSelect }: CommandItemProps) {
+function CommandItem({ children, value, icon, description, onSelect }: CommandItemProps) {
   return (
-    <Command.Item onSelect={onSelect}>
-      <div className="flex justify-between">
-        <div className="flex gap-2">
-          {icon}
-          <span>{children}</span>
-        </div>
+    <Command.Item value={value} onSelect={onSelect}>
+      <div className="grid grid-cols-[28px_1fr_auto]">
+        <span>{icon}</span>
+        <span className="truncate">{children}</span>
         {description ? <span className="text-text-muted">{description}</span> : null}
       </div>
     </Command.Item>

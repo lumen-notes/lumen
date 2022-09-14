@@ -44,6 +44,19 @@ export function NoteFillIcon24() {
   )
 }
 
+export function NoteIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M4 6h8v1H4V6ZM9 9H4v1h5V9Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13Zm13 1h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5Z"
+      />
+    </svg>
+  )
+}
+
 export function TagIcon24() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
