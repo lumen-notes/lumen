@@ -128,7 +128,11 @@ export function CommandMenu() {
       }}
     >
       <Card elevation={2}>
-        <Command.Input placeholder="Search" value={query} onValueChange={setQuery} />
+        <Command.Input
+          placeholder="Search notes, tags, and dates"
+          value={query}
+          onValueChange={setQuery}
+        />
         <Command.List>
           {dateString ? (
             <Command.Group heading="Date">
