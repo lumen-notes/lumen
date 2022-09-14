@@ -53,13 +53,24 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   }, [debouncedQuery, sortedTags, searcher])
 
   return (
-    <Panel id={id} title="Tags" icon={<TagIcon24 />} onClose={onClose}>
+    <Panel
+      id={id}
+      title="Tags"
+      description={pluralize(sortedTags.length, "tag")}
+      icon={<TagIcon24 />}
+      onClose={onClose}
+    >
       <div className="flex flex-col gap-2 px-4 pb-4">
-        <SearchInput
-          placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          <SearchInput
+            placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          {debouncedQuery ? (
+            <span className="text-xs text-text-muted">{pluralize(results.length, "result")}</span>
+          ) : null}
+        </div>
         <ul className="flex flex-col">
           {results.map(([name, noteCount]) => (
             <li

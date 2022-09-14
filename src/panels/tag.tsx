@@ -6,6 +6,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
+import { pluralize } from "../utils/pluralize"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { name = "" } = params
@@ -14,7 +15,13 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const noteIds = state.context.tags[name] || []
 
   return (
-    <Panel id={id} title={`#${name}`} icon={<TagIcon24 />} onClose={onClose}>
+    <Panel
+      id={id}
+      title={`#${name}`}
+      description={pluralize(noteIds.length, "note")}
+      icon={<TagIcon24 />}
+      onClose={onClose}
+    >
       <div className="flex flex-col gap-4 px-4 pb-4">
         <NoteForm defaultBody={`#${name}`} />
         <NoteList key={name} ids={noteIds} />
