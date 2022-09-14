@@ -61,11 +61,16 @@ export function NoteList({ ids }: NoteListProps) {
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <SearchInput
-          placeholder={`Search ${pluralize(ids.length, "note")}`}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          <SearchInput
+            placeholder={`Search ${pluralize(ids.length, "note")}`}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          {debouncedQuery ? (
+            <span className="text-xs text-text-muted">{pluralize(results.length, "result")}</span>
+          ) : null}
+        </div>
         {results.slice(0, numVisibleNotes).map((id) => (
           <NoteCard key={id} id={id} />
         ))}
