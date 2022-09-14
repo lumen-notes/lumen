@@ -1,5 +1,6 @@
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
+import qs from "qs"
 import React from "react"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
@@ -101,9 +102,7 @@ export function CommandMenu() {
               <CommandItem
                 key={`Show all notes matching "${debouncedQuery}"`}
                 icon={<SearchIcon16 />}
-                onSelect={() => {
-                  // TODO
-                }}
+                onSelect={() => navigate(`/?${qs.stringify({ q: debouncedQuery })}`)}
               >
                 Show all notes matching "{debouncedQuery}"
               </CommandItem>

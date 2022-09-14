@@ -1,9 +1,11 @@
 import React from "react"
-import { LinkProps, Link as RouterLink, matchPath, Params } from "react-router-dom"
+import { Link as RouterLink, LinkProps, matchRoutes, Params } from "react-router-dom"
 import { z } from "zod"
 import { DatePanel } from "../panels/date"
 import { NotePanel } from "../panels/note"
+import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
+import { TagsPanel } from "../panels/tags"
 import { insertAt } from "../utils/insert-at"
 import { useSearchParam } from "../utils/use-search-param"
 
@@ -141,14 +143,8 @@ function Outlet() {
   return (
     <>
       {panels.map((value, index) => {
-        const { id, pathname, search } = deserializePanelValue(value)
-        return (
-          <PanelContext.Provider key={id} value={{ id, pathname, search, index }}>
-            <PanelRoute pattern="/:id" panel={NotePanel} />
-            <PanelRoute pattern="/tags/:name" panel={TagPanel} />
-            <PanelRoute pattern="/dates/:date" panel={DatePanel} />
-          </PanelContext.Provider>
-        )
+        const panel = deserializePanelValue(value)
+        return <PanelRoutes key={panel.id} panel={panel} index={index} />
       })}
     </>
   )
@@ -160,28 +156,37 @@ export type PanelProps = {
   onClose?: () => void
 }
 
-type PanelRouteProps = {
-  pattern: string
-  panel: React.ComponentType<PanelProps>
-}
+const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType<PanelProps> }> = [
+  { index: true, panel: NotesPanel },
+  { path: ":id", panel: NotePanel },
+  { path: "tags", panel: TagsPanel },
+  { path: "tags/:name", panel: TagPanel },
+  { path: "dates/:date", panel: DatePanel },
+]
 
-function PanelRoute({ pattern, panel: Panel }: PanelRouteProps) {
+type PanelRoutesProps = { panel: PanelValue; index: number }
+
+function PanelRoutes({ panel, index }: PanelRoutesProps) {
   const { closePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
 
-  if (!panel) return null
+  const [match] = matchRoutes(ROUTES, { pathname: panel.pathname }) || []
 
-  const match = matchPath(pattern, panel.pathname)
+  if (!match || !("panel" in match.route)) return <div>Unexpected error</div>
 
-  return match ? (
-    <Panel
-      id={panel.id}
-      params={match.params}
-      onClose={() => {
-        closePanel?.(panel.index)
-      }}
-    />
-  ) : null
+  // @ts-ignore If we get here, we know that the `panel` property exists
+  const { panel: Panel } = match.route
+
+  return (
+    <PanelContext.Provider value={{ ...panel, index }}>
+      <Panel
+        id={panel.id}
+        params={match.params}
+        onClose={() => {
+          closePanel?.(index)
+        }}
+      />
+    </PanelContext.Provider>
+  )
 }
 
 export const Panels = Object.assign(Root, { Link, Outlet })
