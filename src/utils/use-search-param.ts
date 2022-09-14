@@ -1,5 +1,6 @@
 import qs from "qs"
 import React from "react"
+import { useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Schema } from "zod"
 import { PanelContext, PanelsContext } from "../components/panels"
@@ -21,25 +22,30 @@ export function useSearchParam<T = string>(
   const panel = React.useContext(PanelContext)
   const searchParams = qs.parse(panel ? panel.search : location.search, { ignoreQueryPrefix: true })
 
-  let value: T
+  const [value, setValue] = useState(() => {
+    try {
+      return schema.parse(searchParams[key])
+    } catch (error) {
+      return defaultValue
+    }
+  })
 
-  try {
-    value = schema.parse(searchParams[key])
-  } catch (error) {
-    value = defaultValue
-  }
-
-  const setValue = React.useCallback(
+  const setValueAndParam = React.useCallback(
     (value: T) => {
-      const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
-      if (panel && updatePanel) {
-        updatePanel(panel.index, { search: searchString })
-      } else {
-        navigate(`${location.pathname}?${searchString}`, { replace })
-      }
+      setValue(value)
+
+      React.startTransition(() => {
+        const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
+
+        if (panel) {
+          updatePanel?.(panel.index, { search: searchString })
+        } else {
+          navigate(`${location.pathname}?${searchString}`, { replace })
+        }
+      })
     },
-    [searchParams, key, navigate],
+    [searchParams, key, navigate, location.pathname, replace, panel, updatePanel],
   )
 
-  return [value, setValue]
+  return [value, setValueAndParam]
 }

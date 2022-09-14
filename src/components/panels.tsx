@@ -144,7 +144,11 @@ function Outlet() {
     <>
       {panels.map((value, index) => {
         const panel = deserializePanelValue(value)
-        return <PanelRoutes key={panel.id} panel={panel} index={index} />
+        return (
+          <PanelContext.Provider key={panel.id} value={{ ...panel, index }}>
+            <PanelRoutes />
+          </PanelContext.Provider>
+        )
       })}
     </>
   )
@@ -164,10 +168,13 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: "dates/:date", panel: DatePanel },
 ]
 
-type PanelRoutesProps = { panel: PanelValue; index: number }
+// type PanelRoutesProps = { panel: PanelValue; index: number }
 
-function PanelRoutes({ panel, index }: PanelRoutesProps) {
+function PanelRoutes() {
   const { closePanel } = React.useContext(PanelsContext)
+  const panel = React.useContext(PanelContext)
+
+  if (!panel) return <div>Unexpected error</div>
 
   const [match] = matchRoutes(ROUTES, { pathname: panel.pathname }) || []
 
@@ -177,15 +184,13 @@ function PanelRoutes({ panel, index }: PanelRoutesProps) {
   const { panel: Panel } = match.route
 
   return (
-    <PanelContext.Provider value={{ ...panel, index }}>
-      <Panel
-        id={panel.id}
-        params={match.params}
-        onClose={() => {
-          closePanel?.(index)
-        }}
-      />
-    </PanelContext.Provider>
+    <Panel
+      id={panel.id}
+      params={match.params}
+      onClose={() => {
+        closePanel?.(panel.index)
+      }}
+    />
   )
 }
 
