@@ -144,11 +144,11 @@ export function CommandMenu() {
           ) : null}
           {tagResults.length ? (
             <Command.Group heading="Tags">
-              {tagResults.slice(0, numVisibleTags).map(([name, count]) => (
+              {tagResults.slice(0, numVisibleTags).map(([name, noteCount]) => (
                 <CommandItem
                   key={name}
                   icon={<TagIcon16 />}
-                  description={pluralize(count, "note")}
+                  description={pluralize(noteCount, "note")}
                   onSelect={() => navigate(`/tags/${name}`)}
                 >
                   #{name}

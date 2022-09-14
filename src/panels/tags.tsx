@@ -25,17 +25,24 @@ export function TagsPanel({ id, onClose }: PanelProps) {
 
   // Sort tags alphabetically
   const sortedTags = React.useMemo(
-    () => Object.entries(state.context.tags).sort((a, b) => a[0].localeCompare(b[0])),
+    () =>
+      Object.entries(state.context.tags)
+        .map(([name, noteIds]): [string, number] => [name, noteIds.length])
+        .sort((a, b) => a[0].localeCompare(b[0])),
     [state.context.tags],
   )
 
   // Create a search index
   const searcher = React.useMemo(() => {
-    return new Searcher(sortedTags, {
+    const entries = Object.entries(state.context.tags)
+      .map(([name, noteIds]): [string, number] => [name, noteIds.length])
+      // Sort by note count in descending order then alphabetically
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    return new Searcher(entries, {
       keySelector: ([name]) => name,
       threshold: 0.8,
     })
-  }, [sortedTags])
+  }, [state.context.tags])
 
   const results = React.useMemo(() => {
     if (!debouncedQuery) {
@@ -54,7 +61,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
           onChange={(event) => setQuery(event.target.value)}
         />
         <ul className="flex flex-col">
-          {results.map(([name, noteIds]) => (
+          {results.map(([name, noteCount]) => (
             <li
               key={name}
               className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
@@ -62,7 +69,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
               <Panels.Link className="underline underline-offset-2" to={`/tags/${name}`}>
                 #{name}
               </Panels.Link>
-              <span className="text-text-muted">{pluralize(noteIds.length, "note")}</span>
+              <span className="text-text-muted">{pluralize(noteCount, "note")}</span>
             </li>
           ))}
         </ul>
