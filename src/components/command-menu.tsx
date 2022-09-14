@@ -10,7 +10,7 @@ import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useDebounce } from "../utils/use-debounce"
-import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16 } from "./icons"
+import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
@@ -60,6 +60,7 @@ export function CommandMenu() {
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [open, openMenu, closeMenu])
 
+  // Check if query can be parsed as a date
   const dateString = React.useMemo(() => {
     const date = parseDate(debouncedQuery)
 
@@ -71,6 +72,18 @@ export function CommandMenu() {
 
     return `${year}-${month}-${day}`
   }, [debouncedQuery])
+
+  // Create tag search index
+  const tagSearcher = React.useMemo(() => {
+    const entries = Object.entries(state.context.tags)
+      .map(([name, noteIds]): [string, number] => [name, noteIds.length])
+      // Sort by note count in descending order then alphabetically
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    return new Searcher(entries, {
+      keySelector: ([name]) => name,
+      threshold: 0.8,
+    })
+  }, [state.context.tags])
 
   // Create note search index
   const noteSearcher = React.useMemo(() => {
@@ -84,11 +97,20 @@ export function CommandMenu() {
     })
   }, [state.context.notes])
 
+  // Search tags
+  const tagResults = React.useMemo(() => {
+    return tagSearcher.search(debouncedQuery)
+  }, [tagSearcher, debouncedQuery])
+
   // Search notes
   const noteResults = React.useMemo(() => {
     return noteSearcher.search(debouncedQuery)
   }, [noteSearcher, debouncedQuery])
 
+  // Only show the first 2 tags
+  const numVisibleTags = 2
+
+  // Only show the first 6 notes
   const numVisibleNotes = 6
 
   return (
@@ -118,6 +140,29 @@ export function CommandMenu() {
               >
                 {formatDate(dateString)}
               </CommandItem>
+            </Command.Group>
+          ) : null}
+          {tagResults.length ? (
+            <Command.Group heading="Tags">
+              {tagResults.slice(0, numVisibleTags).map(([name, count]) => (
+                <CommandItem
+                  key={name}
+                  icon={<TagIcon16 />}
+                  description={pluralize(count, "note")}
+                  onSelect={() => navigate(`/tags/${name}`)}
+                >
+                  #{name}
+                </CommandItem>
+              ))}
+              {tagResults.length > numVisibleTags ? (
+                <CommandItem
+                  key={`Show all tags matching "${debouncedQuery}"`}
+                  icon={<SearchIcon16 />}
+                  onSelect={() => navigate(`/tags?${qs.stringify({ q: debouncedQuery })}`)}
+                >
+                  Show all {pluralize(tagResults.length, "tag")} matching "{debouncedQuery}"
+                </CommandItem>
+              ) : null}
             </Command.Group>
           ) : null}
           {debouncedQuery ? (

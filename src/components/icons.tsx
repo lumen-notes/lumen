@@ -81,6 +81,14 @@ export function TagFillIcon24() {
   )
 }
 
+export function TagIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M7.914 1.293A1 1 0 0 1 8.621 1H14a1 1 0 0 1 1 1v5.379a1 1 0 0 1-.293.707l-6.5 6.5a1 1 0 0 1-1.414 0L1.414 9.207a1 1 0 0 1 0-1.414l6.5-6.5ZM8.621 0a2 2 0 0 0-1.414.586l-6.5 6.5a2 2 0 0 0 0 2.828l5.379 5.379a2 2 0 0 0 2.828 0l6.5-6.5A2 2 0 0 0 16 7.379V2a2 2 0 0 0-2-2H8.621ZM11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+    </svg>
+  )
+}
+
 export function CalendarIcon24({ date }: { date?: number }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
