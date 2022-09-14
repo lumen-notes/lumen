@@ -65,7 +65,12 @@ export function NoteList({ ids }: NoteListProps) {
           <SearchInput
             placeholder={`Search ${pluralize(ids.length, "note")}`}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value)
+
+              // Reset the number of visible notes when the user starts typing
+              setNumVisibleNotes(10)
+            }}
           />
           {debouncedQuery ? (
             <span className="text-xs text-text-muted">{pluralize(results.length, "result")}</span>
