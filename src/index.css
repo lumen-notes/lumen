@@ -38,6 +38,7 @@
   color-scheme: light dark;
 
   --h: 30deg;
+  --h-highlight: 90deg;
   --s: 5%;
   --l-text: 10%;
   --l-text-muted: 45%;
@@ -53,12 +54,14 @@
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-muted: hsl(var(--h) var(--s) var(--l-text-muted));
   --color-text-placeholder: hsl(var(--h) var(--s) var(--l-text-placeholder));
+  --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
   --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
+  --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-divider: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-divider));
   --color-border-focus: hsl(200deg 100% 40%);
@@ -75,6 +78,8 @@
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
     --a-bg-hover: 0.1;
+    --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
+    --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
   }
 }

@@ -1,6 +1,7 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { TagIcon24 } from "../components/icons"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
@@ -22,10 +23,12 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon24 />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4 px-4 pb-4">
-        <NoteForm defaultBody={`#${name}`} />
-        <NoteList key={name} ids={noteIds} />
-      </div>
+      <LinkHighlightProvider href={`/tags/${name}`}>
+        <div className="flex flex-col gap-4 px-4 pb-4">
+          <NoteForm defaultBody={`#${name}`} />
+          <NoteList key={name} ids={noteIds} />
+        </div>
+      </LinkHighlightProvider>
     </Panel>
   )
 }

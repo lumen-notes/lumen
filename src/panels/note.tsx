@@ -1,6 +1,7 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { NoteIcon24 } from "../components/icons"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
@@ -21,8 +22,12 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
 
         <h3 className="leading-none">Backlinks</h3>
 
-        <NoteForm defaultBody={`[[${noteId}]]`} />
-        <NoteList key={noteId} ids={backlinks || []} />
+        <LinkHighlightProvider href={`/${noteId}`}>
+          <div className="flex flex-col gap-4">
+            <NoteForm defaultBody={`[[${noteId}]]`} />
+            <NoteList key={noteId} ids={backlinks || []} />
+          </div>
+        </LinkHighlightProvider>
       </div>
     </Panel>
   )

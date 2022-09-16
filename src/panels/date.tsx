@@ -1,6 +1,7 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { CalendarIcon24 } from "../components/icons"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
@@ -32,10 +33,12 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4 px-4 pb-4">
-        <NoteForm defaultBody={`[[${date}]]`} />
-        <NoteList key={date} ids={noteIds} />
-      </div>
+      <LinkHighlightProvider href={`/dates/${date}`}>
+        <div className="flex flex-col gap-4 px-4 pb-4">
+          <NoteForm defaultBody={`[[${date}]]`} />
+          <NoteList key={date} ids={noteIds} />
+        </div>
+      </LinkHighlightProvider>
     </Panel>
   )
 }
