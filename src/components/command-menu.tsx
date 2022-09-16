@@ -51,6 +51,13 @@ export function CommandMenu() {
         if (open) {
           closeMenu()
         } else {
+          const textSelection = window.getSelection()?.toString()
+
+          // If text is selected, use that as the initial query
+          if (textSelection) {
+            setQuery(textSelection)
+          }
+
           openMenu()
         }
       }
