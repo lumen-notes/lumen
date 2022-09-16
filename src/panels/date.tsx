@@ -1,13 +1,17 @@
 import { useActor } from "@xstate/react"
+import clsx from "clsx"
+import { eachDayOfInterval, isMonday, isSunday, nextSunday, previousMonday } from "date-fns"
+import { toDate } from "date-fns-tz"
 import React from "react"
+import { Card } from "../components/card"
 import { CalendarIcon24 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
-import { PanelProps } from "../components/panels"
+import { PanelProps, Panels } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
-import { formatDate, formatDateDistance } from "../utils/date"
+import { dayNames, formatDate, formatDateDistance, monthNames, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
@@ -33,12 +37,66 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
     >
-      <LinkHighlightProvider href={`/dates/${date}`}>
-        <div className="flex flex-col gap-4">
-          <NoteForm defaultBody={`[[${date}]]`} />
-          <NoteList key={date} ids={noteIds} />
-        </div>
-      </LinkHighlightProvider>
+      <div className="flex flex-col gap-4">
+        <Calendar activeDate={date} />
+        <LinkHighlightProvider href={`/dates/${date}`}>
+          <div key={date} className="flex flex-col gap-4">
+            <NoteForm defaultBody={`[[${date}]]`} />
+            <NoteList key={date} ids={noteIds} />
+          </div>
+        </LinkHighlightProvider>
+      </div>
     </Panel>
+  )
+}
+
+// TODO: Implement roving focus
+function Calendar({ activeDate: dateString }: { activeDate: string }) {
+  const date = toDate(dateString)
+  const monday = isMonday(date) ? date : previousMonday(date)
+  const sunday = isSunday(date) ? date : nextSunday(date)
+  const week = eachDayOfInterval({ start: monday, end: sunday })
+
+  return (
+    <Card className="flex flex-col gap-2 p-2">
+      <div className="flex">
+        {week.map((date) => {
+          const dayName = dayNames[date.getDay() as keyof typeof dayNames]
+          const monthMame = monthNames[date.getMonth() as keyof typeof monthNames]
+          const day = date.getDate()
+          const year = date.getFullYear()
+          const label = `${dayName}, ${monthMame} ${day}, ${year}`
+          const isToday = toDateString(date) === toDateString(new Date())
+          const isActive = toDateString(date) === dateString
+          return (
+            <Panels.Link
+              key={date.toISOString()}
+              to={`/dates/${toDateString(date)}`}
+              target="_self"
+              aria-label={label}
+              className={clsx(
+                "relative flex w-full cursor-pointer flex-col items-center gap-1 rounded py-2 leading-[16px] text-text-muted hover:bg-bg-hover",
+                // Underline the active day
+                isActive &&
+                  "font-semibold text-text before:absolute before:-bottom-2 before:h-[2px] before:w-full before:bg-text before:content-['']",
+              )}
+            >
+              <span>{dayNames[date.getDay() as keyof typeof dayNames].slice(0, 2)}</span>
+              <span
+                className={clsx(
+                  isToday && "-my-[2px] -mx-1 rounded py-[2px] px-1",
+                  // Outline the current day
+                  isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
+                  // Make outline bolder if current day is active
+                  isToday && isActive && "shadow-[inset_0_0_0_1.5px_currentColor]",
+                )}
+              >
+                {date.getDate()}
+              </span>
+            </Panels.Link>
+          )
+        })}
+      </div>
+    </Card>
   )
 }

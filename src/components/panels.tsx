@@ -121,22 +121,38 @@ function focusFirstFocusableElement(element: HTMLElement | null) {
   }
 }
 
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>((props, ref) => {
-  const { openPanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
-  return (
-    <RouterLink
-      {...props}
-      ref={ref}
-      onClick={(event) => {
-        if (openPanel && props.to && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
-          openPanel(props.to, panel?.index)
-          event.preventDefault()
-        }
-      }}
-    />
-  )
-})
+const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>(
+  ({ target = "_blank", ...props }, ref) => {
+    const { openPanel, updatePanel } = React.useContext(PanelsContext)
+    const panel = React.useContext(PanelContext)
+    return (
+      <RouterLink
+        {...props}
+        ref={ref}
+        onClick={(event) => {
+          if (!props.to || event.metaKey || event.ctrlKey || event.shiftKey) return
+
+          // Open link in a new panel
+          if (target === "_blank") {
+            openPanel?.(props.to, panel?.index)
+            event.preventDefault()
+          }
+
+          // Open link in the current panel
+          if (target === "_self") {
+            if (panel) {
+              const [pathname, search] = props.to.split("?")
+              updatePanel?.(panel?.index, { pathname, search })
+              event.preventDefault()
+            } else {
+              // TODO: Handle this case
+            }
+          }
+        }}
+      />
+    )
+  },
+)
 
 function Outlet() {
   const { panels } = React.useContext(PanelsContext)

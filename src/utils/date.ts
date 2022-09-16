@@ -1,39 +1,39 @@
 import { addDays, formatDistance, isSameDay, subDays } from "date-fns"
 
-const MONTHS = {
-  1: "Jan",
-  2: "Feb",
-  3: "Mar",
-  4: "Apr",
+export const monthNames = {
+  1: "January",
+  2: "February",
+  3: "March",
+  4: "April",
   5: "May",
-  6: "Jun",
-  7: "Jul",
-  8: "Aug",
-  9: "Sep",
-  10: "Oct",
-  11: "Nov",
-  12: "Dec",
+  6: "June",
+  7: "July",
+  8: "August",
+  9: "September",
+  10: "October",
+  11: "November",
+  12: "December",
 }
 
-const DAYS_OF_WEEK = {
-  1: "Mon",
-  2: "Tue",
-  3: "Wed",
-  4: "Thu",
-  5: "Fri",
-  6: "Sat",
-  0: "Sun",
+export const dayNames = {
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+  0: "Sunday",
 }
 
 export function formatDate(dateString: string) {
   const date = new Date(dateString)
   const currentYear = new Date().getUTCFullYear()
   const year = date.getUTCFullYear()
-  const month = (date.getUTCMonth() + 1) as keyof typeof MONTHS
+  const month = (date.getUTCMonth() + 1) as keyof typeof monthNames
   const day = date.getUTCDate()
-  const dayOfWeek = date.getUTCDay() as keyof typeof DAYS_OF_WEEK
+  const dayOfWeek = date.getUTCDay() as keyof typeof dayNames
 
-  let formattedDate = `${DAYS_OF_WEEK[dayOfWeek]}, ${MONTHS[month]} ${day}`
+  let formattedDate = `${dayNames[dayOfWeek].slice(0, 3)}, ${monthNames[month].slice(0, 3)} ${day}`
 
   // Only show the year if it's not the current year
   if (year !== currentYear) {
@@ -71,4 +71,11 @@ export function formatDateDistance(dateString: string) {
   return formatDistance(then, nowUtc, {
     addSuffix: true,
   })
+}
+
+export function toDateString(date: Date) {
+  const year = date.getFullYear().toString().padStart(4, "0")
+  const month = (date.getMonth() + 1).toString().padStart(2, "0")
+  const day = date.getDate().toString().padStart(2, "0")
+  return `${year}-${month}-${day}`
 }

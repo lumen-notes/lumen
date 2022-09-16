@@ -4,6 +4,7 @@ import clsx from "clsx"
 import React from "react"
 import { NavLink as RouterNavLink, NavLinkProps, Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
+import { toDateString } from "../utils/date"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -121,7 +122,7 @@ export function Root() {
                 </NavLink>
               </li>
               <li>
-                <NavLink to={`/dates/${getCurrentDateString()}`} aria-label="Today" end>
+                <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
                   {({ isActive }) =>
                     isActive ? (
                       <CalendarFillIcon24 date={new Date().getDate()} />
@@ -181,12 +182,4 @@ function NavLink(props: NavLinkProps) {
       {...props}
     />
   )
-}
-
-function getCurrentDateString() {
-  const now = new Date()
-  const year = now.getFullYear().toString().padStart(4, "0")
-  const month = (now.getMonth() + 1).toString().padStart(2, "0")
-  const day = now.getDate().toString().padStart(2, "0")
-  return `${year}-${month}-${day}`
 }
