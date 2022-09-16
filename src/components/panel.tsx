@@ -1,5 +1,4 @@
 import clsx from "clsx"
-import { useInView } from "react-intersection-observer"
 import { IconButton } from "./button"
 import { CloseIcon16 } from "./icons"
 
@@ -13,7 +12,6 @@ type PanelProps = {
 }
 
 export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
-  const [topRef, topInView] = useInView()
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
@@ -28,11 +26,9 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         }
       }}
     >
-      <div ref={topRef} />
       <div
         className={clsx(
-          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b p-4",
-          topInView ? "border-transparent" : "border-border-divider bg-bg-inset",
+          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-inset p-4",
         )}
       >
         <div className="flex flex-shrink gap-2">
@@ -48,7 +44,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           </IconButton>
         ) : null}
       </div>
-      {children}
+      <div className="p-4">{children}</div>
     </div>
   )
 }

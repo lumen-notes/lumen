@@ -24,7 +24,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <LinkHighlightProvider href={`/tags/${name}`}>
-        <div className="flex flex-col gap-4 px-4 pb-4">
+        <div className="flex flex-col gap-4">
           <NoteForm defaultBody={`#${name}`} />
           <NoteList key={name} ids={noteIds} />
         </div>

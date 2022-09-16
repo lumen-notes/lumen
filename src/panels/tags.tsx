@@ -60,7 +60,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
       icon={<TagIcon24 />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-2 px-4 pb-4">
+      <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2">
           <SearchInput
             placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}

@@ -17,7 +17,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
 
   return (
     <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
-      <div className="flex flex-col gap-4 px-4 pb-4">
+      <div className="flex flex-col gap-4">
         <NoteCard id={noteId} />
 
         <h3 className="leading-none">Backlinks</h3>

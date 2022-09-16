@@ -34,7 +34,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <LinkHighlightProvider href={`/dates/${date}`}>
-        <div className="flex flex-col gap-4 px-4 pb-4">
+        <div className="flex flex-col gap-4">
           <NoteForm defaultBody={`[[${date}]]`} />
           <NoteList key={date} ids={noteIds} />
         </div>
