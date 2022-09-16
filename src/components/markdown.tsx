@@ -44,12 +44,15 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         },
       }}
       components={{
-        // @ts-ignore I'm not sure how to extend the list of accepted component keys
+        // @ts-ignore I don't know how to extend the list of accepted component keys
         noteLink: NoteLink,
         // @ts-ignore
         tagLink: TagLink,
         // @ts-ignore
         dateLink: DateLink,
+        // Open external links in a new tab
+        // eslint-disable-next-line jsx-a11y/anchor-has-content
+        a: (props) => <a target="_blank" rel="noopener noreferrer" {...props} />,
       }}
     >
       {children}
