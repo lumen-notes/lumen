@@ -88,7 +88,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
                   // Outline the current day
                   isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
                   // Make outline bolder if current day is active
-                  isToday && isActive && "shadow-[inset_0_0_0_1.5px_currentColor]",
+                  isToday && isActive && "bg-text text-bg",
                 )}
               >
                 {date.getDate()}
