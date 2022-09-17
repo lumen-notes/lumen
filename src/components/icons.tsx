@@ -210,7 +210,7 @@ export function PlusIcon16() {
   )
 }
 
-export function ChevronLeft16() {
+export function ChevronLeftIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path
@@ -227,7 +227,7 @@ export function ChevronLeft16() {
   )
 }
 
-export function ChevronRight16() {
+export function ChevronRightIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path
@@ -240,6 +240,18 @@ export function ChevronRight16() {
         clipRule="evenodd"
         d="M11.293 8 5.646 2.354l.708-.708 6 6a.5.5 0 0 1 0 .708l-6 6-.708-.707L11.293 8Z"
       /> */}
+    </svg>
+  )
+}
+
+export function PaperclipIcon16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12.345 2.405a2.255 2.255 0 0 0-3.19 0L3.533 8.028a3.67 3.67 0 0 0 5.19 5.19L13.5 8.438 14.56 9.5l-4.777 4.778a5.17 5.17 0 1 1-7.31-7.31l5.622-5.623a3.755 3.755 0 1 1 5.31 5.31l-5.75 5.75a2.341 2.341 0 0 1-3.31-3.31L9 4.439 10.06 5.5l-4.655 4.655a.841.841 0 0 0 1.19 1.19l5.75-5.75c.88-.881.88-2.309 0-3.19Z"
+      />
     </svg>
   )
 }

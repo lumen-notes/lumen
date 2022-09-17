@@ -6,7 +6,7 @@ import { toDate } from "date-fns-tz"
 import React from "react"
 import { IconButton } from "../components/button"
 import { Card } from "../components/card"
-import { CalendarIcon24, ChevronLeft16, ChevronRight16 } from "../components/icons"
+import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
@@ -76,13 +76,13 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
             aria-label="Previous week"
             onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
           >
-            <ChevronLeft16 />
+            <ChevronLeftIcon16 />
           </IconButton>
           <IconButton
             aria-label="Next week"
             onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
           >
-            <ChevronRight16 />
+            <ChevronRightIcon16 />
           </IconButton>
         </div>
       </div>

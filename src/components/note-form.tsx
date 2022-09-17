@@ -16,7 +16,7 @@ import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
-import { CloseIcon16 } from "./icons"
+import { CloseIcon16, PaperclipIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
 
 type NoteFormProps = {
@@ -103,7 +103,7 @@ export function NoteForm({
         <div ref={editorRef} className="p-2" />
         <div className="flex justify-between">
           <IconButton>
-            <CloseIcon16 />
+            <PaperclipIcon16 />
           </IconButton>
           <div className="flex gap-2">
             {onCancel ? (
