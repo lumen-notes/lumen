@@ -17,7 +17,6 @@ export function LinkHighlightProvider({ href, children }: LinkHighlightProviderP
           margin: 0 -0.125rem;
           color: var(--color-text-highlight);
           background-color: var(--color-bg-highlight);
-          border-radius: 0.25rem;
         }`}
       </style>
       {children}

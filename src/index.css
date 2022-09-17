@@ -257,7 +257,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .markdown a {
-  @apply underline underline-offset-2;
+  @apply rounded underline underline-offset-2;
 }
 
 .markdown a[href^="http"]::after {

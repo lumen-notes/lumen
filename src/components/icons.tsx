@@ -186,3 +186,27 @@ export function PlusIcon16() {
     </svg>
   )
 }
+
+export function ChevronLeft16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m4.707 8 5.647-5.646-.708-.708-6 6a.5.5 0 0 0 0 .708l6 6 .707-.707L4.708 8Z"
+      />
+    </svg>
+  )
+}
+
+export function ChevronRight16() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.293 8 5.646 2.354l.708-.708 6 6a.5.5 0 0 1 0 .708l-6 6-.708-.707L11.293 8Z"
+      />
+    </svg>
+  )
+}
