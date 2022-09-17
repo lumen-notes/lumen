@@ -1,5 +1,13 @@
+import qs from "qs"
 import React from "react"
-import { Link as RouterLink, LinkProps, matchRoutes, Params } from "react-router-dom"
+import {
+  Link as RouterLink,
+  LinkProps,
+  matchRoutes,
+  Params,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"
 import { z } from "zod"
 import { DatePanel } from "../panels/date"
 import { NotePanel } from "../panels/note"
@@ -123,6 +131,8 @@ function focusFirstFocusableElement(element: HTMLElement | null) {
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>(
   ({ target = "_blank", ...props }, ref) => {
+    const location = useLocation()
+    const navigate = useNavigate()
     const { openPanel, updatePanel } = React.useContext(PanelsContext)
     const panel = React.useContext(PanelContext)
     return (
@@ -140,13 +150,24 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>(
 
           // Open link in the current panel
           if (target === "_self") {
+            const [pathname, search] = props.to.split("?")
+
             if (panel) {
-              const [pathname, search] = props.to.split("?")
               updatePanel?.(panel?.index, { pathname, search })
-              event.preventDefault()
             } else {
-              // TODO: Handle this case
+              // Preserve the current search params
+              const combinedSearch = {
+                ...qs.parse(location.search, { ignoreQueryPrefix: true }),
+                ...qs.parse(search),
+              }
+
+              navigate({
+                pathname,
+                search: qs.stringify(combinedSearch),
+              })
             }
+
+            event.preventDefault()
           }
         }}
       />
