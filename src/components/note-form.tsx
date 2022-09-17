@@ -14,8 +14,9 @@ import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
-import { Button } from "./button"
+import { Button, IconButton } from "./button"
 import { Card } from "./card"
+import { CloseIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
 
 type NoteFormProps = {
@@ -100,25 +101,30 @@ export function NoteForm({
         }}
       >
         <div ref={editorRef} className="p-2" />
-        <div className="flex gap-2 self-end">
-          {onCancel ? (
+        <div className="flex justify-between">
+          <IconButton>
+            <CloseIcon16 />
+          </IconButton>
+          <div className="flex gap-2">
+            {onCancel ? (
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <Button type="button" onClick={onCancel}>
+                    Cancel
+                  </Button>
+                </Tooltip.Trigger>
+                <Tooltip.Content side="bottom">esc</Tooltip.Content>
+              </Tooltip>
+            ) : null}
             <Tooltip>
               <Tooltip.Trigger asChild>
-                <Button type="button" onClick={onCancel}>
-                  Cancel
+                <Button type="submit" variant="primary">
+                  {id ? "Save" : "Add"}
                 </Button>
               </Tooltip.Trigger>
-              <Tooltip.Content side="bottom">esc</Tooltip.Content>
+              <Tooltip.Content side="bottom">⌘⏎</Tooltip.Content>
             </Tooltip>
-          ) : null}
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <Button type="submit" variant="primary">
-                {id ? "Save" : "Add"}
-              </Button>
-            </Tooltip.Trigger>
-            <Tooltip.Content side="bottom">⌘⏎</Tooltip.Content>
-          </Tooltip>
+          </div>
         </div>
       </form>
     </Card>

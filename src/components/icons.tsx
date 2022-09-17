@@ -47,12 +47,18 @@ export function NoteFillIcon24() {
 export function NoteIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M4 6h8v1H4V6ZM9 9H4v1h5V9Z" />
+      <path d="M4 6h8v1.5H4V6ZM9 9H4v1.5h5V9Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2 2a2 2 0 0 0-2 2v8.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2Zm12 1.5H2a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5Z"
+      />
+      {/* <path d="M4 6h8v1H4V6ZM9 9H4v1h5V9Z" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13Zm13 1h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5Z"
-      />
+      /> */}
     </svg>
   )
 }
@@ -84,7 +90,13 @@ export function TagFillIcon24() {
 export function TagIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M7.914 1.293A1 1 0 0 1 8.621 1H14a1 1 0 0 1 1 1v5.379a1 1 0 0 1-.293.707l-6.5 6.5a1 1 0 0 1-1.414 0L1.414 9.207a1 1 0 0 1 0-1.414l6.5-6.5ZM8.621 0a2 2 0 0 0-1.414.586l-6.5 6.5a2 2 0 0 0 0 2.828l5.379 5.379a2 2 0 0 0 2.828 0l6.5-6.5A2 2 0 0 0 16 7.379V2a2 2 0 0 0-2-2H8.621ZM11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+      <path d="M11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m.914 9.914 5.172 5.172a2 2 0 0 0 2.828 0l6.5-6.5A2 2 0 0 0 16 7.172V2a2 2 0 0 0-2-2H8.828a2 2 0 0 0-1.414.586l-6.5 6.5a2 2 0 0 0 0 2.828ZM14.5 2v5.172a.5.5 0 0 1-.146.353l-6.5 6.5a.5.5 0 0 1-.708 0L1.975 8.854a.5.5 0 0 1 0-.708l6.5-6.5a.5.5 0 0 1 .353-.146H14a.5.5 0 0 1 .5.5Z"
+      />
+      {/* <path d="M7.914 1.293A1 1 0 0 1 8.621 1H14a1 1 0 0 1 1 1v5.379a1 1 0 0 1-.293.707l-6.5 6.5a1 1 0 0 1-1.414 0L1.414 9.207a1 1 0 0 1 0-1.414l6.5-6.5ZM8.621 0a2 2 0 0 0-1.414.586l-6.5 6.5a2 2 0 0 0 0 2.828l5.379 5.379a2 2 0 0 0 2.828 0l6.5-6.5A2 2 0 0 0 16 7.379V2a2 2 0 0 0-2-2H8.621ZM11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" /> */}
     </svg>
   )
 }
@@ -150,8 +162,13 @@ export function SearchIcon16() {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M10.73 11.436a6.5 6.5 0 1 1 .707-.707l4.417 4.417-.707.708-4.418-4.418ZM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+        d="M11.5 6.5a5 5 0 1 1-10 0 5 5 0 0 1 10 0Zm-.965 5.096a6.5 6.5 0 1 1 1.06-1.06l3.935 3.934-1.06 1.06-3.935-3.934Z"
       />
+      {/* <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.73 11.436a6.5 6.5 0 1 1 .707-.707l4.417 4.417-.707.708-4.418-4.418ZM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z"
+      /> */}
     </svg>
   )
 }
@@ -174,7 +191,12 @@ export function LoadingIcon16() {
 export function CloseIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="m2.5 1.793 5.5 5.5 5.5-5.5.707.707-5.5 5.5 5.5 5.5-.707.707-5.5-5.5-5.5 5.5-.707-.707 5.5-5.5-5.5-5.5.707-.707Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2.5 1.44 8 6.94l5.5-5.5 1.06 1.06L9.06 8l5.5 5.5-1.06 1.06L8 9.06l-5.5 5.5-1.06-1.06L6.94 8l-5.5-5.5L2.5 1.44Z"
+      />
+      {/* <path d="m2.5 1.793 5.5 5.5 5.5-5.5.707.707-5.5 5.5 5.5 5.5-.707.707-5.5-5.5-5.5 5.5-.707-.707 5.5-5.5-5.5-5.5.707-.707Z" /> */}
     </svg>
   )
 }
@@ -182,7 +204,8 @@ export function CloseIcon16() {
 export function PlusIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M8 1H7v6H1v1h6v6h1V8h6V7H8V1Z" />
+      <path d="M8.5 1H7v6H1v1.5h6v6h1.5v-6h6V7h-6V1Z" />
+      {/* <path d="M8 1H7v6H1v1h6v6h1V8h6V7H8V1Z" /> */}
     </svg>
   )
 }
@@ -193,8 +216,13 @@ export function ChevronLeft16() {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="m4.707 8 5.647-5.646-.708-.708-6 6a.5.5 0 0 0 0 .708l6 6 .707-.707L4.708 8Z"
+        d="m5.06 8 5.97-5.97L9.97.97l-6.5 6.5a.75.75 0 0 0 0 1.06l6.5 6.5 1.06-1.06L5.06 8Z"
       />
+      {/* <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="m4.707 8 5.647-5.646-.708-.708-6 6a.5.5 0 0 0 0 .708l6 6 .707-.707L4.708 8Z"
+      /> */}
     </svg>
   )
 }
@@ -205,8 +233,13 @@ export function ChevronRight16() {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M11.293 8 5.646 2.354l.708-.708 6 6a.5.5 0 0 1 0 .708l-6 6-.708-.707L11.293 8Z"
+        d="M10.94 8 4.97 2.03 6.03.97l6.5 6.5a.75.75 0 0 1 0 1.06l-6.5 6.5-1.06-1.06L10.94 8Z"
       />
+      {/* <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M11.293 8 5.646 2.354l.708-.708 6 6a.5.5 0 0 1 0 .708l-6 6-.708-.707L11.293 8Z"
+      /> */}
     </svg>
   )
 }
