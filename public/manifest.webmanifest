@@ -10,5 +10,6 @@
     }
   ],
   "start_url": "/",
-  "display": "fullscreen"
+  "display": "fullscreen",
+  "background_color": "#ffffff"
 }

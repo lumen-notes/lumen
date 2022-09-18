@@ -1,3 +1,5 @@
+// TODO: Implement caching strategies
+
 self.addEventListener("install", (event) => {
   event.waitUntil(() => {
     console.log("Service worker installed")
