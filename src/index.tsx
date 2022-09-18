@@ -30,3 +30,19 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     </GlobalStateProvider>
   </React.StrictMode>,
 )
+
+async function registerServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    try {
+      console.log("Registering service worker...")
+      const registration = await navigator.serviceWorker.register("/service-worker.js")
+      console.log("Service worker registered:", registration)
+    } catch (error) {
+      console.error("Error during service worker registration:", error)
+    }
+  } else {
+    console.log("Service workers not supported")
+  }
+}
+
+registerServiceWorker()
