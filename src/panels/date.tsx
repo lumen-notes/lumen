@@ -68,8 +68,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
     <Card className="flex flex-col gap-2 p-2">
       <div className="flex items-center justify-between">
         <span className="px-2 text-base font-semibold">
-          {monthNames[(startOfWeek.getMonth() + 1) as keyof typeof monthNames]}{" "}
-          {startOfWeek.getFullYear()}
+          {monthNames[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
         <div>
           <IconButton
@@ -100,11 +99,11 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
 }
 
 function CalendarDate({ date, active: isActive = false }: { date: Date; active?: boolean }) {
-  const dayName = dayNames[date.getDay() as keyof typeof dayNames]
-  const monthMame = monthNames[date.getMonth() as keyof typeof monthNames]
+  const dayName = dayNames[date.getDay()]
+  const monthName = monthNames[date.getMonth()]
   const day = date.getDate()
   const year = date.getFullYear()
-  const label = `${dayName}, ${monthMame} ${day}, ${year}`
+  const label = `${dayName}, ${monthName} ${day}, ${year}`
   const isToday = toDateString(date) === toDateString(new Date())
   return (
     <RovingFocusGroup.Item asChild active={isActive}>
@@ -120,7 +119,7 @@ function CalendarDate({ date, active: isActive = false }: { date: Date; active?:
             "font-semibold text-text before:absolute before:-bottom-2 before:h-[2px] before:w-full before:bg-text before:content-['']",
         )}
       >
-        <span>{dayNames[date.getDay() as keyof typeof dayNames].slice(0, 2)}</span>
+        <span>{dayName.slice(0, 2)}</span>
         <span
           className={clsx(
             isToday && "-my-[2px] -mx-1 rounded py-[2px] px-1",
