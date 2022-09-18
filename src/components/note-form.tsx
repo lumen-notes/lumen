@@ -109,9 +109,7 @@ export function NoteForm({
             {onCancel ? (
               <Tooltip>
                 <Tooltip.Trigger asChild>
-                  <Button type="button" onClick={onCancel}>
-                    Cancel
-                  </Button>
+                  <Button onClick={onCancel}>Cancel</Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content side="bottom">esc</Tooltip.Content>
               </Tooltip>
