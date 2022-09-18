@@ -146,12 +146,18 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
 export function CalendarIcon16() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M13 4H3v1h10V4Z" />
+      <path d="M13 4H3v1.5h10V4Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm2-.5h12a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5Z"
+      />
+      {/* <path d="M13 4H3v1h10V4Z" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm2-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1Z"
-      />
+      /> */}
     </svg>
   )
 }
