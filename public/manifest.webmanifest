@@ -1,0 +1,14 @@
+{
+  "name": "Lumen",
+  "short_name": "Lumen",
+  "description": "A system for thinking, writing, learning, and mindfulness",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "fullscreen"
+}
