@@ -9,4 +9,5 @@ module.exports = {
   ],
   swDest: "dist/service-worker.js",
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
+  skipWaiting: true,
 }
