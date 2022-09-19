@@ -23,18 +23,18 @@ export function Root() {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
 
-  React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      // Reload with `command + r`
-      if (event.key === "r" && event.metaKey && !event.shiftKey) {
-        send("RELOAD")
-        event.preventDefault()
-      }
-    }
+  // React.useEffect(() => {
+  //   function onKeyDown(event: KeyboardEvent) {
+  //     // Reload with `command + r`
+  //     if (event.key === "r" && event.metaKey && !event.shiftKey) {
+  //       send("RELOAD")
+  //       event.preventDefault()
+  //     }
+  //   }
 
-    window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
-  }, [send])
+  //   window.addEventListener("keydown", onKeyDown)
+  //   return () => window.removeEventListener("keydown", onKeyDown)
+  // }, [send])
 
   if (state.matches("loadingContext")) {
     return null
@@ -147,9 +147,7 @@ export function Root() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content side="right" align="end">
-                <DropdownMenu.Item onClick={() => send("RELOAD")} shortcut="⌘R">
-                  Reload
-                </DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => send("RELOAD")}>Reload</DropdownMenu.Item>
                 <DropdownMenu.Item onClick={() => send("DISCONNECT")}>Disconnect</DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
