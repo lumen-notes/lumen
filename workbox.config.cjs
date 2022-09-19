@@ -7,6 +7,6 @@ module.exports = {
       handler: "NetworkFirst",
     },
   ],
-  swDest: "dist/sw.js",
+  swDest: "dist/service-worker.js",
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
 }

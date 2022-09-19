@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:sw": "workbox generateSW workbox.config.cjs",
+    "build:service-worker": "workbox generateSW workbox.config.cjs",
     "build": "tsc && vite build",
-    "postbuild": "npm run build:sw",
+    "postbuild": "npm run build:service-worker",
     "preview": "vite preview",
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.ts,.tsx src",
