@@ -76,7 +76,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
-          <Card className="w-96 px-4 py-3" elevation={1}>
+          <Card className="z-20 w-96 px-4 py-3" elevation={1}>
             <Markdown>{body ?? "Not found"}</Markdown>
           </Card>
         </HoverCard.Content>

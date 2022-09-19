@@ -28,7 +28,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
     >
       <div
         className={clsx(
-          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-inset p-4",
+          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-backdrop p-4 backdrop-blur-md",
         )}
       >
         <div className="flex flex-shrink gap-2">

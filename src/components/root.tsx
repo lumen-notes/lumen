@@ -77,11 +77,11 @@ export function Root() {
           }}
         >
           <AlertDialog.Portal>
-            <AlertDialog.Overlay className="fixed inset-0 z-10 bg-bg-backdrop" />
+            <AlertDialog.Overlay className="fixed inset-0 z-20 bg-bg-backdrop backdrop-blur-sm" />
             <AlertDialog.Content asChild>
               <Card
                 elevation={2}
-                className="fixed top-1/2 left-1/2 z-10 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-4 p-4"
+                className="fixed top-1/2 left-1/2 z-20 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-4 p-4"
               >
                 <div className="flex flex-col gap-2">
                   <AlertDialog.Title className="text-base font-semibold leading-none">
@@ -112,8 +112,8 @@ export function Root() {
           </AlertDialog.Portal>
         </AlertDialog.Root>
       ) : null}
-      <div className="flex h-screen">
-        <div className="flex flex-col items-center justify-between border-r border-border-divider p-2">
+      <div className="flex h-screen overflow-auto">
+        <div className="sticky left-0 z-20 flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2 backdrop-blur-md">
           <nav>
             <ul className="flex flex-col gap-2">
               <li>
@@ -153,7 +153,7 @@ export function Root() {
             </DropdownMenu>
           </div>
         </div>
-        <main className="flex-shrink flex-grow overflow-auto">
+        <main className="flex-shrink-0">
           <Outlet />
         </main>
       </div>
