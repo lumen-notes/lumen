@@ -35,7 +35,7 @@ async function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     try {
       console.log("Registering service worker...")
-      const registration = await navigator.serviceWorker.register("/service-worker.js")
+      const registration = await navigator.serviceWorker.register("/sw.js")
       console.log("Service worker registered:", registration)
     } catch (error) {
       console.error("Error during service worker registration:", error)
@@ -45,4 +45,7 @@ async function registerServiceWorker() {
   }
 }
 
-registerServiceWorker()
+// Register service worker in production
+if (process.env.NODE_ENV === "production") {
+  registerServiceWorker()
+}
