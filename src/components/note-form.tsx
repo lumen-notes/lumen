@@ -12,7 +12,7 @@ import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
-import { GlobalStateContext, NoteId } from "../global-state"
+import { GlobalStateContext, NoteId, UPLOADS_DIRECTORY } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
@@ -74,12 +74,57 @@ export function NoteForm({
     }
   }
 
+  function attachFile(file: File) {
+    const fileId = Date.now().toString()
+    const fileExtension = file.name.split(".").pop()
+    const fileName = file.name.replace(`.${fileExtension}`, "")
+
+    globalState.service?.send({
+      type: "UPLOAD_FILE",
+      id: fileId,
+      file,
+    })
+
+    let markdown = `[${fileName}](/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension})`
+
+    // Use markdown image syntax if file is an image
+    if (file.type.startsWith("image/")) {
+      markdown = `!${markdown}`
+    }
+
+    const { from = 0, to = 0 } = view?.state.selection.ranges[view?.state.selection.mainIndex] || {}
+    const anchor = from + markdown.indexOf("]")
+    const head = from + markdown.indexOf("[") + 1
+
+    view?.dispatch({
+      // Replace the current selection with the markdown
+      changes: [{ from, to, insert: markdown }],
+      // Select the text content of the inserted markdown
+      selection: { anchor, head },
+    })
+
+    view?.focus()
+  }
+
   return (
     <Card
       className={clsx(
         "p-2",
         editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
       )}
+      // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+      onDrop={(event) => {
+        const [item] = Array.from(event.dataTransfer.items)
+        const file = item.getAsFile()
+
+        if (file) {
+          attachFile(file)
+          event.preventDefault()
+        }
+      }}
+      onDragOver={(event) => {
+        event.preventDefault()
+      }}
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <form
@@ -105,12 +150,11 @@ export function NoteForm({
           ref={editorRef}
           className="p-2"
           onPaste={(event) => {
-            for (const file of event.clipboardData.files) {
-              globalState.service?.send({
-                type: "UPLOAD_FILE",
-                id: Date.now().toString(),
-                file,
-              })
+            const [file] = Array.from(event.clipboardData.files)
+
+            if (file) {
+              attachFile(file)
+              event.preventDefault()
             }
           }}
         />
@@ -120,16 +164,14 @@ export function NoteForm({
             onChange={(files) => {
               if (!files) return
 
-              for (const file of files) {
-                globalState.service?.send({
-                  type: "UPLOAD_FILE",
-                  id: Date.now().toString(),
-                  file,
-                })
+              const [file] = Array.from(files)
+
+              if (file) {
+                attachFile(file)
               }
             }}
           >
-            <IconButton aria-label="Attach file">
+            <IconButton aria-label="Attach a file">
               <PaperclipIcon16 />
             </IconButton>
           </FileInputButton>
