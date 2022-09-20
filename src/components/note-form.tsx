@@ -16,7 +16,8 @@ import { GlobalStateContext, NoteId } from "../global-state"
 import { formatDate } from "../utils/date"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
-import { CloseIcon16, PaperclipIcon16 } from "./icons"
+import { FileInputButton } from "./file-input-button"
+import { PaperclipIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
 
 type NoteFormProps = {
@@ -102,9 +103,11 @@ export function NoteForm({
       >
         <div ref={editorRef} className="p-2" />
         <div className="flex justify-between">
-          <IconButton>
-            <PaperclipIcon16 />
-          </IconButton>
+          <FileInputButton onChange={console.log} asChild>
+            <IconButton>
+              <PaperclipIcon16 />
+            </IconButton>
+          </FileInputButton>
           <div className="flex gap-2">
             {onCancel ? (
               <Tooltip>
