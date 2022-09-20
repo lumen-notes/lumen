@@ -101,10 +101,35 @@ export function NoteForm({
           }
         }}
       >
-        <div ref={editorRef} className="p-2" />
+        <div
+          ref={editorRef}
+          className="p-2"
+          onPaste={(event) => {
+            for (const file of event.clipboardData.files) {
+              globalState.service?.send({
+                type: "UPLOAD_FILE",
+                id: Date.now().toString(),
+                file,
+              })
+            }
+          }}
+        />
         <div className="flex justify-between">
-          <FileInputButton onChange={console.log} asChild>
-            <IconButton>
+          <FileInputButton
+            asChild
+            onChange={(files) => {
+              if (!files) return
+
+              for (const file of files) {
+                globalState.service?.send({
+                  type: "UPLOAD_FILE",
+                  id: Date.now().toString(),
+                  file,
+                })
+              }
+            }}
+          >
+            <IconButton aria-label="Attach file">
               <PaperclipIcon16 />
             </IconButton>
           </FileInputButton>

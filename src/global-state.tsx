@@ -9,6 +9,8 @@ import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
 import { isSupported } from "./utils/is-supported"
 
+export const UPLOADS_DIRECTORY = "uploads"
+
 export type NoteId = string
 
 type Context = {
@@ -27,6 +29,7 @@ type Event =
   | { type: "DISCONNECT" }
   | { type: "UPSERT_NOTE"; id: NoteId; body: string }
   | { type: "DELETE_NOTE"; id: NoteId }
+  | { type: "UPLOAD_FILE"; id: string; file: File }
 
 const machine = createMachine(
   {
@@ -193,6 +196,9 @@ const machine = createMachine(
           DELETE_NOTE: {
             actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
           },
+          UPLOAD_FILE: {
+            actions: ["uploadFile"],
+          },
         },
       },
     },
@@ -312,7 +318,7 @@ const machine = createMachine(
           create: true,
         })
 
-        // Create a FileSystemWritableFileStream to write to
+        // Create a stream to write to
         const writeableStream = await fileHandle.createWritable()
 
         // Write the contents of the file
@@ -359,6 +365,34 @@ const machine = createMachine(
 
         // Delete the file
         await context.directoryHandle.removeEntry(`${event.id}.md`)
+      },
+      uploadFile: async (context, event) => {
+        if (!context.directoryHandle) {
+          throw new Error("Directory not found")
+        }
+
+        const fileExtension = event.file.name.split(".").pop()
+        const fileName = `${event.id}.${fileExtension}`
+
+        // Get handle for uploads directory
+        const uploadsDirectoryHandle = await context.directoryHandle.getDirectoryHandle(
+          UPLOADS_DIRECTORY,
+          {
+            create: true,
+          },
+        )
+
+        // Create a new file in the uploads directory
+        const fileHandle = await uploadsDirectoryHandle.getFileHandle(fileName, { create: true })
+
+        // Create a stream to write to
+        const writeableStream = await fileHandle.createWritable()
+
+        // Write the contents of the file
+        await writeableStream.write(await event.file.arrayBuffer())
+
+        // Close the stream
+        await writeableStream.close()
       },
     },
     guards: {
