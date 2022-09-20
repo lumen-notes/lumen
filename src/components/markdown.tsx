@@ -2,6 +2,7 @@ import * as HoverCard from "@radix-ui/react-hover-card"
 import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
+import { Link } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -51,8 +52,16 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         // @ts-ignore
         dateLink: DateLink,
         // Open external links in a new tab
-        // eslint-disable-next-line jsx-a11y/anchor-has-content
-        a: (props) => <a target="_blank" rel="noopener noreferrer" {...props} />,
+        a: (props) => {
+          const isExternal = props.href?.startsWith("http")
+
+          if (isExternal) {
+            // eslint-disable-next-line jsx-a11y/anchor-has-content
+            return <a target="_blank" rel="noopener noreferrer" {...props} />
+          }
+
+          return <Link to={props.href || ""}>{props.children}</Link>
+        },
       }}
     >
       {children}
