@@ -4,17 +4,20 @@ import React from "react"
 import { LoadingIcon16 } from "../components/icons"
 import { GlobalStateContext } from "../global-state"
 
+const fileCache = new Map<string, { file: File; base64: string }>()
+
 type FilePreviewProps = {
   path: string
   alt?: string
 }
 
 export function FilePreview({ path, alt = "" }: FilePreviewProps) {
+  const cachedFile = fileCache.get(path)
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const [file, setFile] = React.useState<File | null>(null)
-  const [base64, setBase64] = React.useState<string | null>(null)
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [file, setFile] = React.useState<File | null>(cachedFile?.file || null)
+  const [base64, setBase64] = React.useState<string | null>(cachedFile?.base64 || null)
+  const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
     if (!file && state.matches("connected")) {
@@ -33,6 +36,9 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
 
         setFile(file)
         setBase64(base64)
+
+        // Cache the file and base64 data
+        fileCache.set(path, { file, base64 })
       } catch (error) {
         console.error(error)
       } finally {
@@ -43,8 +49,9 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
 
   if (!file) {
     return isLoading || !state.matches("connected") ? (
-      <div className="flex items-center gap-2 text-text-muted">
-        <LoadingIcon16 /> Loading...
+      <div className="flex items-center gap-2 leading-4 text-text-muted">
+        <LoadingIcon16 />
+        Loading...
       </div>
     ) : (
       <div>File not found</div>
