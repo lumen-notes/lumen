@@ -106,10 +106,12 @@ export function NoteForm({
     view?.focus()
   }
 
+  const [isDraggingOver, setIsDraggingOver] = React.useState(false)
+
   return (
     <Card
       className={clsx(
-        "p-2",
+        "relative p-2",
         editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
       )}
       // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
@@ -121,11 +123,28 @@ export function NoteForm({
           attachFile(file)
           event.preventDefault()
         }
+
+        setIsDraggingOver(false)
       }}
       onDragOver={(event) => {
+        // Allow drop event
+        event.preventDefault()
+      }}
+      onDragEnter={(event) => {
+        setIsDraggingOver(true)
         event.preventDefault()
       }}
     >
+      {/* Dropzone overlay */}
+      {isDraggingOver ? (
+        <div
+          className="absolute inset-0 z-10 rounded-lg bg-bg-hover"
+          onDragLeave={(event) => {
+            setIsDraggingOver(false)
+            event.preventDefault()
+          }}
+        />
+      ) : null}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <form
         className="flex flex-col gap-2"
