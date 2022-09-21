@@ -261,3 +261,15 @@ export function PaperclipIcon16() {
     </svg>
   )
 }
+
+export function FileIcon24() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M13.757 1a3 3 0 0 1 2.122.879L20.12 6.12A3 3 0 0 1 21 8.243V20a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h7.757ZM4.5 20V4A1.5 1.5 0 0 1 6 2.5h7v5.75c0 .414.336.75.75.75h5.75v11a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20ZM19.303 7.5a1.503 1.503 0 0 0-.242-.318l-4.243-4.243a1.498 1.498 0 0 0-.318-.242V7.5h4.803Z"
+      />
+    </svg>
+  )
+}
