@@ -10,8 +10,16 @@ export function FilePanel({ id, params = {}, onClose }: PanelProps) {
 
   return (
     // TODO: Create 24px file icon
-    <Panel id={id} title="File" icon={<NoteIcon24 />} onClose={onClose}>
-      <FilePreview path={path} />
+    <Panel
+      id={id}
+      title="File"
+      description={path.split("/").pop()}
+      icon={<NoteIcon24 />}
+      onClose={onClose}
+    >
+      <div className="grid h-full w-full place-items-center">
+        <FilePreview path={path} />
+      </div>
     </Panel>
   )
 }
