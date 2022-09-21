@@ -29,7 +29,10 @@
     "react/display-name": "off",
     "react/prop-types": "off",
     "react/no-unescaped-entities": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "args": "none", "ignoreRestSiblings": true }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "args": "none", "ignoreRestSiblings": true, "destructuredArrayIgnorePattern": "^_" }
+    ],
     "@typescript-eslint/ban-ts-comment": "off"
   }
 }

@@ -2,7 +2,7 @@ import * as HoverCard from "@radix-ui/react-hover-card"
 import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { Link } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -11,6 +11,7 @@ import { remarkTagLink } from "../remark-plugins/tag-link"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
+import { FilePreview } from "./file-preview"
 import { Panels } from "./panels"
 import { Tooltip } from "./tooltip"
 
@@ -45,29 +46,45 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         },
       }}
       components={{
+        a: Link,
+        img: Image,
         // @ts-ignore I don't know how to extend the list of accepted component keys
         noteLink: NoteLink,
         // @ts-ignore
         tagLink: TagLink,
         // @ts-ignore
         dateLink: DateLink,
-        // Open external links in a new tab
-        a: (props) => {
-          const isExternal = props.href?.startsWith("http")
-
-          if (isExternal) {
-            // eslint-disable-next-line jsx-a11y/anchor-has-content
-            return <a target="_blank" rel="noopener noreferrer" {...props} />
-          }
-
-          return <Link to={props.href || ""}>{props.children}</Link>
-        },
       }}
     >
       {children}
     </ReactMarkdown>
   )
 })
+
+function Link(props: React.ComponentPropsWithoutRef<"a">) {
+  const isExternal = props.href?.startsWith("http")
+
+  // Open external links in a new tab
+  if (isExternal) {
+    // eslint-disable-next-line jsx-a11y/anchor-has-content
+    return <a target="_blank" rel="noopener noreferrer" {...props} />
+  }
+
+  return <RouterLink to={props.href || ""}>{props.children}</RouterLink>
+}
+
+function Image(props: React.ComponentPropsWithoutRef<"img">) {
+  // Render local files with FilePreview
+  if (props.src?.startsWith("/file")) {
+    const [_, search] = props.src.split("?")
+    const searchParams = new URLSearchParams(search)
+    const path = searchParams.get("path") || ""
+    return <FilePreview path={path} alt={props.alt} />
+  }
+
+  // eslint-disable-next-line jsx-a11y/alt-text
+  return <img {...props} />
+}
 
 type NoteLinkProps = {
   id: string

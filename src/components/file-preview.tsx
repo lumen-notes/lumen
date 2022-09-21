@@ -4,7 +4,12 @@ import React from "react"
 import { LoadingIcon16 } from "../components/icons"
 import { GlobalStateContext } from "../global-state"
 
-export function FilePreview({ path }: { path: string }) {
+type FilePreviewProps = {
+  path: string
+  alt?: string
+}
+
+export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const [file, setFile] = React.useState<File | null>(null)
@@ -50,7 +55,7 @@ export function FilePreview({ path }: { path: string }) {
 
   // Image
   if (file.type.startsWith("image/")) {
-    return <img src={src} alt="" />
+    return <img src={src} alt={alt} />
   }
 
   // Video
@@ -66,12 +71,12 @@ export function FilePreview({ path }: { path: string }) {
   // Audio
   if (file.type.startsWith("audio/")) {
     // eslint-disable-next-line jsx-a11y/media-has-caption
-    return <audio controls src={src} />
+    return <audio controls src={src} className="w-full max-w-lg" />
   }
 
   // PDF (< 1 MB)
   if (file.type === "application/pdf" && file.size < 1000000) {
-    return <iframe title={path} src={src} className="h-screen w-screen" />
+    return <iframe title={path} src={src} className="h-full w-full" />
   }
 
   return (
