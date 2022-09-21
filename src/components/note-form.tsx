@@ -86,9 +86,7 @@ export function NoteForm({
       file,
     })
 
-    let markdown = `[${fileName}](/file?${qs.stringify({
-      path: `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`,
-    })})`
+    let markdown = `[${fileName}](/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension})`
 
     // Use markdown image syntax if file is an image
     if (file.type.startsWith("image/")) {

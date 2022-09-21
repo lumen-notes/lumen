@@ -1,5 +1,6 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { useActor } from "@xstate/react"
+import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
@@ -62,8 +63,10 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
   // Open local files in a panel
-  if (props.href?.startsWith("/file")) {
-    return <Panels.Link to={props.href}>{props.children}</Panels.Link>
+  if (props.href?.startsWith("/")) {
+    return (
+      <Panels.Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Panels.Link>
+    )
   }
 
   // eslint-disable-next-line jsx-a11y/anchor-has-content
@@ -72,11 +75,8 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
-  if (props.src?.startsWith("/file")) {
-    const [_, search] = props.src.split("?")
-    const searchParams = new URLSearchParams(search)
-    const path = searchParams.get("path") || ""
-    return <FilePreview path={path} alt={props.alt} />
+  if (props.src?.startsWith("/")) {
+    return <FilePreview path={props.src} alt={props.alt} />
   }
 
   // eslint-disable-next-line jsx-a11y/alt-text
