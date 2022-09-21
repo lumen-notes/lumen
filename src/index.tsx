@@ -2,10 +2,12 @@ import * as Tooltip from "@radix-ui/react-tooltip"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { PermissionDialog } from "./components/permission-dialog"
 import { Root } from "./components/root"
 import { GlobalStateProvider } from "./global-state"
 import "./index.css"
 import { DatePage } from "./pages/date"
+import { FilePage } from "./pages/file"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { TagPage } from "./pages/tag"
@@ -15,8 +17,10 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <GlobalStateProvider>
       <Tooltip.Provider>
+        <PermissionDialog />
         <BrowserRouter>
           <Routes>
+            <Route path="/file" element={<FilePage />} />
             <Route path="/" element={<Root />}>
               <Route index element={<NotesPage />} />
               <Route path=":id" element={<NotePage />} />

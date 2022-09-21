@@ -108,7 +108,7 @@ const machine = createMachine(
           onDone: [
             {
               cond: "isGranted",
-              target: "loadingNotes",
+              target: "connected",
             },
             {
               cond: "isPrompt",
@@ -144,7 +144,7 @@ const machine = createMachine(
           id: "requestPermission",
           onDone: [
             {
-              target: "loadingNotes",
+              target: "connected",
             },
           ],
           onError: [
@@ -161,43 +161,48 @@ const machine = createMachine(
           onDone: [
             {
               actions: "setContext",
-              target: "loadingNotes",
+              target: "connected",
             },
           ],
           onError: "disconnected",
         },
       },
-      loadingNotes: {
-        invoke: {
-          src: "loadNotes",
-          id: "loadNotes",
-          onDone: [
-            {
-              actions: ["setContext", "setContextInIndexedDB"],
-              target: "connected",
-            },
-          ],
-        },
-      },
       connected: {
-        on: {
-          SHOW_DIRECTORY_PICKER: {
-            target: "showingDirectoryPicker",
+        initial: "loadingNotes",
+        states: {
+          loadingNotes: {
+            invoke: {
+              src: "loadNotes",
+              id: "loadNotes",
+              onDone: [
+                {
+                  actions: ["setContext", "setContextInIndexedDB"],
+                  target: "idle",
+                },
+              ],
+            },
           },
-          RELOAD: {
-            target: "queryingPermission",
-          },
-          DISCONNECT: {
-            target: "disconnected",
-          },
-          UPSERT_NOTE: {
-            actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
-          },
-          DELETE_NOTE: {
-            actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
-          },
-          UPLOAD_FILE: {
-            actions: ["uploadFile"],
+          idle: {
+            on: {
+              SHOW_DIRECTORY_PICKER: {
+                target: "#global.showingDirectoryPicker",
+              },
+              RELOAD: {
+                target: "#global.queryingPermission",
+              },
+              DISCONNECT: {
+                target: "#global.disconnected",
+              },
+              UPSERT_NOTE: {
+                actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
+              },
+              DELETE_NOTE: {
+                actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
+              },
+              UPLOAD_FILE: {
+                actions: ["uploadFile"],
+              },
+            },
           },
         },
       },
@@ -366,6 +371,7 @@ const machine = createMachine(
         // Delete the file
         await context.directoryHandle.removeEntry(`${event.id}.md`)
       },
+      // TODO: Move uploadFile out of the global state machine
       uploadFile: async (context, event) => {
         if (!context.directoryHandle) {
           throw new Error("Directory not found")

@@ -189,7 +189,7 @@ export function LoadingIcon16() {
       fill="currentColor"
       aria-hidden
     >
-      <path d="M8 1a7 7 0 1 0 7 7h-1a6 6 0 1 1-6-6V1Z" />
+      <path d="M8 1a7 7 0 1 0 7 7h-1.5A5.5 5.5 0 1 1 8 2.5V1Z" />
     </svg>
   )
 }

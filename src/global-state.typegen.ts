@@ -99,14 +99,16 @@ export interface Typegen0 {
   eventsCausingDelays: {}
   matchesStates:
     | "connected"
+    | "connected.idle"
+    | "connected.loadingNotes"
     | "disconnected"
     | "initial"
     | "loadingContext"
-    | "loadingNotes"
     | "notSupported"
     | "prompt"
     | "queryingPermission"
     | "requestingPermission"
     | "showingDirectoryPicker"
+    | { connected?: "idle" | "loadingNotes" }
   tags: never
 }

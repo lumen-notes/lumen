@@ -19,6 +19,7 @@ import { Card } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { PaperclipIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
+import qs from "qs"
 
 type NoteFormProps = {
   id?: NoteId
@@ -85,7 +86,9 @@ export function NoteForm({
       file,
     })
 
-    let markdown = `[${fileName}](/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension})`
+    let markdown = `[${fileName}](/file?${qs.stringify({
+      path: `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`,
+    })})`
 
     // Use markdown image syntax if file is an image
     if (file.type.startsWith("image/")) {
