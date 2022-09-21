@@ -19,7 +19,6 @@ import { Card } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { PaperclipIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
-import qs from "qs"
 
 type NoteFormProps = {
   id?: NoteId
