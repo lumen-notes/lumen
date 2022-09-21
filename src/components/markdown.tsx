@@ -2,7 +2,6 @@ import * as HoverCard from "@radix-ui/react-hover-card"
 import { useActor } from "@xstate/react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { Link as RouterLink } from "react-router-dom"
 import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -62,15 +61,13 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 })
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
-  const isExternal = props.href?.startsWith("http")
-
-  // Open external links in a new tab
-  if (isExternal) {
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
-    return <a target="_blank" rel="noopener noreferrer" {...props} />
+  // Open local files in a panel
+  if (props.href?.startsWith("/file")) {
+    return <Panels.Link to={props.href}>{props.children}</Panels.Link>
   }
 
-  return <RouterLink to={props.href || ""}>{props.children}</RouterLink>
+  // eslint-disable-next-line jsx-a11y/anchor-has-content
+  return <a target="_blank" rel="noopener noreferrer" {...props} />
 }
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {

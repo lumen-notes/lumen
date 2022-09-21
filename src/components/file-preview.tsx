@@ -74,10 +74,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     return <audio controls src={src} className="w-full max-w-lg" />
   }
 
-  // PDF (< 1 MB)
-  if (file.type === "application/pdf" && file.size < 1000000) {
-    return <iframe title={path} src={src} className="h-full w-full" />
-  }
+  // TODO: Render PDFs
 
   return (
     <div>

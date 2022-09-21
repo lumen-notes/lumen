@@ -370,6 +370,8 @@ const machine = createMachine(
 
         // Delete the file
         await context.directoryHandle.removeEntry(`${event.id}.md`)
+
+        // TODO: Delete attached files
       },
       // TODO: Move uploadFile out of the global state machine
       uploadFile: async (context, event) => {

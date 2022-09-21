@@ -10,6 +10,7 @@ import {
 } from "react-router-dom"
 import { z } from "zod"
 import { DatePanel } from "../panels/date"
+import { FilePanel } from "../panels/file"
 import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
@@ -203,6 +204,7 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: "tags", panel: TagsPanel },
   { path: "tags/:name", panel: TagPanel },
   { path: "dates/:date", panel: DatePanel },
+  { path: "file", panel: FilePanel },
 ]
 
 // type PanelRoutesProps = { panel: PanelValue; index: number }
