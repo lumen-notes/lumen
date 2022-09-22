@@ -88,6 +88,7 @@
 
 body {
   @apply bg-bg-inset font-body text-sm text-text;
+  font-variant-numeric: slashed-zero;
 }
 
 *:focus-visible {
