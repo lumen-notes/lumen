@@ -52,9 +52,9 @@ export function NoteList({ ids }: NoteListProps) {
   React.useEffect(() => {
     if (bottomInView) {
       // Render 10 more notes when the user scrolls to the bottom of the list
-      setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
+      setNumVisibleNotes((num) => Math.min(num + 10, items.length))
     }
-  }, [bottomInView, searchResults.length])
+  }, [bottomInView, items.length])
 
   return (
     <div>
@@ -80,7 +80,7 @@ export function NoteList({ ids }: NoteListProps) {
           <NoteCard key={id} id={id} />
         ))}
       </div>
-      <div ref={bottomRef} />
+      {items.length > numVisibleNotes ? <div ref={bottomRef} /> : null}
     </div>
   )
 }
