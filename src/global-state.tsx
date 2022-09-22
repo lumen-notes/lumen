@@ -1,17 +1,12 @@
 import { useInterpret } from "@xstate/react"
 import { get, set } from "idb-keyval"
-import { fromMarkdown } from "mdast-util-from-markdown"
 import React from "react"
-import { visit } from "unist-util-visit"
 import { assign, createMachine, InterpreterFrom } from "xstate"
-import { dateLink, dateLinkFromMarkdown } from "./remark-plugins/date-link"
-import { noteLink, noteLinkFromMarkdown } from "./remark-plugins/note-link"
-import { tagLink, tagLinkFromMarkdown } from "./remark-plugins/tag-link"
+import { NoteId } from "./types"
 import { isSupported } from "./utils/is-supported"
+import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
-
-export type NoteId = string
 
 type Context = {
   directoryHandle: FileSystemDirectoryHandle | null
@@ -233,7 +228,7 @@ const machine = createMachine(
         await set("context", null)
       },
       upsertNote: assign((context, event) => {
-        const { noteLinks, tagLinks, dateLinks } = parseBody(event.body)
+        const { noteLinks, tagLinks, dateLinks } = parseNoteBody(event.body)
 
         // Update backlinks
         const backlinkEntries = Object.entries(context.backlinks).map(([noteId, backlinks]) => {
@@ -459,108 +454,25 @@ const machine = createMachine(
 
         return { directoryHandle }
       },
-      loadNotes: async (context) => {
+      loadNotes: (context) => {
         if (!context.directoryHandle) {
           throw new Error("Directory not found")
         }
 
-        const data: ReturnType<typeof parseFile>[] = []
-        const notes: Record<NoteId, string> = {}
-        const backlinks: Record<NoteId, NoteId[]> = {}
-        const tags: Record<string, NoteId[]> = {}
-        const dates: Record<string, NoteId[]> = {}
+        const worker = new Worker(new URL("./load-notes.worker.ts", import.meta.url), {
+          type: "module",
+        })
 
-        // Start timer
-        console.time("loadNotes")
-
-        // Parse every note file in the directory
-        for await (const [name, handle] of context.directoryHandle.entries()) {
-          // Only load markdown files with numeric names (example: "123.md")
-          if (handle.kind === "file" && /^\d+\.md$/.test(name)) {
-            data.push(handle.getFile().then(parseFile))
+        return new Promise((resolve) => {
+          worker.postMessage({ directoryHandle: context.directoryHandle })
+          worker.onmessage = (event) => {
+            resolve(event.data)
           }
-        }
-
-        for (const { id, body, noteLinks, tagLinks, dateLinks } of await Promise.all(data)) {
-          notes[id] = body
-
-          for (const noteLink of noteLinks) {
-            push(backlinks, noteLink, id)
-          }
-
-          for (const tagLink of tagLinks) {
-            push(tags, tagLink, id)
-          }
-
-          for (const dateLink of dateLinks) {
-            push(dates, dateLink, id)
-          }
-        }
-
-        // End timer
-        console.timeEnd("loadNotes")
-
-        return { notes, backlinks, tags, dates }
+        })
       },
     },
   },
 )
-
-/** Extracts metadata from a note file */
-async function parseFile(file: File) {
-  if (!/^\d+\.md$/.test(file.name)) {
-    throw new Error(`Invalid note filename: ${file.name}`)
-  }
-
-  const id = file.name.replace(/\.md$/, "")
-  const body = await file.text()
-
-  return { id, body, ...parseBody(body) }
-}
-
-/** Extracts metadata from a note body */
-function parseBody(body: string) {
-  const noteLinks: NoteId[] = []
-  const tagLinks: string[] = []
-  const dateLinks: string[] = []
-
-  const mdast = fromMarkdown(body, {
-    extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
-  })
-
-  visit(mdast, (node) => {
-    switch (node.type) {
-      case "noteLink": {
-        noteLinks.push(node.data.id.toString())
-        break
-      }
-      case "tagLink": {
-        tagLinks.push(node.data.name)
-        break
-      }
-      case "dateLink": {
-        dateLinks.push(node.data.date)
-        break
-      }
-    }
-  })
-
-  return { noteLinks, tagLinks, dateLinks }
-}
-
-/**
- * Pushes a value to an array in an object.
- * If the array doesn't exist, this function creates it.
- */
-function push<Key extends string | number, Value>(
-  obj: Record<Key, Value[]>,
-  property: Key,
-  value: Value,
-) {
-  const list = obj[property] ? obj[property] : (obj[property] = [])
-  list.push(value)
-}
 
 export type GlobalStateContextValue = {
   service: InterpreterFrom<typeof machine>
