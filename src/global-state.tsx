@@ -3,6 +3,7 @@ import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { NoteId } from "./types"
+import { writeFile } from "./utils/file-system"
 import { isSupported } from "./utils/is-supported"
 import { parseNoteBody } from "./utils/parse-note-body"
 
@@ -24,7 +25,6 @@ type Event =
   | { type: "DISCONNECT" }
   | { type: "UPSERT_NOTE"; id: NoteId; body: string }
   | { type: "DELETE_NOTE"; id: NoteId }
-  | { type: "UPLOAD_FILE"; id: string; file: File }
 
 const machine = createMachine(
   {
@@ -192,9 +192,6 @@ const machine = createMachine(
               DELETE_NOTE: {
                 actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
               },
-              UPLOAD_FILE: {
-                actions: ["uploadFile"],
-              },
             },
           },
         },
@@ -307,23 +304,12 @@ const machine = createMachine(
           dates: Object.fromEntries(dateEntries),
         }
       }),
-      upsertNoteFile: async (context, event) => {
+      upsertNoteFile: (context, event) => {
         if (!context.directoryHandle) {
           throw new Error("Directory not found")
         }
 
-        const fileHandle = await context.directoryHandle.getFileHandle(`${event.id}.md`, {
-          create: true,
-        })
-
-        // Create a stream to write to
-        const writeableStream = await fileHandle.createWritable()
-
-        // Write the contents of the file
-        await writeableStream.write(event.body)
-
-        // Close the stream
-        await writeableStream.close()
+        writeFile(context.directoryHandle, `${event.id}.md`, event.body, { create: true })
       },
       deleteNote: assign((context, event) => {
         const { [event.id]: _, ...rest } = context.notes
@@ -365,35 +351,6 @@ const machine = createMachine(
         await context.directoryHandle.removeEntry(`${event.id}.md`)
 
         // TODO: Delete attached files
-      },
-      // TODO: Move uploadFile out of the global state machine
-      uploadFile: async (context, event) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
-
-        const fileExtension = event.file.name.split(".").pop()
-        const fileName = `${event.id}.${fileExtension}`
-
-        // Get handle for uploads directory
-        const uploadsDirectoryHandle = await context.directoryHandle.getDirectoryHandle(
-          UPLOADS_DIRECTORY,
-          {
-            create: true,
-          },
-        )
-
-        // Create a new file in the uploads directory
-        const fileHandle = await uploadsDirectoryHandle.getFileHandle(fileName, { create: true })
-
-        // Create a stream to write to
-        const writeableStream = await fileHandle.createWritable()
-
-        // Write the contents of the file
-        await writeableStream.write(await event.file.arrayBuffer())
-
-        // Close the stream
-        await writeableStream.close()
       },
     },
     guards: {

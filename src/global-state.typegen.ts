@@ -76,7 +76,6 @@ export interface Typegen0 {
       | "done.invoke.loadNotes"
       | "done.invoke.showDirectoryPicker"
     setContextInIndexedDB: "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.loadNotes"
-    uploadFile: "UPLOAD_FILE"
     upsertNote: "UPSERT_NOTE"
     upsertNoteFile: "UPSERT_NOTE"
   }

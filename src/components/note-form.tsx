@@ -8,17 +8,22 @@ import {
 import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
+import { useActor } from "@xstate/react"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
-import { GlobalStateContext, NoteId, UPLOADS_DIRECTORY } from "../global-state"
+import { GlobalStateContext } from "../global-state"
+import { NoteId } from "../types"
 import { formatDate } from "../utils/date"
+import { writeFile } from "../utils/file-system"
 import { Button, IconButton } from "./button"
 import { Card } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { PaperclipIcon16 } from "./icons"
 import { Tooltip } from "./tooltip"
+
+const UPLOADS_DIRECTORY = "uploads"
 
 type NoteFormProps = {
   id?: NoteId
@@ -36,6 +41,7 @@ export function NoteForm({
   onCancel,
 }: NoteFormProps) {
   const globalState = React.useContext(GlobalStateContext)
+  const [state] = useActor(globalState.service)
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
@@ -78,18 +84,18 @@ export function NoteForm({
     }
   }
 
-  function attachFile(file: File) {
+  async function attachFile(file: File) {
     const fileId = Date.now().toString()
     const fileExtension = file.name.split(".").pop()
     const fileName = file.name.replace(`.${fileExtension}`, "")
+    const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
 
-    globalState.service?.send({
-      type: "UPLOAD_FILE",
-      id: fileId,
-      file,
-    })
+    // Upload file
+    if (state.context.directoryHandle) {
+      writeFile(state.context.directoryHandle, filePath, await file.arrayBuffer(), { create: true })
+    }
 
-    let markdown = `[${fileName}](/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension})`
+    let markdown = `[${fileName}](${filePath})`
 
     // Use markdown image syntax if file is an image
     if (file.type.startsWith("image/")) {
