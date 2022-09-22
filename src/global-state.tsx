@@ -179,9 +179,6 @@ const machine = createMachine(
           },
           idle: {
             on: {
-              SHOW_DIRECTORY_PICKER: {
-                target: "#global.showingDirectoryPicker",
-              },
               RELOAD: {
                 target: "#global.queryingPermission",
               },
