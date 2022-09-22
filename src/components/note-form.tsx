@@ -50,6 +50,12 @@ export function NoteForm({
     onStateChange: (event) => setEditorHasFocus(event.view.hasFocus),
   })
 
+  function setBody(value: string) {
+    view?.dispatch({
+      changes: [{ from: 0, to: body.length, insert: value }],
+    })
+  }
+
   function handleSubmit() {
     // Don't create empty notes
     if (!body) return
@@ -68,9 +74,7 @@ export function NoteForm({
 
     // If we're creating a new note, reset the form after submitting
     if (!id) {
-      view?.dispatch({
-        changes: [{ from: 0, to: body.length, insert: defaultBody }],
-      })
+      setBody(defaultBody)
     }
   }
 
@@ -159,8 +163,9 @@ export function NoteForm({
             event.preventDefault()
           }
 
-          // Cancel on `escape`
+          // Clear and cancel on `escape`
           if (event.key === "Escape") {
+            setBody("")
             onCancel?.()
           }
         }}
