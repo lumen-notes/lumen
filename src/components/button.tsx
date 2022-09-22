@@ -2,13 +2,14 @@ import { clsx } from "clsx"
 import React from "react"
 import { Tooltip } from "./tooltip"
 
-export type ButtonProps = {
+export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   variant?: "default" | "primary"
-} & React.ComponentPropsWithoutRef<"button">
+  shortcut?: string
+}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "default", className, children, ...props }, ref) => {
-    return (
+  ({ variant = "default", shortcut, className, children, ...props }, ref) => {
+    const button = (
       <button
         ref={ref}
         type="button"
@@ -24,16 +25,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     )
+
+    if (shortcut) {
+      return (
+        <Tooltip>
+          <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
+          <Tooltip.Content side="bottom">{shortcut}</Tooltip.Content>
+        </Tooltip>
+      )
+    }
+
+    return button
   },
 )
 
 export const IconButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<"button"> & {
-    // aria-label is required for accessibility
-    "aria-label": string
+    "aria-label": string // Required for accessibility
+    shortcut?: string
   }
->(({ className, children, ...props }, ref) => {
+>(({ className, children, shortcut, ...props }, ref) => {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
@@ -49,7 +61,12 @@ export const IconButton = React.forwardRef<
           {children}
         </button>
       </Tooltip.Trigger>
-      <Tooltip.Content>{props["aria-label"]}</Tooltip.Content>
+      <Tooltip.Content>
+        <div className="flex gap-2">
+          <span>{props["aria-label"]}</span>
+          {shortcut ? <span>{shortcut}</span> : null}
+        </div>
+      </Tooltip.Content>
     </Tooltip>
   )
 })

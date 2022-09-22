@@ -21,7 +21,6 @@ import { Button, IconButton } from "./button"
 import { Card } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { PaperclipIcon16 } from "./icons"
-import { Tooltip } from "./tooltip"
 
 const UPLOADS_DIRECTORY = "uploads"
 
@@ -207,21 +206,13 @@ export function NoteForm({
           </FileInputButton>
           <div className="flex gap-2">
             {onCancel ? (
-              <Tooltip>
-                <Tooltip.Trigger asChild>
-                  <Button onClick={onCancel}>Cancel</Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content side="bottom">esc</Tooltip.Content>
-              </Tooltip>
+              <Button shortcut="esc" onClick={onCancel}>
+                Cancel
+              </Button>
             ) : null}
-            <Tooltip>
-              <Tooltip.Trigger asChild>
-                <Button type="submit" variant="primary">
-                  {id ? "Save" : "Add"}
-                </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Content side="bottom">⌘⏎</Tooltip.Content>
-            </Tooltip>
+            <Button type="submit" variant="primary" shortcut="⌘⏎">
+              {id ? "Save" : "Add"}
+            </Button>
           </div>
         </div>
       </form>
