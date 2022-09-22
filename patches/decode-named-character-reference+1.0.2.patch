@@ -1,0 +1,19 @@
+diff --git a/node_modules/decode-named-character-reference/index.dom.js b/node_modules/decode-named-character-reference/index.dom.js
+index 5d0abe2..ffad265 100644
+--- a/node_modules/decode-named-character-reference/index.dom.js
++++ b/node_modules/decode-named-character-reference/index.dom.js
+@@ -2,13 +2,12 @@
+ 
+ /* eslint-env browser */
+ 
+-const element = document.createElement('i')
+-
+ /**
+  * @param {string} value
+  * @returns {string|false}
+  */
+ export function decodeNamedCharacterReference(value) {
++  const element = document.createElement('i')
+   const characterReference = '&' + value + ';'
+   element.innerHTML = characterReference
+   const char = element.textContent
