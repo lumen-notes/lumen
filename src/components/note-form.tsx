@@ -201,7 +201,7 @@ export function NoteForm({
               }
             }}
           >
-            <IconButton aria-label="Attach a file">
+            <IconButton aria-label="Attach file">
               <PaperclipIcon16 />
             </IconButton>
           </FileInputButton>

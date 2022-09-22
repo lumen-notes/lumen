@@ -1,5 +1,6 @@
 import { clsx } from "clsx"
 import React from "react"
+import { Tooltip } from "./tooltip"
 
 export type ButtonProps = {
   variant?: "default" | "primary"
@@ -28,19 +29,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
 export const IconButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentPropsWithoutRef<"button">
+  React.ComponentPropsWithoutRef<"button"> & {
+    // aria-label is required for accessibility
+    "aria-label": string
+  }
 >(({ className, children, ...props }, ref) => {
   return (
-    <button
-      ref={ref}
-      type="button"
-      className={clsx(
-        "cursor-default rounded p-2 text-text-muted hover:bg-bg-hover disabled:pointer-events-none disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </button>
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <button
+          ref={ref}
+          type="button"
+          className={clsx(
+            "cursor-default rounded p-2 text-text-muted hover:bg-bg-hover disabled:pointer-events-none disabled:opacity-50",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </button>
+      </Tooltip.Trigger>
+      <Tooltip.Content>{props["aria-label"]}</Tooltip.Content>
+    </Tooltip>
   )
 })

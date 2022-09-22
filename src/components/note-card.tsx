@@ -3,7 +3,8 @@ import { EditorView } from "@codemirror/view"
 import { useActor } from "@xstate/react"
 import copy from "copy-to-clipboard"
 import React from "react"
-import { GlobalStateContext, NoteId } from "../global-state"
+import { GlobalStateContext } from "../global-state"
+import { NoteId } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { IconButton } from "./button"
 import { Card } from "./card"
@@ -109,7 +110,7 @@ export function NoteCard({ id }: NoteCardProps) {
         <div className="-m-2">
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="More actions">
+              <IconButton aria-label="Note actions">
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>

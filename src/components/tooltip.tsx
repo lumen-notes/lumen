@@ -27,7 +27,7 @@ const Content: React.FC<ContentProps> = ({
         alignOffset={alignOffset}
         asChild
       >
-        <Card elevation={1} className="z-10 py-1 px-2 text-text-muted">
+        <Card elevation={1} className="z-20 py-1 px-2 text-text-muted">
           {children}
         </Card>
       </RadixTooltip.Content>
