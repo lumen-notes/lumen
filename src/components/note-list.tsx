@@ -5,7 +5,6 @@ import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { GlobalStateContext, NoteId } from "../global-state"
 import { pluralize } from "../utils/pluralize"
-import { useDebounce } from "../utils/use-debounce"
 import { useSearchParam } from "../utils/use-search-param"
 import { NoteCard } from "./note-card"
 import { SearchInput } from "./search-input"
@@ -24,7 +23,7 @@ export function NoteList({ ids }: NoteListProps) {
     replace: true,
   })
 
-  const debouncedQuery = useDebounce(query)
+  const deferredQuery = React.useDeferredValue(query)
 
   // Sort notes by when they were created in descending order
   const sortedIds = React.useMemo(() => ids.sort((a, b) => parseInt(b) - parseInt(a)), [ids])
@@ -38,13 +37,12 @@ export function NoteList({ ids }: NoteListProps) {
     })
   }, [sortedIds, state.context.notes])
 
-  const results = React.useMemo(() => {
-    if (!debouncedQuery) {
-      return sortedIds
-    }
+  const searchResults = React.useMemo(() => {
+    return searcher.search(deferredQuery).map(([id]) => id)
+  }, [deferredQuery, searcher])
 
-    return searcher.search(debouncedQuery).map(([id]) => id)
-  }, [debouncedQuery, sortedIds, searcher])
+  // Show the search results if the user has typed something, otherwise show all notes
+  const items = deferredQuery ? searchResults : sortedIds
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
@@ -54,9 +52,9 @@ export function NoteList({ ids }: NoteListProps) {
   React.useEffect(() => {
     if (bottomInView) {
       // Render 10 more notes when the user scrolls to the bottom of the list
-      setNumVisibleNotes((num) => Math.min(num + 10, results.length))
+      setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
     }
-  }, [bottomInView, results.length])
+  }, [bottomInView, searchResults.length])
 
   return (
     <div>
@@ -72,11 +70,13 @@ export function NoteList({ ids }: NoteListProps) {
               setNumVisibleNotes(10)
             }}
           />
-          {debouncedQuery ? (
-            <span className="text-xs text-text-muted">{pluralize(results.length, "result")}</span>
+          {deferredQuery ? (
+            <span className="text-xs text-text-muted">
+              {pluralize(searchResults.length, "result")}
+            </span>
           ) : null}
         </div>
-        {results.slice(0, numVisibleNotes).map((id) => (
+        {items.slice(0, numVisibleNotes).map((id) => (
           <NoteCard key={id} id={id} />
         ))}
       </div>

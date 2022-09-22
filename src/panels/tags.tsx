@@ -8,7 +8,6 @@ import { PanelProps, Panels } from "../components/panels"
 import { SearchInput } from "../components/search-input"
 import { GlobalStateContext } from "../global-state"
 import { pluralize } from "../utils/pluralize"
-import { useDebounce } from "../utils/use-debounce"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
@@ -21,7 +20,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
     replace: true,
   })
 
-  const debouncedQuery = useDebounce(query)
+  const deferredQuery = React.useDeferredValue(query)
 
   // Sort tags alphabetically
   const sortedTags = React.useMemo(
@@ -44,13 +43,12 @@ export function TagsPanel({ id, onClose }: PanelProps) {
     })
   }, [state.context.tags])
 
-  const results = React.useMemo(() => {
-    if (!debouncedQuery) {
-      return sortedTags
-    }
+  const searchResults = React.useMemo(() => {
+    return searcher.search(deferredQuery)
+  }, [deferredQuery, searcher])
 
-    return searcher.search(debouncedQuery)
-  }, [debouncedQuery, sortedTags, searcher])
+  // Show the search results if the user has typed something, otherwise show all tags
+  const items = deferredQuery ? searchResults : sortedTags
 
   return (
     <Panel
@@ -67,12 +65,14 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
-          {debouncedQuery ? (
-            <span className="text-xs text-text-muted">{pluralize(results.length, "result")}</span>
+          {deferredQuery ? (
+            <span className="text-xs text-text-muted">
+              {pluralize(searchResults.length, "result")}
+            </span>
           ) : null}
         </div>
         <ul className="flex flex-col">
-          {results.map(([name, noteCount]) => (
+          {items.map(([name, noteCount]) => (
             <li
               key={name}
               className="flex justify-between border-b border-border-divider py-3 last:border-b-0"

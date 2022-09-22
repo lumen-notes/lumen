@@ -9,7 +9,6 @@ import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
-import { useDebounce } from "../utils/use-debounce"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 
 export function CommandMenu() {
@@ -18,7 +17,7 @@ export function CommandMenu() {
   const [previouslyActiveElement, setPreviouslyActiveElement] = React.useState<Element | null>(null)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
-  const debouncedQuery = useDebounce(query)
+  const deferredQuery = React.useDeferredValue(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
 
   const openMenu = React.useCallback(() => {
@@ -69,7 +68,7 @@ export function CommandMenu() {
 
   // Check if query can be parsed as a date
   const dateString = React.useMemo(() => {
-    const date = parseDate(debouncedQuery)
+    const date = parseDate(deferredQuery)
 
     if (!date) return ""
 
@@ -78,7 +77,7 @@ export function CommandMenu() {
     const day = String(date.getDate()).padStart(2, "0")
 
     return `${year}-${month}-${day}`
-  }, [debouncedQuery])
+  }, [deferredQuery])
 
   // Create tag search index
   const tagSearcher = React.useMemo(() => {
@@ -106,13 +105,13 @@ export function CommandMenu() {
 
   // Search tags
   const tagResults = React.useMemo(() => {
-    return tagSearcher.search(debouncedQuery)
-  }, [tagSearcher, debouncedQuery])
+    return tagSearcher.search(deferredQuery)
+  }, [tagSearcher, deferredQuery])
 
   // Search notes
   const noteResults = React.useMemo(() => {
-    return noteSearcher.search(debouncedQuery)
-  }, [noteSearcher, debouncedQuery])
+    return noteSearcher.search(deferredQuery)
+  }, [noteSearcher, deferredQuery])
 
   // Only show the first 2 tags
   const numVisibleTags = 2
@@ -163,16 +162,16 @@ export function CommandMenu() {
               ))}
               {tagResults.length > numVisibleTags ? (
                 <CommandItem
-                  key={`Show all tags matching "${debouncedQuery}"`}
+                  key={`Show all tags matching "${deferredQuery}"`}
                   icon={<SearchIcon16 />}
-                  onSelect={() => navigate(`/tags?${qs.stringify({ q: debouncedQuery })}`)}
+                  onSelect={() => navigate(`/tags?${qs.stringify({ q: deferredQuery })}`)}
                 >
-                  Show all {pluralize(tagResults.length, "tag")} matching "{debouncedQuery}"
+                  Show all {pluralize(tagResults.length, "tag")} matching "{deferredQuery}"
                 </CommandItem>
               ) : null}
             </Command.Group>
           ) : null}
-          {debouncedQuery ? (
+          {deferredQuery ? (
             <Command.Group heading="Notes">
               {noteResults.slice(0, numVisibleNotes).map(([id, body]) => (
                 <CommandItem
@@ -186,20 +185,20 @@ export function CommandMenu() {
               ))}
               {noteResults.length > numVisibleNotes ? (
                 <CommandItem
-                  key={`Show all notes matching "${debouncedQuery}"`}
+                  key={`Show all notes matching "${deferredQuery}"`}
                   icon={<SearchIcon16 />}
-                  onSelect={() => navigate(`/?${qs.stringify({ q: debouncedQuery })}`)}
+                  onSelect={() => navigate(`/?${qs.stringify({ q: deferredQuery })}`)}
                 >
-                  Show all {pluralize(noteResults.length, "note")} matching "{debouncedQuery}"
+                  Show all {pluralize(noteResults.length, "note")} matching "{deferredQuery}"
                 </CommandItem>
               ) : null}
               <CommandItem
-                key={`Create new note "${debouncedQuery}"`}
+                key={`Create new note "${deferredQuery}"`}
                 icon={<PlusIcon16 />}
                 onSelect={() => {
                   const note = {
                     id: Date.now().toString(),
-                    body: debouncedQuery,
+                    body: deferredQuery,
                   }
 
                   // Create new note
@@ -212,7 +211,7 @@ export function CommandMenu() {
                   navigate(`/${note.id}`)
                 }}
               >
-                Create new note "{debouncedQuery}"
+                Create new note "{deferredQuery}"
               </CommandItem>
             </Command.Group>
           ) : null}
