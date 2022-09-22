@@ -178,6 +178,7 @@ const machine = createMachine(
             },
           },
           idle: {
+            // TODO: Allow these events while loading notes
             on: {
               RELOAD: {
                 target: "#global.queryingPermission",
