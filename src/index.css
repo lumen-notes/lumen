@@ -231,6 +231,14 @@ input[type="search"]::-webkit-search-cancel-button {
   @apply pl-6;
 }
 
+.markdown ul ul {
+  @apply my-2;
+}
+
+.markdown li {
+  @apply my-1;
+}
+
 .markdown li [type="checkbox"] {
   @apply align-middle;
 }
