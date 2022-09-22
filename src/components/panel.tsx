@@ -16,8 +16,10 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       data-panel // Data attribute used to manage focus
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
       id={id}
-      className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider"
+      className="flex h-full w-[80vw] max-w-lg flex-shrink-0 flex-col overflow-auto border-r border-border-divider focus:outline-none"
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
         if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {

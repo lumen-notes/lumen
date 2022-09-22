@@ -58,8 +58,8 @@ function Root({ children }: React.PropsWithChildren) {
         // Scroll the new panel into view
         panelElement?.scrollIntoView({ block: "center", inline: "center" })
 
-        // Focus the first focusable element in the new panel
-        focusFirstFocusableElement(panelElement)
+        // Focus the new panel
+        panelElement?.focus()
       })
     },
     [panels, setPanels],
@@ -73,8 +73,8 @@ function Root({ children }: React.PropsWithChildren) {
 
       const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
 
-      // Focus the first focusable element in the previous panel
-      focusFirstFocusableElement(panelElements[currentIndex - 1])
+      // Focus the previous panel
+      panelElements[currentIndex - 1]?.focus()
 
       // Update state
       setPanels(panels.filter((_, i) => i !== index))
@@ -118,16 +118,6 @@ function serializePanelValue({ id, pathname, search }: PanelValue) {
 function deserializePanelValue(value: string): PanelValue {
   const [id, pathname, search] = value.split(SEPARATOR)
   return { id, pathname, search }
-}
-
-function focusFirstFocusableElement(element: HTMLElement | null) {
-  const firstFocusableElement = element?.querySelector(
-    'button, [href], input, select, textarea, [role=textbox], [tabindex]:not([tabindex="-1"])',
-  )
-
-  if (firstFocusableElement instanceof HTMLElement) {
-    firstFocusableElement.focus()
-  }
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>(
