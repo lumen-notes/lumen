@@ -8,7 +8,31 @@ A system for thinking, writing, learning, and mindfulness.
 
 ## Note syntax
 
-Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with a few extra syntax extensions.
+Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with a few additional syntax extensions:
+
+### Note links
+
+```
+[[<note-id>|<link-text>]]
+```
+
+Example: `[[123456|click me]]`
+
+### Date links
+
+```
+[[YYYY-MM-DD]]
+```
+
+Example: `[[2022-07-11]]`
+
+### Tag links
+
+```
+#<tag>
+```
+
+Example: `#recipe`
 
 ## Keyboard shortcuts
 
