@@ -32,7 +32,7 @@ export function NoteCard({ id }: NoteCardProps) {
   const [state] = useActor(globalState.service)
 
   const body = state.context.notes[id]
-  const backlinks = state.context.backlinks[id]
+  const backlinks = state.context.backlinks[id] || []
 
   if (typeof body === "undefined") {
     return <Card className="p-4">Not found</Card>
@@ -100,7 +100,7 @@ export function NoteCard({ id }: NoteCardProps) {
           <Panels.Link to={`/${id}`} className="rounded tracking-wide underline underline-offset-2">
             {id}
           </Panels.Link>
-          {backlinks?.length ? (
+          {backlinks.length ? (
             <span>
               {" · "}
               {pluralize(backlinks.length, "backlink")}
@@ -131,6 +131,7 @@ export function NoteCard({ id }: NoteCardProps) {
                   globalState.service.send({ type: "DELETE_NOTE", id })
                 }}
                 shortcut="⌘⌫"
+                disabled={backlinks.length > 0}
               >
                 Delete
               </DropdownMenu.Item>

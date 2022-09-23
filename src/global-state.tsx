@@ -189,9 +189,14 @@ const machine = createMachine(
               UPSERT_NOTE: {
                 actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
               },
-              DELETE_NOTE: {
-                actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
-              },
+              DELETE_NOTE: [
+                {
+                  // To preserve referential integrity, we only allow you to
+                  // delete a note if no other notes link to it.
+                  cond: "hasNoBacklinks",
+                  actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
+                },
+              ],
             },
           },
         },
@@ -365,6 +370,9 @@ const machine = createMachine(
       },
       isDenied: (context, event) => {
         return event.data === "denied"
+      },
+      hasNoBacklinks: (context, event) => {
+        return !context.backlinks[event.id]?.length
       },
     },
     services: {

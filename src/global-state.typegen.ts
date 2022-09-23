@@ -90,6 +90,7 @@ export interface Typegen0 {
     showDirectoryPicker: "SHOW_DIRECTORY_PICKER"
   }
   eventsCausingGuards: {
+    hasNoBacklinks: "DELETE_NOTE"
     isDenied: "done.invoke.queryPermission"
     isGranted: "done.invoke.queryPermission"
     isPrompt: "done.invoke.queryPermission"
