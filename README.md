@@ -12,15 +12,19 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with t
 
 ### Note links
 
+Link to another note using its ID.
+
 ```
 [[<note-id>|<link-text>]]
 ```
 
 | Example | Rendered HTML |
 | :-- | :-- |
-| `[[123456\|click me]]` | `<a href="/123456">click me</a>` |
+| `[[1652342106359\|Randie Bemis]]` | `<a href="/1652342106359">Randie Bemis</a>` |
 
 ### Date links
+
+Link to all other notes that reference the same date.
 
 ```
 [[YYYY-MM-DD]]
@@ -31,6 +35,8 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with t
 | `[[2021-07-11]]` | `<a href="/dates/2021-07-11">Sun, Jul 11, 2021</a>` |
 
 ### Tag links
+
+Link to all other notes with the same tag.
 
 ```
 #<tag-name>
