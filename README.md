@@ -16,9 +16,7 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with a
 [[<note-id>|<link-text>]]
 ```
 
-Example:
-
-| Markdown | Rendered HTML |
+| Example | Rendered HTML |
 | :-- | :-- |
 | `[[123456\|click me]]` | `<a href="/123456">click me</a>` |
 
@@ -28,9 +26,7 @@ Example:
 [[YYYY-MM-DD]]
 ```
 
-Example:
-
-| Markdown | Rendered HTML |
+| Example | Rendered HTML |
 | :-- | :-- |
 | `[[2021-07-11]]` | `<a href="/dates/2021-07-11">Sun, Jul 11, 2021</a>` |
 
@@ -40,9 +36,7 @@ Example:
 #<tag>
 ```
 
-Example:
-
-| Markdown | Rendered HTML |
+| Example | Rendered HTML |
 | :-- | :-- |
 | `#recipe` | `<a href="/tags/recipe">#recipe</a>` |
 
