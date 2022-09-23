@@ -38,7 +38,7 @@
   color-scheme: light dark;
 
   --h: 30deg;
-  --h-highlight: 90deg;
+  --h-highlight: 40deg; /* 90deg */
   --s: 5%;
   --l-text: 10%;
   --l-text-muted: 45%;
