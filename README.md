@@ -33,7 +33,7 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with t
 ### Tag links
 
 ```
-#<tag>
+#<tag-name>
 ```
 
 | Example | Rendered HTML |
