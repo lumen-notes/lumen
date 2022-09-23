@@ -6,6 +6,10 @@ A system for thinking, writing, learning &amp; mindfulness
 
 [uselumen.com](https://uselumen.com)
 
+## Note syntax
+
+Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) syntax.
+
 ## Keyboard shortcuts
 
 | Action              | Shortcut                  |
