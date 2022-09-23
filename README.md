@@ -8,7 +8,7 @@ A system for thinking, writing, learning, and mindfulness.
 
 ## Note syntax
 
-Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with a few additional syntax extensions:
+Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with the following syntax extensions:
 
 ### Note links
 
