@@ -96,8 +96,12 @@ export function NoteForm({
 
     let markdown = `[${fileName}](${filePath})`
 
-    // Use markdown image syntax if file is an image
-    if (file.type.startsWith("image/")) {
+    // Use markdown image syntax if file is an image, video, or audio
+    if (
+      file.type.startsWith("image/") ||
+      file.type.startsWith("video/") ||
+      file.type.startsWith("audio/")
+    ) {
       markdown = `!${markdown}`
     }
 
