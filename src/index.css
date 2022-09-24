@@ -301,7 +301,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-group-heading] {
-  @apply px-3 py-2 leading-[16px] text-text-muted;
+  @apply px-3 py-2 leading-4 text-text-muted;
 }
 
 [cmdk-group]:not(:first-child) {
@@ -309,7 +309,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 [cmdk-item] {
-  @apply cursor-default rounded py-3 px-3 leading-[16px];
+  @apply cursor-default rounded py-3 px-3 leading-4;
 }
 
 [cmdk-item][aria-selected] {
