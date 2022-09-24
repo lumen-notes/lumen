@@ -48,7 +48,7 @@
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
   --a-bg-backdrop: 0.65;
-  --a-bg-hover: 0.075;
+  --a-bg-hover: 0.05;
   --a-border: 0.25;
   --a-border-divider: 0.15;
   --color-text: hsl(var(--h) var(--s) var(--l-text));
@@ -77,7 +77,7 @@
     --l-bg-wash: 20%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
-    --a-bg-hover: 0.1;
+    --a-bg-hover: 0.075;
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
