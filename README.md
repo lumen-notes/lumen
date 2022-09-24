@@ -6,11 +6,13 @@ A system for thinking, writing, learning, and mindfulness.
 
 [uselumen.com](https://uselumen.com)
 
-## Note syntax
+## Syntax
 
 Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with the following syntax extensions:
 
 ### Note links
+
+Link to another note using its ID.
 
 ```
 [[<note-id>|<link-text>]]
@@ -18,9 +20,11 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with t
 
 | Example | Rendered HTML |
 | :-- | :-- |
-| `[[123456\|click me]]` | `<a href="/123456">click me</a>` |
+| `[[1652342106359\|Randie Bemis]]` | `<a href="/1652342106359">Randie Bemis</a>` |
 
 ### Date links
+
+Link to all other notes that reference the same date.
 
 ```
 [[YYYY-MM-DD]]
@@ -32,8 +36,10 @@ Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with t
 
 ### Tag links
 
+Link to all other notes with the same tag.
+
 ```
-#<tag>
+#<tag-name>
 ```
 
 | Example | Rendered HTML |
