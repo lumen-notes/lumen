@@ -97,7 +97,7 @@ export function NoteCard({ id }: NoteCardProps) {
 
       <div className="flex h-4 items-center justify-between">
         <span className="text-text-muted">
-          <Panels.Link to={`/${id}`} className="rounded tracking-wide underline underline-offset-2">
+          <Panels.Link to={`/${id}`} className="link tracking-wide">
             {id}
           </Panels.Link>
           {backlinks.length ? (

@@ -85,7 +85,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
 
   return (
     <div>
-      <a download={file.name} href={src} className="rounded underline underline-offset-2">
+      <a download={file.name} href={src} className="link">
         Download {file.name} ({(file.size / 1000000).toFixed(1)} MB)
       </a>
     </div>

@@ -46,7 +46,7 @@ export function Root() {
           This browser is not supported. Please open Lumen in a browser that supports the{" "}
           <a
             href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API#browser_compatibility"
-            className="underline underline-offset-2"
+            className="link"
           >
             File System Access API
           </a>

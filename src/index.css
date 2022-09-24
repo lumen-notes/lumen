@@ -100,6 +100,12 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
 }
 
+/* Utility classes */
+
+.link {
+  @apply rounded-sm underline underline-offset-2 outline-offset-0;
+}
+
 /* Codemirror styles */
 
 .cm-editor.cm-editor.cm-focused {
@@ -258,7 +264,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .markdown a {
-  @apply rounded underline underline-offset-2;
+  @apply link;
 }
 
 .markdown a[href^="http"]::after {

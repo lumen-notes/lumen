@@ -77,7 +77,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
               key={name}
               className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
             >
-              <Panels.Link className="underline underline-offset-2" to={`/tags/${name}`}>
+              <Panels.Link className="link" to={`/tags/${name}`}>
                 #{name}
               </Panels.Link>
               <span className="text-text-muted">{pluralize(noteCount, "note")}</span>
