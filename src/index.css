@@ -91,7 +91,7 @@ body {
   font-variant-numeric: slashed-zero;
 }
 
-*:focus-visible {
+*:focus {
   @apply outline outline-2 outline-offset-[-1px] outline-border-focus;
 }
 
