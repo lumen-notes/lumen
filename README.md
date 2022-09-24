@@ -18,8 +18,8 @@ Link to another note using its ID.
 [[<note-id>|<link-text>]]
 ```
 
-| Example | Rendered HTML |
-| :-- | :-- |
+| Example                           | Rendered HTML                               |
+| :-------------------------------- | :------------------------------------------ |
 | `[[1652342106359\|Randie Bemis]]` | `<a href="/1652342106359">Randie Bemis</a>` |
 
 ### Date links
@@ -30,8 +30,8 @@ Link to all other notes that reference the same date.
 [[YYYY-MM-DD]]
 ```
 
-| Example | Rendered HTML |
-| :-- | :-- |
+| Example          | Rendered HTML                                       |
+| :--------------- | :-------------------------------------------------- |
 | `[[2021-07-11]]` | `<a href="/dates/2021-07-11">Sun, Jul 11, 2021</a>` |
 
 ### Tag links
@@ -42,10 +42,9 @@ Link to all other notes with the same tag.
 #<tag-name>
 ```
 
-| Example | Rendered HTML |
-| :-- | :-- |
+| Example   | Rendered HTML                        |
+| :-------- | :----------------------------------- |
 | `#recipe` | `<a href="/tags/recipe">#recipe</a>` |
-
 
 ## Keyboard shortcuts
 
@@ -55,9 +54,10 @@ Link to all other notes with the same tag.
 
 **With focus inside a panel...**
 
-| Action      | Shortcut                  |
-| ----------- | ------------------------- |
-| Close panel | <kbd>⌘</kbd> <kbd>X</kbd> |
+| Action             | Shortcut                  |
+| ------------------ | ------------------------- |
+| Focus search input | <kbd>⌘</kbd> <kbd>F</kbd> |
+| Close panel        | <kbd>⌘</kbd> <kbd>X</kbd> |
 
 **With focus inside a note card...**
 
