@@ -232,7 +232,7 @@ type CommandItemProps = {
 function CommandItem({ children, value, icon, description, onSelect }: CommandItemProps) {
   return (
     <Command.Item value={value} onSelect={onSelect}>
-      <div className="grid grid-cols-[28px_1fr_auto]">
+      <div className="grid grid-cols-[1.75rem_1fr_auto]">
         <span className="text-text-muted">{icon}</span>
         <span className="truncate">{children}</span>
         {description ? <span className="text-text-muted">{description}</span> : null}

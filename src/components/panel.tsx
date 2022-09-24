@@ -30,13 +30,13 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
     >
       <div
         className={clsx(
-          "sticky top-0 z-10 flex h-[56px] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-backdrop p-4 backdrop-blur-md",
+          "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-backdrop p-4 backdrop-blur-md",
         )}
       >
         <div className="flex flex-shrink gap-2">
           <div className="flex-shrink-0">{icon}</div>
           <div className="flex items-baseline gap-3">
-            <h2 className="flex-shrink-0 text-lg font-semibold leading-[24px]">{title}</h2>
+            <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
             {description ? <span className="truncate text-text-muted">{description}</span> : null}
           </div>
         </div>
