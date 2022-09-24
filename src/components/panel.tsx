@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import React from "react"
 import { IconButton } from "./button"
 import { CloseIcon16 } from "./icons"
 
@@ -12,9 +13,11 @@ type PanelProps = {
 }
 
 export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
+  const panelRef = React.useRef<HTMLDivElement>(null)
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
+      ref={panelRef}
       data-panel // Data attribute used to manage focus
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
@@ -25,6 +28,16 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
           onClose?.()
           event.preventDefault()
+        }
+
+        // Focus search input with `command + f`
+        if (event.metaKey && event.key === "f") {
+          const searchInput =
+            panelRef.current?.querySelector<HTMLInputElement>("input[type=search]")
+          if (searchInput) {
+            searchInput.focus()
+            event.preventDefault()
+          }
         }
       }}
     >
