@@ -1,3 +1,4 @@
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
@@ -17,7 +18,6 @@ const MIN_WIDTH = 512
 const MAX_WIDTH = 800
 
 export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
-  const [isResizing, setIsResizing] = React.useState(false)
   const [width, setWidth] = React.useState(MIN_WIDTH)
   const panelRef = React.useRef<HTMLDivElement>(null)
   return (
@@ -28,7 +28,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="relative h-full w-[80vw] flex-shrink-0 border-r border-border-divider focus:outline-none"
+      className="relative h-full w-[80vw] flex-shrink-0 focus:outline-none"
       style={{ maxWidth: width }}
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
@@ -48,30 +48,8 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         }
       }}
     >
-      {/* TODO: Resize with keyboard */}
-      <DraggableCore
-        onStart={() => setIsResizing(true)}
-        onStop={() => setIsResizing(false)}
-        onDrag={(event, { deltaX }) => {
-          setWidth((width) => clamp(width + deltaX, MIN_WIDTH, MAX_WIDTH))
-          event.preventDefault()
-        }}
-      >
-        <div
-          data-resizing={isResizing}
-          className={clsx(
-            "absolute top-0 bottom-0 right-0 z-20 w-1 cursor-col-resize",
-            !isResizing && "hover:bg-bg-hover",
-            isResizing && "bg-border-divider",
-          )}
-        />
-      </DraggableCore>
-      <div
-        className={clsx(
-          "flex h-full flex-col overflow-auto",
-          // isResizing && "[&::-webkit-scrollbar]:hidden",
-        )}
-      >
+      <ResizeHandle value={width} min={MIN_WIDTH} max={MAX_WIDTH} onChange={setWidth} />
+      <div className="flex h-full flex-col overflow-auto border-r border-border-divider">
         <div
           className={clsx(
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-divider bg-bg-backdrop p-4 backdrop-blur-md",
@@ -93,6 +71,61 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         <div className="flex-grow p-4">{children}</div>
       </div>
     </div>
+  )
+}
+
+function ResizeHandle({
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  value: number
+  min: number
+  max: number
+  onChange: (value: number) => void
+}) {
+  const [isDragging, setIsDragging] = React.useState(false)
+  const [isFocused, setIsFocused] = React.useState(false)
+  const isResizing = isDragging || isFocused
+  const sliderRef = React.useRef<HTMLInputElement>(null)
+  return (
+    <>
+      <DraggableCore
+        onStart={() => setIsDragging(true)}
+        onStop={() => {
+          setIsDragging(false)
+          sliderRef.current?.focus()
+        }}
+        onDrag={(event, { deltaX }) => {
+          onChange(clamp(value + deltaX, min, max))
+          event.preventDefault()
+        }}
+      >
+        <div
+          data-resizing={isDragging}
+          className={clsx(
+            "absolute top-0 bottom-0 right-0 z-20 w-1 cursor-col-resize",
+            !isResizing && "hover:bg-bg-hover",
+            isResizing && "bg-border-focus",
+          )}
+        />
+      </DraggableCore>
+      <VisuallyHidden.Root>
+        <input
+          ref={sliderRef}
+          aria-label="Resize panel"
+          type="range"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          value={value}
+          min={min}
+          max={max}
+          onChange={(event) => onChange(Number(event.target.value))}
+          step={16}
+        />
+      </VisuallyHidden.Root>
+    </>
   )
 }
 
