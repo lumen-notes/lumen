@@ -88,6 +88,7 @@ function ResizeHandle({
   const [isDragging, setIsDragging] = React.useState(false)
   const [isFocused, setIsFocused] = React.useState(false)
   const isResizing = isDragging || isFocused
+  const handleRef = React.useRef<HTMLDivElement>(null)
   const sliderRef = React.useRef<HTMLInputElement>(null)
   return (
     <>
@@ -103,6 +104,7 @@ function ResizeHandle({
         }}
       >
         <div
+          ref={handleRef}
           data-resizing={isDragging}
           className={clsx(
             "absolute top-0 bottom-0 right-0 z-20 w-1 cursor-col-resize",
@@ -116,12 +118,32 @@ function ResizeHandle({
           ref={sliderRef}
           aria-label="Resize panel"
           type="range"
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            setIsFocused(true)
+            handleRef.current?.scrollIntoView()
+          }}
           onBlur={() => setIsFocused(false)}
           value={value}
           min={min}
           max={max}
           onChange={(event) => onChange(Number(event.target.value))}
+          onKeyDown={(event) => {
+            if (event.shiftKey) {
+              switch (event.key) {
+                case "ArrowLeft":
+                case "ArrowDown":
+                  onChange(min)
+                  event.preventDefault()
+                  break
+
+                case "ArrowRight":
+                case "ArrowUp":
+                  onChange(max)
+                  event.preventDefault()
+                  break
+              }
+            }
+          }}
           step={16}
         />
       </VisuallyHidden.Root>
