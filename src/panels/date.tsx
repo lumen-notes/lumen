@@ -107,7 +107,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
             initial={{ x: direction === "next" ? "100%" : "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: direction === "next" ? "-100%" : "100%" }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <RovingFocusGroup.Root orientation="horizontal" className="flex">
               {week.map((date) => (
