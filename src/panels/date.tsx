@@ -3,6 +3,7 @@ import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } from "date-fns"
 import { toDate } from "date-fns-tz"
+import { AnimatePresence, motion } from "framer-motion"
 import React from "react"
 import { IconButton } from "../components/button"
 import { Card } from "../components/card"
@@ -54,6 +55,8 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
 
 // TODO: Implement roving focus
 function Calendar({ activeDate: dateString }: { activeDate: string }) {
+  const [direction, setDirection] = React.useState<"previous" | "next">("next")
+
   const date = toDate(dateString)
 
   const [startOfWeek, setStartOfWeek] = React.useState(() =>
@@ -65,35 +68,59 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
   const week = eachDayOfInterval({ start: startOfWeek, end: endOfWeek })
 
   return (
-    <Card className="flex flex-col gap-2 p-2">
+    <Card className="flex flex-col gap-2 overflow-hidden p-2">
       <div className="flex items-center justify-between">
         <span className="px-2 text-base font-semibold">
           {monthNames[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
-        <div>
-          <IconButton
-            aria-label="Previous week"
-            onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
-          >
-            <ChevronLeftIcon16 />
-          </IconButton>
-          <IconButton
-            aria-label="Next week"
-            onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
-          >
-            <ChevronRightIcon16 />
-          </IconButton>
-        </div>
+
+        <RovingFocusGroup.Root orientation="horizontal">
+          <RovingFocusGroup.Item asChild>
+            <IconButton
+              aria-label="Previous week"
+              onClick={() => {
+                setDirection("previous")
+                setTimeout(() => setStartOfWeek(previousMonday(startOfWeek)))
+              }}
+            >
+              <ChevronLeftIcon16 />
+            </IconButton>
+          </RovingFocusGroup.Item>
+          <RovingFocusGroup.Item asChild>
+            <IconButton
+              aria-label="Next week"
+              onClick={() => {
+                setDirection("next")
+                setTimeout(() => setStartOfWeek(nextMonday(startOfWeek)))
+              }}
+            >
+              <ChevronRightIcon16 />
+            </IconButton>
+          </RovingFocusGroup.Item>
+        </RovingFocusGroup.Root>
       </div>
-      <RovingFocusGroup.Root orientation="horizontal" className="flex">
-        {week.map((date) => (
-          <CalendarDate
-            key={date.toISOString()}
-            date={date}
-            active={toDateString(date) === dateString}
-          />
-        ))}
-      </RovingFocusGroup.Root>
+      <div className="grid">
+        <AnimatePresence initial={false}>
+          <motion.div
+            key={startOfWeek.toString()}
+            className="col-span-full row-span-full"
+            initial={{ x: direction === "next" ? "100%" : "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: direction === "next" ? "-100%" : "100%" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <RovingFocusGroup.Root orientation="horizontal" className="flex">
+              {week.map((date) => (
+                <CalendarDate
+                  key={date.toISOString()}
+                  date={date}
+                  active={toDateString(date) === dateString}
+                />
+              ))}
+            </RovingFocusGroup.Root>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </Card>
   )
 }
