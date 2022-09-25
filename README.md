@@ -6,6 +6,11 @@ A system for thinking, writing, learning, and mindfulness.
 
 [uselumen.com](https://uselumen.com)
 
+## Guidelines
+
+- Limit each note to one idea.
+- Link notes together using [note](#note-links), [date](#date-links), and [tag](#tag-links) links.
+
 ## Syntax
 
 Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with the following syntax extensions:
