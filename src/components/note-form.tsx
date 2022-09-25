@@ -50,7 +50,7 @@ export function NoteForm({
     value: body = "",
   } = useCodeMirror({
     defaultValue: defaultBody,
-    placeholder: "Write something",
+    placeholder: "Write a note...",
     viewRef: codeMirrorViewRef,
     onStateChange: (event) => setEditorHasFocus(event.view.hasFocus),
   })
