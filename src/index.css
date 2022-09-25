@@ -238,7 +238,10 @@ input[type="search"]::-webkit-search-cancel-button {
   @apply pl-6;
 }
 
-.markdown ul ul {
+.markdown ul ul,
+.markdown ul ol,
+.markdown ol ul,
+.markdown ol ol {
   @apply my-2;
 }
 
