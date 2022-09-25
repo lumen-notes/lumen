@@ -100,6 +100,10 @@ input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
 }
 
+body:has([data-resizing="true"]) * {
+  cursor: col-resize;
+}
+
 /* Utility classes */
 
 .link {
