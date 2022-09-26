@@ -65,7 +65,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
               if (!panelRef.current) break
 
               const panelRect = panelRef.current.getBoundingClientRect()
-              setWidth(window.innerWidth - panelRect.x)
+              setWidth(Math.max(window.innerWidth - panelRect.x, MIN_WIDTH))
               break
             }
           }
