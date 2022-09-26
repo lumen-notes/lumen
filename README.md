@@ -6,7 +6,7 @@ A system for thinking, writing, learning, and mindfulness.
 
 [uselumen.com](https://uselumen.com)
 
-## Guidelines
+## Instructions
 
 - Limit each note to one idea.
 - Link notes together using [note](#note-links), [date](#date-links), and [tag](#tag-links) links.
