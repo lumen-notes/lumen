@@ -15,7 +15,7 @@ type PanelProps = {
 }
 
 const MIN_WIDTH = 512
-const MAX_WIDTH = 800
+const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
   const [width, setWidth] = React.useState(MIN_WIDTH)
@@ -28,8 +28,8 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="relative h-full w-[80vw] flex-shrink-0 focus:outline-none"
-      style={{ maxWidth: width }}
+      className="relative h-full flex-shrink-0 focus:outline-none"
+      style={{ width }}
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
         if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
@@ -48,7 +48,29 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         }
       }}
     >
-      <ResizeHandle value={width} min={MIN_WIDTH} max={MAX_WIDTH} onChange={setWidth} />
+      <ResizeHandle
+        value={width}
+        min={MIN_WIDTH}
+        max={MAX_WIDTH}
+        onChange={setWidth}
+        onSnap={(direction) => {
+          switch (direction) {
+            case "left": {
+              setWidth(MIN_WIDTH)
+              break
+            }
+
+            // Fill the remaining space to the right
+            case "right": {
+              if (!panelRef.current) break
+
+              const panelRect = panelRef.current.getBoundingClientRect()
+              setWidth(window.innerWidth - panelRect.x)
+              break
+            }
+          }
+        }}
+      />
       <div className="flex h-full flex-col overflow-auto border-r border-border-divider">
         <div
           className={clsx(
@@ -78,12 +100,16 @@ function ResizeHandle({
   value,
   min,
   max,
+  step = 16,
   onChange,
+  onSnap,
 }: {
   value: number
   min: number
   max: number
+  step?: number
   onChange: (value: number) => void
+  onSnap?: (direction: "left" | "right") => void
 }) {
   const [isDragging, setIsDragging] = React.useState(false)
   const [isFocused, setIsFocused] = React.useState(false)
@@ -132,19 +158,19 @@ function ResizeHandle({
               switch (event.key) {
                 case "ArrowLeft":
                 case "ArrowDown":
-                  onChange(min)
+                  onSnap?.("left")
                   event.preventDefault()
                   break
 
                 case "ArrowRight":
                 case "ArrowUp":
-                  onChange(max)
+                  onSnap?.("right")
                   event.preventDefault()
                   break
               }
             }
           }}
-          step={16}
+          step={step}
         />
       </VisuallyHidden.Root>
     </>
