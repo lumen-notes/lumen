@@ -81,12 +81,15 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     return <audio controls src={src} className="w-full max-w-lg" />
   }
 
-  // TODO: Render PDFs
+  // PDF (< 1 MB)
+  if (file.type === "application/pdf" && file.size < 1_000_000) {
+    return <iframe title={file.name} src={src} className="h-full w-full" />
+  }
 
   return (
     <div>
       <a download={file.name} href={src} className="link">
-        Download {file.name} ({(file.size / 1000000).toFixed(1)} MB)
+        Download {file.name} ({(file.size / 1_000_000).toFixed(1)} MB)
       </a>
     </div>
   )
