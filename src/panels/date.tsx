@@ -53,7 +53,6 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   )
 }
 
-// TODO: Implement roving focus
 function Calendar({ activeDate: dateString }: { activeDate: string }) {
   const [direction, setDirection] = React.useState<"previous" | "next">("next")
 
@@ -107,7 +106,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
             initial={{ x: direction === "next" ? "100%" : "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: direction === "next" ? "-100%" : "100%" }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
           >
             <RovingFocusGroup.Root orientation="horizontal" className="flex">
               {week.map((date) => (
