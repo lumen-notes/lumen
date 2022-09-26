@@ -40,7 +40,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4">
         <Calendar activeDate={date} />
         <LinkHighlightProvider href={`/dates/${date}`}>
           <div key={date} className="flex flex-col gap-4">

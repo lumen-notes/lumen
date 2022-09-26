@@ -68,7 +68,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
             </IconButton>
           ) : null}
         </div>
-        <div className="flex-grow p-4">{children}</div>
+        <div className="flex-grow">{children}</div>
       </div>
     </div>
   )

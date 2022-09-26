@@ -21,7 +21,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
       icon={<NoteIcon24 />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4">
         <NoteForm />
         <NoteList ids={noteIds} />
       </div>
