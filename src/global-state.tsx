@@ -448,6 +448,6 @@ export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
 
 export function GlobalStateProvider({ children }: React.PropsWithChildren) {
   const service = useInterpret(machine)
-
-  return <GlobalStateContext.Provider value={{ service }}>{children}</GlobalStateContext.Provider>
+  const contextValue = React.useMemo(() => ({ service }), [service])
+  return <GlobalStateContext.Provider value={contextValue}>{children}</GlobalStateContext.Provider>
 }

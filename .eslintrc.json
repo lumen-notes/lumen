@@ -29,6 +29,7 @@
     "react/display-name": "off",
     "react/prop-types": "off",
     "react/no-unescaped-entities": "off",
+    "react/jsx-no-constructed-context-values": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
       { "args": "none", "ignoreRestSiblings": true, "destructuredArrayIgnorePattern": "^_" }

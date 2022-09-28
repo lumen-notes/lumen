@@ -91,15 +91,18 @@ function Root({ children }: React.PropsWithChildren) {
     [panels, setPanels],
   )
 
+  const contextValue = React.useMemo(
+    () => ({
+      panels,
+      openPanel,
+      closePanel,
+      updatePanel,
+    }),
+    [panels, openPanel, closePanel, updatePanel],
+  )
+
   return (
-    <PanelsContext.Provider
-      value={{
-        panels,
-        openPanel,
-        closePanel,
-        updatePanel,
-      }}
-    >
+    <PanelsContext.Provider value={contextValue}>
       <div className="flex h-full overflow-y-hidden">{children}</div>
     </PanelsContext.Provider>
   )
@@ -172,11 +175,7 @@ function Outlet() {
     <>
       {panels.map((value, index) => {
         const panel = deserializePanelValue(value)
-        return (
-          <PanelContext.Provider key={panel.id} value={{ ...panel, index }}>
-            <PanelRoutes />
-          </PanelContext.Provider>
-        )
+        return <PanelRoutes key={panel.id} panel={panel} index={index} />
       })}
     </>
   )
@@ -197,11 +196,18 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: "file", panel: FilePanel },
 ]
 
-// type PanelRoutesProps = { panel: PanelValue; index: number }
+type PanelRoutesProps = { panel: PanelValue; index: number }
 
-function PanelRoutes() {
+function PanelRoutes({ panel, index }: PanelRoutesProps) {
   const { closePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
+
+  const contextValue = React.useMemo(
+    () => ({
+      ...panel,
+      index,
+    }),
+    [panel, index],
+  )
 
   if (!panel) return <div>Unexpected error</div>
 
@@ -213,13 +219,15 @@ function PanelRoutes() {
   const { panel: Panel } = match.route
 
   return (
-    <Panel
-      id={panel.id}
-      params={match.params}
-      onClose={() => {
-        closePanel?.(panel.index)
-      }}
-    />
+    <PanelContext.Provider value={contextValue}>
+      <Panel
+        id={panel.id}
+        params={match.params}
+        onClose={() => {
+          closePanel?.(index)
+        }}
+      />
+    </PanelContext.Provider>
   )
 }
 
