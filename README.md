@@ -2,14 +2,14 @@
 
 > **Warning**: Work in progress
 
-A system for thinking, writing, learning, and mindfulness.
+An opinionated* system for thinking, writing, learning, and mindfulness.
 
 [uselumen.com](https://uselumen.com)
 
-## Instructions
+## *Opinions
 
-- Limit each note to one idea.
-- Link notes together using [note](#note-links), [date](#date-links), and [tag](#tag-links) links.
+- Each note in Lumen should be limited to one idea.
+- Lumen is not a task manager. 
 
 ## Syntax
 
