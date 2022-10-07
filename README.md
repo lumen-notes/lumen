@@ -2,14 +2,9 @@
 
 > **Warning**: Work in progress
 
-An opinionated* system for thinking, writing, learning, and mindfulness.
+A system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 [uselumen.com](https://uselumen.com)
-
-## *Opinions
-
-- Each note in Lumen should be limited to one idea.
-- Lumen is not a task manager. 
 
 ## Syntax
 
