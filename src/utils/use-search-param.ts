@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { Schema } from "zod"
 import { PanelContext, PanelsContext } from "../components/panels"
 
-type UseSearchParamOptions<T = string> = {
+type SearchParamOptions<T = string> = {
   defaultValue: T
   schema: Schema<T>
   replace?: boolean
@@ -14,7 +14,7 @@ type UseSearchParamOptions<T = string> = {
 // Reference: https://www.inkoop.io/blog/syncing-query-parameters-with-react-state/
 export function useSearchParam<T = string>(
   key: string,
-  { defaultValue, schema, replace = false }: UseSearchParamOptions<T>,
+  { defaultValue, schema, replace = false }: SearchParamOptions<T>,
 ): [T, (value: T) => void] {
   const location = useLocation()
   const navigate = useNavigate()
