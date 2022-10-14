@@ -2,14 +2,9 @@
 
 > **Warning**: Work in progress
 
-A system for thinking, writing, learning, and mindfulness.
+A system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 [uselumen.com](https://uselumen.com)
-
-## Instructions
-
-- Limit each note to one idea.
-- Link notes together using [note](#note-links), [date](#date-links), and [tag](#tag-links) links.
 
 ## Syntax
 
