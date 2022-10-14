@@ -1,18 +1,11 @@
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
-import {
-  Code,
-  Construct,
-  Extension,
-  HtmlExtension,
-  Previous,
-  State,
-  Tokenizer,
-} from "micromark-util-types"
+import { Code, Construct, Extension, HtmlExtension, Previous } from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
-import { createMachine, interpret, send } from "xstate"
+import { createMachine, send } from "xstate"
+import { createTokenizer } from "./create-tokenizer"
 
 const types = {
   tagLink: "tagLink",
@@ -196,47 +189,6 @@ function isNameChar(code: Code): boolean {
 
 // Syntax extension (text -> tokens)
 export function tagLink(): Extension {
-  const tokenize: Tokenizer = (effects, ok, nok) => {
-    const service = interpret(
-      tagLinkMachine.withConfig({
-        actions: {
-          consume: (context, event) => {
-            // console.log("consume", String.fromCharCode(Number(event.code)))
-            effects.consume(event.code)
-          },
-          // @ts-ignore XState typegen doesn't detect actions with metadata
-          enter: (context, event, { action }) => {
-            // console.log("enter", action.tokenType)
-            effects.enter(action.tokenType)
-          },
-          // @ts-ignore XState typegen doesn't detect actions with metadata
-          exit: (context, event, { action }) => {
-            // console.log("exit", action.tokenType)
-            effects.exit(action.tokenType)
-          },
-        },
-      }),
-    )
-
-    service.start()
-
-    function nextState(code: Code): State | void {
-      service.send({ type: "CHAR", code })
-
-      if (service.state.value === "ok") {
-        return ok(code)
-      }
-
-      if (service.state.toStrings().some((s) => /nok$/.test(s))) {
-        return nok(code)
-      }
-
-      return nextState
-    }
-
-    return nextState
-  }
-
   const previous: Previous = (code) => {
     return (
       code === codes.space ||
@@ -249,7 +201,7 @@ export function tagLink(): Extension {
 
   const construct: Construct = {
     name: "tagLink",
-    tokenize,
+    tokenize: createTokenizer(tagLinkMachine),
     previous,
   }
 
