@@ -76,7 +76,11 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
-    return <FilePreview path={props.src} alt={props.alt} />
+    return (
+      <Panels.Link to={`/file?${qs.stringify({ path: props.src })}`}>
+        <FilePreview path={props.src} alt={props.alt} />
+      </Panels.Link>
+    )
   }
 
   // eslint-disable-next-line jsx-a11y/alt-text
