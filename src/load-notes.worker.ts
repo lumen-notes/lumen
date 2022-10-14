@@ -1,6 +1,8 @@
 import { NoteId } from "./types"
 import { parseNoteBody } from "./utils/parse-note-body"
 
+const FILENAME_REGEX = /^\d+\.md$/
+
 type MessagePayload = {
   directoryHandle: FileSystemDirectoryHandle
 }
@@ -19,7 +21,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // Parse every note file in the directory
   for await (const [name, handle] of directoryHandle.entries()) {
     // Only load markdown files with numeric names (example: "123.md")
-    if (handle.kind === "file" && /^\d+\.md$/.test(name)) {
+    if (handle.kind === "file" && FILENAME_REGEX.test(name)) {
       data.push(handle.getFile().then(parseFile))
     }
   }
@@ -48,7 +50,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
 
 /** Extracts metadata from a note file */
 async function parseFile(file: File) {
-  if (!/^\d+\.md$/.test(file.name)) {
+  if (!FILENAME_REGEX.test(file.name)) {
     throw new Error(`Invalid note filename: ${file.name}`)
   }
 

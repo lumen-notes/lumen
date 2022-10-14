@@ -2,7 +2,7 @@ import { addDays, formatDistance, isSameDay, subDays } from "date-fns"
 
 // Date utilities
 
-export const monthNames = [
+export const MONTH_NAMES = [
   "January",
   "February",
   "March",
@@ -17,7 +17,7 @@ export const monthNames = [
   "December",
 ]
 
-export const dayNames = [
+export const DAY_NAMES = [
   "Sunday",
   "Monday",
   "Tuesday",
@@ -37,9 +37,9 @@ export function formatDate(dateString: string) {
   const date = new Date(dateString)
   const currentYear = new Date().getUTCFullYear()
   const year = date.getUTCFullYear()
-  const month = monthNames[date.getUTCMonth()].slice(0, 3)
+  const month = MONTH_NAMES[date.getUTCMonth()].slice(0, 3)
   const day = date.getUTCDate()
-  const dayOfWeek = dayNames[date.getUTCDay()].slice(0, 3)
+  const dayOfWeek = DAY_NAMES[date.getUTCDay()].slice(0, 3)
 
   let formattedDate = `${dayOfWeek}, ${month} ${day}`
 

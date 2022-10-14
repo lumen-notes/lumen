@@ -14,7 +14,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
-import { dayNames, formatDate, formatDateDistance, monthNames, toDateString } from "../utils/date"
+import { DAY_NAMES, formatDate, formatDateDistance, MONTH_NAMES, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
@@ -70,7 +70,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
     <Card className="flex flex-col gap-2 overflow-hidden p-2">
       <div className="flex items-center justify-between">
         <span className="px-2 text-base font-semibold">
-          {monthNames[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
+          {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
 
         <RovingFocusGroup.Root orientation="horizontal">
@@ -125,8 +125,8 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
 }
 
 function CalendarDate({ date, active: isActive = false }: { date: Date; active?: boolean }) {
-  const dayName = dayNames[date.getDay()]
-  const monthName = monthNames[date.getMonth()]
+  const dayName = DAY_NAMES[date.getDay()]
+  const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()
   const year = date.getFullYear()
   const label = `${dayName}, ${monthName} ${day}, ${year}`
