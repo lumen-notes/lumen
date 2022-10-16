@@ -13,7 +13,6 @@ module.exports = {
       "text-placeholder": "var(--color-text-placeholder)",
       "text-highlight": "var(--color-text-highlight)",
       bg: "var(--color-bg)",
-      "bg-wash": "var(--color-bg-wash)",
       "bg-inset": "var(--color-bg-inset)",
       "bg-overlay": "var(--color-bg-overlay)",
       "bg-backdrop": "var(--color-bg-backdrop)",

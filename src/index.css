@@ -44,7 +44,6 @@
   --l-text-muted: 45%;
   --l-text-placeholder: 55%;
   --l-bg: 100%;
-  --l-bg-wash: 95%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
   --a-bg-backdrop: 0.65;
@@ -57,7 +56,6 @@
   --color-text-placeholder: hsl(var(--h) var(--s) var(--l-text-placeholder));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
-  --color-bg-wash: hsl(var(--h) var(--s) var(--l-bg-wash));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
@@ -76,7 +74,6 @@
     --l-text-muted: 60%;
     --l-text-placeholder: 55%;
     --l-bg: 10%;
-    --l-bg-wash: 20%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
     --a-bg-secondary: 0.075;
@@ -214,11 +211,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown pre {
-  @apply overflow-auto rounded bg-bg-wash p-3;
+  @apply overflow-auto rounded bg-bg-secondary p-3;
 }
 
 .markdown code {
-  @apply rounded bg-bg-wash px-1;
+  @apply rounded bg-bg-secondary px-1;
 }
 
 .markdown pre > code {
