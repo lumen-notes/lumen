@@ -110,19 +110,19 @@ export function NoteCard({ id }: NoteCardProps) {
         <div className="-m-2">
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut="⌘.">
+              <IconButton aria-label="Note actions" shortcut={["⌘", "."]}>
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item onSelect={switchToEditing} shortcut="E">
+              <DropdownMenu.Item onSelect={switchToEditing} shortcut={["E"]}>
                 Edit
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onSelect={() => copy(body)} shortcut="⌘C">
+              <DropdownMenu.Item onSelect={() => copy(body)} shortcut={["⌘", "C"]}>
                 Copy markdown
               </DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={() => copy(id)} shortcut="⌘⇧C">
+              <DropdownMenu.Item onSelect={() => copy(id)} shortcut={["⌘", "⇧", "C"]}>
                 Copy ID
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
@@ -130,7 +130,7 @@ export function NoteCard({ id }: NoteCardProps) {
                 onSelect={() => {
                   globalState.service.send({ type: "DELETE_NOTE", id })
                 }}
-                shortcut="⌘⌫"
+                shortcut={["⌘", "⌫"]}
                 disabled={backlinks.length > 0}
               >
                 Delete

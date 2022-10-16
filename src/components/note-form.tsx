@@ -210,11 +210,11 @@ export function NoteForm({
           </FileInputButton>
           <div className="flex gap-2">
             {onCancel ? (
-              <Button shortcut="esc" onClick={onCancel}>
+              <Button shortcut={["esc"]} onClick={onCancel}>
                 Cancel
               </Button>
             ) : null}
-            <Button type="submit" variant="primary" shortcut="⌘⏎">
+            <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
               {id ? "Save" : "Add"}
             </Button>
           </div>

@@ -85,7 +85,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
             </div>
           </div>
           {onClose ? (
-            <IconButton aria-label="Close panel" shortcut="⌘X" onClick={() => onClose()}>
+            <IconButton aria-label="Close panel" shortcut={["⌘", "X"]} onClick={() => onClose()}>
               <CloseIcon16 />
             </IconButton>
           ) : null}

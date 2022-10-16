@@ -1,12 +1,13 @@
 import React from "react"
 import { SearchIcon16 } from "./icons"
+import { Keys } from "./keys"
 
 type SearchInputProps = React.ComponentPropsWithoutRef<"input"> & {
-  shortcut?: string
+  shortcut?: string[]
 }
 
 export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ shortcut = "⌘F", ...props }, ref) => {
+  ({ shortcut = ["⌘", "F"], ...props }, ref) => {
     return (
       <div className="relative">
         <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-muted">
@@ -19,8 +20,8 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         {shortcut && !props.value ? (
-          <div className="absolute top-0 bottom-0 right-4 flex items-center text-text-muted">
-            {shortcut}
+          <div className="absolute top-0 bottom-0 right-4 flex items-center">
+            <Keys keys={shortcut} />
           </div>
         ) : null}
       </div>

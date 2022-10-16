@@ -2,6 +2,7 @@ import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
 import { clsx } from "clsx"
 import React from "react"
 import { Card } from "./card"
+import { Keys } from "./keys"
 
 const Root = RadixDropdownMenu.Root
 
@@ -18,7 +19,7 @@ const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuC
 )
 
 type ItemProps = RadixDropdownMenu.DropdownMenuItemProps & {
-  shortcut?: string
+  shortcut?: string[]
 }
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
@@ -32,7 +33,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       {...props}
     >
       <span className="flex-grow">{children}</span>
-      <span className="uppercase text-text-muted">{shortcut}</span>
+      {shortcut ? <Keys keys={shortcut} /> : null}
     </RadixDropdownMenu.Item>
   ),
 )

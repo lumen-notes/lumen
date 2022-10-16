@@ -1,11 +1,12 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { clsx } from "clsx"
 import React from "react"
+import { Keys } from "./keys"
 import { Tooltip } from "./tooltip"
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   variant?: "default" | "primary"
-  shortcut?: string
+  shortcut?: string[]
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -31,7 +32,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return (
         <Tooltip>
           <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
-          <Tooltip.Content side="bottom">{shortcut}</Tooltip.Content>
+          <Tooltip.Content side="bottom">
+            <Keys keys={shortcut} />
+          </Tooltip.Content>
         </Tooltip>
       )
     }
@@ -44,10 +47,10 @@ export const IconButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<"button"> & {
     "aria-label": string // Required for accessibility
-    shortcut?: string
+    shortcut?: string[]
     tooltipSide?: TooltipContentProps["side"]
   }
->(({ className, children, shortcut, tooltipSide = "top", ...props }, ref) => {
+>(({ className, children, shortcut, tooltipSide = "bottom", ...props }, ref) => {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
@@ -64,9 +67,9 @@ export const IconButton = React.forwardRef<
         </button>
       </Tooltip.Trigger>
       <Tooltip.Content side={tooltipSide}>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           <span>{props["aria-label"]}</span>
-          {shortcut ? <span>{shortcut}</span> : null}
+          {shortcut ? <Keys keys={shortcut} /> : null}
         </div>
       </Tooltip.Content>
     </Tooltip>
