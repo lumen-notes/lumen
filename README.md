@@ -48,9 +48,19 @@ Link to all other notes with the same tag.
 
 ## Keyboard shortcuts
 
-| Action              | Shortcut                  |
-| ------------------- | ------------------------- |
-| Toggle command menu | <kbd>⌘</kbd> <kbd>K</kbd> |
+| Action                 | Shortcut                  |
+| ---------------------- | ------------------------- |
+| Toggle command menu    | <kbd>⌘</kbd> <kbd>K</kbd> |
+| Toggle new note dialog | <kbd>⌘</kbd> <kbd>I</kbd> |
+
+**With focus inside the new note dialog...**
+
+| Action                 | Shortcut                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| Create note            | <kbd>⌘</kbd> <kbd>Enter</kbd>                                              |
+| Close dialog           | <kbd>Esc</kbd>                                                             |
+| Adjust dialog position | <kbd>⌘</kbd> <kbd>ArrowKey</kbd> (Hold <kbd>⇧</kbd> to increase step size) |
+| Reset dialog position  | <kbd>⌘</kbd> <kbd>0</kbd>                                                  |
 
 **With focus inside a panel...**
 
