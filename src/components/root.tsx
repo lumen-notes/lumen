@@ -100,7 +100,7 @@ export function Root() {
             <NewNoteDialog />
           </div>
           <div className="flex flex-col gap-2">
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" tooltipSide="right">
                   <MoreIcon24 />
