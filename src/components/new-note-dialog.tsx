@@ -99,8 +99,8 @@ export function NewNoteDialog() {
                 // Hold `shift` to increase step size
                 const step = event.shiftKey ? 128 : 16
 
-                // Move dialog with `command + arrow`
                 switch (event.key) {
+                  // Adjust dialog position with `command + arrow key`
                   case "ArrowUp":
                     setPosition({ x: position.x, y: position.y - step })
                     event.preventDefault()
@@ -120,12 +120,18 @@ export function NewNoteDialog() {
                     setPosition({ x: position.x - step, y: position.y })
                     event.preventDefault()
                     break
+
+                  // Reset dialog position with `command + 0`
+                  case "0":
+                    setPosition(initialPosition())
+                    event.preventDefault()
+                    break
                 }
               }}
             >
               <NoteForm
                 elevation={2}
-                editorMinHeight={64}
+                editorMinHeight={96}
                 codeMirrorViewRef={codeMirrorViewRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)
