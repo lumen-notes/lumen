@@ -9,7 +9,6 @@ import { IconButton } from "../components/button"
 import { Card } from "../components/card"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
-import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"
@@ -43,10 +42,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col gap-4 p-4">
         <Calendar activeDate={date} />
         <LinkHighlightProvider href={`/dates/${date}`}>
-          <div key={date} className="flex flex-col gap-4">
-            <NoteForm defaultBody={`[[${date}]]`} />
-            <NoteList key={date} ids={noteIds} />
-          </div>
+          <NoteList key={date} ids={noteIds} />
         </LinkHighlightProvider>
       </div>
     </Panel>

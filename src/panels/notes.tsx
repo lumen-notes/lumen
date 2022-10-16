@@ -1,7 +1,6 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { NoteIcon24 } from "../components/icons"
-import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
@@ -21,8 +20,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
       icon={<NoteIcon24 />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4 p-4">
-        <NoteForm />
+      <div className="p-4">
         <NoteList ids={noteIds} />
       </div>
     </Panel>

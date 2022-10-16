@@ -18,7 +18,7 @@ import { NoteId } from "../types"
 import { formatDate } from "../utils/date"
 import { writeFile } from "../utils/file-system"
 import { Button, IconButton } from "./button"
-import { Card } from "./card"
+import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { PaperclipIcon16 } from "./icons"
 
@@ -27,6 +27,7 @@ const UPLOADS_DIRECTORY = "uploads"
 type NoteFormProps = {
   id?: NoteId
   defaultBody?: string
+  elevation?: CardProps["elevation"]
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
   onSubmit?: (note: { id: NoteId; body: string }) => void
   onCancel?: () => void
@@ -35,6 +36,7 @@ type NoteFormProps = {
 export function NoteForm({
   id,
   defaultBody = "",
+  elevation = 0,
   codeMirrorViewRef,
   onSubmit,
   onCancel,
@@ -123,6 +125,7 @@ export function NoteForm({
 
   return (
     <Card
+      elevation={elevation}
       className={clsx(
         "relative p-2",
         editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",

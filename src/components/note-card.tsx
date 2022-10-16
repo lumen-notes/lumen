@@ -58,6 +58,8 @@ export function NoteCard({ id }: NoteCardProps) {
   return !isEditing ? (
     // View mode
     <Card
+      // Used to focus the note card after creating it
+      data-note-id={id}
       ref={cardRef}
       tabIndex={0}
       className="flex flex-col gap-6 p-4"

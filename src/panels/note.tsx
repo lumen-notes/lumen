@@ -3,7 +3,6 @@ import React from "react"
 import { NoteIcon24 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
-import { NoteForm } from "../components/note-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
@@ -23,10 +22,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <h3 className="leading-none">Backlinks</h3>
 
         <LinkHighlightProvider href={`/${noteId}`}>
-          <div className="flex flex-col gap-4">
-            <NoteForm defaultBody={`[[${noteId}]]`} />
-            <NoteList key={noteId} ids={backlinks || []} />
-          </div>
+          <NoteList key={noteId} ids={backlinks || []} />
         </LinkHighlightProvider>
       </div>
     </Panel>

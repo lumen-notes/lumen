@@ -14,40 +14,38 @@ import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from 
 export function CommandMenu() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const [previouslyActiveElement, setPreviouslyActiveElement] = React.useState<Element | null>(null)
-  const [open, setOpen] = React.useState(false)
+  const prevActiveElement = React.useRef<HTMLElement>()
+  const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
 
   const openMenu = React.useCallback(() => {
-    setPreviouslyActiveElement(document.activeElement)
-    setOpen(true)
+    prevActiveElement.current = document.activeElement as HTMLElement
+    setIsOpen(true)
   }, [])
 
   const closeMenu = React.useCallback(() => {
-    setOpen(false)
+    setIsOpen(false)
 
     // Focus the previously active element
-    if (previouslyActiveElement instanceof HTMLElement) {
-      setTimeout(() => previouslyActiveElement.focus())
-    }
-  }, [previouslyActiveElement])
+    setTimeout(() => prevActiveElement.current?.focus())
+  }, [])
 
   const navigate = React.useCallback(
     (url: string) => {
       openPanel?.(url, panels.length - 1)
-      setOpen(false)
+      setIsOpen(false)
       setQuery("")
     },
-    [openPanel, panels, setOpen, setQuery],
+    [openPanel, panels],
   )
 
   // Toggle the menu with `command + k`
   React.useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && event.metaKey) {
-        if (open) {
+        if (isOpen) {
           closeMenu()
         } else {
           const textSelection = window.getSelection()?.toString()
@@ -64,7 +62,7 @@ export function CommandMenu() {
 
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [open, openMenu, closeMenu])
+  }, [isOpen, openMenu, closeMenu])
 
   // Check if query can be parsed as a date
   const dateString = React.useMemo(() => {
@@ -122,7 +120,7 @@ export function CommandMenu() {
   return (
     <Command.Dialog
       label="Global command menu"
-      open={open}
+      open={isOpen}
       onOpenChange={(open) => (open ? openMenu() : closeMenu())}
       shouldFilter={false}
       onKeyDown={(event) => {

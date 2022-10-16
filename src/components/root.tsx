@@ -18,6 +18,8 @@ import {
   TagIcon24,
 } from "./icons"
 
+import { NewNoteDialog } from "./new-note-dialog"
+
 export function Root() {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
@@ -68,35 +70,39 @@ export function Root() {
     <div>
       <div className="flex h-screen overflow-auto">
         <div className="sticky left-0 z-20 flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2 backdrop-blur-md">
-          <nav>
-            <ul className="flex flex-col gap-2">
-              <li>
-                <NavLink to="/" aria-label="Notes" end>
-                  {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
-                  {({ isActive }) =>
-                    isActive ? (
-                      <CalendarFillIcon24 date={new Date().getDate()} />
-                    ) : (
-                      <CalendarIcon24 date={new Date().getDate()} />
-                    )
-                  }
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/tags" aria-label="Tags" end>
-                  {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
+          <div className="flex flex-col gap-3">
+            <nav>
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <NavLink to="/" aria-label="Notes" end>
+                    {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
+                    {({ isActive }) =>
+                      isActive ? (
+                        <CalendarFillIcon24 date={new Date().getDate()} />
+                      ) : (
+                        <CalendarIcon24 date={new Date().getDate()} />
+                      )
+                    }
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/tags" aria-label="Tags" end>
+                    {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
+                  </NavLink>
+                </li>
+              </ul>
+            </nav>
+            <div role="none" className="mx-1 h-px bg-border-divider" />
+            <NewNoteDialog />
+          </div>
           <div className="flex flex-col gap-2">
             <DropdownMenu>
               <DropdownMenu.Trigger asChild>
-                <IconButton aria-label="More actions">
+                <IconButton aria-label="More actions" tooltipSide="right">
                   <MoreIcon24 />
                 </IconButton>
               </DropdownMenu.Trigger>
