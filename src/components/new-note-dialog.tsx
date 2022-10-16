@@ -125,6 +125,7 @@ export function NewNoteDialog() {
             >
               <NoteForm
                 elevation={2}
+                editorMinHeight={64}
                 codeMirrorViewRef={codeMirrorViewRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)

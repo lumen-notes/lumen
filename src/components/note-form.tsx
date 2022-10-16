@@ -28,6 +28,7 @@ type NoteFormProps = {
   id?: NoteId
   defaultBody?: string
   elevation?: CardProps["elevation"]
+  editorMinHeight?: string | number
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
   onSubmit?: (note: { id: NoteId; body: string }) => void
   onCancel?: () => void
@@ -37,6 +38,7 @@ export function NoteForm({
   id,
   defaultBody = "",
   elevation = 0,
+  editorMinHeight,
   codeMirrorViewRef,
   onSubmit,
   onCancel,
@@ -154,7 +156,7 @@ export function NoteForm({
       {/* Dropzone overlay */}
       {isDraggingOver ? (
         <div
-          className="absolute inset-0 z-10 rounded-lg bg-bg-hover"
+          className="absolute inset-0 z-10 rounded-lg bg-bg-secondary"
           onDragLeave={(event) => {
             setIsDraggingOver(false)
             event.preventDefault()
@@ -184,7 +186,8 @@ export function NoteForm({
       >
         <div
           ref={editorRef}
-          className="p-2"
+          className="grid p-2"
+          style={{ minHeight: editorMinHeight }}
           onPaste={(event) => {
             const [file] = Array.from(event.clipboardData.files)
 
