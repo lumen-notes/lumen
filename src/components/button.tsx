@@ -1,3 +1,4 @@
+import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { clsx } from "clsx"
 import React from "react"
 import { Tooltip } from "./tooltip"
@@ -44,8 +45,9 @@ export const IconButton = React.forwardRef<
   React.ComponentPropsWithoutRef<"button"> & {
     "aria-label": string // Required for accessibility
     shortcut?: string
+    tooltipSide?: TooltipContentProps["side"]
   }
->(({ className, children, shortcut, ...props }, ref) => {
+>(({ className, children, shortcut, tooltipSide = "top", ...props }, ref) => {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
@@ -61,7 +63,7 @@ export const IconButton = React.forwardRef<
           {children}
         </button>
       </Tooltip.Trigger>
-      <Tooltip.Content>
+      <Tooltip.Content side={tooltipSide}>
         <div className="flex gap-2">
           <span>{props["aria-label"]}</span>
           {shortcut ? <span>{shortcut}</span> : null}
