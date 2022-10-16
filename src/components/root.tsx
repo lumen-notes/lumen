@@ -107,6 +107,14 @@ export function Root() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content side="right" align="end">
+                <DropdownMenu.Item
+                  onClick={() =>
+                    window.open("https://github.com/colebemis/lumen/issues/new", "_blank")
+                  }
+                >
+                  Send feedback
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item onClick={() => send("RELOAD")}>Reload</DropdownMenu.Item>
                 <DropdownMenu.Item onClick={() => send("DISCONNECT")}>Disconnect</DropdownMenu.Item>
               </DropdownMenu.Content>
