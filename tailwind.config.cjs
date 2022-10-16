@@ -17,7 +17,7 @@ module.exports = {
       "bg-inset": "var(--color-bg-inset)",
       "bg-overlay": "var(--color-bg-overlay)",
       "bg-backdrop": "var(--color-bg-backdrop)",
-      "bg-hover": "var(--color-bg-hover)",
+      "bg-secondary": "var(--color-bg-secondary)",
       "bg-highlight": "var(--color-bg-highlight)",
       border: "var(--color-border)",
       "border-divider": "var(--color-border-divider)",

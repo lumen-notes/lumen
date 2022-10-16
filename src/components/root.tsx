@@ -135,7 +135,10 @@ function NavLink(props: NavLinkProps) {
   return (
     <RouterNavLink
       className={({ isActive }) =>
-        clsx("flex rounded py-2 px-2 hover:bg-bg-hover", isActive ? "text-text" : "text-text-muted")
+        clsx(
+          "flex rounded py-2 px-2 hover:bg-bg-secondary",
+          isActive ? "text-text" : "text-text-muted",
+        )
       }
       {...props}
     />

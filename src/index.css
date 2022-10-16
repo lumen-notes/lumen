@@ -48,7 +48,7 @@
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
   --a-bg-backdrop: 0.65;
-  --a-bg-hover: 0.05;
+  --a-bg-secondary: 0.05;
   --a-border: 0.25;
   --a-border-divider: 0.15;
   --color-text: hsl(var(--h) var(--s) var(--l-text));
@@ -60,7 +60,7 @@
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
-  --color-bg-hover: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-hover));
+  --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
   --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-divider: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-divider));
@@ -77,7 +77,7 @@
     --l-bg-wash: 20%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
-    --a-bg-hover: 0.075;
+    --a-bg-secondary: 0.075;
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
@@ -155,7 +155,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
-  @apply bg-bg-hover text-text;
+  @apply bg-bg-secondary text-text;
 }
 
 .cm-editor .cm-completionMatchedText {
@@ -330,5 +330,5 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-item][aria-selected] {
-  @apply bg-bg-hover;
+  @apply bg-bg-secondary;
 }

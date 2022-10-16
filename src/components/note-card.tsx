@@ -112,7 +112,7 @@ export function NoteCard({ id }: NoteCardProps) {
         <div className="-m-2">
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]}>
+              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>

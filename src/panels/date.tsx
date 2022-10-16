@@ -135,7 +135,7 @@ function CalendarDate({ date, active: isActive = false }: { date: Date; active?:
         target="_self"
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer flex-col items-center gap-1 rounded py-2 leading-4 text-text-muted hover:bg-bg-hover",
+          "relative flex w-full cursor-pointer flex-col items-center gap-1 rounded py-2 leading-4 text-text-muted hover:bg-bg-secondary",
           // Underline the active day
           isActive &&
             "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
