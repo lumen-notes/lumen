@@ -88,6 +88,7 @@ export function NewNoteDialog() {
                 y: position.y + data.deltaY,
               })
             }
+            onStop={() => focusNoteEditor()}
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
