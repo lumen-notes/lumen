@@ -51,13 +51,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   const items = deferredQuery ? searchResults : sortedTags
 
   return (
-    <Panel
-      id={id}
-      title="Tags"
-      description={pluralize(sortedTags.length, "tag")}
-      icon={<TagIcon24 />}
-      onClose={onClose}
-    >
+    <Panel id={id} title="Tags" icon={<TagIcon24 />} onClose={onClose}>
       <div className="flex flex-col gap-2 p-4">
         <div className="flex flex-col gap-2">
           <SearchInput
