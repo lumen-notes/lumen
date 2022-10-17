@@ -57,12 +57,10 @@ Link to all other notes with the same tag.
 
 **With focus inside the new note dialog...**
 
-| Action                 | Shortcut                                                                   |
-| ---------------------- | -------------------------------------------------------------------------- |
-| Create note            | <kbd>⌘</kbd> <kbd>Enter</kbd>                                              |
-| Close dialog           | <kbd>Esc</kbd>                                                             |
-| Adjust dialog position | <kbd>⌘</kbd> <kbd>ArrowKey</kbd> (Hold <kbd>⇧</kbd> to increase step size) |
-| Reset dialog position  | <kbd>⌘</kbd> <kbd>0</kbd>                                                  |
+| Action       | Shortcut                      |
+| ------------ | ----------------------------- |
+| Create note  | <kbd>⌘</kbd> <kbd>Enter</kbd> |
+| Close dialog | <kbd>Esc</kbd>                |
 
 **With focus inside a panel...**
 

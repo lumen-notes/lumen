@@ -94,41 +94,6 @@ export function NewNoteDialog() {
             <div
               className="fixed z-20"
               style={{ top: position.y, left: position.x, width: DIALOG_WIDTH }}
-              onKeyDown={(event) => {
-                if (!event.metaKey) return
-
-                // Hold `shift` to increase step size
-                const step = event.shiftKey ? 128 : 16
-
-                switch (event.key) {
-                  // Adjust dialog position with `command + arrow key`
-                  case "ArrowUp":
-                    setPosition({ x: position.x, y: position.y - step })
-                    event.preventDefault()
-                    break
-
-                  case "ArrowRight":
-                    setPosition({ x: position.x + step, y: position.y })
-                    event.preventDefault()
-                    break
-
-                  case "ArrowDown":
-                    setPosition({ x: position.x, y: position.y + step })
-                    event.preventDefault()
-                    break
-
-                  case "ArrowLeft":
-                    setPosition({ x: position.x - step, y: position.y })
-                    event.preventDefault()
-                    break
-
-                  // Reset dialog position with `command + 0`
-                  case "0":
-                    setPosition(initialPosition())
-                    event.preventDefault()
-                    break
-                }
-              }}
             >
               <NoteForm
                 elevation={2}
