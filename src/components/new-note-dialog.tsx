@@ -89,6 +89,8 @@ export function NewNoteDialog() {
               })
             }
             onStop={() => focusNoteEditor()}
+            // Ignore drag events in the note editor
+            cancel=".cm-editor"
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
