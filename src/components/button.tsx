@@ -5,19 +5,19 @@ import { Keys } from "./keys"
 import { Tooltip } from "./tooltip"
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
-  variant?: "default" | "primary"
+  variant?: "secondary" | "primary"
   shortcut?: string[]
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "default", shortcut, className, children, ...props }, ref) => {
+  ({ variant = "secondary", shortcut, className, children, ...props }, ref) => {
     const button = (
       <button
         ref={ref}
         type="button"
         className={clsx(
           "cursor-default rounded px-3 py-2 font-semibold leading-4 disabled:pointer-events-none disabled:opacity-50",
-          variant === "default" &&
+          variant === "secondary" &&
             "bg-bg-secondary ring-1 ring-inset ring-border hover:bg-bg-tertiary",
           variant === "primary" &&
             "bg-text text-bg focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-bg",
