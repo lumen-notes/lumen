@@ -1,0 +1,18 @@
+name: CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run test:coverage
+    - uses: actions/upload-artifact@v3.1.0
+      with:
+        name: coverage
+        path: coverage
+
