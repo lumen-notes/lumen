@@ -1,4 +1,3 @@
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
@@ -139,40 +138,39 @@ function ResizeHandle({
           )}
         />
       </DraggableCore>
-      <VisuallyHidden.Root>
-        <input
-          ref={sliderRef}
-          aria-label="Resize panel"
-          type="range"
-          onFocus={() => {
-            setIsFocused(true)
-            handleRef.current?.scrollIntoView()
-          }}
-          onBlur={() => setIsFocused(false)}
-          value={value}
-          min={min}
-          max={max}
-          onChange={(event) => onChange(Number(event.target.value))}
-          onKeyDown={(event) => {
-            if (event.shiftKey) {
-              switch (event.key) {
-                case "ArrowLeft":
-                case "ArrowDown":
-                  onSnap?.("left")
-                  event.preventDefault()
-                  break
+      <input
+        ref={sliderRef}
+        className="sr-only"
+        aria-label="Resize panel"
+        type="range"
+        onFocus={() => {
+          setIsFocused(true)
+          handleRef.current?.scrollIntoView()
+        }}
+        onBlur={() => setIsFocused(false)}
+        value={value}
+        min={min}
+        max={max}
+        onChange={(event) => onChange(Number(event.target.value))}
+        onKeyDown={(event) => {
+          if (event.shiftKey) {
+            switch (event.key) {
+              case "ArrowLeft":
+              case "ArrowDown":
+                onSnap?.("left")
+                event.preventDefault()
+                break
 
-                case "ArrowRight":
-                case "ArrowUp":
-                  onSnap?.("right")
-                  event.preventDefault()
-                  break
-              }
+              case "ArrowRight":
+              case "ArrowUp":
+                onSnap?.("right")
+                event.preventDefault()
+                break
             }
-          }}
-          step={step}
-        />
-      </VisuallyHidden.Root>
+          }
+        }}
+        step={step}
+      />
     </>
   )
 }
