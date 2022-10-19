@@ -24,5 +24,5 @@ module.exports = {
       "border-focus": "var(--color-border-focus)",
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/container-queries")],
 }

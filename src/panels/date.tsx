@@ -135,24 +135,28 @@ function CalendarDate({ date, active: isActive = false }: { date: Date; active?:
         target="_self"
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer flex-col items-center gap-1 rounded py-2 leading-4 text-text-muted hover:bg-bg-secondary",
+          "relative flex w-full cursor-pointer justify-center rounded py-2 leading-4 text-text-muted @container hover:bg-bg-secondary",
           // Underline the active day
           isActive &&
             "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
         )}
       >
-        <span>{dayName.slice(0, 2)}</span>
-        <span
-          className={clsx(
-            isToday && "-my-[0.125rem] -mx-1 rounded py-[0.125rem] px-1",
-            // Outline the current day
-            isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
-            // Make outline bolder if current day is active
-            isToday && isActive && "bg-text text-bg",
-          )}
-        >
-          {date.getDate()}
-        </span>
+        <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2">
+          <span className="@[6rem]:hidden">{dayName.slice(0, 2)}</span>
+          {/* Show the first 3 letters of the day name when there's enough space */}
+          <span className="hidden @[6rem]:inline">{dayName.slice(0, 3)}</span>
+          <span
+            className={clsx(
+              isToday && "-my-[0.125rem] -mx-1 rounded py-[0.125rem] px-1",
+              // Outline the current day
+              isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
+              // Make outline bolder if current day is active
+              isToday && isActive && "bg-text text-bg",
+            )}
+          >
+            {date.getDate()}
+          </span>
+        </div>
       </Panels.Link>
     </RovingFocusGroup.Item>
   )

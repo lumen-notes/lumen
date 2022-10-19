@@ -56,6 +56,7 @@
     "zod": "^3.18.0"
   },
   "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.0",
     "@types/mdast": "^3.0.10",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.0.15",
