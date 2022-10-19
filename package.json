@@ -13,6 +13,7 @@
     "lint": "eslint --ext .js,.ts,.tsx src",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -67,6 +68,7 @@
     "@typescript-eslint/parser": "^5.37.0",
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.8",
+    "c8": "^7.12.0",
     "eslint": "^8.23.1",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.8",
