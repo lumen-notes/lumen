@@ -4,38 +4,37 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run lint
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - run: npm run lint
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run test:coverage
-    - uses: actions/upload-artifact@v3.1.0
-      with:
-        name: coverage
-        path: coverage
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v3.1.0
+        with:
+          name: coverage
+          path: coverage
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build
-      run:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
   benchmark:
     runs-on: ubuntu-latest
     steps:
@@ -46,5 +45,3 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run benchmark >> $GITHUB_STEP_SUMMARY
-  
-
