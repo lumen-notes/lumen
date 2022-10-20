@@ -1,7 +1,7 @@
 name: CI
 on: [push]
 jobs:
-  setup:
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -10,10 +10,6 @@ jobs:
         node-version: 18.x
         cache: 'npm'
     - run: npm ci
-  lint:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
     - run: npm run lint
   test:
     runs-on: ubuntu-latest
