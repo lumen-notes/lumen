@@ -47,11 +47,32 @@ const foo = "bar"
 
 const suite = new Benchmark.Suite("Markdown parsing")
 
-suite.add("Markdown without syntax extensions", () => {
+suite.add("Without syntax extensions", () => {
   fromMarkdown(markdown)
 })
 
-suite.add("Markdown with syntax extensions", () => {
+suite.add("With tag link syntax", () => {
+  fromMarkdown(markdown, {
+    extensions: [tagLink()],
+    mdastExtensions: [tagLinkFromMarkdown()],
+  })
+})
+
+suite.add("With note link syntax", () => {
+  fromMarkdown(markdown, {
+    extensions: [noteLink()],
+    mdastExtensions: [noteLinkFromMarkdown()],
+  })
+})
+
+suite.add("With date link syntax", () => {
+  fromMarkdown(markdown, {
+    extensions: [dateLink()],
+    mdastExtensions: [dateLinkFromMarkdown()],
+  })
+})
+
+suite.add("With all syntax extensions", () => {
   fromMarkdown(markdown, {
     extensions: [noteLink(), tagLink(), dateLink()],
     mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
@@ -60,6 +81,8 @@ suite.add("Markdown with syntax extensions", () => {
 
 suite.on("complete", function () {
   const fastest: Benchmark = this.filter("fastest")[0]
+
+  console.log(`## ${this.name}`)
 
   this.forEach((benchmark: Benchmark) => {
     const isFastest = benchmark === fastest
