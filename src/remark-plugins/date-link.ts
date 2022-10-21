@@ -1,13 +1,11 @@
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
-import { Code, Construct, Extension, HtmlExtension } from "micromark-util-types"
+import { Code, Construct, Extension, HtmlExtension, State, Tokenizer } from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
-import { assign, createMachine } from "xstate"
-import { createTokenizer } from "./create-tokenizer"
 
-const tokenTypes = {
+const types = {
   dateLink: "dateLink",
   dateLinkMarker: "dateLinkMarker",
   dateLinkFull: "dateLinkFull",
@@ -17,503 +15,159 @@ const tokenTypes = {
   dateLinkSeparator: "dateLinkSeparator",
 }
 
-const dateLinkMachine = createMachine(
-  {
-    tsTypes: {} as import("./date-link.typegen").Typegen0,
-    schema: {
-      context: {} as { year: string; month: string; day: string },
-      events: {} as { type: "CHAR"; code: Code },
-    },
-    id: "dateLink",
-    context: {
-      year: "",
-      month: "",
-      day: "",
-    },
-    initial: "dateLink",
-    states: {
-      dateLink: {
-        entry: {
-          type: "enter",
-          tokenType: tokenTypes.dateLink,
-        },
-        exit: {
-          type: "exit",
-          tokenType: tokenTypes.dateLink,
-        },
-        initial: "openingMarker",
-        states: {
-          openingMarker: {
-            entry: {
-              type: "enter",
-              tokenType: tokenTypes.dateLinkMarker,
-            },
-            exit: {
-              type: "exit",
-              tokenType: tokenTypes.dateLinkMarker,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isOpeningMarkerChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isOpeningMarkerChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "full",
-              },
-            ],
-          },
-          full: {
-            entry: {
-              type: "enter",
-              tokenType: tokenTypes.dateLinkFull,
-            },
-            exit: {
-              type: "exit",
-              tokenType: tokenTypes.dateLinkFull,
-            },
-            initial: "year",
-            states: {
-              year: {
-                entry: {
-                  type: "enter",
-                  tokenType: tokenTypes.dateLinkYear,
-                },
-                exit: {
-                  type: "exit",
-                  tokenType: tokenTypes.dateLinkYear,
-                },
-                initial: "1",
-                states: {
-                  1: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendYear"],
-                          target: "2",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  2: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendYear"],
-                          target: "3",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  3: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendYear"],
-                          target: "4",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  4: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendYear"],
-                          target: "ok",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  ok: {
-                    type: "final",
-                  },
-                  nok: {
-                    type: "final",
-                  },
-                },
-                onDone: [
-                  {
-                    cond: "isOk",
-                    target: "separator1",
-                  },
-                ],
-              },
-              separator1: {
-                entry: {
-                  type: "enter",
-                  tokenType: tokenTypes.dateLinkSeparator,
-                },
-                exit: {
-                  type: "exit",
-                  tokenType: tokenTypes.dateLinkSeparator,
-                },
-                initial: "1",
-                states: {
-                  1: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isSeparatorChar",
-                          actions: "consume",
-                          target: "ok",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  ok: {
-                    type: "final",
-                  },
-                  nok: {
-                    type: "final",
-                  },
-                },
-                onDone: [
-                  {
-                    cond: "isOk",
-                    target: "month",
-                  },
-                ],
-              },
-              month: {
-                entry: {
-                  type: "enter",
-                  tokenType: tokenTypes.dateLinkMonth,
-                },
-                exit: {
-                  type: "exit",
-                  tokenType: tokenTypes.dateLinkMonth,
-                },
-                initial: "1",
-                states: {
-                  1: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendMonth"],
-                          target: "2",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  2: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendMonth"],
-                          target: "ok",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  ok: {
-                    type: "final",
-                  },
-                  nok: {
-                    type: "final",
-                  },
-                },
-                onDone: [
-                  {
-                    cond: "isOk",
-                    target: "separator2",
-                  },
-                ],
-              },
-              separator2: {
-                entry: {
-                  type: "enter",
-                  tokenType: tokenTypes.dateLinkSeparator,
-                },
-                exit: {
-                  type: "exit",
-                  tokenType: tokenTypes.dateLinkSeparator,
-                },
-                initial: "1",
-                states: {
-                  1: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isSeparatorChar",
-                          actions: "consume",
-                          target: "ok",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  ok: {
-                    type: "final",
-                  },
-                  nok: {
-                    type: "final",
-                  },
-                },
-                onDone: [
-                  {
-                    cond: "isOk",
-                    target: "day",
-                  },
-                ],
-              },
-              day: {
-                entry: {
-                  type: "enter",
-                  tokenType: tokenTypes.dateLinkDay,
-                },
-                exit: {
-                  type: "exit",
-                  tokenType: tokenTypes.dateLinkDay,
-                },
-                initial: "1",
-                states: {
-                  1: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendDay"],
-                          target: "2",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  2: {
-                    on: {
-                      CHAR: [
-                        {
-                          cond: "isNumberChar",
-                          actions: ["consume", "appendDay"],
-                          target: "ok",
-                        },
-                        {
-                          target: "nok",
-                        },
-                      ],
-                    },
-                  },
-                  ok: {
-                    type: "final",
-                  },
-                  nok: {
-                    type: "final",
-                  },
-                },
-                onDone: [
-                  {
-                    cond: "isOk",
-                    target: "ok",
-                  },
-                ],
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "validateDate",
-              },
-            ],
-          },
-          validateDate: {
-            always: [
-              {
-                cond: "isValidDate",
-                target: "closingMarker",
-              },
-              {
-                target: "nok",
-              },
-            ],
-          },
-          closingMarker: {
-            entry: {
-              type: "enter",
-              tokenType: tokenTypes.dateLinkMarker,
-            },
-            exit: {
-              type: "exit",
-              tokenType: tokenTypes.dateLinkMarker,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isClosingMarkerChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isClosingMarkerChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "ok",
-              },
-            ],
-          },
-          ok: {
-            type: "final",
-          },
-          nok: {
-            type: "final",
-          },
-        },
-        onDone: [
-          {
-            cond: "isOk",
-            target: "ok",
-          },
-        ],
-      },
-      ok: {
-        type: "final",
-      },
-    },
-  },
-  {
-    guards: {
-      isOk: (context, event, { state }) => {
-        return state.toStrings().some((s) => /\.ok$/.test(s))
-      },
-      isOpeningMarkerChar: (context, event) => {
-        return event.code === codes.leftSquareBracket
-      },
-      isClosingMarkerChar: (context, event) => {
-        return event.code === codes.rightSquareBracket
-      },
-      isNumberChar: (context, event) => {
-        if (event.code === null) return false
-        return event.code >= codes.digit0 && event.code <= codes.digit9
-      },
-      isSeparatorChar: (context, event) => {
-        return event.code === codes.dash
-      },
-      isValidDate: (context, event) => {
-        const date = new Date(`${context.year}-${context.month}-${context.day}`)
-        return !isNaN(date.valueOf())
-      },
-    },
-    actions: {
-      appendYear: assign({
-        year: (context, event) =>
-          event.code ? context.year + String.fromCharCode(event.code) : context.year,
-      }),
-      appendMonth: assign({
-        month: (context, event) =>
-          event.code ? context.month + String.fromCharCode(event.code) : context.month,
-      }),
-      appendDay: assign({
-        day: (context, event) =>
-          event.code ? context.day + String.fromCharCode(event.code) : context.day,
-      }),
-    },
-  },
-)
-
 // Syntax extension (text -> tokens)
 export function dateLink(): Extension {
+  const tokenize: Tokenizer = (effects, ok, nok) => {
+    return enter
+
+    function enter(code: Code): State | void {
+      if (isOpeningMarkerChar(code)) {
+        effects.enter(types.dateLink)
+        effects.enter(types.dateLinkMarker)
+        effects.consume(code)
+        return exitOpeningMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function exitOpeningMarker(code: Code): State | void {
+      if (isOpeningMarkerChar(code)) {
+        effects.consume(code)
+        effects.exit(types.dateLinkMarker)
+        effects.enter(types.dateLinkFull)
+        return enterYear1
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterYear1(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.enter(types.dateLinkYear)
+        effects.consume(code)
+        return enterYear2
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterYear2(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        return enterYear3
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterYear3(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        return enterYear4
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterYear4(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        effects.exit(types.dateLinkYear)
+        return enterSeparator1
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterSeparator1(code: Code): State | void {
+      if (isSeparatorChar(code)) {
+        effects.enter(types.dateLinkSeparator)
+        effects.consume(code)
+        effects.exit(types.dateLinkSeparator)
+        return enterMonth1
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterMonth1(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.enter(types.dateLinkMonth)
+        effects.consume(code)
+        return enterMonth2
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterMonth2(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        effects.exit(types.dateLinkMonth)
+        return enterSeparator2
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterSeparator2(code: Code): State | void {
+      if (isSeparatorChar(code)) {
+        effects.enter(types.dateLinkSeparator)
+        effects.consume(code)
+        effects.exit(types.dateLinkSeparator)
+        return enterDay1
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterDay1(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.enter(types.dateLinkDay)
+        effects.consume(code)
+        return enterDay2
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterDay2(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        effects.exit(types.dateLinkDay)
+        return enterClosingMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterClosingMarker(code: Code): State | void {
+      if (isClosingMarkerChar(code)) {
+        effects.exit(types.dateLinkFull)
+        effects.enter(types.dateLinkMarker)
+        effects.consume(code)
+        return exitClosingMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function exitClosingMarker(code: Code): State | void {
+      if (isClosingMarkerChar(code)) {
+        effects.consume(code)
+        effects.exit(types.dateLinkMarker)
+        effects.exit(types.dateLink)
+        return ok
+      } else {
+        return nok(code)
+      }
+    }
+  }
+
   const construct: Construct = {
     name: "dateLink",
-    tokenize: createTokenizer(dateLinkMachine),
+    tokenize,
   }
 
   return {
@@ -523,12 +177,33 @@ export function dateLink(): Extension {
   }
 }
 
+/** Returns true if character is a valid opening marker */
+function isOpeningMarkerChar(code: number | null): boolean {
+  return code === codes.leftSquareBracket
+}
+
+/** Returns true if character is a valid closing marker */
+function isClosingMarkerChar(code: number | null): boolean {
+  return code === codes.rightSquareBracket
+}
+
+/** Returns true if character is a valid number */
+function isNumberChar(code: number | null): boolean {
+  if (code === null) return false
+  return code >= codes.digit0 && code <= codes.digit9
+}
+
+/** Returns true if character is a valid separator */
+function isSeparatorChar(code: number | null): boolean {
+  return code === codes.dash
+}
+
 // HTML extension (tokens -> HTML)
 // This is only used for unit testing
 export function dateLinkHtml(): HtmlExtension {
   return {
     enter: {
-      [tokenTypes.dateLinkFull](token) {
+      [types.dateLinkFull](token) {
         const date = this.sliceSerialize(token)
         this.tag(`<date-link date="${date}" />`)
       },
@@ -555,15 +230,15 @@ export function dateLinkFromMarkdown(): FromMarkdownExtension {
 
   return {
     enter: {
-      [tokenTypes.dateLink](token) {
+      [types.dateLink](token) {
         this.enter({ type: "dateLink", data: { date: "" } }, token)
       },
-      [tokenTypes.dateLinkFull](token) {
+      [types.dateLinkFull](token) {
         date = this.sliceSerialize(token)
       },
     },
     exit: {
-      [tokenTypes.dateLink](token) {
+      [types.dateLink](token) {
         const node = this.stack[this.stack.length - 1]
 
         if (node.type === "dateLink" && date) {
