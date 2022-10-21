@@ -15,7 +15,7 @@ const types = {
   dateLinkSeparator: "dateLinkSeparator",
 }
 
-// Syntax extension (text -> tokens)
+/** Syntax extension (text -> tokens) */
 export function dateLink(): Extension {
   const tokenize: Tokenizer = (effects, ok, nok) => {
     return enter
@@ -198,8 +198,10 @@ function isSeparatorChar(code: number | null): boolean {
   return code === codes.dash
 }
 
-// HTML extension (tokens -> HTML)
-// This is only used for unit testing
+/**
+ * HTML extension (tokens -> HTML)
+ * This is only used for unit testing
+ */
 export function dateLinkHtml(): HtmlExtension {
   return {
     enter: {
@@ -223,7 +225,7 @@ declare module "mdast" {
   }
 }
 
-// MDAST extension (tokens -> MDAST)
+/** MDAST extension (tokens -> MDAST) */
 export function dateLinkFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let date: string | undefined
@@ -254,8 +256,10 @@ export function dateLinkFromMarkdown(): FromMarkdownExtension {
   }
 }
 
-// Remark plugin
-// Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+/**
+ * Remark plugin
+ * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+ */
 export function remarkDateLink(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()

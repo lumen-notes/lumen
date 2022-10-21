@@ -107,8 +107,10 @@ function isNameChar(code: Code): boolean {
   return isAlphaChar(code) || isNumberChar(code) || code === codes.underscore || code === codes.dash
 }
 
-// HTML extension (tokens -> HTML)
-// This is only used for unit testing
+/**
+ * HTML extension (tokens -> HTML)
+ * This is only used for unit testing
+ */
 export function tagLinkHtml(): HtmlExtension {
   return {
     enter: {
@@ -132,7 +134,7 @@ declare module "mdast" {
   }
 }
 
-// MDAST extension (tokens -> MDAST)
+/** MDAST extension (tokens -> MDAST) */
 export function tagLinkFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let name: string | undefined
@@ -163,8 +165,10 @@ export function tagLinkFromMarkdown(): FromMarkdownExtension {
   }
 }
 
-// Remark plugin
-// Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+/**
+ * Remark plugin
+ * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+ */
 export function remarkTagLink(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()
