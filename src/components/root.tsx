@@ -26,6 +26,7 @@ import {
 } from "./icons"
 
 import { NewNoteDialog } from "./new-note-dialog"
+import { Tooltip } from "./tooltip"
 
 export function Root() {
   const globalState = React.useContext(GlobalStateContext)
@@ -158,14 +159,19 @@ function NavLink(props: NavLinkProps) {
   const isActive = match !== null
 
   return (
-    <RovingFocusGroup.Item asChild active={isActive}>
-      <RouterNavLink
-        className={clsx(
-          "flex rounded py-2 px-2 hover:bg-bg-secondary",
-          isActive ? "text-text" : "text-text-muted",
-        )}
-        {...props}
-      />
-    </RovingFocusGroup.Item>
+    <Tooltip>
+      <Tooltip.Trigger asChild>
+        <RovingFocusGroup.Item asChild active={isActive}>
+          <RouterNavLink
+            className={clsx(
+              "flex rounded py-2 px-2 hover:bg-bg-secondary",
+              isActive ? "text-text" : "text-text-muted",
+            )}
+            {...props}
+          />
+        </RovingFocusGroup.Item>
+      </Tooltip.Trigger>
+      <Tooltip.Content side="right">{props["aria-label"]}</Tooltip.Content>
+    </Tooltip>
   )
 }
