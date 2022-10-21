@@ -19,6 +19,10 @@ export function CommandMenu() {
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
+  const [noteSearcher, setNoteSearcher] = React.useState<Searcher<
+    [string, string],
+    Record<string, unknown>
+  > | null>(null)
 
   const openMenu = React.useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement
@@ -90,14 +94,20 @@ export function CommandMenu() {
   }, [state.context.tags])
 
   // Create note search index
-  const noteSearcher = React.useMemo(() => {
+  // We use useEffect here to avoid blocking the first render while sorting the notes
+  React.useEffect(() => {
     // Sort notes by when they were created in descending order
     const entries = Object.entries(state.context.notes).sort(
       (a, b) => parseInt(b[0]) - parseInt(a[0]),
     )
-    return new Searcher(entries, {
+
+    const noteSearcher = new Searcher(entries, {
       keySelector: ([id, body]) => body,
       threshold: 0.8,
+    })
+
+    React.startTransition(() => {
+      setNoteSearcher(noteSearcher)
     })
   }, [state.context.notes])
 
@@ -108,7 +118,7 @@ export function CommandMenu() {
 
   // Search notes
   const noteResults = React.useMemo(() => {
-    return noteSearcher.search(deferredQuery)
+    return noteSearcher?.search(deferredQuery) ?? []
   }, [noteSearcher, deferredQuery])
 
   // Only show the first 2 tags
