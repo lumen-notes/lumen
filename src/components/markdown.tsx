@@ -77,7 +77,10 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Panels.Link to={`/file?${qs.stringify({ path: props.src })}`}>
+      <Panels.Link
+        to={`/file?${qs.stringify({ path: props.src })}`}
+        className="block !no-underline"
+      >
         <FilePreview path={props.src} alt={props.alt} />
       </Panels.Link>
     )
