@@ -1,11 +1,9 @@
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
-import { Code, Construct, Extension, HtmlExtension } from "micromark-util-types"
+import { Code, Construct, Extension, HtmlExtension, State, Tokenizer } from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
-import { createMachine, send } from "xstate"
-import { createTokenizer } from "./create-tokenizer"
 
 const types = {
   noteLink: "noteLink",
@@ -15,355 +13,101 @@ const types = {
   noteLinkText: "noteLinkText",
 }
 
-const noteLinkMachine = createMachine(
-  {
-    tsTypes: {} as import("./note-link.typegen").Typegen0,
-    schema: { events: {} as { type: "CHAR"; code: Code } },
-    id: "noteLink",
-    initial: "noteLink",
-    states: {
-      noteLink: {
-        entry: {
-          type: "enter",
-          tokenType: types.noteLink,
-        },
-        exit: {
-          type: "exit",
-          tokenType: types.noteLink,
-        },
-        initial: "openingMarker",
-        states: {
-          openingMarker: {
-            entry: {
-              type: "enter",
-              tokenType: types.noteLinkMarker,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.noteLinkMarker,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isOpeningMarkerChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isOpeningMarkerChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "id",
-              },
-            ],
-          },
-          id: {
-            entry: {
-              type: "enter",
-              tokenType: types.noteLinkId,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.noteLinkId,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isNumberChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isNumberChar",
-                      actions: "consume",
-                    },
-                    {
-                      actions: "forwardChar",
-                      target: "ok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "checkNextChar",
-              },
-            ],
-          },
-          checkNextChar: {
-            on: {
-              CHAR: [
-                {
-                  cond: "isSeparatorChar",
-                  actions: "forwardChar",
-                  target: "separator",
-                },
-                {
-                  cond: "isClosingMarkerChar",
-                  actions: "forwardChar",
-                  target: "closingMarker",
-                },
-                {
-                  target: "nok",
-                },
-              ],
-            },
-          },
-          separator: {
-            entry: {
-              type: "enter",
-              tokenType: types.noteLinkSeparator,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.noteLinkSeparator,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isSeparatorChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "text",
-              },
-            ],
-          },
-          text: {
-            entry: {
-              type: "enter",
-              tokenType: types.noteLinkText,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.noteLinkText,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isTextChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isTextChar",
-                      actions: "consume",
-                    },
-                    {
-                      actions: "forwardChar",
-                      target: "ok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "closingMarker",
-              },
-            ],
-          },
-          closingMarker: {
-            entry: {
-              type: "enter",
-              tokenType: types.noteLinkMarker,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.noteLinkMarker,
-            },
-            initial: "1",
-            states: {
-              "1": {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isClosingMarkerChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isClosingMarkerChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "ok",
-              },
-            ],
-          },
-          ok: {
-            type: "final",
-          },
-          nok: {
-            type: "final",
-          },
-        },
-        onDone: [
-          {
-            cond: "isOk",
-            target: "ok",
-          },
-        ],
-      },
-      ok: {
-        type: "final",
-      },
-    },
-  },
-  {
-    guards: {
-      isOk: (context, event, { state }) => {
-        return state.toStrings().some((s) => /\.ok$/.test(s))
-      },
-      isOpeningMarkerChar: (context, event) => {
-        return event.code === codes.leftSquareBracket
-      },
-      isClosingMarkerChar: (context, event) => {
-        return event.code === codes.rightSquareBracket
-      },
-      isNumberChar: (context, event) => {
-        if (event.code === null) return false
-        return event.code >= codes.digit0 && event.code <= codes.digit9
-      },
-      isSeparatorChar: (context, event) => {
-        return event.code === codes.verticalBar
-      },
-      isTextChar: (context, event) => {
-        return (
-          event.code !== codes.eof &&
-          event.code !== codes.carriageReturn &&
-          event.code !== codes.lineFeed &&
-          event.code !== codes.carriageReturnLineFeed &&
-          event.code !== codes.rightSquareBracket
-        )
-      },
-    },
-    actions: {
-      forwardChar: send((context, event) => ({
-        type: "CHAR",
-        code: event.code,
-      })),
-    },
-  },
-)
-
-// Syntax extension (text -> tokens)
+/** Syntax extension (text -> tokens) */
 export function noteLink(): Extension {
+  const tokenize: Tokenizer = (effects, ok, nok) => {
+    return enter
+
+    function enter(code: Code): State | void {
+      if (isOpeningMarkerChar(code)) {
+        effects.enter(types.noteLink)
+        effects.enter(types.noteLinkMarker)
+        effects.consume(code)
+        return exitOpeningMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function exitOpeningMarker(code: Code): State | void {
+      if (isOpeningMarkerChar(code)) {
+        effects.consume(code)
+        effects.exit(types.noteLinkMarker)
+
+        return enterId
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterId(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.enter(types.noteLinkId)
+        effects.consume(code)
+        return continueId
+      } else {
+        return nok(code)
+      }
+    }
+
+    function continueId(code: Code): State | void {
+      if (isNumberChar(code)) {
+        effects.consume(code)
+        return continueId
+      } else if (isSeparatorChar(code)) {
+        effects.exit(types.noteLinkId)
+        effects.enter(types.noteLinkSeparator)
+        effects.consume(code)
+        effects.exit(types.noteLinkSeparator)
+        return enterText
+      } else if (isClosingMarkerChar(code)) {
+        effects.exit(types.noteLinkId)
+        effects.enter(types.noteLinkMarker)
+        effects.consume(code)
+        return exitClosingMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterText(code: Code): State | void {
+      if (isTextChar(code)) {
+        effects.enter(types.noteLinkText)
+        effects.consume(code)
+        return continueText
+      } else {
+        return nok(code)
+      }
+    }
+
+    function continueText(code: Code): State | void {
+      if (isTextChar(code)) {
+        effects.consume(code)
+        return continueText
+      } else if (isClosingMarkerChar(code)) {
+        effects.exit(types.noteLinkText)
+        effects.enter(types.noteLinkMarker)
+        effects.consume(code)
+        return exitClosingMarker
+      } else {
+        return nok(code)
+      }
+    }
+
+    function exitClosingMarker(code: Code): State | void {
+      if (isClosingMarkerChar(code)) {
+        effects.consume(code)
+        effects.exit(types.noteLinkMarker)
+        effects.exit(types.noteLink)
+        return ok
+      } else {
+        return nok(code)
+      }
+    }
+  }
   const construct: Construct = {
     name: "noteLink",
-    tokenize: createTokenizer(noteLinkMachine),
+    tokenize,
   }
 
   return {
@@ -373,8 +117,42 @@ export function noteLink(): Extension {
   }
 }
 
-// HTML extension (tokens -> HTML)
-// This is only used for unit testing
+/** Returns true if character is a valid opening marker */
+function isOpeningMarkerChar(code: Code): boolean {
+  return code === codes.leftSquareBracket
+}
+
+/** Returns true if character is a valid closing marker */
+function isClosingMarkerChar(code: Code): boolean {
+  return code === codes.rightSquareBracket
+}
+
+/** Returns true if character is a valid number character */
+function isNumberChar(code: Code): boolean {
+  if (code === null) return false
+  return code >= codes.digit0 && code <= codes.digit9
+}
+
+/** Returns true if character is a valid separator character */
+function isSeparatorChar(code: Code): boolean {
+  return code === codes.verticalBar
+}
+
+/** Returns true if character is a valid text character */
+function isTextChar(code: Code): boolean {
+  return (
+    code !== codes.eof &&
+    code !== codes.carriageReturn &&
+    code !== codes.lineFeed &&
+    code !== codes.carriageReturnLineFeed &&
+    code !== codes.rightSquareBracket
+  )
+}
+
+/**
+ * HTML extension (tokens -> HTML)
+ * This is only used for unit testing
+ */
 export function noteLinkHtml(): HtmlExtension {
   // Initialize state
   let id: string | undefined
@@ -413,7 +191,7 @@ declare module "mdast" {
   }
 }
 
-// MDAST extension (tokens -> MDAST)
+/** MDAST extension (tokens -> MDAST) */
 export function noteLinkFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let id: string | undefined
@@ -450,8 +228,10 @@ export function noteLinkFromMarkdown(): FromMarkdownExtension {
   }
 }
 
-// Remark plugin
-// Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+/**
+ * Remark plugin
+ * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
+ */
 export function remarkNoteLink(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()
