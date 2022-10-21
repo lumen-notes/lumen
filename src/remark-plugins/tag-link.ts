@@ -1,11 +1,17 @@
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
 import { codes } from "micromark-util-symbol/codes"
-import { Code, Construct, Extension, HtmlExtension, Previous } from "micromark-util-types"
+import {
+  Code,
+  Construct,
+  Extension,
+  HtmlExtension,
+  Previous,
+  State,
+  Tokenizer,
+} from "micromark-util-types"
 import { Plugin } from "unified"
 import { Node } from "unist"
-import { createMachine, send } from "xstate"
-import { createTokenizer } from "./create-tokenizer"
 
 const types = {
   tagLink: "tagLink",
@@ -13,158 +19,72 @@ const types = {
   tagLinkName: "tagLinkName",
 }
 
-const tagLinkMachine = createMachine(
-  {
-    tsTypes: {} as import("./tag-link.typegen").Typegen0,
-    schema: { events: {} as { type: "CHAR"; code: Code } },
-    id: "tagLink",
-    initial: "tagLink",
-    states: {
-      tagLink: {
-        entry: {
-          type: "enter",
-          tokenType: types.tagLink,
-        },
-        exit: {
-          type: "exit",
-          tokenType: types.tagLink,
-        },
-        initial: "marker",
-        states: {
-          marker: {
-            entry: {
-              type: "enter",
-              tokenType: types.tagLinkMarker,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.tagLinkMarker,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isMarkerChar",
-                      actions: "consume",
-                      target: "ok",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "name",
-              },
-            ],
-          },
-          name: {
-            entry: {
-              type: "enter",
-              tokenType: types.tagLinkName,
-            },
-            exit: {
-              type: "exit",
-              tokenType: types.tagLinkName,
-            },
-            initial: "1",
-            states: {
-              1: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isAlphaChar",
-                      actions: "consume",
-                      target: "2",
-                    },
-                    {
-                      target: "nok",
-                    },
-                  ],
-                },
-              },
-              2: {
-                on: {
-                  CHAR: [
-                    {
-                      cond: "isNameChar",
-                      actions: "consume",
-                    },
-                    {
-                      actions: "forwardChar",
-                      target: "ok",
-                    },
-                  ],
-                },
-              },
-              ok: {
-                type: "final",
-              },
-              nok: {
-                type: "final",
-              },
-            },
-            onDone: [
-              {
-                cond: "isOk",
-                target: "ok",
-              },
-            ],
-          },
-          ok: {
-            type: "final",
-          },
-          nok: {
-            type: "final",
-          },
-        },
-        onDone: [
-          {
-            cond: "isOk",
-            target: "ok",
-          },
-        ],
-      },
-      ok: {
-        type: "final",
-      },
+/** Syntax extension (text -> tokens) */
+export function tagLink(): Extension {
+  const tokenize: Tokenizer = (effects, ok, nok) => {
+    return enter
+
+    function enter(code: Code): State | void {
+      if (isMarkerChar(code)) {
+        effects.enter(types.tagLink)
+        effects.enter(types.tagLinkMarker)
+        effects.consume(code)
+        effects.exit(types.tagLinkMarker)
+        return enterName
+      } else {
+        return nok(code)
+      }
+    }
+
+    function enterName(code: Code): State | void {
+      if (isAlphaChar(code)) {
+        effects.enter(types.tagLinkName)
+        effects.consume(code)
+        return continueName
+      } else {
+        return nok(code)
+      }
+    }
+
+    function continueName(code: Code): State | void {
+      if (isNameChar(code)) {
+        effects.consume(code)
+        return continueName
+      } else {
+        effects.exit(types.tagLinkName)
+        effects.exit(types.tagLink)
+        return ok(code)
+      }
+    }
+  }
+
+  const previous: Previous = (code) => {
+    return (
+      code === codes.space ||
+      code === codes.carriageReturn ||
+      code === codes.lineFeed ||
+      code === codes.carriageReturnLineFeed ||
+      code === codes.eof
+    )
+  }
+
+  const construct: Construct = {
+    name: "tagLink",
+    tokenize,
+    previous,
+  }
+
+  return {
+    text: {
+      [codes.numberSign]: construct,
     },
-  },
-  {
-    guards: {
-      isOk: (context, event, { state }) => {
-        return state.toStrings().some((s) => /\.ok$/.test(s))
-      },
-      isMarkerChar: (context, event) => {
-        return event.code === codes.numberSign
-      },
-      isAlphaChar: (context, event) => {
-        return isAlphaChar(event.code)
-      },
-      isNameChar: (context, event) => {
-        return isNameChar(event.code)
-      },
-    },
-    actions: {
-      forwardChar: send((context, event) => ({
-        type: "CHAR",
-        code: event.code,
-      })),
-    },
-  },
-)
+  }
+}
+
+/** Returns true if character is valid tag marker */
+function isMarkerChar(code: Code): boolean {
+  return code === codes.numberSign
+}
 
 /** Returns true if character is in the English alphabet */
 function isAlphaChar(code: Code): boolean {
@@ -185,31 +105,6 @@ function isNumberChar(code: Code): boolean {
 function isNameChar(code: Code): boolean {
   if (code === null) return false
   return isAlphaChar(code) || isNumberChar(code) || code === codes.underscore || code === codes.dash
-}
-
-// Syntax extension (text -> tokens)
-export function tagLink(): Extension {
-  const previous: Previous = (code) => {
-    return (
-      code === codes.space ||
-      code === codes.carriageReturn ||
-      code === codes.lineFeed ||
-      code === codes.carriageReturnLineFeed ||
-      code === codes.eof
-    )
-  }
-
-  const construct: Construct = {
-    name: "tagLink",
-    tokenize: createTokenizer(tagLinkMachine),
-    previous,
-  }
-
-  return {
-    text: {
-      [codes.numberSign]: construct,
-    },
-  }
 }
 
 // HTML extension (tokens -> HTML)
