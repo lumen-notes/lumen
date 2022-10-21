@@ -1,7 +1,14 @@
+import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
-import { NavLink as RouterNavLink, NavLinkProps, Outlet } from "react-router-dom"
+import {
+  NavLink as RouterNavLink,
+  NavLinkProps,
+  Outlet,
+  useMatch,
+  useResolvedPath,
+} from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
 import { toDateString } from "../utils/date"
 import { Button, IconButton } from "./button"
@@ -71,31 +78,33 @@ export function Root() {
       <div className="flex h-screen overflow-auto">
         <div className="sticky left-0 z-20 flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2 backdrop-blur-md">
           <div className="flex flex-col gap-3">
-            <nav>
-              <ul className="flex flex-col gap-2">
-                <li>
-                  <NavLink to="/" aria-label="Notes" end>
-                    {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
-                    {({ isActive }) =>
-                      isActive ? (
-                        <CalendarFillIcon24 date={new Date().getDate()} />
-                      ) : (
-                        <CalendarIcon24 date={new Date().getDate()} />
-                      )
-                    }
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/tags" aria-label="Tags" end>
-                    {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
-                  </NavLink>
-                </li>
-              </ul>
-            </nav>
+            <RovingFocusGroup.Root orientation="vertical">
+              <nav>
+                <ul className="flex flex-col gap-2">
+                  <li>
+                    <NavLink to="/" aria-label="Notes" end>
+                      {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
+                      {({ isActive }) =>
+                        isActive ? (
+                          <CalendarFillIcon24 date={new Date().getDate()} />
+                        ) : (
+                          <CalendarIcon24 date={new Date().getDate()} />
+                        )
+                      }
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/tags" aria-label="Tags" end>
+                      {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
+                    </NavLink>
+                  </li>
+                </ul>
+              </nav>
+            </RovingFocusGroup.Root>
             <div role="none" className="mx-1 h-px bg-border-divider" />
             <NewNoteDialog />
           </div>
@@ -140,15 +149,23 @@ export function Root() {
 }
 
 function NavLink(props: NavLinkProps) {
+  const path = useResolvedPath(props.to)
+  const match = useMatch({
+    path: path.pathname,
+    end: props.end,
+    caseSensitive: props.caseSensitive,
+  })
+  const isActive = match !== null
+
   return (
-    <RouterNavLink
-      className={({ isActive }) =>
-        clsx(
+    <RovingFocusGroup.Item asChild active={isActive}>
+      <RouterNavLink
+        className={clsx(
           "flex rounded py-2 px-2 hover:bg-bg-secondary",
           isActive ? "text-text" : "text-text-muted",
-        )
-      }
-      {...props}
-    />
+        )}
+        {...props}
+      />
+    </RovingFocusGroup.Item>
   )
 }
