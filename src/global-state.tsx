@@ -253,7 +253,6 @@ const machine = createMachine(
       },
       sortNoteIds: assign({
         sortedNoteIds: (context, event) => {
-          console.log("hi")
           return Object.keys(context.notes).sort((a, b) => parseInt(b) - parseInt(a))
         },
       }),

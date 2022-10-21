@@ -19,7 +19,6 @@ export async function writeFile(
 ) {
   // '/uploads/123.jpg' -> ['uploads', '123.jpg']
   const pathArray = path.split("/").filter(Boolean)
-  console.log(pathArray)
 
   const fileHandle = await getFileHandle(rootHandle, pathArray, options)
 
