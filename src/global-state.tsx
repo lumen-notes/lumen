@@ -12,6 +12,7 @@ export const UPLOADS_DIRECTORY = "uploads"
 type Context = {
   directoryHandle: FileSystemDirectoryHandle | null
   notes: Record<NoteId, string>
+  sortedNoteIds: NoteId[]
   backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
   dates: Record<string, NoteId[]>
@@ -31,6 +32,7 @@ const machine = createMachine(
     context: {
       directoryHandle: null,
       notes: {},
+      sortedNoteIds: [],
       backlinks: {},
       tags: {},
       dates: {},
@@ -178,6 +180,7 @@ const machine = createMachine(
             },
           },
           idle: {
+            entry: ["sortNoteIds"],
             // TODO: Allow these events while loading notes
             on: {
               RELOAD: {
@@ -188,6 +191,8 @@ const machine = createMachine(
               },
               UPSERT_NOTE: {
                 actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
+                target: "idle",
+                internal: false, // Re-run entry actions
               },
               DELETE_NOTE: [
                 {
@@ -195,6 +200,8 @@ const machine = createMachine(
                   // delete a note if no other notes link to it.
                   cond: "hasNoBacklinks",
                   actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
+                  target: "idle",
+                  internal: false, // Re-run entry actions
                 },
               ],
             },
@@ -206,13 +213,30 @@ const machine = createMachine(
   {
     actions: {
       setContext: assign({
-        directoryHandle: (context, event) =>
-          "directoryHandle" in event.data ? event.data.directoryHandle : context.directoryHandle,
-        notes: (context, event) => ("notes" in event.data ? event.data.notes : context.notes),
-        backlinks: (context, event) =>
-          "backlinks" in event.data ? event.data.backlinks : context.backlinks,
-        tags: (context, event) => ("tags" in event.data ? event.data.tags : context.tags),
-        dates: (context, event) => ("dates" in event.data ? event.data.dates : context.dates),
+        directoryHandle: (context, event) => {
+          if ("directoryHandle" in event.data) return event.data.directoryHandle
+          return context.directoryHandle
+        },
+        notes: (context, event) => {
+          if ("notes" in event.data) return event.data.notes
+          return context.notes
+        },
+        sortedNoteIds: (context, event) => {
+          if ("sortedNoteIds" in event.data) return event.data.sortedNoteIds
+          return context.sortedNoteIds
+        },
+        backlinks: (context, event) => {
+          if ("backlinks" in event.data) return event.data.backlinks
+          return context.backlinks
+        },
+        tags: (context, event) => {
+          if ("tags" in event.data) return event.data.tags
+          return context.tags
+        },
+        dates: (context, event) => {
+          if ("dates" in event.data) return event.data.dates
+          return context.dates
+        },
       }),
       clearContext: assign({
         directoryHandle: (context, event) => null,
@@ -227,6 +251,12 @@ const machine = createMachine(
       clearContextInIndexedDB: async (context, event) => {
         await set("context", null)
       },
+      sortNoteIds: assign({
+        sortedNoteIds: (context, event) => {
+          console.log("hi")
+          return Object.keys(context.notes).sort((a, b) => parseInt(b) - parseInt(a))
+        },
+      }),
       upsertNote: assign((context, event) => {
         const { noteLinks, tagLinks, dateLinks } = parseNoteBody(event.body)
 

@@ -12,11 +12,16 @@ import { SearchInput } from "./search-input"
 
 type NoteListProps = {
   ids: NoteId[]
+  disableSort?: boolean
 }
 
-export function NoteList({ ids }: NoteListProps) {
+export function NoteList({ ids, disableSort }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
+  const [searcher, setSearcher] = React.useState<Searcher<
+    [string, string],
+    Record<string, unknown>
+  > | null>(null)
 
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",
@@ -27,19 +32,28 @@ export function NoteList({ ids }: NoteListProps) {
   const deferredQuery = React.useDeferredValue(query)
 
   // Sort notes by when they were created in descending order
-  const sortedIds = React.useMemo(() => ids.sort((a, b) => parseInt(b) - parseInt(a)), [ids])
+  const sortedIds = React.useMemo(
+    () => (disableSort ? ids : ids.sort((a, b) => parseInt(b) - parseInt(a))),
+    [disableSort, ids],
+  )
 
   // Create a search index
-  const searcher = React.useMemo(() => {
-    const entries = sortedIds.map((id) => [id, state.context.notes[id]])
-    return new Searcher(entries, {
+  // We use useEffect here to avoid blocking the first render while mapping over the notes
+  React.useEffect(() => {
+    const entries: [string, string][] = sortedIds.map((id) => [id, state.context.notes[id]])
+
+    const searcher = new Searcher(entries, {
       keySelector: ([id, body]) => body,
       threshold: 0.8,
+    })
+
+    React.startTransition(() => {
+      setSearcher(searcher)
     })
   }, [sortedIds, state.context.notes])
 
   const searchResults = React.useMemo(() => {
-    return searcher.search(deferredQuery).map(([id]) => id)
+    return searcher?.search(deferredQuery).map(([id]) => id) ?? []
   }, [deferredQuery, searcher])
 
   // Show the search results if the user has typed something, otherwise show all notes
