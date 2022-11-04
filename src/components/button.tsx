@@ -17,8 +17,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type="button"
         className={clsx(
           "cursor-default rounded px-3 py-2 font-semibold leading-4 disabled:pointer-events-none disabled:opacity-50",
-          variant === "secondary" &&
-            "bg-bg-secondary ring-1 ring-inset ring-border hover:bg-bg-tertiary",
+          variant === "secondary" && "ring-1 ring-inset ring-border hover:bg-bg-secondary",
           variant === "primary" &&
             "bg-text text-bg focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-bg",
           className,
