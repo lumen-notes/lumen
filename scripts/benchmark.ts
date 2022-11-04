@@ -84,11 +84,18 @@ suite.on("complete", function () {
 
   console.log(`## ${this.name}`)
 
+  // Create markdown table
+  console.log("| Test case | Ops/sec | Margin of error | Comparison |")
+  console.log("| --------- | ------- | --------------- | ---------- |")
+
   this.forEach((benchmark: Benchmark) => {
     const isFastest = benchmark === fastest
     console.log(
-      `${benchmark.name}: ${Benchmark.formatNumber(Math.round(benchmark.hz))} ops/sec`,
-      isFastest ? `(fastest)` : `(${percentDecrease(fastest.hz, benchmark.hz)}% slower)`,
+      `| ${benchmark.name} | ${Benchmark.formatNumber(
+        Math.round(benchmark.hz),
+      )} ops/sec | ±${benchmark.stats.rme.toFixed(2)}% | ${
+        isFastest ? "**Fastest**" : `${percentDecrease(fastest.hz, benchmark.hz)}% slower`
+      } |`,
     )
   })
 })
