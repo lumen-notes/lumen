@@ -86,7 +86,7 @@ suite.on("complete", function () {
 
   // Create markdown table
   console.log("| Test case | Ops/sec | Margin of error | Comparison |")
-  console.log("| --------- | ------- | --------------- | ---------- |")
+  console.log("| :-------- | :------ | :-------------- | :--------- |")
 
   this.forEach((benchmark: Benchmark) => {
     const isFastest = benchmark === fastest
