@@ -191,7 +191,7 @@ export function CommandMenu() {
                   {body}
                 </CommandItem>
               ))}
-              {noteResults.length > numVisibleNotes ? (
+              {noteResults.length > 0 ? (
                 <CommandItem
                   key={`Show all notes matching "${deferredQuery}"`}
                   icon={<SearchIcon16 />}
