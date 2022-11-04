@@ -17,6 +17,8 @@ import { DropdownMenu } from "./dropdown-menu"
 import {
   CalendarFillIcon24,
   CalendarIcon24,
+  GraphFillIcon24,
+  GraphIcon24,
   LoadingIcon16,
   MoreIcon24,
   NoteFillIcon24,
@@ -101,6 +103,11 @@ export function Root() {
                   <li>
                     <NavLink to="/tags" aria-label="Tags" end>
                       {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/graph" aria-label="Graph" end>
+                      {({ isActive }) => (isActive ? <GraphFillIcon24 /> : <GraphIcon24 />)}
                     </NavLink>
                   </li>
                 </ul>

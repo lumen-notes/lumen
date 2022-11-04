@@ -283,3 +283,27 @@ export function ComposeIcon24() {
     </svg>
   )
 }
+
+export function GraphIcon24() {
+  return (
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M13.421 8.74A3.99 3.99 0 0 1 12 9c-.5 0-.98-.092-1.421-.26l-3.881 6.307a4 4 0 1 1-1.277-.787l3.881-6.307a4 4 0 1 1 5.396 0l3.88 6.307a4 4 0 1 1-1.277.787l-3.88-6.307ZM14.5 5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM4 20.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM22.5 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
+      />
+    </svg>
+  )
+}
+
+export function GraphFillIcon24() {
+  return (
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.698 7.953a4 4 0 1 0-5.396 0l-3.88 6.307a4 4 0 1 0 1.277.787l3.88-6.307c.441.168.92.26 1.421.26.5 0 .98-.092 1.421-.26l3.881 6.307a4 4 0 1 0 1.277-.787l-3.881-6.307Z"
+      />
+    </svg>
+  )
+}
