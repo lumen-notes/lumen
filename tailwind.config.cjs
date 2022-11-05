@@ -8,6 +8,7 @@ module.exports = {
     },
     colors: {
       transparent: "transparent",
+      "current-color": "currentColor",
       text: "var(--color-text)",
       "text-muted": "var(--color-text-muted)",
       "text-placeholder": "var(--color-text-placeholder)",

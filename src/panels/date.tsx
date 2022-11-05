@@ -13,6 +13,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
+import { NoteId } from "../types"
 import { DAY_NAMES, formatDate, formatDateDistance, MONTH_NAMES, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
@@ -40,7 +41,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <div className="flex flex-col gap-4 p-4">
-        <Calendar activeDate={date} />
+        <Calendar activeDate={date} dates={state.context.dates} />
         <LinkHighlightProvider href={`/dates/${date}`}>
           <NoteList key={date} ids={noteIds} />
         </LinkHighlightProvider>
@@ -49,7 +50,13 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   )
 }
 
-function Calendar({ activeDate: dateString }: { activeDate: string }) {
+function Calendar({
+  activeDate: dateString,
+  dates,
+}: {
+  activeDate: string
+  dates: Record<string, NoteId[]>
+}) {
   const [direction, setDirection] = React.useState<"previous" | "next">("next")
 
   const date = toDate(dateString)
@@ -109,7 +116,8 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
                 <CalendarDate
                   key={date.toISOString()}
                   date={date}
-                  active={toDateString(date) === dateString}
+                  isActive={toDateString(date) === dateString}
+                  hasNotes={dates[toDateString(date)]?.length > 0}
                 />
               ))}
             </RovingFocusGroup.Root>
@@ -120,7 +128,15 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
   )
 }
 
-function CalendarDate({ date, active: isActive = false }: { date: Date; active?: boolean }) {
+function CalendarDate({
+  date,
+  isActive = false,
+  hasNotes = false,
+}: {
+  date: Date
+  isActive?: boolean
+  hasNotes?: boolean
+}) {
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()
@@ -135,10 +151,15 @@ function CalendarDate({ date, active: isActive = false }: { date: Date; active?:
         target="_self"
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer justify-center rounded py-2 leading-4 text-text-muted @container hover:bg-bg-secondary",
+          "relative flex w-full cursor-pointer justify-center rounded py-4 leading-4 text-text-muted @container hover:bg-bg-secondary",
+
           // Underline the active day
           isActive &&
             "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
+
+          // Show a dot if the date has notes
+          hasNotes &&
+            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-current-color after:content-['']",
         )}
       >
         <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2">
