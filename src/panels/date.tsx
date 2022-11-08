@@ -6,7 +6,6 @@ import { toDate } from "date-fns-tz"
 import { AnimatePresence, motion } from "framer-motion"
 import React from "react"
 import { IconButton } from "../components/button"
-import { Card } from "../components/card"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -40,11 +39,13 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col">
         <Calendar activeDate={date} dates={state.context.dates} />
-        <LinkHighlightProvider href={`/dates/${date}`}>
-          <NoteList key={date} ids={noteIds} />
-        </LinkHighlightProvider>
+        <div className="p-4">
+          <LinkHighlightProvider href={`/dates/${date}`}>
+            <NoteList key={date} ids={noteIds} />
+          </LinkHighlightProvider>
+        </div>
       </div>
     </Panel>
   )
@@ -70,9 +71,9 @@ function Calendar({
   const week = eachDayOfInterval({ start: startOfWeek, end: endOfWeek })
 
   return (
-    <Card className="flex flex-col gap-2 overflow-hidden p-2">
+    <div className="flex flex-col gap-1 overflow-hidden py-2 px-4 shadow-[inset_0_-1px_0_var(--color-border-divider)]">
       <div className="flex items-center justify-between">
-        <span className="px-2 text-base font-semibold">
+        <span className="text-base font-semibold">
           {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
 
@@ -124,7 +125,7 @@ function Calendar({
           </motion.div>
         </AnimatePresence>
       </div>
-    </Card>
+    </div>
   )
 }
 
@@ -151,7 +152,7 @@ function CalendarDate({
         target="_self"
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer justify-center rounded py-4 leading-4 text-text-muted @container hover:bg-bg-secondary",
+          "relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-muted @container hover:bg-bg-secondary",
 
           // Underline the active day
           isActive &&
@@ -159,7 +160,9 @@ function CalendarDate({
 
           // Show a dot if the date has notes
           hasNotes &&
-            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-current-color after:content-['']",
+            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+          hasNotes && isActive && "after:bg-text",
+          hasNotes && !isActive && "after:bg-border",
         )}
       >
         <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2">
