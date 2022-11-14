@@ -44,6 +44,8 @@ Link to all other notes with the same tag.
 #<tag-name>
 ```
 
+> **Note**: Tag names must start with a letter and can contain letters, numbers, hyphens, and underscores.
+
 | Example   | Rendered HTML                        |
 | :-------- | :----------------------------------- |
 | `#recipe` | `<a href="/tags/recipe">#recipe</a>` |
