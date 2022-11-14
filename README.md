@@ -80,3 +80,10 @@ Link to all other notes with the same tag.
 | Copy note markdown    | <kbd>⌘</kbd> <kbd>C</kbd>              |
 | Copy note ID          | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
 | Delete note           | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
+
+### Inspired by
+
+- [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
+- [Andy Matuschak's notes](https://notes.andymatuschak.org/)
+- [Obsidian](https://obsidian.md/)
+- [Logseq](https://logseq.com/)
