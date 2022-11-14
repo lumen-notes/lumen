@@ -2,7 +2,7 @@
 
 # Lumen
 
-A system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+An opinionated system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 [uselumen.com](https://uselumen.com)
 
