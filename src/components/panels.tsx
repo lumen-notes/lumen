@@ -15,7 +15,6 @@ import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
-import { insertAt } from "../utils/insert-at"
 import { useSearchParam } from "../utils/use-search-param"
 
 type PanelValue = {
@@ -50,7 +49,7 @@ function Root({ children }: React.PropsWithChildren) {
       const [pathname, search] = url.split("?")
       const value = serializePanelValue({ id, pathname, search })
 
-      setPanels(insertAt(panels, index, value))
+      setPanels(panels.slice(0, index).concat(value))
 
       setTimeout(() => {
         const panelElement = document.getElementById(id)
@@ -77,7 +76,7 @@ function Root({ children }: React.PropsWithChildren) {
       panelElements[currentIndex - 1]?.focus()
 
       // Update state
-      setPanels(panels.filter((_, i) => i !== index))
+      setPanels(panels.slice(0, index))
     },
     [panels, setPanels],
   )
