@@ -10,7 +10,7 @@ An opinionated* system for thinking, writing, learning, and mindfulness. Based o
 
 ## *Opinions
 
-- Knowledge management and task management are separate concerns and require separate tools. Lumen is a knowledge management tool.
+- Knowledge management and task management should be separate. Lumen is a tool for knowledge management not task management.
 - Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
 - Notes should be short and densely linked.
 
