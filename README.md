@@ -2,7 +2,7 @@
 
 # Lumen
 
-An opinionated* note-taking tool for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+An opinionated* note-taking system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 [uselumen.com](https://uselumen.com)
 
@@ -10,7 +10,7 @@ An opinionated* note-taking tool for thinking, writing, learning, and mindfulnes
 
 ## *Strong opinions, weakly held
 
-- Knowledge management and task management should be separate. Lumen is a tool for knowledge management not task management.
+- Knowledge management and task management should be separate. Lumen is a system for knowledge management not task management.
 - Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
 - Notes should be short and densely linked.
 - Notes should be accessible while offline.
