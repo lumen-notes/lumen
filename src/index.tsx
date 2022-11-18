@@ -8,6 +8,7 @@ import { GlobalStateProvider } from "./global-state"
 import "./index.css"
 import { DatePage } from "./pages/date"
 import { FilePage } from "./pages/file"
+import { GraphPage } from "./pages/graph"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { TagPage } from "./pages/tag"
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
               <Route path="tags" element={<TagsPage />} />
               <Route path="tags/:name" element={<TagPage />} />
               <Route path="dates/:date" element={<DatePage />} />
+              <Route path="graph" element={<GraphPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
