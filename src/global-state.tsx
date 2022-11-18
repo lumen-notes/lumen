@@ -459,6 +459,7 @@ const machine = createMachine(
           worker.postMessage({ directoryHandle: context.directoryHandle })
           worker.onmessage = (event) => {
             resolve(event.data)
+            // worker.terminate()
           }
         })
       },
