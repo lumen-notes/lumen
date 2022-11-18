@@ -11,7 +11,7 @@ An opinionated* system for thinking, writing, learning, and mindfulness. Based o
 ## *Opinions
 
 - Notes should be short and densely linked.
-- Knowledge mangement and task management are separate concerns that require separate tools.
+- Knowledge management and task management are separate concerns that require separate tools.
 
 ## Syntax
 
