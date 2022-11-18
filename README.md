@@ -91,6 +91,7 @@ Link to all other notes with the same tag.
 ## Related
 
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
+- [Introduction to the Zettelkasten Method](https://zettelkasten.de/introduction/)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
 - [Obsidian](https://obsidian.md/)
 - [Logseq](https://logseq.com/)
