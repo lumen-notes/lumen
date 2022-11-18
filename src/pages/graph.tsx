@@ -2,7 +2,6 @@ import React from "react"
 import { GlobalStateContext } from "../global-state"
 import { useActor } from "@xstate/react"
 import Graph from "graphology"
-// import { forceSimulation, forceLink, forceCenter } from "d3-force"
 import {
   forceCenter,
   forceLink,
@@ -11,81 +10,10 @@ import {
   SimulationLinkDatum,
   SimulationNodeDatum,
 } from "d3-force"
-import { select } from "d3-selection"
-// import { Node, Link } from "../simulate-force.worker"
 
-// type NodeType = "note" | "tag" | "date"
-
-type Node = SimulationNodeDatum & {
-  id: string
-}
+type Node = SimulationNodeDatum & { id: string }
 
 type Link = SimulationLinkDatum<Node>
-
-// function simulateForce({
-//   nodes,
-//   links,
-//   width,
-//   height,
-// }: {
-//   nodes: Node[]
-//   links: Link[]
-//   width: number
-//   height: number
-// }): Promise<{ nodes: Node[]; links: Link[] }> {
-//   const nodesCopy = nodes.map((node) => ({ ...node }))
-//   const linksCopy = links.map((link) => ({ ...link }))
-
-//   return new Promise((resolve) => {
-//     const simulation = forceSimulation(nodesCopy)
-//       .force(
-//         "link",
-//         forceLink<Node, Link>(linksCopy).id((d) => d.id),
-//       )
-//       .force("center", forceCenter(width / 2, height / 2))
-//       .force("charge", forceManyBody().strength(-10))
-
-//     simulation.on("end", () => resolve({ nodes: nodesCopy, links: linksCopy }))
-//   })
-// }
-
-// function useGraph({
-//   nodes,
-//   links,
-//   width,
-//   height,
-// }: {
-//   nodes: Node[]
-//   links: Link[]
-//   width: number
-//   height: number
-// }) {
-//   const [graph, setGraph] = React.useState<{ nodes: Node[]; links: Link[] }>({
-//     nodes: [],
-//     links: [],
-//   })
-
-//   React.useEffect(() => {
-//     const worker = new Worker(new URL("../simulate-force.worker.ts", import.meta.url), {
-//       type: "module",
-//     })
-
-//     worker.postMessage({ nodes, links })
-//     worker.onmessage = (event) => {
-//       setGraph(event.data)
-//     }
-
-//     return () => {
-//       worker.terminate()
-//     }
-//   }, [])
-
-//   return graph
-// }
-
-// const worker = new Worker(new URL("../simulate-force.worker.ts", import.meta.url), {
-//   type: "module",
-// })
 
 export function GraphPage() {
   const globalState = React.useContext(GlobalStateContext)
@@ -114,62 +42,61 @@ export function GraphPage() {
     return { nodes, links }
   }, [state.context.notes, state.context.backlinks])
 
-  // const ref = React.useRef<SVGSVGElement>(null)
-  const ref = React.useRef<HTMLCanvasElement>(null)
-  const width = 800
-  const height = 600
-
-  const simulationNodes = React.useRef([])
-  const simulationLinks = React.useRef([])
-
-  const updateDom = React.useCallback(() => {
-    if (!ref.current) return
-    // const width = ref.current.width
-    // const height = ref.current.height
-    const ctx = ref.current.getContext("2d")
-
-    if (!ctx) return
-
-    // clear the canvas
-    ctx.clearRect(0, 0, width, height)
-    ctx.fillStyle = "green"
-
-    ctx.beginPath()
-    ctx.strokeStyle = "grey"
-    ctx.lineWidth = 0.3
-    simulationLinks.current.forEach((node) => {
-      // draw a circle
-      ctx.moveTo(node.source.x, node.source.y)
-      ctx.lineTo(node.target.x, node.target.y)
-    })
-    ctx.stroke()
-
-    ctx.beginPath()
-    simulationNodes.current.forEach((node) => {
-      // draw a circle
-      ctx.moveTo(node.x, node.y)
-      ctx.arc(node.x, node.y, 10, 0, Math.PI * 2)
-    })
-    ctx.fill()
-
-    // d3-rendering
-    // const wrapper = select(ref.current)
-    // wrapper
-    //   .selectAll("circle")
-    //   .data(nodesCopy)
-    //   .join("circle")
-    //   .attr("cx", (d: any) => d.x)
-    //   .attr("cy", (d: any) => d.y)
-    //   .attr("r", 10)
-  }, [])
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const simulationNodes = React.useRef<Node[]>([])
+  const simulationLinks = React.useRef<Link[]>([])
+  const width = 1000
+  const height = 1000
 
   const simulation = React.useMemo(() => {
-    return forceSimulation<Node>(simulationNodes.current)
-      .force(
-        "link",
-        forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
-      )
+    function updateDom() {
+      if (!canvasRef.current) return
+
+      const ctx = canvasRef.current.getContext("2d")
+
+      if (!ctx) return
+
+      // Clear the canvas
+      ctx.clearRect(0, 0, width, height)
+
+      // Draw the links
+      ctx.beginPath()
+      ctx.strokeStyle = "grey"
+      ctx.lineWidth = 0.3
+      for (const link of simulationLinks.current) {
+        if (
+          typeof link.source !== "object" ||
+          typeof link.target !== "object" ||
+          !link.source.x ||
+          !link.source.y ||
+          !link.target.x ||
+          !link.target.y
+        ) {
+          continue
+        }
+
+        // Draw a line
+        ctx.moveTo(link.source.x, link.source.y)
+        ctx.lineTo(link.target.x, link.target.y)
+      }
+      ctx.stroke()
+
+      // Draw the nodes
+      ctx.beginPath()
+      ctx.fillStyle = "red"
+      for (const node of simulationNodes.current) {
+        if (!node.x || !node.y) continue
+
+        // Draw a circle
+        ctx.moveTo(node.x, node.y)
+        ctx.arc(node.x, node.y, 10, 0, Math.PI * 2)
+      }
+      ctx.fill()
+    }
+
+    return forceSimulation<Node>()
       .force("center", forceCenter(width / 2, height / 2))
+      .force("charge", forceManyBody().strength(-10))
       .on("tick", updateDom)
   }, [])
 
@@ -178,42 +105,18 @@ export function GraphPage() {
       const cachedNode = simulationNodes.current.find((cachedNode) => cachedNode.id === node.id)
       return { ...node, x: cachedNode?.x, y: cachedNode?.y }
     })
+
     simulationLinks.current = links.map((link) => ({ ...link }))
 
-    simulation
-      .alpha(1)
-      .nodes(simulationNodes.current)
-      .force(
-        "link",
-        forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
-      )
-      .force("charge", forceManyBody().strength(-10))
-    // .stop()
-    // simulation.tick(10)
-    // updateDom()
-  }, [nodes, links])
+    simulation.nodes(simulationNodes.current).force(
+      "link",
+      forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
+    )
+  }, [nodes, links, simulation])
 
   return (
-    <div className="h-full w-full p-3">
-      {/* <pre>{JSON.stringify({ nodes, links }, null, 2)}</pre> */}
-
-      <canvas width={width} height={height} ref={ref} />
+    <div className="h-full w-full">
+      <canvas width={width} height={height} ref={canvasRef} />
     </div>
-    // <svg width="500" height="500">
-    //   {graph.links.map((link) => (
-    //     <line
-    //       key={`${link.source.id}-${link.target.id}`}
-    //       x1={link.source.x}
-    //       y1={link.source.y}
-    //       x2={link.target.x}
-    //       y2={link.target.y}
-    //       strokeWidth="1"
-    //       className="stroke-text"
-    //     />
-    //   ))}
-    //   {graph.nodes.map((node) => (
-    //     <circle key={node.id} cx={node.x} cy={node.y} r={5} className="fill-text" />
-    //   ))}
-    // </svg>
   )
 }
