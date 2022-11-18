@@ -87,7 +87,7 @@ Link to all other notes with the same tag.
 | Copy note ID          | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
 | Delete note           | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
 
-## Inspired by
+## Related
 
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
