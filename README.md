@@ -12,6 +12,7 @@ An opinionated* system for thinking, writing, learning, and mindfulness. Based o
 
 - Notes should be short and densely linked.
 - Knowledge management and task management are separate concerns that require separate tools.
+- Notes should be stored in plain text files to ensure portability and longevity.
 
 ## Syntax
 
