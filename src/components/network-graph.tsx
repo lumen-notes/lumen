@@ -17,6 +17,12 @@ type NetworkGraphProps = {
   links: Link[]
 }
 
+// TODO: Adjust width and height based on the size of the container
+// TODO: Fix canvas resolution on retina displays
+// TODO: Pan and zoom
+// TODO: Add click handlers
+// TODO: Highlight nodes on hover
+// TODO: Drag nodes
 export function NetworkGraph({ nodes, links }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const width = 1000

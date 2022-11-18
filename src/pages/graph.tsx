@@ -10,6 +10,7 @@ export function GraphPage() {
 
   const { nodes, links } = React.useMemo(() => {
     // TODO: Store the graph in the global context
+    // TODO: Add tags and dates to the graph
     const graph = new Graph({ type: "undirected", multi: false })
 
     for (const noteId of Object.keys(state.context.notes)) {
