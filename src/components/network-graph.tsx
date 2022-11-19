@@ -104,7 +104,8 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
 
   React.useEffect(() => {
     simulation.force("center", forceCenter(width / 2, height / 2))
-  }, [simulation, width, height])
+    requestAnimationFrame(drawToCanvas)
+  }, [width, height, simulation, drawToCanvas])
 
   return (
     <canvas

@@ -34,7 +34,7 @@ export function GraphPage() {
   }, [state.context.notes, state.context.backlinks])
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full overflow-hidden">
       <NetworkGraph nodes={nodes} links={links} width={1000} height={1000} />
     </div>
   )

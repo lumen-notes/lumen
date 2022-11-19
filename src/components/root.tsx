@@ -78,8 +78,8 @@ export function Root() {
 
   return (
     <div>
-      <div className="flex h-screen min-w-[100vw] overflow-auto">
-        <div className="sticky left-0 z-20 flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2 backdrop-blur-md">
+      <div className="w-screent grid h-screen grid-cols-[auto_1fr]">
+        <div className="flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2">
           <div className="flex flex-col gap-3">
             <RovingFocusGroup.Root orientation="vertical">
               <nav>
@@ -138,7 +138,7 @@ export function Root() {
             </DropdownMenu>
           </div>
         </div>
-        <main className="flex-shrink-0 flex-grow">
+        <main className="overflow-auto">
           <Outlet />
         </main>
       </div>
