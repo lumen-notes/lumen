@@ -13,31 +13,34 @@ type Node = SimulationNodeDatum & { id: string }
 type Link = SimulationLinkDatum<Node>
 
 type NetworkGraphProps = {
+  width: number
+  height: number
   nodes: Node[]
   links: Link[]
 }
 
 // TODO: Adjust width and height based on the size of the container
-// TODO: Fix canvas resolution on retina displays
 // TODO: Pan and zoom
 // TODO: Add click handlers
 // TODO: Highlight nodes on hover
 // TODO: Drag nodes
-export function NetworkGraph({ nodes, links }: NetworkGraphProps) {
+export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
-  const width = 1000
-  const height = 1000
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
+  const pixelRatio = window.devicePixelRatio ?? 1
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
 
     const ctx = canvasRef.current.getContext("2d")
+    const style = window.getComputedStyle(document.documentElement)
 
     if (!ctx) return
 
-    const style = window.getComputedStyle(document.documentElement)
+    // Improve rendering on high-resolution displays
+    // https://stackoverflow.com/questions/41763580/svg-rendered-into-canvas-blurred-on-retina-display
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
 
     // Clear the canvas
     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.width)
@@ -75,11 +78,10 @@ export function NetworkGraph({ nodes, links }: NetworkGraphProps) {
       ctx.arc(node.x, node.y, 4, 0, Math.PI * 2)
     }
     ctx.fill()
-  }, [])
+  }, [pixelRatio])
 
   const simulation = React.useMemo(() => {
     return forceSimulation<Node>()
-      .force("center", forceCenter(width / 2, height / 2))
       .force("charge", forceManyBody().strength(-10))
       .on("tick", drawToCanvas)
   }, [drawToCanvas])
@@ -100,5 +102,16 @@ export function NetworkGraph({ nodes, links }: NetworkGraphProps) {
     )
   }, [nodes, links, simulation])
 
-  return <canvas ref={canvasRef} width={width} height={height} />
+  React.useEffect(() => {
+    simulation.force("center", forceCenter(width / 2, height / 2))
+  }, [simulation, width, height])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={width * pixelRatio}
+      height={height * pixelRatio}
+      style={{ width, height }}
+    />
+  )
 }

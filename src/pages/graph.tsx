@@ -35,7 +35,7 @@ export function GraphPage() {
 
   return (
     <div className="h-full w-full">
-      <NetworkGraph nodes={nodes} links={links} />
+      <NetworkGraph nodes={nodes} links={links} width={1000} height={1000} />
     </div>
   )
 }
