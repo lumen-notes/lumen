@@ -125,10 +125,12 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
     if (!canvasRef.current) return
 
     select<HTMLCanvasElement, Node>(canvasRef.current).call(
-      zoom<HTMLCanvasElement, Node>().on("zoom", ({ transform }) => {
-        transformRef.current = transform
-        requestAnimationFrame(() => drawToCanvas())
-      }),
+      zoom<HTMLCanvasElement, Node>()
+        .scaleExtent([0.1, 10])
+        .on("zoom", ({ transform }) => {
+          transformRef.current = transform
+          requestAnimationFrame(() => drawToCanvas())
+        }),
     )
   }, [drawToCanvas])
 
