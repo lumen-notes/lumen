@@ -134,6 +134,17 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
     )
   }, [drawToCanvas])
 
+  // Redraw the canvas when the user's color scheme preference changes
+  React.useEffect(() => {
+    function handleChange() {
+      requestAnimationFrame(() => drawToCanvas())
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    mediaQuery.addEventListener("change", handleChange)
+    return () => mediaQuery.removeEventListener("change", handleChange)
+  }, [drawToCanvas])
+
   return (
     <canvas
       ref={canvasRef}
