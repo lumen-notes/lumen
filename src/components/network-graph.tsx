@@ -22,6 +22,7 @@ type NetworkGraphProps = {
 // TODO: Pan and zoom
 // TODO: Add click handlers
 // TODO: Highlight nodes on hover
+// TODO: Disable animation for motion-sensitive users
 // TODO: Drag nodes
 export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
