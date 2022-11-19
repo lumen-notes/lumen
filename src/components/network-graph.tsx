@@ -19,7 +19,6 @@ type NetworkGraphProps = {
   links: Link[]
 }
 
-// TODO: Adjust width and height based on the size of the container
 // TODO: Pan and zoom
 // TODO: Add click handlers
 // TODO: Highlight nodes on hover
@@ -29,6 +28,8 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
   const pixelRatio = window.devicePixelRatio ?? 1
+  const widthRef = React.useRef(width)
+  const heightRef = React.useRef(height)
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
@@ -43,8 +44,7 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
 
     // Clear the canvas
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.width)
-
+    ctx.clearRect(0, 0, widthRef.current, heightRef.current)
     // Draw the links
     ctx.beginPath()
     ctx.strokeStyle = style.getPropertyValue("--color-border")
@@ -83,6 +83,7 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
   const simulation = React.useMemo(() => {
     return forceSimulation<Node>()
       .force("charge", forceManyBody().strength(-10))
+      .force("center", forceCenter(window.innerWidth / 2, window.innerHeight / 2))
       .on("tick", drawToCanvas)
   }, [drawToCanvas])
 
@@ -103,9 +104,11 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
   }, [nodes, links, simulation])
 
   React.useEffect(() => {
-    simulation.force("center", forceCenter(width / 2, height / 2))
+    widthRef.current = width
+    heightRef.current = height
+
     requestAnimationFrame(drawToCanvas)
-  }, [width, height, simulation, drawToCanvas])
+  }, [width, height, drawToCanvas])
 
   return (
     <canvas

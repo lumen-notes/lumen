@@ -3,6 +3,7 @@ import Graph from "graphology"
 import React from "react"
 import { NetworkGraph } from "../components/network-graph"
 import { GlobalStateContext } from "../global-state"
+import { useMeasure } from "react-use"
 
 export function GraphPage() {
   const globalState = React.useContext(GlobalStateContext)
@@ -33,9 +34,11 @@ export function GraphPage() {
     return { nodes, links }
   }, [state.context.notes, state.context.backlinks])
 
+  const [ref, { width, height }] = useMeasure<HTMLDivElement>()
+
   return (
-    <div className="h-full w-full overflow-hidden">
-      <NetworkGraph nodes={nodes} links={links} width={1000} height={1000} />
+    <div ref={ref} className="h-full w-full overflow-hidden">
+      <NetworkGraph nodes={nodes} links={links} width={width} height={height} />
     </div>
   )
 }
