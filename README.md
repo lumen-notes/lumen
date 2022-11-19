@@ -14,6 +14,7 @@ An opinionated* note-taking system for thinking, writing, learning, and mindfuln
 - Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
 - Notes should be short and densely linked.
 - Notes should be accessible while offline.
+- Notes should be version controlled.
 
 ## Syntax
 
