@@ -6,6 +6,8 @@ import {
   SimulationLinkDatum,
   SimulationNodeDatum,
 } from "d3-force"
+import { select } from "d3-selection"
+import { zoom, zoomIdentity } from "d3-zoom"
 import React from "react"
 
 type Node = SimulationNodeDatum & { id: string }
@@ -19,7 +21,6 @@ type NetworkGraphProps = {
   links: Link[]
 }
 
-// TODO: Pan and zoom
 // TODO: Add click handlers
 // TODO: Highlight nodes on hover
 // TODO: Disable animation for motion-sensitive users
@@ -31,25 +32,28 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
   const pixelRatio = window.devicePixelRatio ?? 1
   const widthRef = React.useRef(width)
   const heightRef = React.useRef(height)
+  const transformRef = React.useRef(zoomIdentity)
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
 
-    const ctx = canvasRef.current.getContext("2d")
-    const style = window.getComputedStyle(document.documentElement)
+    const context = canvasRef.current.getContext("2d")
 
-    if (!ctx) return
+    if (!context) return
+
+    const style = window.getComputedStyle(document.documentElement)
 
     // Improve rendering on high-resolution displays
     // https://stackoverflow.com/questions/41763580/svg-rendered-into-canvas-blurred-on-retina-display
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
 
     // Clear the canvas
-    ctx.clearRect(0, 0, widthRef.current, heightRef.current)
+    context.clearRect(0, 0, widthRef.current, heightRef.current)
+
     // Draw the links
-    ctx.beginPath()
-    ctx.strokeStyle = style.getPropertyValue("--color-border")
-    ctx.lineWidth = 1
+    context.beginPath()
+    context.strokeStyle = style.getPropertyValue("--color-border")
+    context.lineWidth = 1
     for (const link of simulationLinks.current) {
       if (
         typeof link.source !== "object" ||
@@ -62,23 +66,28 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
         continue
       }
 
+      const [sourceX, sourceY] = transformRef.current.apply([link.source.x, link.source.y])
+      const [targetX, targetY] = transformRef.current.apply([link.target.x, link.target.y])
+
       // Draw a line
-      ctx.moveTo(link.source.x, link.source.y)
-      ctx.lineTo(link.target.x, link.target.y)
+      context.moveTo(sourceX, sourceY)
+      context.lineTo(targetX, targetY)
     }
-    ctx.stroke()
+    context.stroke()
 
     // Draw the nodes
-    ctx.beginPath()
-    ctx.fillStyle = style.getPropertyValue("--color-text")
+    context.beginPath()
+    context.fillStyle = style.getPropertyValue("--color-text")
     for (const node of simulationNodes.current) {
       if (!node.x || !node.y) continue
 
+      const [x, y] = transformRef.current.apply([node.x, node.y])
+
       // Draw a circle
-      ctx.moveTo(node.x, node.y)
-      ctx.arc(node.x, node.y, 4, 0, Math.PI * 2)
+      context.moveTo(x, y)
+      context.arc(x, y, 4, 0, Math.PI * 2)
     }
-    ctx.fill()
+    context.fill()
   }, [pixelRatio])
 
   const simulation = React.useMemo(() => {
@@ -104,12 +113,24 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
     )
   }, [nodes, links, simulation])
 
+  // Redraw the canvas when the container is resized
   React.useEffect(() => {
     widthRef.current = width
     heightRef.current = height
-
-    requestAnimationFrame(drawToCanvas)
+    requestAnimationFrame(() => drawToCanvas())
   }, [width, height, drawToCanvas])
+
+  // Zoom and pan
+  React.useEffect(() => {
+    if (!canvasRef.current) return
+
+    select<HTMLCanvasElement, Node>(canvasRef.current).call(
+      zoom<HTMLCanvasElement, Node>().on("zoom", ({ transform }) => {
+        transformRef.current = transform
+        requestAnimationFrame(() => drawToCanvas())
+      }),
+    )
+  }, [drawToCanvas])
 
   return (
     <canvas
