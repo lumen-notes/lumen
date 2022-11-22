@@ -1,11 +1,20 @@
 import { useActor } from "@xstate/react"
 import Graph from "graphology"
 import React from "react"
-import { NetworkGraph } from "../components/network-graph"
-import { GlobalStateContext } from "../global-state"
 import { useMeasure } from "react-use"
+import { z } from "zod"
+import { NetworkGraph } from "../components/network-graph"
+import { NoteCard } from "../components/note-card"
+import { GlobalStateContext } from "../global-state"
+import { useSearchParam } from "../utils/use-search-param"
 
 export function GraphPage() {
+  const [selectedId, setSelectedId] = useSearchParam("id", {
+    defaultValue: "",
+    schema: z.string(),
+    replace: true,
+  })
+
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
@@ -37,13 +46,20 @@ export function GraphPage() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   return (
-    <div ref={ref} className="h-full w-full overflow-hidden">
+    <div ref={ref} className="relative h-full w-full overflow-hidden">
+      {selectedId ? (
+        <div className="absolute top-0 left-0 w-full max-w-md p-4">
+          <NoteCard id={selectedId} />
+        </div>
+      ) : null}
       <NetworkGraph
         nodes={nodes}
         links={links}
         width={width}
         height={height}
-        onNodeClick={(node) => console.log(node.id)}
+        onClick={(node) => {
+          setSelectedId(node?.id || "")
+        }}
       />
     </div>
   )

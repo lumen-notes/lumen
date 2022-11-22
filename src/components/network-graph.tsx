@@ -19,13 +19,13 @@ type NetworkGraphProps = {
   height: number
   nodes: Node[]
   links: Link[]
-  onNodeClick?: (node: Node) => void
+  onClick?: (node?: Node) => void
 }
 
 // TODO: Highlight nodes on hover
 // TODO: Disable animation for motion-sensitive users
 // TODO: Drag nodes
-export function NetworkGraph({ width, height, nodes, links, onNodeClick }: NetworkGraphProps) {
+export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
@@ -34,11 +34,11 @@ export function NetworkGraph({ width, height, nodes, links, onNodeClick }: Netwo
   const widthRef = React.useRef(width)
   const heightRef = React.useRef(height)
   const transformRef = React.useRef(zoomIdentity)
-  const onNodeClickRef = React.useRef(onNodeClick)
+  const onClickRef = React.useRef(onClick)
 
   React.useEffect(() => {
-    onNodeClickRef.current = onNodeClick
-  }, [onNodeClick])
+    onClickRef.current = onClick
+  }, [onClick])
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
@@ -172,12 +172,11 @@ export function NetworkGraph({ width, height, nodes, links, onNodeClick }: Netwo
 
         const dx = node.x - x
         const dy = node.y - y
-        return Math.sqrt(dx * dx + dy * dy) < radius
+        const targetRadius = radius * 2
+        return Math.sqrt(dx * dx + dy * dy) < targetRadius
       })
 
-      if (node) {
-        onNodeClickRef.current?.(node)
-      }
+      onClickRef.current?.(node)
     }
 
     canvas?.addEventListener("click", handleClick)
