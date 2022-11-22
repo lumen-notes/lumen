@@ -88,7 +88,7 @@ export function GraphPage() {
   return (
     <div ref={ref} className="relative h-full w-full overflow-hidden">
       {selectedId ? (
-        <div className="absolute bottom-0 right-0 w-full max-w-md p-4">
+        <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
           <NoteCard id={selectedId} />
         </div>
       ) : null}
