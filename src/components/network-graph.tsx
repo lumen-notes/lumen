@@ -84,10 +84,14 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
 
     simulationLinks.current = links.map((link) => ({ ...link }))
 
-    simulation.nodes(simulationNodes.current).force(
-      "link",
-      forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
-    )
+    simulation
+      .nodes(simulationNodes.current)
+      .force(
+        "link",
+        forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
+      )
+      .alpha(1)
+      .restart()
   }, [nodes, links, simulation])
 
   // Redraw the canvas when the container is resized
