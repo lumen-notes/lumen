@@ -36,6 +36,7 @@ export type NetworkGraphProps = {
   targetRadius?: number
   drawNode?: (options: DrawNodeOptions) => void
   drawLink?: (options: DrawLinkOptions) => void
+  bringToFront?: (node: Node) => boolean
   onClick?: (node?: Node) => void
 }
 
@@ -56,6 +57,7 @@ function defaultDrawLink({ link, context, cssVar }: DrawLinkOptions) {
 }
 
 // TODO: Highlight nodes on hover
+// TODO: Navigate with arrow keys
 // TODO: Disable animation for motion-sensitive users
 // TODO: Drag nodes
 export function NetworkGraph({
@@ -66,6 +68,7 @@ export function NetworkGraph({
   targetRadius = 16,
   drawNode = defaultDrawNode,
   drawLink = defaultDrawLink,
+  bringToFront = () => false,
   onClick,
 }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
@@ -77,12 +80,14 @@ export function NetworkGraph({
   const transformRef = React.useRef(zoomIdentity)
   const drawNodeRef = React.useRef(drawNode)
   const drawLinkRef = React.useRef(drawLink)
+  const bringToFrontRef = React.useRef(bringToFront)
   const onClickRef = React.useRef(onClick)
 
   // Update callback refs
   React.useEffect(() => {
     drawNodeRef.current = drawNode
     drawLinkRef.current = drawLink
+    bringToFrontRef.current = bringToFront
     onClickRef.current = onClick
   })
 
@@ -142,8 +147,8 @@ export function NetworkGraph({
     }
 
     // Draw the nodes
-    for (const node of simulationNodes.current) {
-      if (!node.x || !node.y) continue
+    function drawNode(node: Node) {
+      if (!context || !node.x || !node.y) return
 
       const [x, y] = transformRef.current.apply([node.x, node.y])
 
@@ -152,6 +157,22 @@ export function NetworkGraph({
         context,
         cssVar,
       })
+    }
+
+    const frontNodes: Node[] = []
+
+    for (const node of simulationNodes.current) {
+      if (bringToFrontRef.current(node)) {
+        frontNodes.push(node)
+        continue
+      }
+
+      drawNode(node)
+    }
+    console.log(frontNodes)
+
+    for (const node of frontNodes) {
+      drawNode(node)
     }
   }, [pixelRatio])
 
