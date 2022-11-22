@@ -3,7 +3,7 @@ import Graph from "graphology"
 import React from "react"
 import { useMeasure } from "react-use"
 import { z } from "zod"
-import { Link, NetworkGraph, Node } from "../components/network-graph"
+import { DrawLinkOptions, DrawNodeOptions, NetworkGraph } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
 import { GlobalStateContext } from "../global-state"
 import { useSearchParam } from "../utils/use-search-param"
@@ -45,20 +45,40 @@ export function GraphPage() {
 
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
-  const nodeColor = React.useCallback(
-    (node: Node, cssVar: (name: string) => string) => {
-      if (!selectedId) {
-        return cssVar("--color-text")
-      }
+  const drawNode = React.useCallback(
+    ({ node, context, cssVar }: DrawNodeOptions) => {
+      // Draw a circle
+      const radius = 4
+      context.beginPath()
+      context.arc(node.x, node.y, radius, 0, Math.PI * 2)
+      context.fillStyle =
+        !selectedId || node.id === selectedId
+          ? cssVar("--color-text")
+          : cssVar("--color-text-placeholder")
+      context.fill()
 
-      return node.id === selectedId ? cssVar("--color-text") : cssVar("--color-text-placeholder")
+      if (node.id === selectedId) {
+        // Draw a focus ring around the selected node
+        const lineWidth = 2
+        context.beginPath()
+        context.arc(node.x, node.y, radius + lineWidth / 2 + 1, 0, Math.PI * 2)
+        context.lineWidth = lineWidth
+        context.strokeStyle = cssVar("--color-border-focus")
+        context.stroke()
+      }
     },
     [selectedId],
   )
 
-  const linkColor = React.useCallback(
-    (link: Link, cssVar: (name: string) => string) => {
-      return selectedId ? cssVar("--color-border-divider") : cssVar("--color-border")
+  const drawLink = React.useCallback(
+    ({ link, context, cssVar }: DrawLinkOptions) => {
+      // Draw a line
+      context.beginPath()
+      context.moveTo(link.source.x, link.source.y)
+      context.lineTo(link.target.x, link.target.y)
+      context.strokeStyle = selectedId ? cssVar("--color-border-divider") : cssVar("--color-border")
+      context.lineWidth = 1
+      context.stroke()
     },
     [selectedId],
   )
@@ -75,10 +95,8 @@ export function GraphPage() {
         height={height}
         nodes={nodes}
         links={links}
-        nodeColor={nodeColor}
-        linkColor={linkColor}
-        // drawNode={drawNode}
-        // drawLink={drawLink}
+        drawNode={drawNode}
+        drawLink={drawLink}
         onClick={(node) => {
           setSelectedId(node?.id || "")
         }}

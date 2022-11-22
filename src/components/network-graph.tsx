@@ -10,26 +10,49 @@ import { select } from "d3-selection"
 import { zoom, zoomIdentity } from "d3-zoom"
 import React from "react"
 
+type WithPosition<T> = Omit<T, "x" | "y"> & { x: number; y: number }
+
 export type Node = SimulationNodeDatum & { id: string }
 
 export type Link = SimulationLinkDatum<Node>
+
+export type DrawNodeOptions = {
+  node: WithPosition<Node>
+  context: CanvasRenderingContext2D
+  cssVar: (name: string) => string
+}
+
+export type DrawLinkOptions = {
+  link: Omit<Link, "source" | "target"> & { source: WithPosition<Node>; target: WithPosition<Node> }
+  context: CanvasRenderingContext2D
+  cssVar: (name: string) => string
+}
 
 export type NetworkGraphProps = {
   width: number
   height: number
   nodes: Node[]
   links: Link[]
-  nodeColor?: string | ((node: Node, cssVar: (name: string) => string) => string)
-  linkColor?: string | ((link: Link, cssVar: (name: string) => string) => string)
+  targetRadius?: number
+  drawNode?: (options: DrawNodeOptions) => void
+  drawLink?: (options: DrawLinkOptions) => void
   onClick?: (node?: Node) => void
 }
 
-function defaultNodeColor(node: Node, cssVar: (name: string) => string) {
-  return cssVar("--color-text")
+function defaultDrawNode({ node, context, cssVar }: DrawNodeOptions) {
+  context.beginPath()
+  context.arc(node.x, node.y, 4, 0, Math.PI * 2)
+  context.fillStyle = cssVar("--color-text")
+  context.fill()
 }
 
-function defaultLinkColor(link: Link, cssVar: (name: string) => string) {
-  return cssVar("--color-border")
+function defaultDrawLink({ link, context, cssVar }: DrawLinkOptions) {
+  context.beginPath()
+  context.moveTo(link.source.x, link.source.y)
+  context.lineTo(link.target.x, link.target.y)
+  context.strokeStyle = cssVar("--color-border")
+  context.lineWidth = 1
+  context.stroke()
 }
 
 // TODO: Highlight nodes on hover
@@ -40,26 +63,26 @@ export function NetworkGraph({
   height,
   nodes,
   links,
-  nodeColor = defaultNodeColor,
-  linkColor = defaultLinkColor,
+  targetRadius = 16,
+  drawNode = defaultDrawNode,
+  drawLink = defaultDrawLink,
   onClick,
 }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
   const pixelRatio = window.devicePixelRatio ?? 1
-  const radius = 4
   const widthRef = React.useRef(width)
   const heightRef = React.useRef(height)
   const transformRef = React.useRef(zoomIdentity)
-  const nodeColorRef = React.useRef(nodeColor)
-  const linkColorRef = React.useRef(linkColor)
+  const drawNodeRef = React.useRef(drawNode)
+  const drawLinkRef = React.useRef(drawLink)
   const onClickRef = React.useRef(onClick)
 
   // Update callback refs
   React.useEffect(() => {
-    nodeColorRef.current = nodeColor
-    linkColorRef.current = linkColor
+    drawNodeRef.current = drawNode
+    drawLinkRef.current = drawLink
     onClickRef.current = onClick
   })
 
@@ -107,15 +130,15 @@ export function NetworkGraph({
         link.target.y ?? 0,
       ])
 
-      context.beginPath()
-      context.lineWidth = 1
-      context.strokeStyle =
-        typeof linkColorRef.current === "function"
-          ? linkColorRef.current(link, cssVar)
-          : linkColorRef.current
-      context.moveTo(sourceX, sourceY)
-      context.lineTo(targetX, targetY)
-      context.stroke()
+      drawLinkRef.current({
+        link: {
+          ...link,
+          source: { ...link.source, x: sourceX, y: sourceY },
+          target: { ...link.target, x: targetX, y: targetY },
+        },
+        context,
+        cssVar,
+      })
     }
 
     // Draw the nodes
@@ -124,14 +147,11 @@ export function NetworkGraph({
 
       const [x, y] = transformRef.current.apply([node.x, node.y])
 
-      context.beginPath()
-      context.fillStyle =
-        typeof nodeColorRef.current === "function"
-          ? nodeColorRef.current(node, cssVar)
-          : nodeColorRef.current
-      context.moveTo(x, y)
-      context.arc(x, y, radius, 0, Math.PI * 2)
-      context.fill()
+      drawNodeRef.current({
+        node: { ...node, x, y },
+        context,
+        cssVar,
+      })
     }
   }, [pixelRatio])
 
@@ -215,8 +235,7 @@ export function NetworkGraph({
 
         const dx = node.x - x
         const dy = node.y - y
-        const targetRadius = (radius * 4) / transformRef.current.k
-        return Math.sqrt(dx * dx + dy * dy) < targetRadius
+        return Math.sqrt(dx * dx + dy * dy) < targetRadius / transformRef.current.k
       })
 
       onClickRef.current?.(node)
@@ -225,7 +244,7 @@ export function NetworkGraph({
 
     canvas?.addEventListener("click", handleClick)
     return () => canvas?.removeEventListener("click", handleClick)
-  }, [drawToCanvas])
+  }, [targetRadius, drawToCanvas])
 
   return (
     <canvas
