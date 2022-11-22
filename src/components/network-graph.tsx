@@ -19,20 +19,26 @@ type NetworkGraphProps = {
   height: number
   nodes: Node[]
   links: Link[]
+  onNodeClick?: (node: Node) => void
 }
 
-// TODO: Add click handlers
 // TODO: Highlight nodes on hover
 // TODO: Disable animation for motion-sensitive users
 // TODO: Drag nodes
-export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps) {
+export function NetworkGraph({ width, height, nodes, links, onNodeClick }: NetworkGraphProps) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
   const pixelRatio = window.devicePixelRatio ?? 1
+  const radius = 4
   const widthRef = React.useRef(width)
   const heightRef = React.useRef(height)
   const transformRef = React.useRef(zoomIdentity)
+  const onNodeClickRef = React.useRef(onNodeClick)
+
+  React.useEffect(() => {
+    onNodeClickRef.current = onNodeClick
+  }, [onNodeClick])
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
@@ -85,7 +91,7 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
 
       // Draw a circle
       context.moveTo(x, y)
-      context.arc(x, y, 4, 0, Math.PI * 2)
+      context.arc(x, y, radius, 0, Math.PI * 2)
     }
     context.fill()
   }, [pixelRatio])
@@ -136,14 +142,47 @@ export function NetworkGraph({ width, height, nodes, links }: NetworkGraphProps)
 
   // Redraw the canvas when the user's color scheme preference changes
   React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
     function handleChange() {
       requestAnimationFrame(() => drawToCanvas())
     }
 
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     mediaQuery.addEventListener("change", handleChange)
     return () => mediaQuery.removeEventListener("change", handleChange)
   }, [drawToCanvas])
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current
+
+    function handleClick(event: MouseEvent) {
+      const canvasRect = canvas?.getBoundingClientRect()
+
+      if (!canvasRect) return
+
+      // Get the coordinates of the click relative to the canvas
+      const [x, y] = transformRef.current.invert([
+        event.clientX - canvasRect.left,
+        event.clientY - canvasRect.top,
+      ])
+
+      // Find the node that was clicked
+      const node = simulationNodes.current.find((node) => {
+        if (!node.x || !node.y) return false
+
+        const dx = node.x - x
+        const dy = node.y - y
+        return Math.sqrt(dx * dx + dy * dy) < radius
+      })
+
+      if (node) {
+        onNodeClickRef.current?.(node)
+      }
+    }
+
+    canvas?.addEventListener("click", handleClick)
+    return () => canvas?.removeEventListener("click", handleClick)
+  })
 
   return (
     <canvas

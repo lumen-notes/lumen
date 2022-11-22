@@ -38,7 +38,13 @@ export function GraphPage() {
 
   return (
     <div ref={ref} className="h-full w-full overflow-hidden">
-      <NetworkGraph nodes={nodes} links={links} width={width} height={height} />
+      <NetworkGraph
+        nodes={nodes}
+        links={links}
+        width={width}
+        height={height}
+        onNodeClick={(node) => console.log(node.id)}
+      />
     </div>
   )
 }
