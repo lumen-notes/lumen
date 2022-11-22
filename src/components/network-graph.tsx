@@ -7,12 +7,17 @@ import {
   SimulationNodeDatum,
 } from "d3-force"
 import { select } from "d3-selection"
-import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
+import { zoom, zoomIdentity } from "d3-zoom"
 import React from "react"
 
 type Node = SimulationNodeDatum & { id: string }
+type NodeWithPosition = Omit<Node, "x" | "y"> & { x: number; y: number }
 
 type Link = SimulationLinkDatum<Node>
+type LinkWithPosition = Omit<Link, "source" | "target"> & {
+  source: NodeWithPosition
+  target: NodeWithPosition
+}
 
 type NetworkGraphProps = {
   width: number
@@ -49,6 +54,11 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
 
     const documentStyle = window.getComputedStyle(document.documentElement)
 
+    /** Returns the computed value of a CSS custom property (variable) */
+    function cssVar(property: string) {
+      return documentStyle.getPropertyValue(property)
+    }
+
     // Improve rendering on high-resolution displays
     // https://stackoverflow.com/questions/41763580/svg-rendered-into-canvas-blurred-on-retina-display
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
@@ -58,12 +68,49 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
 
     // Draw the links
     for (const link of simulationLinks.current) {
-      drawLink({ context, link, transform: transformRef.current, documentStyle })
+      if (
+        typeof link.source !== "object" ||
+        typeof link.target !== "object" ||
+        !link.source.x ||
+        !link.source.y ||
+        !link.target.x ||
+        !link.target.y
+      ) {
+        continue
+      }
+
+      const [sourceX, sourceY] = transformRef.current.apply([
+        link.source.x ?? 0,
+        link.source.y ?? 0,
+      ])
+
+      const [targetX, targetY] = transformRef.current.apply([
+        link.target.x ?? 0,
+        link.target.y ?? 0,
+      ])
+
+      drawLink({
+        context,
+        link: {
+          ...link,
+          source: { ...link.source, x: sourceX, y: sourceY },
+          target: { ...link.source, x: targetX, y: targetY },
+        },
+        cssVar,
+      })
     }
 
     // Draw the nodes
     for (const node of simulationNodes.current) {
-      drawNode({ context, node, transform: transformRef.current, documentStyle })
+      if (!node.x || !node.y) continue
+
+      const [x, y] = transformRef.current.apply([node.x, node.y])
+
+      drawNode({
+        context,
+        node: { ...node, x, y },
+        cssVar,
+      })
     }
   }, [pixelRatio])
 
@@ -171,58 +218,34 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
 function drawLink({
   context,
   link,
-  transform,
-  documentStyle,
+  cssVar,
 }: {
   context: CanvasRenderingContext2D
-  link: Link
-  transform: ZoomTransform
-  documentStyle: CSSStyleDeclaration
+  link: LinkWithPosition
+  cssVar: (property: string) => string
 }) {
-  context.beginPath()
-  context.strokeStyle = documentStyle.getPropertyValue("--color-border")
-  context.lineWidth = 1
-
-  if (
-    typeof link.source !== "object" ||
-    typeof link.target !== "object" ||
-    !link.source.x ||
-    !link.source.y ||
-    !link.target.x ||
-    !link.target.y
-  ) {
-    return
-  }
-
-  const [sourceX, sourceY] = transform.apply([link.source.x, link.source.y])
-  const [targetX, targetY] = transform.apply([link.target.x, link.target.y])
-
   // Draw a line
-  context.moveTo(sourceX, sourceY)
-  context.lineTo(targetX, targetY)
+  context.beginPath()
+  context.strokeStyle = cssVar("--color-border")
+  context.lineWidth = 1
+  context.moveTo(link.source.x, link.source.y)
+  context.lineTo(link.target.x, link.target.y)
   context.stroke()
 }
 
 function drawNode({
   context,
   node,
-  transform,
-  documentStyle,
+  cssVar,
 }: {
   context: CanvasRenderingContext2D
-  node: Node
-  transform: ZoomTransform
-  documentStyle: CSSStyleDeclaration
+  node: NodeWithPosition
+  cssVar: (property: string) => string
 }) {
-  context.beginPath()
-  context.fillStyle = documentStyle.getPropertyValue("--color-text")
-
-  if (!node.x || !node.y) return
-
-  const [x, y] = transform.apply([node.x, node.y])
-
   // Draw a circle
-  context.moveTo(x, y)
-  context.arc(x, y, 4, 0, Math.PI * 2)
+  context.beginPath()
+  context.fillStyle = cssVar("--color-text")
+  context.moveTo(node.x, node.y)
+  context.arc(node.x, node.y, 4, 0, Math.PI * 2)
   context.fill()
 }
