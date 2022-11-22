@@ -7,7 +7,7 @@ import {
   SimulationNodeDatum,
 } from "d3-force"
 import { select } from "d3-selection"
-import { zoom, zoomIdentity } from "d3-zoom"
+import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
 import React from "react"
 
 type Node = SimulationNodeDatum & { id: string }
@@ -47,7 +47,7 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
 
     if (!context) return
 
-    const style = window.getComputedStyle(document.documentElement)
+    const documentStyle = window.getComputedStyle(document.documentElement)
 
     // Improve rendering on high-resolution displays
     // https://stackoverflow.com/questions/41763580/svg-rendered-into-canvas-blurred-on-retina-display
@@ -57,43 +57,14 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
     context.clearRect(0, 0, widthRef.current, heightRef.current)
 
     // Draw the links
-    context.beginPath()
-    context.strokeStyle = style.getPropertyValue("--color-border")
-    context.lineWidth = 1
     for (const link of simulationLinks.current) {
-      if (
-        typeof link.source !== "object" ||
-        typeof link.target !== "object" ||
-        !link.source.x ||
-        !link.source.y ||
-        !link.target.x ||
-        !link.target.y
-      ) {
-        continue
-      }
-
-      const [sourceX, sourceY] = transformRef.current.apply([link.source.x, link.source.y])
-      const [targetX, targetY] = transformRef.current.apply([link.target.x, link.target.y])
-
-      // Draw a line
-      context.moveTo(sourceX, sourceY)
-      context.lineTo(targetX, targetY)
+      drawLink({ context, link, transform: transformRef.current, documentStyle })
     }
-    context.stroke()
 
     // Draw the nodes
-    context.beginPath()
-    context.fillStyle = style.getPropertyValue("--color-text")
     for (const node of simulationNodes.current) {
-      if (!node.x || !node.y) continue
-
-      const [x, y] = transformRef.current.apply([node.x, node.y])
-
-      // Draw a circle
-      context.moveTo(x, y)
-      context.arc(x, y, radius, 0, Math.PI * 2)
+      drawNode({ context, node, transform: transformRef.current, documentStyle })
     }
-    context.fill()
   }, [pixelRatio])
 
   const simulation = React.useMemo(() => {
@@ -191,4 +162,63 @@ export function NetworkGraph({ width, height, nodes, links, onClick }: NetworkGr
       style={{ width, height }}
     />
   )
+}
+
+function drawLink({
+  context,
+  link,
+  transform,
+  documentStyle,
+}: {
+  context: CanvasRenderingContext2D
+  link: Link
+  transform: ZoomTransform
+  documentStyle: CSSStyleDeclaration
+}) {
+  context.beginPath()
+  context.strokeStyle = documentStyle.getPropertyValue("--color-border")
+  context.lineWidth = 1
+
+  if (
+    typeof link.source !== "object" ||
+    typeof link.target !== "object" ||
+    !link.source.x ||
+    !link.source.y ||
+    !link.target.x ||
+    !link.target.y
+  ) {
+    return
+  }
+
+  const [sourceX, sourceY] = transform.apply([link.source.x, link.source.y])
+  const [targetX, targetY] = transform.apply([link.target.x, link.target.y])
+
+  // Draw a line
+  context.moveTo(sourceX, sourceY)
+  context.lineTo(targetX, targetY)
+  context.stroke()
+}
+
+function drawNode({
+  context,
+  node,
+  transform,
+  documentStyle,
+}: {
+  context: CanvasRenderingContext2D
+  node: Node
+  transform: ZoomTransform
+  documentStyle: CSSStyleDeclaration
+}) {
+  context.beginPath()
+  context.fillStyle = documentStyle.getPropertyValue("--color-text")
+
+  if (!node.x || !node.y) return
+
+  const [x, y] = transform.apply([node.x, node.y])
+
+  // Draw a circle
+  context.moveTo(x, y)
+  context.arc(x, y, 4, 0, Math.PI * 2)
+  context.fill()
 }
