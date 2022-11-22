@@ -3,7 +3,7 @@ import Graph from "graphology"
 import React from "react"
 import { useMeasure } from "react-use"
 import { z } from "zod"
-import { NetworkGraph } from "../components/network-graph"
+import { Link, NetworkGraph, Node } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
 import { GlobalStateContext } from "../global-state"
 import { useSearchParam } from "../utils/use-search-param"
@@ -45,18 +45,40 @@ export function GraphPage() {
 
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
+  const nodeColor = React.useCallback(
+    (node: Node, cssVar: (name: string) => string) => {
+      if (!selectedId) {
+        return cssVar("--color-text")
+      }
+
+      return node.id === selectedId ? cssVar("--color-text") : cssVar("--color-text-placeholder")
+    },
+    [selectedId],
+  )
+
+  const linkColor = React.useCallback(
+    (link: Link, cssVar: (name: string) => string) => {
+      return selectedId ? cssVar("--color-border-divider") : cssVar("--color-border")
+    },
+    [selectedId],
+  )
+
   return (
     <div ref={ref} className="relative h-full w-full overflow-hidden">
       {selectedId ? (
-        <div className="absolute top-0 left-0 w-full max-w-md p-4">
+        <div className="absolute bottom-0 right-0 w-full max-w-md p-4">
           <NoteCard id={selectedId} />
         </div>
       ) : null}
       <NetworkGraph
-        nodes={nodes}
-        links={links}
         width={width}
         height={height}
+        nodes={nodes}
+        links={links}
+        nodeColor={nodeColor}
+        linkColor={linkColor}
+        // drawNode={drawNode}
+        // drawLink={drawLink}
         onClick={(node) => {
           setSelectedId(node?.id || "")
         }}
