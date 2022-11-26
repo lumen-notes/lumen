@@ -46,9 +46,25 @@ export function GraphPage() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   const drawNode = React.useCallback(
-    ({ node, context, cssVar }: DrawNodeOptions) => {
+    ({ node, isFocused, context, cssVar }: DrawNodeOptions) => {
       const isSelected = node.id === selectedId
       const nodeRadius = isSelected ? 6 : 4
+      const focusRingWidth = 2
+
+      if (isFocused) {
+        // Draw backdrop
+        context.beginPath()
+        context.arc(node.x, node.y, nodeRadius + focusRingWidth / 2 + 1, 0, Math.PI * 2)
+        context.fillStyle = cssVar("--color-bg")
+        context.fill()
+
+        // Draw focus ring
+        context.beginPath()
+        context.arc(node.x, node.y, nodeRadius + focusRingWidth / 2 + 1, 0, Math.PI * 2)
+        context.strokeStyle = cssVar("--color-border-focus")
+        context.lineWidth = focusRingWidth
+        context.stroke()
+      }
 
       // Draw a circle
       context.beginPath()
@@ -87,11 +103,6 @@ export function GraphPage() {
 
   return (
     <div ref={ref} className="relative h-full w-full overflow-hidden">
-      {selectedId ? (
-        <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
-          <NoteCard id={selectedId} />
-        </div>
-      ) : null}
       <NetworkGraph
         width={width}
         height={height}
@@ -104,6 +115,11 @@ export function GraphPage() {
           setSelectedId(node?.id || "")
         }}
       />
+      {selectedId ? (
+        <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
+          <NoteCard id={selectedId} />
+        </div>
+      ) : null}
     </div>
   )
 }

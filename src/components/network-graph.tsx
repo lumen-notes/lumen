@@ -18,6 +18,7 @@ export type Link = SimulationLinkDatum<Node>
 
 export type DrawNodeOptions = {
   node: WithPosition<Node>
+  isFocused: boolean
   context: CanvasRenderingContext2D
   cssVar: (name: string) => string
 }
@@ -74,6 +75,7 @@ export function NetworkGraph({
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const simulationNodes = React.useRef<Node[]>([])
   const simulationLinks = React.useRef<Link[]>([])
+  const focusedNodeRef = React.useRef<Node | undefined>()
   const pixelRatio = window.devicePixelRatio ?? 1
   const widthRef = React.useRef(width)
   const heightRef = React.useRef(height)
@@ -152,8 +154,11 @@ export function NetworkGraph({
 
       const [x, y] = transformRef.current.apply([node.x, node.y])
 
+      const isCanvasFocused = document.activeElement === canvasRef.current
+
       drawNodeRef.current({
         node: { ...node, x, y },
+        isFocused: isCanvasFocused && node.id === focusedNodeRef.current?.id,
         context,
         cssVar,
       })
@@ -236,6 +241,7 @@ export function NetworkGraph({
     return () => mediaQuery.removeEventListener("change", handleChange)
   }, [drawToCanvas])
 
+  // Handle clicks
   React.useEffect(() => {
     const canvas = canvasRef.current
 
@@ -259,6 +265,7 @@ export function NetworkGraph({
         return Math.sqrt(dx * dx + dy * dy) < targetRadius / transformRef.current.k
       })
 
+      focusedNodeRef.current = node
       onClickRef.current?.(node)
       requestAnimationFrame(() => drawToCanvas())
     }
@@ -273,6 +280,10 @@ export function NetworkGraph({
       width={width * pixelRatio}
       height={height * pixelRatio}
       style={{ width, height }}
+      className="focus:outline-none"
+      tabIndex={0}
+      onFocus={() => requestAnimationFrame(() => drawToCanvas())}
+      onBlur={() => requestAnimationFrame(() => drawToCanvas())}
     />
   )
 }
