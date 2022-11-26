@@ -46,12 +46,13 @@ export function GraphPage() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
   const drawNode = React.useCallback(
-    ({ node, isFocused, context, cssVar }: DrawNodeOptions) => {
+    ({ node, canvas, context, cssVar }: DrawNodeOptions) => {
+      const isFocused = canvas === document.activeElement
       const isSelected = node.id === selectedId
       const nodeRadius = isSelected ? 6 : 4
       const focusRingWidth = 2
 
-      if (isFocused) {
+      if (isFocused && isSelected) {
         // Draw backdrop
         context.beginPath()
         context.arc(node.x, node.y, nodeRadius + focusRingWidth / 2 + 1, 0, Math.PI * 2)
@@ -83,11 +84,19 @@ export function GraphPage() {
 
   const drawLink = React.useCallback(
     ({ link, context, cssVar }: DrawLinkOptions) => {
+      const isSelected = link.source.id === selectedId || link.target.id === selectedId
+
       // Draw a line
       context.beginPath()
       context.moveTo(link.source.x, link.source.y)
       context.lineTo(link.target.x, link.target.y)
-      context.strokeStyle = selectedId ? cssVar("--color-border-divider") : cssVar("--color-border")
+      if (!selectedId) {
+        context.strokeStyle = cssVar("--color-border")
+      } else if (isSelected) {
+        context.strokeStyle = cssVar("--color-text-muted")
+      } else {
+        context.strokeStyle = cssVar("--color-border-divider")
+      }
       context.lineWidth = 1
       context.stroke()
     },
@@ -111,9 +120,8 @@ export function GraphPage() {
         drawNode={drawNode}
         drawLink={drawLink}
         bringToFront={bringToFront}
-        onClick={(node) => {
-          setSelectedId(node?.id || "")
-        }}
+        selectedId={selectedId}
+        onSelect={(node) => setSelectedId(node?.id || "")}
       />
       {selectedId ? (
         <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
