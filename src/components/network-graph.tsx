@@ -88,6 +88,7 @@ export function NetworkGraph({
   const drawLinkRef = React.useRef(drawLink)
   const bringToFrontRef = React.useRef(bringToFront)
   const onSelectRef = React.useRef(onSelect)
+  const [prevSelectedNode, setPrevSelectedNode] = React.useState<Node | undefined>()
 
   // Update callback refs
   React.useEffect(() => {
@@ -96,6 +97,11 @@ export function NetworkGraph({
     bringToFrontRef.current = bringToFront
     onSelectRef.current = onSelect
   })
+
+  if (selectedId && selectedId !== prevSelectedNode?.id) {
+    const selectedNode = simulationNodes.current.find((node) => node.id === selectedId)
+    setPrevSelectedNode(selectedNode)
+  }
 
   const drawToCanvas = React.useCallback(() => {
     if (!canvasRef.current) return
@@ -292,9 +298,9 @@ export function NetworkGraph({
         }
 
         // Select a node with `tab` if no node is selected
-        if (event.key === "Tab" && !selectedId) {
+        if (event.key === "Tab" && !event.shiftKey && !selectedId) {
           event.preventDefault()
-          onSelectRef.current?.(simulationNodes.current[0])
+          onSelectRef.current?.(prevSelectedNode || simulationNodes.current[0])
           requestAnimationFrame(() => drawToCanvas())
         }
 
