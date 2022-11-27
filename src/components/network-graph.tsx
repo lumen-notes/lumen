@@ -12,7 +12,7 @@ import React from "react"
 
 type Position = { x: number; y: number }
 
-type WithPosition<T> = Omit<T, "x" | "y"> & Position
+type WithPosition<T> = Omit<T, keyof Position> & Position
 
 type Direction = "n" | "s" | "e" | "w"
 
@@ -39,28 +39,11 @@ export type NetworkGraphProps = {
   height: number
   nodes: Node[]
   links: Link[]
+  drawNode: (options: DrawNodeOptions) => void
+  drawLink: (options: DrawLinkOptions) => void
   targetRadius?: number
-  drawNode?: (options: DrawNodeOptions) => void
-  drawLink?: (options: DrawLinkOptions) => void
-  bringToFront?: (node: Node) => boolean
   selectedId?: string
-  onSelect?: (node?: Node) => void
-}
-
-function defaultDrawNode({ node, context, cssVar }: DrawNodeOptions) {
-  context.beginPath()
-  context.arc(node.x, node.y, 4, 0, Math.PI * 2)
-  context.fillStyle = cssVar("--color-text")
-  context.fill()
-}
-
-function defaultDrawLink({ link, context, cssVar }: DrawLinkOptions) {
-  context.beginPath()
-  context.moveTo(link.source.x, link.source.y)
-  context.lineTo(link.target.x, link.target.y)
-  context.strokeStyle = cssVar("--color-border")
-  context.lineWidth = 1
-  context.stroke()
+  onSelect?: (nodeId: string) => void
 }
 
 // TODO: Disable animation for motion-sensitive users
@@ -70,10 +53,9 @@ export function NetworkGraph({
   height,
   nodes,
   links,
+  drawNode,
+  drawLink,
   targetRadius = 16,
-  drawNode = defaultDrawNode,
-  drawLink = defaultDrawLink,
-  bringToFront = () => false,
   selectedId = "",
   onSelect,
 }: NetworkGraphProps) {
@@ -86,7 +68,7 @@ export function NetworkGraph({
   const transformRef = React.useRef(zoomIdentity)
   const drawNodeRef = React.useRef(drawNode)
   const drawLinkRef = React.useRef(drawLink)
-  const bringToFrontRef = React.useRef(bringToFront)
+  const selectedIdRef = React.useRef(selectedId)
   const onSelectRef = React.useRef(onSelect)
   const [prevSelectedNode, setPrevSelectedNode] = React.useState<Node | undefined>()
 
@@ -94,7 +76,7 @@ export function NetworkGraph({
   React.useEffect(() => {
     drawNodeRef.current = drawNode
     drawLinkRef.current = drawLink
-    bringToFrontRef.current = bringToFront
+    selectedIdRef.current = selectedId
     onSelectRef.current = onSelect
   })
 
@@ -107,9 +89,9 @@ export function NetworkGraph({
     if (!canvasRef.current) return
 
     const context = canvasRef.current.getContext("2d")
-
     if (!context) return
 
+    // Get document style declaration to access CSS variables
     const documentStyle = window.getComputedStyle(document.documentElement)
 
     /** Returns the computed value of a CSS custom property (variable) */
@@ -153,7 +135,6 @@ export function NetworkGraph({
       })
     }
 
-    // Draw the nodes
     function drawNode(node: Node) {
       if (!canvasRef.current || !context || !node.x || !node.y) return
 
@@ -167,22 +148,25 @@ export function NetworkGraph({
       })
     }
 
-    const frontNodes: Node[] = []
+    let selectedNode: Node | undefined
 
+    // Draw the nodes
     for (const node of simulationNodes.current) {
-      if (bringToFrontRef.current(node)) {
-        frontNodes.push(node)
+      if (node.id === selectedIdRef.current) {
+        selectedNode = node
         continue
       }
 
       drawNode(node)
     }
 
-    for (const node of frontNodes) {
-      drawNode(node)
+    // Draw the selected node last so it's on top
+    if (selectedNode) {
+      drawNode(selectedNode)
     }
   }, [pixelRatio])
 
+  // Initialize the force simulation
   const simulation = React.useMemo(() => {
     return forceSimulation<Node>()
       .force("charge", forceManyBody().strength(-10))
@@ -190,6 +174,7 @@ export function NetworkGraph({
       .on("tick", drawToCanvas)
   }, [drawToCanvas])
 
+  // Restart the force simulation when the nodes or links change
   React.useEffect(() => {
     simulationNodes.current = nodes.map((node) => {
       const cachedNode = simulationNodes.current.find((cachedNode) => cachedNode.id === node.id)
@@ -210,13 +195,6 @@ export function NetworkGraph({
       .restart()
   }, [nodes, links, simulation])
 
-  // Redraw the canvas when the container is resized
-  React.useEffect(() => {
-    widthRef.current = width
-    heightRef.current = height
-    requestAnimationFrame(() => drawToCanvas())
-  }, [width, height, drawToCanvas])
-
   // Zoom and pan
   React.useEffect(() => {
     if (!canvasRef.current) return
@@ -230,6 +208,13 @@ export function NetworkGraph({
         }),
     )
   }, [drawToCanvas])
+
+  // Redraw the canvas when the container is resized
+  React.useEffect(() => {
+    widthRef.current = width
+    heightRef.current = height
+    requestAnimationFrame(() => drawToCanvas())
+  }, [width, height, drawToCanvas])
 
   // Redraw the canvas when the user's color scheme preference changes
   React.useEffect(() => {
@@ -267,7 +252,7 @@ export function NetworkGraph({
         return Math.sqrt(dx * dx + dy * dy) < targetRadius / transformRef.current.k
       })
 
-      onSelectRef.current?.(node)
+      onSelectRef.current?.(node?.id || "")
       requestAnimationFrame(() => drawToCanvas())
     }
 
@@ -283,25 +268,22 @@ export function NetworkGraph({
       style={{ width, height }}
       className="focus:outline-none"
       tabIndex={0}
-      onFocus={() => {
-        requestAnimationFrame(() => drawToCanvas())
-      }}
-      onBlur={() => {
-        requestAnimationFrame(() => drawToCanvas())
-      }}
+      // Redraw the canvas when the focus changes
+      onFocus={() => requestAnimationFrame(() => drawToCanvas())}
+      onBlur={() => requestAnimationFrame(() => drawToCanvas())}
       onKeyDown={(event) => {
-        // Unselect node with `escape`
+        // Unselect with `escape`
         if (event.key === "Escape") {
-          event.preventDefault()
-          onSelectRef.current?.()
+          onSelectRef.current?.("")
           requestAnimationFrame(() => drawToCanvas())
+          event.preventDefault()
         }
 
         // Select a node with `tab` if no node is selected
         if (event.key === "Tab" && !event.shiftKey && !selectedId) {
-          event.preventDefault()
-          onSelectRef.current?.(prevSelectedNode || simulationNodes.current[0])
+          onSelectRef.current?.(prevSelectedNode?.id || simulationNodes.current[0].id)
           requestAnimationFrame(() => drawToCanvas())
+          event.preventDefault()
         }
 
         const keyToDirection: Record<string, Direction> = {
@@ -313,22 +295,23 @@ export function NetworkGraph({
 
         // Move selection with arrow keys
         if (event.key in keyToDirection) {
-          event.preventDefault()
-
           const direction = keyToDirection[event.key]
           const selectedNode = simulationNodes.current.find((node) => node.id === selectedId)
           const nextNode = getNextNode(simulationNodes.current, selectedNode, direction)
 
           if (nextNode) {
-            onSelectRef.current?.(nextNode)
+            onSelectRef.current?.(nextNode.id)
             requestAnimationFrame(() => drawToCanvas())
           }
+
+          event.preventDefault()
         }
       }}
     />
   )
 }
 
+/** Returns the next node in a given direction */
 function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: Direction) {
   if (
     typeof selectedNode === "undefined" ||
@@ -341,13 +324,13 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
   let result: { node: Node; score: number } | undefined
 
   for (const node of nodes) {
-    // Skip focused node
+    // Skip selected node
     if (node === selectedNode) continue
 
-    // Skip node if it doesn't have a position
+    // Skip nodes that don't have a position
     if (typeof node.x === "undefined" || typeof node.y === "undefined") continue
 
-    // Skip node if it's in the wrong direction
+    // Skip nodes on the wrong side of the selected node
     switch (direction) {
       case "n":
         if (node.y > selectedNode.y) continue
@@ -363,31 +346,20 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
         break
     }
 
-    const distance = getDistance(
-      {
-        x: selectedNode.x,
-        y: selectedNode.y,
-      },
-      {
-        x: node.x,
-        y: node.y,
-      },
-    )
+    // Get the distance between the selected node and the current node
+    const distance = getDistance({ x: selectedNode.x, y: selectedNode.y }, { x: node.x, y: node.y })
 
+    // Get the angle between the selected node and the current node
     const angle = getAngle(
-      {
-        x: selectedNode.x,
-        y: selectedNode.y,
-      },
-      {
-        x: node.x,
-        y: node.y,
-      },
+      { x: selectedNode.x, y: selectedNode.y },
+      { x: node.x, y: node.y },
       direction,
     )
 
+    // Calculate a score for the current node
     const score = (1 / distance) * (Math.PI / 2 - angle)
 
+    // Pick the node with the highest score
     if (!result || result.score < score) {
       result = { node, score }
     }
@@ -396,10 +368,12 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
   return result?.node
 }
 
+/** Returns the distance between two points. */
 function getDistance(a: Position, b: Position) {
   return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
 }
 
+/** Returns the angle between two points in radians. */
 function getAngle(a: Position, b: Position, direction: Direction) {
   let oppositeSide = 0
   let adjacentSide = 0

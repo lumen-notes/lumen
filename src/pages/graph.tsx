@@ -3,7 +3,7 @@ import Graph from "graphology"
 import React from "react"
 import { useMeasure } from "react-use"
 import { z } from "zod"
-import { DrawLinkOptions, DrawNodeOptions, NetworkGraph, Node } from "../components/network-graph"
+import { DrawLinkOptions, DrawNodeOptions, NetworkGraph } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
 import { GlobalStateContext } from "../global-state"
 import { useSearchParam } from "../utils/use-search-param"
@@ -53,13 +53,13 @@ export function GraphPage() {
       const focusRingWidth = 2
 
       if (isFocused && isSelected) {
-        // Draw backdrop
+        // Draw a backdrop
         context.beginPath()
         context.arc(node.x, node.y, nodeRadius + focusRingWidth / 2 + 1, 0, Math.PI * 2)
         context.fillStyle = cssVar("--color-bg")
         context.fill()
 
-        // Draw focus ring
+        // Draw a focus ring
         context.beginPath()
         context.arc(node.x, node.y, nodeRadius + focusRingWidth / 2 + 1, 0, Math.PI * 2)
         context.strokeStyle = cssVar("--color-border-focus")
@@ -103,13 +103,6 @@ export function GraphPage() {
     [selectedId],
   )
 
-  const bringToFront = React.useCallback(
-    (node: Node) => {
-      return node.id === selectedId
-    },
-    [selectedId],
-  )
-
   return (
     <div ref={ref} className="relative h-full w-full overflow-hidden">
       <NetworkGraph
@@ -119,9 +112,8 @@ export function GraphPage() {
         links={links}
         drawNode={drawNode}
         drawLink={drawLink}
-        bringToFront={bringToFront}
         selectedId={selectedId}
-        onSelect={(node) => setSelectedId(node?.id || "")}
+        onSelect={(nodeId) => setSelectedId(nodeId)}
       />
       {selectedId ? (
         <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
