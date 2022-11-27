@@ -357,7 +357,8 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
     )
 
     // Calculate a score for the current node
-    const score = (1 / distance) * (Math.PI / 2 - angle)
+    // const score = (1 / distance) * (Math.PI / 2 - angle)
+    const score = (1 / distance) * Math.pow((Math.PI / 2 - angle) / (Math.PI / 2), 2)
 
     // Pick the node with the highest score
     if (!result || result.score < score) {
