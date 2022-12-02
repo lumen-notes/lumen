@@ -11,7 +11,7 @@ module.exports = {
       "current-color": "currentColor",
       text: "var(--color-text)",
       "text-muted": "var(--color-text-secondary)",
-      "text-placeholder": "var(--color-text-placeholder)",
+      "text-tertiary": "var(--color-text-tertiary)",
       "text-highlight": "var(--color-text-highlight)",
       bg: "var(--color-bg)",
       "bg-inset": "var(--color-bg-inset)",

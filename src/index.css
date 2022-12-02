@@ -42,7 +42,7 @@
   --s: 5%;
   --l-text: 10%;
   --l-text-secondary: 45%;
-  --l-text-placeholder: 55%;
+  --l-text-tertiary: 55%;
   --l-bg: 100%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
@@ -53,7 +53,7 @@
   --a-border-secondary: 0.15;
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
-  --color-text-placeholder: hsl(var(--h) var(--s) var(--l-text-placeholder));
+  --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
@@ -72,7 +72,7 @@
     --h: 220deg;
     --l-text: 90%;
     --l-text-secondary: 60%;
-    --l-text-placeholder: 55%;
+    --l-text-tertiary: 55%;
     --l-bg: 10%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
@@ -162,7 +162,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-placeholder {
-  @apply text-text-placeholder;
+  @apply text-text-tertiary;
 }
 
 /* Markdown styles */
@@ -303,7 +303,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-input]::placeholder {
-  @apply text-text-placeholder;
+  @apply text-text-tertiary;
 }
 
 [cmdk-list] {

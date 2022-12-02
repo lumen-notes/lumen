@@ -1,324 +1,455 @@
-import {
-  forceCenter,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  SimulationLinkDatum,
-  SimulationNodeDatum,
-} from "d3-force"
 import { select } from "d3-selection"
-import { zoom, zoomIdentity } from "d3-zoom"
-import React from "react"
+import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
+import * as React from "react"
+import { useMedia } from "react-use"
+import { Link, Node } from "../simulation.worker"
 
 type Position = { x: number; y: number }
+type Direction = "up" | "down" | "left" | "right"
+type Axis = "x" | "y"
 
-type WithPosition<T> = Omit<T, keyof Position> & Position
-
-type Direction = "n" | "s" | "e" | "w"
-
-export type Node = SimulationNodeDatum & { id: string }
-
-export type Link = SimulationLinkDatum<Node>
-
-export type DrawNodeOptions = {
-  node: WithPosition<Node>
-  canvas: HTMLCanvasElement
-  context: CanvasRenderingContext2D
-  cssVar: (name: string) => string
+const KEY_TO_DIRECTION: Record<string, Direction> = {
+  ArrowUp: "up",
+  ArrowDown: "down",
+  ArrowLeft: "left",
+  ArrowRight: "right",
 }
 
-export type DrawLinkOptions = {
-  link: Omit<Link, "source" | "target"> & { source: WithPosition<Node>; target: WithPosition<Node> }
-  canvas: HTMLCanvasElement
-  context: CanvasRenderingContext2D
-  cssVar: (name: string) => string
+const DIRERCTION_TO_AXIS: Record<Direction, Axis> = {
+  up: "y",
+  down: "y",
+  left: "x",
+  right: "x",
 }
 
-export type NetworkGraphProps = {
+type Bleed = number | [number, number] | [number, number, number, number]
+
+export type NetworkGraphInstance = {
+  focus: () => void
+  centerInView: (nodeId: string) => void
+}
+
+type NetworkGraphProps = {
   width: number
   height: number
   nodes: Node[]
   links: Link[]
-  drawNode: (options: DrawNodeOptions) => void
-  drawLink: (options: DrawLinkOptions) => void
-  targetRadius?: number
   selectedId?: string
-  onSelect?: (nodeId: string) => void
+  hoveredId?: string
+  targetRadius?: number
+  bleed?: Bleed
+  onSelect?: (node: Node | null) => void
+  onHover?: (node: Node | null) => void
 }
 
-// TODO: Disable animation for motion-sensitive users
-// TODO: Drag nodes
-export function NetworkGraph({
-  width,
-  height,
-  nodes,
-  links,
-  drawNode,
-  drawLink,
-  targetRadius = 16,
-  selectedId = "",
-  onSelect,
-}: NetworkGraphProps) {
-  const canvasRef = React.useRef<HTMLCanvasElement>(null)
-  const simulationNodes = React.useRef<Node[]>([])
-  const simulationLinks = React.useRef<Link[]>([])
-  const pixelRatio = window.devicePixelRatio ?? 1
-  const widthRef = React.useRef(width)
-  const heightRef = React.useRef(height)
-  const transformRef = React.useRef(zoomIdentity)
-  const drawNodeRef = React.useRef(drawNode)
-  const drawLinkRef = React.useRef(drawLink)
-  const selectedIdRef = React.useRef(selectedId)
-  const onSelectRef = React.useRef(onSelect)
-  const [prevSelectedNode, setPrevSelectedNode] = React.useState<Node | undefined>()
+export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphProps>(
+  (
+    {
+      width,
+      height,
+      nodes,
+      links,
+      selectedId = "",
+      hoveredId = "",
+      targetRadius = 24,
+      bleed = 48,
+      onSelect,
+      onHover,
+    },
+    ref,
+  ) => {
+    const canvasRef = React.useRef<HTMLCanvasElement>(null)
+    const [prevNodes, setPrevNodes] = React.useState<Node[]>(nodes)
+    const [prevLinks, setPrevLinks] = React.useState<Link[]>(links)
+    const [prevSelectedId, setPrevSelectedId] = React.useState(selectedId)
+    const [simulationNodes, setSimulationNodes] = React.useState<Node[]>(nodes)
+    const [simulationLinks, setSimulationLinks] = React.useState<Link[]>(links)
+    const { transform, scrollIntoView, centerInView } = useViewport(canvasRef, width, height)
+    const pixelRatio = window.devicePixelRatio || 1
+    const [isCanvasFocused, setIsCanvasFocused] = React.useState(false)
+    const cssVar = useCssVar()
+    const simulationWorkerRef = React.useRef<Worker>()
 
-  // Update callback refs
-  React.useEffect(() => {
-    drawNodeRef.current = drawNode
-    drawLinkRef.current = drawLink
-    selectedIdRef.current = selectedId
-    onSelectRef.current = onSelect
-  })
+    React.useEffect(() => {
+      const worker = new Worker(new URL("../simulation.worker.ts", import.meta.url), {
+        type: "module",
+      })
 
-  if (selectedId && selectedId !== prevSelectedNode?.id) {
-    const selectedNode = simulationNodes.current.find((node) => node.id === selectedId)
-    setPrevSelectedNode(selectedNode)
-  }
+      // Initialize nodes and links
+      worker.postMessage({ nodes, links })
 
-  const drawToCanvas = React.useCallback(() => {
-    if (!canvasRef.current) return
-
-    const context = canvasRef.current.getContext("2d")
-    if (!context) return
-
-    // Get document style declaration to access CSS variables
-    const documentStyle = window.getComputedStyle(document.documentElement)
-
-    /** Returns the computed value of a CSS custom property (variable) */
-    function cssVar(name: string) {
-      return documentStyle.getPropertyValue(name)
-    }
-
-    // Improve rendering on high-resolution displays
-    // https://stackoverflow.com/questions/41763580/svg-rendered-into-canvas-blurred-on-retina-display
-    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-
-    // Clear the canvas
-    context.clearRect(0, 0, widthRef.current, heightRef.current)
-
-    // Draw the links
-    for (const link of simulationLinks.current) {
-      if (
-        typeof link.source !== "object" ||
-        typeof link.target !== "object" ||
-        typeof link.source.x === "undefined" ||
-        typeof link.source.y === "undefined" ||
-        typeof link.target.x === "undefined" ||
-        typeof link.target.y === "undefined"
-      ) {
-        continue
+      worker.onmessage = (event) => {
+        const { nodes, links } = event.data
+        setSimulationNodes(nodes)
+        setSimulationLinks(links)
       }
 
-      const [sourceX, sourceY] = transformRef.current.apply([link.source.x, link.source.y])
+      simulationWorkerRef.current = worker
 
-      const [targetX, targetY] = transformRef.current.apply([link.target.x, link.target.y])
-
-      drawLinkRef.current({
-        link: {
-          ...link,
-          source: { ...link.source, x: sourceX, y: sourceY },
-          target: { ...link.target, x: targetX, y: targetY },
-        },
-        canvas: canvasRef.current,
-        context,
-        cssVar,
-      })
-    }
-
-    function drawNode(node: Node) {
-      if (!canvasRef.current || !context || !node.x || !node.y) return
-
-      const [x, y] = transformRef.current.apply([node.x, node.y])
-
-      drawNodeRef.current({
-        node: { ...node, x, y },
-        canvas: canvasRef.current,
-        context,
-        cssVar,
-      })
-    }
-
-    let selectedNode: Node | undefined
-
-    // Draw the nodes
-    for (const node of simulationNodes.current) {
-      if (node.id === selectedIdRef.current) {
-        selectedNode = node
-        continue
+      return () => {
+        worker.terminate()
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
-      drawNode(node)
+    // Update simulation when nodes or links change
+    if (nodes !== prevNodes || links !== prevLinks) {
+      simulationWorkerRef.current?.postMessage({ nodes, links })
+      setPrevNodes(nodes)
+      setPrevLinks(links)
     }
 
-    // Draw the selected node last so it's on top
-    if (selectedNode) {
-      drawNode(selectedNode)
-    }
-  }, [pixelRatio])
-
-  // Initialize the force simulation
-  const simulation = React.useMemo(() => {
-    return forceSimulation<Node>()
-      .force("charge", forceManyBody().strength(-10))
-      .force("center", forceCenter(window.innerWidth / 2, window.innerHeight / 2))
-      .on("tick", drawToCanvas)
-  }, [drawToCanvas])
-
-  // Restart the force simulation when the nodes or links change
-  React.useEffect(() => {
-    simulationNodes.current = nodes.map((node) => {
-      const cachedNode = simulationNodes.current.find((cachedNode) => cachedNode.id === node.id)
-
-      // Preserve the position of the node if it exists
-      return { ...node, x: cachedNode?.x, y: cachedNode?.y }
-    })
-
-    simulationLinks.current = links.map((link) => ({ ...link }))
-
-    simulation
-      .nodes(simulationNodes.current)
-      .force(
-        "link",
-        forceLink<Node, Link>(simulationLinks.current).id((d) => d.id),
-      )
-      .alpha(1)
-      .restart()
-  }, [nodes, links, simulation])
-
-  // Zoom and pan
-  React.useEffect(() => {
-    if (!canvasRef.current) return
-
-    select<HTMLCanvasElement, Node>(canvasRef.current).call(
-      zoom<HTMLCanvasElement, Node>()
-        .scaleExtent([0.1, 10])
-        .on("zoom", ({ transform }) => {
-          transformRef.current = transform
-          requestAnimationFrame(() => drawToCanvas())
-        }),
-    )
-  }, [drawToCanvas])
-
-  // Redraw the canvas when the container is resized
-  React.useEffect(() => {
-    widthRef.current = width
-    heightRef.current = height
-    requestAnimationFrame(() => drawToCanvas())
-  }, [width, height, drawToCanvas])
-
-  // Redraw the canvas when the user's color scheme preference changes
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-    function handleChange() {
-      requestAnimationFrame(() => drawToCanvas())
+    // Scroll to selected node when selectedId changes
+    if (selectedId && selectedId !== prevSelectedId) {
+      const selectedNode = simulationNodes.find((node) => node.id === selectedId)
+      if (selectedNode) scrollIntoView(selectedNode, { bleed })
+      setPrevSelectedId(selectedId)
     }
 
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [drawToCanvas])
+    React.useImperativeHandle(ref, () => ({
+      focus() {
+        canvasRef.current?.focus()
+      },
+      centerInView(nodeId: string) {
+        const node = simulationNodes.find((node) => node.id === nodeId)
+        if (node) centerInView(node)
+      },
+    }))
 
-  // Handle clicks
-  React.useEffect(() => {
-    const canvas = canvasRef.current
+    // Draw graph to canvas
+    React.useEffect(() => {
+      function draw() {
+        const context = canvasRef.current?.getContext("2d", { alpha: false })
 
-    function handleClick(event: MouseEvent) {
-      const canvasRect = canvas?.getBoundingClientRect()
+        if (!context) return
 
-      if (!canvasRect) return
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
 
-      // Get the coordinates of the click relative to the canvas
-      const [x, y] = transformRef.current.invert([
-        event.clientX - canvasRect.left,
-        event.clientY - canvasRect.top,
-      ])
+        context.fillStyle = cssVar("--color-bg-inset")
+        context.fillRect(0, 0, width, height)
 
-      // Find the node that was clicked
-      const node = simulationNodes.current.find((node) => {
-        if (!node.x || !node.y) return false
+        const connectedNodes = new Set<Node>()
+        const connectedLinks = new Set<Link>()
 
-        const dx = node.x - x
-        const dy = node.y - y
-        return Math.sqrt(dx * dx + dy * dy) < targetRadius / transformRef.current.k
-      })
-
-      onSelectRef.current?.(node?.id || "")
-      requestAnimationFrame(() => drawToCanvas())
-    }
-
-    canvas?.addEventListener("click", handleClick)
-    return () => canvas?.removeEventListener("click", handleClick)
-  }, [targetRadius, drawToCanvas])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width * pixelRatio}
-      height={height * pixelRatio}
-      style={{ width, height }}
-      className="focus:outline-none"
-      tabIndex={0}
-      // Redraw the canvas when the focus changes
-      onFocus={() => requestAnimationFrame(() => drawToCanvas())}
-      onBlur={() => requestAnimationFrame(() => drawToCanvas())}
-      onKeyDown={(event) => {
-        // Unselect with `escape`
-        if (event.key === "Escape") {
-          onSelectRef.current?.("")
-          requestAnimationFrame(() => drawToCanvas())
-          event.preventDefault()
-        }
-
-        // Select a node with `tab` if no node is selected
-        if (event.key === "Tab" && !event.shiftKey && !selectedId) {
-          onSelectRef.current?.(prevSelectedNode?.id || simulationNodes.current[0].id)
-          requestAnimationFrame(() => drawToCanvas())
-          event.preventDefault()
-        }
-
-        const keyToDirection: Record<string, Direction> = {
-          ArrowUp: "n",
-          ArrowDown: "s",
-          ArrowRight: "e",
-          ArrowLeft: "w",
-        }
-
-        // Move selection with arrow keys
-        if (event.key in keyToDirection) {
-          const direction = keyToDirection[event.key]
-          const selectedNode = simulationNodes.current.find((node) => node.id === selectedId)
-          const nextNode = getNextNode(simulationNodes.current, selectedNode, direction)
-
-          if (nextNode) {
-            onSelectRef.current?.(nextNode.id)
-            requestAnimationFrame(() => drawToCanvas())
+        // Draw links
+        for (const link of simulationLinks) {
+          if (typeof link.source !== "object" || typeof link.target !== "object") {
+            continue
           }
 
-          event.preventDefault()
+          if (link.source.id === selectedId) {
+            connectedNodes.add(link.target)
+            connectedLinks.add(link)
+            continue
+          }
+
+          if (link.target.id === selectedId) {
+            connectedNodes.add(link.source)
+            connectedLinks.add(link)
+            continue
+          }
+
+          const [sourceX, sourceY] = transform.apply([link.source.x || 0, link.source.y || 0])
+
+          const [targetX, targetY] = transform.apply([link.target.x || 0, link.target.y || 0])
+
+          context.beginPath()
+          context.moveTo(sourceX, sourceY)
+          context.lineTo(targetX, targetY)
+          context.strokeStyle = cssVar("--color-border")
+          context.lineWidth = 1
+          context.stroke()
         }
-      }}
-    />
+
+        let selectedNode: Node | null = null
+        const nodeRadius = 4
+
+        // Draw nodes
+        for (const node of simulationNodes) {
+          if (node.id === selectedId) {
+            selectedNode = node
+            continue
+          }
+
+          if (connectedNodes.has(node)) {
+            continue
+          }
+
+          const [x, y] = transform.apply([node.x || 0, node.y || 0])
+          const isHovered = node.id === hoveredId
+
+          context.beginPath()
+          context.arc(x, y, isHovered ? nodeRadius * 1.5 : nodeRadius, 0, Math.PI * 2)
+          context.fillStyle = selectedId ? cssVar("--color-text-tertiary") : cssVar("--color-text")
+          context.fill()
+        }
+
+        // Draw connected links
+        for (const link of connectedLinks) {
+          if (typeof link.source !== "object" || typeof link.target !== "object") {
+            continue
+          }
+
+          const [sourceX, sourceY] = transform.apply([link.source.x || 0, link.source.y || 0])
+
+          const [targetX, targetY] = transform.apply([link.target.x || 0, link.target.y || 0])
+
+          context.beginPath()
+          context.moveTo(sourceX, sourceY)
+          context.lineTo(targetX, targetY)
+          context.strokeStyle = cssVar("--color-text")
+          context.lineWidth = 1
+          context.stroke()
+        }
+
+        // Draw connected nodes
+        for (const node of connectedNodes) {
+          const [x, y] = transform.apply([node.x || 0, node.y || 0])
+          const isHovered = node.id === hoveredId
+
+          context.beginPath()
+          context.arc(x, y, isHovered ? nodeRadius * 1.5 : nodeRadius, 0, Math.PI * 2)
+          context.fillStyle = cssVar("--color-text")
+          context.fill()
+        }
+
+        // Draw selected node
+        if (selectedNode) {
+          const [x, y] = transform.apply([selectedNode.x || 0, selectedNode.y || 0])
+
+          context.beginPath()
+          context.arc(x, y, nodeRadius * 2, 0, Math.PI * 2)
+          context.fillStyle = cssVar("--color-text")
+          context.fill()
+
+          // Draw focus ring
+          if (isCanvasFocused) {
+            const lineWidth = 2
+            const gap = 1
+            context.beginPath()
+            context.arc(x, y, nodeRadius * 2 + gap + lineWidth / 2, 0, Math.PI * 2)
+            context.strokeStyle = cssVar("--color-border-focus")
+            context.lineWidth = lineWidth
+            context.stroke()
+          }
+        }
+      }
+
+      const frame = window.requestAnimationFrame(draw)
+      return () => window.cancelAnimationFrame(frame)
+    })
+
+    return (
+      <canvas
+        ref={canvasRef}
+        tabIndex={0}
+        width={width * pixelRatio}
+        height={height * pixelRatio}
+        style={{
+          width,
+          height,
+          cursor: hoveredId ? "pointer" : "default",
+          outline: "none",
+        }}
+        onFocus={() => setIsCanvasFocused(true)}
+        onBlur={() => setIsCanvasFocused(false)}
+        onClick={(event) => {
+          const position = getRelativePosition(event, transform)
+
+          const closestNode = getClosestNode(simulationNodes, position, targetRadius / transform.k)
+
+          onSelect?.(closestNode)
+        }}
+        onMouseMove={(event) => {
+          React.startTransition(() => {
+            const position = getRelativePosition(event, transform)
+
+            const closestNode = getClosestNode(
+              simulationNodes,
+              position,
+              targetRadius / transform.k,
+            )
+
+            onHover?.(closestNode)
+          })
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.preventDefault()
+            onSelect?.(null)
+          }
+
+          if (event.key in KEY_TO_DIRECTION) {
+            event.preventDefault()
+
+            const nextNode = getNextNode(simulationNodes, selectedId, KEY_TO_DIRECTION[event.key])
+
+            if (nextNode) {
+              onSelect?.(nextNode)
+            }
+          }
+        }}
+      />
+    )
+  },
+)
+
+/**
+ * Returns a function that can be used to get the computed value
+ * of a CSS custom property (variable).
+ */
+function useCssVar() {
+  const prefersDark = useMedia("(prefers-color-scheme: dark)")
+
+  const documentStyle = React.useMemo(
+    () => window.getComputedStyle(document.documentElement),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [prefersDark],
   )
+
+  const cssVar = React.useCallback(
+    (name: string) => documentStyle.getPropertyValue(name),
+    [documentStyle],
+  )
+
+  return cssVar
 }
 
-/** Returns the next node in a given direction */
-function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: Direction) {
-  if (
-    typeof selectedNode === "undefined" ||
-    typeof selectedNode.x === "undefined" ||
-    typeof selectedNode.y === "undefined"
-  ) {
-    return
+function useViewport(ref: React.RefObject<HTMLElement>, width: number, height: number) {
+  const [zoomTransform, setZoomTransform] = React.useState(zoomIdentity)
+  const [offset, setOffset] = React.useState<[number, number]>([
+    window.innerWidth / 2,
+    window.innerHeight / 2,
+  ])
+
+  const transform = zoomTransform.translate(...offset)
+
+  React.useEffect(() => {
+    if (!ref.current) return
+
+    const zoomBehavior = zoom<HTMLElement, Node>().on("zoom", ({ transform }) => {
+      setZoomTransform(transform)
+    })
+
+    select<HTMLElement, Node>(ref.current).call(zoomBehavior)
+  }, [ref])
+
+  const scrollIntoView = React.useCallback(
+    (node: Node, { bleed = 0 }: { bleed?: Bleed } = {}) => {
+      const [x, y] = transform.apply([node.x || 0, node.y || 0])
+
+      let [bleedTop, bleedRight, bleedBottom, bleedLeft] = [0, 0, 0, 0]
+
+      // Resolve bleed shorthand
+      if (typeof bleed === "number") {
+        bleedTop = bleed
+        bleedRight = bleed
+        bleedBottom = bleed
+        bleedLeft = bleed
+      } else if (bleed.length === 2) {
+        bleedTop = bleed[0]
+        bleedRight = bleed[1]
+        bleedBottom = bleed[0]
+        bleedLeft = bleed[1]
+      } else if (bleed.length === 4) {
+        bleedTop = bleed[0]
+        bleedRight = bleed[1]
+        bleedBottom = bleed[2]
+        bleedLeft = bleed[3]
+      }
+
+      const left = bleedLeft
+      const right = width - bleedRight
+      const top = bleedTop
+      const bottom = height - bleedBottom
+
+      const inView = x > left && x < right && y > top && y < bottom
+
+      if (inView) return
+
+      let dx = 0
+      let dy = 0
+
+      if (x < left) {
+        dx = x - left
+      } else if (x > right) {
+        dx = x - right
+      }
+
+      if (y < top) {
+        dy = y - top
+      } else if (y > bottom) {
+        dy = y - bottom
+      }
+
+      setOffset([offset[0] - dx / transform.k, offset[1] - dy / transform.k])
+    },
+    [transform, width, height, offset],
+  )
+
+  const centerInView = React.useCallback(
+    (node: Node) => {
+      const [x, y] = transform.apply([node.x || 0, node.y || 0])
+
+      const dx = x - width / 2
+      const dy = y - height / 2
+
+      console.log(dx, dy)
+
+      setOffset([offset[0] - dx / transform.k, offset[1] - dy / transform.k])
+    },
+    [transform, width, height, offset],
+  )
+
+  return { transform, scrollIntoView, centerInView }
+}
+
+/**
+ * Get the cursor position relative to the target of the mouse event,
+ * taking into account the current zoom transform.
+ */
+function getRelativePosition(event: React.MouseEvent, transform: ZoomTransform): Position {
+  const rect = event.currentTarget.getBoundingClientRect()
+
+  const [x, y] = transform.invert([event.clientX - rect.left, event.clientY - rect.top])
+
+  return { x, y }
+}
+
+/**
+ * Get the node closest to the given position,
+ * or null if none are within the given radius.
+ */
+function getClosestNode(nodes: Node[], position: Position, radius: number): Node | null {
+  const [node] = nodes.reduce<[Node | null, number]>(
+    (acc, node) => {
+      let [closestNode, minDistance] = acc
+
+      if (!node.x || !node.y) return acc
+
+      const distance = getDistance({ x: node.x, y: node.y }, position)
+
+      // If the node is closer than the current closest node,
+      // then it's the new closest node.
+      if (distance < minDistance) {
+        closestNode = node
+        minDistance = distance
+      }
+
+      return [closestNode, minDistance]
+    },
+    [null, radius],
+  )
+
+  return node
+}
+
+/** Get the next node in the given direction. */
+function getNextNode(nodes: Node[], selectedId: string, direction: Direction): Node | null {
+  const selectedNode = nodes.find((node) => node.id === selectedId)
+
+  if (!selectedNode || selectedNode.x === undefined || selectedNode.y === undefined) {
+    return null
   }
 
   let result: { node: Node; score: number } | undefined
@@ -327,37 +458,26 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
     // Skip selected node
     if (node === selectedNode) continue
 
-    // Skip nodes that don't have a position
-    if (typeof node.x === "undefined" || typeof node.y === "undefined") continue
+    // Skip nodes without position
+    if (node.x === undefined || node.y === undefined) continue
 
     // Skip nodes on the wrong side of the selected node
-    switch (direction) {
-      case "n":
-        if (node.y > selectedNode.y) continue
-        break
-      case "s":
-        if (node.y < selectedNode.y) continue
-        break
-      case "e":
-        if (node.x < selectedNode.x) continue
-        break
-      case "w":
-        if (node.x > selectedNode.x) continue
-        break
-    }
+    if (direction === "up" && node.y > selectedNode.y) continue
+    if (direction === "down" && node.y < selectedNode.y) continue
+    if (direction === "left" && node.x > selectedNode.x) continue
+    if (direction === "right" && node.x < selectedNode.x) continue
 
-    // Get the distance between the selected node and the current node
-    const distance = getDistance({ x: selectedNode.x, y: selectedNode.y }, { x: node.x, y: node.y })
+    // Get the distance between the current node and the selected node
+    const distance = getDistance({ x: node.x, y: node.y }, { x: selectedNode.x, y: selectedNode.y })
 
-    // Get the angle between the selected node and the current node
+    // Get the angle between the current node and the selected node
     const angle = getAngle(
-      { x: selectedNode.x, y: selectedNode.y },
       { x: node.x, y: node.y },
-      direction,
+      { x: selectedNode.x, y: selectedNode.y },
+      DIRERCTION_TO_AXIS[direction],
     )
 
     // Calculate a score for the current node
-    // const score = (1 / distance) * (Math.PI / 2 - angle)
     const score = (1 / distance) * Math.pow((Math.PI / 2 - angle) / (Math.PI / 2), 2)
 
     // Pick the node with the highest score
@@ -366,34 +486,24 @@ function getNextNode(nodes: Node[], selectedNode: Node | undefined, direction: D
     }
   }
 
-  return result?.node
+  return result?.node || null
 }
 
-/** Returns the distance between two points. */
+/** Get the distance between two positions. */
 function getDistance(a: Position, b: Position) {
-  return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
+  const dx = a.x - b.x
+  const dy = a.y - b.y
+  return Math.sqrt(dx * dx + dy * dy)
 }
 
-/** Returns the angle between two points in radians. */
-function getAngle(a: Position, b: Position, direction: Direction) {
-  let oppositeSide = 0
-  let adjacentSide = 0
+/** Get the angle between two positions in radians. */
+function getAngle(a: Position, b: Position, axis: Axis) {
+  const dx = Math.abs(b.x - a.x)
+  const dy = Math.abs(b.y - a.y)
 
-  switch (direction) {
-    case "n":
-    case "s":
-      oppositeSide = Math.abs(b.x - a.x)
-      adjacentSide = Math.abs(b.y - a.y)
-      break
-
-    case "e":
-    case "w":
-      oppositeSide = Math.abs(b.y - a.y)
-      adjacentSide = Math.abs(b.x - a.x)
-      break
+  if (axis === "x") {
+    return Math.atan2(dy, dx)
+  } else {
+    return Math.atan2(dx, dy)
   }
-
-  const angle = Math.atan(oppositeSide / adjacentSide)
-
-  return angle
 }
