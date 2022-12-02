@@ -137,7 +137,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
-  @apply max-w-sm rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-divider dark:ring-inset;
+  @apply max-w-sm rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
@@ -145,7 +145,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-completionInfo {
-  @apply w-96 max-w-none whitespace-pre-wrap rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-divider dark:ring-inset;
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-secondary dark:ring-inset;
   word-break: break-word;
 }
 
@@ -313,11 +313,11 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
-  @apply border-t border-border-divider p-2;
+  @apply border-t border-border-secondary p-2;
 }
 
 [cmdk-group-heading] {
-  @apply px-3 py-2 leading-4 text-text-muted;
+  @apply px-3 py-2 leading-4 text-text-secondary;
 }
 
 [cmdk-group]:not(:first-child) {

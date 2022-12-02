@@ -49,7 +49,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
 
   if (!file) {
     return isLoading || !state.matches("connected") ? (
-      <div className="flex items-center gap-2 leading-4 text-text-muted">
+      <div className="flex items-center gap-2 leading-4 text-text-secondary">
         <LoadingIcon16 />
         Loading...
       </div>

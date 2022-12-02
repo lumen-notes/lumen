@@ -60,7 +60,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             onChange={(event) => setQuery(event.target.value)}
           />
           {deferredQuery ? (
-            <span className="text-xs text-text-muted">
+            <span className="text-xs text-text-secondary">
               {pluralize(searchResults.length, "result")}
             </span>
           ) : null}
@@ -69,12 +69,12 @@ export function TagsPanel({ id, onClose }: PanelProps) {
           {items.map(([name, noteCount]) => (
             <li
               key={name}
-              className="flex justify-between border-b border-border-divider py-3 last:border-b-0"
+              className="flex justify-between border-b border-border-secondary py-3 last:border-b-0"
             >
               <Panels.Link className="link" to={`/tags/${name}`}>
                 #{name}
               </Panels.Link>
-              <span className="text-text-muted">{pluralize(noteCount, "note")}</span>
+              <span className="text-text-secondary">{pluralize(noteCount, "note")}</span>
             </li>
           ))}
         </ul>

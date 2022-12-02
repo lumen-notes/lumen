@@ -79,7 +79,7 @@ export function Root() {
   return (
     <div>
       <div className="w-screent grid h-screen grid-cols-[auto_1fr]">
-        <div className="flex flex-col items-center justify-between border-r border-border-divider bg-bg-backdrop p-2">
+        <div className="flex flex-col items-center justify-between border-r border-border-secondary bg-bg-backdrop p-2">
           <div className="flex flex-col gap-3">
             <RovingFocusGroup.Root orientation="vertical">
               <nav>
@@ -113,7 +113,7 @@ export function Root() {
                 </ul>
               </nav>
             </RovingFocusGroup.Root>
-            <div role="none" className="mx-1 h-px bg-border-divider" />
+            <div role="none" className="mx-1 h-px bg-border-secondary" />
             <NewNoteDialog />
           </div>
           <div className="flex flex-col gap-2">
@@ -145,7 +145,7 @@ export function Root() {
       {state.matches("connected.loadingNotes") ? (
         <Card
           elevation={1}
-          className="fixed bottom-2 right-2 p-2 text-text-muted"
+          className="fixed bottom-2 right-2 p-2 text-text-secondary"
           role="status"
           aria-label="Loading notes"
         >
@@ -172,7 +172,7 @@ function NavLink(props: NavLinkProps) {
           <RouterNavLink
             className={clsx(
               "flex rounded py-2 px-2 hover:bg-bg-secondary",
-              isActive ? "text-text" : "text-text-muted",
+              isActive ? "text-text" : "text-text-secondary",
             )}
             {...props}
           />

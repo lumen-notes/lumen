@@ -10,12 +10,12 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ shortcut = ["⌘", "F"], ...props }, ref) => {
     return (
       <div className="relative">
-        <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-muted">
+        <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-secondary">
           <SearchIcon16 />
         </div>
         <input
           ref={ref}
-          className="w-full rounded-lg bg-bg-secondary px-4 py-3 pl-[2.75rem] [font-variant-numeric:inherit] placeholder:text-text-muted focus:bg-bg"
+          className="w-full rounded-lg bg-bg-secondary px-4 py-3 pl-[2.75rem] [font-variant-numeric:inherit] placeholder:text-text-secondary focus:bg-bg"
           type="search"
           {...props}
         />

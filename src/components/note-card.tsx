@@ -98,7 +98,7 @@ export function NoteCard({ id }: NoteCardProps) {
       <Markdown>{body}</Markdown>
 
       <div className="flex h-4 items-center justify-between">
-        <span className="text-text-muted">
+        <span className="text-text-secondary">
           <Panels.Link to={`/${id}`} className="link tracking-wide">
             {id}
           </Panels.Link>

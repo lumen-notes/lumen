@@ -241,9 +241,9 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="grid grid-cols-[1.75rem_1fr_auto]">
-        <span className="text-text-muted">{icon}</span>
+        <span className="text-text-secondary">{icon}</span>
         <span className="truncate">{children}</span>
-        {description ? <span className="text-text-muted">{description}</span> : null}
+        {description ? <span className="text-text-secondary">{description}</span> : null}
       </div>
     </Command.Item>
   )

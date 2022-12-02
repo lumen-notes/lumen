@@ -126,7 +126,7 @@ function TagLink({ name }: TagLinkProps) {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Panels.Link className="text-text-muted" to={`/tags/${name}`}>
+        <Panels.Link className="text-text-secondary" to={`/tags/${name}`}>
           #{name}
         </Panels.Link>
       </Tooltip.Trigger>

@@ -30,7 +30,7 @@ export function PermissionDialog() {
               <AlertDialog.Title className="text-base font-semibold leading-none">
                 Allow access to {state.context.directoryHandle.name}?
               </AlertDialog.Title>
-              <AlertDialog.Description className="text-text-muted">
+              <AlertDialog.Description className="text-text-secondary">
                 Lumen needs permission to access your local {state.context.directoryHandle.name}{" "}
                 folder
               </AlertDialog.Description>
