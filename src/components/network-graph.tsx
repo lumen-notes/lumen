@@ -274,11 +274,29 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }}
         onKeyDown={(event) => {
+          // Unselect node with `escape`
           if (event.key === "Escape") {
             event.preventDefault()
             onSelect?.(null)
           }
 
+          // Reselect previously selected node with `tab`
+          if (event.key === "Tab" && !event.shiftKey && !selectedId) {
+            event.preventDefault()
+
+            let node = simulationNodes.find((node) => node.id === prevSelectedId) || null
+
+            // If there is no previous selected node,
+            // select the node closest to the center
+            if (!node) {
+              const [x, y] = transform.invert([width / 2, height / 2])
+              node = getClosestNode(simulationNodes, { x, y }, Infinity)
+            }
+
+            onSelect?.(node)
+          }
+
+          // Traverse with arrow keys
           if (event.key in KEY_TO_DIRECTION) {
             event.preventDefault()
 
