@@ -93,9 +93,9 @@ export function GraphPage() {
       if (!selectedId) {
         context.strokeStyle = cssVar("--color-border")
       } else if (isSelected) {
-        context.strokeStyle = cssVar("--color-text-muted")
+        context.strokeStyle = cssVar("--color-text-secondary")
       } else {
-        context.strokeStyle = cssVar("--color-border-divider")
+        context.strokeStyle = cssVar("--color-border-secondary")
       }
       context.lineWidth = 1
       context.stroke()
