@@ -12,7 +12,7 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
 import { FilePreview } from "./file-preview"
-import { Panels } from "./panels"
+import { useLink } from "./link-context"
 import { Tooltip } from "./tooltip"
 
 type MarkdownProps = {
@@ -62,10 +62,14 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 })
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
+  const Link = useLink()
+
   // Open local files in a panel
   if (props.href?.startsWith("/")) {
     return (
-      <Panels.Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Panels.Link>
+      <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
+        {props.children}
+      </Link>
     )
   }
 
@@ -74,15 +78,18 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
 }
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
+  const Link = useLink()
+
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Panels.Link
+      <Link
+        target="_blank"
         to={`/file?${qs.stringify({ path: props.src })}`}
         className="block !no-underline"
       >
         <FilePreview path={props.src} alt={props.alt} />
-      </Panels.Link>
+      </Link>
     )
   }
 
@@ -96,13 +103,16 @@ type NoteLinkProps = {
 }
 
 function NoteLink({ id, text }: NoteLinkProps) {
+  const Link = useLink()
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const body = state.context.notes[id]
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Panels.Link to={`/${id}`}>{text}</Panels.Link>
+        <Link target="_blank" to={`/${id}`}>
+          {text}
+        </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
@@ -120,15 +130,16 @@ type TagLinkProps = {
 }
 
 function TagLink({ name }: TagLinkProps) {
+  const Link = useLink()
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const notesCount = state.context.tags[name]?.length ?? 0
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Panels.Link className="text-text-secondary" to={`/tags/${name}`}>
+        <Link target="_blank" className="text-text-secondary" to={`/tags/${name}`}>
           #{name}
-        </Panels.Link>
+        </Link>
       </Tooltip.Trigger>
       <Tooltip.Content>{pluralize(notesCount, "note")}</Tooltip.Content>
     </Tooltip>
@@ -140,10 +151,13 @@ type DateLinkProps = {
 }
 
 function DateLink({ date }: DateLinkProps) {
+  const Link = useLink()
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Panels.Link to={`/dates/${date}`}>{formatDate(date)}</Panels.Link>
+        <Link target="_blank" to={`/dates/${date}`}>
+          {formatDate(date)}
+        </Link>
       </Tooltip.Trigger>
       <Tooltip.Content>{formatDateDistance(date)}</Tooltip.Content>
     </Tooltip>

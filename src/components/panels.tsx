@@ -16,6 +16,7 @@ import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
 import { useSearchParam } from "../utils/use-search-param"
+import { LinkContext } from "./link-context"
 
 type PanelValue = {
   id: string
@@ -102,7 +103,9 @@ function Root({ children }: React.PropsWithChildren) {
 
   return (
     <PanelsContext.Provider value={contextValue}>
-      <div className="flex h-full overflow-y-hidden">{children}</div>
+      <LinkContext.Provider value={Link}>
+        <div className="flex h-full overflow-y-hidden">{children}</div>
+      </LinkContext.Provider>
     </PanelsContext.Provider>
   )
 }
@@ -122,51 +125,51 @@ function deserializePanelValue(value: string): PanelValue {
   return { id, pathname, search }
 }
 
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps & { to: string }>(
-  ({ target = "_blank", ...props }, ref) => {
-    const location = useLocation()
-    const navigate = useNavigate()
-    const { openPanel, updatePanel } = React.useContext(PanelsContext)
-    const panel = React.useContext(PanelContext)
-    return (
-      <RouterLink
-        {...props}
-        ref={ref}
-        onClick={(event) => {
-          if (!props.to || event.metaKey || event.ctrlKey || event.shiftKey) return
+const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { openPanel, updatePanel } = React.useContext(PanelsContext)
+  const panel = React.useContext(PanelContext)
+  return (
+    <RouterLink
+      {...props}
+      ref={ref}
+      onClick={(event) => {
+        if (typeof props.to !== "string" || event.metaKey || event.ctrlKey || event.shiftKey) {
+          return
+        }
 
-          // Open link in a new panel
-          if (target === "_blank") {
-            openPanel?.(props.to, panel?.index)
-            event.preventDefault()
-          }
+        // Open link in a new panel
+        if (props.target === "_blank") {
+          openPanel?.(props.to, panel?.index)
+          event.preventDefault()
+        }
 
-          // Open link in the current panel
-          if (target === "_self") {
-            const [pathname, search] = props.to.split("?")
+        // Open link in the current panel
+        if (props.target === "_self") {
+          const [pathname, search] = props.to.split("?")
 
-            if (panel) {
-              updatePanel?.(panel?.index, { pathname, search })
-            } else {
-              // Preserve the current search params
-              const combinedSearch = {
-                ...qs.parse(location.search, { ignoreQueryPrefix: true }),
-                ...qs.parse(search),
-              }
-
-              navigate({
-                pathname,
-                search: qs.stringify(combinedSearch),
-              })
+          if (panel) {
+            updatePanel?.(panel?.index, { pathname, search })
+          } else {
+            // Preserve the current search params
+            const combinedSearch = {
+              ...qs.parse(location.search, { ignoreQueryPrefix: true }),
+              ...qs.parse(search),
             }
 
-            event.preventDefault()
+            navigate({
+              pathname,
+              search: qs.stringify(combinedSearch),
+            })
           }
-        }}
-      />
-    )
-  },
-)
+
+          event.preventDefault()
+        }
+      }}
+    />
+  )
+})
 
 function Outlet() {
   const { panels } = React.useContext(PanelsContext)

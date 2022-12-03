@@ -10,27 +10,22 @@ import { IconButton } from "./button"
 import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
+import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
-import { Panels } from "./panels"
 
 type NoteCardProps = {
   id: NoteId
 }
 
 export function NoteCard({ id }: NoteCardProps) {
+  const Link = useLink()
   const cardRef = React.useRef<HTMLDivElement>(null)
-
   const codeMirrorViewRef = React.useRef<EditorView>()
-
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-
   const globalState = React.useContext(GlobalStateContext)
-
-  // TODO: Use selectors to avoid unnecessary rerenders
   const [state] = useActor(globalState.service)
-
   const body = state.context.notes[id]
   const backlinks = state.context.backlinks[id] || []
 
@@ -55,6 +50,7 @@ export function NoteCard({ id }: NoteCardProps) {
     setIsEditing(false)
     setTimeout(() => cardRef.current?.focus())
   }
+
   return !isEditing ? (
     // View mode
     <Card
@@ -99,9 +95,9 @@ export function NoteCard({ id }: NoteCardProps) {
 
       <div className="flex h-4 items-center justify-between">
         <span className="text-text-secondary">
-          <Panels.Link to={`/${id}`} className="link tracking-wide">
+          <Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
-          </Panels.Link>
+          </Link>
           {backlinks.length ? (
             <span>
               {" · "}

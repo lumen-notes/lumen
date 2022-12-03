@@ -7,10 +7,11 @@ import { AnimatePresence, motion } from "framer-motion"
 import React from "react"
 import { IconButton } from "../components/button"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
+import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
-import { PanelProps, Panels } from "../components/panels"
+import { PanelProps } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { NoteId } from "../types"
 import { DAY_NAMES, formatDate, formatDateDistance, MONTH_NAMES, toDateString } from "../utils/date"
@@ -138,6 +139,7 @@ function CalendarDate({
   isActive?: boolean
   hasNotes?: boolean
 }) {
+  const Link = useLink()
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()
@@ -146,10 +148,9 @@ function CalendarDate({
   const isToday = toDateString(date) === toDateString(new Date())
   return (
     <RovingFocusGroup.Item asChild active={isActive}>
-      <Panels.Link
+      <Link
         key={date.toISOString()}
         to={`/dates/${toDateString(date)}`}
-        target="_self"
         aria-label={label}
         className={clsx(
           "relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
@@ -181,7 +182,7 @@ function CalendarDate({
             {date.getDate()}
           </span>
         </div>
-      </Panels.Link>
+      </Link>
     </RovingFocusGroup.Item>
   )
 }
