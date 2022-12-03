@@ -4,18 +4,17 @@ import React from "react"
 import { Link as RouterLink, LinkProps } from "react-router-dom"
 import { useMeasure } from "react-use"
 import { z } from "zod"
+import { CommandMenu } from "../components/command-menu"
 import { LinkContext } from "../components/link-context"
 import { NetworkGraph, NetworkGraphInstance } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
 import { GlobalStateContext } from "../global-state"
 import { useSearchParam } from "../utils/use-search-param"
 
-const GraphContext = React.createContext({
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  selectNode: (nodeId: string) => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  hoverNode: (nodeId: string) => {},
-})
+export const GraphContext = React.createContext<{
+  selectNode?: (nodeId: string, options?: { centerInView?: boolean }) => void
+  hoverNode?: (nodeId: string) => void
+}>({})
 
 export function GraphPage() {
   const [selectedId, setSelectedId] = useSearchParam("id", {
@@ -58,9 +57,12 @@ export function GraphPage() {
   const graphRef = React.useRef<NetworkGraphInstance>(null)
 
   const selectNode = React.useCallback(
-    (id: string) => {
+    (id: string, options: { centerInView?: boolean } = {}) => {
       setSelectedId(id)
-      graphRef.current?.focus()
+      setTimeout(() => {
+        if (options.centerInView) graphRef.current?.centerInView(id)
+        graphRef.current?.focus()
+      })
     },
     [setSelectedId],
   )
@@ -74,6 +76,7 @@ export function GraphPage() {
     <GraphContext.Provider value={contextValue}>
       <LinkContext.Provider value={Link}>
         <div ref={ref} className="relative h-full w-full overflow-hidden">
+          <CommandMenu />
           <NetworkGraph
             ref={graphRef}
             width={width}
@@ -96,6 +99,12 @@ export function GraphPage() {
   )
 }
 
+const NOTE_PATH_REGEX = /^\/(?<id>\d+)$/
+
+export function pathToNodeId(path: string) {
+  return path.match(NOTE_PATH_REGEX)?.groups?.id ?? ""
+}
+
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const { selectNode, hoverNode } = React.useContext(GraphContext)
   return (
@@ -103,28 +112,34 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {...props}
       ref={ref}
       onClick={(event) => {
-        if (typeof props.to !== "string" || event.metaKey || event.ctrlKey || event.shiftKey) {
+        if (
+          typeof props.to !== "string" ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          !selectNode
+        ) {
           return
         }
 
-        // Note link
-        if (props.to.match(/^\/\d+$/)) {
-          const id = props.to.replace(/^\//, "")
-          selectNode(id)
+        const nodeId = pathToNodeId(props.to)
+
+        if (nodeId) {
+          selectNode?.(nodeId)
           event.preventDefault()
         }
       }}
       onMouseEnter={(event) => {
-        if (typeof props.to !== "string") return
+        if (typeof props.to !== "string" || !hoverNode) return
 
-        // Note link
-        if (props.to.match(/^\/\d+$/)) {
-          const id = props.to.replace(/^\//, "")
-          hoverNode(id)
+        const nodeId = pathToNodeId(props.to)
+
+        if (nodeId) {
+          hoverNode(nodeId)
           event.preventDefault()
         }
       }}
-      onMouseLeave={() => hoverNode("")}
+      onMouseLeave={() => hoverNode?.("")}
     />
   )
 })

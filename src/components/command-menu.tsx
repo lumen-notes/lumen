@@ -4,9 +4,11 @@ import { Command } from "cmdk"
 import { Searcher } from "fast-fuzzy"
 import qs from "qs"
 import React from "react"
+import { useNavigate } from "react-router-dom"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
+import { GraphContext, pathToNodeId } from "../pages/graph"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
@@ -19,6 +21,8 @@ export function CommandMenu() {
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
+  const { selectNode } = React.useContext(GraphContext)
+  const routerNavigate = useNavigate()
   const [noteSearcher, setNoteSearcher] = React.useState<Searcher<
     [string, string],
     Record<string, unknown>
@@ -38,11 +42,21 @@ export function CommandMenu() {
 
   const navigate = React.useCallback(
     (url: string) => {
-      openPanel?.(url, panels.length - 1)
+      if (selectNode && pathToNodeId(url)) {
+        // If we're in a graph context, navigate by selecting the node in the graph
+        selectNode(pathToNodeId(url), { centerInView: true })
+      } else if (openPanel) {
+        // If we're in a panel context, navigate by opening a panel
+        openPanel(url, panels.length - 1)
+      } else {
+        // Otherwise, navigate by using the router
+        routerNavigate(url)
+      }
+
       setIsOpen(false)
       setQuery("")
     },
-    [openPanel, panels],
+    [selectNode, openPanel, panels, routerNavigate],
   )
 
   // Toggle the menu with `command + k`
