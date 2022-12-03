@@ -4,7 +4,9 @@ import React from "react"
 import { Link as RouterLink, LinkProps } from "react-router-dom"
 import { useMeasure } from "react-use"
 import { z } from "zod"
+import { Card } from "../components/card"
 import { CommandMenu } from "../components/command-menu"
+import { TagIcon16 } from "../components/icons"
 import { LinkContext } from "../components/link-context"
 import { NetworkGraph, NetworkGraphInstance } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
@@ -27,13 +29,14 @@ export function GraphPage() {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
 
-  const { nodes, links } = React.useMemo(() => {
+  const graph = React.useMemo(() => {
     // TODO: Store the graph in the global context
     // TODO: Add tags and dates to the graph
-    const graph = new Graph({ type: "undirected", multi: false })
+    const graph = new Graph<{ type: "note" | "tag" }>({ type: "undirected", multi: false })
 
+    // Add notes to the graph
     for (const noteId of Object.keys(state.context.notes)) {
-      graph.addNode(noteId)
+      graph.addNode(noteId, { type: "note" })
     }
 
     for (const [noteId, backlinks] of Object.entries(state.context.backlinks)) {
@@ -46,11 +49,26 @@ export function GraphPage() {
       }
     }
 
+    // Add tags to graph
+    for (const [tagName, noteIds] of Object.entries(state.context.tags)) {
+      graph.addNode(tagName, { type: "tag" })
+
+      for (const noteId of noteIds) {
+        if (!graph.hasNode(noteId) || graph.hasEdge(tagName, noteId)) continue
+
+        graph.addEdge(tagName, noteId)
+      }
+    }
+
+    return graph
+  }, [state.context.notes, state.context.tags, state.context.backlinks])
+
+  const { nodes, links } = React.useMemo(() => {
     const nodes = graph.mapNodes((id) => ({ id }))
     const links = graph.mapEdges((edge, attributes, source, target) => ({ source, target }))
 
     return { nodes, links }
-  }, [state.context.notes, state.context.backlinks])
+  }, [graph])
 
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
@@ -90,7 +108,22 @@ export function GraphPage() {
           />
           {selectedId ? (
             <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
-              <NoteCard id={selectedId} />
+              {graph.getNodeAttribute(selectedId, "type") === "note" && (
+                <NoteCard id={selectedId} elevation={1} />
+              )}
+              {graph.getNodeAttribute(selectedId, "type") === "tag" && (
+                <Card className="flex justify-between p-3" elevation={1}>
+                  <div className="flex items-center gap-3">
+                    <div className="flex text-text-secondary">
+                      <TagIcon16 />
+                    </div>
+                    <RouterLink to={`/tags/${selectedId}`} className="link">
+                      #{selectedId}
+                    </RouterLink>
+                  </div>
+                  <span className="text-text-secondary">{graph.degree(selectedId)} notes</span>
+                </Card>
+              )}
             </div>
           ) : null}
         </div>
@@ -100,9 +133,10 @@ export function GraphPage() {
 }
 
 const NOTE_PATH_REGEX = /^\/(?<id>\d+)$/
+const TAG_PATH_REGEX = /^\/tags\/(?<id>.+)$/
 
 export function pathToNodeId(path: string) {
-  return path.match(NOTE_PATH_REGEX)?.groups?.id ?? ""
+  return path.match(NOTE_PATH_REGEX)?.groups?.id ?? path.match(TAG_PATH_REGEX)?.groups?.id ?? ""
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {

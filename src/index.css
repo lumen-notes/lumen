@@ -46,6 +46,7 @@
   --l-bg: 100%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
+  --l-border-edge: 75%;
   --a-bg-backdrop: 0.65;
   --a-bg-secondary: 0.05;
   --a-bg-tertiary: 0.1;
@@ -65,6 +66,7 @@
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200deg 100% 40%);
+  --color-border-edge: hsl(var(--h) var(--s) var(--l-border-edge));
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,6 +78,7 @@
     --l-bg: 10%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
+    --l-border-edge: 25%;
     --a-bg-secondary: 0.075;
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);

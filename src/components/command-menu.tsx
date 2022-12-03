@@ -46,7 +46,7 @@ export function CommandMenu() {
         // If we're in a graph context, navigate by selecting the node in the graph
         selectNode(pathToNodeId(url), { centerInView: true })
       } else if (openPanel) {
-        // If we're in a panel context, navigate by opening a panel
+        // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
       } else {
         // Otherwise, navigate by using the router

@@ -7,7 +7,7 @@ import { GlobalStateContext } from "../global-state"
 import { NoteId } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { IconButton } from "./button"
-import { Card } from "./card"
+import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
 import { useLink } from "./link-context"
@@ -16,9 +16,10 @@ import { NoteForm } from "./note-form"
 
 type NoteCardProps = {
   id: NoteId
+  elevation?: CardProps["elevation"]
 }
 
-export function NoteCard({ id }: NoteCardProps) {
+export function NoteCard({ id, elevation }: NoteCardProps) {
   const Link = useLink()
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
@@ -59,6 +60,7 @@ export function NoteCard({ id }: NoteCardProps) {
       ref={cardRef}
       tabIndex={0}
       className="flex flex-col gap-6 p-4"
+      elevation={elevation}
       onKeyDown={(event) => {
         // Switch to editing with `e`
         if (event.key === "e") {
@@ -145,6 +147,7 @@ export function NoteCard({ id }: NoteCardProps) {
       id={id}
       defaultBody={body}
       codeMirrorViewRef={codeMirrorViewRef}
+      elevation={elevation}
       onSubmit={switchToViewing}
       onCancel={switchToViewing}
     />

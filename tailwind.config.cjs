@@ -23,6 +23,7 @@ module.exports = {
       border: "var(--color-border)",
       "border-secondary": "var(--color-border-secondary)",
       "border-focus": "var(--color-border-focus)",
+      "border-edge": "var(--color-border-edge)",
     },
   },
   plugins: [require("@tailwindcss/container-queries")],

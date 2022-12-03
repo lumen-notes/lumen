@@ -156,7 +156,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           context.beginPath()
           context.moveTo(sourceX, sourceY)
           context.lineTo(targetX, targetY)
-          context.strokeStyle = cssVar("--color-border")
+          context.strokeStyle = cssVar("--color-border-edge")
           context.lineWidth = 1
           context.stroke()
         }
@@ -197,7 +197,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           context.beginPath()
           context.moveTo(sourceX, sourceY)
           context.lineTo(targetX, targetY)
-          context.strokeStyle = cssVar("--color-text")
+          context.strokeStyle = cssVar("--color-text-secondary")
           context.lineWidth = 1
           context.stroke()
         }
