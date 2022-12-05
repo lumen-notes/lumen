@@ -4,8 +4,14 @@ import * as React from "react"
 import { useMedia } from "react-use"
 import { Link, Node } from "../simulation.worker"
 
+type NodeState = "idle" | "hover" | "active" | "disabled"
+
+type LinkState = "idle" | "active" | "disabled"
+
 type Position = { x: number; y: number }
+
 type Direction = "up" | "down" | "left" | "right"
+
 type Axis = "x" | "y"
 
 const KEY_TO_DIRECTION: Record<string, Direction> = {
@@ -66,7 +72,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     const [simulationLinks, setSimulationLinks] = React.useState<Link[]>(links)
     const { transform, scrollIntoView, centerInView } = useViewport(canvasRef, width, height)
     const pixelRatio = window.devicePixelRatio || 1
-    const [isCanvasFocused, setIsCanvasFocused] = React.useState(false)
+    const [_, setIsCanvasFocused] = React.useState(false)
     const cssVar = useCssVar()
     const simulationWorkerRef = React.useRef<Worker>()
 
@@ -120,11 +126,11 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     React.useEffect(() => {
       function draw() {
         const context = canvasRef.current?.getContext("2d", { alpha: false })
-
         if (!context) return
 
         context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
 
+        // Clear canvas
         context.fillStyle = cssVar("--color-bg-inset")
         context.fillRect(0, 0, width, height)
 
@@ -133,9 +139,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
 
         // Draw links
         for (const link of simulationLinks) {
-          if (typeof link.source !== "object" || typeof link.target !== "object") {
-            continue
-          }
+          if (typeof link.source !== "object" || typeof link.target !== "object") return
 
           if (link.source.id === selectedId) {
             connectedNodes.add(link.target)
@@ -149,25 +153,33 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
             continue
           }
 
-          const [sourceX, sourceY] = transform.apply([link.source.x || 0, link.source.y || 0])
+          let state: LinkState = "idle"
 
-          const [targetX, targetY] = transform.apply([link.target.x || 0, link.target.y || 0])
+          if (selectedId) {
+            state = "disabled"
+          }
 
-          context.beginPath()
-          context.moveTo(sourceX, sourceY)
-          context.lineTo(targetX, targetY)
-          context.strokeStyle = cssVar("--color-border-edge")
-          context.lineWidth = 1
-          context.stroke()
+          drawLink(link, {
+            state,
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
         }
 
-        let selectedNode: Node | null = null
-        const nodeRadius = 4
+        let activeNode: Node | null = null
+        let hoverNode: Node | null = null
 
         // Draw nodes
         for (const node of simulationNodes) {
           if (node.id === selectedId) {
-            selectedNode = node
+            activeNode = node
+            continue
+          }
+
+          if (node.id === hoveredId) {
+            hoverNode = node
             continue
           }
 
@@ -175,63 +187,71 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
             continue
           }
 
-          const [x, y] = transform.apply([node.x || 0, node.y || 0])
-          const isHovered = node.id === hoveredId
+          let state: NodeState = "idle"
 
-          context.beginPath()
-          context.arc(x, y, isHovered ? nodeRadius * 1.5 : nodeRadius, 0, Math.PI * 2)
-          context.fillStyle = selectedId ? cssVar("--color-text-tertiary") : cssVar("--color-text")
-          context.fill()
+          if (node.id === hoveredId) {
+            state = "hover"
+          } else if (selectedId) {
+            state = "disabled"
+          }
+
+          drawNode(node, {
+            state,
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
         }
 
         // Draw connected links
         for (const link of connectedLinks) {
-          if (typeof link.source !== "object" || typeof link.target !== "object") {
-            continue
-          }
-
-          const [sourceX, sourceY] = transform.apply([link.source.x || 0, link.source.y || 0])
-
-          const [targetX, targetY] = transform.apply([link.target.x || 0, link.target.y || 0])
-
-          context.beginPath()
-          context.moveTo(sourceX, sourceY)
-          context.lineTo(targetX, targetY)
-          context.strokeStyle = cssVar("--color-text-secondary")
-          context.lineWidth = 1
-          context.stroke()
+          drawLink(link, {
+            state: "active",
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
         }
 
         // Draw connected nodes
         for (const node of connectedNodes) {
-          const [x, y] = transform.apply([node.x || 0, node.y || 0])
-          const isHovered = node.id === hoveredId
+          let state: NodeState = "idle"
 
-          context.beginPath()
-          context.arc(x, y, isHovered ? nodeRadius * 1.5 : nodeRadius, 0, Math.PI * 2)
-          context.fillStyle = cssVar("--color-text")
-          context.fill()
+          if (node.id === hoveredId) {
+            state = "hover"
+          }
+
+          drawNode(node, {
+            state,
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
         }
 
-        // Draw selected node
-        if (selectedNode) {
-          const [x, y] = transform.apply([selectedNode.x || 0, selectedNode.y || 0])
+        // Draw hover node
+        if (hoverNode) {
+          drawNode(hoverNode, {
+            state: "hover",
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
+        }
 
-          context.beginPath()
-          context.arc(x, y, nodeRadius * 2, 0, Math.PI * 2)
-          context.fillStyle = cssVar("--color-text")
-          context.fill()
-
-          // Draw focus ring
-          if (isCanvasFocused) {
-            const lineWidth = 2
-            const gap = 1
-            context.beginPath()
-            context.arc(x, y, nodeRadius * 2 + gap + lineWidth / 2, 0, Math.PI * 2)
-            context.strokeStyle = cssVar("--color-border-focus")
-            context.lineWidth = lineWidth
-            context.stroke()
-          }
+        // Draw active node
+        if (activeNode) {
+          drawNode(activeNode, {
+            state: "active",
+            canvas: canvasRef.current,
+            context,
+            transform,
+            cssVar,
+          })
         }
       }
 
@@ -312,6 +332,124 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
   },
 )
 
+type DrawNodeOptions = {
+  state: NodeState
+  canvas: HTMLCanvasElement | null
+  context: CanvasRenderingContext2D
+  transform: ZoomTransform
+  cssVar: (name: string) => string
+}
+
+function drawNode(node: Node, { state, context, transform, canvas, cssVar }: DrawNodeOptions) {
+  const isCanvasFocused = document.activeElement === canvas
+  const scale = clamp(transform.k, 0, 1)
+  const [x, y] = transform.apply([node.x ?? 0, node.y ?? 0])
+  const baseRadius = 6
+  const baseTextSize = 12
+  const baseTextOffset = baseRadius + 8
+
+  const radius = {
+    idle: baseRadius * scale,
+    hover: baseRadius + 2,
+    active: baseRadius + 2,
+    disabled: baseRadius * scale,
+  }[state]
+
+  const fill = {
+    idle: cssVar("--color-node"),
+    hover: cssVar("--color-node"),
+    active: cssVar("--color-node-active"),
+    disabled: cssVar("--color-node-disabled"),
+  }[state]
+
+  const textSize = {
+    idle: baseTextSize * scale,
+    hover: baseTextSize,
+    active: baseTextSize,
+    disabled: baseTextSize * scale,
+  }[state]
+
+  const textAlpha = {
+    idle: scale,
+    hover: 1,
+    active: 1,
+    disabled: 0,
+  }[state]
+
+  const textOffset = {
+    idle: baseTextOffset * scale,
+    hover: baseTextOffset,
+    active: baseTextOffset,
+    disabled: baseTextOffset * scale,
+  }[state]
+
+  if (state === "active" && isCanvasFocused) {
+    const lineWidth = 2
+    const gap = 1
+
+    // Draw backdrop
+    context.beginPath()
+    context.arc(x, y, radius + gap + lineWidth / 2, 0, Math.PI * 2)
+    context.fillStyle = cssVar("--color-bg-inset")
+    context.fill()
+
+    // Draw focus ring
+    context.beginPath()
+    context.arc(x, y, radius + gap + lineWidth / 2, 0, Math.PI * 2)
+    context.strokeStyle = cssVar("--color-border-focus")
+    context.lineWidth = lineWidth
+    context.stroke()
+  }
+
+  // Draw circle
+  context.beginPath()
+  context.arc(x, y, radius, 0, Math.PI * 2)
+  context.fillStyle = fill
+  context.fill()
+
+  // Draw text
+  context.font = `${textSize}px iA Writer Quattro` // TODO: Use CSS variable
+  context.textAlign = "center"
+  context.textBaseline = "top"
+  context.fillStyle = cssVar("--color-text")
+  context.globalAlpha = textAlpha
+  context.fillText(node.id, x, y + textOffset)
+  context.globalAlpha = 1
+}
+
+type DrawLinkOptions = {
+  state: LinkState
+  canvas: HTMLCanvasElement | null
+  context: CanvasRenderingContext2D
+  transform: ZoomTransform
+  cssVar: (name: string) => string
+}
+
+function drawLink(link: Link, { state, context, transform, canvas, cssVar }: DrawLinkOptions) {
+  if (typeof link.source !== "object" || typeof link.target !== "object") return
+
+  const [sourceX, sourceY] = transform.apply([link.source.x ?? 0, link.source.y ?? 0])
+  const [targetX, targetY] = transform.apply([link.target.x ?? 0, link.target.y ?? 0])
+
+  const stroke = {
+    idle: cssVar("--color-edge"),
+    active: cssVar("--color-edge-active"),
+    disabled: cssVar("--color-edge-disabled"),
+  }[state]
+
+  context.beginPath()
+  context.moveTo(sourceX, sourceY)
+  context.lineTo(targetX, targetY)
+  context.strokeStyle = stroke
+  context.lineWidth = 1
+  context.stroke()
+}
+
+/** Clamps a value between a minimum and maximum value. */
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
 /**
  * Returns a function that can be used to get the computed value
  * of a CSS custom property (variable).
@@ -345,9 +483,11 @@ function useViewport(ref: React.RefObject<HTMLElement>, width: number, height: n
   React.useEffect(() => {
     if (!ref.current) return
 
-    const zoomBehavior = zoom<HTMLElement, Node>().on("zoom", ({ transform }) => {
-      setZoomTransform(transform)
-    })
+    const zoomBehavior = zoom<HTMLElement, Node>()
+      .scaleExtent([0.1, 5])
+      .on("zoom", ({ transform }) => {
+        setZoomTransform(transform)
+      })
 
     select<HTMLElement, Node>(ref.current).call(zoomBehavior)
   }, [ref])

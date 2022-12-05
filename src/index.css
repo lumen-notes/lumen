@@ -39,19 +39,26 @@
 
   --h: 30deg;
   --h-highlight: 90deg;
+
   --s: 5%;
+
   --l-text: 10%;
   --l-text-secondary: 45%;
-  --l-text-tertiary: 55%;
+  --l-text-tertiary: 60%;
   --l-bg: 100%;
   --l-bg-inset: 97.5%;
   --l-bg-overlay: 100%;
-  --l-border-edge: 75%;
+  --l-node-disabled: 80%;
+  --l-edge: 85%;
+  --l-edge-active: 75%;
+  --l-edge-disabled: 90%;
+
   --a-bg-backdrop: 0.65;
   --a-bg-secondary: 0.05;
   --a-bg-tertiary: 0.1;
   --a-border: 0.25;
   --a-border-secondary: 0.15;
+
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
@@ -66,20 +73,31 @@
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200deg 100% 40%);
-  --color-border-edge: hsl(var(--h) var(--s) var(--l-border-edge));
+  --color-node: var(--color-text-secondary);
+  --color-node-active: var(--color-border-focus);
+  --color-node-disabled: hsl(var(--h) var(--s) var(--l-node-disabled));
+  --color-edge: hsl(var(--h) var(--s) var(--l-edge));
+  --color-edge-active: hsl(var(--h) var(--s) var(--l-edge-active));
+  --color-edge-disabled: hsl(var(--h) var(--s) var(--l-edge-disabled));
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --h: 220deg;
+
     --l-text: 90%;
     --l-text-secondary: 60%;
-    --l-text-tertiary: 55%;
+    --l-text-tertiary: 50%;
     --l-bg: 10%;
     --l-bg-inset: 5%;
     --l-bg-overlay: 15%;
-    --l-border-edge: 25%;
+    --l-node-disabled: 20%;
+    --l-edge: 20%;
+    --l-edge-active: 40%;
+    --l-edge-disabled: 10%;
+
     --a-bg-secondary: 0.075;
+
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
     --color-border-focus: hsl(200deg 100% 70%);

@@ -1,4 +1,5 @@
 import {
+  forceCollide,
   forceLink,
   forceManyBody,
   forceSimulation,
@@ -18,7 +19,8 @@ const simulation = forceSimulation<Node>()
     "link",
     forceLink<Node, Link>(links).id((d) => d.id),
   )
-  .force("charge", forceManyBody().strength(-10))
+  .force("charge", forceManyBody().strength(-100))
+  .force("collide", forceCollide().radius(64).iterations(2))
   .on("tick", () => postMessage({ nodes, links }))
 
 onmessage = (event: MessageEvent<{ nodes: Node[]; links: Link[] }>) => {
