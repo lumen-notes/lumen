@@ -232,10 +232,10 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        // Draw hovered node
-        if (hoveredNode) {
-          drawNode(hoveredNode, {
-            state: "hover",
+        // Draw selected node
+        if (selectedNode) {
+          drawNode(selectedNode, {
+            state: "selected",
             canvas: canvasRef.current,
             context,
             transform,
@@ -243,10 +243,10 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        // Draw selected node
-        if (selectedNode) {
-          drawNode(selectedNode, {
-            state: "selected",
+        // Draw hovered node
+        if (hoveredNode) {
+          drawNode(hoveredNode, {
+            state: "hover",
             canvas: canvasRef.current,
             context,
             transform,
@@ -383,6 +383,45 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
     disabled: baseTextOffset * scale,
   }[state]
 
+  const textMaxLength = {
+    idle: 20 * Math.max(transform.k, 1),
+    hover: Infinity,
+    selected: Infinity,
+    disabled: 20 * Math.max(transform.k, 1),
+  }[state]
+
+  const text = truncate(node.label, textMaxLength)
+  context.font = `${textSize}px iA Writer Quattro` // TODO: Use CSS variable
+
+  if (text && (state === "selected" || state === "hover")) {
+    // Draw text backdrop
+    const textWidth = context.measureText(text).width
+    const textHeight = textSize
+    const textPaddingX = 6
+    const textPaddingY = 4
+    const backdropRadius = 4
+
+    context.beginPath()
+    // @ts-ignore
+    context.roundRect(
+      x - textWidth / 2 - textPaddingX,
+      y + textOffset - textPaddingY,
+      textWidth + textPaddingX * 2,
+      textHeight + textPaddingY * 2,
+      backdropRadius,
+    )
+    context.fillStyle = cssVar("--color-bg-overlay")
+    context.fill()
+  }
+
+  // Draw text
+  context.textAlign = "center"
+  context.textBaseline = "top"
+  context.fillStyle = cssVar("--color-text")
+  context.globalAlpha = textAlpha
+  context.fillText(text, x, y + textOffset)
+  context.globalAlpha = 1
+
   if (state === "selected" && isCanvasFocused) {
     const lineWidth = 2
     const gap = 1
@@ -406,15 +445,6 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   context.arc(x, y, radius, 0, Math.PI * 2)
   context.fillStyle = fill
   context.fill()
-
-  // Draw text
-  context.font = `${textSize}px iA Writer Quattro` // TODO: Use CSS variable
-  context.textAlign = "center"
-  context.textBaseline = "top"
-  context.fillStyle = cssVar("--color-text")
-  context.globalAlpha = textAlpha
-  context.fillText(node.label, x, y + textOffset)
-  context.globalAlpha = 1
 }
 
 type DrawLinkOptions = {
@@ -663,5 +693,14 @@ function getAngle(a: Position, b: Position, axis: Axis) {
     return Math.atan2(dy, dx)
   } else {
     return Math.atan2(dx, dy)
+  }
+}
+
+/** Truncate a string to the given length, adding ellipsis if necessary. */
+function truncate(str: string, length: number) {
+  if (str.length > length) {
+    return str.slice(0, length - 3) + "..."
+  } else {
+    return str
   }
 }
