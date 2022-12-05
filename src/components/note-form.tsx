@@ -374,7 +374,7 @@ function useNoteCompletion() {
 
       // Create a search index
       const searcher = new Searcher(entries, {
-        keySelector: (entry) => entry[1],
+        keySelector: ([id, { body }]) => body,
         threshold: 0.8,
       })
 
@@ -408,7 +408,7 @@ function useNoteCompletion() {
 
       const options = [
         ...results.slice(0, 6).map(
-          ([id, body]): Completion => ({
+          ([id, { body }]): Completion => ({
             label: body,
             info: body,
             apply: (view, completion, from, to) => {

@@ -4,7 +4,7 @@ import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { GlobalStateContext } from "../global-state"
-import { NoteId } from "../types"
+import { Note, NoteId } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 import { NoteCard } from "./note-card"
@@ -19,7 +19,7 @@ export function NoteList({ ids, disableSort }: NoteListProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const [searcher, setSearcher] = React.useState<Searcher<
-    [string, string],
+    [string, Note],
     Record<string, unknown>
   > | null>(null)
 
@@ -40,10 +40,10 @@ export function NoteList({ ids, disableSort }: NoteListProps) {
   // Create a search index
   // We use useEffect here to avoid blocking the first render while mapping over the notes
   React.useEffect(() => {
-    const entries: [string, string][] = sortedIds.map((id) => [id, state.context.notes[id]])
+    const entries: [string, Note][] = sortedIds.map((id) => [id, state.context.notes[id]])
 
     const searcher = new Searcher(entries, {
-      keySelector: ([id, body]) => body,
+      keySelector: ([id, { body }]) => body,
       threshold: 0.8,
     })
 

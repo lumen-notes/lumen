@@ -26,7 +26,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const body = state.context.notes[id]
+  const { body } = state.context.notes[id]
   const backlinks = state.context.backlinks[id] || []
 
   if (typeof body === "undefined") {

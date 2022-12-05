@@ -2,7 +2,7 @@ import { useInterpret } from "@xstate/react"
 import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
-import { NoteId } from "./types"
+import { Note, NoteId } from "./types"
 import { writeFile } from "./utils/file-system"
 import { isSupported } from "./utils/is-supported"
 import { parseNoteBody } from "./utils/parse-note-body"
@@ -11,7 +11,7 @@ export const UPLOADS_DIRECTORY = "uploads"
 
 type Context = {
   directoryHandle: FileSystemDirectoryHandle | null
-  notes: Record<NoteId, string>
+  notes: Record<NoteId, Note>
   sortedNoteIds: NoteId[]
   backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
@@ -54,7 +54,7 @@ const machine = createMachine(
         }
         loadNotes: {
           data: {
-            notes: Record<NoteId, string>
+            notes: Record<NoteId, Note>
             backlinks: Record<NoteId, NoteId[]>
             tags: Record<string, NoteId[]>
             dates: Record<string, NoteId[]>
@@ -257,7 +257,7 @@ const machine = createMachine(
         },
       }),
       upsertNote: assign((context, event) => {
-        const { noteLinks, tagLinks, dateLinks } = parseNoteBody(event.body)
+        const { title, noteLinks, tagLinks, dateLinks } = parseNoteBody(event.body)
 
         // Update backlinks
         const backlinkEntries = Object.entries(context.backlinks).map(([noteId, backlinks]) => {
@@ -332,7 +332,7 @@ const machine = createMachine(
           })
 
         return {
-          notes: { ...context.notes, [event.id]: event.body },
+          notes: { ...context.notes, [event.id]: { title, body: event.body } },
           backlinks: Object.fromEntries(backlinkEntries),
           tags: Object.fromEntries(tagEntries),
           dates: Object.fromEntries(dateEntries),

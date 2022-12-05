@@ -9,6 +9,7 @@ import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state"
 import { GraphContext, pathToNodeId } from "../pages/graph"
+import { Note } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
@@ -24,7 +25,7 @@ export function CommandMenu() {
   const { selectNode } = React.useContext(GraphContext)
   const routerNavigate = useNavigate()
   const [noteSearcher, setNoteSearcher] = React.useState<Searcher<
-    [string, string],
+    [string, Note],
     Record<string, unknown>
   > | null>(null)
 
@@ -116,7 +117,7 @@ export function CommandMenu() {
     )
 
     const noteSearcher = new Searcher(entries, {
-      keySelector: ([id, body]) => body,
+      keySelector: ([id, { body }]) => body,
       threshold: 0.8,
     })
 
@@ -195,7 +196,7 @@ export function CommandMenu() {
           ) : null}
           {deferredQuery ? (
             <Command.Group heading="Notes">
-              {noteResults.slice(0, numVisibleNotes).map(([id, body]) => (
+              {noteResults.slice(0, numVisibleNotes).map(([id, { body }]) => (
                 <CommandItem
                   key={id}
                   value={id}

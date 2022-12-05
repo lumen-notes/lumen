@@ -1,4 +1,4 @@
-import { NoteId } from "./types"
+import { Note, NoteId } from "./types"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 const FILENAME_REGEX = /^\d+\.md$/
@@ -13,7 +13,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
 
   const directoryHandle = event.data.directoryHandle
   const data: ReturnType<typeof parseFile>[] = []
-  const notes: Record<NoteId, string> = {}
+  const notes: Record<NoteId, Note> = {}
   const backlinks: Record<NoteId, NoteId[]> = {}
   const tags: Record<string, NoteId[]> = {}
   const dates: Record<string, NoteId[]> = {}
@@ -26,8 +26,8 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     }
   }
 
-  for (const { id, body, noteLinks, tagLinks, dateLinks } of await Promise.all(data)) {
-    notes[id] = body
+  for (const { id, title, body, noteLinks, tagLinks, dateLinks } of await Promise.all(data)) {
+    notes[id] = { title, body }
 
     for (const noteLink of noteLinks) {
       push(backlinks, noteLink, id)

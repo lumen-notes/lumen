@@ -32,11 +32,17 @@ export function GraphPage() {
   const graph = React.useMemo(() => {
     // TODO: Store the graph in the global context
     // TODO: Add tags and dates to the graph
-    const graph = new Graph<{ type: "note" | "tag" }>({ type: "undirected", multi: false })
+    const graph = new Graph<{
+      type: "note" | "tag"
+      label: string
+    }>({
+      type: "undirected",
+      multi: false,
+    })
 
     // Add notes to the graph
-    for (const noteId of Object.keys(state.context.notes)) {
-      graph.addNode(noteId, { type: "note" })
+    for (const [noteId, { title }] of Object.entries(state.context.notes)) {
+      graph.addNode(noteId, { type: "note", label: title })
     }
 
     for (const [noteId, backlinks] of Object.entries(state.context.backlinks)) {
@@ -51,7 +57,7 @@ export function GraphPage() {
 
     // Add tags to graph
     for (const [tagName, noteIds] of Object.entries(state.context.tags)) {
-      graph.addNode(tagName, { type: "tag" })
+      graph.addNode(tagName, { type: "tag", label: `#${tagName}` })
 
       for (const noteId of noteIds) {
         if (!graph.hasNode(noteId) || graph.hasEdge(tagName, noteId)) continue
@@ -64,15 +70,7 @@ export function GraphPage() {
   }, [state.context.notes, state.context.tags, state.context.backlinks])
 
   const { nodes, links } = React.useMemo(() => {
-    const nodes = graph.mapNodes((id, attributes) => {
-      switch (attributes.type) {
-        case "note":
-          return { id, label: id }
-
-        case "tag":
-          return { id, label: `#${id}` }
-      }
-    })
+    const nodes = graph.mapNodes((id, { label }) => ({ id, label }))
     const links = graph.mapEdges((edge, attributes, source, target) => ({ source, target }))
 
     return { nodes, links }
