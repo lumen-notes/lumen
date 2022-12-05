@@ -139,6 +139,13 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
           return
         }
 
+        // If we're not in a panels context, use the router's navigate function
+        if (!openPanel || !updatePanel) {
+          navigate(props.to, { replace: props.replace })
+          event.preventDefault()
+          return
+        }
+
         // Open link in a new panel
         if (props.target === "_blank") {
           openPanel?.(props.to, panel?.index)

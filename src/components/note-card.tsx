@@ -10,9 +10,9 @@ import { IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { MoreIcon16 } from "./icons"
-import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
+import { Panels } from "./panels"
 
 type NoteCardProps = {
   id: NoteId
@@ -20,7 +20,6 @@ type NoteCardProps = {
 }
 
 export function NoteCard({ id, elevation }: NoteCardProps) {
-  const Link = useLink()
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
   const [isEditing, setIsEditing] = React.useState(false)
@@ -97,9 +96,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
       <div className="flex h-4 items-center justify-between">
         <span className="text-text-secondary">
-          <Link target="_blank" to={`/${id}`} className="link tracking-wide">
+          <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
-          </Link>
+          </Panels.Link>
           {backlinks.length ? (
             <span>
               {" · "}
