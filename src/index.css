@@ -74,10 +74,10 @@
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200deg 100% 40%);
   --color-node: var(--color-text-secondary);
-  --color-node-active: var(--color-border-focus);
+  --color-node-selected: var(--color-border-focus);
   --color-node-disabled: hsl(var(--h) var(--s) var(--l-node-disabled));
   --color-edge: hsl(var(--h) var(--s) var(--l-edge));
-  --color-edge-active: hsl(var(--h) var(--s) var(--l-edge-active));
+  --color-edge-selected: hsl(var(--h) var(--s) var(--l-edge-active));
   --color-edge-disabled: hsl(var(--h) var(--s) var(--l-edge-disabled));
 }
 

@@ -2,11 +2,11 @@ import { select } from "d3-selection"
 import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
 import * as React from "react"
 import { useMedia } from "react-use"
-import { Link, Node } from "../simulation.worker"
+import { Link, Node } from "../force-simulation.worker"
 
-type NodeState = "idle" | "hover" | "active" | "disabled"
+type NodeState = "idle" | "hover" | "selected" | "disabled"
 
-type LinkState = "idle" | "active" | "disabled"
+type LinkState = "idle" | "selected" | "disabled"
 
 type Position = { x: number; y: number }
 
@@ -77,7 +77,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     const simulationWorkerRef = React.useRef<Worker>()
 
     React.useEffect(() => {
-      const worker = new Worker(new URL("../simulation.worker.ts", import.meta.url), {
+      const worker = new Worker(new URL("../force-simulation.worker.ts", import.meta.url), {
         type: "module",
       })
 
@@ -168,18 +168,18 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        let activeNode: Node | null = null
-        let hoverNode: Node | null = null
+        let selectedNode: Node | null = null
+        let hoveredNode: Node | null = null
 
         // Draw nodes
         for (const node of simulationNodes) {
           if (node.id === selectedId) {
-            activeNode = node
+            selectedNode = node
             continue
           }
 
           if (node.id === hoveredId) {
-            hoverNode = node
+            hoveredNode = node
             continue
           }
 
@@ -207,7 +207,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
         // Draw connected links
         for (const link of connectedLinks) {
           drawLink(link, {
-            state: "active",
+            state: "selected",
             canvas: canvasRef.current,
             context,
             transform,
@@ -232,9 +232,9 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        // Draw hover node
-        if (hoverNode) {
-          drawNode(hoverNode, {
+        // Draw hovered node
+        if (hoveredNode) {
+          drawNode(hoveredNode, {
             state: "hover",
             canvas: canvasRef.current,
             context,
@@ -243,10 +243,10 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        // Draw active node
-        if (activeNode) {
-          drawNode(activeNode, {
-            state: "active",
+        // Draw selected node
+        if (selectedNode) {
+          drawNode(selectedNode, {
+            state: "selected",
             canvas: canvasRef.current,
             context,
             transform,
@@ -351,39 +351,39 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   const radius = {
     idle: baseRadius * scale,
     hover: baseRadius + 2,
-    active: baseRadius + 2,
+    selected: baseRadius + 2,
     disabled: baseRadius * scale,
   }[state]
 
   const fill = {
     idle: cssVar("--color-node"),
     hover: cssVar("--color-node"),
-    active: cssVar("--color-node-active"),
+    selected: cssVar("--color-node-selected"),
     disabled: cssVar("--color-node-disabled"),
   }[state]
 
   const textSize = {
     idle: baseTextSize * scale,
     hover: baseTextSize,
-    active: baseTextSize,
+    selected: baseTextSize,
     disabled: baseTextSize * scale,
   }[state]
 
   const textAlpha = {
     idle: scale,
     hover: 1,
-    active: 1,
+    selected: 1,
     disabled: 0,
   }[state]
 
   const textOffset = {
     idle: baseTextOffset * scale,
     hover: baseTextOffset,
-    active: baseTextOffset,
+    selected: baseTextOffset,
     disabled: baseTextOffset * scale,
   }[state]
 
-  if (state === "active" && isCanvasFocused) {
+  if (state === "selected" && isCanvasFocused) {
     const lineWidth = 2
     const gap = 1
 
@@ -413,7 +413,7 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   context.textBaseline = "top"
   context.fillStyle = cssVar("--color-text")
   context.globalAlpha = textAlpha
-  context.fillText(node.id, x, y + textOffset)
+  context.fillText(node.label, x, y + textOffset)
   context.globalAlpha = 1
 }
 
@@ -433,7 +433,7 @@ function drawLink(link: Link, { state, context, transform, canvas, cssVar }: Dra
 
   const stroke = {
     idle: cssVar("--color-edge"),
-    active: cssVar("--color-edge-active"),
+    selected: cssVar("--color-edge-selected"),
     disabled: cssVar("--color-edge-disabled"),
   }[state]
 

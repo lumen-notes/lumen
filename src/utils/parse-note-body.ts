@@ -1,12 +1,14 @@
 import { fromMarkdown } from "mdast-util-from-markdown"
+import { toString } from "mdast-util-to-string"
 import { visit } from "unist-util-visit"
-import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
+import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../types"
 
 /** Extracts metadata from a note body */
 export function parseNoteBody(body: string) {
+  let title = ""
   const noteLinks: NoteId[] = []
   const tagLinks: string[] = []
   const dateLinks: string[] = []
@@ -18,6 +20,12 @@ export function parseNoteBody(body: string) {
 
   visit(mdast, (node) => {
     switch (node.type) {
+      case "heading": {
+        if (node.depth === 1 && !title) {
+          title = toString(node)
+        }
+        break
+      }
       case "noteLink": {
         noteLinks.push(node.data.id.toString())
         break
@@ -33,5 +41,5 @@ export function parseNoteBody(body: string) {
     }
   })
 
-  return { noteLinks, tagLinks, dateLinks }
+  return { title, noteLinks, tagLinks, dateLinks }
 }

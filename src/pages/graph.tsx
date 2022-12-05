@@ -64,7 +64,15 @@ export function GraphPage() {
   }, [state.context.notes, state.context.tags, state.context.backlinks])
 
   const { nodes, links } = React.useMemo(() => {
-    const nodes = graph.mapNodes((id) => ({ id }))
+    const nodes = graph.mapNodes((id, attributes) => {
+      switch (attributes.type) {
+        case "note":
+          return { id, label: id }
+
+        case "tag":
+          return { id, label: `#${id}` }
+      }
+    })
     const links = graph.mapEdges((edge, attributes, source, target) => ({ source, target }))
 
     return { nodes, links }

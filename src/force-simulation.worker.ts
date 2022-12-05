@@ -7,7 +7,7 @@ import {
   SimulationNodeDatum,
 } from "d3-force"
 
-export type Node = SimulationNodeDatum & { id: string }
+export type Node = SimulationNodeDatum & { id: string; label: string }
 export type Link = SimulationLinkDatum<Node>
 
 let nodes: Node[] = []
