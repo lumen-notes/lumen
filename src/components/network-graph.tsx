@@ -373,7 +373,7 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
     idle: scale,
     hover: 1,
     selected: 1,
-    disabled: 0,
+    disabled: 0.4 * scale,
   }[state]
 
   const textOffset = {
