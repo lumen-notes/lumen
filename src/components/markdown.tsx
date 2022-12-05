@@ -106,7 +106,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const Link = useLink()
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const body = state.context.notes[id]
+  const { body } = state.context.notes[id]
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
