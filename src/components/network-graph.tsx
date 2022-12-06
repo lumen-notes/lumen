@@ -384,10 +384,10 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   }[state]
 
   const textMaxLength = {
-    idle: 20 * Math.max(transform.k, 1),
+    idle: 16 * Math.max(transform.k, 1),
     hover: Infinity,
     selected: Infinity,
-    disabled: 20 * Math.max(transform.k, 1),
+    disabled: 16 * Math.max(transform.k, 1),
   }[state]
 
   const text = truncate(node.label, textMaxLength)
@@ -395,8 +395,9 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
 
   if (text && (state === "selected" || state === "hover")) {
     // Draw text backdrop
-    const textWidth = context.measureText(text).width
-    const textHeight = textSize
+    const textMetrics = context.measureText(text)
+    const textWidth = textMetrics.width
+    const textHeight = textMetrics.actualBoundingBoxDescent ?? textSize
     const textPaddingX = 6
     const textPaddingY = 4
     const backdropRadius = 4
