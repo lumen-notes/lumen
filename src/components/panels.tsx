@@ -126,6 +126,7 @@ function deserializePanelValue(value: string): PanelValue {
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const { target = "_self" } = props
   const location = useLocation()
   const navigate = useNavigate()
   const { openPanel, updatePanel } = React.useContext(PanelsContext)
@@ -147,13 +148,13 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
         }
 
         // Open link in a new panel
-        if (props.target === "_blank") {
+        if (target === "_blank") {
           openPanel?.(props.to, panel?.index)
           event.preventDefault()
         }
 
         // Open link in the current panel
-        if (props.target === "_self") {
+        if (target === "_self") {
           const [pathname, search] = props.to.split("?")
 
           if (panel) {
@@ -229,6 +230,7 @@ function PanelRoutes({ panel, index }: PanelRoutesProps) {
 
   return (
     <PanelContext.Provider value={contextValue}>
+      {/* @ts-ignore */}
       <Panel
         id={panel.id}
         params={match.params}
