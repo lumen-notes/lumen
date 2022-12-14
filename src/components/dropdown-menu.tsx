@@ -19,11 +19,12 @@ const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuC
 )
 
 type ItemProps = RadixDropdownMenu.DropdownMenuItemProps & {
+  icon?: React.ReactNode
   shortcut?: string[]
 }
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
-  ({ className, shortcut, children, ...props }, ref) => (
+  ({ className, icon, shortcut, children, ...props }, ref) => (
     <RadixDropdownMenu.Item
       ref={ref}
       className={clsx(
@@ -32,7 +33,10 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       )}
       {...props}
     >
-      <span className="flex-grow">{children}</span>
+      <div className="flex flex-grow items-center gap-3">
+        {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
+        <span>{children}</span>
+      </div>
       {shortcut ? <Keys keys={shortcut} /> : null}
     </RadixDropdownMenu.Item>
   ),

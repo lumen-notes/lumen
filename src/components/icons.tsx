@@ -307,3 +307,28 @@ export function GraphFillIcon24() {
     </svg>
   )
 }
+
+export function CopyIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M4 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2Zm2-.5h8a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5Z" />
+      <path d="M2 4h1v1.5H2a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-1H12v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
+    </svg>
+  )
+}
+
+export function TrashIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M15 3h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v1H1v1.5h14V3ZM7 1.5h2a.5.5 0 0 1 .5.5v1h-3V2a.5.5 0 0 1 .5-.5ZM2.858 14.153 2.23 6h1.504l.618 8.038a.5.5 0 0 0 .499.462h6.296a.5.5 0 0 0 .498-.462L12.265 6h1.504l-.627 8.153A2 2 0 0 1 11.148 16H4.852a2 2 0 0 1-1.994-1.847Z" />
+    </svg>
+  )
+}
+
+export function EditIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M10.586 1.354a2 2 0 0 1 2.828 0l1.232 1.232a2 2 0 0 1 0 2.828L6.281 13.78a2.25 2.25 0 0 1-.88.543l-3.215 1.072c-.977.326-1.907-.604-1.581-1.58l1.071-3.216a2.25 2.25 0 0 1 .544-.88l8.366-8.365Zm1.768 1.06a.5.5 0 0 0-.708 0L3.281 10.78a.75.75 0 0 0-.181.293l-.914 2.741 2.74-.914a.751.751 0 0 0 .294-.18l8.366-8.366a.5.5 0 0 0 0-.708l-1.232-1.232ZM8 14h8v1.5H8V14Z" />
+    </svg>
+  )
+}

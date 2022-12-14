@@ -9,7 +9,7 @@ import { pluralize } from "../utils/pluralize"
 import { IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
-import { MoreIcon16 } from "./icons"
+import { CopyIcon16, EditIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { Panels } from "./panels"
@@ -114,18 +114,27 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item onSelect={switchToEditing} shortcut={["E"]}>
+              <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
                 Edit
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onSelect={() => copy(body)} shortcut={["⌘", "C"]}>
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(body)}
+                shortcut={["⌘", "C"]}
+              >
                 Copy markdown
               </DropdownMenu.Item>
-              <DropdownMenu.Item onSelect={() => copy(id)} shortcut={["⌘", "⇧", "C"]}>
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(id)}
+                shortcut={["⌘", "⇧", "C"]}
+              >
                 Copy ID
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
+                icon={<TrashIcon16 />}
                 onSelect={() => {
                   globalState.service.send({ type: "DELETE_NOTE", id })
                 }}
