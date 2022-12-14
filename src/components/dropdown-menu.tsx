@@ -28,7 +28,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     <RadixDropdownMenu.Item
       ref={ref}
       className={clsx(
-        "flex cursor-default gap-4 rounded py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none [&[data-disabled]]:opacity-50",
+        "flex cursor-default gap-5 rounded py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none [&[data-disabled]]:opacity-50",
         className,
       )}
       {...props}
