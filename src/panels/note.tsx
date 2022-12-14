@@ -12,10 +12,11 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
+  const { title } = state.context.notes[noteId]
   const backlinks = state.context.backlinks[noteId]
 
   return (
-    <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
+    <Panel id={id} title={title || "Note"} icon={<NoteIcon24 />} onClose={onClose}>
       <div className="flex flex-col gap-4 p-4">
         <NoteCard id={noteId} />
 
