@@ -390,7 +390,7 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
     disabled: 16 * Math.max(transform.k, 1),
   }[state]
 
-  const text = truncate(node.label, textMaxLength)
+  const text = truncate(node.title, textMaxLength)
   context.font = `${textSize}px iA Writer Quattro` // TODO: Use CSS variable
 
   if (text && (state === "selected" || state === "hover")) {
