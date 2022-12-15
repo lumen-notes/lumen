@@ -71,7 +71,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
               key={name}
               className="flex justify-between border-b border-border-secondary py-3 last:border-b-0"
             >
-              <Panels.Link className="link" to={`/tags/${name}`}>
+              <Panels.Link className="link" to={`/tags/${name}`} target="_blank">
                 #{name}
               </Panels.Link>
               <span className="text-text-secondary">{pluralize(noteCount, "note")}</span>
