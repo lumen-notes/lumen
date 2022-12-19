@@ -1,5 +1,3 @@
-import { useActor } from "@xstate/react"
-import Graph from "graphology"
 import React from "react"
 import { Link as RouterLink, LinkProps } from "react-router-dom"
 import { useMeasure } from "react-use"
@@ -10,7 +8,7 @@ import { TagIcon16 } from "../components/icons"
 import { LinkContext } from "../components/link-context"
 import { NetworkGraph, NetworkGraphInstance } from "../components/network-graph"
 import { NoteCard } from "../components/note-card"
-import { GlobalStateContext } from "../global-state"
+import { getLinks, getNodes, useGlobalGraph } from "../utils/graph"
 import { useSearchParam } from "../utils/use-search-param"
 
 export const GraphContext = React.createContext<{
@@ -24,57 +22,12 @@ export function GraphPage() {
     schema: z.string(),
     replace: true,
   })
+
   const [hoveredId, setHoveredId] = React.useState<string>("")
 
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
-
-  const graph = React.useMemo(() => {
-    // TODO: Store the graph in the global context
-    // TODO: Add tags and dates to the graph
-    const graph = new Graph<{
-      type: "note" | "tag"
-      label: string
-    }>({
-      type: "undirected",
-      multi: false,
-    })
-
-    // Add notes to the graph
-    for (const [noteId, { title }] of Object.entries(state.context.notes)) {
-      graph.addNode(noteId, { type: "note", label: title })
-    }
-
-    for (const [noteId, backlinks] of Object.entries(state.context.backlinks)) {
-      if (!graph.hasNode(noteId)) continue
-
-      for (const backlink of backlinks) {
-        if (!graph.hasNode(backlink) || graph.hasEdge(backlink, noteId)) continue
-
-        graph.addEdge(backlink, noteId)
-      }
-    }
-
-    // Add tags to graph
-    for (const [tagName, noteIds] of Object.entries(state.context.tags)) {
-      graph.addNode(tagName, { type: "tag", label: `#${tagName}` })
-
-      for (const noteId of noteIds) {
-        if (!graph.hasNode(noteId) || graph.hasEdge(tagName, noteId)) continue
-
-        graph.addEdge(tagName, noteId)
-      }
-    }
-
-    return graph
-  }, [state.context.notes, state.context.tags, state.context.backlinks])
-
-  const { nodes, links } = React.useMemo(() => {
-    const nodes = graph.mapNodes((id, { label }) => ({ id, label }))
-    const links = graph.mapEdges((edge, attributes, source, target) => ({ source, target }))
-
-    return { nodes, links }
-  }, [graph])
+  const graph = useGlobalGraph()
+  const nodes = React.useMemo(() => getNodes(graph), [graph])
+  const links = React.useMemo(() => getLinks(graph), [graph])
 
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
