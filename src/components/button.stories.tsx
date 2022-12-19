@@ -19,7 +19,7 @@ export const Secondary = {
   },
 }
 
-export const WithShortcut = {
+export const WithKeyboardShortcut = {
   args: {
     children: "Save",
     shortcut: ["⌘", "⏎"],
