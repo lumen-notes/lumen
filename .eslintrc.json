@@ -9,9 +9,12 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:jsx-a11y/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:storybook/recommended"
   ],
-  "ignorePatterns": ["**/*.typegen.ts"],
+  "ignorePatterns": [
+    "**/*.typegen.ts"
+  ],
   "overrides": [],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -23,7 +26,12 @@
       "version": "detect"
     }
   },
-  "plugins": ["react", "react-hooks", "jsx-a11y", "@typescript-eslint"],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "@typescript-eslint"
+  ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/display-name": "off",
@@ -32,7 +40,11 @@
     "react/jsx-no-constructed-context-values": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "args": "none", "ignoreRestSiblings": true, "destructuredArrayIgnorePattern": "^_" }
+      {
+        "args": "none",
+        "ignoreRestSiblings": true,
+        "destructuredArrayIgnorePattern": "^_"
+      }
     ],
     "@typescript-eslint/ban-ts-comment": "off"
   }

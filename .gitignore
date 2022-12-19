@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 coverage
+storybook-static
 
 # Editor directories and files
 .vscode/*
