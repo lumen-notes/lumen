@@ -1,4 +1,4 @@
-import { NetworkGraph } from "./network-graph"
+import { NetworkGraph, NetworkGraphProps } from "./network-graph"
 
 export default {
   title: "NetworkGraph",
@@ -9,9 +9,12 @@ export default {
 }
 
 export const Default = {
+  render: (args: NetworkGraphProps) => (
+    <div className="h-screen w-screen">
+      <NetworkGraph {...args} />
+    </div>
+  ),
   args: {
-    width: 500,
-    height: 500,
     nodes: [
       { id: "a", title: "A" },
       { id: "b", title: "B" },

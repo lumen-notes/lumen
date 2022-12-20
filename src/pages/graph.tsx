@@ -1,6 +1,5 @@
 import React from "react"
 import { Link as RouterLink, LinkProps } from "react-router-dom"
-import { useMeasure } from "react-use"
 import { z } from "zod"
 import { Card } from "../components/card"
 import { CommandMenu } from "../components/command-menu"
@@ -29,8 +28,6 @@ export function GraphPage() {
   const nodes = React.useMemo(() => getNodes(graph), [graph])
   const links = React.useMemo(() => getLinks(graph), [graph])
 
-  const [ref, { width, height }] = useMeasure<HTMLDivElement>()
-
   const graphRef = React.useRef<NetworkGraphInstance>(null)
 
   const selectNode = React.useCallback(
@@ -52,12 +49,10 @@ export function GraphPage() {
   return (
     <GraphContext.Provider value={contextValue}>
       <LinkContext.Provider value={Link}>
-        <div ref={ref} className="relative h-full w-full overflow-hidden">
+        <div className="relative h-full w-full">
           <CommandMenu />
           <NetworkGraph
             ref={graphRef}
-            width={width}
-            height={height}
             nodes={nodes}
             links={links}
             selectedId={selectedId}

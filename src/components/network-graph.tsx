@@ -1,7 +1,7 @@
 import { select } from "d3-selection"
 import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
 import * as React from "react"
-import { useMedia } from "react-use"
+import { useMeasure, useMedia } from "react-use"
 import { Link, Node } from "../force-simulation.worker"
 
 type NodeState = "idle" | "hover" | "selected" | "disabled"
@@ -35,9 +35,7 @@ export type NetworkGraphInstance = {
   centerInView: (nodeId: string) => void
 }
 
-type NetworkGraphProps = {
-  width: number
-  height: number
+export type NetworkGraphProps = {
   nodes: Node[]
   links: Link[]
   selectedId?: string
@@ -51,8 +49,6 @@ type NetworkGraphProps = {
 export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphProps>(
   (
     {
-      width,
-      height,
       nodes,
       links,
       selectedId = "",
@@ -64,17 +60,18 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     },
     ref,
   ) => {
+    const [containerRef, { width, height }] = useMeasure<HTMLDivElement>()
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
+    const simulationWorkerRef = React.useRef<Worker>()
     const [prevNodes, setPrevNodes] = React.useState<Node[]>(nodes)
     const [prevLinks, setPrevLinks] = React.useState<Link[]>(links)
     const [prevSelectedId, setPrevSelectedId] = React.useState(selectedId)
     const [simulationNodes, setSimulationNodes] = React.useState<Node[]>(nodes)
     const [simulationLinks, setSimulationLinks] = React.useState<Link[]>(links)
-    const { transform, scrollIntoView, centerInView } = useViewport(canvasRef, width, height)
-    const pixelRatio = window.devicePixelRatio || 1
     const [_, setIsCanvasFocused] = React.useState(false)
+    const { transform, scrollIntoView, centerInView } = useViewport(canvasRef, width, height)
     const cssVar = useCssVar()
-    const simulationWorkerRef = React.useRef<Worker>()
+    const pixelRatio = window.devicePixelRatio || 1
 
     React.useEffect(() => {
       const worker = new Worker(new URL("../force-simulation.worker.ts", import.meta.url), {
@@ -260,28 +257,21 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     })
 
     return (
-      <canvas
-        ref={canvasRef}
-        tabIndex={0}
-        width={width * pixelRatio}
-        height={height * pixelRatio}
-        style={{
-          width,
-          height,
-          cursor: hoveredId ? "pointer" : "default",
-          outline: "none",
-        }}
-        onFocus={() => setIsCanvasFocused(true)}
-        onBlur={() => setIsCanvasFocused(false)}
-        onClick={(event) => {
-          const position = getRelativePosition(event, transform)
-
-          const closestNode = getClosestNode(simulationNodes, position, targetRadius / transform.k)
-
-          onSelect?.(closestNode)
-        }}
-        onMouseMove={(event) => {
-          React.startTransition(() => {
+      <div ref={containerRef} className="h-full w-full overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          tabIndex={0}
+          width={width * pixelRatio}
+          height={height * pixelRatio}
+          style={{
+            width,
+            height,
+            cursor: hoveredId ? "pointer" : "default",
+            outline: "none",
+          }}
+          onFocus={() => setIsCanvasFocused(true)}
+          onBlur={() => setIsCanvasFocused(false)}
+          onClick={(event) => {
             const position = getRelativePosition(event, transform)
 
             const closestNode = getClosestNode(
@@ -290,44 +280,57 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
               targetRadius / transform.k,
             )
 
-            onHover?.(closestNode)
-          })
-        }}
-        onKeyDown={(event) => {
-          // Unselect node with `escape`
-          if (event.key === "Escape") {
-            event.preventDefault()
-            onSelect?.(null)
-          }
+            onSelect?.(closestNode)
+          }}
+          onMouseMove={(event) => {
+            React.startTransition(() => {
+              const position = getRelativePosition(event, transform)
 
-          // Reselect previously selected node with `tab`
-          if (event.key === "Tab" && !event.shiftKey && !selectedId) {
-            event.preventDefault()
+              const closestNode = getClosestNode(
+                simulationNodes,
+                position,
+                targetRadius / transform.k,
+              )
 
-            let node = simulationNodes.find((node) => node.id === prevSelectedId) || null
-
-            // If there is no previous selected node,
-            // select the node closest to the center
-            if (!node) {
-              const [x, y] = transform.invert([width / 2, height / 2])
-              node = getClosestNode(simulationNodes, { x, y }, Infinity)
+              onHover?.(closestNode)
+            })
+          }}
+          onKeyDown={(event) => {
+            // Unselect node with `escape`
+            if (event.key === "Escape") {
+              event.preventDefault()
+              onSelect?.(null)
             }
 
-            onSelect?.(node)
-          }
+            // Reselect previously selected node with `tab`
+            if (event.key === "Tab" && !event.shiftKey && !selectedId) {
+              event.preventDefault()
 
-          // Traverse with arrow keys
-          if (event.key in KEY_TO_DIRECTION) {
-            event.preventDefault()
+              let node = simulationNodes.find((node) => node.id === prevSelectedId) || null
 
-            const nextNode = getNextNode(simulationNodes, selectedId, KEY_TO_DIRECTION[event.key])
+              // If there is no previous selected node,
+              // select the node closest to the center
+              if (!node) {
+                const [x, y] = transform.invert([width / 2, height / 2])
+                node = getClosestNode(simulationNodes, { x, y }, Infinity)
+              }
 
-            if (nextNode) {
-              onSelect?.(nextNode)
+              onSelect?.(node)
             }
-          }
-        }}
-      />
+
+            // Traverse with arrow keys
+            if (event.key in KEY_TO_DIRECTION) {
+              event.preventDefault()
+
+              const nextNode = getNextNode(simulationNodes, selectedId, KEY_TO_DIRECTION[event.key])
+
+              if (nextNode) {
+                onSelect?.(nextNode)
+              }
+            }
+          }}
+        />
+      </div>
     )
   },
 )
