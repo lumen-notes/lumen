@@ -8,21 +8,25 @@ export default {
   },
 }
 
+const numNodes = 100
+const numLinks = 100
+
 export const Default = {
-  render: (args: NetworkGraphProps) => (
-    <div className="h-screen w-screen">
-      <NetworkGraph {...args} />
-    </div>
-  ),
+  render: (args: NetworkGraphProps) => {
+    return (
+      <div className="h-screen w-screen">
+        <NetworkGraph {...args} />
+      </div>
+    )
+  },
   args: {
-    nodes: [
-      { id: "a", title: "A" },
-      { id: "b", title: "B" },
-      { id: "c", title: "C" },
-    ],
-    links: [
-      { source: "a", target: "b" },
-      { source: "a", target: "c" },
-    ],
+    nodes: Array.from({ length: numNodes }).map((_, i) => ({
+      id: i.toString(),
+      title: `Node ${i}`,
+    })),
+    links: Array.from({ length: numLinks }).map((_, i) => ({
+      source: Math.floor(Math.random() * numNodes).toString(),
+      target: Math.floor(Math.random() * numNodes).toString(),
+    })),
   },
 }
