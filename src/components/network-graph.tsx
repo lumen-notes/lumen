@@ -3,6 +3,7 @@ import { zoom, zoomIdentity, ZoomTransform } from "d3-zoom"
 import * as React from "react"
 import { useMeasure, useMedia } from "react-use"
 import { Link, Node } from "../force-simulation.worker"
+import { Card } from "./card"
 
 type NodeState = "idle" | "hover" | "selected" | "disabled"
 
@@ -257,7 +258,10 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
     })
 
     return (
-      <div ref={containerRef} className="h-full w-full overflow-hidden">
+      <div ref={containerRef} className="relative h-full w-full overflow-hidden">
+        <Card className="absolute bottom-4 left-4 py-1 px-2 text-xs">
+          {Math.floor(transform.k * 100)}%
+        </Card>
         <canvas
           ref={canvasRef}
           tabIndex={0}
