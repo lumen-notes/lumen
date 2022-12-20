@@ -511,12 +511,10 @@ function useCssVar() {
 
 function useViewport(ref: React.RefObject<HTMLElement>, width: number, height: number) {
   const [zoomTransform, setZoomTransform] = React.useState(zoomIdentity)
-  const [offset, setOffset] = React.useState<[number, number]>([
-    window.innerWidth / 2,
-    window.innerHeight / 2,
-  ])
+  const center = React.useMemo((): [number, number] => [width / 2, height / 2], [width, height])
+  const [offset, setOffset] = React.useState<[number, number]>([0, 0])
 
-  const transform = zoomTransform.translate(...offset)
+  const transform = zoomTransform.translate(...center).translate(...offset)
 
   React.useEffect(() => {
     if (!ref.current) return
