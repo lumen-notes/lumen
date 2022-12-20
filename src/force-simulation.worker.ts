@@ -19,7 +19,7 @@ const simulation = forceSimulation<Node>()
     "link",
     forceLink<Node, Link>(links).id((d) => d.id),
   )
-  .force("charge", forceManyBody().strength(-100))
+  .force("charge", forceManyBody().strength(-120).distanceMax(240))
   .force("collide", forceCollide().radius(64).iterations(2))
   .on("tick", () => postMessage({ nodes, links }))
 
