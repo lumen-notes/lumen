@@ -3,6 +3,7 @@ import React from "react"
 import { DraggableCore } from "react-draggable"
 import { IconButton } from "./button"
 import { CloseIcon16 } from "./icons"
+import { PanelContext } from "./panels"
 
 type PanelProps = {
   id?: string
@@ -19,6 +20,7 @@ const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
   const [width, setWidth] = React.useState(MIN_WIDTH)
   const panelRef = React.useRef<HTMLDivElement>(null)
+  const panel = React.useContext(PanelContext)
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
@@ -27,8 +29,12 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="relative h-full flex-shrink-0 focus:outline-none"
-      style={{ width }}
+      className="sticky h-full flex-shrink-0 bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none"
+      style={{
+        width,
+        // Stagger sticky offset of panels
+        left: panel ? (panel.index + 1) * 8 : 0,
+      }}
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
         if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
@@ -70,7 +76,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           }
         }}
       />
-      <div className="flex h-full flex-col overflow-auto border-r border-border-secondary">
+      <div className="flex h-full flex-col overflow-auto">
         <div
           className={clsx(
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-backdrop p-4 backdrop-blur-md",
