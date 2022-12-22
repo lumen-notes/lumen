@@ -22,8 +22,6 @@ export function GraphPage() {
     replace: true,
   })
 
-  const [hoveredId, setHoveredId] = React.useState<string>("")
-
   const graph = useGlobalGraph()
   const nodes = React.useMemo(() => getNodes(graph), [graph])
   const links = React.useMemo(() => getLinks(graph), [graph])
@@ -41,10 +39,7 @@ export function GraphPage() {
     [setSelectedId],
   )
 
-  const contextValue = React.useMemo(
-    () => ({ selectNode, hoverNode: setHoveredId }),
-    [selectNode, setHoveredId],
-  )
+  const contextValue = React.useMemo(() => ({ selectNode }), [selectNode])
 
   return (
     <GraphContext.Provider value={contextValue}>
@@ -55,10 +50,7 @@ export function GraphPage() {
             ref={graphRef}
             nodes={nodes}
             links={links}
-            selectedId={selectedId}
-            hoveredId={hoveredId}
-            onSelect={(node) => setSelectedId(node?.id || "")}
-            onHover={(node) => setHoveredId(node?.id || "")}
+            onFocus={(node) => setSelectedId(node?.id || "")}
           />
           {selectedId ? (
             <div className="absolute bottom-0 right-0 max-h-full w-full max-w-md overflow-auto p-4">
@@ -94,7 +86,7 @@ export function pathToNodeId(path: string) {
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { selectNode, hoverNode } = React.useContext(GraphContext)
+  const { selectNode } = React.useContext(GraphContext)
   return (
     <RouterLink
       {...props}
@@ -117,17 +109,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
           event.preventDefault()
         }
       }}
-      onMouseEnter={(event) => {
-        if (typeof props.to !== "string" || !hoverNode) return
-
-        const nodeId = pathToNodeId(props.to)
-
-        if (nodeId) {
-          hoverNode(nodeId)
-          event.preventDefault()
-        }
-      }}
-      onMouseLeave={() => hoverNode?.("")}
     />
   )
 })

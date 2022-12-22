@@ -5,7 +5,7 @@ import { useMeasure, useMedia } from "react-use"
 import { Link, Node } from "../force-simulation.worker"
 import { Card } from "./card"
 
-type NodeState = "idle" | "hover" | "selected" | "disabled"
+type NodeState = "idle" | "hover" | "focus" | "disabled"
 
 type LinkState = "idle" | "selected" | "disabled"
 
@@ -39,34 +39,24 @@ export type NetworkGraphInstance = {
 export type NetworkGraphProps = {
   nodes: Node[]
   links: Link[]
-  selectedId?: string
-  hoveredId?: string
+  // selectedId?: string
+  // hoveredId?: string
   targetRadius?: number
   bleed?: Bleed
-  onSelect?: (node: Node | null) => void
-  onHover?: (node: Node | null) => void
+  onClick?: (node: Node | null) => void
+  onFocus?: (node: Node | null) => void
 }
 
 export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphProps>(
-  (
-    {
-      nodes,
-      links,
-      selectedId = "",
-      hoveredId = "",
-      targetRadius = 24,
-      bleed = 48,
-      onSelect,
-      onHover,
-    },
-    ref,
-  ) => {
+  ({ nodes, links, targetRadius = 24, bleed = 48, onClick, onFocus }, ref) => {
     const [containerRef, { width, height }] = useMeasure<HTMLDivElement>()
     const canvasRef = React.useRef<HTMLCanvasElement>(null)
     const simulationWorkerRef = React.useRef<Worker>()
     const [prevNodes, setPrevNodes] = React.useState<Node[]>(nodes)
     const [prevLinks, setPrevLinks] = React.useState<Link[]>(links)
-    const [prevSelectedId, setPrevSelectedId] = React.useState(selectedId)
+    const [prevFocusedNodeId, setPrevFocusedNodeId] = React.useState("")
+    const [focusedNodeId, setFocusedNodeId] = React.useState("")
+    const [hoveredNodeId, setHoveredNodeId] = React.useState("")
     const [simulationNodes, setSimulationNodes] = React.useState<Node[]>(nodes)
     const [simulationLinks, setSimulationLinks] = React.useState<Link[]>(links)
     const [_, setIsCanvasFocused] = React.useState(false)
@@ -96,18 +86,22 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    function focusNode(node: Node | null) {
+      // Save previously focused node so we can restore it later
+      if (focusedNodeId) setPrevFocusedNodeId(focusedNodeId)
+
+      setFocusedNodeId(node?.id || "")
+      onFocus?.(node)
+
+      // Scroll to focused node
+      if (node) scrollIntoView(node, { bleed })
+    }
+
     // Update simulation when nodes or links change
     if (nodes !== prevNodes || links !== prevLinks) {
       simulationWorkerRef.current?.postMessage({ nodes, links })
       setPrevNodes(nodes)
       setPrevLinks(links)
-    }
-
-    // Scroll to selected node when selectedId changes
-    if (selectedId && selectedId !== prevSelectedId) {
-      const selectedNode = simulationNodes.find((node) => node.id === selectedId)
-      if (selectedNode) scrollIntoView(selectedNode, { bleed })
-      setPrevSelectedId(selectedId)
     }
 
     React.useImperativeHandle(ref, () => ({
@@ -132,33 +126,27 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
         context.fillStyle = cssVar("--color-bg-inset")
         context.fillRect(0, 0, width, height)
 
-        const connectedNodes = new Set<Node>()
-        const connectedLinks = new Set<Link>()
+        // const connectedNodes = new Set<Node>()
+        // const connectedLinks = new Set<Link>()
 
         // Draw links
         for (const link of simulationLinks) {
           if (typeof link.source !== "object" || typeof link.target !== "object") return
 
-          if (link.source.id === selectedId) {
-            connectedNodes.add(link.target)
-            connectedLinks.add(link)
-            continue
-          }
+          // if (link.source.id === focusedNodeId) {
+          //   connectedNodes.add(link.target)
+          //   connectedLinks.add(link)
+          //   continue
+          // }
 
-          if (link.target.id === selectedId) {
-            connectedNodes.add(link.source)
-            connectedLinks.add(link)
-            continue
-          }
-
-          let state: LinkState = "idle"
-
-          if (selectedId) {
-            state = "disabled"
-          }
+          // if (link.target.id === focusedNodeId) {
+          //   connectedNodes.add(link.source)
+          //   connectedLinks.add(link)
+          //   continue
+          // }
 
           drawLink(link, {
-            state,
+            state: "idle",
             canvas: canvasRef.current,
             context,
             transform,
@@ -166,35 +154,27 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           })
         }
 
-        let selectedNode: Node | null = null
+        let focusedNode: Node | null = null
         let hoveredNode: Node | null = null
 
         // Draw nodes
         for (const node of simulationNodes) {
-          if (node.id === selectedId) {
-            selectedNode = node
+          if (node.id === focusedNodeId) {
+            focusedNode = node
             continue
           }
 
-          if (node.id === hoveredId) {
+          if (node.id === hoveredNodeId) {
             hoveredNode = node
             continue
           }
 
-          if (connectedNodes.has(node)) {
-            continue
-          }
-
-          let state: NodeState = "idle"
-
-          if (node.id === hoveredId) {
-            state = "hover"
-          } else if (selectedId) {
-            state = "disabled"
-          }
+          // if (connectedNodes.has(node)) {
+          //   continue
+          // }
 
           drawNode(node, {
-            state,
+            state: "idle",
             canvas: canvasRef.current,
             context,
             transform,
@@ -203,37 +183,37 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
         }
 
         // Draw connected links
-        for (const link of connectedLinks) {
-          drawLink(link, {
-            state: "selected",
-            canvas: canvasRef.current,
-            context,
-            transform,
-            cssVar,
-          })
-        }
+        // for (const link of connectedLinks) {
+        //   drawLink(link, {
+        //     state: "selected",
+        //     canvas: canvasRef.current,
+        //     context,
+        //     transform,
+        //     cssVar,
+        //   })
+        // }
 
         // Draw connected nodes
-        for (const node of connectedNodes) {
-          let state: NodeState = "idle"
+        // for (const node of connectedNodes) {
+        //   let state: NodeState = "idle"
 
-          if (node.id === hoveredId) {
-            state = "hover"
-          }
+        //   if (node.id === hoveredNodeId) {
+        //     state = "hover"
+        //   }
 
-          drawNode(node, {
-            state,
-            canvas: canvasRef.current,
-            context,
-            transform,
-            cssVar,
-          })
-        }
+        //   drawNode(node, {
+        //     state,
+        //     canvas: canvasRef.current,
+        //     context,
+        //     transform,
+        //     cssVar,
+        //   })
+        // }
 
-        // Draw selected node
-        if (selectedNode) {
-          drawNode(selectedNode, {
-            state: "selected",
+        // Draw focused node
+        if (focusedNode) {
+          drawNode(focusedNode, {
+            state: "focus",
             canvas: canvasRef.current,
             context,
             transform,
@@ -270,7 +250,7 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
           style={{
             width,
             height,
-            cursor: hoveredId ? "pointer" : "default",
+            cursor: hoveredNodeId ? "pointer" : "default",
             outline: "none",
           }}
           onFocus={() => setIsCanvasFocused(true)}
@@ -284,7 +264,8 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
               targetRadius / transform.k,
             )
 
-            onSelect?.(closestNode)
+            focusNode(closestNode)
+            onClick?.(closestNode)
           }}
           onMouseMove={(event) => {
             React.startTransition(() => {
@@ -296,40 +277,55 @@ export const NetworkGraph = React.forwardRef<NetworkGraphInstance, NetworkGraphP
                 targetRadius / transform.k,
               )
 
-              onHover?.(closestNode)
+              setHoveredNodeId(closestNode?.id || "")
             })
           }}
           onKeyDown={(event) => {
-            // Unselect node with `escape`
+            // Unfocus node with `escape`
             if (event.key === "Escape") {
               event.preventDefault()
-              onSelect?.(null)
+              focusNode(null)
             }
 
-            // Reselect previously selected node with `tab`
-            if (event.key === "Tab" && !event.shiftKey && !selectedId) {
+            // Refocus previously focused node with `tab`
+            if (event.key === "Tab" && !event.shiftKey && !focusedNodeId) {
               event.preventDefault()
 
-              let node = simulationNodes.find((node) => node.id === prevSelectedId) || null
+              let node = simulationNodes.find((node) => node.id === prevFocusedNodeId) || null
 
-              // If there is no previous selected node,
-              // select the node closest to the center
+              // If there is no previous focused node,
+              // focus the node closest to the center
               if (!node) {
                 const [x, y] = transform.invert([width / 2, height / 2])
                 node = getClosestNode(simulationNodes, { x, y }, Infinity)
               }
 
-              onSelect?.(node)
+              focusNode(node)
             }
 
             // Traverse with arrow keys
             if (event.key in KEY_TO_DIRECTION) {
               event.preventDefault()
 
-              const nextNode = getNextNode(simulationNodes, selectedId, KEY_TO_DIRECTION[event.key])
+              const nextNode = getNextNode(
+                simulationNodes,
+                focusedNodeId,
+                KEY_TO_DIRECTION[event.key],
+              )
 
               if (nextNode) {
-                onSelect?.(nextNode)
+                focusNode(nextNode)
+              }
+            }
+
+            // Simulate click with `enter` or `space`
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+
+              const node = simulationNodes.find((node) => node.id === focusedNodeId)
+
+              if (node) {
+                onClick?.(node)
               }
             }
           }}
@@ -358,49 +354,49 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   const radius = {
     idle: baseRadius * scale,
     hover: baseRadius + 2,
-    selected: baseRadius + 2,
+    focus: baseRadius + 2,
     disabled: baseRadius * scale,
   }[state]
 
   const fill = {
     idle: cssVar("--color-node"),
     hover: cssVar("--color-node"),
-    selected: cssVar("--color-node-selected"),
+    focus: cssVar("--color-node"),
     disabled: cssVar("--color-node-disabled"),
   }[state]
 
   const textSize = {
     idle: baseTextSize * scale,
     hover: baseTextSize,
-    selected: baseTextSize,
+    focus: baseTextSize,
     disabled: baseTextSize * scale,
   }[state]
 
   const textAlpha = {
     idle: scale,
     hover: 1,
-    selected: 1,
+    focus: 1,
     disabled: 0.4 * scale,
   }[state]
 
   const textOffset = {
     idle: baseTextOffset * scale,
     hover: baseTextOffset,
-    selected: baseTextOffset,
+    focus: baseTextOffset,
     disabled: baseTextOffset * scale,
   }[state]
 
   const textMaxLength = {
     idle: 16 * Math.max(transform.k, 1),
     hover: Infinity,
-    selected: Infinity,
+    focus: Infinity,
     disabled: 16 * Math.max(transform.k, 1),
   }[state]
 
   const text = truncate(node.title, textMaxLength)
   context.font = `${textSize}px iA Writer Quattro` // TODO: Use CSS variable
 
-  if (text && (state === "selected" || state === "hover")) {
+  if (text && (state === "focus" || state === "hover")) {
     // Draw text backdrop
     const textMetrics = context.measureText(text)
     const textWidth = textMetrics.width
@@ -430,7 +426,7 @@ function drawNode(node: Node, { state, context, transform, canvas, cssVar }: Dra
   context.fillText(text, x, y + textOffset)
   context.globalAlpha = 1
 
-  if (state === "selected" && isCanvasFocused) {
+  if (state === "focus" && isCanvasFocused) {
     const lineWidth = 2
     const gap = 1
 
@@ -619,7 +615,7 @@ function getClosestNode(nodes: Node[], position: Position, radius: number): Node
     (acc, node) => {
       let [closestNode, minDistance] = acc
 
-      if (!node.x || !node.y) return acc
+      if (node.x === undefined || node.y === undefined) return acc
 
       const distance = getDistance({ x: node.x, y: node.y }, position)
 

@@ -37,11 +37,14 @@
 :root {
   color-scheme: light dark;
 
+  /* Hue */
   --h: 30deg;
   --h-highlight: 90deg;
 
+  /* Saturation */
   --s: 5%;
 
+  /* Lightness */
   --l-text: 10%;
   --l-text-secondary: 45%;
   --l-text-tertiary: 60%;
@@ -50,15 +53,15 @@
   --l-bg-overlay: 100%;
   --l-node-disabled: 80%;
   --l-edge: 85%;
-  --l-edge-active: 70%;
-  --l-edge-disabled: 90%;
 
+  /* Opacity */
   --a-bg-backdrop: 0.65;
   --a-bg-secondary: 0.05;
   --a-bg-tertiary: 0.1;
   --a-border: 0.25;
   --a-border-secondary: 0.15;
 
+  /* Colors */
   --color-text: hsl(var(--h) var(--s) var(--l-text));
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
@@ -74,17 +77,15 @@
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200deg 100% 40%);
   --color-node: var(--color-text-secondary);
-  --color-node-selected: var(--color-border-focus);
-  --color-node-disabled: hsl(var(--h) var(--s) var(--l-node-disabled));
   --color-edge: hsl(var(--h) var(--s) var(--l-edge));
-  --color-edge-selected: hsl(var(--h) var(--s) var(--l-edge-active));
-  --color-edge-disabled: hsl(var(--h) var(--s) var(--l-edge-disabled));
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Hue */
     --h: 220deg;
 
+    /* Lightness */
     --l-text: 90%;
     --l-text-secondary: 60%;
     --l-text-tertiary: 50%;
@@ -93,11 +94,11 @@
     --l-bg-overlay: 15%;
     --l-node-disabled: 20%;
     --l-edge: 20%;
-    --l-edge-active: 40%;
-    --l-edge-disabled: 10%;
 
+    /* Opacity */
     --a-bg-secondary: 0.075;
 
+    /* Colors */
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
