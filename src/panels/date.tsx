@@ -72,9 +72,9 @@ function Calendar({
   const week = eachDayOfInterval({ start: startOfWeek, end: endOfWeek })
 
   return (
-    <div className="flex flex-col gap-1 overflow-hidden py-2 px-4 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+    <div className="flex flex-col gap-2 overflow-hidden py-2 px-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
       <div className="flex items-center justify-between">
-        <span className="text-base font-semibold">
+        <span className="px-2 text-base font-semibold">
           {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
 
