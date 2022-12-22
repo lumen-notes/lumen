@@ -251,7 +251,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown hr {
-  @apply border-border;
+  @apply border-border-secondary;
 }
 
 .markdown ul {
