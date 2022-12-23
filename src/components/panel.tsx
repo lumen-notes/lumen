@@ -54,29 +54,31 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         }
       }}
     >
-      <ResizeHandle
-        value={width}
-        min={MIN_WIDTH}
-        max={MAX_WIDTH}
-        onChange={setWidth}
-        onSnap={(direction) => {
-          switch (direction) {
-            case "left": {
-              setWidth(MIN_WIDTH)
-              break
-            }
+      <div className="hidden sm:block">
+        <ResizeHandle
+          value={width}
+          min={MIN_WIDTH}
+          max={MAX_WIDTH}
+          onChange={setWidth}
+          onSnap={(direction) => {
+            switch (direction) {
+              case "left": {
+                setWidth(MIN_WIDTH)
+                break
+              }
 
-            // Fill the remaining space to the right
-            case "right": {
-              if (!panelRef.current) break
+              // Fill the remaining space to the right
+              case "right": {
+                if (!panelRef.current) break
 
-              const panelRect = panelRef.current.getBoundingClientRect()
-              setWidth(Math.max(window.innerWidth - panelRect.x, MIN_WIDTH))
-              break
+                const panelRect = panelRef.current.getBoundingClientRect()
+                setWidth(Math.max(window.innerWidth - panelRect.x, MIN_WIDTH))
+                break
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
+      </div>
       <div className="flex h-full flex-col overflow-auto">
         <div
           className={clsx(
