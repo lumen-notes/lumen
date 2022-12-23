@@ -79,6 +79,7 @@ export function Root() {
   return (
     <div>
       <div className="flex h-screen w-screen flex-col-reverse sm:flex-row ">
+        {/* TODO: Don't mount both desktop and mobile navigation at the same time */}
         {/* Desktop navigation */}
         <div className="hidden sm:flex">
           <NavBar direction="vertical" />

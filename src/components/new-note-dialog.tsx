@@ -17,6 +17,7 @@ function initialPosition() {
   }
 }
 
+// TODO: Support mobile viewports
 export function NewNoteDialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) {
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const prevActiveElement = React.useRef<HTMLElement>()
