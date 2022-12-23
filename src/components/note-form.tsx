@@ -385,7 +385,7 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            body: query,
+            body: `${query}\n\n#inbox`,
           }
 
           // Create new note
