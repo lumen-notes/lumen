@@ -1,5 +1,7 @@
 import { EditorView } from "@codemirror/view"
 import * as Portal from "@radix-ui/react-portal"
+import { TooltipContentProps } from "@radix-ui/react-tooltip"
+import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
 import { IconButton } from "./button"
@@ -15,7 +17,7 @@ function initialPosition() {
   }
 }
 
-export function NewNoteDialog() {
+export function NewNoteDialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) {
   const triggerRef = React.useRef<HTMLButtonElement>(null)
   const prevActiveElement = React.useRef<HTMLElement>()
   const [isOpen, setIsOpen] = React.useState(false)
@@ -72,10 +74,10 @@ export function NewNoteDialog() {
     <>
       <IconButton
         ref={triggerRef}
-        className={isOpen ? "text-text" : ""}
+        className={clsx("w-full", isOpen && "text-text")}
         aria-label="New note"
         shortcut={["⌘", "I"]}
-        tooltipSide="right"
+        tooltipSide={tooltipSide}
         onClick={toggle}
       >
         {isOpen ? <ComposeFillIcon24 /> : <ComposeIcon24 />}

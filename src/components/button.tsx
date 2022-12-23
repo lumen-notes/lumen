@@ -58,7 +58,7 @@ export const IconButton = React.forwardRef<
           ref={ref}
           type="button"
           className={clsx(
-            "cursor-default rounded p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50",
+            "inline-flex cursor-default justify-center rounded p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50",
             className,
           )}
           {...props}

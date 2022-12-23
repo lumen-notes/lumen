@@ -1,4 +1,4 @@
-import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
+import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
@@ -78,67 +78,16 @@ export function Root() {
 
   return (
     <div>
-      <div className="w-screent grid h-screen grid-cols-[auto_1fr]">
-        <div className="flex flex-col items-center justify-between border-r border-border-secondary bg-bg-backdrop p-2">
-          <div className="flex flex-col gap-3">
-            <RovingFocusGroup.Root orientation="vertical">
-              <nav>
-                <ul className="flex flex-col gap-2">
-                  <li>
-                    <NavLink to="/" aria-label="Notes" end>
-                      {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink to={`/dates/${toDateString(new Date())}`} aria-label="Today" end>
-                      {({ isActive }) =>
-                        isActive ? (
-                          <CalendarFillIcon24 date={new Date().getDate()} />
-                        ) : (
-                          <CalendarIcon24 date={new Date().getDate()} />
-                        )
-                      }
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink to="/tags" aria-label="Tags" end>
-                      {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
-                    </NavLink>
-                  </li>
-                  {/* <li>
-                    <NavLink to="/graph" aria-label="Graph" end>
-                      {({ isActive }) => (isActive ? <GraphFillIcon24 /> : <GraphIcon24 />)}
-                    </NavLink>
-                  </li> */}
-                </ul>
-              </nav>
-            </RovingFocusGroup.Root>
-            <div role="none" className="mx-1 h-px bg-border-secondary" />
-            <NewNoteDialog />
-          </div>
-          <div className="flex flex-col gap-2">
-            <DropdownMenu modal={false}>
-              <DropdownMenu.Trigger asChild>
-                <IconButton aria-label="More actions" tooltipSide="right">
-                  <MoreIcon24 />
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content side="right" align="end">
-                <DropdownMenu.Item
-                  onClick={() =>
-                    window.open("https://github.com/colebemis/lumen/issues/new", "_blank")
-                  }
-                >
-                  Send feedback
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item onClick={() => send("RELOAD")}>Reload</DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => send("DISCONNECT")}>Disconnect</DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
-          </div>
+      <div className="flex h-screen w-screen flex-col-reverse sm:flex-row ">
+        {/* Desktop navigation */}
+        <div className="hidden sm:flex">
+          <NavBar direction="vertical" />
         </div>
-        <main className="overflow-auto">
+        {/* Mobile navigation */}
+        <div className="flex sm:hidden">
+          <NavBar direction="horizontal" />
+        </div>
+        <main className="w-full flex-grow overflow-auto">
           <Outlet />
         </main>
       </div>
@@ -156,7 +105,10 @@ export function Root() {
   )
 }
 
-function NavLink(props: NavLinkProps) {
+function NavLink({
+  tooltipSide,
+  ...props
+}: NavLinkProps & { tooltipSide?: TooltipContentProps["side"] }) {
   const path = useResolvedPath(props.to)
   const match = useMatch({
     path: path.pathname,
@@ -168,17 +120,103 @@ function NavLink(props: NavLinkProps) {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <RovingFocusGroup.Item asChild active={isActive}>
-          <RouterNavLink
-            className={clsx(
-              "flex rounded py-2 px-2 hover:bg-bg-secondary",
-              isActive ? "text-text" : "text-text-secondary",
-            )}
-            {...props}
-          />
-        </RovingFocusGroup.Item>
+        <RouterNavLink
+          className={clsx(
+            "inline-flex w-full justify-center rounded py-2 px-2 hover:bg-bg-secondary",
+            isActive ? "text-text" : "text-text-secondary",
+          )}
+          {...props}
+        />
       </Tooltip.Trigger>
-      <Tooltip.Content side="right">{props["aria-label"]}</Tooltip.Content>
+      <Tooltip.Content side={tooltipSide}>{props["aria-label"]}</Tooltip.Content>
     </Tooltip>
+  )
+}
+
+function NavBar({ direction }: { direction: "horizontal" | "vertical" }) {
+  const globalState = React.useContext(GlobalStateContext)
+  return (
+    <nav
+      className={clsx(
+        "w-full border-border-secondary",
+        direction === "vertical" ? "border-r" : "border-t",
+      )}
+    >
+      <ul
+        className={clsx(
+          "flex gap-2 p-2",
+          direction === "vertical" ? "h-full flex-col" : "flex-row",
+        )}
+      >
+        <li className={clsx(direction === "vertical" ? "flex-grow-0" : "flex-grow")}>
+          <NavLink
+            to="/"
+            aria-label="Notes"
+            tooltipSide={direction === "vertical" ? "right" : "top"}
+            end
+          >
+            {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
+          </NavLink>
+        </li>
+        <li className={clsx(direction === "vertical" ? "flex-grow-0" : "flex-grow")}>
+          <NavLink
+            to={`/dates/${toDateString(new Date())}`}
+            aria-label="Today"
+            tooltipSide={direction === "vertical" ? "right" : "top"}
+            end
+          >
+            {({ isActive }) =>
+              isActive ? (
+                <CalendarFillIcon24 date={new Date().getDate()} />
+              ) : (
+                <CalendarIcon24 date={new Date().getDate()} />
+              )
+            }
+          </NavLink>
+        </li>
+        <li className={clsx(direction === "vertical" ? "flex-grow-0" : "flex-grow")}>
+          <NavLink
+            to="/tags"
+            aria-label="Tags"
+            tooltipSide={direction === "vertical" ? "right" : "top"}
+            end
+          >
+            {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
+          </NavLink>
+        </li>
+        <li className={clsx(direction === "vertical" ? "flex-grow-0" : "flex-grow")}>
+          <NewNoteDialog tooltipSide={direction === "vertical" ? "right" : "top"} />
+        </li>
+        <li className={clsx(direction === "vertical" ? "mt-auto flex-grow-0" : "flex-grow")}>
+          <DropdownMenu modal={false}>
+            <DropdownMenu.Trigger asChild>
+              <IconButton
+                aria-label="More actions"
+                tooltipSide={direction === "vertical" ? "right" : "top"}
+                className="w-full"
+              >
+                <MoreIcon24 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content side={direction === "vertical" ? "right" : "top"} align="end">
+              <DropdownMenu.Item
+                onClick={() =>
+                  window.open("https://github.com/colebemis/lumen/issues/new", "_blank")
+                }
+              >
+                Send feedback
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item onClick={() => globalState.service.send("RELOAD")}>
+                Reload
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onClick={() => globalState.service.send("DISCONNECT")}>
+                Disconnect
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        </li>
+      </ul>
+    </nav>
   )
 }
