@@ -102,7 +102,7 @@ export function NewNoteDialog({ tooltipSide }: { tooltipSide?: TooltipContentPro
             >
               <NoteForm
                 elevation={2}
-                editorMinHeight={96}
+                editorMinHeight={160}
                 codeMirrorViewRef={codeMirrorViewRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)
