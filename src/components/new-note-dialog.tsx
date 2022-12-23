@@ -3,7 +3,7 @@ import * as Portal from "@radix-ui/react-portal"
 import React from "react"
 import { DraggableCore } from "react-draggable"
 import { IconButton } from "./button"
-import { ComposeIcon24 } from "./icons"
+import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteForm } from "./note-form"
 
 const DIALOG_WIDTH = 480
@@ -72,12 +72,13 @@ export function NewNoteDialog() {
     <>
       <IconButton
         ref={triggerRef}
+        className={isOpen ? "text-text" : ""}
         aria-label="New note"
         shortcut={["⌘", "I"]}
         tooltipSide="right"
         onClick={toggle}
       >
-        <ComposeIcon24 />
+        {isOpen ? <ComposeFillIcon24 /> : <ComposeIcon24 />}
       </IconButton>
       {isOpen ? (
         <Portal.Root>
