@@ -104,7 +104,7 @@ function Root({ children }: React.PropsWithChildren) {
   return (
     <PanelsContext.Provider value={contextValue}>
       <LinkContext.Provider value={Link}>
-        <div className="flex h-full overflow-y-hidden">{children}</div>
+        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none">{children}</div>
       </LinkContext.Provider>
     </PanelsContext.Provider>
   )

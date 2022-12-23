@@ -29,12 +29,12 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="sticky h-full w-screen flex-shrink-0 bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:w-[var(--width)]"
+      className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
       style={{
         // @ts-ignore TypeScript doesn't know about custom properties
         "--width": `${width}px`,
         // Stagger sticky offset of panels
-        left: panel ? (panel.index + 1) * 8 : 0,
+        "--left": panel ? `${(panel.index + 1) * 8}px` : 0,
       }}
       onKeyDown={(event) => {
         // Close with `command + x` if no text is selected
