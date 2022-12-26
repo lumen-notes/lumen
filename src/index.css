@@ -264,7 +264,7 @@ body:has([data-resizing="true"]) * {
 
 .markdown ul,
 .markdown ol {
-  @apply pl-6;
+  @apply pl-12;
 }
 
 .markdown ul ul,
