@@ -48,9 +48,9 @@ export interface Typegen0 {
   }
   missingImplementations: {
     actions: never
-    services: never
-    guards: never
     delays: never
+    guards: never
+    services: never
   }
   eventsCausingActions: {
     clearContext:
@@ -80,6 +80,14 @@ export interface Typegen0 {
     upsertNote: "UPSERT_NOTE"
     upsertNoteFile: "UPSERT_NOTE"
   }
+  eventsCausingDelays: {}
+  eventsCausingGuards: {
+    hasNoBacklinks: "DELETE_NOTE"
+    isDenied: "done.invoke.queryPermission"
+    isGranted: "done.invoke.queryPermission"
+    isPrompt: "done.invoke.queryPermission"
+    isSupported: ""
+  }
   eventsCausingServices: {
     loadContext: ""
     loadNotes:
@@ -90,14 +98,6 @@ export interface Typegen0 {
     requestPermission: "REQUEST_PERMISSION"
     showDirectoryPicker: "SHOW_DIRECTORY_PICKER"
   }
-  eventsCausingGuards: {
-    hasNoBacklinks: "DELETE_NOTE"
-    isDenied: "done.invoke.queryPermission"
-    isGranted: "done.invoke.queryPermission"
-    isPrompt: "done.invoke.queryPermission"
-    isSupported: ""
-  }
-  eventsCausingDelays: {}
   matchesStates:
     | "connected"
     | "connected.idle"
