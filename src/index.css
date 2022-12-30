@@ -232,6 +232,10 @@ body:has([data-resizing="true"]) * {
   @apply font-semibold;
 }
 
+.markdown h1 {
+  @apply text-base leading-snug;
+}
+
 .markdown pre {
   @apply overflow-auto rounded bg-bg-secondary p-3;
 }
