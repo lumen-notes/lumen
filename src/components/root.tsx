@@ -186,7 +186,10 @@ function NavBar({ direction }: { direction: "horizontal" | "vertical" }) {
           </NavLink>
         </li>
         <li className={clsx(direction === "vertical" ? "flex-grow-0" : "flex-grow")}>
-          <NewNoteDialog tooltipSide={direction === "vertical" ? "right" : "top"} />
+          <NewNoteDialog.Trigger
+            className="w-full"
+            tooltipSide={direction === "vertical" ? "right" : "top"}
+          />
         </li>
         <li className={clsx(direction === "vertical" ? "mt-auto flex-grow-0" : "flex-grow")}>
           <DropdownMenu modal={false}>
