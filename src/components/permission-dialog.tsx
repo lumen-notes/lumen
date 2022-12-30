@@ -20,7 +20,7 @@ export function PermissionDialog() {
       }}
     >
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-20 bg-bg-backdrop backdrop-blur-sm" />
+        <AlertDialog.Overlay className="bg-bg-inset-backdrop fixed inset-0 z-20 backdrop-blur-sm" />
         <AlertDialog.Content asChild>
           <Card
             elevation={2}
