@@ -3,6 +3,7 @@ import { clsx } from "clsx"
 import React from "react"
 import { Card } from "./card"
 import { Keys } from "./keys"
+import * as Portal from "@radix-ui/react-portal"
 
 const Root = RadixDropdownMenu.Root
 
@@ -10,11 +11,13 @@ const Trigger = RadixDropdownMenu.Trigger
 
 const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuContentProps>(
   ({ children, ...props }, ref) => (
-    <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
-      <Card elevation={1} className="z-20 min-w-[10rem] p-1">
-        {children}
-      </Card>
-    </RadixDropdownMenu.Content>
+    <Portal.Root>
+      <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
+        <Card elevation={1} className="z-20 min-w-[10rem] p-1">
+          {children}
+        </Card>
+      </RadixDropdownMenu.Content>
+    </Portal.Root>
   ),
 )
 
