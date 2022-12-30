@@ -32,8 +32,8 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
     >
       <ul
         className={clsx(
-          "flex gap-2 p-2",
-          { left: "h-full flex-col", bottom: "flex-row" }[position],
+          "flex p-2",
+          { left: "h-full flex-col gap-2", bottom: "flex-row" }[position],
         )}
       >
         <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
