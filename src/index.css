@@ -39,7 +39,7 @@
 
   /* Hue */
   --h: 30deg;
-  --h-highlight: 90deg;
+  --h-highlight: 160deg;
 
   /* Saturation */
   --s: 5%;
@@ -132,7 +132,7 @@ body:has([data-resizing="true"]) * {
 /* Utility classes */
 
 .link {
-  @apply rounded-sm underline underline-offset-2 outline-offset-0;
+  @apply rounded-sm underline decoration-1 underline-offset-2 outline-offset-0;
 }
 
 /* Codemirror styles */
