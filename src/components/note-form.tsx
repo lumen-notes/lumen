@@ -197,7 +197,7 @@ export function NoteForm({
             }
           }}
         />
-        <div className="flex justify-between">
+        <div className="sticky bottom-0 -m-[calc(0.5rem-1px)] flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md">
           <FileInputButton
             asChild
             onChange={(files) => {

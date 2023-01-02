@@ -58,7 +58,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       data-note-id={id}
       ref={cardRef}
       tabIndex={0}
-      className="flex flex-col p-1"
+      className="flex flex-col gap-6 p-4"
       elevation={elevation}
       onKeyDown={(event) => {
         // Switch to editing with `e`
@@ -92,11 +92,8 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         }
       }}
     >
-      <div className="p-3">
-        <Markdown>{body}</Markdown>
-      </div>
-
-      <div className="sticky bottom-0 flex items-center justify-between rounded-md bg-bg-backdrop p-3 backdrop-blur-md">
+      <Markdown>{body}</Markdown>
+      <div className="sticky bottom-0 -m-[calc(1rem-1px)] flex items-center justify-between rounded-lg bg-bg-backdrop p-[calc(1rem-1px)] backdrop-blur-md">
         <span className="leading-4 text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
