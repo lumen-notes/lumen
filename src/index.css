@@ -71,6 +71,7 @@
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
   --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg) / var(--a-bg-backdrop));
   --color-bg-inset-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
+  --color-bg-overlay-backdrop: hsla(var(--h) var(--s) var(--l-bg-overlay) / var(--a-bg-backdrop));
   --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
   --color-bg-tertiary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-tertiary));
   --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
@@ -318,7 +319,7 @@ body:has([data-resizing="true"]) * {
 /* Cmdk styles */
 
 [cmdk-overlay] {
-  @apply bg-bg-inset-backdrop fixed inset-0 z-20 backdrop-blur-sm;
+  @apply fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm;
 }
 
 [cmdk-dialog] {

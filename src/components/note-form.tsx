@@ -197,7 +197,13 @@ export function NoteForm({
             }
           }}
         />
-        <div className="sticky bottom-0 -m-[calc(0.5rem-1px)] flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md">
+        <div
+          className={clsx(
+            "sticky bottom-0 -m-[calc(0.5rem-1px)] flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md",
+            elevation === 0 && "bg-bg-backdrop",
+            elevation === 1 && "bg-bg-overlay-backdrop",
+          )}
+        >
           <FileInputButton
             asChild
             onChange={(files) => {

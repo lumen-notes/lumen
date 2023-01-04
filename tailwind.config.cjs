@@ -18,6 +18,7 @@ module.exports = {
       "bg-overlay": "var(--color-bg-overlay)",
       "bg-backdrop": "var(--color-bg-backdrop)",
       "bg-inset-backdrop": "var(--color-bg-inset-backdrop)",
+      "bg-overlay-backdrop": "var(--color-bg-overlay-backdrop)",
       "bg-secondary": "var(--color-bg-secondary)",
       "bg-tertiary": "var(--color-bg-tertiary)",
       "bg-highlight": "var(--color-bg-highlight)",
