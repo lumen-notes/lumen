@@ -4,6 +4,7 @@ import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
+import { useMedia } from "react-use"
 import { IconButton } from "./button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteForm } from "./note-form"
@@ -138,72 +139,17 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
     focusNoteEditor,
     focusPrevActiveElement,
   } = React.useContext(NewNoteDialogContext)
-  // const triggerRef = React.useRef<HTMLButtonElement>(null)
-  // const prevActiveElement = React.useRef<HTMLElement>()
-  // const [isOpen, setIsOpen] = React.useState(false)
-  // const [position, setPosition] = React.useState(() => initialPosition())
-  // const codeMirrorViewRef = React.useRef<EditorView>()
-
-  // const focusPrevActiveElement = React.useCallback(() => {
-  //   prevActiveElement.current?.focus()
-  // }, [])
-
-  // const focusNoteEditor = React.useCallback(() => {
-  //   codeMirrorViewRef.current?.focus()
-  // }, [])
-
-  // const focusNoteCard = React.useCallback(
-  //   (id: string) => {
-  //     const noteElement = document.querySelector(`[data-note-id="${id}"]`)
-  //     if (noteElement instanceof HTMLElement) {
-  //       noteElement.focus()
-  //     } else {
-  //       // Fallback to previous active element
-  //       focusPrevActiveElement()
-  //     }
-  //   },
-  //   [focusPrevActiveElement],
-  // )
-
-  // const toggle = React.useCallback(() => {
-  //   if (isOpen) {
-  //     setIsOpen(false)
-  //     focusPrevActiveElement()
-  //   } else {
-  //     prevActiveElement.current = document.activeElement as HTMLElement
-  //     setIsOpen(true)
-  //     setPosition(initialPosition())
-  //     setTimeout(() => focusNoteEditor())
-  //   }
-  // }, [isOpen, focusPrevActiveElement, focusNoteEditor])
-
-  // React.useEffect(() => {
-  //   function onKeyDown(event: KeyboardEvent) {
-  //     // Toggle with `command + i`
-  //     if (event.key === "i" && event.metaKey) {
-  //       toggle()
-  //       event.preventDefault()
-  //     }
-  //   }
-
-  //   window.addEventListener("keydown", onKeyDown)
-  //   return () => window.removeEventListener("keydown", onKeyDown)
-  // }, [toggle])
+  // We consider any viewport wider than 640px a desktop viewport.
+  // This breakpoint is copied from Tailwind's default breakpoints.
+  // Reference: https://tailwindcss.com/docs/responsive-design
+  const isDesktop = useMedia("(min-width: 640px)")
 
   return (
     <>
-      {/* <IconButton
-        ref={triggerRef}
-        className={clsx("w-full", isOpen && "text-text")}
-        aria-label="New note"
-        shortcut={["⌘", "I"]}
-        tooltipSide={tooltipSide}
-        onClick={toggle}
-      >
-        {isOpen ? <ComposeFillIcon24 /> : <ComposeIcon24 />}
-      </IconButton> */}
       {isOpen ? (
         <Portal.Root>
+          {/* Overlay */}
+          <div className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-md sm:hidden" />
           <DraggableCore
             onDrag={(event, data) =>
               setPosition({
@@ -214,11 +160,17 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
             onStop={() => focusNoteEditor()}
             // Ignore drag events in the note editor
             cancel=".cm-editor"
+            disabled={!isDesktop}
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
-              className="fixed z-20"
-              style={{ top: position.y, left: position.x, width: DIALOG_WIDTH }}
+              className="fixed top-4 left-4 right-4 z-20 sm:right-[unset] sm:top-[var(--top)] sm:left-[var(--left)] sm:w-[var(--width)]"
+              style={{
+                // @ts-ignore
+                "--top": `${position.y}px`,
+                "--left": `${position.x}px`,
+                "--width": `${DIALOG_WIDTH}px`,
+              }}
             >
               <NoteForm
                 elevation={2}
