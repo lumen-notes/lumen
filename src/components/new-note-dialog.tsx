@@ -222,7 +222,8 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
             >
               <NoteForm
                 elevation={2}
-                editorMinHeight={160}
+                minHeight="12rem"
+                maxHeight="50vh"
                 codeMirrorViewRef={editorRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)

@@ -28,7 +28,8 @@ type NoteFormProps = {
   id?: NoteId
   defaultBody?: string
   elevation?: CardProps["elevation"]
-  editorMinHeight?: string | number
+  minHeight?: string | number
+  maxHeight?: string | number
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
   onSubmit?: (note: { id: NoteId; body: string }) => void
   onCancel?: () => void
@@ -38,7 +39,8 @@ export function NoteForm({
   id,
   defaultBody = "",
   elevation = 0,
-  editorMinHeight,
+  minHeight,
+  maxHeight,
   codeMirrorViewRef,
   onSubmit,
   onCancel,
@@ -129,9 +131,11 @@ export function NoteForm({
     <Card
       elevation={elevation}
       className={clsx(
-        "relative p-2",
+        "relative flex flex-col",
         editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
+        maxHeight !== undefined && "overflow-y-auto",
       )}
+      style={{ minHeight, maxHeight }}
       // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
       onDrop={(event) => {
         const [item] = Array.from(event.dataTransfer.items)
@@ -165,7 +169,7 @@ export function NoteForm({
       ) : null}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <form
-        className="flex flex-col gap-2"
+        className="flex flex-grow flex-col"
         onSubmit={(event) => {
           handleSubmit()
           event.preventDefault()
@@ -186,8 +190,7 @@ export function NoteForm({
       >
         <div
           ref={editorRef}
-          className="grid p-2"
-          style={{ minHeight: editorMinHeight }}
+          className="grid flex-shrink-0 flex-grow p-4"
           onPaste={(event) => {
             const [file] = Array.from(event.clipboardData.files)
 
@@ -199,7 +202,7 @@ export function NoteForm({
         />
         <div
           className={clsx(
-            "sticky bottom-0 -m-[calc(0.5rem-1px)] flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md",
+            "sticky bottom-px m-px flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md",
             elevation === 0 && "bg-bg-backdrop",
             elevation === 1 && "bg-bg-overlay-backdrop",
           )}
