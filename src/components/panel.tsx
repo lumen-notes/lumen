@@ -82,12 +82,12 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       <div className="flex h-full flex-col overflow-auto">
         <div
           className={clsx(
-            "bg-bg-inset-backdrop sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary p-4 backdrop-blur-md",
+            "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset-backdrop p-4 backdrop-blur-md",
           )}
         >
           <div className="flex flex-shrink gap-2">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
-            <div className="flex items-baseline gap-3">
+            <div className="flex items-baseline gap-3 overflow-hidden">
               {/* TODO: Truncate title */}
               <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
               {description ? (
