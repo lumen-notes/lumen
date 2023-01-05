@@ -56,14 +56,16 @@ export function Root() {
         </main>
       </div>
       {state.matches("connected.loadingNotes") ? (
-        <Card
-          elevation={1}
-          className="fixed bottom-2 right-2 p-2 text-text-secondary"
-          role="status"
-          aria-label="Loading notes"
-        >
-          <LoadingIcon16 />
-        </Card>
+        <div className="fixed bottom-2 right-2">
+          <Card
+            elevation={1}
+            className="p-2 text-text-secondary"
+            role="status"
+            aria-label="Loading notes"
+          >
+            <LoadingIcon16 />
+          </Card>
+        </div>
       ) : null}
     </div>
   )

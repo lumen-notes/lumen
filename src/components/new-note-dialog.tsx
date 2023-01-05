@@ -149,7 +149,14 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
       {isOpen ? (
         <Portal.Root>
           {/* Overlay */}
-          <div className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm sm:hidden" />
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div
+            className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm sm:hidden"
+            onClick={() => {
+              setIsOpen(false)
+              focusPrevActiveElement()
+            }}
+          />
           <DraggableCore
             onDrag={(event, data) =>
               setPosition({

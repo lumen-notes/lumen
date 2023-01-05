@@ -20,37 +20,36 @@ export function PermissionDialog() {
       }}
     >
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="bg-bg-inset-backdrop fixed inset-0 z-20 backdrop-blur-sm" />
+        <AlertDialog.Overlay className="fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm" />
         <AlertDialog.Content asChild>
-          <Card
-            elevation={2}
-            className="fixed top-1/2 left-1/2 z-20 flex w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 flex-col gap-4 p-4"
-          >
-            <div className="flex flex-col gap-2">
-              <AlertDialog.Title className="text-base font-semibold leading-none">
-                Allow access to {state.context.directoryHandle.name}?
-              </AlertDialog.Title>
-              <AlertDialog.Description className="text-text-secondary">
-                Lumen needs permission to access your local {state.context.directoryHandle.name}{" "}
-                folder
-              </AlertDialog.Description>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <AlertDialog.Cancel asChild>
-                <Button>Deny</Button>
-              </AlertDialog.Cancel>
-              <AlertDialog.Action asChild>
-                <Button
-                  variant="primary"
-                  onClick={() => send("REQUEST_PERMISSION")}
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  autoFocus
-                >
-                  Allow
-                </Button>
-              </AlertDialog.Action>
-            </div>
-          </Card>
+          <div className="fixed top-1/2 left-1/2 z-20 w-[90vw] max-w-xs -translate-x-1/2 -translate-y-1/2 focus:outline-0">
+            <Card elevation={2} className="flex flex-col gap-4 p-4">
+              <div className="flex flex-col gap-2">
+                <AlertDialog.Title className="text-base font-semibold leading-none">
+                  Allow access to {state.context.directoryHandle.name}?
+                </AlertDialog.Title>
+                <AlertDialog.Description className="text-text-secondary">
+                  Lumen needs permission to access your local {state.context.directoryHandle.name}{" "}
+                  folder
+                </AlertDialog.Description>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <AlertDialog.Cancel asChild>
+                  <Button>Deny</Button>
+                </AlertDialog.Cancel>
+                <AlertDialog.Action asChild>
+                  <Button
+                    variant="primary"
+                    onClick={() => send("REQUEST_PERMISSION")}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                  >
+                    Allow
+                  </Button>
+                </AlertDialog.Action>
+              </div>
+            </Card>
+          </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>
     </AlertDialog.Root>
