@@ -36,10 +36,7 @@ const NewNoteDialogContext = React.createContext<{
 const DIALOG_WIDTH = 480
 
 function initialPosition() {
-  return {
-    x: window.innerWidth / 2 - DIALOG_WIDTH / 2,
-    y: 128,
-  }
+  return { x: 0, y: 0 }
 }
 
 function Provider({ children }: { children: React.ReactNode }) {
@@ -171,7 +168,7 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
-              className="fixed top-4 left-4 right-4 z-20 sm:right-[unset] sm:top-[var(--top)] sm:left-[var(--left)] sm:w-[var(--width)]"
+              className="fixed top-4 left-4 right-4 z-20 sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:w-[var(--width)]"
               style={{
                 // @ts-ignore
                 "--top": `${position.y}px`,
