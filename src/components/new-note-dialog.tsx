@@ -149,7 +149,7 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
       {isOpen ? (
         <Portal.Root>
           {/* Overlay */}
-          <div className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-md sm:hidden" />
+          <div className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm sm:hidden" />
           <DraggableCore
             onDrag={(event, data) =>
               setPosition({
