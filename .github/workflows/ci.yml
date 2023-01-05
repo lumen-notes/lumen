@@ -44,4 +44,4 @@ jobs:
           node-version: 18.x
           cache: "npm"
       - run: npm ci
-      - run: npm run benchmark >> $GITHUB_STEP_SUMMARY
+      - run: npx vite-node scripts/benchmark.ts >> $GITHUB_STEP_SUMMARY
