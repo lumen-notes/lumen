@@ -58,7 +58,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       data-note-id={id}
       ref={cardRef}
       tabIndex={0}
-      className="flex flex-col gap-6 p-4"
+      className="flex flex-col"
       elevation={elevation}
       onKeyDown={(event) => {
         // Switch to editing with `e`
@@ -92,9 +92,11 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         }
       }}
     >
-      <Markdown>{body}</Markdown>
-      <div className="sticky bottom-0 -m-[calc(1rem-1px)] flex items-center justify-between rounded-lg bg-bg-backdrop p-[calc(1rem-1px)] backdrop-blur-md">
-        <span className="leading-4 text-text-secondary">
+      <div className="p-4 pb-1">
+        <Markdown>{body}</Markdown>
+      </div>
+      <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop p-2 backdrop-blur-md">
+        <span className="px-2 text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
           </Panels.Link>
@@ -105,46 +107,44 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             </span>
           ) : null}
         </span>
-        <div className="-m-2">
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-            <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
-                <MoreIcon16 />
-              </IconButton>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
-                Edit
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(body)}
-                shortcut={["⌘", "C"]}
-              >
-                Copy markdown
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(id)}
-                shortcut={["⌘", "⇧", "C"]}
-              >
-                Copy ID
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                icon={<TrashIcon16 />}
-                onSelect={() => {
-                  globalState.service.send({ type: "DELETE_NOTE", id })
-                }}
-                shortcut={["⌘", "⌫"]}
-                disabled={backlinks.length > 0}
-              >
-                Delete
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu>
-        </div>
+        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+          <DropdownMenu.Trigger asChild>
+            <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+              <MoreIcon16 />
+            </IconButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
+              Edit
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<CopyIcon16 />}
+              onSelect={() => copy(body)}
+              shortcut={["⌘", "C"]}
+            >
+              Copy markdown
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<CopyIcon16 />}
+              onSelect={() => copy(id)}
+              shortcut={["⌘", "⇧", "C"]}
+            >
+              Copy ID
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<TrashIcon16 />}
+              onSelect={() => {
+                globalState.service.send({ type: "DELETE_NOTE", id })
+              }}
+              shortcut={["⌘", "⌫"]}
+              disabled={backlinks.length > 0}
+            >
+              Delete
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
       </div>
     </Card>
   ) : (

@@ -130,12 +130,8 @@ export function NoteForm({
   return (
     <Card
       elevation={elevation}
-      className={clsx(
-        "relative flex flex-col",
-        editorHasFocus && "outline outline-2 outline-offset-[-1px] outline-border-focus",
-        maxHeight !== undefined && "overflow-y-auto",
-      )}
-      style={{ minHeight, maxHeight }}
+      focusVisible={editorHasFocus}
+      className="relative flex flex-col"
       // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
       onDrop={(event) => {
         const [item] = Array.from(event.dataTransfer.items)
@@ -167,74 +163,82 @@ export function NoteForm({
           }}
         />
       ) : null}
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-      <form
-        className="flex flex-grow flex-col"
-        onSubmit={(event) => {
-          handleSubmit()
-          event.preventDefault()
-        }}
-        onKeyDown={(event) => {
-          // Submit on `command + enter`
-          if (event.key === "Enter" && event.metaKey) {
-            handleSubmit()
-            event.preventDefault()
-          }
 
-          // Clear and cancel on `escape`
-          if (event.key === "Escape") {
-            setBody("")
-            onCancel?.()
-          }
-        }}
-      >
+      <div className={clsx("rounded-lg", maxHeight !== undefined && "overflow-hidden")}>
         <div
-          ref={editorRef}
-          className="grid flex-shrink-0 flex-grow p-4"
-          onPaste={(event) => {
-            const [file] = Array.from(event.clipboardData.files)
-
-            if (file) {
-              attachFile(file)
-              event.preventDefault()
-            }
-          }}
-        />
-        <div
-          className={clsx(
-            "sticky bottom-px m-px flex justify-between rounded-lg p-[calc(0.5rem-1px)] backdrop-blur-md",
-            elevation === 0 && "bg-bg-backdrop",
-            elevation === 1 && "bg-bg-overlay-backdrop",
-          )}
+          className={clsx("flex flex-col", maxHeight !== undefined && "overflow-auto")}
+          style={{ minHeight, maxHeight }}
         >
-          <FileInputButton
-            asChild
-            onChange={(files) => {
-              if (!files) return
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+          <form
+            className="flex flex-grow flex-col"
+            onSubmit={(event) => {
+              handleSubmit()
+              event.preventDefault()
+            }}
+            onKeyDown={(event) => {
+              // Submit on `command + enter`
+              if (event.key === "Enter" && event.metaKey) {
+                handleSubmit()
+                event.preventDefault()
+              }
 
-              const [file] = Array.from(files)
-
-              if (file) {
-                attachFile(file)
+              // Clear and cancel on `escape`
+              if (event.key === "Escape") {
+                setBody("")
+                onCancel?.()
               }
             }}
           >
-            <IconButton aria-label="Attach file">
-              <PaperclipIcon16 />
-            </IconButton>
-          </FileInputButton>
-          <div className="flex gap-2">
-            {onCancel ? (
-              <Button shortcut={["esc"]} onClick={onCancel}>
-                Cancel
-              </Button>
-            ) : null}
-            <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
-              {id ? "Save" : "Add"}
-            </Button>
-          </div>
+            <div
+              ref={editorRef}
+              className="grid flex-shrink-0 flex-grow p-4 pb-1"
+              onPaste={(event) => {
+                const [file] = Array.from(event.clipboardData.files)
+
+                if (file) {
+                  attachFile(file)
+                  event.preventDefault()
+                }
+              }}
+            />
+            <div
+              className={clsx(
+                "sticky bottom-0 flex justify-between rounded-lg p-2 backdrop-blur-md",
+                elevation === 0 && "bg-bg-backdrop",
+                elevation === 1 && "bg-bg-overlay-backdrop",
+              )}
+            >
+              <FileInputButton
+                asChild
+                onChange={(files) => {
+                  if (!files) return
+
+                  const [file] = Array.from(files)
+
+                  if (file) {
+                    attachFile(file)
+                  }
+                }}
+              >
+                <IconButton aria-label="Attach file">
+                  <PaperclipIcon16 />
+                </IconButton>
+              </FileInputButton>
+              <div className="flex gap-2">
+                {onCancel ? (
+                  <Button shortcut={["esc"]} onClick={onCancel}>
+                    Cancel
+                  </Button>
+                ) : null}
+                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
+                  {id ? "Save" : "Add"}
+                </Button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </Card>
   )
 }
