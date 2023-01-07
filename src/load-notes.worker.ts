@@ -1,7 +1,7 @@
 import { Note, NoteId } from "./types"
 import { parseNoteBody } from "./utils/parse-note-body"
 
-const FILENAME_REGEX = /^\d+\.md$/
+// const FILENAME_REGEX = /^\d+\.md$/
 
 type MessagePayload = {
   directoryHandle: FileSystemDirectoryHandle
@@ -11,22 +11,29 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // Start timer
   console.time("loadNotes")
 
-  const directoryHandle = event.data.directoryHandle
-  const data: ReturnType<typeof parseFile>[] = []
+  // Fetch notes from GitHub repository
+  const json = await fetch(
+    "https://api.github.com/repos/colebemis/notes/contents/.lumen/notes.json",
+    {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+        Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+      },
+    },
+  ).then((response) => response.json())
+
+  const data: Record<string, string> = JSON.parse(atob(json.content))
+  const parsedData = Object.entries(data).map(([id, body]) => ({
+    id,
+    body,
+    ...parseNoteBody(body),
+  }))
   const notes: Record<NoteId, Note> = {}
   const backlinks: Record<NoteId, NoteId[]> = {}
   const tags: Record<string, NoteId[]> = {}
   const dates: Record<string, NoteId[]> = {}
 
-  // Parse every note file in the directory
-  for await (const [name, handle] of directoryHandle.entries()) {
-    // Only load markdown files with numeric names (example: "123.md")
-    if (handle.kind === "file" && FILENAME_REGEX.test(name)) {
-      data.push(handle.getFile().then(parseFile))
-    }
-  }
-
-  for (const { id, title, body, noteLinks, tagLinks, dateLinks } of await Promise.all(data)) {
+  for (const { id, title, body, noteLinks, tagLinks, dateLinks } of parsedData) {
     notes[id] = { title, body }
 
     for (const noteLink of noteLinks) {
@@ -49,16 +56,16 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
 }
 
 /** Extracts metadata from a note file */
-async function parseFile(file: File) {
-  if (!FILENAME_REGEX.test(file.name)) {
-    throw new Error(`Invalid note filename: ${file.name}`)
-  }
+// async function parseFile(file: File) {
+//   if (!FILENAME_REGEX.test(file.name)) {
+//     throw new Error(`Invalid note filename: ${file.name}`)
+//   }
 
-  const id = file.name.replace(/\.md$/, "")
-  const body = await file.text()
+//   const id = file.name.replace(/\.md$/, "")
+//   const body = await file.text()
 
-  return { id, body, ...parseNoteBody(body) }
-}
+//   return { id, body, ...parseNoteBody(body) }
+// }
 
 /**
  * Pushes a value to an array in an object.
