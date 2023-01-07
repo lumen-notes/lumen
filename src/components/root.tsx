@@ -2,7 +2,7 @@ import { useActor } from "@xstate/react"
 import React from "react"
 import { Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
-import { Button } from "./button"
+// import { Button } from "./button"
 import { Card } from "./card"
 import { LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
@@ -10,7 +10,7 @@ import { useMedia } from "react-use"
 
 export function Root() {
   const globalState = React.useContext(GlobalStateContext)
-  const [state, send] = useActor(globalState.service)
+  const [state] = useActor(globalState.service)
   // We consider any viewport wider than 640px a desktop viewport.
   // This breakpoint is copied from Tailwind's default breakpoints.
   // Reference: https://tailwindcss.com/docs/responsive-design
