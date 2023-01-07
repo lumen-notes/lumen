@@ -135,6 +135,7 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
         x={12}
         y={18}
         fontSize="10px"
+        fill="currentColor"
         className="font-mono font-semibold leading-none text-bg-inset"
       >
         {date}
