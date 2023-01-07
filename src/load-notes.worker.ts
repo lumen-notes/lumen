@@ -4,6 +4,7 @@ import { parseNoteBody } from "./utils/parse-note-body"
 // const FILENAME_REGEX = /^\d+\.md$/
 
 type MessagePayload = {
+  sha: string
   directoryHandle: FileSystemDirectoryHandle
 }
 
@@ -12,9 +13,27 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   console.time("loadNotes")
 
   // TODO: Handle offline mode
-  // TODO: Don't fetch if the current SHA is the same as SHA of the last updated file
 
-  // Fetch notes from GitHub repository
+  // Fetch latest commit SHA
+  const mainRef = await fetch("https://api.github.com/repos/colebemis/notes/git/refs/heads/main", {
+    headers: {
+      Accept: "application/vnd.github.v3+json",
+      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+    },
+  }).then((response) => response.json())
+
+  const sha: string = mainRef.object.sha
+
+  // Don't load notes if the SHA hasn't changed
+  if (sha === event.data.sha) {
+    // End timer
+    console.timeEnd("loadNotes")
+
+    self.postMessage(null)
+    return
+  }
+
+  // Fetch notes from GitHub
   const json = await fetch(
     "https://api.github.com/repos/colebemis/notes/contents/.lumen/notes.json",
     {
@@ -55,7 +74,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // End timer
   console.timeEnd("loadNotes")
 
-  self.postMessage({ notes, backlinks, tags, dates })
+  self.postMessage({ sha, notes, backlinks, tags, dates })
 }
 
 /** Extracts metadata from a note file */

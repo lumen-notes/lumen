@@ -3,13 +3,14 @@ import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { Note, NoteId } from "./types"
-import { writeFile } from "./utils/file-system"
+// import { writeFile } from "./utils/file-system"
 import { isSupported } from "./utils/is-supported"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
 
 type Context = {
+  sha: string
   directoryHandle: FileSystemDirectoryHandle | null
   notes: Record<NoteId, Note>
   sortedNoteIds: NoteId[]
@@ -30,6 +31,7 @@ type Event =
 const machine = createMachine(
   {
     context: {
+      sha: "",
       directoryHandle: null,
       notes: {},
       sortedNoteIds: [],
@@ -54,11 +56,12 @@ const machine = createMachine(
         }
         loadNotes: {
           data: {
+            sha: string
             notes: Record<NoteId, Note>
             backlinks: Record<NoteId, NoteId[]>
             tags: Record<string, NoteId[]>
             dates: Record<string, NoteId[]>
-          }
+          } | null
         }
       },
       events: {} as Event,
@@ -213,29 +216,33 @@ const machine = createMachine(
   {
     actions: {
       setContext: assign({
+        sha: (context, event) => {
+          if (!event.data || !("sha" in event.data)) return context.sha
+          return event.data.sha
+        },
         directoryHandle: (context, event) => {
-          if ("directoryHandle" in event.data) return event.data.directoryHandle
-          return context.directoryHandle
+          if (!event.data || !("directoryHandle" in event.data)) return context.directoryHandle
+          return event.data.directoryHandle
         },
         notes: (context, event) => {
-          if ("notes" in event.data) return event.data.notes
-          return context.notes
+          if (!event.data || !("notes" in event.data)) return context.notes
+          return event.data.notes
         },
         sortedNoteIds: (context, event) => {
-          if ("sortedNoteIds" in event.data) return event.data.sortedNoteIds
-          return context.sortedNoteIds
+          if (!event.data || !("sortedNoteIds" in event.data)) return context.sortedNoteIds
+          return event.data.sortedNoteIds
         },
         backlinks: (context, event) => {
-          if ("backlinks" in event.data) return event.data.backlinks
-          return context.backlinks
+          if (!event.data || !("backlinks" in event.data)) return context.backlinks
+          return event.data.backlinks
         },
         tags: (context, event) => {
-          if ("tags" in event.data) return event.data.tags
-          return context.tags
+          if (!event.data || !("tags" in event.data)) return context.tags
+          return event.data.tags
         },
         dates: (context, event) => {
-          if ("dates" in event.data) return event.data.dates
-          return context.dates
+          if (!event.data || !("dates" in event.data)) return context.dates
+          return event.data.dates
         },
       }),
       clearContext: assign({
@@ -362,6 +369,8 @@ const machine = createMachine(
               sha,
             }),
           })
+
+          console.log("updated", sha)
         } catch (error) {
           // Create the file
           await fetch(endpoint, {
@@ -506,7 +515,7 @@ const machine = createMachine(
         })
 
         return new Promise((resolve) => {
-          worker.postMessage({ directoryHandle: context.directoryHandle })
+          worker.postMessage({ sha: context.sha, directoryHandle: context.directoryHandle })
           worker.onmessage = (event) => {
             resolve(event.data)
           }
