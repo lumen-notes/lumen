@@ -42,7 +42,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // TODO: Handle case where .lumen/notes.json doesn't exist
 
   // Fetch notes from GitHub
-  const json = await fetch(
+  const file = await fetch(
     `https://api.github.com/repos/${repoOwner}/${repoName}/contents/.lumen/notes.json`,
     {
       headers: {
@@ -53,7 +53,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   ).then((response) => response.json())
 
   const schema = z.record(z.string())
-  const data = schema.parse(JSON.parse(atob(json.content)))
+  const data = schema.parse(JSON.parse(atob(file.content)))
   const parsedData = Object.entries(data).map(([id, body]) => ({
     id,
     body,
