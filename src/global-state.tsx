@@ -4,7 +4,7 @@ import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { Note, NoteId } from "./types"
 // import { writeFile } from "./utils/file-system"
-import { isSupported } from "./utils/is-supported"
+// import { isSupported } from "./utils/is-supported"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
@@ -76,15 +76,16 @@ const machine = createMachine(
     initial: "initial",
     states: {
       initial: {
-        always: [
-          {
-            cond: "isSupported",
-            target: "loadingContext",
-          },
-          {
-            target: "notSupported",
-          },
-        ],
+        always: "loadingContext",
+        // always: [
+        //   {
+        //     cond: "isSupported",
+        //     target: "loadingContext",
+        //   },
+        //   {
+        //     target: "notSupported",
+        //   },
+        // ],
       },
       // Browser does not support the File System Access API
       notSupported: {
@@ -97,12 +98,14 @@ const machine = createMachine(
           onDone: [
             {
               actions: ["setContext"],
-              target: "queryingPermission",
+              // target: "queryingPermission",
+              target: "connected",
             },
           ],
           onError: [
             {
-              target: "disconnected",
+              // target: "disconnected",
+              target: "connected",
             },
           ],
         },
@@ -192,12 +195,12 @@ const machine = createMachine(
             entry: ["sortNoteIds"],
             // TODO: Allow these events while loading notes
             on: {
-              RELOAD: {
-                target: "#global.queryingPermission",
-              },
-              DISCONNECT: {
-                target: "#global.disconnected",
-              },
+              // RELOAD: {
+              //   target: "#global.queryingPermission",
+              // },
+              // DISCONNECT: {
+              //   target: "#global.disconnected",
+              // },
               UPSERT_NOTE: {
                 actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
                 target: "idle",
@@ -467,9 +470,9 @@ const machine = createMachine(
       },
     },
     guards: {
-      isSupported: (context, event) => {
-        return isSupported()
-      },
+      // isSupported: (context, event) => {
+      //   return isSupported()
+      // },
       isGranted: (context, event) => {
         return event.data === "granted"
       },
@@ -526,9 +529,10 @@ const machine = createMachine(
         return { directoryHandle }
       },
       loadNotes: (context) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
+        console.log("loadNotes")
+        // if (!context.directoryHandle) {
+        //   throw new Error("Directory not found")
+        // }
 
         const worker = new Worker(new URL("./load-notes.worker.ts", import.meta.url), {
           type: "module",

@@ -54,18 +54,14 @@ export interface Typegen0 {
   }
   eventsCausingActions: {
     clearContext:
-      | "DISCONNECT"
       | "PERMISSION_DENIED"
       | "done.invoke.queryPermission"
-      | "error.platform.loadContext"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
       | "error.platform.showDirectoryPicker"
     clearContextInIndexedDB:
-      | "DISCONNECT"
       | "PERMISSION_DENIED"
       | "done.invoke.queryPermission"
-      | "error.platform.loadContext"
       | "error.platform.queryPermission"
       | "error.platform.requestPermission"
       | "error.platform.showDirectoryPicker"
@@ -86,15 +82,16 @@ export interface Typegen0 {
     isDenied: "done.invoke.queryPermission"
     isGranted: "done.invoke.queryPermission"
     isPrompt: "done.invoke.queryPermission"
-    isSupported: ""
   }
   eventsCausingServices: {
     loadContext: ""
     loadNotes:
+      | "done.invoke.loadContext"
       | "done.invoke.queryPermission"
       | "done.invoke.requestPermission"
       | "done.invoke.showDirectoryPicker"
-    queryPermission: "RELOAD" | "done.invoke.loadContext"
+      | "error.platform.loadContext"
+    queryPermission: never
     requestPermission: "REQUEST_PERMISSION"
     showDirectoryPicker: "SHOW_DIRECTORY_PICKER"
   }
