@@ -10,6 +10,9 @@ import { parseNoteBody } from "./utils/parse-note-body"
 export const UPLOADS_DIRECTORY = "uploads"
 
 type Context = {
+  authToken: string
+  repoOwner: string
+  repoName: string
   sha: string
   directoryHandle: FileSystemDirectoryHandle | null
   notes: Record<NoteId, Note>
@@ -31,6 +34,9 @@ type Event =
 const machine = createMachine(
   {
     context: {
+      authToken: import.meta.env.VITE_GITHUB_TOKEN,
+      repoOwner: "colebemis",
+      repoName: "notes",
       sha: "",
       directoryHandle: null,
       notes: {},
@@ -216,6 +222,18 @@ const machine = createMachine(
   {
     actions: {
       setContext: assign({
+        authToken: (context, event) => {
+          if (!event.data || !("authToken" in event.data)) return context.authToken
+          return event.data.authToken
+        },
+        repoOwner: (context, event) => {
+          if (!event.data || !("repoOwner" in event.data)) return context.repoOwner
+          return event.data.repoOwner
+        },
+        repoName: (context, event) => {
+          if (!event.data || !("repoName" in event.data)) return context.repoName
+          return event.data.repoName
+        },
         sha: (context, event) => {
           if (!event.data || !("sha" in event.data)) return context.sha
           return event.data.sha
@@ -246,6 +264,9 @@ const machine = createMachine(
         },
       }),
       clearContext: assign({
+        // authToken: (context, event) => "",
+        // repoOwner: (context, event) => "",
+        // repoName: (context, event) => "",
         sha: (context, event) => "",
         directoryHandle: (context, event) => null,
         notes: (context, event) => ({}),
@@ -347,14 +368,14 @@ const machine = createMachine(
         }
       }),
       upsertNoteFile: async (context, event) => {
-        const endpoint = `https://api.github.com/repos/colebemis/notes/contents/${event.id}.md`
+        const endpoint = `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${event.id}.md`
 
         try {
           // Get the SHA of the file
           const { sha } = await fetch(endpoint, {
             headers: {
               Accept: "application/vnd.github.v3+json",
-              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+              Authorization: `Bearer ${context.authToken}`,
             },
           }).then((response) => response.json())
 
@@ -362,7 +383,7 @@ const machine = createMachine(
           await fetch(endpoint, {
             method: "PUT",
             headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+              Authorization: `Bearer ${context.authToken}`,
             },
             body: JSON.stringify({
               message: `Update ${event.id}.md`,
@@ -370,14 +391,12 @@ const machine = createMachine(
               sha,
             }),
           })
-
-          console.log("updated", sha)
         } catch (error) {
           // Create the file
           await fetch(endpoint, {
             method: "PUT",
             headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+              Authorization: `Bearer ${context.authToken}`,
             },
             body: JSON.stringify({
               message: `Create ${event.id}.md`,
@@ -418,14 +437,14 @@ const machine = createMachine(
         }
       }),
       deleteNoteFile: async (context, event) => {
-        const endpoint = `https://api.github.com/repos/colebemis/notes/contents/${event.id}.md`
+        const endpoint = `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${event.id}.md`
 
         try {
           // Get the SHA of the file
           const { sha } = await fetch(endpoint, {
             headers: {
               Accept: "application/vnd.github.v3+json",
-              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+              Authorization: `Bearer ${context.authToken}`,
             },
           }).then((response) => response.json())
 
@@ -433,7 +452,7 @@ const machine = createMachine(
           await fetch(endpoint, {
             method: "DELETE",
             headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+              Authorization: `Bearer ${context.authToken}`,
             },
             body: JSON.stringify({
               message: `Delete ${event.id}.md`,
@@ -515,8 +534,10 @@ const machine = createMachine(
           type: "module",
         })
 
+        const { authToken, repoOwner, repoName, sha } = context
+
         return new Promise((resolve) => {
-          worker.postMessage({ sha: context.sha, directoryHandle: context.directoryHandle })
+          worker.postMessage({ authToken, repoOwner, repoName, sha })
           worker.onmessage = (event) => {
             resolve(event.data)
           }

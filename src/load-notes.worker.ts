@@ -4,28 +4,33 @@ import { parseNoteBody } from "./utils/parse-note-body"
 // const FILENAME_REGEX = /^\d+\.md$/
 
 type MessagePayload = {
+  authToken: string
+  repoOwner: string
+  repoName: string
   sha: string
-  directoryHandle: FileSystemDirectoryHandle
 }
 
 self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // Start timer
   console.time("loadNotes")
 
+  const { authToken, repoOwner, repoName, sha } = event.data
+
   // TODO: Handle offline mode
 
   // Fetch latest commit SHA
-  const mainRef = await fetch("https://api.github.com/repos/colebemis/notes/git/refs/heads/main", {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+  const mainRef = await fetch(
+    `https://api.github.com/repos/${repoOwner}/${repoName}/git/refs/heads/main`,
+    {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+        Authorization: `Bearer ${authToken}`,
+      },
     },
-  }).then((response) => response.json())
-
-  const sha: string = mainRef.object.sha
+  ).then((response) => response.json())
 
   // Don't load notes if the SHA hasn't changed
-  if (sha === event.data.sha) {
+  if (mainRef.object.sha === sha) {
     // End timer
     console.timeEnd("loadNotes")
 
@@ -37,11 +42,11 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
 
   // Fetch notes from GitHub
   const json = await fetch(
-    "https://api.github.com/repos/colebemis/notes/contents/.lumen/notes.json",
+    `https://api.github.com/repos/${repoOwner}/${repoName}/contents/.lumen/notes.json`,
     {
       headers: {
         Accept: "application/vnd.github.v3+json",
-        Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+        Authorization: `Bearer ${authToken}`,
       },
     },
   ).then((response) => response.json())
@@ -76,7 +81,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // End timer
   console.timeEnd("loadNotes")
 
-  self.postMessage({ sha, notes, backlinks, tags, dates })
+  self.postMessage({ sha: mainRef.object.sha, notes, backlinks, tags, dates })
 }
 
 /** Extracts metadata from a note file */
