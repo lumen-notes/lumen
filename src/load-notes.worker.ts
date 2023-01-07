@@ -11,6 +11,9 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   // Start timer
   console.time("loadNotes")
 
+  // TODO: Handle offline mode
+  // TODO: Don't fetch if the current SHA is the same as SHA of the last updated file
+
   // Fetch notes from GitHub repository
   const json = await fetch(
     "https://api.github.com/repos/colebemis/notes/contents/.lumen/notes.json",

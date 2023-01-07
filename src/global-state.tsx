@@ -338,12 +338,43 @@ const machine = createMachine(
           dates: Object.fromEntries(dateEntries),
         }
       }),
-      upsertNoteFile: (context, event) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
+      upsertNoteFile: async (context, event) => {
+        const endpoint = `https://api.github.com/repos/colebemis/notes/contents/${event.id}.md`
 
-        writeFile(context.directoryHandle, `${event.id}.md`, event.body, { create: true })
+        try {
+          // Get the SHA of the file
+          const { sha } = await fetch(endpoint, {
+            headers: {
+              Accept: "application/vnd.github.v3+json",
+              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+            },
+          }).then((response) => response.json())
+
+          // Update the file
+          await fetch(endpoint, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+            },
+            body: JSON.stringify({
+              message: `Update ${event.id}.md`,
+              content: btoa(event.body),
+              sha,
+            }),
+          })
+        } catch (error) {
+          // Create the file
+          await fetch(endpoint, {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+            },
+            body: JSON.stringify({
+              message: `Create ${event.id}.md`,
+              content: btoa(event.body),
+            }),
+          })
+        }
       },
       deleteNote: assign((context, event) => {
         const { [event.id]: _, ...rest } = context.notes
@@ -377,12 +408,31 @@ const machine = createMachine(
         }
       }),
       deleteNoteFile: async (context, event) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
+        const endpoint = `https://api.github.com/repos/colebemis/notes/contents/${event.id}.md`
 
-        // Delete the file
-        await context.directoryHandle.removeEntry(`${event.id}.md`)
+        try {
+          // Get the SHA of the file
+          const { sha } = await fetch(endpoint, {
+            headers: {
+              Accept: "application/vnd.github.v3+json",
+              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+            },
+          }).then((response) => response.json())
+
+          // Delete the file
+          await fetch(endpoint, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+            },
+            body: JSON.stringify({
+              message: `Delete ${event.id}.md`,
+              sha,
+            }),
+          })
+        } catch (error) {
+          console.error(error)
+        }
 
         // TODO: Delete attached files
       },
