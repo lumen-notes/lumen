@@ -47,7 +47,10 @@ export function Root() {
 
   return (
     <div>
-      <div className="flex h-screen w-screen flex-col-reverse sm:flex-row ">
+      <div
+        className="flex h-screen w-screen flex-col-reverse sm:flex-row"
+        style={{ height: "100svh" }}
+      >
         <div className="flex">
           <NavBar position={isDesktop ? "left" : "bottom"} />
         </div>
