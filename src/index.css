@@ -118,6 +118,10 @@ body {
   @apply outline outline-2 outline-offset-[-1px] outline-border-focus;
 }
 
+input[type="search"] {
+  -webkit-appearance: none;
+}
+
 /* Hide the browser's default cancel button on search inputs */
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
