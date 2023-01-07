@@ -33,6 +33,8 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     return
   }
 
+  // TODO: Handle case where .lumen/notes.json doesn't exist
+
   // Fetch notes from GitHub
   const json = await fetch(
     "https://api.github.com/repos/colebemis/notes/contents/.lumen/notes.json",

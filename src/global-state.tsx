@@ -246,6 +246,7 @@ const machine = createMachine(
         },
       }),
       clearContext: assign({
+        sha: (context, event) => "",
         directoryHandle: (context, event) => null,
         notes: (context, event) => ({}),
         backlinks: (context, event) => ({}),
