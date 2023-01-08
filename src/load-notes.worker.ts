@@ -1,3 +1,4 @@
+import { Buffer } from "buffer"
 import { z } from "zod"
 import { Note, NoteId } from "./types"
 import { parseNoteBody } from "./utils/parse-note-body"
@@ -53,7 +54,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
   ).then((response) => response.json())
 
   const schema = z.record(z.string())
-  const data = schema.parse(JSON.parse(atob(file.content)))
+  const data = schema.parse(JSON.parse(Buffer.from(file.content, "base64").toString()))
   const parsedData = Object.entries(data).map(([id, body]) => ({
     id,
     body,
