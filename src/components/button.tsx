@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type="button"
         className={clsx(
-          "cursor-default rounded px-3 py-2 font-semibold leading-4 disabled:pointer-events-none disabled:opacity-50",
+          "cursor-default rounded px-3 py-2 font-semibold leading-4 disabled:pointer-events-none disabled:opacity-50 touch:py-3 touch:px-4",
           variant === "secondary" && "ring-1 ring-inset ring-border hover:bg-bg-secondary",
           variant === "primary" &&
             "bg-text text-bg focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-bg",
@@ -58,7 +58,7 @@ export const IconButton = React.forwardRef<
           ref={ref}
           type="button"
           className={clsx(
-            "inline-flex cursor-default justify-center rounded p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50",
+            "inline-flex cursor-default justify-center rounded p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50 touch:p-3",
             className,
           )}
           {...props}
