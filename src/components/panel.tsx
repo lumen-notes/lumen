@@ -79,7 +79,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           }}
         />
       </div>
-      <div className="flex h-full flex-col overflow-auto">
+      <div className="flex h-full flex-col overflow-auto [-webkit-transform:translateZ(0)]">
         <div
           className={clsx(
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset-backdrop p-4 backdrop-blur-md",
