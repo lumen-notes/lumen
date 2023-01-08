@@ -178,7 +178,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
-  @apply flex rounded px-2 py-1;
+  @apply flex rounded px-2 py-1 touch:py-2 touch:px-3;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
