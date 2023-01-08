@@ -27,7 +27,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
       className={clsx(
         "w-full border-border-secondary",
         // Add a border separating the nav bar from the main content.
-        { left: "border-r", bottom: "border-t pb-[34px]" }[position],
+        { left: "border-r", bottom: "border-t pb-[env(safe-area-inset-bottom)]" }[position],
       )}
     >
       <ul
