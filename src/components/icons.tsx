@@ -334,3 +334,12 @@ export function EditIcon16() {
     </svg>
   )
 }
+
+export function ExternalLinkIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M7 3.5H3a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V9H14v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4v1.5Z" />
+      <path d="M16 0H9v1.5h4.44L6.94 8 8 9.06l6.5-6.5V7H16V0Z" />
+    </svg>
+  )
+}

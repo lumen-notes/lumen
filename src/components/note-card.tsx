@@ -9,7 +9,7 @@ import { pluralize } from "../utils/pluralize"
 import { IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
-import { CopyIcon16, EditIcon16, MoreIcon16, TrashIcon16 } from "./icons"
+import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { Panels } from "./panels"
@@ -131,6 +131,19 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               shortcut={["⌘", "⇧", "C"]}
             >
               Copy ID
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<ExternalLinkIcon16 />}
+              onSelect={() =>
+                window.open(
+                  `https://github.com/${state.context.repoOwner}/${state.context.repoName}/blob/main/${id}.md`,
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+            >
+              Open in GitHub
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
