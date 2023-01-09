@@ -20,7 +20,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
-    if (!file && state.matches("connected")) {
+    if (!file) {
       loadFile()
     }
 
@@ -45,7 +45,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   }, [file, state, path])
 
   if (!file) {
-    return isLoading || !state.matches("connected") ? (
+    return isLoading ? (
       <div className="flex items-center gap-2 leading-4 text-text-secondary">
         <LoadingIcon16 />
         Loading...
