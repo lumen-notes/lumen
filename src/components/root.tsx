@@ -26,7 +26,7 @@ export function Root() {
     return (
       <div className="grid h-screen w-screen place-items-center [@supports(height:100svh)]:h-[100svh]">
         <form
-          className="grid w-full max-w-md gap-4 p-6"
+          className="grid w-full max-w-md gap-6 p-6"
           key="sign-in"
           onSubmit={(event) => {
             event.preventDefault()
@@ -38,9 +38,9 @@ export function Root() {
           }}
         >
           <div className="grid gap-2">
-            <label htmlFor="auth-token">Personal access token</label>
+            <label htmlFor="auth-token">GitHub personal access token</label>
             <input
-              className="w-full rounded bg-bg-secondary px-3 py-2"
+              className="w-full rounded bg-bg-secondary px-3 py-2 touch:py-3 touch:px-4"
               type="password"
               id="auth-token"
               name="auth-token"
@@ -48,6 +48,13 @@ export function Root() {
               defaultValue={import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : ""}
               required
             />
+            <p className="text-text-secondary">
+              Generate a new{" "}
+              <a href="https://github.com/settings/tokens/new" className="link">
+                personal access token
+              </a>
+              , then paste it here. Be sure to give your token "repo" scope.
+            </p>
           </div>
           <Button type="submit" variant="primary" className="w-full">
             Sign in

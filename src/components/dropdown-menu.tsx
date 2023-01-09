@@ -13,7 +13,7 @@ const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuC
   ({ children, ...props }, ref) => (
     <Portal.Root>
       <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
-        <Card elevation={1} className="z-20 min-w-[10rem] p-1">
+        <Card elevation={1} className="z-20 min-w-[14rem] p-1">
           {children}
         </Card>
       </RadixDropdownMenu.Content>
