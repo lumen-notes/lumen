@@ -101,7 +101,7 @@ const machine = createMachine(
             always: [
               {
                 cond: "hasRepo",
-                target: "connected",
+                target: "loadingNotes",
               },
               {
                 target: "selectingRepo",
@@ -109,55 +109,47 @@ const machine = createMachine(
             ],
           },
           selectingRepo: {
-            entry: ["clearRepo", "clearRepoInIndexedDB"],
             on: {
               SELECT_REPO: {
                 actions: ["setContext", "saveContextInIndexedDB"],
-                target: "connected",
+                target: "loadingNotes",
               },
             },
           },
-          connected: {
-            initial: "loadingNotes",
-            on: {
-              CHANGE_REPO: "selectingRepo",
+          loadingNotes: {
+            invoke: {
+              src: "loadNotes",
+              id: "loadNotes",
+              onDone: [
+                {
+                  actions: ["setContext", "saveContextInIndexedDB"],
+                  target: "idle",
+                },
+              ],
+              // TODO: Handle errors
             },
-            states: {
-              loadingNotes: {
-                invoke: {
-                  src: "loadNotes",
-                  id: "loadNotes",
-                  onDone: [
-                    {
-                      actions: ["setContext", "saveContextInIndexedDB"],
-                      target: "idle",
-                    },
-                  ],
-                  // TODO: Handle errors
-                },
+          },
+          idle: {
+            entry: ["sortNoteIds"],
+            // TODO: Allow these events while loading notes
+            on: {
+              RELOAD_NOTES: "loadingNotes",
+              CHANGE_REPO: "selectingRepo",
+              UPSERT_NOTE: {
+                actions: ["upsertNote", "upsertNoteFile", "saveContextInIndexedDB"],
+                target: "idle",
+                internal: false, // Re-run entry actions
               },
-              idle: {
-                entry: ["sortNoteIds"],
-                // TODO: Allow these events while loading notes
-                on: {
-                  RELOAD_NOTES: "loadingNotes",
-                  UPSERT_NOTE: {
-                    actions: ["upsertNote", "upsertNoteFile", "saveContextInIndexedDB"],
-                    target: "idle",
-                    internal: false, // Re-run entry actions
-                  },
-                  DELETE_NOTE: [
-                    {
-                      // To preserve referential integrity, we only allow you to
-                      // delete a note if no other notes link to it.
-                      cond: "hasNoBacklinks",
-                      actions: ["deleteNote", "deleteNoteFile", "saveContextInIndexedDB"],
-                      target: "idle",
-                      internal: false, // Re-run entry actions
-                    },
-                  ],
+              DELETE_NOTE: [
+                {
+                  // To preserve referential integrity, we only allow you to
+                  // delete a note if no other notes link to it.
+                  cond: "hasNoBacklinks",
+                  actions: ["deleteNote", "deleteNoteFile", "saveContextInIndexedDB"],
+                  target: "idle",
+                  internal: false, // Re-run entry actions
                 },
-              },
+              ],
             },
           },
         },
@@ -181,17 +173,6 @@ const machine = createMachine(
         await set("context", {
           ...context,
           authToken: "",
-        })
-      },
-      clearRepo: assign({
-        repoOwner: (context, event) => "",
-        repoName: (context, event) => "",
-      }),
-      clearRepoInIndexedDB: async (context, event) => {
-        await set("context", {
-          ...context,
-          repoOwner: "",
-          repoName: "",
         })
       },
       sortNoteIds: assign({

@@ -31,8 +31,6 @@ export interface Typegen0 {
   eventsCausingActions: {
     clearAuthToken: "SIGN_OUT" | "done.invoke.loadContext" | "error.platform.loadContext"
     clearAuthTokenInIndexedDB: "SIGN_OUT" | "done.invoke.loadContext" | "error.platform.loadContext"
-    clearRepo: "" | "CHANGE_REPO"
-    clearRepoInIndexedDB: "" | "CHANGE_REPO"
     deleteNote: "DELETE_NOTE"
     deleteNoteFile: "DELETE_NOTE"
     saveContextInIndexedDB:
@@ -59,18 +57,11 @@ export interface Typegen0 {
   matchesStates:
     | "loadingContext"
     | "signedIn"
-    | "signedIn.connected"
-    | "signedIn.connected.idle"
-    | "signedIn.connected.loadingNotes"
+    | "signedIn.idle"
     | "signedIn.initializing"
+    | "signedIn.loadingNotes"
     | "signedIn.selectingRepo"
     | "signedOut"
-    | {
-        signedIn?:
-          | "connected"
-          | "initializing"
-          | "selectingRepo"
-          | { connected?: "idle" | "loadingNotes" }
-      }
+    | { signedIn?: "idle" | "initializing" | "loadingNotes" | "selectingRepo" }
   tags: never
 }

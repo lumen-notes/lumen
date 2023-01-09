@@ -68,9 +68,21 @@ export function Root() {
           }}
         >
           <label htmlFor="repo-owner">Repository owner</label>
-          <input type="text" id="repo-owner" name="repo-owner" required />
+          <input
+            type="text"
+            id="repo-owner"
+            name="repo-owner"
+            defaultValue={state.context.repoOwner}
+            required
+          />
           <label htmlFor="repo-name">Repository name</label>
-          <input type="text" id="repo-name" name="repo-name" required />
+          <input
+            type="text"
+            id="repo-name"
+            name="repo-name"
+            defaultValue={state.context.repoName}
+            required
+          />
           <Button type="submit">Select</Button>
         </form>
       </div>
@@ -87,7 +99,7 @@ export function Root() {
           <Outlet />
         </main>
       </div>
-      {state.matches("signedIn.connected.loadingNotes") ? (
+      {state.matches("signedIn.loadingNotes") ? (
         <div className="fixed bottom-2 right-2">
           <Card
             elevation={1}
