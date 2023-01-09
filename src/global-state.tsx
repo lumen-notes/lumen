@@ -1,10 +1,9 @@
 import { useInterpret } from "@xstate/react"
+import { Buffer } from "buffer"
 import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { Note, NoteId } from "./types"
-// import { writeFile } from "./utils/file-system"
-// import { isSupported } from "./utils/is-supported"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
@@ -390,7 +389,7 @@ const machine = createMachine(
             },
             body: JSON.stringify({
               message: `Update ${event.id}.md`,
-              content: btoa(event.body),
+              content: Buffer.from(event.body).toString("base64"),
               sha,
             }),
           })
@@ -403,7 +402,7 @@ const machine = createMachine(
             },
             body: JSON.stringify({
               message: `Create ${event.id}.md`,
-              content: btoa(event.body),
+              content: Buffer.from(event.body).toString("base64"),
             }),
           })
         }
