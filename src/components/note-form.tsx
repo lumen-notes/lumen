@@ -9,6 +9,7 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { useActor } from "@xstate/react"
+import { Buffer } from "buffer"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
@@ -16,7 +17,6 @@ import React from "react"
 import { GlobalStateContext } from "../global-state"
 import { NoteId } from "../types"
 import { formatDate } from "../utils/date"
-import { writeFile } from "../utils/file-system"
 import { Button, IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -90,39 +90,55 @@ export function NoteForm({
   }
 
   async function attachFile(file: File) {
-    const fileId = Date.now().toString()
-    const fileExtension = file.name.split(".").pop()
-    const fileName = file.name.replace(`.${fileExtension}`, "")
-    const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
+    try {
+      const fileId = Date.now().toString()
+      const fileExtension = file.name.split(".").pop()
+      const fileName = file.name.replace(`.${fileExtension}`, "")
+      const filePath = `${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
+      const arrayBuffer = await file.arrayBuffer()
 
-    // Upload file
-    if (state.context.directoryHandle) {
-      writeFile(state.context.directoryHandle, filePath, await file.arrayBuffer(), { create: true })
+      // Upload file
+      fetch(
+        `https://api.github.com/repos/${state.context.repoOwner}/${state.context.repoName}/contents/${filePath}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${state.context.authToken}`,
+          },
+          body: JSON.stringify({
+            message: `Upload ${fileId}.${fileExtension}`,
+            content: Buffer.from(arrayBuffer).toString("base64"),
+          }),
+        },
+      )
+
+      let markdown = `[${fileName}](/${filePath})`
+
+      // Use markdown image syntax if file is an image, video, or audio
+      if (
+        file.type.startsWith("image/") ||
+        file.type.startsWith("video/") ||
+        file.type.startsWith("audio/")
+      ) {
+        markdown = `!${markdown}`
+      }
+
+      const { from = 0, to = 0 } =
+        view?.state.selection.ranges[view?.state.selection.mainIndex] || {}
+      const anchor = from + markdown.indexOf("]")
+      const head = from + markdown.indexOf("[") + 1
+
+      view?.dispatch({
+        // Replace the current selection with the markdown
+        changes: [{ from, to, insert: markdown }],
+        // Select the text content of the inserted markdown
+        selection: { anchor, head },
+      })
+
+      view?.focus()
+    } catch (error) {
+      console.error(error)
     }
-
-    let markdown = `[${fileName}](${filePath})`
-
-    // Use markdown image syntax if file is an image, video, or audio
-    if (
-      file.type.startsWith("image/") ||
-      file.type.startsWith("video/") ||
-      file.type.startsWith("audio/")
-    ) {
-      markdown = `!${markdown}`
-    }
-
-    const { from = 0, to = 0 } = view?.state.selection.ranges[view?.state.selection.mainIndex] || {}
-    const anchor = from + markdown.indexOf("]")
-    const head = from + markdown.indexOf("[") + 1
-
-    view?.dispatch({
-      // Replace the current selection with the markdown
-      changes: [{ from, to, insert: markdown }],
-      // Select the text content of the inserted markdown
-      selection: { anchor, head },
-    })
-
-    view?.focus()
   }
 
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
