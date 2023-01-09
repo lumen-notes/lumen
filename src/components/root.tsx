@@ -23,6 +23,7 @@ export function Root() {
 
   if (state.matches("signedOut")) {
     // TODO: Validate the token
+    // TODO: Replace with OAuth flow
     return (
       <div className="grid h-screen w-screen place-items-center [@supports(height:100svh)]:h-[100svh]">
         <form
