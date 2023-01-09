@@ -81,11 +81,14 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Send feedback
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => globalState.service.send("RELOAD")}>
-                Reload
+              <DropdownMenu.Item onClick={() => globalState.service.send("RELOAD_NOTES")}>
+                Reload notes
               </DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => globalState.service.send("DISCONNECT")}>
-                Disconnect
+              <DropdownMenu.Item onClick={() => globalState.service.send("CHANGE_REPO")}>
+                Change repository
+              </DropdownMenu.Item>
+              <DropdownMenu.Item onClick={() => globalState.service.send("SIGN_OUT")}>
+                Sign out
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>

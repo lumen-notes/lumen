@@ -13,7 +13,6 @@ export type Context = {
   repoOwner: string
   repoName: string
   sha: string
-  directoryHandle: FileSystemDirectoryHandle | null
   notes: Record<NoteId, Note>
   sortedNoteIds: NoteId[]
   backlinks: Record<NoteId, NoteId[]>
@@ -22,22 +21,21 @@ export type Context = {
 }
 
 type Event =
-  | { type: "SHOW_DIRECTORY_PICKER" }
-  | { type: "REQUEST_PERMISSION" }
-  | { type: "PERMISSION_DENIED" }
-  | { type: "RELOAD" }
-  | { type: "DISCONNECT" }
+  | { type: "SIGN_IN"; data: { authToken: string } }
+  | { type: "SIGN_OUT" }
+  | { type: "SELECT_REPO"; data: { repoOwner: string; repoName: string } }
+  | { type: "CHANGE_REPO" }
+  | { type: "RELOAD_NOTES" }
   | { type: "UPSERT_NOTE"; id: NoteId; body: string }
   | { type: "DELETE_NOTE"; id: NoteId }
 
 const machine = createMachine(
   {
     context: {
-      authToken: import.meta.env.VITE_GITHUB_TOKEN,
-      repoOwner: "colebemis",
-      repoName: "notes",
+      authToken: "",
+      repoOwner: "",
+      repoName: "",
       sha: "",
-      directoryHandle: null,
       notes: {},
       sortedNoteIds: [],
       backlinks: {},
@@ -50,14 +48,6 @@ const machine = createMachine(
       services: {} as {
         loadContext: {
           data: Context
-        }
-        queryPermission: {
-          data: PermissionState
-        }
-        showDirectoryPicker: {
-          data: {
-            directoryHandle: FileSystemDirectoryHandle
-          }
         }
         loadNotes: {
           data: {
@@ -72,149 +62,102 @@ const machine = createMachine(
       events: {} as Event,
     },
     id: "global",
-    initial: "initial",
+    initial: "loadingContext",
     states: {
-      initial: {
-        always: "loadingContext",
-        // always: [
-        //   {
-        //     cond: "isSupported",
-        //     target: "loadingContext",
-        //   },
-        //   {
-        //     target: "notSupported",
-        //   },
-        // ],
-      },
-      // Browser does not support the File System Access API
-      notSupported: {
-        type: "final",
-      },
       loadingContext: {
         invoke: {
           src: "loadContext",
           id: "loadContext",
           onDone: [
             {
+              cond: "hasAuthToken",
               actions: ["setContext"],
-              // target: "queryingPermission",
-              target: "connected",
+              target: "signedIn",
             },
-          ],
-          onError: [
             {
-              // target: "disconnected",
-              target: "connected",
+              actions: ["setContext"],
+              target: "signedOut",
             },
           ],
+          onError: "signedOut",
         },
       },
-      queryingPermission: {
-        invoke: {
-          src: "queryPermission",
-          id: "queryPermission",
-          onDone: [
-            {
-              cond: "isGranted",
-              target: "connected",
-            },
-            {
-              cond: "isPrompt",
-              target: "prompt",
-            },
-            {
-              cond: "isDenied",
-              target: "disconnected",
-            },
-          ],
-          onError: [
-            {
-              target: "disconnected",
-            },
-          ],
-        },
-      },
-      disconnected: {
-        entry: ["clearContext", "clearContextInIndexedDB"],
+      signedOut: {
+        entry: ["clearAuthToken", "clearAuthTokenInIndexedDB"],
         on: {
-          SHOW_DIRECTORY_PICKER: "showingDirectoryPicker",
+          SIGN_IN: {
+            actions: ["setContext", "saveContextInIndexedDB"],
+            target: "signedIn",
+          },
         },
       },
-      prompt: {
+      signedIn: {
         on: {
-          REQUEST_PERMISSION: "requestingPermission",
-          PERMISSION_DENIED: "disconnected",
+          SIGN_OUT: "signedOut",
         },
-      },
-      requestingPermission: {
-        invoke: {
-          src: "requestPermission",
-          id: "requestPermission",
-          onDone: [
-            {
-              target: "connected",
-            },
-          ],
-          onError: [
-            {
-              target: "disconnected",
-            },
-          ],
-        },
-      },
-      showingDirectoryPicker: {
-        invoke: {
-          src: "showDirectoryPicker",
-          id: "showDirectoryPicker",
-          onDone: [
-            {
-              actions: "setContext",
-              target: "connected",
-            },
-          ],
-          onError: "disconnected",
-        },
-      },
-      connected: {
-        initial: "loadingNotes",
+        initial: "initializing",
         states: {
-          loadingNotes: {
-            invoke: {
-              src: "loadNotes",
-              id: "loadNotes",
-              onDone: [
-                {
-                  actions: ["setContext", "setContextInIndexedDB"],
-                  target: "idle",
-                },
-              ],
+          initializing: {
+            always: [
+              {
+                cond: "hasRepo",
+                target: "connected",
+              },
+              {
+                target: "selectingRepo",
+              },
+            ],
+          },
+          selectingRepo: {
+            entry: ["clearRepo", "clearRepoInIndexedDB"],
+            on: {
+              SELECT_REPO: {
+                actions: ["setContext", "saveContextInIndexedDB"],
+                target: "connected",
+              },
             },
           },
-          idle: {
-            entry: ["sortNoteIds"],
-            // TODO: Allow these events while loading notes
+          connected: {
+            initial: "loadingNotes",
             on: {
-              // RELOAD: {
-              //   target: "#global.queryingPermission",
-              // },
-              // DISCONNECT: {
-              //   target: "#global.disconnected",
-              // },
-              UPSERT_NOTE: {
-                actions: ["upsertNote", "upsertNoteFile", "setContextInIndexedDB"],
-                target: "idle",
-                internal: false, // Re-run entry actions
-              },
-              DELETE_NOTE: [
-                {
-                  // To preserve referential integrity, we only allow you to
-                  // delete a note if no other notes link to it.
-                  cond: "hasNoBacklinks",
-                  actions: ["deleteNote", "deleteNoteFile", "setContextInIndexedDB"],
-                  target: "idle",
-                  internal: false, // Re-run entry actions
+              CHANGE_REPO: "selectingRepo",
+            },
+            states: {
+              loadingNotes: {
+                invoke: {
+                  src: "loadNotes",
+                  id: "loadNotes",
+                  onDone: [
+                    {
+                      actions: ["setContext", "saveContextInIndexedDB"],
+                      target: "idle",
+                    },
+                  ],
+                  // TODO: Handle errors
                 },
-              ],
+              },
+              idle: {
+                entry: ["sortNoteIds"],
+                // TODO: Allow these events while loading notes
+                on: {
+                  RELOAD_NOTES: "loadingNotes",
+                  UPSERT_NOTE: {
+                    actions: ["upsertNote", "upsertNoteFile", "saveContextInIndexedDB"],
+                    target: "idle",
+                    internal: false, // Re-run entry actions
+                  },
+                  DELETE_NOTE: [
+                    {
+                      // To preserve referential integrity, we only allow you to
+                      // delete a note if no other notes link to it.
+                      cond: "hasNoBacklinks",
+                      actions: ["deleteNote", "deleteNoteFile", "saveContextInIndexedDB"],
+                      target: "idle",
+                      internal: false, // Re-run entry actions
+                    },
+                  ],
+                },
+              },
             },
           },
         },
@@ -223,64 +166,33 @@ const machine = createMachine(
   },
   {
     actions: {
-      setContext: assign({
-        authToken: (context, event) => {
-          if (!event.data || !("authToken" in event.data)) return context.authToken
-          return event.data.authToken
-        },
-        repoOwner: (context, event) => {
-          if (!event.data || !("repoOwner" in event.data)) return context.repoOwner
-          return event.data.repoOwner
-        },
-        repoName: (context, event) => {
-          if (!event.data || !("repoName" in event.data)) return context.repoName
-          return event.data.repoName
-        },
-        sha: (context, event) => {
-          if (!event.data || !("sha" in event.data)) return context.sha
-          return event.data.sha
-        },
-        directoryHandle: (context, event) => {
-          if (!event.data || !("directoryHandle" in event.data)) return context.directoryHandle
-          return event.data.directoryHandle
-        },
-        notes: (context, event) => {
-          if (!event.data || !("notes" in event.data)) return context.notes
-          return event.data.notes
-        },
-        sortedNoteIds: (context, event) => {
-          if (!event.data || !("sortedNoteIds" in event.data)) return context.sortedNoteIds
-          return event.data.sortedNoteIds
-        },
-        backlinks: (context, event) => {
-          if (!event.data || !("backlinks" in event.data)) return context.backlinks
-          return event.data.backlinks
-        },
-        tags: (context, event) => {
-          if (!event.data || !("tags" in event.data)) return context.tags
-          return event.data.tags
-        },
-        dates: (context, event) => {
-          if (!event.data || !("dates" in event.data)) return context.dates
-          return event.data.dates
-        },
+      setContext: assign((context, event) => {
+        console.log("setContext", event.data)
+        if (!event.data) return context
+        return { ...context, ...event.data }
       }),
-      clearContext: assign({
-        // authToken: (context, event) => "",
-        // repoOwner: (context, event) => "",
-        // repoName: (context, event) => "",
-        sha: (context, event) => "",
-        directoryHandle: (context, event) => null,
-        notes: (context, event) => ({}),
-        backlinks: (context, event) => ({}),
-        tags: (context, event) => ({}),
-        dates: (context, event) => ({}),
-      }),
-      setContextInIndexedDB: async (context, event) => {
+      saveContextInIndexedDB: async (context, event) => {
         await set("context", context)
       },
-      clearContextInIndexedDB: async (context, event) => {
-        await set("context", null)
+      clearAuthToken: assign({
+        authToken: (context, event) => "",
+      }),
+      clearAuthTokenInIndexedDB: async (context, event) => {
+        await set("context", {
+          ...context,
+          authToken: "",
+        })
+      },
+      clearRepo: assign({
+        repoOwner: (context, event) => "",
+        repoName: (context, event) => "",
+      }),
+      clearRepoInIndexedDB: async (context, event) => {
+        await set("context", {
+          ...context,
+          repoOwner: "",
+          repoName: "",
+        })
       },
       sortNoteIds: assign({
         sortedNoteIds: (context, event) => {
@@ -465,21 +377,15 @@ const machine = createMachine(
           console.error(error)
         }
 
-        // TODO: Delete attached files
+        // TODO: Delete unreferenced files
       },
     },
     guards: {
-      // isSupported: (context, event) => {
-      //   return isSupported()
-      // },
-      isGranted: (context, event) => {
-        return event.data === "granted"
+      hasAuthToken: (context, event) => {
+        return Boolean(event.data.authToken)
       },
-      isPrompt: (context, event) => {
-        return event.data === "prompt"
-      },
-      isDenied: (context, event) => {
-        return event.data === "denied"
+      hasRepo: (context, event) => {
+        return Boolean(context.repoOwner && context.repoName)
       },
       hasNoBacklinks: (context, event) => {
         return !context.backlinks[event.id]?.length
@@ -495,44 +401,7 @@ const machine = createMachine(
 
         return context
       },
-      queryPermission: async (context) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
-
-        const permission = await context.directoryHandle.queryPermission({
-          mode: "readwrite",
-        })
-
-        return permission
-      },
-      requestPermission: async (context) => {
-        if (!context.directoryHandle) {
-          throw new Error("Directory not found")
-        }
-
-        const permission = await context.directoryHandle.requestPermission({
-          mode: "readwrite",
-        })
-
-        if (permission !== "granted") {
-          throw new Error("Permission denied")
-        }
-      },
-      showDirectoryPicker: async () => {
-        const directoryHandle = await window.showDirectoryPicker({
-          id: "notes",
-          mode: "readwrite",
-        })
-
-        return { directoryHandle }
-      },
       loadNotes: (context) => {
-        console.log("loadNotes")
-        // if (!context.directoryHandle) {
-        //   throw new Error("Directory not found")
-        // }
-
         const worker = new Worker(new URL("./load-notes.worker.ts", import.meta.url), {
           type: "module",
         })

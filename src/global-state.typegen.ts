@@ -14,37 +14,13 @@ export interface Typegen0 {
       data: unknown
       __tip: "See the XState TS docs to learn how to strongly type this."
     }
-    "done.invoke.queryPermission": {
-      type: "done.invoke.queryPermission"
-      data: unknown
-      __tip: "See the XState TS docs to learn how to strongly type this."
-    }
-    "done.invoke.requestPermission": {
-      type: "done.invoke.requestPermission"
-      data: unknown
-      __tip: "See the XState TS docs to learn how to strongly type this."
-    }
-    "done.invoke.showDirectoryPicker": {
-      type: "done.invoke.showDirectoryPicker"
-      data: unknown
-      __tip: "See the XState TS docs to learn how to strongly type this."
-    }
     "error.platform.loadContext": { type: "error.platform.loadContext"; data: unknown }
     "error.platform.loadNotes": { type: "error.platform.loadNotes"; data: unknown }
-    "error.platform.queryPermission": { type: "error.platform.queryPermission"; data: unknown }
-    "error.platform.requestPermission": { type: "error.platform.requestPermission"; data: unknown }
-    "error.platform.showDirectoryPicker": {
-      type: "error.platform.showDirectoryPicker"
-      data: unknown
-    }
     "xstate.init": { type: "xstate.init" }
   }
   invokeSrcNameMap: {
     loadContext: "done.invoke.loadContext"
     loadNotes: "done.invoke.loadNotes"
-    queryPermission: "done.invoke.queryPermission"
-    requestPermission: "done.invoke.requestPermission"
-    showDirectoryPicker: "done.invoke.showDirectoryPicker"
   }
   missingImplementations: {
     actions: never
@@ -53,60 +29,48 @@ export interface Typegen0 {
     services: never
   }
   eventsCausingActions: {
-    clearContext:
-      | "PERMISSION_DENIED"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "error.platform.showDirectoryPicker"
-    clearContextInIndexedDB:
-      | "PERMISSION_DENIED"
-      | "done.invoke.queryPermission"
-      | "error.platform.queryPermission"
-      | "error.platform.requestPermission"
-      | "error.platform.showDirectoryPicker"
+    clearAuthToken: "SIGN_OUT" | "done.invoke.loadContext" | "error.platform.loadContext"
+    clearAuthTokenInIndexedDB: "SIGN_OUT" | "done.invoke.loadContext" | "error.platform.loadContext"
+    clearRepo: "" | "CHANGE_REPO"
+    clearRepoInIndexedDB: "" | "CHANGE_REPO"
     deleteNote: "DELETE_NOTE"
     deleteNoteFile: "DELETE_NOTE"
-    setContext:
-      | "done.invoke.loadContext"
+    saveContextInIndexedDB:
+      | "DELETE_NOTE"
+      | "SELECT_REPO"
+      | "SIGN_IN"
+      | "UPSERT_NOTE"
       | "done.invoke.loadNotes"
-      | "done.invoke.showDirectoryPicker"
-    setContextInIndexedDB: "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.loadNotes"
+    setContext: "SELECT_REPO" | "SIGN_IN" | "done.invoke.loadContext" | "done.invoke.loadNotes"
     sortNoteIds: "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.loadNotes"
     upsertNote: "UPSERT_NOTE"
     upsertNoteFile: "UPSERT_NOTE"
   }
   eventsCausingDelays: {}
   eventsCausingGuards: {
+    hasAuthToken: "done.invoke.loadContext"
     hasNoBacklinks: "DELETE_NOTE"
-    isDenied: "done.invoke.queryPermission"
-    isGranted: "done.invoke.queryPermission"
-    isPrompt: "done.invoke.queryPermission"
+    hasRepo: ""
   }
   eventsCausingServices: {
-    loadContext: ""
-    loadNotes:
-      | "done.invoke.loadContext"
-      | "done.invoke.queryPermission"
-      | "done.invoke.requestPermission"
-      | "done.invoke.showDirectoryPicker"
-      | "error.platform.loadContext"
-    queryPermission: never
-    requestPermission: "REQUEST_PERMISSION"
-    showDirectoryPicker: "SHOW_DIRECTORY_PICKER"
+    loadContext: "xstate.init"
+    loadNotes: "" | "RELOAD_NOTES" | "SELECT_REPO"
   }
   matchesStates:
-    | "connected"
-    | "connected.idle"
-    | "connected.loadingNotes"
-    | "disconnected"
-    | "initial"
     | "loadingContext"
-    | "notSupported"
-    | "prompt"
-    | "queryingPermission"
-    | "requestingPermission"
-    | "showingDirectoryPicker"
-    | { connected?: "idle" | "loadingNotes" }
+    | "signedIn"
+    | "signedIn.connected"
+    | "signedIn.connected.idle"
+    | "signedIn.connected.loadingNotes"
+    | "signedIn.initializing"
+    | "signedIn.selectingRepo"
+    | "signedOut"
+    | {
+        signedIn?:
+          | "connected"
+          | "initializing"
+          | "selectingRepo"
+          | { connected?: "idle" | "loadingNotes" }
+      }
   tags: never
 }
