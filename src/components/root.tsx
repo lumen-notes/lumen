@@ -24,8 +24,9 @@ export function Root() {
   if (state.matches("signedOut")) {
     // TODO: Validate the token
     return (
-      <div>
+      <div className="grid h-screen w-screen place-items-center [@supports(height:100svh)]:h-[100svh]">
         <form
+          className="grid w-full max-w-md gap-4 p-6"
           key="sign-in"
           onSubmit={(event) => {
             event.preventDefault()
@@ -36,16 +37,21 @@ export function Root() {
             }
           }}
         >
-          <label htmlFor="auth-token">Personal access token</label>
-          <input
-            type="password"
-            id="auth-token"
-            name="auth-token"
-            // Pre-fill the token in development mode
-            defaultValue={import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : ""}
-            required
-          />
-          <Button type="submit">Sign in</Button>
+          <div className="grid gap-2">
+            <label htmlFor="auth-token">Personal access token</label>
+            <input
+              className="w-full rounded bg-bg-secondary px-3 py-2"
+              type="password"
+              id="auth-token"
+              name="auth-token"
+              // Pre-fill the token in development mode
+              defaultValue={import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : ""}
+              required
+            />
+          </div>
+          <Button type="submit" variant="primary" className="w-full">
+            Sign in
+          </Button>
         </form>
       </div>
     )
