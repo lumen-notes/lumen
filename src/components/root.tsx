@@ -22,6 +22,7 @@ export function Root() {
   }
 
   if (state.matches("signedOut")) {
+    // TODO: Validate the token
     return (
       <div>
         <form
