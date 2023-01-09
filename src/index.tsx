@@ -3,7 +3,6 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { NewNoteDialog } from "./components/new-note-dialog"
-import { PermissionDialog } from "./components/permission-dialog"
 import { Root } from "./components/root"
 import { GlobalStateProvider } from "./global-state"
 import "./index.css"
@@ -21,7 +20,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <Tooltip.Provider>
         <NewNoteDialog.Provider>
           <NewNoteDialog />
-          <PermissionDialog />
           <BrowserRouter>
             <Routes>
               <Route path="/file" element={<FilePage />} />
