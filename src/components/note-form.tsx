@@ -20,6 +20,7 @@ import { formatDate } from "../utils/date"
 import { Button, IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
+import { fileCache } from "./file-preview"
 import { PaperclipIcon16 } from "./icons"
 
 const UPLOADS_DIRECTORY = "uploads"
@@ -94,12 +95,12 @@ export function NoteForm({
       const fileId = Date.now().toString()
       const fileExtension = file.name.split(".").pop()
       const fileName = file.name.replace(`.${fileExtension}`, "")
-      const filePath = `${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
+      const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
       const arrayBuffer = await file.arrayBuffer()
 
       // Upload file
       fetch(
-        `https://api.github.com/repos/${state.context.repoOwner}/${state.context.repoName}/contents/${filePath}`,
+        `https://api.github.com/repos/${state.context.repoOwner}/${state.context.repoName}/contents${filePath}`,
         {
           method: "PUT",
           headers: {
@@ -112,7 +113,10 @@ export function NoteForm({
         },
       )
 
-      let markdown = `[${fileName}](/${filePath})`
+      // Cache file
+      fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
+
+      let markdown = `[${fileName}](${filePath})`
 
       // Use markdown image syntax if file is an image, video, or audio
       if (

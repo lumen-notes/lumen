@@ -1,10 +1,10 @@
 import { useActor } from "@xstate/react"
-import { encode } from "base64-arraybuffer"
+import mime from "mime"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { GlobalStateContext } from "../global-state"
+import { Context, GlobalStateContext } from "../global-state"
 
-const fileCache = new Map<string, { file: File; base64: string }>()
+export const fileCache = new Map<string, { file: File; url: string }>()
 
 type FilePreviewProps = {
   path: string
@@ -16,7 +16,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
   const [file, setFile] = React.useState<File | null>(cachedFile?.file || null)
-  const [base64, setBase64] = React.useState<string | null>(cachedFile?.base64 || null)
+  const [url, setUrl] = React.useState(cachedFile?.url || "")
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
@@ -25,20 +25,17 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     }
 
     async function loadFile() {
-      if (!state.context.directoryHandle) return
-
       try {
         setIsLoading(true)
 
-        const file = await readFile(state.context.directoryHandle, path)
-        const arrayBuffer = await file.arrayBuffer()
-        const base64 = encode(arrayBuffer)
+        const file = await readFile(state.context, path)
+        const url = URL.createObjectURL(file)
 
         setFile(file)
-        setBase64(base64)
+        setUrl(url)
 
         // Cache the file and base64 data
-        fileCache.set(path, { file, base64 })
+        fileCache.set(path, { file, url })
       } catch (error) {
         console.error(error)
       } finally {
@@ -58,11 +55,9 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     )
   }
 
-  const src = `data:${file.type};base64,${base64}`
-
   // Image
   if (file.type.startsWith("image/")) {
-    return <img src={src} alt={alt} />
+    return <img src={url} alt={alt} />
   }
 
   // Video
@@ -70,7 +65,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     return (
       // eslint-disable-next-line jsx-a11y/media-has-caption
       <video controls>
-        <source src={src} type={file.type} />
+        <source src={url} type={file.type} />
       </video>
     )
   }
@@ -78,38 +73,67 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   // Audio
   if (file.type.startsWith("audio/")) {
     // eslint-disable-next-line jsx-a11y/media-has-caption
-    return <audio controls src={src} className="w-full max-w-lg" />
+    return <audio controls src={url} className="w-full max-w-lg" />
   }
 
   // PDF (< 1 MB)
   if (file.type === "application/pdf" && file.size < 1_000_000) {
-    return <iframe title={file.name} src={src} className="h-full w-full" />
+    return <iframe title={file.name} src={url} className="h-full w-full" />
   }
 
   return (
     <div>
-      <a download={file.name} href={src} className="link">
+      <a download={file.name} href={url} className="link">
         Download {file.name} ({(file.size / 1_000_000).toFixed(1)} MB)
       </a>
     </div>
   )
 }
 
-async function readFile(rootHandle: FileSystemDirectoryHandle, path: string) {
-  // '/uploads/123.jpg' -> ['uploads', '123.jpg']
-  const pathArray = path.split("/").filter(Boolean)
-  const fileHandle = await getFileHandle(rootHandle, pathArray)
-  return await fileHandle.getFile()
-}
+async function readFile(context: Context, path: string) {
+  const response = await fetch(
+    `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${
+      // Remove leading slash if present
+      path.replace(/^\//, "")
+    }`,
+    {
+      headers: {
+        Authorization: `Bearer ${context.authToken}`,
+        Accept: "application/vnd.github.raw",
+      },
+    },
+  )
 
-async function getFileHandle(
-  rootHandle: FileSystemDirectoryHandle,
-  path: string[],
-): Promise<FileSystemFileHandle> {
-  if (path.length === 1) {
-    return await rootHandle.getFileHandle(path[0])
+  if (!response.ok || !response.body) {
+    throw new Error(response.statusText)
   }
 
-  const directoryHandle = await rootHandle.getDirectoryHandle(path[0])
-  return await getFileHandle(directoryHandle, path.slice(1))
+  // Reference: https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
+  const reader = response.body.getReader()
+
+  const stream = new ReadableStream({
+    start(controller) {
+      // @ts-ignore
+      function push() {
+        return reader.read().then(({ done, value }) => {
+          // When no more data needs to be consumed, close the stream
+          if (done) {
+            controller.close()
+            return
+          }
+
+          // Enqueue the next data chunk into our target stream
+          controller.enqueue(value)
+          return push()
+        })
+      }
+
+      return push()
+    },
+  })
+
+  const blob = await new Response(stream).blob()
+  const mimeType = mime.getType(path) || ""
+  const filename = path.split("/").pop() || ""
+  return new File([blob], filename, { type: mimeType })
 }

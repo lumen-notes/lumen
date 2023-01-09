@@ -9,7 +9,7 @@ import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
 
-type Context = {
+export type Context = {
   authToken: string
   repoOwner: string
   repoName: string
