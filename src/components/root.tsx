@@ -3,11 +3,11 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 import { GlobalStateContext } from "../global-state"
 // import { Button } from "./button"
+import { useMedia } from "react-use"
+import { Button } from "./button"
 import { Card } from "./card"
 import { LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
-import { useMedia } from "react-use"
-import { Button } from "./button"
 
 export function Root() {
   const globalState = React.useContext(GlobalStateContext)
@@ -23,15 +23,29 @@ export function Root() {
 
   if (state.matches("signedOut")) {
     return (
-      <div className="grid h-screen place-items-center p-4 [@supports(height:100svh)]:h-[100svh]">
-        <Button
-          onClick={() => {
-            // TODO: Use a proper OAuth flow
-            send({ type: "SIGN_IN", data: { authToken: import.meta.env.VITE_GITHUB_TOKEN } })
+      <div>
+        <form
+          key="sign-in"
+          onSubmit={(event) => {
+            event.preventDefault()
+            const formData = new FormData(event.currentTarget)
+            const authToken = formData.get("auth-token")
+            if (typeof authToken === "string") {
+              send({ type: "SIGN_IN", data: { authToken } })
+            }
           }}
         >
-          Sign in with GitHub
-        </Button>
+          <label htmlFor="auth-token">Personal access token</label>
+          <input
+            type="password"
+            id="auth-token"
+            name="auth-token"
+            // Pre-fill the token in development mode
+            defaultValue={import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : ""}
+            required
+          />
+          <Button type="submit">Sign in</Button>
+        </form>
       </div>
     )
   }
@@ -41,6 +55,7 @@ export function Root() {
     return (
       <div>
         <form
+          key="select-repo"
           onSubmit={(event) => {
             event.preventDefault()
             const formData = new FormData(event.currentTarget)
