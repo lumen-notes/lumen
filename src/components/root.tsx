@@ -51,7 +51,12 @@ export function Root() {
             />
             <p className="text-text-secondary">
               Generate a new{" "}
-              <a href="https://github.com/settings/tokens/new" className="link">
+              <a
+                className="link"
+                href="https://github.com/settings/tokens/new"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 personal access token
               </a>
               , then paste it here. Be sure to give your token "repo" scope.
