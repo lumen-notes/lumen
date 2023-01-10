@@ -266,40 +266,26 @@ const machine = createMachine(
       upsertNoteFile: async (context, event) => {
         const endpoint = `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${event.id}.md`
 
-        try {
-          // Get the SHA of the file
-          const { sha } = await fetch(endpoint, {
-            headers: {
-              Accept: "application/vnd.github.v3+json",
-              Authorization: `Bearer ${context.authToken}`,
-            },
-          }).then((response) => response.json())
+        // Get the SHA of the file
+        const { sha } = await fetch(endpoint, {
+          headers: {
+            Accept: "application/vnd.github.v3+json",
+            Authorization: `Bearer ${context.authToken}`,
+          },
+        }).then((response) => response.json())
 
-          // Update the file
-          await fetch(endpoint, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${context.authToken}`,
-            },
-            body: JSON.stringify({
-              message: `Update ${event.id}.md`,
-              content: Buffer.from(event.body).toString("base64"),
-              sha,
-            }),
-          })
-        } catch (error) {
-          // Create the file
-          await fetch(endpoint, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${context.authToken}`,
-            },
-            body: JSON.stringify({
-              message: `Create ${event.id}.md`,
-              content: Buffer.from(event.body).toString("base64"),
-            }),
-          })
-        }
+        // Update the file
+        await fetch(endpoint, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${context.authToken}`,
+          },
+          body: JSON.stringify({
+            message: `${sha ? "Update" : "Create"} ${event.id}.md`,
+            content: Buffer.from(event.body).toString("base64"),
+            sha,
+          }),
+        })
       },
       deleteNote: assign((context, event) => {
         const { [event.id]: _, ...rest } = context.notes
