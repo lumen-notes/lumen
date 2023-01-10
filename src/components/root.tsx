@@ -5,7 +5,7 @@ import { GlobalStateContext } from "../global-state"
 import { useMedia } from "react-use"
 import { Button } from "./button"
 import { Card } from "./card"
-import { LoadingIcon16 } from "./icons"
+import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { Input } from "./input"
 import { NavBar } from "./nav-bar"
 
@@ -124,13 +124,21 @@ export function Root() {
 
   return (
     <div>
-      <div className="flex h-screen w-screen flex-col-reverse sm:flex-row [@supports(height:100svh)]:h-[100svh]">
-        <div className="flex">
-          <NavBar position={isDesktop ? "left" : "bottom"} />
+      <div className="flex h-screen w-screen flex-col [@supports(height:100svh)]:h-[100svh]">
+        {state.context.error ? (
+          <div className="flex items-center gap-3 bg-[crimson] p-4 font-mono text-[white]">
+            <ErrorIcon16 />
+            <span>{state.context.error}</span>
+          </div>
+        ) : null}
+        <div className="flex h-full w-full flex-col-reverse sm:flex-row [@supports(height:100svh)]:h-[100svh]">
+          <div className="flex">
+            <NavBar position={isDesktop ? "left" : "bottom"} />
+          </div>
+          <main className="w-full flex-grow overflow-auto">
+            <Outlet />
+          </main>
         </div>
-        <main className="w-full flex-grow overflow-auto">
-          <Outlet />
-        </main>
       </div>
       {state.matches("signedIn.loadingNotes") ? (
         <div className="fixed bottom-2 right-2">

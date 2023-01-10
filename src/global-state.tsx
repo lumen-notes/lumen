@@ -18,6 +18,7 @@ export type Context = {
   backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
   dates: Record<string, NoteId[]>
+  error: string
 }
 
 type Event =
@@ -41,6 +42,7 @@ const machine = createMachine(
       backlinks: {},
       tags: {},
       dates: {},
+      error: "",
     },
     tsTypes: {} as import("./global-state.typegen").Typegen0,
     schema: {
@@ -126,7 +128,6 @@ const machine = createMachine(
                   target: "idle",
                 },
               ],
-              // TODO: Handle errors
             },
           },
           idle: {

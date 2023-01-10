@@ -343,3 +343,12 @@ export function ExternalLinkIcon16() {
     </svg>
   )
 }
+
+export function ErrorIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M8.75 4v5h-1.5V4h1.5ZM8 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
+      <path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm0-1.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z" />
+    </svg>
+  )
+}

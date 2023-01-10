@@ -12,7 +12,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const globalState = React.useContext(GlobalStateContext)
   const [state] = useActor(globalState.service)
-  const { title } = state.context.notes[noteId]
+  const { title = "" } = state.context.notes[noteId] || {}
   const backlinks = state.context.backlinks[noteId]
 
   return (
