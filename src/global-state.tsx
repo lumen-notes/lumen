@@ -98,7 +98,7 @@ const machine =
           entry: ["sortNoteIds", "saveContextInIndexedDB"],
           on: {
             UPSERT_NOTE: {
-              actions: ["upsertNote"],
+              actions: ["upsertNote", "sortNoteIds"],
               target: "syncingNotes",
             },
             DELETE_NOTE: [
@@ -106,7 +106,7 @@ const machine =
                 // To preserve referential integrity, we only allow you to
                 // delete a note if no other notes link to it.
                 cond: "hasNoBacklinks",
-                actions: ["deleteNote"],
+                actions: ["deleteNote", "sortNoteIds"],
                 target: "syncingNotes",
               },
             ],

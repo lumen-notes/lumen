@@ -24,7 +24,7 @@
           "deleteNote": "DELETE_NOTE";
 "saveContextInIndexedDB": "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes";
 "setContext": "done.invoke.loadContext" | "done.invoke.syncNotes" | "error.platform.syncNotes";
-"sortNoteIds": "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes";
+"sortNoteIds": "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes";
 "upsertNote": "UPSERT_NOTE";
         };
         eventsCausingDelays: {
