@@ -3,8 +3,6 @@ import { z } from "zod"
 import { Note, NoteId } from "./types"
 import { parseNoteBody } from "./utils/parse-note-body"
 
-// const FILENAME_REGEX = /^\d+\.md$/
-
 type MessagePayload = {
   authToken: string
   repoOwner: string
@@ -33,17 +31,21 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     )
 
     if (!refResponse.ok) {
-      if (refResponse.status === 404) {
-        throw new Error(`Repository not found: ${repoOwner}/${repoName}`)
-      }
+      switch (refResponse.status) {
+        // Unauthorized
+        case 401:
+          throw new Error(`Invalid GitHub token`)
 
-      if (refResponse.status === 401) {
-        throw new Error(`Invalid GitHub token`)
-      }
+        // Not found
+        case 404:
+          throw new Error(`Repository not found: ${repoOwner}/${repoName}`)
 
-      throw new Error(
-        `Failed to fetch repository: ${repoOwner}/${repoName} (${refResponse.status})`,
-      )
+        // Other error
+        default:
+          throw new Error(
+            `Failed to fetch repository: ${repoOwner}/${repoName} (${refResponse.status})`,
+          )
+      }
     }
 
     const ref = await refResponse.json()
@@ -114,18 +116,6 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     })
   }
 }
-
-/** Extracts metadata from a note file */
-// async function parseFile(file: File) {
-//   if (!FILENAME_REGEX.test(file.name)) {
-//     throw new Error(`Invalid note filename: ${file.name}`)
-//   }
-
-//   const id = file.name.replace(/\.md$/, "")
-//   const body = await file.text()
-
-//   return { id, body, ...parseNoteBody(body) }
-// }
 
 /**
  * Pushes a value to an array in an object.

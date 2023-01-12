@@ -40,7 +40,9 @@ export function NoteList({ ids, disableSort }: NoteListProps) {
   // Create a search index
   // We use useEffect here to avoid blocking the first render while mapping over the notes
   React.useEffect(() => {
-    const entries: [string, Note][] = sortedIds.map((id) => [id, state.context.notes[id]])
+    const entries: [string, Note][] = sortedIds
+      .map((id): [string, Note] => [id, state.context.notes[id]])
+      .filter(([id, note]) => note !== undefined)
 
     const searcher = new Searcher(entries, {
       keySelector: ([id, { body }]) => body,

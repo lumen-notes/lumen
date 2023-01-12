@@ -68,7 +68,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={clsx({ left: "mt-auto flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="More actions" tooltipSide={tooltipSide} className="w-full">
+              <IconButton aria-label="More actions" disableTooltip className="w-full">
                 <MoreIcon24 />
               </IconButton>
             </DropdownMenu.Trigger>
@@ -78,17 +78,17 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                   window.open("https://github.com/colebemis/lumen/issues/new", "_blank")
                 }
               >
+                {/* TODO: Feedback icon */}
                 Send feedback
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => globalState.service.send("RELOAD_NOTES")}>
-                Reload notes
+              <DropdownMenu.Item onClick={() => globalState.service.send("SYNC_NOTES")}>
+                {/* TODO: Sync icon */}
+                Sync notes
               </DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => globalState.service.send("CHANGE_REPO")}>
-                Change repository
-              </DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => globalState.service.send("SIGN_OUT")}>
-                Sign out
+              <DropdownMenu.Item>
+                {/* TODO: Settings icon */}
+                Change sync settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>

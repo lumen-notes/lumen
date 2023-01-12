@@ -92,6 +92,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         }
       }}
     >
+      {!state.matches("syncingNotes") && state.context.unsyncedNotes.upserted.has(id)
+        ? "Unsynced note"
+        : null}
       <div className="p-4 pb-1">
         <Markdown>{body}</Markdown>
       </div>
