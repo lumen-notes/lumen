@@ -28,6 +28,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const [state] = useActor(globalState.service)
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
+  const isSynced = state.matches("syncingNotes") || !state.context.unsyncedNotes.upserted.has(id)
 
   if (typeof body === "undefined") {
     return <Card className="p-4">Not found</Card>
@@ -92,9 +93,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         }
       }}
     >
-      {!state.matches("syncingNotes") && state.context.unsyncedNotes.upserted.has(id)
-        ? "Unsynced note"
-        : null}
       <div className="p-4 pb-1">
         <Markdown>{body}</Markdown>
       </div>
@@ -107,6 +105,12 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <span>
               {" · "}
               {pluralize(backlinks.length, "backlink")}
+            </span>
+          ) : null}
+          {!isSynced ? (
+            <span>
+              {" · "}
+              Not synced
             </span>
           ) : null}
         </span>
