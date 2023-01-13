@@ -26,15 +26,17 @@ type Event =
   | { type: "SYNC_NOTES" }
   | { type: "UPSERT_NOTE"; id: NoteId; body: string }
   | { type: "DELETE_NOTE"; id: NoteId }
+  | { type: "SET_CONTEXT"; data: Partial<Context> }
 
 const machine =
   /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6dWEAlgHZQDCaJALmAB7UDEEVYupAbmgNZsESUa9agG0ADAF1EoAA5pYRakSrSQdRAGYNANlwAWAIx6xADgMAmMwYDs1vdoA0IAJ6ID2k7hMBODefN6liY62gYaAL7hTqiYOPhohKQUVLQMjGAAThloGbgyKFjUAGY5ALbxhIKpopKqcgpKKkhqmjr6RqYWVrb2Tq4IFga4Gr7mBmIT2uZiRhFRIDHYeLDOJADGSQByaLSwzKzsJFy8uCvr27viUs31isokquoI3gCs1rhi9r7B1iba331EIZPBoXr5tGJzN5-NprAFItF0EtTqsNmQLnB0lkcnkCsUyijzjs4Fc6vI7k1QE9XiCTJYwdZTJDLICEGZ9N5OdDtBpTIzPgiFki4kQICgwIwAKoABQAygBRABKABUAPqbADyyvlpJu5MaD2aTx+uEs3lMgWhGmM1lZNj0uFeGgMRj+YNegUFixFYolABF5QAZeXa9VanW1PUNe6PRAms0WqHma1iW0uRDmaxDYxTMTm7RTczaF4vL3CvCi8WMWUATU25DD2tlutk+pjRrjGneCZMluTNtZOneJjBfg8o8+Bki8xIaAgcFU3pQZOjlJaCAAtI505vtGXYnh+EkqsIVxTDVSgeY7S7cLNpnSE3pvPvkWc0VAMfAo+fYwMjOYd5+CYtiguM7ispmQwaHS1gFjB7jTFO8xLuwvpngaf4vNMXjWC8MzYQY3iGHhdpiBowx5j45HPi8ZjFtO4RAA */
   createMachine(
     {
       context: {
-        authToken: import.meta.env.VITE_GITHUB_TOKEN,
-        repoOwner: "colebemis",
-        repoName: "notes",
+        // Pre-fill personal access token in development
+        authToken: import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : "",
+        repoOwner: "",
+        repoName: "",
         sha: "",
         notes: {},
         sortedNoteIds: [],
@@ -96,6 +98,7 @@ const machine =
         },
         idle: {
           entry: ["sortNoteIds", "saveContextInIndexedDB"],
+          exit: ["sortNoteIds", "saveContextInIndexedDB"],
           on: {
             UPSERT_NOTE: {
               actions: ["upsertNote", "sortNoteIds"],
@@ -111,97 +114,12 @@ const machine =
               },
             ],
             SYNC_NOTES: "syncingNotes",
+            SET_CONTEXT: {
+              actions: ["setContext"],
+              target: "syncingNotes",
+            },
           },
         },
-        // loadingContext: {
-        //   invoke: {
-        //     src: "loadContext",
-        //     id: "loadContext",
-        //     onDone: [
-        //       {
-        //         cond: "hasAuthToken",
-        //         actions: ["setContext"],
-        //         target: "signedIn",
-        //       },
-        //       {
-        //         actions: ["setContext"],
-        //         target: "signedOut",
-        //       },
-        //     ],
-        //     onError: "signedOut",
-        //   },
-        // },
-        // signedOut: {
-        //   entry: ["clearAuthToken", "clearAuthTokenInIndexedDB"],
-        //   on: {
-        //     SIGN_IN: {
-        //       actions: ["setContext", "saveContextInIndexedDB"],
-        //       target: "signedIn",
-        //     },
-        //   },
-        // },
-        // signedIn: {
-        //   on: {
-        //     SIGN_OUT: "signedOut",
-        //   },
-        //   initial: "initializing",
-        //   states: {
-        //     initializing: {
-        //       always: [
-        //         {
-        //           cond: "hasRepo",
-        //           target: "loadingNotes",
-        //         },
-        //         {
-        //           target: "selectingRepo",
-        //         },
-        //       ],
-        //     },
-        //     selectingRepo: {
-        //       on: {
-        //         SELECT_REPO: {
-        //           actions: ["setContext", "saveContextInIndexedDB"],
-        //           target: "loadingNotes",
-        //         },
-        //       },
-        //     },
-        //     loadingNotes: {
-        //       invoke: {
-        //         src: "loadNotes",
-        //         id: "loadNotes",
-        //         onDone: [
-        //           {
-        //             actions: ["setContext", "saveContextInIndexedDB"],
-        //             target: "idle",
-        //           },
-        //         ],
-        //       },
-        //     },
-        //     idle: {
-        //       entry: ["sortNoteIds", 'saveContextInIndexedDB'],
-        //       // TODO: Allow these events while loading notes
-        //       on: {
-        //         RELOAD_NOTES: "loadingNotes",
-        //         CHANGE_REPO: "selectingRepo",
-        //         UPSERT_NOTE: {
-        //           actions: ["upsertNote", "upsertNoteFile", "saveContextInIndexedDB"],
-        //           target: "idle",
-        //           internal: false, // Re-run entry actions
-        //         },
-        //         DELETE_NOTE: [
-        //           {
-        //             // To preserve referential integrity, we only allow you to
-        //             // delete a note if no other notes link to it.
-        //             cond: "hasNoBacklinks",
-        //             actions: ["deleteNote", "deleteNoteFile", "saveContextInIndexedDB"],
-        //             target: "idle",
-        //             internal: false, // Re-run entry actions
-        //           },
-        //         ],
-        //       },
-        //     },
-        //   },
-        // },
       },
     },
     {
@@ -213,15 +131,6 @@ const machine =
         saveContextInIndexedDB: async (context, event) => {
           await set("context", context)
         },
-        // clearAuthToken: assign({
-        //   authToken: (context, event) => "",
-        // }),
-        // clearAuthTokenInIndexedDB: async (context, event) => {
-        //   await set("context", {
-        //     ...context,
-        //     authToken: "",
-        //   })
-        // },
         sortNoteIds: assign({
           sortedNoteIds: (context, event) => {
             return Object.keys(context.notes).sort((a, b) => parseInt(b) - parseInt(a))

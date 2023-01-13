@@ -9,6 +9,7 @@
 "error.platform.loadContext": { type: "error.platform.loadContext"; data: unknown };
 "error.platform.syncNotes": { type: "error.platform.syncNotes"; data: unknown };
 "xstate.init": { type: "xstate.init" };
+"xstate.stop": { type: "xstate.stop" };
         };
         invokeSrcNameMap: {
           "loadContext": "done.invoke.loadContext";
@@ -22,9 +23,9 @@
         };
         eventsCausingActions: {
           "deleteNote": "DELETE_NOTE";
-"saveContextInIndexedDB": "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes";
-"setContext": "done.invoke.loadContext" | "done.invoke.syncNotes" | "error.platform.syncNotes";
-"sortNoteIds": "DELETE_NOTE" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes";
+"saveContextInIndexedDB": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes" | "xstate.stop";
+"setContext": "SET_CONTEXT" | "done.invoke.loadContext" | "done.invoke.syncNotes" | "error.platform.syncNotes";
+"sortNoteIds": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes" | "xstate.stop";
 "upsertNote": "UPSERT_NOTE";
         };
         eventsCausingDelays: {
@@ -35,7 +36,7 @@
         };
         eventsCausingServices: {
           "loadContext": "xstate.init";
-"syncNotes": "DELETE_NOTE" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.loadContext";
+"syncNotes": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.loadContext";
         };
         matchesStates: "idle" | "loadingContext" | "syncingNotes";
         tags: never;

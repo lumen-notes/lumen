@@ -1,27 +1,36 @@
+import * as Dialog from "@radix-ui/react-dialog"
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
+import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
 import { NavLink as RouterNavLink, NavLinkProps, useMatch, useResolvedPath } from "react-router-dom"
+import { useNetworkState } from "react-use"
 import { GlobalStateContext } from "../global-state"
 import { toDateString } from "../utils/date"
-import { IconButton } from "./button"
+import { Button, IconButton } from "./button"
+import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import {
   CalendarFillIcon24,
   CalendarIcon24,
+  CloseIcon16,
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
+import { Input } from "./input"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const globalState = React.useContext(GlobalStateContext)
+  const [state, send] = useActor(globalState.service)
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = React.useState(false)
+  const { online } = useNetworkState()
   return (
     <nav
       className={clsx(
@@ -68,6 +77,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={clsx({ left: "mt-auto flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
+              {/* TODO: Focus button when dialog closes. */}
               <IconButton aria-label="More actions" disableTooltip className="w-full">
                 <MoreIcon24 />
               </IconButton>
@@ -82,16 +92,97 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Send feedback
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => globalState.service.send("SYNC_NOTES")}>
+              <DropdownMenu.Item onClick={() => send("SYNC_NOTES")} disabled={!online}>
                 {/* TODO: Sync icon */}
                 Sync notes
               </DropdownMenu.Item>
-              <DropdownMenu.Item>
+              <DropdownMenu.Item onClick={() => setIsSettingsDialogOpen(true)}>
                 {/* TODO: Settings icon */}
                 Change sync settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
+          {/* TODO: Move this to a separate component. */}
+          <Dialog.Root open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm" />
+              <Dialog.Content className="fixed top-0 left-1/2 z-20 w-full max-w-sm -translate-x-1/2 p-4 focus:outline-0 sm:top-1/2 sm:-translate-y-1/2">
+                <Card className="grid gap-6 p-4">
+                  <Dialog.Close asChild>
+                    <IconButton aria-label="Close" className="absolute top-1 right-1">
+                      <CloseIcon16 />
+                    </IconButton>
+                  </Dialog.Close>
+                  <div className="grid gap-2">
+                    <Dialog.Title className="text-base font-semibold leading-none">
+                      Sync settings
+                    </Dialog.Title>
+                    <Dialog.Description className="text-text-secondary">
+                      Store your notes as Markdown files in a GitHub repository of your choice.
+                    </Dialog.Description>
+                  </div>
+                  <form
+                    className="grid gap-4"
+                    onSubmit={(event) => {
+                      event.preventDefault()
+                      const formData = new FormData(event.currentTarget)
+                      const authToken = String(formData.get("auth-token"))
+                      const repoOwner = String(formData.get("repo-owner"))
+                      const repoName = String(formData.get("repo-name"))
+                      send({ type: "SET_CONTEXT", data: { authToken, repoOwner, repoName } })
+                      setIsSettingsDialogOpen(false)
+                    }}
+                  >
+                    <div className="grid gap-2">
+                      <label htmlFor="auth-token" className="leading-4">
+                        Personal access token
+                      </label>
+                      <Input
+                        id="auth-token"
+                        name="auth-token"
+                        spellCheck={false}
+                        defaultValue={state.context.authToken}
+                      />
+                      <p className="markdown text-text-secondary">
+                        Generate a{" "}
+                        <a
+                          href="https://github.com/settings/tokens/new"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          personal access token
+                        </a>{" "}
+                        with <code>repo</code> access, then paste it here.
+                      </p>
+                    </div>
+                    <div className="grid gap-2">
+                      <label htmlFor="repo-owner" className="leading-4">
+                        Repository owner
+                      </label>
+                      <Input
+                        id="repo-owner"
+                        name="repo-owner"
+                        defaultValue={state.context.repoOwner}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <label htmlFor="repo-name" className="leading-4">
+                        Repository name
+                      </label>
+                      <Input
+                        id="repo-name"
+                        name="repo-name"
+                        defaultValue={state.context.repoName}
+                      />
+                    </div>
+                    <Button type="submit" variant="primary" className="mt-2">
+                      Save
+                    </Button>
+                  </form>
+                </Card>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </li>
       </ul>
     </nav>
