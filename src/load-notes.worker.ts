@@ -31,6 +31,8 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     )
 
     if (!refResponse.ok) {
+      console.error(refResponse)
+
       switch (refResponse.status) {
         // Unauthorized
         case 401:

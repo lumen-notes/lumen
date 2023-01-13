@@ -33,8 +33,7 @@ const machine =
   createMachine(
     {
       context: {
-        // Pre-fill personal access token in development
-        authToken: import.meta.env.DEV ? import.meta.env.VITE_GITHUB_TOKEN : "",
+        authToken: "",
         repoOwner: "",
         repoName: "",
         sha: "",
