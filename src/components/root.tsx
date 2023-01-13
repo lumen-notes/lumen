@@ -61,7 +61,7 @@ export function Root() {
           </main>
         </div>
         {!online ? (
-          <div className="flex justify-center py-2 px-4 text-text-secondary sm:justify-start sm:bg-bg-tertiary">
+          <div className="flex justify-center py-2 px-4 sm:justify-start sm:bg-bg-tertiary">
             {/* TODO: Offline icon */}
             <span>Offline</span>
             {unsyncedNoteCount > 0 ? (

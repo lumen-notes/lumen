@@ -66,6 +66,7 @@
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
+  --color-text-pending: hsl(35deg 94% 20%);
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
@@ -75,6 +76,7 @@
   --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
   --color-bg-tertiary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-tertiary));
   --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
+  --color-bg-pending: hsl(49deg 100% 85%);
   --color-border: hsla(var(--h) var(--s) var(--l-text) / var(--a-border));
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200deg 100% 40%);
@@ -102,7 +104,9 @@
 
     /* Colors */
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
-    --color-bg-highlight: hsl(var(--h-highlight) 20% 20%);
+    --color-text-pending: hsl(44deg 100% 85%);
+    --color-bg-highlight: hsl(var(--h-highlight) 30% 20%);
+    --color-bg-pending: hsl(35deg 93% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
   }
 }
@@ -138,7 +142,7 @@ body:has([data-resizing="true"]) * {
 /* Utility classes */
 
 .link {
-  @apply rounded-sm underline decoration-1 underline-offset-2 outline-offset-0;
+  @apply rounded underline decoration-1 underline-offset-2 outline-offset-0;
 }
 
 /* Codemirror styles */
