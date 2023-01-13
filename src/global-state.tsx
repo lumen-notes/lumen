@@ -43,8 +43,8 @@ const machine =
         tags: {},
         dates: {},
         unsyncedNotes: {
-          upserted: new Set([]),
-          deleted: new Set([]),
+          upserted: new Set<string>(),
+          deleted: new Set<string>(),
         },
         error: "",
       },
@@ -55,14 +55,8 @@ const machine =
           loadContext: {
             data: Context
           }
-          loadNotes: {
-            data: {
-              sha: string
-              notes: Record<NoteId, Note>
-              backlinks: Record<NoteId, NoteId[]>
-              tags: Record<string, NoteId[]>
-              dates: Record<string, NoteId[]>
-            } | null
+          syncNotes: {
+            data: Partial<Context> | null
           }
         },
         events: {} as Event,
@@ -125,7 +119,7 @@ const machine =
       actions: {
         setContext: assign((context, event) => {
           if (!event.data) return context
-          return { ...context, ...event.data }
+          return { ...context, ...(event.data as Partial<Context>) }
         }),
         saveContextInIndexedDB: async (context, event) => {
           await set("context", context)
@@ -303,14 +297,17 @@ const machine =
             type: "module",
           })
 
-          const data = await new Promise((resolve) => {
+          const data: Pick<
+            Context,
+            "notes" | "backlinks" | "dates" | "tags" | "sha" | "error"
+          > | null = await new Promise((resolve) => {
             worker.postMessage({ authToken, repoOwner, repoName, sha })
             worker.onmessage = (event) => resolve(event.data)
           })
 
           const unsyncedNotes = {
-            upserted: new Set(),
-            deleted: new Set(),
+            upserted: new Set<string>(),
+            deleted: new Set<string>(),
           }
 
           return data ? { ...data, unsyncedNotes } : { unsyncedNotes }
