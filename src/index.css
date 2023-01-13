@@ -114,7 +114,7 @@
 /* Global styles */
 
 body {
-  @apply bg-bg-inset font-body text-sm text-text;
+  @apply overflow-hidden bg-bg-inset font-body text-sm text-text;
   font-variant-numeric: slashed-zero;
 }
 
