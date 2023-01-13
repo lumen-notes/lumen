@@ -45,7 +45,7 @@ export function Root() {
 
   return (
     <div>
-      <div className="flex h-screen w-screen flex-col [@supports(height:100svh)]:h-[100svh]">
+      <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] [@supports(height:100svh)]:h-[100svh]">
         {state.context.error ? (
           <div className="flex items-center gap-3 bg-[crimson] py-2 px-4 text-[white]">
             <ErrorIcon16 />
@@ -61,7 +61,7 @@ export function Root() {
           </main>
         </div>
         {!online ? (
-          <div className="flex bg-bg-tertiary py-2 px-4">
+          <div className="flex justify-center py-2 px-4 text-text-secondary sm:justify-start sm:bg-bg-tertiary">
             {/* TODO: Offline icon */}
             <span>Offline</span>
             {unsyncedNoteCount > 0 ? (
@@ -74,9 +74,7 @@ export function Root() {
         ) : null}
       </div>
       {state.matches("syncingNotes") ? (
-        // `bottom-16` ensures that the syncing indicator doesn't overlap
-        // the bottom nav bar on mobile
-        <div className="fixed bottom-16 right-2 sm:bottom-2">
+        <div className="fixed top-2 right-2 sm:top-[unset] sm:bottom-2">
           <Card
             elevation={1}
             className="flex items-center gap-2 p-2 text-text-secondary"
