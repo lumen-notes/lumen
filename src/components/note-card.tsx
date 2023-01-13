@@ -25,7 +25,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const globalState = React.useContext(GlobalStateContext)
-  const [state, send] = useActor(globalState.service)
+  const [state] = useActor(globalState.service)
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
   const isSynced = state.matches("syncingNotes") || !state.context.unsyncedNotes.upserted.has(id)
@@ -36,7 +36,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
   function switchToEditing() {
     // Sync notes before editing so that we're editing the latest SHA
-    send("SYNC_NOTES")
+    // send("SYNC_NOTES")
     setIsEditing(true)
     setTimeout(() => {
       const view = codeMirrorViewRef.current
