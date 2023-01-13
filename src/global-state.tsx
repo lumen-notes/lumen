@@ -1,9 +1,9 @@
 import { useInterpret } from "@xstate/react"
-import { Buffer } from "buffer"
 import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { Note, NoteId } from "./types"
+import { deleteFile, writeFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
@@ -280,19 +280,19 @@ const machine =
             return null
           }
 
-          // Upsert note files
+          // Update files
           for (const id of context.unsyncedNotes.upserted) {
-            upsertNoteFile(context, id, context.notes[id].body)
+            writeFile({ context, path: `${id}.md`, content: context.notes[id].body })
             // What happens there is an error?
           }
 
-          // Delete note files
+          // Delete files
           for (const id of context.unsyncedNotes.deleted) {
-            deleteNoteFile(context, id)
+            deleteFile({ context, path: `${id}.md` })
             // What happens there is an error?
           }
 
-          // Load note files
+          // Load files
           const worker = new Worker(new URL("./load-notes.worker.ts", import.meta.url), {
             type: "module",
           })
@@ -329,65 +329,4 @@ export function GlobalStateProvider({ children }: React.PropsWithChildren) {
   const service = useInterpret(machine)
   const contextValue = React.useMemo(() => ({ service }), [service])
   return <GlobalStateContext.Provider value={contextValue}>{children}</GlobalStateContext.Provider>
-}
-
-async function upsertNoteFile(context: Context, id: NoteId, body: string) {
-  const endpoint = `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${id}.md`
-
-  // Get the SHA of the file
-  const { sha } = await fetch(endpoint, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${context.authToken}`,
-    },
-  }).then((response) => response.json())
-
-  const fileExists = Boolean(sha)
-
-  // Create or update the file
-  const response = await fetch(endpoint, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${context.authToken}`,
-    },
-    body: JSON.stringify({
-      message: `${fileExists ? "Update" : "Create"} ${id}.md`,
-      content: Buffer.from(body).toString("base64"),
-      sha,
-    }),
-  })
-
-  if (!response.ok) {
-    console.error(
-      `Failed to ${fileExists ? "update" : "create"} file: ${id}.md ${response.status}}`,
-    )
-  }
-}
-
-async function deleteNoteFile(context: Context, id: NoteId) {
-  const endpoint = `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${id}.md`
-
-  // Get the SHA of the file
-  const { sha } = await fetch(endpoint, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${context.authToken}`,
-    },
-  }).then((response) => response.json())
-
-  // Delete the file
-  const response = await fetch(endpoint, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${context.authToken}`,
-    },
-    body: JSON.stringify({
-      message: `Delete ${id}.md`,
-      sha,
-    }),
-  })
-
-  if (!response.ok) {
-    console.error(`Failed to delete file: ${id}.md (${response.status})`)
-  }
 }

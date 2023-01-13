@@ -1,8 +1,8 @@
 import { useActor } from "@xstate/react"
-import mime from "mime"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { Context, GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state"
+import { readFile } from "../utils/file-system"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -28,7 +28,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
       try {
         setIsLoading(true)
 
-        const file = await readFile(state.context, path)
+        const file = await readFile({ context: state.context, path })
         const url = URL.createObjectURL(file)
 
         setFile(file)
@@ -88,52 +88,4 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
       </a>
     </div>
   )
-}
-
-async function readFile(context: Context, path: string) {
-  const response = await fetch(
-    `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${
-      // Remove leading slash if present
-      path.replace(/^\//, "")
-    }`,
-    {
-      headers: {
-        Authorization: `Bearer ${context.authToken}`,
-        Accept: "application/vnd.github.raw",
-      },
-    },
-  )
-
-  if (!response.ok || !response.body) {
-    throw new Error(response.statusText)
-  }
-
-  // Reference: https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Using_readable_streams#reading_the_stream
-  const reader = response.body.getReader()
-
-  const stream = new ReadableStream({
-    start(controller) {
-      // @ts-ignore
-      function push() {
-        return reader.read().then(({ done, value }) => {
-          // When no more data needs to be consumed, close the stream
-          if (done) {
-            controller.close()
-            return
-          }
-
-          // Enqueue the next data chunk into our target stream
-          controller.enqueue(value)
-          return push()
-        })
-      }
-
-      return push()
-    },
-  })
-
-  const blob = await new Response(stream).blob()
-  const mimeType = mime.getType(path) || ""
-  const filename = path.split("/").pop() || ""
-  return new File([blob], filename, { type: mimeType })
 }

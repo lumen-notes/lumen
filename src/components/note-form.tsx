@@ -9,7 +9,6 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { useActor } from "@xstate/react"
-import { Buffer } from "buffer"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
@@ -17,6 +16,7 @@ import React from "react"
 import { GlobalStateContext } from "../global-state"
 import { NoteId } from "../types"
 import { formatDate } from "../utils/date"
+import { writeFile } from "../utils/file-system"
 import { Button, IconButton } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -99,19 +99,7 @@ export function NoteForm({
       const arrayBuffer = await file.arrayBuffer()
 
       // Upload file
-      fetch(
-        `https://api.github.com/repos/${state.context.repoOwner}/${state.context.repoName}/contents${filePath}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${state.context.authToken}`,
-          },
-          body: JSON.stringify({
-            message: `Upload ${fileId}.${fileExtension}`,
-            content: Buffer.from(arrayBuffer).toString("base64"),
-          }),
-        },
-      )
+      writeFile({ context: state.context, path: filePath, content: arrayBuffer })
 
       // Cache file
       fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
