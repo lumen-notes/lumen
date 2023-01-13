@@ -106,7 +106,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
           <Dialog.Root open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm" />
-              <Dialog.Content className="fixed left-1/2 top-1/2 z-20 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 p-4 focus:outline-0">
+              <Dialog.Content className="fixed left-1/2 top-1/3 z-20 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 p-4 focus:outline-0">
                 <Card elevation={2} className="grid gap-6 p-4">
                   <Dialog.Close asChild>
                     <IconButton aria-label="Close" className="absolute top-1 right-1">
