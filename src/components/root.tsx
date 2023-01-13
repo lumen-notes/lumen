@@ -22,9 +22,19 @@ export function Root() {
 
   const { online } = useNetworkState()
 
-  const handleOnline = React.useCallback(() => send("SYNC_NOTES"), [send])
+  const handleOnline = React.useCallback(() => {
+    send("SYNC_NOTES")
+  }, [send])
 
+  const handleVisibilityChange = React.useCallback(() => {
+    if (document.visibilityState === "visible") {
+      send("SYNC_NOTES")
+    }
+  }, [send])
+
+  // Sync notes when the app comes online or becomes visible.
   useEvent("online", handleOnline)
+  useEvent("visibilitychange", handleVisibilityChange)
 
   const unsyncedNoteCount =
     state.context.unsyncedNotes.upserted.size + state.context.unsyncedNotes.deleted.size
