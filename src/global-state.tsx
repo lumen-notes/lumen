@@ -273,7 +273,7 @@ const machine =
           return context
         },
         syncNotes: async (context) => {
-          const { authToken, repoOwner, repoName, sha } = context
+          const { authToken, repoOwner, repoName } = context
 
           // Dont sync if offline, no auth token, or no repo
           if (!navigator.onLine || !authToken || !repoOwner || !repoName) {
@@ -297,11 +297,8 @@ const machine =
             type: "module",
           })
 
-          const data: Pick<
-            Context,
-            "notes" | "backlinks" | "dates" | "tags" | "sha" | "error"
-          > | null = await new Promise((resolve) => {
-            worker.postMessage({ authToken, repoOwner, repoName, sha })
+          const data: Partial<Context> | null = await new Promise((resolve) => {
+            worker.postMessage(context)
             worker.onmessage = (event) => resolve(event.data)
           })
 

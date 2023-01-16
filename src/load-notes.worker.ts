@@ -1,59 +1,18 @@
-import { Buffer } from "buffer"
 import { z } from "zod"
+import { Context } from "./global-state"
 import { Note, NoteId } from "./types"
+import { readFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
 
-type MessagePayload = {
-  authToken: string
-  repoOwner: string
-  repoName: string
-  sha: string
-}
-
-self.onmessage = async (event: MessageEvent<MessagePayload>) => {
+self.onmessage = async (event: MessageEvent<Context>) => {
   try {
     // Start timer
     console.time("loadNotes")
 
-    const { authToken, repoOwner, repoName, sha } = event.data
-
-    // TODO: Handle offline mode
-
-    // Fetch latest commit SHA
-    const refResponse = await fetch(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/git/refs/heads/main`,
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      },
-    )
-
-    if (!refResponse.ok) {
-      console.error(refResponse)
-
-      switch (refResponse.status) {
-        // Unauthorized
-        case 401:
-          throw new Error(`Invalid GitHub token`)
-
-        // Not found
-        case 404:
-          throw new Error(`Repository not found: ${repoOwner}/${repoName}`)
-
-        // Other error
-        default:
-          throw new Error(
-            `Failed to fetch repository: ${repoOwner}/${repoName} (${refResponse.status})`,
-          )
-      }
-    }
-
-    const ref = await refResponse.json()
+    const latestSha = await fetchLatestSha(event.data)
 
     // Don't load notes if the SHA hasn't changed
-    if (ref.object.sha === sha) {
+    if (latestSha === event.data.sha) {
       // End timer
       console.timeEnd("loadNotes")
 
@@ -61,21 +20,12 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
       return
     }
 
-    // TODO: Handle case where .lumen/notes.json doesn't exist
+    // TODO: Provide helpful guidance when .lumen/notes.json doesn't exist
 
     // Fetch notes from GitHub
-    const file = await fetch(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/.lumen/notes.json`,
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      },
-    ).then((response) => response.json())
-
+    const file = await readFile({ context: event.data, path: ".lumen/notes.json" })
     const schema = z.record(z.string())
-    const data = schema.parse(JSON.parse(Buffer.from(file.content, "base64").toString()))
+    const data = schema.parse(JSON.parse(await file.text()))
     const parsedData = Object.entries(data).map(([id, body]) => ({
       id,
       body,
@@ -105,7 +55,7 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
     // End timer
     console.timeEnd("loadNotes")
 
-    self.postMessage({ sha: ref.object.sha, notes, backlinks, tags, dates, error: "" })
+    self.postMessage({ sha: latestSha, notes, backlinks, tags, dates, error: "" })
   } catch (err) {
     const error = err as Error
     self.postMessage({
@@ -117,6 +67,42 @@ self.onmessage = async (event: MessageEvent<MessagePayload>) => {
       dates: {},
     })
   }
+}
+
+async function fetchLatestSha(context: Context) {
+  const response = await fetch(
+    `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/git/refs/heads/main`,
+    {
+      headers: {
+        Accept: "application/vnd.github.v3+json",
+        Authorization: `Bearer ${context.authToken}`,
+      },
+    },
+  )
+
+  if (!response.ok) {
+    console.error(response)
+
+    switch (response.status) {
+      // Unauthorized
+      case 401:
+        throw new Error(`Invalid GitHub token`)
+
+      // Not found
+      case 404:
+        throw new Error(`Repository not found: ${context.repoOwner}/${context.repoName}`)
+
+      // Other error
+      default:
+        throw new Error(
+          `Failed to fetch repository: ${context.repoOwner}/${context.repoName} (${response.status})`,
+        )
+    }
+  }
+
+  const ref = await response.json()
+
+  return ref.object.sha
 }
 
 /**
