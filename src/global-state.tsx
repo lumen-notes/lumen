@@ -3,7 +3,7 @@ import { get, set } from "idb-keyval"
 import React from "react"
 import { assign, createMachine, InterpreterFrom } from "xstate"
 import { Note, NoteId } from "./types"
-import { deleteFile, writeFile } from "./utils/file-system"
+// import { deleteFile, writeFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
 
 export const UPLOADS_DIRECTORY = "uploads"
@@ -280,34 +280,14 @@ const machine =
             return null
           }
 
-          // Update files
-          for (const id of context.unsyncedNotes.upserted) {
-            writeFile({ context, path: `${id}.md`, content: context.notes[id].body })
-            // What happens there is an error?
-          }
-
-          // Delete files
-          for (const id of context.unsyncedNotes.deleted) {
-            deleteFile({ context, path: `${id}.md` })
-            // What happens there is an error?
-          }
-
-          // Load files
-          const worker = new Worker(new URL("./load-notes.worker.ts", import.meta.url), {
+          const worker = new Worker(new URL("./sync-notes.worker.ts", import.meta.url), {
             type: "module",
           })
 
-          const data: Partial<Context> | null = await new Promise((resolve) => {
+          return await new Promise<Partial<Context>>((resolve) => {
             worker.postMessage(context)
             worker.onmessage = (event) => resolve(event.data)
           })
-
-          const unsyncedNotes = {
-            upserted: new Set<string>(),
-            deleted: new Set<string>(),
-          }
-
-          return data ? { ...data, unsyncedNotes } : { unsyncedNotes }
         },
       },
     },

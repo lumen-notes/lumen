@@ -1,42 +1,69 @@
 import { z } from "zod"
 import { Context } from "./global-state"
 import { Note, NoteId } from "./types"
-import { readFile } from "./utils/file-system"
+import { deleteFile, readFile, writeFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
+
+const timerLabel = "Sync notes"
 
 self.onmessage = async (event: MessageEvent<Context>) => {
   try {
-    // Start timer
-    console.time("loadNotes")
+    console.time(timerLabel)
+
+    // Push unsynced notes to GitHub
+    for (const id of event.data.unsyncedNotes.upserted) {
+      writeFile({ context: event.data, path: `${id}.md`, content: event.data.notes[id].body })
+    }
+
+    for (const id of event.data.unsyncedNotes.deleted) {
+      deleteFile({ context: event.data, path: `${id}.md` })
+    }
 
     const latestSha = await fetchLatestSha(event.data)
 
     // Don't load notes if the SHA hasn't changed
     if (latestSha === event.data.sha) {
-      // End timer
-      console.timeEnd("loadNotes")
-
-      self.postMessage(null)
+      console.timeEnd(timerLabel)
+      console.log(`SHA: ${latestSha} (unchanged)`)
+      self.postMessage({
+        // Clear unsynced notes
+        unsyncedNotes: { upserted: new Set<string>(), deleted: new Set<string>() },
+        // Clear error
+        error: "",
+      })
       return
     }
 
-    // TODO: Provide helpful guidance when .lumen/notes.json doesn't exist
-
-    // Fetch notes from GitHub
+    // Fetch note data from GitHub
+    // TODO: Handle case when .lumen/notes.json doesn't exist
     const file = await readFile({ context: event.data, path: ".lumen/notes.json" })
     const schema = z.record(z.string())
-    const data = schema.parse(JSON.parse(await file.text()))
-    const parsedData = Object.entries(data).map(([id, body]) => ({
-      id,
-      body,
-      ...parseNoteBody(body),
-    }))
+    const noteData = schema.parse(JSON.parse(await file.text()))
+    const parsedNoteData = Object.entries(noteData).map(([id, body]) => {
+      const isSynced = !event.data.unsyncedNotes.upserted.has(id)
+      // If the note is synced, use the body from GitHub
+      // Otherwise, use the body stored in context
+      const updatedBody = isSynced ? body : event.data.notes[id].body
+      return {
+        id,
+        body: updatedBody,
+        ...parseNoteBody(updatedBody),
+      }
+    })
+
+    // Create a map of notes, backlinks, tags, and dates
     const notes: Record<NoteId, Note> = {}
     const backlinks: Record<NoteId, NoteId[]> = {}
     const tags: Record<string, NoteId[]> = {}
     const dates: Record<string, NoteId[]> = {}
 
-    for (const { id, title, body, noteLinks, tagLinks, dateLinks } of parsedData) {
+    // Copy the parsed data into the maps
+    for (const { id, title, body, noteLinks, tagLinks, dateLinks } of parsedNoteData) {
+      // Skip deleted notes
+      if (event.data.unsyncedNotes.deleted.has(id)) {
+        continue
+      }
+
       notes[id] = { title, body }
 
       for (const noteLink of noteLinks) {
@@ -52,14 +79,26 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       }
     }
 
-    // End timer
-    console.timeEnd("loadNotes")
+    // Log the time it took to sync notes
+    console.timeEnd(timerLabel)
+    console.log(`SHA: ${latestSha} (changed)`)
 
-    self.postMessage({ sha: latestSha, notes, backlinks, tags, dates, error: "" })
-  } catch (err) {
-    const error = err as Error
+    // Send the notes, backlinks, tags, and dates to the main thread
     self.postMessage({
-      error: error.message,
+      sha: latestSha,
+      notes,
+      backlinks,
+      tags,
+      dates,
+      // Clear unsynced notes
+      unsyncedNotes: { upserted: new Set<string>(), deleted: new Set<string>() },
+      // Clear error
+      error: "",
+    })
+  } catch (error) {
+    // Send the error to the main thread
+    self.postMessage({
+      error: (error as Error).message,
       sha: "",
       notes: {},
       backlinks: {},
