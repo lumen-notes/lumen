@@ -33,9 +33,10 @@ module.exports = {
     },
     borderRadius: {
       none: "0",
-      sm: "0.375rem", // 6px
-      md: "0.625rem", // 10px (6px + 4px)
-      lg: "0.875rem", // 14px (6px + 8px)
+      xs: "0.1875rem", // 3px (base / 2)
+      sm: "0.375rem", // 6px (base)
+      md: "0.625rem", // 10px (base + 4px)
+      lg: "0.875rem", // 14px (base + 8px)
       full: "9999px",
     },
   },

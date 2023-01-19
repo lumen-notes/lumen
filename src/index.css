@@ -148,7 +148,7 @@ body:has([data-resizing="true"]) * {
 /* Utility classes */
 
 .link {
-  @apply rounded-sm underline decoration-1 underline-offset-2 outline-offset-0;
+  @apply rounded-xs underline decoration-1 underline-offset-2 outline-offset-0;
 }
 
 /* Codemirror styles */
@@ -257,7 +257,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown code {
-  @apply rounded-sm bg-bg-secondary px-1;
+  @apply rounded-xs bg-bg-secondary px-1;
 }
 
 .markdown pre > code {
