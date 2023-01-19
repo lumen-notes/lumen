@@ -153,7 +153,7 @@ function CalendarDate({
         to={`/dates/${toDateString(date)}`}
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
+          "relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
 
           // Underline the active day
           isActive &&
@@ -161,7 +161,7 @@ function CalendarDate({
 
           // Show a dot if the date has notes
           hasNotes &&
-            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+            "after:rounded-full after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:content-['']",
           hasNotes && isActive && "after:bg-text",
           hasNotes && !isActive && "after:bg-border",
         )}
@@ -172,7 +172,7 @@ function CalendarDate({
           <span className="hidden @[6rem]:inline">{dayName.slice(0, 3)}</span>
           <span
             className={clsx(
-              isToday && "-my-[0.125rem] -mx-1 rounded py-[0.125rem] px-1",
+              isToday && "-my-[0.125rem] -mx-1 rounded-sm py-[0.125rem] px-1",
               // Outline the current day
               isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
               // Make outline bolder if current day is active

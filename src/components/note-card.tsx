@@ -112,7 +112,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           {!isSynced ? (
             <span>
               {" · "}
-              <span className="rounded bg-bg-pending px-1 text-text-pending">Not synced</span>
+              <span className="rounded-sm bg-bg-pending px-1 text-text-pending">Not synced</span>
             </span>
           ) : null}
         </span>

@@ -66,6 +66,7 @@
     "react-router-dom": "^6.3.0",
     "react-use": "^17.4.0",
     "remark-gfm": "^3.0.1",
+    "tailwind-merge": "^1.8.1",
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.0",
     "xstate": "^4.32.1",

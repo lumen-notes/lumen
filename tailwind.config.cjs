@@ -31,6 +31,13 @@ module.exports = {
       "border-secondary": "var(--color-border-secondary)",
       "border-focus": "var(--color-border-focus)",
     },
+    borderRadius: {
+      none: "0",
+      sm: "0.375rem", // 6px
+      md: "0.625rem", // 10px (6px + 4px)
+      lg: "0.875rem", // 14px (6px + 8px)
+      full: "9999px",
+    },
   },
   plugins: [
     require("@tailwindcss/container-queries"),

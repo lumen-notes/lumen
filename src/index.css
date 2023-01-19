@@ -148,7 +148,7 @@ body:has([data-resizing="true"]) * {
 /* Utility classes */
 
 .link {
-  @apply rounded underline decoration-1 underline-offset-2 outline-offset-0;
+  @apply rounded-sm underline decoration-1 underline-offset-2 outline-offset-0;
 }
 
 /* Codemirror styles */
@@ -175,7 +175,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
-  @apply max-w-sm rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  @apply max-w-sm rounded-md border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
@@ -183,12 +183,12 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-completionInfo {
-  @apply w-96 max-w-none whitespace-pre-wrap rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-md border-0 bg-bg-overlay p-1 px-3 py-2 font-body text-sm shadow-lg ring-1 ring-border-secondary dark:ring-inset;
   word-break: break-word;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
-  @apply flex rounded px-2 py-1 touch:py-2 touch:px-3;
+  @apply flex rounded-sm px-2 py-1 touch:py-2 touch:px-3;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
@@ -253,11 +253,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown pre {
-  @apply overflow-auto rounded bg-bg-secondary p-3;
+  @apply overflow-auto rounded-sm bg-bg-secondary p-3;
 }
 
 .markdown code {
-  @apply rounded bg-bg-secondary px-1;
+  @apply rounded-sm bg-bg-secondary px-1;
 }
 
 .markdown pre > code {
@@ -367,7 +367,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-item] {
-  @apply cursor-default rounded py-3 px-3 leading-4;
+  @apply cursor-default rounded-sm py-3 px-3 leading-4;
 }
 
 [cmdk-item][aria-selected] {

@@ -1,5 +1,5 @@
-import { clsx } from "clsx"
 import React from "react"
+import { cx } from "../utils/cx"
 
 export type CardProps = React.ComponentPropsWithoutRef<"div"> & {
   elevation?: 0 | 1 | 2
@@ -11,7 +11,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={clsx(
+        className={cx(
           "relative rounded-lg ring-1 ring-border-secondary after:pointer-events-none after:absolute after:inset-0 after:rounded-lg focus:outline-0  dark:ring-0 dark:after:ring-1 dark:after:ring-inset dark:after:ring-border-secondary",
           elevation === 0 && "bg-bg shadow-sm",
           elevation === 1 && "bg-bg-overlay shadow-lg",

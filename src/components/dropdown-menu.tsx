@@ -15,7 +15,7 @@ const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuC
       <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
         <Card
           elevation={1}
-          className="z-20 min-w-[14rem] p-1 animate-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
+          className="z-20 min-w-[14rem] rounded-md p-1 animate-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
         >
           {children}
         </Card>
@@ -34,7 +34,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     <RadixDropdownMenu.Item
       ref={ref}
       className={clsx(
-        "flex cursor-default gap-5 rounded py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none touch:py-3 touch:px-4 [&[data-disabled]]:opacity-50",
+        "flex cursor-default gap-5 rounded-sm py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none touch:py-3 touch:px-4 [&[data-disabled]]:opacity-50",
         className,
       )}
       {...props}
