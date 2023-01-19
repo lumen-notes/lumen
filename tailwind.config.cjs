@@ -34,6 +34,7 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/container-queries"),
+    require("tailwindcss-animate"),
     plugin(function ({ addVariant }) {
       addVariant("touch", "@media (pointer: coarse)")
     }),

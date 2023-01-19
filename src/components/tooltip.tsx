@@ -27,7 +27,10 @@ const Content: React.FC<ContentProps> = ({
         alignOffset={alignOffset}
         asChild
       >
-        <Card elevation={1} className="z-20 p-2 leading-none text-text">
+        <Card
+          elevation={1}
+          className="z-20 p-2 leading-none text-text animate-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
+        >
           {children}
         </Card>
       </RadixTooltip.Content>
