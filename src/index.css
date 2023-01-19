@@ -66,7 +66,7 @@
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
-  --color-text-pending: hsl(35deg 94% 20%);
+  --color-text-pending: hsl(35deg 94% 15%);
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
@@ -104,7 +104,7 @@
 
     /* Colors */
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
-    --color-text-pending: hsl(44deg 100% 85%);
+    --color-text-pending: hsl(44deg 100% 90%);
     --color-bg-highlight: hsl(var(--h-highlight) 30% 20%);
     --color-bg-pending: hsl(35deg 93% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
