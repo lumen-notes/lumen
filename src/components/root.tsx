@@ -77,7 +77,7 @@ export function Root() {
         <div className="fixed top-2 right-2 sm:top-[unset] sm:bottom-2">
           <Card
             elevation={1}
-            className="flex items-center gap-2 p-2 text-text-secondary"
+            className="flex items-center gap-2 rounded-md p-2 text-text-secondary"
             role="status"
             aria-label="Loading notes"
           >
