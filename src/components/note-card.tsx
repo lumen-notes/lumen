@@ -122,7 +122,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               <MoreIcon16 />
             </IconButton>
           </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
+          <DropdownMenu.Content align="end">
             <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
               Edit
             </DropdownMenu.Item>
