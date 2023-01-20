@@ -168,7 +168,7 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
-              className="fixed top-2 left-2 right-2 z-20 animate-in fade-in zoom-in-90 sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:w-[var(--width)]"
+              className="fixed top-2 left-2 right-2 z-20 sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:w-[var(--width)]"
               style={{
                 // @ts-ignore
                 "--top": `${position.y}px`,

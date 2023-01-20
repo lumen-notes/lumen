@@ -200,7 +200,7 @@ export function NoteForm({
           >
             <div
               ref={editorRef}
-              className="grid flex-shrink-0 flex-grow p-4 pb-1"
+              className="flex flex-shrink-0 flex-grow p-4 pb-1"
               onPaste={(event) => {
                 const [file] = Array.from(event.clipboardData.files)
 

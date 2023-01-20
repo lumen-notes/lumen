@@ -154,6 +154,10 @@ body:has([data-resizing="true"]) * {
 
 /* Codemirror styles */
 
+.cm-editor {
+  @apply w-full;
+}
+
 .cm-editor.cm-editor.cm-focused {
   @apply outline-none;
 }
