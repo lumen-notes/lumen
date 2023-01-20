@@ -5,16 +5,13 @@ function setThemeColor() {
     return
   }
 
-  // Wait for the next frame to ensure the background color is set
-  setTimeout(() => {
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]')
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]')
 
-    const backgroundColor = window
-      .getComputedStyle(document.body)
-      .getPropertyValue("background-color")
+  const backgroundColor = window
+    .getComputedStyle(document.body)
+    .getPropertyValue("background-color")
 
-    themeColorMeta?.setAttribute("content", backgroundColor)
-  })
+  themeColorMeta?.setAttribute("content", backgroundColor)
 }
 
 /** Dyanmically change the theme color to match the background color */
