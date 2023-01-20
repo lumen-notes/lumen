@@ -92,13 +92,21 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Send feedback
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => send("SYNC_NOTES")} disabled={!online}>
+              <DropdownMenu.Item
+                onClick={() => send("PULL_NOTES")}
+                disabled={
+                  !online ||
+                  !state.context.authToken ||
+                  !state.context.repoOwner ||
+                  !state.context.repoName
+                }
+              >
                 {/* TODO: Sync icon */}
-                Sync notes
+                Pull from GitHub
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => setIsSettingsDialogOpen(true)}>
                 {/* TODO: Settings icon */}
-                Change sync settings
+                Change GitHub settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
@@ -115,7 +123,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                   </Dialog.Close>
                   <div className="grid gap-2">
                     <Dialog.Title className="text-lg font-semibold leading-none">
-                      Sync settings
+                      GitHub settings
                     </Dialog.Title>
                     <Dialog.Description className="text-text-secondary">
                       Store your notes as Markdown files in a GitHub repository of your choice.

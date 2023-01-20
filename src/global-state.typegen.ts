@@ -5,15 +5,18 @@
         '@@xstate/typegen': true;
         internalEvents: {
           "done.invoke.loadContext": { type: "done.invoke.loadContext"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
-"done.invoke.syncNotes": { type: "done.invoke.syncNotes"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+"done.invoke.pullNotes": { type: "done.invoke.pullNotes"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+"done.invoke.pushNotes": { type: "done.invoke.pushNotes"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "error.platform.loadContext": { type: "error.platform.loadContext"; data: unknown };
-"error.platform.syncNotes": { type: "error.platform.syncNotes"; data: unknown };
+"error.platform.pullNotes": { type: "error.platform.pullNotes"; data: unknown };
+"error.platform.pushNotes": { type: "error.platform.pushNotes"; data: unknown };
 "xstate.init": { type: "xstate.init" };
 "xstate.stop": { type: "xstate.stop" };
         };
         invokeSrcNameMap: {
           "loadContext": "done.invoke.loadContext";
-"syncNotes": "done.invoke.syncNotes";
+"pullNotes": "done.invoke.pullNotes";
+"pushNotes": "done.invoke.pushNotes";
         };
         missingImplementations: {
           actions: never;
@@ -23,9 +26,9 @@
         };
         eventsCausingActions: {
           "deleteNote": "DELETE_NOTE";
-"saveContextInIndexedDB": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes" | "xstate.stop";
-"setContext": "SET_CONTEXT" | "done.invoke.loadContext" | "done.invoke.syncNotes" | "error.platform.syncNotes";
-"sortNoteIds": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.syncNotes" | "error.platform.loadContext" | "error.platform.syncNotes" | "xstate.stop";
+"saveContextInIndexedDB": "DELETE_NOTE" | "PULL_NOTES" | "PUSH_NOTES" | "SET_CONTEXT" | "UPSERT_NOTE" | "done.invoke.pullNotes" | "done.invoke.pushNotes" | "error.platform.loadContext" | "error.platform.pullNotes" | "error.platform.pushNotes" | "xstate.stop";
+"setContext": "SET_CONTEXT" | "done.invoke.loadContext" | "done.invoke.pullNotes" | "done.invoke.pushNotes" | "error.platform.pullNotes" | "error.platform.pushNotes";
+"sortNoteIds": "DELETE_NOTE" | "PULL_NOTES" | "PUSH_NOTES" | "SET_CONTEXT" | "UPSERT_NOTE" | "done.invoke.pullNotes" | "done.invoke.pushNotes" | "error.platform.loadContext" | "error.platform.pullNotes" | "error.platform.pushNotes" | "xstate.stop";
 "upsertNote": "UPSERT_NOTE";
         };
         eventsCausingDelays: {
@@ -36,9 +39,10 @@
         };
         eventsCausingServices: {
           "loadContext": "xstate.init";
-"syncNotes": "DELETE_NOTE" | "SET_CONTEXT" | "SYNC_NOTES" | "UPSERT_NOTE" | "done.invoke.loadContext";
+"pullNotes": "PULL_NOTES" | "SET_CONTEXT" | "done.invoke.loadContext";
+"pushNotes": "DELETE_NOTE" | "PUSH_NOTES" | "UPSERT_NOTE";
         };
-        matchesStates: "idle" | "loadingContext" | "syncingNotes";
+        matchesStates: "idle" | "loadingContext" | "pullingNotes" | "pushingNotes";
         tags: never;
       }
   

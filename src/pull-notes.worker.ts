@@ -1,23 +1,14 @@
 import { z } from "zod"
 import { Context } from "./global-state"
 import { Note, NoteId } from "./types"
-import { deleteFile, readFile, writeFile } from "./utils/file-system"
+import { readFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
 
-const timerLabel = "Sync notes"
+const timerLabel = "Pull notes"
 
 self.onmessage = async (event: MessageEvent<Context>) => {
   try {
     console.time(timerLabel)
-
-    // Push unsynced notes to GitHub
-    for (const id of event.data.unsyncedNotes.upserted) {
-      writeFile({ context: event.data, path: `${id}.md`, content: event.data.notes[id].body })
-    }
-
-    for (const id of event.data.unsyncedNotes.deleted) {
-      deleteFile({ context: event.data, path: `${id}.md` })
-    }
 
     const latestSha = await fetchLatestSha(event.data)
 
@@ -26,8 +17,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       console.timeEnd(timerLabel)
       console.log(`SHA: ${latestSha} (unchanged)`)
       self.postMessage({
-        // Clear unsynced notes
-        unsyncedNotes: { upserted: new Set<string>(), deleted: new Set<string>() },
         // Clear error
         error: "",
       })
@@ -40,15 +29,7 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     const schema = z.record(z.string())
     const noteData = schema.parse(JSON.parse(await file.text()))
     const parsedNoteData = Object.entries(noteData).map(([id, body]) => {
-      const isSynced = !event.data.unsyncedNotes.upserted.has(id)
-      // If the note is synced, use the body from GitHub
-      // Otherwise, use the body stored in context
-      const updatedBody = isSynced ? body : event.data.notes[id].body
-      return {
-        id,
-        body: updatedBody,
-        ...parseNoteBody(updatedBody),
-      }
+      return { id, body, ...parseNoteBody(body) }
     })
 
     // Create a map of notes, backlinks, tags, and dates
@@ -59,11 +40,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
 
     // Copy the parsed data into the maps
     for (const { id, title, body, noteLinks, tagLinks, dateLinks } of parsedNoteData) {
-      // Skip deleted notes
-      if (event.data.unsyncedNotes.deleted.has(id)) {
-        continue
-      }
-
       notes[id] = { title, body }
 
       for (const noteLink of noteLinks) {
@@ -79,7 +55,7 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       }
     }
 
-    // Log the time it took to sync notes
+    // Log the time it took to pull and parse the notes
     console.timeEnd(timerLabel)
     console.log(`SHA: ${latestSha} (changed)`)
 
@@ -90,8 +66,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       backlinks,
       tags,
       dates,
-      // Clear unsynced notes
-      unsyncedNotes: { upserted: new Set<string>(), deleted: new Set<string>() },
       // Clear error
       error: "",
     })

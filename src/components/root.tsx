@@ -23,12 +23,12 @@ export function Root() {
   const { online } = useNetworkState()
 
   const handleOnline = React.useCallback(() => {
-    send("SYNC_NOTES")
+    send("PUSH_NOTES")
   }, [send])
 
   const handleVisibilityChange = React.useCallback(() => {
     if (document.visibilityState === "visible") {
-      send("SYNC_NOTES")
+      send("PULL_NOTES")
     }
   }, [send])
 
@@ -36,8 +36,8 @@ export function Root() {
   useEvent("online", handleOnline)
   useEvent("visibilitychange", handleVisibilityChange)
 
-  const unsyncedNoteCount =
-    state.context.unsyncedNotes.upserted.size + state.context.unsyncedNotes.deleted.size
+  const pendingChangeCount =
+    state.context.pendingChanges.upsert.size + state.context.pendingChanges.delete.size
 
   if (state.matches("loadingContext")) {
     return null
@@ -64,25 +64,27 @@ export function Root() {
           <div className="flex justify-center py-2 px-4 sm:justify-start sm:bg-bg-tertiary">
             {/* TODO: Offline icon */}
             <span>Offline</span>
-            {unsyncedNoteCount > 0 ? (
+            {pendingChangeCount > 0 ? (
               <span>
                 <span className="px-2">·</span>
-                {pluralize(unsyncedNoteCount, "unsynced note")}
+                {pluralize(pendingChangeCount, "pending change")}
               </span>
             ) : null}
           </div>
         ) : null}
       </div>
-      {state.matches("syncingNotes") ? (
+      {state.matches("pushingNotes") || state.matches("pullingNotes") ? (
         <div className="fixed top-2 right-2 sm:top-[unset] sm:bottom-2">
           <Card
             elevation={1}
             className="flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"
             role="status"
-            aria-label="Loading notes"
+            aria-label={state.matches("pullingNotes") ? "Pulling notes" : "Pushing notes"}
           >
             <LoadingIcon16 />
-            <span className="leading-4">Syncing...</span>
+            <span className="leading-4">
+              {state.matches("pullingNotes") ? "Pulling..." : "Pushing..."}
+            </span>
           </Card>
         </div>
       ) : null}
