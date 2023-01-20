@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const plugin = require("tailwindcss/plugin")
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -8,6 +5,12 @@ module.exports = {
     hoverOnlyWhenSupported: true,
   },
   theme: {
+    extend: {
+      screens: {
+        coarse: { raw: "(pointer: coarse)" },
+        fine: { raw: "(pointer: fine)" },
+      },
+    },
     fontFamily: {
       body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],
       mono: ['"iA Writer Mono"', "monospace"],
@@ -43,11 +46,5 @@ module.exports = {
       full: "9999px",
     },
   },
-  plugins: [
-    require("@tailwindcss/container-queries"),
-    require("tailwindcss-animate"),
-    plugin(function ({ addVariant }) {
-      addVariant("touch", "@media (pointer: coarse)")
-    }),
-  ],
+  plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-animate")],
 }

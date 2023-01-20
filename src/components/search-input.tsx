@@ -20,7 +20,10 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         {shortcut && !props.value ? (
-          <div aria-hidden className="absolute top-0 bottom-0 right-4 flex items-center">
+          <div
+            aria-hidden
+            className="absolute top-0 bottom-0 right-4 flex items-center coarse:hidden"
+          >
             <Keys keys={shortcut} />
           </div>
         ) : null}

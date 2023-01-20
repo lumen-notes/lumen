@@ -34,7 +34,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     <RadixDropdownMenu.Item
       ref={ref}
       className={clsx(
-        "flex cursor-default gap-5 rounded-sm py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none touch:py-3 touch:px-4 [&[data-disabled]]:opacity-50",
+        "flex cursor-default gap-5 rounded-sm py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none coarse:py-3 coarse:px-4 [&[data-disabled]]:opacity-50",
         className,
       )}
       {...props}
@@ -43,7 +43,11 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
         <span>{children}</span>
       </div>
-      {shortcut ? <Keys keys={shortcut} /> : null}
+      {shortcut ? (
+        <div className="flex coarse:hidden">
+          <Keys keys={shortcut} />
+        </div>
+      ) : null}
     </RadixDropdownMenu.Item>
   ),
 )
