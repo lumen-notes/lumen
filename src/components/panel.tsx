@@ -29,7 +29,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
+      className="snap-centerbg-bg-inset sticky left-0 h-full w-screen flex-shrink-0 shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
       style={{
         // @ts-ignore TypeScript doesn't know about custom properties
         "--width": `${width}px`,
@@ -81,9 +81,9 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       </div>
       <div className="flex h-full flex-col overflow-auto [-webkit-transform:translateZ(0)]">
         <div
-          className={clsx(
-            "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset-backdrop p-4 backdrop-blur-md",
-          )}
+          className={
+            "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
+          }
         >
           <div className="flex flex-shrink gap-2">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
