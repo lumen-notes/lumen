@@ -12,14 +12,14 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cx(
-          "relative rounded-lg ring-1 ring-border-secondary after:pointer-events-none after:absolute after:inset-0 after:rounded-lg focus:outline-0  dark:ring-0 dark:after:ring-1 dark:after:ring-inset dark:after:ring-border-secondary",
+          "relative rounded-lg ring-1 ring-border-secondary after:pointer-events-none after:absolute after:inset-0 after:rounded-lg dark:ring-0 dark:after:ring-inset",
           elevation === 0 && "bg-bg shadow-sm",
           elevation === 1 && "bg-bg-overlay shadow-lg",
           elevation === 2 && "bg-bg-overlay shadow-xl",
           props.tabIndex === 0 &&
-            "focus:after:outline focus:after:outline-2 focus:after:-outline-offset-1 focus:after:outline-border-focus",
-          focusVisible &&
-            "after:outline after:outline-2 after:-outline-offset-1 after:outline-border-focus",
+            "focus:outline-none focus:after:ring-2 focus:after:ring-border-focus",
+          focusVisible && "after:ring-2 after:ring-border-focus",
+          !focusVisible && "dark:after:ring-1 dark:after:ring-border-secondary",
           className,
         )}
         {...props}
