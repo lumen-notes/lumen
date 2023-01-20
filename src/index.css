@@ -338,7 +338,7 @@ body:has([data-resizing="true"]) * {
 /* Cmdk styles */
 
 [cmdk-overlay] {
-  @apply fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm;
+  @apply fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm animate-in fade-in;
 }
 
 [cmdk-dialog] {
