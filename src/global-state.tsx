@@ -115,14 +115,14 @@ const machine =
           exit: ["sortNoteIds", "saveContextInIndexedDB"],
           on: {
             UPSERT_NOTE: {
-              actions: ["upsertNote"],
+              actions: ["upsertNote", "sortNoteIds"],
               target: "pushingNotes",
             },
             DELETE_NOTE: {
               // To preserve referential integrity, we only allow you to
               // delete a note if no other notes link to it.
               cond: "hasNoBacklinks",
-              actions: ["deleteNote"],
+              actions: ["deleteNote", "sortNoteIds"],
               target: "pushingNotes",
             },
             SET_CONTEXT: {
