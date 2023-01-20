@@ -56,7 +56,7 @@ export function Root() {
           <div className="flex">
             <NavBar position={isDesktop ? "left" : "bottom"} />
           </div>
-          <main className="w-full flex-grow overflow-auto">
+          <main className="w-full flex-grow overflow-auto [-webkit-transform:translateZ(0)]">
             <Outlet />
           </main>
         </div>
