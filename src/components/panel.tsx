@@ -29,7 +29,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       id={id}
-      className="snap-centerbg-bg-inset sticky left-0 h-full w-screen flex-shrink-0 shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
+      className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
       style={{
         // @ts-ignore TypeScript doesn't know about custom properties
         "--width": `${width}px`,
