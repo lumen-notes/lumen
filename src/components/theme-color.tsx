@@ -7,16 +7,17 @@ function setThemeColor() {
 
   const themeColorMeta = document.querySelector('meta[name="theme-color"]')
 
-  const themeColor = window
-    .getComputedStyle(document.documentElement)
-    .getPropertyValue("--color-bg-inset")
+  const backgroundColor = window
+    .getComputedStyle(document.body)
+    .getPropertyValue("background-color")
 
-  themeColorMeta?.setAttribute("content", themeColor)
+  themeColorMeta?.setAttribute("content", backgroundColor)
 }
 
-/** Dyanmically change the theme color to match the preferred color scheme */
+/** Dyanmically change the theme color to match the background color */
 export function ThemeColor() {
   useMount(setThemeColor)
+  useEvent("visibilitychange", setThemeColor)
   useEvent("colorschemechange", setThemeColor)
   return null
 }
