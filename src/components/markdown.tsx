@@ -117,7 +117,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
           <Card
-            className="z-20 w-96 px-4 py-3 animate-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
+            className="z-20 w-96 px-4 py-3 animate-in fade-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
             elevation={1}
           >
             <Markdown>{body ?? "Not found"}</Markdown>
