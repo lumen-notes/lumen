@@ -143,12 +143,13 @@ body:has([data-resizing="true"]) * {
 
 /* Utility classes */
 
+/* Focus styles for buttons, inputs, etc. */
 .focus-ring {
   @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
 }
 
 .link {
-  @apply focus-ring rounded-xs underline decoration-1 underline-offset-2;
+  @apply rounded-xs underline decoration-1 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus;
 }
 
 /* Codemirror styles */
