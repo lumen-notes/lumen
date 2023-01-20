@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
+import { ThemeColor } from "./components/theme-color"
 import { GlobalStateProvider } from "./global-state"
 import "./index.css"
 import { DatePage } from "./pages/date"
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <Tooltip.Provider>
         <NewNoteDialog.Provider>
           <NewNoteDialog />
+          <ThemeColor />
           <BrowserRouter>
             <Routes>
               <Route path="/file" element={<FilePage />} />
