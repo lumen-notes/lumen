@@ -15,7 +15,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         </div>
         <input
           ref={ref}
-          className="w-full rounded-md bg-bg-secondary px-4 py-3 pl-[2.75rem] [font-variant-numeric:inherit] placeholder:text-text-secondary focus:bg-bg"
+          className="focus-ring w-full rounded-md bg-bg-secondary px-4 py-3 pl-[2.75rem] [font-variant-numeric:inherit] placeholder:text-text-secondary"
           type="search"
           {...props}
         />

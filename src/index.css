@@ -124,10 +124,6 @@ body {
   font-variant-numeric: slashed-zero;
 }
 
-*:focus {
-  @apply outline outline-2 outline-offset-[-1px] outline-border-focus;
-}
-
 input[type="search"] {
   -webkit-appearance: none;
 }
@@ -147,8 +143,12 @@ body:has([data-resizing="true"]) * {
 
 /* Utility classes */
 
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
+}
+
 .link {
-  @apply rounded-xs underline decoration-1 underline-offset-2 outline-offset-0;
+  @apply focus-ring rounded-xs underline decoration-1 underline-offset-2;
 }
 
 /* Codemirror styles */

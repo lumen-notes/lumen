@@ -109,7 +109,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               <Dialog.Content className="fixed left-1/2 top-[10vh] z-20 w-full max-w-sm -translate-x-1/2 p-4 focus:outline-0">
                 <Card elevation={2} className="grid gap-6 p-4">
                   <Dialog.Close asChild>
-                    <IconButton aria-label="Close" className="absolute top-1 right-1">
+                    <IconButton aria-label="Close" className="absolute top-2 right-2">
                       <CloseIcon16 />
                     </IconButton>
                   </Dialog.Close>
@@ -206,7 +206,7 @@ function NavLink({
       <Tooltip.Trigger asChild>
         <RouterNavLink
           className={clsx(
-            "inline-flex w-full justify-center rounded-sm p-2 hover:bg-bg-secondary touch:p-3",
+            "focus-ring inline-flex w-full justify-center rounded-sm p-2 hover:bg-bg-secondary touch:p-3",
             isActive ? "text-text" : "text-text-secondary",
           )}
           {...props}

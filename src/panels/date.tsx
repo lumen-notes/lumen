@@ -153,7 +153,7 @@ function CalendarDate({
         to={`/dates/${toDateString(date)}`}
         aria-label={label}
         className={clsx(
-          "relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
 
           // Underline the active day
           isActive &&
@@ -161,7 +161,7 @@ function CalendarDate({
 
           // Show a dot if the date has notes
           hasNotes &&
-            "after:rounded-full after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:content-['']",
+            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
           hasNotes && isActive && "after:bg-text",
           hasNotes && !isActive && "after:bg-border",
         )}
