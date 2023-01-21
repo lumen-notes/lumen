@@ -174,6 +174,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                       <Input
                         id="repo-owner"
                         name="repo-owner"
+                        spellCheck={false}
                         defaultValue={state.context.repoOwner}
                       />
                     </div>
@@ -184,6 +185,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                       <Input
                         id="repo-name"
                         name="repo-name"
+                        spellCheck={false}
                         defaultValue={state.context.repoName}
                       />
                     </div>
