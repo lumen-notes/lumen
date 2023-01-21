@@ -57,7 +57,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
           <SearchInput
             placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={setQuery}
           />
           {deferredQuery ? (
             <span className="text-xs text-text-secondary">
