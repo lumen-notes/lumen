@@ -2,7 +2,7 @@
 
 # Lumen
 
-An opinionated* note-taking system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+An opinionated note-taking system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 ## Links
 
@@ -12,13 +12,17 @@ An opinionated* note-taking system for thinking, writing, learning, and mindfuln
 | Storybook | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
 
 
-## *Strong opinions, weakly held
+## Strong opinions, weakly held
 
 - Knowledge management and task management should be separate. Lumen is a system for knowledge management not task management.
 - Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
 - Notes should be atomic and densely linked.
 - Notes should be accessible while offline.
 - Notes should be version controlled.
+
+## Getting started
+
+TODO
 
 ## Syntax
 
