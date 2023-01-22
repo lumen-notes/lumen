@@ -1,4 +1,4 @@
-> **Warning**: Work in progress. See the [project board](https://github.com/users/colebemis/projects/3).
+> **Warning**: Work in progress. Expect frequent breaking changes. See the [project board](https://github.com/users/colebemis/projects/3) for progress updates.
 
 # Lumen
 
