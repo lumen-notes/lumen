@@ -21,6 +21,7 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 - Notes should be atomic and densely linked.
 - Notes should be accessible while offline.
 - Notes should be version controlled.
+- Notes shoulde be stored in a flat directory structure to avoid creating hierarchy prematurely. Hierarchy will emerge naturally as you link notes together.
 
 ## Getting started
 
