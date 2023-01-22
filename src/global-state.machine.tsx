@@ -49,7 +49,7 @@ const machine =
         },
         error: "",
       },
-      tsTypes: {} as import("./global-state.typegen").Typegen0,
+      tsTypes: {} as import("./global-state.machine.typegen").Typegen0,
       schema: {
         context: {} as Context,
         services: {} as {

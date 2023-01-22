@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { Context } from "./global-state"
+import { Context } from "./global-state.machine"
 import { Note, NoteId } from "./types"
 import { readFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"

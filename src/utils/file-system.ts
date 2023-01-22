@@ -1,5 +1,5 @@
 import mime from "mime"
-import { Context } from "../global-state"
+import { Context } from "../global-state.machine"
 import { Buffer } from "buffer"
 
 const GITHUB_ENDPOINT = "https://api.github.com"

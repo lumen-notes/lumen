@@ -1,7 +1,7 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { Outlet } from "react-router-dom"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 import { useMedia, useNetworkState, useEvent } from "react-use"
 import { pluralize } from "../utils/pluralize"
 // import { Button } from "./button"

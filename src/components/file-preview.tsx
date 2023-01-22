@@ -1,7 +1,7 @@
 import { useActor } from "@xstate/react"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 import { readFile } from "../utils/file-system"
 
 export const fileCache = new Map<string, { file: File; url: string }>()

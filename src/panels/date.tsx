@@ -12,7 +12,7 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
 import { DAY_NAMES, formatDate, formatDateDistance, MONTH_NAMES, toDateString } from "../utils/date"
 

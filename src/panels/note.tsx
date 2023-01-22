@@ -6,7 +6,7 @@ import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params

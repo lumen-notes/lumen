@@ -2,7 +2,7 @@ import { useActor } from "@xstate/react"
 import Graph from "graphology"
 import React from "react"
 import { Link, Node } from "../force-simulation.worker"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 import { formatDate } from "./date"
 
 type NodeAttributes = {

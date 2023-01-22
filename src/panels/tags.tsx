@@ -6,7 +6,7 @@ import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"
 import { SearchInput } from "../components/search-input"
-import { GlobalStateContext } from "../global-state"
+import { GlobalStateContext } from "../global-state.machine"
 import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 
