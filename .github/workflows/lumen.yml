@@ -1,0 +1,47 @@
+name: Lumen
+on: [workflow_call]
+permissions:
+  contents: write
+jobs:
+  lumen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build notes.json
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Create an empty object to store the notes
+            const notes = {};
+
+            // Match all .md files with only numeric characters in the filename
+            const FILENAME_REGEX = /^\d+\.md$/
+
+            // Iterate through all the notes in the root directory
+            fs.readdirSync(process.cwd())
+              .filter((filename) => FILENAME_REGEX.test(filename))
+              .forEach((filename) => {
+                // Remove the .md extension from the filename
+                const id = path.basename(filename, '.md');
+
+                // Read the body of the note
+                const body = fs.readFileSync(filename, 'utf8');
+
+                // Add the note to the notes object
+                notes[id] = body;
+              });
+
+            // Create the .lumen directory if it doesn't exist
+            if (!fs.existsSync('.lumen')) {
+              fs.mkdirSync('.lumen');
+            }
+
+            // Write the output to a .json file
+            fs.writeFileSync('.lumen/notes.json', JSON.stringify(notes));
+      - name: Commit notes.json
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Build notes.json"
