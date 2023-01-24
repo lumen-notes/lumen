@@ -27,8 +27,8 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 
 > **Warning**: Incomplete instructions
 
-1. Create a new GitHub repository to store your notes in.
-1. Generate a GitHub personal access token with `repo` access.
+1. Create a new GitHub repository to store your notes in using the [template repository](https://github.com/lumen-notes/lumen-template).
+1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
 1. Paste your personal access token and repository details into Lumen. 
 
 ## Syntax
