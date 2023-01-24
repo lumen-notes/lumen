@@ -102,11 +102,11 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 }
               >
                 {/* TODO: Sync icon */}
-                Pull from GitHub
+                Reload
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => setIsSettingsDialogOpen(true)}>
                 {/* TODO: Settings icon */}
-                Change GitHub settings
+                Settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
@@ -127,7 +127,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                   </Dialog.Close>
                   <div className="grid gap-2">
                     <Dialog.Title className="text-lg font-semibold leading-none">
-                      GitHub settings
+                      Settings
                     </Dialog.Title>
                     <Dialog.Description className="text-text-secondary">
                       Store your notes as Markdown files in a GitHub repository of your choice.
