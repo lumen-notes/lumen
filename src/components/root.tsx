@@ -67,7 +67,7 @@ export function Root() {
             {pendingChangeCount > 0 ? (
               <span>
                 <span className="px-2">·</span>
-                {pluralize(pendingChangeCount, "pending change")}
+                {pluralize(pendingChangeCount, "unpushed change")}
               </span>
             ) : null}
           </div>

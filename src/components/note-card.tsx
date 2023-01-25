@@ -112,7 +112,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           {isPending ? (
             <span>
               {" · "}
-              <span className="rounded-full bg-bg-pending px-2 text-text-pending">Pending</span>
+              <span className="rounded-full bg-bg-pending px-2 text-text-pending">Not pushed</span>
             </span>
           ) : null}
         </span>

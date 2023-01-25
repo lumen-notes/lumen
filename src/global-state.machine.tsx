@@ -18,6 +18,7 @@ export type Context = {
   backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
   dates: Record<string, NoteId[]>
+  // TODO: Rename to unpushedChanges
   pendingChanges: { upsert: Set<NoteId>; delete: Set<NoteId> }
   error: string
 }
