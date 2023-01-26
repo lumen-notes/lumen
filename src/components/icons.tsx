@@ -360,3 +360,11 @@ export function ClearIcon16() {
     </svg>
   )
 }
+
+export function SettingsIcon24() {
+  return (
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M22 7.5h-9.325a3.751 3.751 0 0 1-7.35 0H2V6h3.325a3.751 3.751 0 0 1 7.35 0H22v1.5Zm-13-3A2.25 2.25 0 1 0 9 9a2.25 2.25 0 0 0 0-4.5ZM22 17.5V16h-3.325a3.751 3.751 0 0 0-7.35 0H2v1.5h9.325a3.751 3.751 0 0 0 7.35 0H22Zm-7-3a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 0 1 0-4.5Z" />
+    </svg>
+  )
+}

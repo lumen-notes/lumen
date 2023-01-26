@@ -1,35 +1,37 @@
-import * as Dialog from "@radix-ui/react-dialog"
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import React from "react"
-import { NavLink as RouterNavLink, NavLinkProps, useMatch, useResolvedPath } from "react-router-dom"
+import {
+  NavLink as RouterNavLink,
+  NavLinkProps,
+  useMatch,
+  useNavigate,
+  useResolvedPath,
+} from "react-router-dom"
 import { useNetworkState } from "react-use"
 import { GlobalStateContext } from "../global-state.machine"
 import { toDateString } from "../utils/date"
-import { Button, IconButton } from "./button"
-import { Card } from "./card"
+import { IconButton } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import {
   CalendarFillIcon24,
   CalendarIcon24,
-  CloseIcon16,
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
-import { Input } from "./input"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const globalState = React.useContext(GlobalStateContext)
   const [state, send] = useActor(globalState.service)
+  const navigate = useNavigate()
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
-  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = React.useState(false)
   const { online } = useNetworkState()
   return (
     <nav
@@ -104,99 +106,12 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 {/* TODO: Sync icon */}
                 Reload
               </DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => setIsSettingsDialogOpen(true)}>
+              <DropdownMenu.Item onClick={() => navigate("/settings")}>
                 {/* TODO: Settings icon */}
                 Settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
-          {/* TODO: Move this to a separate component. */}
-          <Dialog.Root open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm animate-in fade-in" />
-              <Dialog.Content className="fixed left-1/2 top-[10vh] z-20 w-full max-w-sm -translate-x-1/2 p-4 focus:outline-0">
-                <Card elevation={2} className="grid gap-6 p-4">
-                  <Dialog.Close asChild>
-                    <IconButton
-                      aria-label="Close"
-                      className="absolute top-2 right-2"
-                      disableTooltip
-                    >
-                      <CloseIcon16 />
-                    </IconButton>
-                  </Dialog.Close>
-                  <div className="grid gap-2">
-                    <Dialog.Title className="text-lg font-semibold leading-none">
-                      Settings
-                    </Dialog.Title>
-                    <Dialog.Description className="text-text-secondary">
-                      Store your notes as Markdown files in a GitHub repository of your choice.
-                    </Dialog.Description>
-                  </div>
-                  <form
-                    className="grid gap-4"
-                    onSubmit={(event) => {
-                      event.preventDefault()
-                      const formData = new FormData(event.currentTarget)
-                      const authToken = String(formData.get("auth-token"))
-                      const repoOwner = String(formData.get("repo-owner"))
-                      const repoName = String(formData.get("repo-name"))
-                      send({ type: "SET_CONTEXT", data: { authToken, repoOwner, repoName } })
-                      setIsSettingsDialogOpen(false)
-                    }}
-                  >
-                    <div className="grid gap-2">
-                      <label htmlFor="auth-token" className="leading-4">
-                        Personal access token
-                      </label>
-                      <Input
-                        id="auth-token"
-                        name="auth-token"
-                        spellCheck={false}
-                        defaultValue={state.context.authToken}
-                      />
-                      <p className="markdown text-text-secondary">
-                        Generate a{" "}
-                        <a
-                          href="https://github.com/settings/tokens/new"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          personal access token
-                        </a>{" "}
-                        with <code>repo</code> access, then paste it here.
-                      </p>
-                    </div>
-                    <div className="grid gap-2">
-                      <label htmlFor="repo-owner" className="leading-4">
-                        Repository owner
-                      </label>
-                      <Input
-                        id="repo-owner"
-                        name="repo-owner"
-                        spellCheck={false}
-                        defaultValue={state.context.repoOwner}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <label htmlFor="repo-name" className="leading-4">
-                        Repository name
-                      </label>
-                      <Input
-                        id="repo-name"
-                        name="repo-name"
-                        spellCheck={false}
-                        defaultValue={state.context.repoName}
-                      />
-                    </div>
-                    <Button type="submit" variant="primary" className="mt-2">
-                      Save
-                    </Button>
-                  </form>
-                </Card>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
         </li>
       </ul>
     </nav>

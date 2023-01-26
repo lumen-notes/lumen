@@ -12,6 +12,7 @@ import { FilePage } from "./pages/file"
 import { GraphPage } from "./pages/graph"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
+import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
 
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <Route path="tags/:name" element={<TagPage />} />
                 <Route path="dates/:date" element={<DatePage />} />
                 <Route path="graph" element={<GraphPage />} />
+                <Route path="settings" element={<SettingsPage />} />
               </Route>
             </Routes>
           </BrowserRouter>
