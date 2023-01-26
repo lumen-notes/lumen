@@ -83,7 +83,7 @@ export function Root() {
           >
             <LoadingIcon16 />
             <span className="leading-4">
-              {state.matches("pullingNotes") ? "Pulling..." : "Pushing..."}
+              {state.matches("pullingNotes") ? "Pulling…" : "Pushing…"}
             </span>
           </Card>
         </div>

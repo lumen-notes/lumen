@@ -48,7 +48,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     return isLoading ? (
       <div className="flex items-center gap-2 leading-4 text-text-secondary">
         <LoadingIcon16 />
-        Loading...
+        Loading…
       </div>
     ) : (
       <div>File not found</div>
