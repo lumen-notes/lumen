@@ -7,6 +7,12 @@ export const ScrollArea = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof RadixScrollArea.Root>
 >(({ className, children, ...props }, ref) => (
   <RadixScrollArea.Root ref={ref} className={cx("relative overflow-hidden", className)} {...props}>
+    <style
+      dangerouslySetInnerHTML={{
+        // Reference: https://github.com/radix-ui/primitives/issues/926
+        __html: `[data-radix-scroll-area-viewport] > div[style] { display: block !important; }`,
+      }}
+    />
     <RadixScrollArea.Viewport className="h-full w-full rounded-[inherit]">
       {children}
     </RadixScrollArea.Viewport>
