@@ -141,7 +141,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Copy ID
             </DropdownMenu.Item>
-            {state.context.repoOwner && !state.context.repoName ? (
+            {state.context.repoOwner && state.context.repoName ? (
               <>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
