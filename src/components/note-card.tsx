@@ -1,6 +1,5 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
-import { useActor } from "@xstate/react"
 import copy from "copy-to-clipboard"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
@@ -24,8 +23,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const codeMirrorViewRef = React.useRef<EditorView>()
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state, send] = GlobalStateContext.useActor()
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
   const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
@@ -90,7 +88,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Delete note with `command + backspace`
         if (event.metaKey && event.key === "Backspace") {
-          globalState.service.send("DELETE_NOTE", { id })
+          send({ type: "DELETE_NOTE", id })
           event.preventDefault()
         }
       }}
@@ -161,9 +159,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
-              onSelect={() => {
-                globalState.service.send({ type: "DELETE_NOTE", id })
-              }}
+              onSelect={() => send({ type: "DELETE_NOTE", id })}
               shortcut={["⌘", "⌫"]}
               disabled={backlinks.length > 0}
             >

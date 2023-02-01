@@ -8,7 +8,6 @@ import {
 import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
-import { useActor } from "@xstate/react"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
@@ -46,8 +45,7 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state, send] = GlobalStateContext.useActor()
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
@@ -77,10 +75,7 @@ export function NoteForm({
       body: body,
     }
 
-    globalState.service?.send({
-      type: "UPSERT_NOTE",
-      ...note,
-    })
+    send({ type: "UPSERT_NOTE", ...note })
 
     onSubmit?.(note)
 
@@ -350,7 +345,7 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
 }
 
 function useTagCompletion() {
-  const globalState = React.useContext(GlobalStateContext)
+  const actorRef = GlobalStateContext.useActorRef()
 
   const tagCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -360,21 +355,21 @@ function useTagCompletion() {
         return null
       }
 
-      const tags = Object.keys(globalState.service.getSnapshot().context.tags)
+      const tags = Object.keys(actorRef.getSnapshot()?.context.tags ?? {})
 
       return {
         from: word.from + 1,
         options: tags.map((name) => ({ label: name })),
       }
     },
-    [globalState],
+    [actorRef],
   )
 
   return tagCompletion
 }
 
 function useNoteCompletion() {
-  const globalState = React.useContext(GlobalStateContext)
+  const actorRef = GlobalStateContext.useActorRef()
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -391,7 +386,7 @@ function useNoteCompletion() {
         return null
       }
 
-      const entries = Object.entries(globalState.service.getSnapshot().context.notes)
+      const entries = Object.entries(actorRef.getSnapshot()?.context.notes ?? {})
 
       // Create a search index
       const searcher = new Searcher(entries, {
@@ -410,7 +405,7 @@ function useNoteCompletion() {
           }
 
           // Create new note
-          globalState.service.send({
+          actorRef.send({
             type: "UPSERT_NOTE",
             ...note,
           })
@@ -454,7 +449,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [globalState],
+    [actorRef],
   )
 
   return noteCompletion

@@ -1,4 +1,3 @@
-import { useActor } from "@xstate/react"
 import Graph from "graphology"
 import React from "react"
 import { Link, Node } from "../force-simulation.worker"
@@ -11,9 +10,7 @@ type NodeAttributes = {
 }
 
 export function useGlobalGraph() {
-  const globalState = React.useContext(GlobalStateContext)
-
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
 
   return React.useMemo(() => {
     const globalGraph = new Graph<NodeAttributes>({

@@ -1,5 +1,4 @@
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
-import { useActor } from "@xstate/react"
 import clsx from "clsx"
 import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } from "date-fns"
 import { toDate } from "date-fns-tz"
@@ -20,8 +19,7 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
 
   // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))

@@ -1,5 +1,3 @@
-import { useActor } from "@xstate/react"
-import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { CommandMenu } from "../components/command-menu"
@@ -9,8 +7,7 @@ import { Panel } from "../components/panel"
 import { GlobalStateContext } from "../global-state.machine"
 
 export function SettingsPage() {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state, send] = useActor(globalState.service)
+  const [state, send] = GlobalStateContext.useActor()
   return (
     <>
       <CommandMenu />

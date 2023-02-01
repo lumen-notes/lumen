@@ -13,8 +13,7 @@ type FilePreviewProps = {
 
 export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const cachedFile = fileCache.get(path)
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
   const [file, setFile] = React.useState<File | null>(cachedFile?.file || null)
   const [url, setUrl] = React.useState(cachedFile?.url || "")
   const [isLoading, setIsLoading] = React.useState(!cachedFile)

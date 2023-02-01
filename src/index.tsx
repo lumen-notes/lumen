@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
 import { ThemeColor } from "./components/theme-color"
-import { GlobalStateProvider } from "./global-state.machine"
+import { GlobalStateContext } from "./global-state.machine"
 import "./index.css"
 import { DatePage } from "./pages/date"
 import { FilePage } from "./pages/file"
@@ -18,7 +18,7 @@ import { TagsPage } from "./pages/tags"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <GlobalStateProvider>
+    <GlobalStateContext.Provider>
       <Tooltip.Provider>
         <NewNoteDialog.Provider>
           <NewNoteDialog />
@@ -39,7 +39,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           </BrowserRouter>
         </NewNoteDialog.Provider>
       </Tooltip.Provider>
-    </GlobalStateProvider>
+    </GlobalStateContext.Provider>
   </React.StrictMode>,
 )
 

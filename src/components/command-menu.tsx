@@ -15,8 +15,7 @@ import { pluralize } from "../utils/pluralize"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 
 export function CommandMenu() {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state, send] = GlobalStateContext.useActor()
   const prevActiveElement = React.useRef<HTMLElement>()
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
@@ -225,10 +224,7 @@ export function CommandMenu() {
                   }
 
                   // Create new note
-                  globalState.service.send({
-                    type: "UPSERT_NOTE",
-                    ...note,
-                  })
+                  send({ type: "UPSERT_NOTE", ...note })
 
                   // Navigate to new note
                   navigate(`/${note.id}`)

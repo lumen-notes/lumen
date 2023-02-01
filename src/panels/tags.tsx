@@ -1,4 +1,3 @@
-import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { z } from "zod"
@@ -11,8 +10,7 @@ import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
 
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",

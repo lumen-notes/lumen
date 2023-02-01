@@ -1,4 +1,3 @@
-import { useActor } from "@xstate/react"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { useInView } from "react-intersection-observer"
@@ -16,8 +15,7 @@ type NoteListProps = {
 }
 
 export function NoteList({ ids, disableSort }: NoteListProps) {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
   const [searcher, setSearcher] = React.useState<Searcher<
     [string, Note],
     Record<string, unknown>

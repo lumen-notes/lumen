@@ -1,7 +1,6 @@
-import { useInterpret } from "@xstate/react"
+import { createActorContext } from "@xstate/react"
 import { get, set } from "idb-keyval"
-import React from "react"
-import { assign, createMachine, InterpreterFrom } from "xstate"
+import { assign, createMachine } from "xstate"
 import { Note, NoteId } from "./types"
 import { deleteFile, writeFile } from "./utils/file-system"
 import { parseNoteBody } from "./utils/parse-note-body"
@@ -346,19 +345,4 @@ const machine =
     },
   )
 
-// TODO: Use createActorContext()
-// Reference: https://github.com/statelyai/xstate/releases/tag/%40xstate%2Freact%403.1.0
-export type GlobalStateContextValue = {
-  service: InterpreterFrom<typeof machine>
-}
-
-export const GlobalStateContext = React.createContext<GlobalStateContextValue>(
-  // @ts-ignore
-  {},
-)
-
-export function GlobalStateProvider({ children }: React.PropsWithChildren) {
-  const service = useInterpret(machine)
-  const contextValue = React.useMemo(() => ({ service }), [service])
-  return <GlobalStateContext.Provider value={contextValue}>{children}</GlobalStateContext.Provider>
-}
+export const GlobalStateContext = createActorContext(machine)

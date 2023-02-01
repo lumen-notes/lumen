@@ -1,5 +1,3 @@
-import { useActor } from "@xstate/react"
-import React from "react"
 import { TagIcon24 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -9,8 +7,7 @@ import { GlobalStateContext } from "../global-state.machine"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { name = "" } = params
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
   const noteIds = state.context.tags[name] || []
 
   return (

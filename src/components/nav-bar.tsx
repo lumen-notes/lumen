@@ -1,7 +1,5 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
-import { useActor } from "@xstate/react"
 import clsx from "clsx"
-import React from "react"
 import {
   NavLink as RouterNavLink,
   NavLinkProps,
@@ -27,8 +25,7 @@ import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const globalState = React.useContext(GlobalStateContext)
-  const [state, send] = useActor(globalState.service)
+  const [state, send] = GlobalStateContext.useActor()
   const navigate = useNavigate()
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]

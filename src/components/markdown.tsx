@@ -1,5 +1,4 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
-import { useActor } from "@xstate/react"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
@@ -104,8 +103,7 @@ type NoteLinkProps = {
 
 function NoteLink({ id, text }: NoteLinkProps) {
   const Link = useLink()
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
   const { body } = state.context.notes[id]
   return (
     <HoverCard.Root>
@@ -134,8 +132,7 @@ type TagLinkProps = {
 
 function TagLink({ name }: TagLinkProps) {
   const Link = useLink()
-  const globalState = React.useContext(GlobalStateContext)
-  const [state] = useActor(globalState.service)
+  const [state] = GlobalStateContext.useActor()
   const notesCount = state.context.tags[name]?.length ?? 0
   return (
     <Tooltip>
