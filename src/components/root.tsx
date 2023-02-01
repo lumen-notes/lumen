@@ -62,7 +62,6 @@ export function Root() {
         </div>
         {!online ? (
           <div className="flex justify-center py-2 px-4 sm:justify-start sm:bg-bg-tertiary">
-            {/* TODO: Offline icon */}
             <span>Offline</span>
             {pendingChangeCount > 0 ? (
               <span>

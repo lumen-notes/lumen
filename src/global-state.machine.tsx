@@ -346,6 +346,8 @@ const machine =
     },
   )
 
+// TODO: Use createActorContext()
+// Reference: https://github.com/statelyai/xstate/releases/tag/%40xstate%2Freact%403.1.0
 export type GlobalStateContextValue = {
   service: InterpreterFrom<typeof machine>
 }

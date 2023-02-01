@@ -124,8 +124,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   )
 }
 
-// TODO: Support mobile viewports
-function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) {
+function Dialog() {
   const {
     isOpen,
     setIsOpen,
@@ -136,6 +135,7 @@ function Dialog({ tooltipSide }: { tooltipSide?: TooltipContentProps["side"] }) 
     focusNoteEditor,
     focusPrevActiveElement,
   } = React.useContext(NewNoteDialogContext)
+
   // We consider any viewport wider than 640px a desktop viewport.
   // This breakpoint is copied from Tailwind's default breakpoints.
   // Reference: https://tailwindcss.com/docs/responsive-design
