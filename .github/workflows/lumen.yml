@@ -1,10 +1,11 @@
 name: Lumen
 on: [workflow_call]
-permissions:
-  contents: write
+
 jobs:
   lumen:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
       - name: Build notes.json
