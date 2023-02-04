@@ -7,6 +7,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
       - name: Build notes.json
         uses: actions/github-script@v3
         with:
