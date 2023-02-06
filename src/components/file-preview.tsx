@@ -1,4 +1,3 @@
-import { useActor } from "@xstate/react"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
 import { GlobalStateContext } from "../global-state.machine"
