@@ -5,9 +5,6 @@ import { Card } from "./card"
 export default {
   title: "Markdown",
   component: Markdown,
-  parameters: {
-    layout: "fullscreen",
-  },
 }
 
 const markdown = `
@@ -213,11 +210,9 @@ What I've written here is probably long enough, but adding this final sentence c
 
 export const KitchenSink: StoryObj<typeof Markdown> = {
   render: (args) => (
-    <div className="max-h-screen w-full overflow-auto p-4">
-      <Card className="mx-auto max-w-lg p-4">
-        <Markdown {...args} />
-      </Card>
-    </div>
+    <Card className="mx-auto max-w-lg p-4">
+      <Markdown {...args} />
+    </Card>
   ),
   args: {
     children: markdown,
