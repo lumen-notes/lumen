@@ -4,7 +4,7 @@ import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } f
 import { toDate } from "date-fns-tz"
 import { AnimatePresence, motion } from "framer-motion"
 import React from "react"
-import { IconButton } from "../components/button"
+import { IconButton } from "../components/icon-button"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"

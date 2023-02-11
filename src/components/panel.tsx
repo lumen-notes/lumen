@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
-import { IconButton } from "./button"
+import { IconButton } from "./icon-button"
 import { CloseIcon16 } from "./icons"
 import { PanelContext } from "./panels"
 import { ScrollArea } from "./scroll-area"

@@ -1,5 +1,5 @@
 import React from "react"
-import { IconButton } from "./button"
+import { IconButton } from "./icon-button"
 import { ClearIcon16, SearchIcon16 } from "./icons"
 import { Keys } from "./keys"
 

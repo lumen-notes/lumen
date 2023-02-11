@@ -5,7 +5,7 @@ import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
 import { useMedia } from "react-use"
-import { IconButton } from "./button"
+import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteForm } from "./note-form"
 

@@ -10,7 +10,7 @@ import {
 import { useNetworkState } from "react-use"
 import { GlobalStateContext } from "../global-state.machine"
 import { toDateString } from "../utils/date"
-import { IconButton } from "./button"
+import { IconButton } from "./icon-button"
 import { DropdownMenu } from "./dropdown-menu"
 import {
   CalendarFillIcon24,
