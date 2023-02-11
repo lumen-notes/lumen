@@ -213,14 +213,12 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown > :first-child,
-.markdown li:first-child,
-.markdown p:first-child {
+.markdown li:first-child {
   @apply mt-0;
 }
 
 .markdown > :last-child,
-.markdown li:last-child,
-.markdown p:last-child {
+.markdown li:last-child {
   @apply mb-0;
 }
 
@@ -234,10 +232,13 @@ body:has([data-resizing="true"]) * {
 .markdown pre,
 .markdown ul,
 .markdown ol,
-.markdown hr,
 .markdown table,
 .markdown blockquote {
   @apply my-3;
+}
+
+.markdown hr {
+  @apply my-4;
 }
 
 .markdown h1,
