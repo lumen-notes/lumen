@@ -247,6 +247,10 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown h1 {
+  @apply text-lg leading-snug;
+}
+
+.markdown h2 {
   @apply text-base leading-snug;
 }
 
