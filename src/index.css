@@ -141,7 +141,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .link {
-  @apply rounded-xs underline decoration-1 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus;
+  @apply rounded-xs underline decoration-text-secondary decoration-1 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus;
 }
 
 /* Codemirror styles */
@@ -326,7 +326,7 @@ body:has([data-resizing="true"]) * {
   display: inline-block;
   width: 8px;
   height: 16px;
-  background-color: currentColor;
+  background-color: var(--color-text-secondary);
   mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDggMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yIDJoNXY1SDZWMy43MDdsLTQuNSA0LjVMLjc5MyA3LjVsNC41LTQuNUgyVjJaIiBmaWxsPSIjMDAwIi8+PC9zdmc+");
   vertical-align: middle;
   margin-left: 2px;
