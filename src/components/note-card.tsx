@@ -97,7 +97,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         <Markdown>{body}</Markdown>
       </div>
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
-        <span className="px-2 text-text-secondary">
+        <span className="px-2 text-sm text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
           </Panels.Link>

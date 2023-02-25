@@ -176,11 +176,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
-  @apply font-mono text-sm;
+  @apply font-mono text-[inherit];
 }
 
 .cm-editor .cm-tooltip.cm-completionInfo {
-  @apply w-96 max-w-none whitespace-pre-wrap rounded-md border-0 bg-bg-overlay p-1 px-3 py-2 font-mono text-sm shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-md border-0 bg-bg-overlay p-1 px-3 py-2 font-mono text-[inherit] shadow-lg ring-1 ring-border-secondary dark:ring-inset;
   word-break: break-word;
 }
 
@@ -247,11 +247,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown h1 {
-  @apply text-lg leading-snug;
+  @apply text-lg !leading-snug coarse:text-xl;
 }
 
 .markdown h2 {
-  @apply text-base leading-snug;
+  @apply text-base !leading-snug coarse:text-lg;
 }
 
 .markdown pre {
