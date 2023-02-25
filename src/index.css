@@ -60,7 +60,7 @@
   --a-bg-secondary: 0.05;
   --a-bg-tertiary: 0.1;
   --a-border: 0.25;
-  --a-border-secondary: 0.15;
+  --a-border-secondary: 0.1;
 
   /* Colors */
   --color-text: hsl(var(--h) var(--s) var(--l-text));

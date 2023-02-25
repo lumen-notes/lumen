@@ -1,9 +1,9 @@
 import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
-import { clsx } from "clsx"
+import * as Portal from "@radix-ui/react-portal"
 import React from "react"
+import { cx } from "../utils/cx"
 import { Card } from "./card"
 import { Keys } from "./keys"
-import * as Portal from "@radix-ui/react-portal"
 
 const Root = RadixDropdownMenu.Root
 
@@ -33,7 +33,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
   ({ className, icon, shortcut, children, ...props }, ref) => (
     <RadixDropdownMenu.Item
       ref={ref}
-      className={clsx(
+      className={cx(
         "flex cursor-default gap-5 rounded-sm py-2 px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none coarse:py-3 coarse:px-4 [&[data-disabled]]:opacity-50",
         className,
       )}
