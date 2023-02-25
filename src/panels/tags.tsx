@@ -58,7 +58,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             onChange={setQuery}
           />
           {deferredQuery ? (
-            <span className="text-xs text-text-secondary">
+            <span className="coarse:sm text-xs text-text-secondary">
               {pluralize(searchResults.length, "result")}
             </span>
           ) : null}

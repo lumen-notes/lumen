@@ -17,7 +17,7 @@ export function SearchInput({ shortcut = ["⌘", "F"], onChange, ...props }: Sea
       </div>
       <input
         ref={ref}
-        className="focus-ring w-full rounded-md bg-bg-secondary px-4 py-3 pl-[2.75rem] [font-variant-numeric:inherit] [-webkit-appearance:none] placeholder:text-text-secondary focus-visible:bg-bg"
+        className="focus-ring h-11 w-full rounded-md bg-bg-secondary px-4 pl-[2.75rem] [font-variant-numeric:inherit] [-webkit-appearance:none] placeholder:text-text-secondary focus-visible:bg-bg coarse:h-12"
         type="search"
         onChange={(e) => onChange?.(e.target.value)}
         {...props}

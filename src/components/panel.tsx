@@ -86,11 +86,13 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
           }
         >
-          <div className="flex flex-shrink gap-2">
+          <div className="flex flex-shrink items-center gap-2">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
             <div className="flex items-baseline gap-3 overflow-hidden">
               {/* TODO: Truncate title */}
-              <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
+              <h2 className="flex-shrink-0 text-lg font-semibold leading-6 coarse:text-xl">
+                {title}
+              </h2>
               {description ? (
                 <span className="truncate text-text-secondary">{description}</span>
               ) : null}

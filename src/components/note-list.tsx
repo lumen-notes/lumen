@@ -86,7 +86,7 @@ export function NoteList({ ids, disableSort }: NoteListProps) {
             }}
           />
           {deferredQuery ? (
-            <span className="text-xs text-text-secondary">
+            <span className="text-xs text-text-secondary coarse:text-sm">
               {pluralize(searchResults.length, "result")}
             </span>
           ) : null}

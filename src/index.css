@@ -116,7 +116,7 @@
 /* Global styles */
 
 body {
-  @apply bg-bg-inset font-body text-sm text-text;
+  @apply bg-bg-inset font-body text-sm text-text coarse:text-base;
   font-variant-numeric: slashed-zero;
 }
 
