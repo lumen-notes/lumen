@@ -166,6 +166,12 @@ function ResizeHandle({
         max={max}
         onChange={(event) => onChange(Number(event.target.value))}
         onKeyDown={(event) => {
+          // Ignore all modifier keys except shift
+          if (event.metaKey || event.ctrlKey || event.altKey) {
+            event.preventDefault()
+            return
+          }
+
           if (event.shiftKey) {
             switch (event.key) {
               case "ArrowLeft":
