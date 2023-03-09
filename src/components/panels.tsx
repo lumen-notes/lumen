@@ -55,11 +55,13 @@ function Root({ children }: React.PropsWithChildren) {
       setTimeout(() => {
         const panelElement = document.getElementById(id)
 
-        // Scroll the new panel into view
-        panelElement?.scrollIntoView({ block: "center", inline: "center" })
+        if (panelElement) {
+          // Scroll the new panel into view
+          panelElement.scrollIntoView({ block: "center", inline: "center" })
 
-        // Focus the new panel
-        panelElement?.focus()
+          // Move focus to the new panel
+          focusPanel(panelElement)
+        }
       })
     },
     [panels, setPanels],
@@ -73,8 +75,12 @@ function Root({ children }: React.PropsWithChildren) {
 
       const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
 
+      const prevPanelElement = panelElements[currentIndex - 1]
+
       // Focus the previous panel
-      panelElements[currentIndex - 1]?.focus()
+      if (prevPanelElement) {
+        focusPanel(prevPanelElement)
+      }
 
       // Update state
       setPanels(panels.slice(0, index))
@@ -110,8 +116,29 @@ function Root({ children }: React.PropsWithChildren) {
   )
 }
 
+/** Generate a unique identifier */
 function generateId() {
   return Date.now().toString(16).slice(-4)
+}
+
+/** Get the first focusable child of an element */
+function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
+  const focusableElements = element.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  )
+  return focusableElements.length ? focusableElements[0] : null
+}
+
+/** Focus the first note or the first focusable child of a panel */
+function focusPanel(panelElement: HTMLElement) {
+  const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
+  const firstFocusableChild = getFirstFocusableChild(panelElement)
+
+  if (firstNote) {
+    firstNote.focus()
+  } else if (firstFocusableChild) {
+    firstFocusableChild.focus()
+  }
 }
 
 const SEPARATOR = ":"

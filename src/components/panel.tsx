@@ -27,8 +27,6 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
     <div
       ref={panelRef}
       data-panel // Data attribute used to manage focus
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
       id={id}
       className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
       style={{
