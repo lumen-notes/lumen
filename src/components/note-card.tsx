@@ -28,13 +28,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const backlinks = state.context.backlinks[id] ?? []
   const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
 
-  if (typeof body === "undefined") {
-    return <Card className="p-4">Not found</Card>
-  }
-
-  function switchToEditing() {
-    // Sync notes before editing so that we're editing the latest SHA
-    // send("SYNC_NOTES")
+  const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
     setTimeout(() => {
       const view = codeMirrorViewRef.current
@@ -45,11 +39,29 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         })
       }
     })
-  }
+  }, [])
 
-  function switchToViewing() {
+  const switchToViewing = React.useCallback(() => {
     setIsEditing(false)
     setTimeout(() => cardRef.current?.focus())
+  }, [])
+
+  const focusNextCard = React.useCallback(() => {
+    if (cardRef.current) {
+      const siblings = Array.from(cardRef.current.parentElement?.children ?? []) as HTMLElement[]
+      const index = siblings.indexOf(cardRef.current)
+
+      // Focus the next note card
+      if (siblings[index + 1]) {
+        siblings[index + 1].focus()
+      } else if (siblings[index - 1]) {
+        siblings[index - 1].focus()
+      }
+    }
+  }, [])
+
+  if (typeof body === "undefined") {
+    return <Card className="p-4">Not found</Card>
   }
 
   return !isEditing ? (
@@ -88,6 +100,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Delete note with `command + backspace`
         if (event.metaKey && event.key === "Backspace") {
+          focusNextCard()
           send({ type: "DELETE_NOTE", id })
           event.preventDefault()
         }
@@ -159,7 +172,10 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
-              onSelect={() => send({ type: "DELETE_NOTE", id })}
+              onSelect={() => {
+                focusNextCard()
+                send({ type: "DELETE_NOTE", id })
+              }}
               shortcut={["⌘", "⌫"]}
               disabled={backlinks.length > 0}
             >
