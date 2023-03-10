@@ -170,7 +170,10 @@ export function NoteForm({
 
       <div className={clsx("rounded-lg", maxHeight !== undefined && "overflow-hidden")}>
         <div
-          className={clsx("flex flex-col", maxHeight !== undefined && "overflow-auto")}
+          className={clsx(
+            "flex flex-col",
+            maxHeight !== undefined && "scroll-pb-[3.5rem] overflow-auto",
+          )}
           style={{ minHeight, maxHeight }}
         >
           {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
