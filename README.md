@@ -72,12 +72,14 @@ Link to all other notes with the same tag.
 
 ## Keyboard shortcuts
 
-| Action                       | Shortcut                               |
-| ---------------------------- | -------------------------------------- |
-| Toggle command menu          | <kbd>⌘</kbd> <kbd>K</kbd>              |
-| Toggle new note dialog       | <kbd>⌘</kbd> <kbd>I</kbd>              |
-| Move focus to next panel     | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>→</kbd> |
-| Move focus to previous panel | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>←</kbd> |
+| Action                 | Shortcut                                            |
+| ---------------------- | --------------------------------------------------- |
+| Toggle command menu    | <kbd>⌘</kbd> <kbd>K</kbd>                           |
+| Toggle new note dialog | <kbd>⌘</kbd> <kbd>I</kbd>                           |
+| Focus first panel      | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>⌥</kbd> <kbd>←</kbd> |
+| Focus previous panel   | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>←</kbd>              |
+| Focus next panel       | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>→</kbd>              |
+| Focus last panel       | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>⌥</kbd> <kbd>→</kbd> |
 
 **With focus inside the new note dialog...**
 
@@ -88,10 +90,14 @@ Link to all other notes with the same tag.
 
 **With focus inside a panel...**
 
-| Action             | Shortcut                  |
-| ------------------ | ------------------------- |
-| Focus search input | <kbd>⌘</kbd> <kbd>F</kbd> |
-| Close panel        | <kbd>⌘</kbd> <kbd>X</kbd> |
+| Action              | Shortcut                                            |
+| ------------------- | --------------------------------------------------- |
+| Focus search input  | <kbd>⌘</kbd> <kbd>F</kbd>                           |
+| Close panel         | <kbd>⌘</kbd> <kbd>X</kbd>                           |
+| Focus first note    | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>⌥</kbd> <kbd>↑</kbd> |
+| Focus previous note | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>↑</kbd>              |
+| Focus next note     | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>↓</kbd>              |
+| Focus last note     | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>⌥</kbd> <kbd>↓</kbd> |
 
 **With focus inside a note card...**
 

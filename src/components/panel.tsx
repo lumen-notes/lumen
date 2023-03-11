@@ -22,11 +22,15 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
   const [width, setWidth] = React.useState(MIN_WIDTH)
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)
+  const [activeNoteId, setActiveNoteId] = React.useState("")
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={panelRef}
-      data-panel // Data attribute used to manage focus
+      // Used to manage focus of panels
+      data-panel
+      // Used to restore focus to active note when moving focus between panels
+      data-active-note-id={activeNoteId}
       id={id}
       className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
       style={{
@@ -43,7 +47,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         }
 
         // Focus search input with `command + f`
-        if (event.metaKey && event.key === "f") {
+        if (event.key === "f" && event.metaKey) {
           const searchInput =
             panelRef.current?.querySelector<HTMLInputElement>("input[type=search]")
           if (searchInput) {
@@ -51,6 +55,48 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
             event.preventDefault()
           }
         }
+
+        // Focus prev/next note with `command + shift + up/down`
+        if (
+          (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+          event.metaKey &&
+          event.shiftKey
+        ) {
+          const noteElements = Array.from(
+            panelRef.current?.querySelectorAll<HTMLElement>("[data-note-id]") ?? [],
+          )
+
+          const focusedNoteElement = noteElements.find((noteElement) =>
+            noteElement.contains(document.activeElement),
+          )
+
+          const focusedNoteIndex = focusedNoteElement
+            ? noteElements.indexOf(focusedNoteElement)
+            : -1
+
+          if (event.key === "ArrowUp" && event.altKey) {
+            const firstNote = noteElements[0]
+            firstNote.focus()
+            event.preventDefault()
+          } else if (event.key === "ArrowDown" && event.altKey) {
+            const lastNote = noteElements[noteElements.length - 1]
+            lastNote.focus()
+            event.preventDefault()
+          } else if (event.key === "ArrowUp" && focusedNoteIndex > 0) {
+            const prevNote = noteElements[focusedNoteIndex - 1]
+            prevNote.focus()
+            event.preventDefault()
+          } else if (event.key === "ArrowDown" && focusedNoteIndex < noteElements.length - 1) {
+            const nextNote = noteElements[focusedNoteIndex + 1]
+            nextNote.focus()
+            event.preventDefault()
+          }
+        }
+      }}
+      onFocus={() => {
+        setActiveNoteId(
+          document.activeElement?.closest<HTMLElement>("[data-note-id]")?.dataset.noteId ?? "",
+        )
       }}
     >
       <div className="hidden sm:block">
@@ -78,7 +124,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           }}
         />
       </div>
-      <ScrollArea className="h-full">
+      <ScrollArea className="h-full" viewportClassName="scroll-pt-[4.5rem] scroll-pb-4">
         <div
           className={
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"

@@ -43,10 +43,12 @@ function Root({ children }: React.PropsWithChildren) {
   })
 
   useEvent("keydown", (event) => {
-    const isLeftArrow = event.key === "ArrowLeft"
-    const isRightArrow = event.key === "ArrowRight"
-
-    if ((isLeftArrow || isRightArrow) && event.metaKey && event.shiftKey) {
+    // Focus prev/next panel with `command + shift + left/right`
+    if (
+      (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
+      event.metaKey &&
+      event.shiftKey
+    ) {
       const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
 
       const focusedPanelElement = panelElements.find((panelElement) =>
@@ -57,16 +59,22 @@ function Root({ children }: React.PropsWithChildren) {
         ? panelElements.indexOf(focusedPanelElement)
         : -1
 
-      if (isLeftArrow && focusedPanelIndex > 0) {
+      if (event.key === "ArrowLeft" && event.altKey) {
+        const firstPanel = panelElements[0]
+        focusPanel(firstPanel)
+      } else if (event.key === "ArrowRight" && event.altKey) {
+        const lastPanel = panelElements[panelElements.length - 1]
+        focusPanel(lastPanel)
+      } else if (event.key === "ArrowLeft" && focusedPanelIndex > 0) {
         // If the user presses the left arrow key and focus is not on the first panel,
         // move focus to the previous panel
-        const prevPanelElement = panelElements[focusedPanelIndex - 1]
-        focusPanel(prevPanelElement)
-      } else if (isRightArrow && focusedPanelIndex < panelElements.length - 1) {
+        const prevPanel = panelElements[focusedPanelIndex - 1]
+        focusPanel(prevPanel)
+      } else if (event.key === "ArrowRight" && focusedPanelIndex < panelElements.length - 1) {
         // If the user presses the right arrow key and focus is not on the last panel,
         // move focus to the next panel
-        const nextPanelElement = panelElements[focusedPanelIndex + 1]
-        focusPanel(nextPanelElement)
+        const nextPanel = panelElements[focusedPanelIndex + 1]
+        focusPanel(nextPanel)
       }
     }
   })
@@ -157,14 +165,17 @@ function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
 }
 
 function focusPanel(panelElement: HTMLElement) {
+  const activeNoteId = panelElement.dataset.activeNoteId
+  const activeNote = panelElement.querySelector<HTMLElement>(`[data-note-id="${activeNoteId}"]`)
   const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
   const firstFocusableChild = getFirstFocusableChild(panelElement)
 
   // Scroll the panel entirely into view
   panelElement.scrollIntoView({ block: "center", inline: "center" })
 
-  // Focus the first note or the first focusable child
-  if (firstNote) {
+  if (activeNote) {
+    activeNote.focus()
+  } else if (firstNote) {
     firstNote.focus()
   } else if (firstFocusableChild) {
     firstFocusableChild.focus()

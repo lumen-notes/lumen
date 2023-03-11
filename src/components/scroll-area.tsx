@@ -4,8 +4,8 @@ import { cx } from "../utils/cx"
 
 export const ScrollArea = React.forwardRef<
   React.ElementRef<typeof RadixScrollArea.Root>,
-  React.ComponentPropsWithoutRef<typeof RadixScrollArea.Root>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof RadixScrollArea.Root> & { viewportClassName?: string }
+>(({ className, viewportClassName, children, ...props }, ref) => (
   <RadixScrollArea.Root ref={ref} className={cx("relative overflow-hidden", className)} {...props}>
     <style
       dangerouslySetInnerHTML={{
@@ -13,7 +13,7 @@ export const ScrollArea = React.forwardRef<
         __html: `[data-radix-scroll-area-viewport] > div[style] { display: block !important; }`,
       }}
     />
-    <RadixScrollArea.Viewport className="h-full w-full rounded-[inherit]">
+    <RadixScrollArea.Viewport className={cx("h-full w-full rounded-[inherit]", viewportClassName)}>
       {children}
     </RadixScrollArea.Viewport>
     <Scrollbar />
