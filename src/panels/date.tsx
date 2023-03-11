@@ -72,7 +72,7 @@ function Calendar({
   return (
     <div className="flex flex-col gap-2 overflow-hidden py-2 px-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
       <div className="flex items-center justify-between">
-        <span className="px-2 text-base font-semibold coarse:text-lg">
+        <span className="px-2 text-lg font-semibold">
           {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
 
@@ -151,7 +151,7 @@ function CalendarDate({
         to={`/dates/${toDateString(date)}`}
         aria-label={label}
         className={clsx(
-          "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 text-sm leading-4 text-text-secondary @container hover:bg-bg-secondary",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
 
           // Underline the active day
           isActive &&
@@ -164,7 +164,7 @@ function CalendarDate({
           hasNotes && !isActive && "after:bg-border",
         )}
       >
-        <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2">
+        <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2 coarse:gap-2">
           <span className="@[6rem]:hidden">{dayName.slice(0, 2)}</span>
           {/* Show the first 3 letters of the day name when there's enough space */}
           <span className="hidden @[6rem]:inline">{dayName.slice(0, 3)}</span>

@@ -83,6 +83,12 @@
   --color-border-focus: hsl(200deg 100% 40%);
   --color-node: var(--color-text-secondary);
   --color-edge: hsl(var(--h) var(--s) var(--l-edge));
+
+  /* Font sizes */
+  --font-size-sm: 0.75rem; /* 12px */
+  --font-size-base: 0.875rem; /* 14px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.125rem; /* 18px */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,10 +119,21 @@
   }
 }
 
+/* Adjust font sizes for touch devices */
+@media (pointer: coarse) {
+  :root {
+    /* Font sizes */
+    --font-size-sm: 0.8125rem; /* 13px */
+    --font-size-base: 0.9375rem; /* 15px */
+    --font-size-lg: 1.125rem; /* 18px */
+    --font-size-xl: 1.25rem; /* 20px */
+  }
+}
+
 /* Global styles */
 
 body {
-  @apply bg-bg-inset font-body text-sm text-text coarse:text-base;
+  @apply bg-bg-inset font-body text-base text-text;
   font-variant-numeric: slashed-zero;
 }
 
@@ -247,11 +264,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown h1 {
-  @apply text-lg !leading-snug coarse:text-xl;
+  @apply text-xl !leading-snug;
 }
 
 .markdown h2 {
-  @apply text-base !leading-snug coarse:text-lg;
+  @apply text-lg !leading-snug;
 }
 
 .markdown pre {

@@ -15,6 +15,12 @@ module.exports = {
       body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],
       mono: ['"iA Writer Mono"', "monospace"],
     },
+    fontSize: {
+      sm: "var(--font-size-sm)",
+      base: "var(--font-size-base)",
+      lg: "var(--font-size-lg)",
+      xl: "var(--font-size-xl)",
+    },
     colors: {
       transparent: "transparent",
       "current-color": "currentColor",
