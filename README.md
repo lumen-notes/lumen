@@ -8,11 +8,10 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 
 ## Links
 
-| Name | URL | Status |
-| :-- | :-- | :-- |
-| Website | [uselumen.com](https://uselumen.com) | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys) |
+| Name      | URL                                                                 | Status                                                                                                                                                               |
+| :-------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Website   | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
 | Storybook | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-
 
 ## Strong opinions, weakly held
 
@@ -27,7 +26,7 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 
 1. Create a new GitHub repository to store your notes in using the [template repository](https://github.com/lumen-notes/lumen-template).
 1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
-1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings). 
+1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
 
 ## Syntax
 
@@ -73,10 +72,12 @@ Link to all other notes with the same tag.
 
 ## Keyboard shortcuts
 
-| Action                 | Shortcut                  |
-| ---------------------- | ------------------------- |
-| Toggle command menu    | <kbd>⌘</kbd> <kbd>K</kbd> |
-| Toggle new note dialog | <kbd>⌘</kbd> <kbd>I</kbd> |
+| Action                       | Shortcut                               |
+| ---------------------------- | -------------------------------------- |
+| Toggle command menu          | <kbd>⌘</kbd> <kbd>K</kbd>              |
+| Toggle new note dialog       | <kbd>⌘</kbd> <kbd>I</kbd>              |
+| Move focus to next panel     | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>→</kbd> |
+| Move focus to previous panel | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>←</kbd> |
 
 **With focus inside the new note dialog...**
 

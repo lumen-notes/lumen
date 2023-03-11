@@ -8,6 +8,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom"
+import { useEvent } from "react-use"
 import { z } from "zod"
 import { DatePanel } from "../panels/date"
 import { FilePanel } from "../panels/file"
@@ -41,6 +42,35 @@ function Root({ children }: React.PropsWithChildren) {
     schema: z.array(z.string()),
   })
 
+  useEvent("keydown", (event) => {
+    const isLeftArrow = event.key === "ArrowLeft"
+    const isRightArrow = event.key === "ArrowRight"
+
+    if ((isLeftArrow || isRightArrow) && event.metaKey && event.shiftKey) {
+      const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
+
+      const focusedPanelElement = panelElements.find((panelElement) =>
+        panelElement.contains(document.activeElement),
+      )
+
+      const focusedPanelIndex = focusedPanelElement
+        ? panelElements.indexOf(focusedPanelElement)
+        : -1
+
+      if (isLeftArrow && focusedPanelIndex > 0) {
+        // If the user presses the left arrow key and focus is not on the first panel,
+        // move focus to the previous panel
+        const prevPanelElement = panelElements[focusedPanelIndex - 1]
+        focusPanel(prevPanelElement)
+      } else if (isRightArrow && focusedPanelIndex < panelElements.length - 1) {
+        // If the user presses the right arrow key and focus is not on the last panel,
+        // move focus to the next panel
+        const nextPanelElement = panelElements[focusedPanelIndex + 1]
+        focusPanel(nextPanelElement)
+      }
+    }
+  })
+
   const openPanel = React.useCallback(
     (url: string, afterIndex?: number) => {
       // Add to the beginning of the list by default
@@ -56,9 +86,6 @@ function Root({ children }: React.PropsWithChildren) {
         const panelElement = document.getElementById(id)
 
         if (panelElement) {
-          // Scroll the new panel into view
-          panelElement.scrollIntoView({ block: "center", inline: "center" })
-
           // Move focus to the new panel
           focusPanel(panelElement)
         }
@@ -129,11 +156,14 @@ function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
   return focusableElements.length ? focusableElements[0] : null
 }
 
-/** Focus the first note or the first focusable child of a panel */
 function focusPanel(panelElement: HTMLElement) {
   const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
   const firstFocusableChild = getFirstFocusableChild(panelElement)
 
+  // Scroll the panel entirely into view
+  panelElement.scrollIntoView({ block: "center", inline: "center" })
+
+  // Focus the first note or the first focusable child
   if (firstNote) {
     firstNote.focus()
   } else if (firstFocusableChild) {
