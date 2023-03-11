@@ -360,7 +360,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-input] {
-  @apply w-full bg-transparent py-4 px-5 text-base leading-none outline-none;
+  @apply w-full bg-transparent py-4 px-5 text-lg leading-none outline-none;
 }
 
 [cmdk-input]::placeholder {
