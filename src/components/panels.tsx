@@ -70,11 +70,13 @@ function Root({ children }: React.PropsWithChildren) {
         // move focus to the previous panel
         const prevPanel = panelElements[focusedPanelIndex - 1]
         focusPanel(prevPanel)
+        event.preventDefault()
       } else if (event.key === "ArrowRight" && focusedPanelIndex < panelElements.length - 1) {
         // If the user presses the right arrow key and focus is not on the last panel,
         // move focus to the next panel
         const nextPanel = panelElements[focusedPanelIndex + 1]
         focusPanel(nextPanel)
+        event.preventDefault()
       }
     }
   })
@@ -145,52 +147,12 @@ function Root({ children }: React.PropsWithChildren) {
   return (
     <PanelsContext.Provider value={contextValue}>
       <LinkContext.Provider value={Link}>
-        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none">{children}</div>
+        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
+          {children}
+        </div>
       </LinkContext.Provider>
     </PanelsContext.Provider>
   )
-}
-
-/** Generate a unique identifier */
-function generateId() {
-  return Date.now().toString(16).slice(-4)
-}
-
-/** Get the first focusable child of an element */
-function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
-  const focusableElements = element.querySelectorAll<HTMLElement>(
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-  )
-  return focusableElements.length ? focusableElements[0] : null
-}
-
-function focusPanel(panelElement: HTMLElement) {
-  const activeNoteId = panelElement.dataset.activeNoteId
-  const activeNote = panelElement.querySelector<HTMLElement>(`[data-note-id="${activeNoteId}"]`)
-  const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
-  const firstFocusableChild = getFirstFocusableChild(panelElement)
-
-  // Scroll the panel entirely into view
-  panelElement.scrollIntoView({ block: "center", inline: "center" })
-
-  if (activeNote) {
-    activeNote.focus()
-  } else if (firstNote) {
-    firstNote.focus()
-  } else if (firstFocusableChild) {
-    firstFocusableChild.focus()
-  }
-}
-
-const SEPARATOR = ":"
-
-function serializePanelValue({ id, pathname, search }: PanelValue) {
-  return [id, pathname, search].join(SEPARATOR)
-}
-
-function deserializePanelValue(value: string): PanelValue {
-  const [id, pathname, search] = value.split(SEPARATOR)
-  return { id, pathname, search }
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -311,3 +273,90 @@ function PanelRoutes({ panel, index }: PanelRoutesProps) {
 }
 
 export const Panels = Object.assign(Root, { Link, Outlet })
+
+// Utilities
+
+/** Generate a unique identifier */
+function generateId() {
+  return Date.now().toString(16).slice(-4)
+}
+
+/** Get the first focusable child of an element */
+function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
+  const focusableElements = element.querySelectorAll<HTMLElement>(
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  )
+  return focusableElements.length ? focusableElements[0] : null
+}
+
+function focusPanel(panelElement: HTMLElement) {
+  const activeNoteId = panelElement.dataset.activeNoteId
+  const activeNote = panelElement.querySelector<HTMLElement>(`[data-note-id="${activeNoteId}"]`)
+  const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
+  const firstFocusableChild = getFirstFocusableChild(panelElement)
+
+  if (activeNote) {
+    activeNote.focus()
+  } else if (firstNote) {
+    firstNote.focus()
+  } else if (firstFocusableChild) {
+    firstFocusableChild.focus()
+  }
+
+  scrollPanelIntoView(panelElement)
+}
+
+function scrollPanelIntoView(panelElement: HTMLElement) {
+  const scrollContainer = getScrollContainer(panelElement) || document.body
+
+  const scrollContainerRect = scrollContainer.getBoundingClientRect()
+
+  const panelRect = panelElement.getBoundingClientRect()
+
+  const nextPanel = panelElement.nextElementSibling as HTMLElement | null
+
+  const nextPanelRect = nextPanel ? nextPanel.getBoundingClientRect() : null
+
+  const panelOverlap = nextPanelRect ? Math.max(0, panelRect.right - nextPanelRect.left) : 0
+
+  const overflowRight = Math.max(0, panelRect.right - scrollContainerRect.right)
+
+  scrollContainer.scrollLeft -= panelOverlap
+  scrollContainer.scrollLeft += overflowRight
+}
+
+/**
+ * Returns the nearest scrollable parent of the element or `null` if the element
+ * is not contained in a scrollable element.
+ */
+function getScrollContainer(element: HTMLElement | null): HTMLElement | null {
+  if (!element || element === document.body) {
+    return null
+  }
+
+  return isScrollable(element) ? element : getScrollContainer(element.parentElement)
+}
+
+/** Returns `true` if the element is scrollable */
+function isScrollable(element: Element) {
+  const hasVerticalScrollableContent = element.scrollHeight > element.clientHeight
+  const hasHorizontalScrollableContent = element.scrollWidth > element.clientWidth
+
+  return (
+    (hasVerticalScrollableContent &&
+      !(window.getComputedStyle(element).overflowY.indexOf("hidden") !== -1)) ||
+    (hasHorizontalScrollableContent &&
+      !(window.getComputedStyle(element).overflowX.indexOf("hidden") !== -1))
+  )
+}
+
+const SEPARATOR = ":"
+
+function serializePanelValue({ id, pathname, search }: PanelValue) {
+  return [id, pathname, search].join(SEPARATOR)
+}
+
+function deserializePanelValue(value: string): PanelValue {
+  const [id, pathname, search] = value.split(SEPARATOR)
+  return { id, pathname, search }
+}
