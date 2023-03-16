@@ -356,7 +356,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-dialog] {
-  @apply fixed top-32 left-1/2 z-20 w-[90vw] max-w-xl -translate-x-1/2;
+  @apply fixed top-2 left-1/2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-32;
 }
 
 [cmdk-input] {
@@ -368,7 +368,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-list] {
-  @apply max-h-[400px] overflow-y-auto overflow-x-hidden;
+  @apply max-h-[min(400px,50vh)] overflow-y-auto overflow-x-hidden;
   scroll-padding-block-start: 8px;
   scroll-padding-block-end: 8px;
 }
