@@ -402,10 +402,6 @@ function useNoteCompletion() {
       // "[[<query>" -> "<query>"
       const query = word.text.slice(2)
 
-      if (!query) {
-        return null
-      }
-
       // Reset timer
       window.clearTimeout(timerRef.current)
       timerRef.current = window.setTimeout(() => {
@@ -413,7 +409,11 @@ function useNoteCompletion() {
         searcherRef.current = null
       }, 1000)
 
-      const entries = Object.entries(actorRef.getSnapshot()?.context.notes ?? {})
+      const stateSnapshot = actorRef.getSnapshot()
+      const entries = Object.entries(stateSnapshot?.context.notes ?? {})
+      const recentEntries = (stateSnapshot?.context.sortedNoteIds || [])
+        .slice(0, 5)
+        .map((id): [string, Note | undefined] => [id, stateSnapshot?.context.notes[id]])
 
       // Create search index if it doesn't exist
       if (!searcherRef.current) {
@@ -423,7 +423,7 @@ function useNoteCompletion() {
         })
       }
 
-      const results = searcherRef.current.search(query)
+      const results = query ? searcherRef.current.search(query) : recentEntries
 
       const createNewNoteOption: Completion = {
         label: `Create new note "${query}"`,
@@ -451,26 +451,27 @@ function useNoteCompletion() {
         },
       }
 
-      const options = [
-        ...results.slice(0, 6).map(
-          ([id, { title, body }]): Completion => ({
-            label: body,
-            info: body,
-            apply: (view, completion, from, to) => {
-              // Insert link to note
-              const text = `${id}|${title || query}`
-              const anchor = from + text.length
-              const head = from + `${id}|`.length
+      const options = results.slice(0, 5).map(
+        ([id, note]): Completion => ({
+          label: note?.body || "",
+          info: note?.body,
+          apply: (view, completion, from, to) => {
+            // Insert link to note
+            const text = `${id}|${note?.title || query}`
+            const anchor = from + text.length
+            const head = from + `${id}|`.length
 
-              view.dispatch({
-                changes: { from, to, insert: text },
-                selection: { anchor, head },
-              })
-            },
-          }),
-        ),
-        createNewNoteOption,
-      ]
+            view.dispatch({
+              changes: { from, to, insert: text },
+              selection: { anchor, head },
+            })
+          },
+        }),
+      )
+
+      if (query) {
+        options.push(createNewNoteOption)
+      }
 
       return {
         from: word.from + 2, // Insert after "[["
