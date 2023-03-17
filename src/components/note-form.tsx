@@ -13,7 +13,7 @@ import clsx from "clsx"
 import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
-import { NoteId } from "../types"
+import { Note, NoteId } from "../types"
 import { formatDate } from "../utils/date"
 import { writeFile } from "../utils/file-system"
 import { Button } from "./button"
@@ -374,6 +374,11 @@ function useTagCompletion() {
 
 function useNoteCompletion() {
   const actorRef = GlobalStateContext.useActorRef()
+  const timerRef = React.useRef<number>()
+  const searcherRef = React.useRef<Searcher<
+    [string, Note],
+    { keySelector: (entry: [string, Note]) => string; threshold: number }
+  > | null>(null)
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -390,15 +395,24 @@ function useNoteCompletion() {
         return null
       }
 
+      // Reset timer
+      window.clearTimeout(timerRef.current)
+      timerRef.current = window.setTimeout(() => {
+        // Clear search index after 1 second to avoid stale results
+        searcherRef.current = null
+      }, 1000)
+
       const entries = Object.entries(actorRef.getSnapshot()?.context.notes ?? {})
 
-      // Create a search index
-      const searcher = new Searcher(entries, {
-        keySelector: ([id, { body }]) => body,
-        threshold: 0.8,
-      })
+      // Create search index if it doesn't exist
+      if (!searcherRef.current) {
+        searcherRef.current = new Searcher(entries, {
+          keySelector: ([id, { body }]) => body,
+          threshold: 0.8,
+        })
+      }
 
-      const results = searcher.search(query)
+      const results = searcherRef.current.search(query)
 
       const createNewNoteOption: Completion = {
         label: `Create new note "${query}"`,
