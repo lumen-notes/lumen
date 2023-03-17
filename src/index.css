@@ -84,6 +84,13 @@
   --color-node: var(--color-text-secondary);
   --color-edge: hsl(var(--h) var(--s) var(--l-edge));
 
+  /* Syntax colors */
+  /* Based on https://rosepinetheme.com/palette */
+  --color-syntax-gold: hsl(35, 81%, 34%);
+  --color-syntax-rose: hsl(3, 53%, 50%);
+  --color-syntax-pine: hsl(197, 53%, 34%);
+  --color-syntax-foam: hsl(189, 30%, 38%);
+
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
   --font-size-base: 0.875rem; /* 14px */
@@ -116,6 +123,12 @@
     --color-bg-highlight: hsl(var(--h-highlight) 30% 20%);
     --color-bg-pending: hsl(35deg 93% 20%);
     --color-border-focus: hsl(200deg 100% 70%);
+
+    /* Syntax colors */
+    --color-syntax-gold: hsl(35, 88%, 72%);
+    --color-syntax-rose: hsl(4, 66%, 80%);
+    --color-syntax-pine: hsl(197, 50%, 60%);
+    --color-syntax-foam: hsl(189, 43%, 73%);
   }
 }
 
@@ -355,6 +368,52 @@ body:has([data-resizing="true"]) * {
   mask-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDggMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yIDJoNXY1SDZWMy43MDdsLTQuNSA0LjVMLjc5MyA3LjVsNC41LTQuNUgyVjJaIiBmaWxsPSIjMDAwIi8+PC9zdmc+");
   vertical-align: middle;
   margin-left: 2px;
+}
+
+/* Syntax highlighting */
+
+.markdown .comment {
+  color: var(--color-text-secondary);
+}
+
+.markdown .punctuation {
+  color: var(--color-text-secondary);
+}
+
+.markdown .keyword {
+  color: var(--color-syntax-foam);
+}
+
+.markdown .function {
+  color: var(--color-syntax-gold);
+}
+
+.markdown .property {
+  color: var(--color-syntax-foam);
+}
+
+.markdown .selector {
+  color: var(--color-syntax-foam);
+}
+
+.markdown .tag {
+  color: var(--color-syntax-pine);
+}
+
+.markdown .attr-name {
+  color: var(--color-syntax-foam);
+}
+
+.markdown .attr-value {
+  color: var(--color-syntax-rose);
+}
+
+.markdown .string {
+  color: var(--color-syntax-rose);
+}
+
+.markdown .operator {
+  color: var(--color-text-secondary);
 }
 
 /* Cmdk styles */

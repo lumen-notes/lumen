@@ -26,20 +26,21 @@ The \`@tailwindcss/typography\` plugin is our attempt to give you what you _actu
 
 It adds a new \`prose\` class that you can slap on any block of vanilla HTML content and turn it into a beautiful, well-formatted document:
 
-    <article class="prose">
-      <h1>Garlic bread with cheese: What the science tells us</h1>
-      <p>
-        For years parents have espoused the health benefits of eating garlic bread with cheese to their
-        children, with the food earning such an iconic status in our culture that kids will often dress
-        up as warm, cheesy loaf for Halloween.
-      </p>
-      <p>
-        But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
-        springing up around the country.
-      </p>
-      <!-- ... -->
-    </article>
-    
+\`\`\`html
+<article class="prose">
+  <h1>Garlic bread with cheese: What the science tells us</h1>
+  <p>
+    For years parents have espoused the health benefits of eating garlic bread with cheese to their
+    children, with the food earning such an iconic status in our culture that kids will often dress
+    up as warm, cheesy loaf for Halloween.
+  </p>
+  <p>
+    But a recent study shows that the celebrated appetizer may be linked to a series of rabies cases
+    springing up around the country.
+  </p>
+  <!-- ... -->
+</article>
+\`\`\`
 
 For more information about how to use the plugin and the features it includes, [read the documentation](https://github.com/tailwindcss/typography/blob/master/README.md).
 
@@ -115,15 +116,16 @@ I think most people are going to use [highlight.js](https://highlightjs.org/) or
 
 Here's what a default \`tailwind.config.js\` file looks like at the time of writing:
 
-    module.exports = {
-      purge: [],
-      theme: {
-        extend: {},
-      },
-      variants: {},
-      plugins: [],
-    }
-    
+\`\`\`js
+module.exports = {
+  purge: [],
+  theme: {
+    extend: {},
+  },
+  variants: {},
+  plugins: [],
+}
+\`\`\`
 
 Hopefully that looks good enough to you.
 
