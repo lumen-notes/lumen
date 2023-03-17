@@ -10,6 +10,9 @@ module.exports = {
         coarse: { raw: "(pointer: coarse)" },
         fine: { raw: "(pointer: fine)" },
       },
+      fontWeight: {
+        bold: "550",
+      },
     },
     fontFamily: {
       body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],

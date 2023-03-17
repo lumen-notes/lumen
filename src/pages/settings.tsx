@@ -15,7 +15,7 @@ export function SettingsPage() {
         <div className="p-4">
           <Card className="grid gap-5 p-4">
             <div className="grid gap-2">
-              <h3 className="text-lg font-semibold !leading-none">GitHub</h3>
+              <h3 className="text-lg font-bold !leading-none">GitHub</h3>
               <p>Store your notes as Markdown files in a GitHub repository of your choice.</p>
             </div>
             <form

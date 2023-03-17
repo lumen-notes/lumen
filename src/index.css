@@ -260,7 +260,7 @@ body:has([data-resizing="true"]) * {
 .markdown h6,
 .markdown strong,
 .markdown th {
-  @apply font-semibold;
+  @apply font-bold;
 }
 
 .markdown h1 {
@@ -319,6 +319,10 @@ body:has([data-resizing="true"]) * {
 
 .markdown li [type="checkbox"] {
   @apply align-middle;
+}
+
+.markdown ::marker {
+  @apply text-text-tertiary;
 }
 
 .markdown table {
