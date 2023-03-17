@@ -322,7 +322,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown ::marker {
-  @apply text-text-tertiary;
+  @apply text-text-secondary;
 }
 
 .markdown table {
