@@ -67,7 +67,7 @@
   --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
-  --color-text-pending: hsl(35, 94%, 15%);
+  --color-text-pending: hsl(30, 94%, 15%);
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
@@ -77,7 +77,7 @@
   --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
   --color-bg-tertiary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-tertiary));
   --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
-  --color-bg-pending: hsl(35, 100%, 85%);
+  --color-bg-pending: hsl(30, 100%, 85%);
   --color-border: hsl(var(--h) var(--s) var(--l-border));
   --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
   --color-border-focus: hsl(200, 100%, 40%);
@@ -86,10 +86,10 @@
 
   /* Syntax colors */
   /* Based on https://rosepinetheme.com/palette */
-  --color-syntax-gold: hsl(35, 80%, 34%);
-  --color-syntax-rose: hsl(10, 50%, 50%);
-  --color-syntax-pine: hsl(200, 50%, 34%);
-  --color-syntax-foam: hsl(170, 30%, 38%);
+  --color-syntax-gold: hsl(30, 80%, 34%);
+  --color-syntax-rose: hsl(6, 50%, 48%);
+  --color-syntax-iris: hsl(268, 21%, 38%);
+  --color-syntax-foam: hsl(170, 50%, 32%);
 
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
@@ -119,16 +119,16 @@
 
     /* Colors */
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
-    --color-text-pending: hsl(35, 100%, 90%);
+    --color-text-pending: hsl(30, 100%, 90%);
     --color-bg-highlight: hsl(var(--h-highlight) 30% 18%);
-    --color-bg-pending: hsl(35, 90%, 15%);
+    --color-bg-pending: hsl(30, 90%, 15%);
     --color-border-focus: hsl(200, 100%, 70%);
 
     /* Syntax colors */
-    --color-syntax-gold: hsl(35, 80%, 72%);
-    --color-syntax-rose: hsl(10, 66%, 80%);
-    --color-syntax-pine: hsl(200, 50%, 64%);
-    --color-syntax-foam: hsl(170, 43%, 73%);
+    --color-syntax-gold: hsl(30, 76%, 72%);
+    --color-syntax-rose: hsl(6, 70%, 78%);
+    --color-syntax-iris: hsl(268, 57%, 78%);
+    --color-syntax-foam: hsl(170, 50%, 73%);
   }
 }
 
@@ -397,7 +397,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown .tag {
-  color: var(--color-syntax-pine);
+  color: var(--color-syntax-iris);
 }
 
 .markdown .attr-name {
@@ -405,7 +405,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown .attr-value {
-  color: var(--color-syntax-rose);
+  color: var(--color-syntax-gold);
 }
 
 .markdown .string {
