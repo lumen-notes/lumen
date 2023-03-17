@@ -209,6 +209,10 @@ body:has([data-resizing="true"]) * {
   @apply bg-bg-secondary text-text;
 }
 
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li .cm-completionDetail {
+  @apply ml-auto not-italic text-text-secondary;
+}
+
 .cm-editor .cm-completionMatchedText {
   @apply no-underline;
 }

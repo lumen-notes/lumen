@@ -14,7 +14,7 @@ import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
 import { Note, NoteId } from "../types"
-import { formatDate } from "../utils/date"
+import { formatDate, formatDateDistance } from "../utils/date"
 import { writeFile } from "../utils/file-system"
 import { Button } from "./button"
 import { IconButton } from "./icon-button"
@@ -292,7 +292,7 @@ function useCodeMirror({
         }),
         closeBrackets(),
         autocompletion({
-          override: [noteCompletion, dateCompletion, tagCompletion],
+          override: [dateCompletion, noteCompletion, tagCompletion],
           icons: false,
         }),
       ],
@@ -314,18 +314,20 @@ function useCodeMirror({
 }
 
 function dateCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/(\[\[)?\w*/)
+  const word = context.matchBefore(/(\[\[[^\]|^|]*|\w*)/)
 
   if (!word) {
     return null
   }
 
-  // Ignore words inside internal links
-  if (word.text.startsWith("[[")) {
+  // "[[<query>" -> "<query>"
+  const query = word.text.replace(/^\[\[/, "")
+
+  if (!query) {
     return null
   }
 
-  const date = parseDate(word.text)
+  const date = parseDate(query)
 
   if (!date) {
     return null
@@ -341,7 +343,16 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
     options: [
       {
         label: formatDate(dateString),
-        apply: `[[${dateString}]]`,
+        detail: formatDateDistance(dateString),
+        apply: (view, completion, from, to) => {
+          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
+          const text = `[[${dateString}]]`
+
+          view.dispatch({
+            changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
+            selection: { anchor: from + text.length },
+          })
+        },
       },
     ],
     filter: false,
