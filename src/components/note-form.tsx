@@ -453,14 +453,14 @@ function useNoteCompletion() {
 
       const options = [
         ...results.slice(0, 6).map(
-          ([id, { body }]): Completion => ({
+          ([id, { title, body }]): Completion => ({
             label: body,
             info: body,
             apply: (view, completion, from, to) => {
               // Insert link to note
-              const text = `${id}|${query}`
+              const text = `${id}|${title || query}`
               const anchor = from + text.length
-              const head = anchor - query.length
+              const head = from + `${id}|`.length
 
               view.dispatch({
                 changes: { from, to, insert: text },
