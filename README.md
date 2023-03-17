@@ -1,8 +1,8 @@
-> **Warning**: Work in progress. Expect frequent breaking changes. See the [project board](https://github.com/users/colebemis/projects/3) for progress updates.
+> **Warning**: Work in progress. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
 
 # Lumen
 
-An opinionated note-taking system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+An opinionated note-taking system for thinking, writing, learning, and mindfulness. Built for personal usage. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 ![Screenshot of the app](https://user-images.githubusercontent.com/4608155/213857201-286bee23-205c-4fbd-b962-22b789c38426.png)
 
@@ -20,7 +20,7 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 - Notes should be atomic and densely linked.
 - Notes should be accessible while offline.
 - Notes should be version controlled.
-- Notes should be stored in a flat directory structure to avoid creating hierarchy prematurely. Hierarchy will emerge naturally as you link notes together.
+- Notes should be stored in a flat directory structure to avoid premature hierarchy. Links between notes create hierarchy organically.
 
 ## Getting started
 
