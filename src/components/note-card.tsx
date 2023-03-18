@@ -27,7 +27,12 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
   github: (value) => {
     if (typeof value !== "string") return null
     return (
-      <DropdownMenu.Item icon={<GitHubIcon16 />} href={`https://github.com/${value}`}>
+      <DropdownMenu.Item
+        icon={<GitHubIcon16 />}
+        href={`https://github.com/${value}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         GitHub profile
       </DropdownMenu.Item>
     )
@@ -35,7 +40,12 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
   twitter: (value) => {
     if (typeof value !== "string") return null
     return (
-      <DropdownMenu.Item icon={<TwitterIcon16 />} href={`https://twitter.com/${value}`}>
+      <DropdownMenu.Item
+        icon={<TwitterIcon16 />}
+        href={`https://twitter.com/${value}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Twitter profile
       </DropdownMenu.Item>
     )
