@@ -368,3 +368,12 @@ export function SettingsIcon24() {
     </svg>
   )
 }
+
+export function InfoIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM8.25 7H6.5v1.5h1v2h-.961V12H10v-1.5H9V7.75A.75.75 0 0 0 8.25 7Z" />
+      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm0-1.5a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" />
+    </svg>
+  )
+}
