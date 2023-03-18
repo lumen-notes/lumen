@@ -91,10 +91,6 @@
   --color-syntax-purple: hsl(268, 21%, 38%);
   --color-syntax-green: hsl(170, 50%, 32%);
 
-  /* Brand colors */
-  --color-github: var(--color-text);
-  --color-twitter: hsl(204, 88%, 53%);
-
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
   --font-size-base: 0.875rem; /* 14px */
