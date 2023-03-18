@@ -86,10 +86,10 @@
 
   /* Syntax colors */
   /* Based on https://rosepinetheme.com/palette */
-  --color-syntax-gold: hsl(30, 80%, 34%);
-  --color-syntax-rose: hsl(6, 50%, 48%);
-  --color-syntax-iris: hsl(268, 21%, 38%);
-  --color-syntax-foam: hsl(170, 50%, 32%);
+  --color-syntax-yellow: hsl(30, 80%, 34%);
+  --color-syntax-orange: hsl(6, 50%, 48%);
+  --color-syntax-purple: hsl(268, 21%, 38%);
+  --color-syntax-green: hsl(170, 50%, 32%);
 
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
@@ -125,10 +125,10 @@
     --color-border-focus: hsl(200, 100%, 70%);
 
     /* Syntax colors */
-    --color-syntax-gold: hsl(30, 76%, 72%);
-    --color-syntax-rose: hsl(6, 70%, 78%);
-    --color-syntax-iris: hsl(268, 57%, 78%);
-    --color-syntax-foam: hsl(170, 50%, 73%);
+    --color-syntax-yellow: hsl(30, 76%, 72%);
+    --color-syntax-orange: hsl(6, 70%, 78%);
+    --color-syntax-purple: hsl(268, 57%, 78%);
+    --color-syntax-green: hsl(170, 50%, 73%);
   }
 }
 
@@ -381,43 +381,43 @@ body:has([data-resizing="true"]) * {
 }
 
 .prism .keyword {
-  color: var(--color-syntax-foam);
+  color: var(--color-syntax-green);
 }
 
 .prism .function {
-  color: var(--color-syntax-gold);
+  color: var(--color-syntax-yellow);
 }
 
 .prism .property {
-  color: var(--color-syntax-foam);
+  color: var(--color-syntax-green);
 }
 
 .prism .selector {
-  color: var(--color-syntax-foam);
+  color: var(--color-syntax-green);
 }
 
 .prism .tag {
-  color: var(--color-syntax-iris);
+  color: var(--color-syntax-purple);
 }
 
 .prism .attr-name {
-  color: var(--color-syntax-foam);
+  color: var(--color-syntax-green);
 }
 
 .prism .attr-value {
-  color: var(--color-syntax-gold);
+  color: var(--color-syntax-yellow);
 }
 
 .prism .key {
-  color: var(--color-syntax-foam);
+  color: var(--color-syntax-green);
 }
 
 .prism .boolean {
-  color: var(--color-syntax-rose);
+  color: var(--color-syntax-orange);
 }
 
 .prism .string {
-  color: var(--color-syntax-rose);
+  color: var(--color-syntax-orange);
 }
 
 .prism .operator {
