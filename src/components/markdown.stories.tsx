@@ -1,13 +1,18 @@
-import { Markdown } from "./markdown"
+import { Markdown, MarkdownProps } from "./markdown"
 import { StoryObj } from "@storybook/react"
 import { Card } from "./card"
 
 export default {
   title: "Markdown",
   component: Markdown,
+  render: (args: MarkdownProps) => (
+    <Card className="mx-auto max-w-lg p-4">
+      <Markdown {...args} />
+    </Card>
+  ),
 }
 
-const markdown = `
+const kitchenSink = `
 # Markdown kitchen sink
 
 _Content copied from [Tailwind](https://play.tailwindcss.com/uj1vGACRJA?layout=preview)_
@@ -211,12 +216,22 @@ What I've written here is probably long enough, but adding this final sentence c
 `
 
 export const KitchenSink: StoryObj<typeof Markdown> = {
-  render: (args) => (
-    <Card className="mx-auto max-w-lg p-4">
-      <Markdown {...args} />
-    </Card>
-  ),
   args: {
-    children: markdown,
+    children: kitchenSink,
+  },
+}
+
+const book = `---
+isbn: 978-1542866507
+---
+
+# How to Take Smart Notes
+
+By Sönke Ahrens
+`
+
+export const Book: StoryObj<typeof Markdown> = {
+  args: {
+    children: book,
   },
 }

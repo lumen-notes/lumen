@@ -17,7 +17,7 @@ import { useLink } from "./link-context"
 import { Tooltip } from "./tooltip"
 import { stringify } from "yaml"
 
-type MarkdownProps = {
+export type MarkdownProps = {
   children: string
 }
 
