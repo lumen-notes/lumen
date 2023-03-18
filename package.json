@@ -68,6 +68,7 @@
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.0",
     "xstate": "^4.35.4",
+    "yaml": "^2.2.1",
     "zod": "^3.18.0"
   },
   "devDependencies": {
