@@ -24,32 +24,42 @@ const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuC
   ),
 )
 
-type ItemProps = RadixDropdownMenu.DropdownMenuItemProps & {
-  icon?: React.ReactNode
-  shortcut?: string[]
-}
+type ItemProps = RadixDropdownMenu.DropdownMenuItemProps &
+  React.ComponentPropsWithoutRef<"a"> & {
+    icon?: React.ReactNode
+    shortcut?: string[]
+  }
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
-  ({ className, icon, shortcut, children, ...props }, ref) => (
-    <RadixDropdownMenu.Item
-      ref={ref}
-      className={cx(
-        "flex h-8 cursor-default items-center gap-5 rounded-sm px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none coarse:h-10 coarse:px-4 [&[data-disabled]]:text-text-secondary [&[data-disabled]]:opacity-75",
-        className,
-      )}
-      {...props}
-    >
-      <div className="flex flex-grow items-center gap-3 coarse:gap-4">
-        {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
-        <span>{children}</span>
-      </div>
-      {shortcut ? (
-        <div className="flex coarse:hidden">
-          <Keys keys={shortcut} />
+  ({ className, icon, shortcut, href, children, ...props }, ref) => {
+    const content = (
+      <>
+        <div className="flex flex-grow items-center gap-3 coarse:gap-4">
+          {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
+          <span>{children}</span>
         </div>
-      ) : null}
-    </RadixDropdownMenu.Item>
-  ),
+        {shortcut ? (
+          <div className="flex coarse:hidden">
+            <Keys keys={shortcut} />
+          </div>
+        ) : null}
+      </>
+    )
+
+    return (
+      <RadixDropdownMenu.Item
+        ref={ref}
+        className={cx(
+          "flex h-8 cursor-default items-center gap-5 rounded-sm px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none coarse:h-10 coarse:px-4 [&[data-disabled]]:text-text-secondary [&[data-disabled]]:opacity-75",
+          className,
+        )}
+        asChild={Boolean(href)}
+        {...props}
+      >
+        {href ? <a href={href}>{content}</a> : content}
+      </RadixDropdownMenu.Item>
+    )
+  },
 )
 
 const Separator = () => {

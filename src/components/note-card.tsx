@@ -158,13 +158,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                   icon={<ExternalLinkIcon16 />}
-                  onSelect={() =>
-                    window.open(
-                      `https://github.com/${state.context.repoOwner}/${state.context.repoName}/blob/main/${id}.md`,
-                      "_blank",
-                      "noopener,noreferrer",
-                    )
-                  }
+                  href={`https://github.com/${state.context.repoOwner}/${state.context.repoName}/blob/main/${id}.md`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
