@@ -93,7 +93,7 @@
 
   /* Brand colors */
   --color-github: var(--color-text);
-  --color-twitter: hsl(203, 89%, 53%);
+  --color-twitter: hsl(204, 88%, 53%);
 
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
