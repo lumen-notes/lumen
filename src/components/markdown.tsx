@@ -8,59 +8,92 @@ import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
 import { Code } from "./code"
 import { FilePreview } from "./file-preview"
 import { useLink } from "./link-context"
 import { Tooltip } from "./tooltip"
+import { stringify } from "yaml"
 
 type MarkdownProps = {
   children: string
 }
 
 export const Markdown = React.memo(({ children }: MarkdownProps) => {
+  const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
+
   return (
-    <ReactMarkdown
-      className="markdown"
-      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
-      remarkRehypeOptions={{
-        handlers: {
-          // TODO: Improve type-safety of `node`
-          noteLink(h, node) {
-            return h(node, "noteLink", {
-              id: node.data.id,
-              text: node.data.text,
-            })
+    <div>
+      {typeof frontmatter?.isbn === "string" ? (
+        // If the note has an ISBN, show the book cover
+        <div className="mb-3">
+          <BookCover isbn={frontmatter.isbn} />
+        </div>
+      ) : null}
+      <ReactMarkdown
+        className="markdown"
+        remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
+        remarkRehypeOptions={{
+          handlers: {
+            // TODO: Improve type-safety of `node`
+            noteLink(h, node) {
+              return h(node, "noteLink", {
+                id: node.data.id,
+                text: node.data.text,
+              })
+            },
+            tagLink(h, node) {
+              return h(node, "tagLink", {
+                name: node.data.name,
+              })
+            },
+            dateLink(h, node) {
+              return h(node, "dateLink", {
+                date: node.data.date,
+              })
+            },
           },
-          tagLink(h, node) {
-            return h(node, "tagLink", {
-              name: node.data.name,
-            })
-          },
-          dateLink(h, node) {
-            return h(node, "dateLink", {
-              date: node.data.date,
-            })
-          },
-        },
-      }}
-      components={{
-        a: Link,
-        img: Image,
-        code: Code,
-        // @ts-ignore I don't know how to extend the list of accepted component keys
-        noteLink: NoteLink,
-        // @ts-ignore
-        tagLink: TagLink,
-        // @ts-ignore
-        dateLink: DateLink,
-      }}
-    >
-      {children}
-    </ReactMarkdown>
+        }}
+        components={{
+          a: Link,
+          img: Image,
+          code: Code,
+          // @ts-ignore I don't know how to extend the list of accepted component keys
+          noteLink: NoteLink,
+          // @ts-ignore
+          tagLink: TagLink,
+          // @ts-ignore
+          dateLink: DateLink,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+      {frontmatter ? (
+        <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
+          <Code className="language-yaml">{stringify(frontmatter)}</Code>
+        </pre>
+      ) : null}
+    </div>
   )
 })
+
+function BookCover({ isbn }: { isbn: string }) {
+  return (
+    <a
+      className="inline-block aspect-[4/6] h-14 rounded-xs bg-bg-secondary bg-cover bg-clip-border bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-all hover:scale-105 hover:shadow-md"
+      href={`https://openlibrary.org/isbn/${isbn}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg)`,
+      }}
+    >
+      <span className="sr-only">Book cover</span>
+    </a>
+  )
+}
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const Link = useLink()
@@ -117,7 +150,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
           <Card
-            className="z-20 w-96 px-4 py-3 animate-in fade-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
+            className="z-20 w-96 p-4 animate-in fade-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
             elevation={1}
           >
             <Markdown>{body ?? "Not found"}</Markdown>

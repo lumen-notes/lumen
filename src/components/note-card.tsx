@@ -30,7 +30,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
   const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
-  const { frontmatter, content } = React.useMemo(() => parseFrontmatter(body || ""), [body])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -111,15 +110,8 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       }}
     >
       <div className="p-4 pb-1">
-        <Markdown>{content}</Markdown>
+        <Markdown>{body}</Markdown>
       </div>
-      {frontmatter ? (
-        <div className="px-4 pt-3">
-          <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
-            <Code className="language-yaml">{stringify(frontmatter)}</Code>
-          </pre>
-        </div>
-      ) : null}
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
