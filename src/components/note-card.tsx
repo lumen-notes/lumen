@@ -2,6 +2,7 @@ import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import React from "react"
+import { z } from "zod"
 import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
@@ -15,6 +16,7 @@ import {
   ExternalLinkIcon16,
   GitHubIcon16,
   MoreIcon16,
+  PhoneIcon16,
   TrashIcon16,
   TwitterIcon16,
 } from "./icons"
@@ -24,6 +26,14 @@ import { Panels } from "./panels"
 
 // Map frontmatter keys to note action menu items
 const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | null> = {
+  phone: (value) => {
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item icon={<PhoneIcon16 />} href={`tel:${value}`}>
+        Call
+      </DropdownMenu.Item>
+    )
+  },
   github: (value) => {
     if (typeof value !== "string") return null
     return (
