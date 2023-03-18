@@ -22,6 +22,7 @@ import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { fileCache } from "./file-preview"
 import { PaperclipIcon16 } from "./icons"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 
 const UPLOADS_DIRECTORY = "uploads"
 
@@ -451,10 +452,11 @@ function useNoteCompletion() {
         },
       }
 
-      const options = results.slice(0, 5).map(
-        ([id, note]): Completion => ({
-          label: note?.body || "",
-          info: note?.body,
+      const options = results.slice(0, 5).map(([id, note]): Completion => {
+        const { content } = parseFrontmatter(note?.body || "")
+        return {
+          label: content || "",
+          info: content,
           apply: (view, completion, from, to) => {
             // Insert link to note
             const text = `${id}|${note?.title || query}`
@@ -466,8 +468,8 @@ function useNoteCompletion() {
               selection: { anchor, head },
             })
           },
-        }),
-      )
+        }
+      })
 
       if (query) {
         options.push(createNewNoteOption)

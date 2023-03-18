@@ -10,6 +10,7 @@ import { GlobalStateContext } from "../global-state.machine"
 import { GraphContext, pathToNodeId } from "../pages/graph"
 import { Note } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 
@@ -194,16 +195,19 @@ export function CommandMenu() {
           ) : null}
           {deferredQuery ? (
             <Command.Group heading="Notes">
-              {noteResults.slice(0, numVisibleNotes).map(([id, { body }]) => (
-                <CommandItem
-                  key={id}
-                  value={id}
-                  icon={<NoteIcon16 />}
-                  onSelect={() => navigate(`/${id}`)}
-                >
-                  {body}
-                </CommandItem>
-              ))}
+              {noteResults.slice(0, numVisibleNotes).map(([id, { body }]) => {
+                const { content } = parseFrontmatter(body)
+                return (
+                  <CommandItem
+                    key={id}
+                    value={id}
+                    icon={<NoteIcon16 />}
+                    onSelect={() => navigate(`/${id}`)}
+                  >
+                    {content}
+                  </CommandItem>
+                )
+              })}
               {noteResults.length > 0 ? (
                 <CommandItem
                   key={`Show all notes matching "${deferredQuery}"`}
