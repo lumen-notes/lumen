@@ -372,47 +372,55 @@ body:has([data-resizing="true"]) * {
 
 /* Syntax highlighting */
 
-.markdown .comment {
+.prism .comment {
   color: var(--color-text-secondary);
 }
 
-.markdown .punctuation {
+.prism .punctuation {
   color: var(--color-text-secondary);
 }
 
-.markdown .keyword {
+.prism .keyword {
   color: var(--color-syntax-foam);
 }
 
-.markdown .function {
+.prism .function {
   color: var(--color-syntax-gold);
 }
 
-.markdown .property {
+.prism .property {
   color: var(--color-syntax-foam);
 }
 
-.markdown .selector {
+.prism .selector {
   color: var(--color-syntax-foam);
 }
 
-.markdown .tag {
+.prism .tag {
   color: var(--color-syntax-iris);
 }
 
-.markdown .attr-name {
+.prism .attr-name {
   color: var(--color-syntax-foam);
 }
 
-.markdown .attr-value {
+.prism .attr-value {
   color: var(--color-syntax-gold);
 }
 
-.markdown .string {
+.prism .key {
+  color: var(--color-syntax-foam);
+}
+
+.prism .boolean {
   color: var(--color-syntax-rose);
 }
 
-.markdown .operator {
+.prism .string {
+  color: var(--color-syntax-rose);
+}
+
+.prism .operator {
   color: var(--color-text-secondary);
 }
 

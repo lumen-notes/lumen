@@ -2,25 +2,19 @@ import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import React from "react"
+import { stringify } from "yaml"
 import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
+import { Code } from "./code"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import {
-  CopyIcon16,
-  EditIcon16,
-  ExternalLinkIcon16,
-  InfoIcon16,
-  MoreIcon16,
-  TrashIcon16,
-} from "./icons"
+import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { Panels } from "./panels"
-import { stringify } from "yaml"
 
 type NoteCardProps = {
   id: NoteId
@@ -32,7 +26,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const codeMirrorViewRef = React.useRef<EditorView>()
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-  const [isInfoExpanded, setIsInfoExpanded] = React.useState(false)
   const [state, send] = GlobalStateContext.useActor()
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
@@ -55,11 +48,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const switchToViewing = React.useCallback(() => {
     setIsEditing(false)
     setTimeout(() => cardRef.current?.focus())
-  }, [])
-
-  const toggleInfo = React.useCallback(() => {
-    setIsInfoExpanded((isInfoExpanded) => !isInfoExpanded)
-    setIsDropdownOpen(false)
   }, [])
 
   const focusNextCard = React.useCallback(() => {
@@ -108,14 +96,8 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           event.preventDefault()
         }
 
-        // Toggle info with `command + shift + .`
-        if (event.key === "." && event.metaKey && event.shiftKey) {
-          toggleInfo()
-          event.preventDefault()
-        }
-
         // Open dropdown with `command + .`
-        if (event.key === "." && event.metaKey && !event.shiftKey) {
+        if (event.key === "." && event.metaKey) {
           setIsDropdownOpen(true)
           event.preventDefault()
         }
@@ -131,6 +113,13 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       <div className="p-4 pb-1">
         <Markdown>{content}</Markdown>
       </div>
+      {frontmatter ? (
+        <div className="px-4 pt-3">
+          <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+            <Code className="language-yaml">{stringify(frontmatter)}</Code>
+          </pre>
+        </div>
+      ) : null}
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
@@ -159,14 +148,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           <DropdownMenu.Content align="end">
             <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
               Edit
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<InfoIcon16 />}
-              onSelect={toggleInfo}
-              shortcut={["⌘", "⇧", "."]}
-              disabled={!frontmatter}
-            >
-              {isInfoExpanded ? "Hide info" : "View info"}
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
@@ -215,11 +196,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           </DropdownMenu.Content>
         </DropdownMenu>
       </div>
-      {frontmatter && isInfoExpanded ? (
-        <div id={`${id}-info`} className="p-4 pt-1">
-          <pre className="rounded-sm bg-bg-secondary p-3">{stringify(frontmatter)}</pre>
-        </div>
-      ) : null}
     </Card>
   ) : (
     // Edit mode

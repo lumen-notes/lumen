@@ -1,19 +1,7 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
-import Prism from "prismjs"
-import "prismjs/components/prism-bash"
-import "prismjs/components/prism-diff"
-import "prismjs/components/prism-json"
-import "prismjs/components/prism-jsx"
-import "prismjs/components/prism-python"
-import "prismjs/components/prism-rust"
-import "prismjs/components/prism-sql"
-import "prismjs/components/prism-tsx"
-import "prismjs/components/prism-typescript"
-import "prismjs/components/prism-yaml"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
 import { GlobalStateContext } from "../global-state.machine"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -22,6 +10,7 @@ import { remarkTagLink } from "../remark-plugins/tag-link"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
+import { Code } from "./code"
 import { FilePreview } from "./file-preview"
 import { useLink } from "./link-context"
 import { Tooltip } from "./tooltip"
@@ -107,19 +96,6 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 
   // eslint-disable-next-line jsx-a11y/alt-text
   return <img {...props} />
-}
-
-function Code({ className, children }: CodeProps) {
-  const language = className?.replace(/language-/, "") || ""
-
-  if (language && Prism.languages[language]) {
-    // Apply syntax highlighting
-    const html = Prism.highlight(String(children), Prism.languages[language], language)
-
-    return <code className={className} dangerouslySetInnerHTML={{ __html: html }} />
-  }
-
-  return <code className={className}>{children}</code>
 }
 
 type NoteLinkProps = {
