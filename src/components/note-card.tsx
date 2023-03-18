@@ -4,14 +4,43 @@ import copy from "copy-to-clipboard"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
+import {
+  CopyIcon16,
+  EditIcon16,
+  ExternalLinkIcon16,
+  GitHubIcon16,
+  MoreIcon16,
+  TrashIcon16,
+  TwitterIcon16,
+} from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { Panels } from "./panels"
+
+// Map frontmatter keys to note action menu items
+const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | null> = {
+  github: (value) => {
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item icon={<GitHubIcon16 />} href={`https://github.com/${value}`}>
+        GitHub profile
+      </DropdownMenu.Item>
+    )
+  },
+  twitter: (value) => {
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item icon={<TwitterIcon16 />} href={`https://twitter.com/${value}`}>
+        Twitter profile
+      </DropdownMenu.Item>
+    )
+  },
+}
 
 type NoteCardProps = {
   id: NoteId
@@ -27,6 +56,13 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const { body } = state.context.notes[id] ?? {}
   const backlinks = state.context.backlinks[id] ?? []
   const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
+  const { frontmatter = {} } = parseFrontmatter(body ?? "")
+
+  const frontmatterItems = React.useMemo(() => {
+    return Object.entries(frontmatterMap)
+      .map(([key, value]) => value(frontmatter[key]))
+      .filter(Boolean)
+  }, [frontmatter])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -138,6 +174,12 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
               Edit
             </DropdownMenu.Item>
+            {frontmatterItems.length ? (
+              <>
+                <DropdownMenu.Separator />
+                {frontmatterItems}
+              </>
+            ) : null}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<CopyIcon16 />}
