@@ -72,11 +72,11 @@ Link to all other notes with the same tag.
 
 ## Metadata
 
-You can add metadata to a note with key-value pairs ([YAML](https://yaml.org/)) surrounded by `---` at the top of your note. We call this metadata "frontmatter."
+You can add metadata to any note in Lumen by including key-value pairs ([YAML](https://yaml.org/)) enclosed within `---` delimiters at the top of your note. We refer to this as your note's "frontmatter".
 
 ### Example
 
-In the following note, we've encoded two pieces of metadata in the frontmatter: the book's ISBN and whether or not we've read it:
+In the following note, we've encoded two pieces of metadata in the frontmatter: the book's ISBN and whether or not we've read it.
 
 ```
 ---
