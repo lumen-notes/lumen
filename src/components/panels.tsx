@@ -112,10 +112,13 @@ function Root({ children }: React.PropsWithChildren) {
 
       const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
 
+      const isPanelFocused =
+        document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
+
       const prevPanelElement = panelElements[currentIndex - 1]
 
       // Focus the previous panel
-      if (prevPanelElement) {
+      if (isPanelFocused && prevPanelElement) {
         focusPanel(prevPanelElement)
       }
 
