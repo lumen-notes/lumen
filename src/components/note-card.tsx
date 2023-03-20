@@ -25,7 +25,7 @@ import {
 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
-import { Panels } from "./panels"
+import { PanelContext, Panels, PanelsContext } from "./panels"
 
 // Map frontmatter keys to note action menu items
 // See README.md#recognized-keys for more information
@@ -117,7 +117,8 @@ type NoteCardProps = {
 export function NoteCard({ id, elevation }: NoteCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
-  // const { panels, closePanel } = React.useContext(PanelsContext)
+  const { closePanel } = React.useContext(PanelsContext)
+  const panel = React.useContext(PanelContext)
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const [state, send] = GlobalStateContext.useActor()
@@ -170,20 +171,15 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     (id: string) => {
       focusNextCard()
 
-      // Close any panels that are open for this note
-      // TODO: Fix focus management
-      // const panelIndex = panels
-      //   .map(deserializePanelValue)
-      //   .findIndex((panel) => panel.pathname.replace("/", "") === id)
-
-      // if (panelIndex !== -1) {
-      //   closePanel?.(panelIndex)
-      // }
-
       // Update state
       send({ type: "DELETE_NOTE", id })
+
+      // Close any panels that are open for this note
+      if (panel && panel.index !== -1) {
+        closePanel?.(panel.index)
+      }
     },
-    [focusNextCard, send],
+    [focusNextCard, panel, closePanel, send],
   )
 
   if (body === undefined) {

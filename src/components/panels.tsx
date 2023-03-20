@@ -88,7 +88,7 @@ function Root({ children }: React.PropsWithChildren) {
 
       const id = generateId()
       const [pathname, search] = url.split("?")
-      const value = serializePanelValue({ id, pathname, search })
+      const value = stringifyPanelValue({ id, pathname, search })
 
       setPanels(panels.slice(0, index).concat(value))
 
@@ -106,7 +106,7 @@ function Root({ children }: React.PropsWithChildren) {
 
   const closePanel = React.useCallback(
     (index: number) => {
-      const panel = deserializePanelValue(panels[index])
+      const panel = parsePanelValue(panels[index])
 
       const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
 
@@ -119,7 +119,9 @@ function Root({ children }: React.PropsWithChildren) {
 
       // Focus the previous panel
       if (isPanelFocused && prevPanelElement) {
-        focusPanel(prevPanelElement)
+        setTimeout(() => {
+          focusPanel(prevPanelElement)
+        })
       }
 
       // Update state
@@ -130,8 +132,8 @@ function Root({ children }: React.PropsWithChildren) {
 
   const updatePanel = React.useCallback(
     (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => {
-      const oldValue = deserializePanelValue(panels[index])
-      const newValue = serializePanelValue({ ...oldValue, ...partialValue })
+      const oldValue = parsePanelValue(panels[index])
+      const newValue = stringifyPanelValue({ ...oldValue, ...partialValue })
       setPanels(panels.map((value, i) => (i === index ? newValue : value)))
     },
     [panels, setPanels],
@@ -217,7 +219,7 @@ function Outlet() {
   return (
     <>
       {panels.map((value, index) => {
-        const panel = deserializePanelValue(value)
+        const panel = parsePanelValue(value)
         return <PanelRoutes key={panel.id} panel={panel} index={index} />
       })}
     </>
@@ -355,11 +357,11 @@ function isScrollable(element: Element) {
 
 const SEPARATOR = ":"
 
-function serializePanelValue({ id, pathname, search }: PanelValue) {
+export function stringifyPanelValue({ id, pathname, search }: PanelValue) {
   return [id, pathname, search].join(SEPARATOR)
 }
 
-function deserializePanelValue(value: string): PanelValue {
+export function parsePanelValue(value: string): PanelValue {
   const [id, pathname, search] = value.split(SEPARATOR)
   return { id, pathname, search }
 }
