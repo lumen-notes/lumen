@@ -22,6 +22,7 @@ import {
   PhoneIcon16,
   TrashIcon16,
   TwitterIcon16,
+  YouTubeIcon16,
 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
@@ -104,6 +105,19 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
         rel="noopener noreferrer"
       >
         Twitter profile
+      </DropdownMenu.Item>
+    )
+  },
+  youtube: (value) => {
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item
+        icon={<YouTubeIcon16 />}
+        href={`https://youtube.com/@${value}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        YouTube channel
       </DropdownMenu.Item>
     )
   },
