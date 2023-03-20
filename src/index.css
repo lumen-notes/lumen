@@ -338,8 +338,12 @@ body:has([data-resizing="true"]) * {
   @apply my-1;
 }
 
+.markdown li:has([type="checkbox"]) {
+  @apply relative list-none;
+}
+
 .markdown li [type="checkbox"] {
-  @apply align-middle;
+  @apply absolute -left-2 h-5 -translate-x-full align-middle;
 }
 
 .markdown ::marker {
