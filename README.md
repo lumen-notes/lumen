@@ -28,7 +28,7 @@ An opinionated note-taking system for thinking, writing, learning, and mindfulne
 1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
 1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
 
-## Syntax
+## Markdown syntax
 
 Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm/) with the following syntax extensions:
 
@@ -69,6 +69,38 @@ Link to all other notes with the same tag.
 | Example   | Rendered HTML                        |
 | :-------- | :----------------------------------- |
 | `#recipe` | `<a href="/tags/recipe">#recipe</a>` |
+
+## Metadata
+
+You can add metadata to a note with key-value pairs ([YAML](https://yaml.org/)) surrounded by `---` at the top of your note. We call this metadata "frontmatter."
+
+### Example
+
+In the following note, we've encoded two pieces of metadata in the frontmatter: the book's ISBN and whether or not we've read it:
+
+```
+---
+ibsn: 978-1542866507
+read: true
+---
+
+# How to Take Smart Notes
+
+...
+```
+
+### Recognized keys
+
+Frontmatter can contain any valid YAML key-value pairs. However, there are a few keys that Lumen recognizes and uses to enhance the user interface.
+
+| Key       | Description             | Enhancements                                                                                                 |
+| :-------- | :---------------------- | :----------------------------------------------------------------------------------------------------------- |
+| `phone`   | Phone number            | Adds "Call" and "Message" links to the note action menu.                                                     |
+| `email`   | Email address           | Adds an "Email" link to the note action menu.                                                                |
+| `website` | Website URL             | Adds a "Website" link to the note action menu.                                                               |
+| `github`  | GitHub username         | Adds a "GitHub profile" link to the note action menu.                                                        |
+| `twitter` | Twitter username        | Adds a "Twitter profile" link to the note action menu.                                                       |
+| `isbn`    | Book ISBN-10 or ISBN-13 | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note. |
 
 ## Keyboard shortcuts
 
