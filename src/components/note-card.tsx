@@ -117,6 +117,7 @@ type NoteCardProps = {
 export function NoteCard({ id, elevation }: NoteCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
+  // const { panels, closePanel } = React.useContext(PanelsContext)
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const [state, send] = GlobalStateContext.useActor()
@@ -156,8 +157,10 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
       // Focus the next note card
       if (siblings[index + 1]) {
+        console.log("focus next")
         siblings[index + 1].focus()
       } else if (siblings[index - 1]) {
+        console.log("focus prev")
         siblings[index - 1].focus()
       }
     }
@@ -166,6 +169,18 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const deleteNote = React.useCallback(
     (id: string) => {
       focusNextCard()
+
+      // Close any panels that are open for this note
+      // TODO: Fix focus management
+      // const panelIndex = panels
+      //   .map(deserializePanelValue)
+      //   .findIndex((panel) => panel.pathname.replace("/", "") === id)
+
+      // if (panelIndex !== -1) {
+      //   closePanel?.(panelIndex)
+      // }
+
+      // Update state
       send({ type: "DELETE_NOTE", id })
     },
     [focusNextCard, send],
