@@ -235,3 +235,16 @@ export const Book: StoryObj<typeof Markdown> = {
     children: book,
   },
 }
+
+const person = `---
+github: nat
+---
+
+# Nat Friedman
+`
+
+export const Person: StoryObj<typeof Markdown> = {
+  args: {
+    children: person,
+  },
+}
