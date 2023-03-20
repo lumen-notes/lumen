@@ -153,16 +153,23 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
   const focusNextCard = React.useCallback(() => {
     if (cardRef.current) {
-      const siblings = Array.from(cardRef.current.parentElement?.children ?? []) as HTMLElement[]
-      const index = siblings.indexOf(cardRef.current)
+      const parentCard = cardRef.current
+        .closest("[data-panel]")
+        ?.querySelector<HTMLElement>("[data-note-id]")
+
+      const siblingCards = Array.from(
+        cardRef.current.parentElement?.querySelectorAll<HTMLElement>("[data-note-id]") || [],
+      )
+
+      const cards = Array.from(new Set([parentCard, ...siblingCards]).values()).filter(Boolean)
+
+      const index = cards.indexOf(cardRef.current)
 
       // Focus the next note card
-      if (siblings[index + 1]) {
-        console.log("focus next")
-        siblings[index + 1].focus()
-      } else if (siblings[index - 1]) {
-        console.log("focus prev")
-        siblings[index - 1].focus()
+      if (cards[index + 1]) {
+        cards[index + 1]?.focus()
+      } else if (cards[index - 1]) {
+        cards[index - 1]?.focus()
       }
     }
   }, [])
@@ -175,7 +182,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       send({ type: "DELETE_NOTE", id })
 
       // Close any panels that are open for this note
-      if (panel && panel.index !== -1) {
+      if (panel && panel.pathname.replace("/", "") === id && panel.index !== -1) {
         closePanel?.(panel.index)
       }
     },
