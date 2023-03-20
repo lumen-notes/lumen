@@ -2,7 +2,6 @@ import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import React from "react"
-import { z } from "zod"
 import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
@@ -15,6 +14,7 @@ import {
   EditIcon16,
   ExternalLinkIcon16,
   GitHubIcon16,
+  MessageIcon16,
   MoreIcon16,
   PhoneIcon16,
   TrashIcon16,
@@ -29,9 +29,14 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
   phone: (value) => {
     if (typeof value !== "string") return null
     return (
-      <DropdownMenu.Item icon={<PhoneIcon16 />} href={`tel:${value}`}>
-        Call
-      </DropdownMenu.Item>
+      <>
+        <DropdownMenu.Item icon={<PhoneIcon16 />} href={`tel:${value}`}>
+          Call
+        </DropdownMenu.Item>
+        <DropdownMenu.Item icon={<MessageIcon16 />} href={`sms:${value}`}>
+          Message
+        </DropdownMenu.Item>
+      </>
     )
   },
   github: (value) => {
