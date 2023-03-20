@@ -418,3 +418,11 @@ export function GlobeIcon16() {
     </svg>
   )
 }
+
+export function MailIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3Zm2-.5a.498.498 0 0 0-.298.098L8 7.546l6.297-4.948A.497.497 0 0 0 14 2.5H2Zm-.5 1.847V13a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V4.347l-5.728 4.5a1.25 1.25 0 0 1-1.544 0L1.5 4.347Z" />
+    </svg>
+  )
+}

@@ -15,6 +15,7 @@ import {
   ExternalLinkIcon16,
   GitHubIcon16,
   GlobeIcon16,
+  MailIcon16,
   MessageIcon16,
   MoreIcon16,
   PhoneIcon16,
@@ -28,6 +29,7 @@ import { Panels } from "./panels"
 // Map frontmatter keys to note action menu items
 const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | null> = {
   phone: (value) => {
+    // TODO: Validate phone number
     if (typeof value !== "string") return null
     return (
       <>
@@ -38,6 +40,15 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
           Message
         </DropdownMenu.Item>
       </>
+    )
+  },
+  email: (value) => {
+    // TODO: Validate email address
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item icon={<MailIcon16 />} href={`mailto:${value}`}>
+        Email
+      </DropdownMenu.Item>
     )
   },
   website: (value) => {
