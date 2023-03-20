@@ -28,6 +28,7 @@ import { NoteForm } from "./note-form"
 import { Panels } from "./panels"
 
 // Map frontmatter keys to note action menu items
+// See README.md#recognized-keys for more information
 const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | null> = {
   phone: (value) => {
     // TODO: Validate phone number
@@ -162,6 +163,14 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     }
   }, [])
 
+  const deleteNote = React.useCallback(
+    (id: string) => {
+      focusNextCard()
+      send({ type: "DELETE_NOTE", id })
+    },
+    [focusNextCard, send],
+  )
+
   if (body === undefined) {
     return <Card className="p-4">Not found</Card>
   }
@@ -202,8 +211,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Delete note with `command + backspace`
         if (event.metaKey && event.key === "Backspace") {
-          focusNextCard()
-          send({ type: "DELETE_NOTE", id })
+          deleteNote(id)
           event.preventDefault()
         }
       }}
@@ -277,10 +285,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
-              onSelect={() => {
-                focusNextCard()
-                send({ type: "DELETE_NOTE", id })
-              }}
+              onSelect={() => deleteNote(id)}
               shortcut={["⌘", "⌫"]}
               disabled={backlinks.length > 0}
             >
