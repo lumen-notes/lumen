@@ -98,6 +98,7 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 | `phone`   | Phone number            | Adds "Call" and "Message" links to the note action menu.                                                     |
 | `email`   | Email address           | Adds an "Email" link to the note action menu.                                                                |
 | `website` | Website URL             | Adds a "Website" link to the note action menu.                                                               |
+| `address` | Physical address        | Adds a "Map" link to the note action menu.                                                                   |
 | `github`  | GitHub username         | Adds a "GitHub profile" link to the note action menu.                                                        |
 | `twitter` | Twitter username        | Adds a "Twitter profile" link to the note action menu.                                                       |
 | `isbn`    | Book ISBN-10 or ISBN-13 | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note. |

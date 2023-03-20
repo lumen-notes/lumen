@@ -16,6 +16,7 @@ import {
   GitHubIcon16,
   GlobeIcon16,
   MailIcon16,
+  MapsIcon16,
   MessageIcon16,
   MoreIcon16,
   PhoneIcon16,
@@ -63,6 +64,19 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
         rel="noopener noreferrer"
       >
         Website
+      </DropdownMenu.Item>
+    )
+  },
+  address: (value) => {
+    if (typeof value !== "string") return null
+    return (
+      <DropdownMenu.Item
+        icon={<MapsIcon16 />}
+        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Map
       </DropdownMenu.Item>
     )
   },
