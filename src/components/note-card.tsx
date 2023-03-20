@@ -14,6 +14,7 @@ import {
   EditIcon16,
   ExternalLinkIcon16,
   GitHubIcon16,
+  GlobeIcon16,
   MessageIcon16,
   MoreIcon16,
   PhoneIcon16,
@@ -37,6 +38,21 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
           Message
         </DropdownMenu.Item>
       </>
+    )
+  },
+  website: (value) => {
+    if (typeof value !== "string") return null
+    const hasProtocol = value.startsWith("http://") || value.startsWith("https://")
+    const url = hasProtocol ? value : `https://${value}`
+    return (
+      <DropdownMenu.Item
+        icon={<GlobeIcon16 />}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Website
+      </DropdownMenu.Item>
     )
   },
   github: (value) => {
