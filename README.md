@@ -76,7 +76,7 @@ You can include metadata, in the form of key-value pairs ([YAML](https://yaml.or
 
 ### Example
 
-In the following note, we've encoded two pieces of metadata in the frontmatter: the book's ISBN and whether or not we've read it.
+In the following note, we've included two pieces of metadata in the frontmatter: the book's ISBN and whether or not we've read it.
 
 ```
 ---
