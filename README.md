@@ -72,7 +72,7 @@ Link to all other notes with the same tag.
 
 ## Metadata
 
-You can add metadata to any note in Lumen by including key-value pairs ([YAML](https://yaml.org/)) enclosed within `---` delimiters at the top of your note. We refer to this as your note's "frontmatter".
+You can include metadata, in the form of key-value pairs ([YAML](https://yaml.org/)), at the top of any note, enclosed within `---` delimiters. We refer to this as your note's "frontmatter".
 
 ### Example
 
