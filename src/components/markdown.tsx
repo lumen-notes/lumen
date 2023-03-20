@@ -28,8 +28,14 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
     <div>
       {typeof frontmatter?.isbn === "string" ? (
         // If the note has an ISBN, show the book cover
-        <div className="mb-3">
+        <div className="mb-3 inline-flex">
           <BookCover isbn={frontmatter.isbn} />
+        </div>
+      ) : null}
+      {typeof frontmatter?.github === "string" ? (
+        // If the note has a GitHub username, show the GitHub avatar
+        <div className="mb-3 inline-flex">
+          <GitHubAvatar username={frontmatter.github} />
         </div>
       ) : null}
       <ReactMarkdown
@@ -82,7 +88,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="inline-block aspect-[4/6] h-14 rounded-xs bg-bg-secondary bg-cover bg-clip-border bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-all hover:scale-105 hover:shadow-md"
+      className="inline-block aspect-[4/6] h-14 rounded-xs bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-all hover:scale-105 hover:shadow-md"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -92,6 +98,18 @@ function BookCover({ isbn }: { isbn: string }) {
     >
       <span className="sr-only">Book cover</span>
     </a>
+  )
+}
+
+function GitHubAvatar({ username }: { username: string }) {
+  return (
+    <div
+      aria-hidden
+      className="inline-block h-8 w-8 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary"
+      style={{
+        backgroundImage: `url(https://github.com/${username}.png?size=64)`,
+      }}
+    />
   )
 }
 
