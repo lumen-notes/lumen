@@ -22,7 +22,7 @@ export const All = {
     <div className="flex flex-col gap-8 p-8">
       {Object.entries(iconsBySize).map(([size, icons]) => (
         <div key={size} className="flex flex-col gap-4">
-          <h3 className="text-base font-bold">
+          <h3 className="text-base font-semibold">
             {size}&times;{size}
           </h3>
           <div className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-4">

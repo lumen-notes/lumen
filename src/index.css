@@ -273,15 +273,18 @@ body:has([data-resizing="true"]) * {
   @apply my-4;
 }
 
+.markdown strong {
+  @apply font-bold;
+}
+
 .markdown h1,
 .markdown h2,
 .markdown h3,
 .markdown h4,
 .markdown h5,
 .markdown h6,
-.markdown strong,
 .markdown th {
-  @apply font-bold;
+  @apply font-semibold;
 }
 
 .markdown h1 {

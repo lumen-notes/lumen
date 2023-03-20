@@ -11,7 +11,8 @@ module.exports = {
         fine: { raw: "(pointer: fine)" },
       },
       fontWeight: {
-        bold: "550",
+        semibold: "550",
+        bold: "650",
       },
     },
     fontFamily: {

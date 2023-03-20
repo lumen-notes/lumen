@@ -72,7 +72,7 @@ function Calendar({
   return (
     <div className="flex flex-col gap-2 overflow-hidden py-2 px-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
       <div className="flex items-center justify-between">
-        <span className="px-2 text-lg font-bold">
+        <span className="px-2 text-lg font-semibold">
           {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
         </span>
 
@@ -155,7 +155,7 @@ function CalendarDate({
 
           // Underline the active day
           isActive &&
-            "font-bold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
+            "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
