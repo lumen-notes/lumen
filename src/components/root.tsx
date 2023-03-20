@@ -20,15 +20,16 @@ export function Root() {
     send("PUSH_NOTES")
   }, [send])
 
-  // const handleVisibilityChange = React.useCallback(() => {
-  //   if (document.visibilityState === "visible") {
-  //     send("PULL_NOTES")
-  //   }
-  // }, [send])
+  const handleVisibilityChange = React.useCallback(() => {
+    if (document.visibilityState === "visible") {
+      // TODO: Add timeout to avoid pulling too soon after pushing
+      send("PULL_NOTES")
+    }
+  }, [send])
 
   // Sync notes when the app comes online or becomes visible.
   useEvent("online", handleOnline)
-  // useEvent("visibilitychange", handleVisibilityChange)
+  useEvent("visibilitychange", handleVisibilityChange)
 
   const pendingChangeCount =
     state.context.pendingChanges.upsert.size + state.context.pendingChanges.delete.size
