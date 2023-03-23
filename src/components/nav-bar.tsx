@@ -83,9 +83,9 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
             </DropdownMenu.Trigger>
             <DropdownMenu.Content side={tooltipSide} align="end">
               <DropdownMenu.Item
-                onClick={() =>
-                  window.open("https://github.com/colebemis/lumen/issues/new", "_blank")
-                }
+                href="https://github.com/colebemis/lumen/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {/* TODO: Feedback icon */}
                 Send feedback
