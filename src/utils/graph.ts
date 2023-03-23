@@ -24,10 +24,10 @@ export function useGlobalGraph() {
     }
 
     // Add edges between notes
-    for (const [noteId, backlinks] of Object.entries(state.context.backlinks)) {
+    for (const [noteId, note] of Object.entries(state.context.notes)) {
       if (!globalGraph.hasNode(noteId)) continue
 
-      for (const backlink of backlinks) {
+      for (const backlink of note.backlinks) {
         if (!globalGraph.hasNode(backlink) || globalGraph.hasEdge(backlink, noteId)) continue
 
         globalGraph.addEdge(backlink, noteId)
@@ -57,7 +57,7 @@ export function useGlobalGraph() {
     }
 
     return globalGraph
-  }, [state.context.notes, state.context.tags, state.context.backlinks, state.context.dates])
+  }, [state.context.notes, state.context.tags, state.context.dates])
 }
 
 export function useLocalGraph(nodeId: string) {
