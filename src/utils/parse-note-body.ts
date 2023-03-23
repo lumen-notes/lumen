@@ -5,6 +5,7 @@ import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../types"
+import { parseFrontmatter } from "./parse-frontmatter"
 
 /** Extracts metadata from a note body */
 export function parseNoteBody(body: string) {
@@ -13,7 +14,9 @@ export function parseNoteBody(body: string) {
   const tagLinks: string[] = []
   const dateLinks: string[] = []
 
-  const mdast = fromMarkdown(body, {
+  const { frontmatter, content } = parseFrontmatter(body)
+
+  const mdast = fromMarkdown(content, {
     extensions: [noteLink(), tagLink(), dateLink()],
     mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
   })
@@ -41,5 +44,5 @@ export function parseNoteBody(body: string) {
     }
   })
 
-  return { title, noteLinks, tagLinks, dateLinks }
+  return { title, noteLinks, tagLinks, dateLinks, frontmatter }
 }

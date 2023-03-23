@@ -14,7 +14,6 @@ export type Context = {
   sha: string
   notes: Record<NoteId, Note>
   sortedNoteIds: NoteId[]
-  backlinks: Record<NoteId, NoteId[]>
   tags: Record<string, NoteId[]>
   dates: Record<string, NoteId[]>
   // TODO: Rename to unpushedChanges
@@ -40,7 +39,7 @@ const machine =
         sha: "",
         notes: {},
         sortedNoteIds: [],
-        backlinks: {},
+        // backlinks: {},
         tags: {},
         dates: {},
         pendingChanges: {
@@ -150,29 +149,32 @@ const machine =
           },
         }),
         upsertNote: assign((context, event) => {
-          const { title, noteLinks, tagLinks, dateLinks } = parseNoteBody(event.body)
+          const { title, noteLinks, tagLinks, dateLinks, frontmatter } = parseNoteBody(event.body)
 
           // Update backlinks
-          const backlinkEntries = Object.entries(context.backlinks).map(([noteId, backlinks]) => {
+          const noteEntries = Object.entries(context.notes).map(([noteId, note]) => {
             // If the note is listed as a backlink but shouldn't be, remove it
-            if (backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
-              return [noteId, backlinks.filter((backlink) => backlink !== event.id)]
+            if (note.backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
+              return [
+                noteId,
+                { ...note, backlinks: note.backlinks.filter((backlink) => backlink !== event.id) },
+              ]
             }
 
             // If the note is not listed as a backlink but should be, add it
-            if (!backlinks.includes(event.id) && noteLinks.includes(noteId)) {
-              return [noteId, [...backlinks, event.id]]
+            if (!note.backlinks.includes(event.id) && noteLinks.includes(noteId)) {
+              return [noteId, { ...note, backlinks: [...note.backlinks, event.id] }]
             }
 
-            return [noteId, backlinks]
+            return [noteId, note]
           })
 
-          noteLinks
-            .filter((noteId) => !Object.keys(context.backlinks).includes(noteId))
-            .forEach((noteId) => {
-              // If the note contains a link to a note that isn't already listed, add it
-              backlinkEntries.push([noteId, [event.id]])
-            })
+          // noteLinks
+          //   .filter((noteId) => !Object.keys(context.note).includes(noteId))
+          //   .forEach((noteId) => {
+          //     // If the note contains a link to a note that isn't already listed, add it
+          //     backlinkEntries.push([noteId, [event.id]])
+          //   })
 
           // Update tags
           const tagEntries = Object.entries(context.tags)
@@ -226,10 +228,17 @@ const machine =
 
           return {
             notes: {
-              ...context.notes,
-              [event.id]: { title, body: event.body },
+              ...Object.fromEntries(noteEntries),
+              [event.id]: {
+                title,
+                body: event.body,
+                tags: tagLinks,
+                dates: dateLinks,
+                backlinks: context.notes[event.id]?.backlinks || [],
+                frontmatter,
+              },
             },
-            backlinks: Object.fromEntries(backlinkEntries),
+            // backlinks: Object.fromEntries(backlinkEntries),
             tags: Object.fromEntries(tagEntries),
             dates: Object.fromEntries(dateEntries),
             pendingChanges: {
@@ -239,14 +248,21 @@ const machine =
           }
         }),
         deleteNote: assign((context, event) => {
-          const { [event.id]: _, ...rest } = context.notes
+          // const backlinkEntries = Object.entries(context.backlinks)
+          //   .map(([noteId, backlinks]) => {
+          //     return [noteId, backlinks.filter((noteId) => noteId !== event.id)]
+          //   })
+          //   // Remove backlinks that don't have any notes
+          //   .filter(([noteId, backlinks]) => backlinks.length > 0)
 
-          const backlinkEntries = Object.entries(context.backlinks)
-            .map(([noteId, backlinks]) => {
-              return [noteId, backlinks.filter((noteId) => noteId !== event.id)]
+          const noteEntries = Object.entries(context.notes)
+            .filter(([noteId]) => noteId !== event.id)
+            .map(([noteId, note]) => {
+              return [
+                noteId,
+                { ...note, backlinks: note.backlinks.filter((backlink) => backlink !== event.id) },
+              ]
             })
-            // Remove backlinks that don't have any notes
-            .filter(([noteId, backlinks]) => backlinks.length > 0)
 
           const tagEntries = Object.entries(context.tags)
             .map(([tagName, noteIds]) => {
@@ -263,8 +279,7 @@ const machine =
             .filter(([date, noteIds]) => noteIds.length > 0)
 
           return {
-            notes: rest,
-            backlinks: Object.fromEntries(backlinkEntries),
+            notes: Object.fromEntries(noteEntries),
             tags: Object.fromEntries(tagEntries),
             dates: Object.fromEntries(dateEntries),
             pendingChanges: {
@@ -278,7 +293,7 @@ const machine =
       },
       guards: {
         hasNoBacklinks: (context, event) => {
-          return !context.backlinks[event.id]?.length
+          return !context.notes[event.id].backlinks?.length
         },
       },
       services: {

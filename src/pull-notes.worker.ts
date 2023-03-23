@@ -34,16 +34,18 @@ self.onmessage = async (event: MessageEvent<Context>) => {
 
     // Create a map of notes, backlinks, tags, and dates
     const notes: Record<NoteId, Note> = {}
-    const backlinks: Record<NoteId, NoteId[]> = {}
     const tags: Record<string, NoteId[]> = {}
     const dates: Record<string, NoteId[]> = {}
 
     // Copy the parsed data into the maps
-    for (const { id, title, body, noteLinks, tagLinks, dateLinks } of parsedNoteData) {
-      notes[id] = { title, body }
-
-      for (const noteLink of noteLinks) {
-        push(backlinks, noteLink, id)
+    for (const { id, title, body, tagLinks, dateLinks, frontmatter } of parsedNoteData) {
+      notes[id] = {
+        title,
+        body,
+        tags: tagLinks,
+        dates: dateLinks,
+        backlinks: [],
+        frontmatter,
       }
 
       for (const tagLink of tagLinks) {
@@ -55,6 +57,13 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       }
     }
 
+    // Add backlinks to notes
+    for (const { id, noteLinks } of parsedNoteData) {
+      for (const noteLink of noteLinks) {
+        notes[noteLink]?.backlinks.push(id)
+      }
+    }
+
     // Log the time it took to pull and parse the notes
     console.timeEnd(timerLabel)
     console.log(`SHA: ${latestSha} (changed)`)
@@ -63,7 +72,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     self.postMessage({
       sha: latestSha,
       notes,
-      backlinks,
       tags,
       dates,
       // Clear error
@@ -75,7 +83,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       error: (error as Error).message,
       sha: "",
       notes: {},
-      backlinks: {},
       tags: {},
       dates: {},
     })

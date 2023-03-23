@@ -9,7 +9,7 @@ import { GlobalStateContext } from "../global-state.machine"
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const [state] = GlobalStateContext.useActor()
-  const backlinks = state.context.backlinks[noteId]
+  const note = state.context.notes[noteId]
 
   return (
     <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
@@ -19,7 +19,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <h3 className="leading-none">Backlinks</h3>
 
         <LinkHighlightProvider href={`/${noteId}`}>
-          <NoteList key={noteId} ids={backlinks || []} />
+          <NoteList key={noteId} ids={note?.backlinks || []} />
         </LinkHighlightProvider>
       </div>
     </Panel>

@@ -4,7 +4,6 @@ import copy from "copy-to-clipboard"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -136,16 +135,14 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const [state, send] = GlobalStateContext.useActor()
-  const { body } = state.context.notes[id] ?? {}
-  const backlinks = state.context.backlinks[id] ?? []
+  const note = state.context.notes[id]
   const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
-  const { frontmatter = {} } = parseFrontmatter(body ?? "")
 
   const frontmatterItems = React.useMemo(() => {
     return Object.entries(frontmatterMap)
-      .map(([key, value]) => value(frontmatter[key]))
+      .map(([key, value]) => value(note?.frontmatter[key]))
       .filter(Boolean)
-  }, [frontmatter])
+  }, [note?.frontmatter])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -203,7 +200,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     [focusNextCard, panel, closePanel, send],
   )
 
-  if (body === undefined) {
+  if (!note) {
     return <Card className="p-4">Not found</Card>
   }
 
@@ -225,7 +222,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Copy markdown with `command + c` if no text is selected
         if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-          copy(body)
+          copy(note.body)
           event.preventDefault()
         }
 
@@ -249,17 +246,17 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       }}
     >
       <div className="p-4 pb-1">
-        <Markdown>{body}</Markdown>
+        <Markdown>{note.body}</Markdown>
       </div>
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">
           <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
           </Panels.Link>
-          {backlinks.length ? (
+          {note.backlinks.length ? (
             <span>
               {" · "}
-              {pluralize(backlinks.length, "backlink")}
+              {pluralize(note.backlinks.length, "backlink")}
             </span>
           ) : null}
           {isPending ? (
@@ -289,7 +286,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<CopyIcon16 />}
-              onSelect={() => copy(body)}
+              onSelect={() => copy(note.body)}
               shortcut={["⌘", "C"]}
             >
               Copy markdown
@@ -319,7 +316,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               icon={<TrashIcon16 />}
               onSelect={() => deleteNote(id)}
               shortcut={["⌘", "⌫"]}
-              disabled={backlinks.length > 0}
+              disabled={note.backlinks.length > 0}
             >
               Delete
             </DropdownMenu.Item>
@@ -330,9 +327,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   ) : (
     // Edit mode
     <NoteForm
-      key={body}
+      key={note.body}
       id={id}
-      defaultBody={body}
+      defaultBody={note.body}
       codeMirrorViewRef={codeMirrorViewRef}
       elevation={elevation}
       onSubmit={switchToViewing}
