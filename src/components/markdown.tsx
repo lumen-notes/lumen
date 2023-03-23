@@ -76,7 +76,8 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
       >
         {content}
       </ReactMarkdown>
-      {frontmatter ? (
+
+      {Object.keys(frontmatter).length > 0 ? (
         <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
           <Code className="language-yaml">{stringify(frontmatter)}</Code>
         </pre>
