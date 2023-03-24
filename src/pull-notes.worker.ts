@@ -32,35 +32,36 @@ self.onmessage = async (event: MessageEvent<Context>) => {
       return { id, body, ...parseNoteBody(body) }
     })
 
-    // Create a map of notes, backlinks, tags, and dates
-    const notes: Record<NoteId, Note> = {}
-    const tags: Record<string, NoteId[]> = {}
-    const dates: Record<string, NoteId[]> = {}
+    // Create a map of notes, tags, and dates
+    const notesMap: Record<NoteId, Note> = {}
+    const tagsMap: Record<string, NoteId[]> = {}
+    const datesMap: Record<string, NoteId[]> = {}
 
     // Copy the parsed data into the maps
-    for (const { id, title, body, tagLinks, dateLinks, frontmatter } of parsedNoteData) {
-      notes[id] = {
+    for (const { id, title, body, tags, dates, links, frontmatter } of parsedNoteData) {
+      notesMap[id] = {
         title,
         body,
-        tags: tagLinks,
-        dates: dateLinks,
+        tags,
+        dates,
+        links,
         backlinks: [],
         frontmatter,
       }
 
-      for (const tagLink of tagLinks) {
-        push(tags, tagLink, id)
+      for (const tag of tags) {
+        push(tagsMap, tag, id)
       }
 
-      for (const dateLink of dateLinks) {
-        push(dates, dateLink, id)
+      for (const date of dates) {
+        push(datesMap, date, id)
       }
     }
 
     // Add backlinks to notes
-    for (const { id, noteLinks } of parsedNoteData) {
-      for (const noteLink of noteLinks) {
-        notes[noteLink]?.backlinks.push(id)
+    for (const { id, links } of parsedNoteData) {
+      for (const link of links) {
+        notesMap[link]?.backlinks.push(id)
       }
     }
 
@@ -71,9 +72,9 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     // Send the notes, backlinks, tags, and dates to the main thread
     self.postMessage({
       sha: latestSha,
-      notes,
-      tags,
-      dates,
+      notes: notesMap,
+      tags: tagsMap,
+      dates: datesMap,
       // Clear error
       error: "",
     })

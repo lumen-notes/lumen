@@ -39,7 +39,6 @@ const machine =
         sha: "",
         notes: {},
         sortedNoteIds: [],
-        // backlinks: {},
         tags: {},
         dates: {},
         pendingChanges: {
@@ -149,52 +148,45 @@ const machine =
           },
         }),
         upsertNote: assign((context, event) => {
-          const { title, noteLinks, tagLinks, dateLinks, frontmatter } = parseNoteBody(event.body)
+          const { title, links, tags, dates, frontmatter } = parseNoteBody(event.body)
 
           // Update backlinks
           const noteEntries = Object.entries(context.notes).map(([noteId, note]) => {
             // If the note is listed as a backlink but shouldn't be, remove it
-            if (note.backlinks.includes(event.id) && !noteLinks.includes(noteId)) {
+            if (note.backlinks.includes(event.id) && !links.includes(noteId)) {
               return [
                 noteId,
-                { ...note, backlinks: note.backlinks.filter((backlink) => backlink !== event.id) },
+                { ...note, backlinks: note.backlinks.filter((link) => link !== event.id) },
               ]
             }
 
             // If the note is not listed as a backlink but should be, add it
-            if (!note.backlinks.includes(event.id) && noteLinks.includes(noteId)) {
+            if (!note.backlinks.includes(event.id) && links.includes(noteId)) {
               return [noteId, { ...note, backlinks: [...note.backlinks, event.id] }]
             }
 
             return [noteId, note]
           })
 
-          // noteLinks
-          //   .filter((noteId) => !Object.keys(context.note).includes(noteId))
-          //   .forEach((noteId) => {
-          //     // If the note contains a link to a note that isn't already listed, add it
-          //     backlinkEntries.push([noteId, [event.id]])
-          //   })
-
           // Update tags
           const tagEntries = Object.entries(context.tags)
-            .map(([tagName, noteIds]) => {
+            .map(([tag, noteIds]) => {
               // If the note is listed with a tag but shouldn't be, remove it
-              if (noteIds.includes(event.id) && !tagLinks.includes(tagName)) {
-                return [tagName, noteIds.filter((noteId) => noteId !== event.id)]
+              if (noteIds.includes(event.id) && !tags.includes(tag)) {
+                return [tag, noteIds.filter((noteId) => noteId !== event.id)]
               }
 
               // If the note is not listed with a tag but should be, add it
-              if (!noteIds.includes(event.id) && tagLinks.includes(tagName)) {
-                return [tagName, [...noteIds, event.id]]
+              if (!noteIds.includes(event.id) && tags.includes(tag)) {
+                return [tag, [...noteIds, event.id]]
               }
 
-              return [tagName, noteIds]
+              return [tag, noteIds]
             })
             // Remove tags that don't have any notes
-            .filter(([tagName, noteIds]) => noteIds.length > 0)
+            .filter(([tag, noteIds]) => noteIds.length > 0)
 
-          tagLinks
+          tags
             .filter((tag) => !Object.keys(context.tags).includes(tag))
             .forEach((tag) => {
               // If the note contains a tag that isn't already listed, add it
@@ -205,12 +197,12 @@ const machine =
           const dateEntries = Object.entries(context.dates)
             .map(([date, noteIds]) => {
               // If the note is listed with a date but shouldn't be, remove it
-              if (noteIds.includes(event.id) && !dateLinks.includes(date)) {
+              if (noteIds.includes(event.id) && !dates.includes(date)) {
                 return [date, noteIds.filter((noteId) => noteId !== event.id)]
               }
 
               // If the note is not listed with a date but should be, add it
-              if (!noteIds.includes(event.id) && dateLinks.includes(date)) {
+              if (!noteIds.includes(event.id) && dates.includes(date)) {
                 return [date, [...noteIds, event.id]]
               }
 
@@ -219,7 +211,7 @@ const machine =
             // Remove dates that don't have any notes
             .filter(([date, noteIds]) => noteIds.length > 0)
 
-          dateLinks
+          dates
             .filter((date) => !Object.keys(context.dates).includes(date))
             .forEach((date) => {
               // If the note contains a date that isn't already listed, add it
@@ -232,13 +224,13 @@ const machine =
               [event.id]: {
                 title,
                 body: event.body,
-                tags: tagLinks,
-                dates: dateLinks,
+                tags,
+                dates,
+                links,
                 backlinks: context.notes[event.id]?.backlinks || [],
                 frontmatter,
               },
             },
-            // backlinks: Object.fromEntries(backlinkEntries),
             tags: Object.fromEntries(tagEntries),
             dates: Object.fromEntries(dateEntries),
             pendingChanges: {
@@ -248,28 +240,24 @@ const machine =
           }
         }),
         deleteNote: assign((context, event) => {
-          // const backlinkEntries = Object.entries(context.backlinks)
-          //   .map(([noteId, backlinks]) => {
-          //     return [noteId, backlinks.filter((noteId) => noteId !== event.id)]
-          //   })
-          //   // Remove backlinks that don't have any notes
-          //   .filter(([noteId, backlinks]) => backlinks.length > 0)
-
           const noteEntries = Object.entries(context.notes)
             .filter(([noteId]) => noteId !== event.id)
             .map(([noteId, note]) => {
               return [
                 noteId,
-                { ...note, backlinks: note.backlinks.filter((backlink) => backlink !== event.id) },
+                {
+                  ...note,
+                  backlinks: note.backlinks.filter((link) => link !== event.id),
+                },
               ]
             })
 
           const tagEntries = Object.entries(context.tags)
-            .map(([tagName, noteIds]) => {
-              return [tagName, noteIds.filter((noteId) => noteId !== event.id)]
+            .map(([tag, noteIds]) => {
+              return [tag, noteIds.filter((noteId) => noteId !== event.id)]
             })
             // Remove tags that don't have any notes
-            .filter(([tagName, noteIds]) => noteIds.length > 0)
+            .filter(([tag, noteIds]) => noteIds.length > 0)
 
           const dateEntries = Object.entries(context.dates)
             .map(([date, noteIds]) => {

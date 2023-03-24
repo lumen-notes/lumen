@@ -10,15 +10,15 @@ import { parseFrontmatter } from "./parse-frontmatter"
 /** Extracts metadata from a note body */
 export function parseNoteBody(body: string) {
   let title = ""
-  const noteLinks: NoteId[] = []
-  const tagLinks: string[] = []
-  const dateLinks: string[] = []
+  const tags: string[] = []
+  const dates: string[] = []
+  const links: NoteId[] = []
 
   const { frontmatter, content } = parseFrontmatter(body)
 
   const mdast = fromMarkdown(content, {
-    extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
+    extensions: [tagLink(), dateLink(), noteLink()],
+    mdastExtensions: [tagLinkFromMarkdown(), dateLinkFromMarkdown(), noteLinkFromMarkdown()],
   })
 
   visit(mdast, (node) => {
@@ -29,20 +29,20 @@ export function parseNoteBody(body: string) {
         }
         break
       }
-      case "noteLink": {
-        noteLinks.push(node.data.id.toString())
-        break
-      }
       case "tagLink": {
-        tagLinks.push(node.data.name)
+        tags.push(node.data.name)
         break
       }
       case "dateLink": {
-        dateLinks.push(node.data.date)
+        dates.push(node.data.date)
+        break
+      }
+      case "noteLink": {
+        links.push(node.data.id.toString())
         break
       }
     }
   })
 
-  return { title, noteLinks, tagLinks, dateLinks, frontmatter }
+  return { title, tags, dates, links, frontmatter }
 }

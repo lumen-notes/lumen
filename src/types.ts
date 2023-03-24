@@ -5,6 +5,7 @@ export type Note = {
   body: string
   tags: string[]
   dates: string[]
+  links: NoteId[]
   backlinks: NoteId[]
   frontmatter: Record<string, unknown>
 }
