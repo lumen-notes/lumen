@@ -67,8 +67,9 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         components={{
           a: Link,
           img: Image,
+          // Delegate rendering of the <pre> element to the Code component
+          pre: ({ children }) => <>{children}</>,
           code: Code,
-          pre: (props) => <React.Fragment {...props} />,
           // @ts-ignore I don't know how to extend the list of accepted component keys
           noteLink: NoteLink,
           // @ts-ignore
