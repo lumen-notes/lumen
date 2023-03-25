@@ -1,7 +1,6 @@
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
-import { NoteId } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 import { NoteCard } from "./note-card"
@@ -9,11 +8,10 @@ import { SearchInput } from "./search-input"
 import { useSearchNotes } from "./search-notes"
 
 type NoteListProps = {
-  ids: NoteId[]
-  disableSort?: boolean
+  baseQuery?: string
 }
 
-export function NoteList({ ids, disableSort }: NoteListProps) {
+export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
   const [query, setQuery] = useSearchParam("q", {
@@ -25,8 +23,8 @@ export function NoteList({ ids, disableSort }: NoteListProps) {
   const deferredQuery = React.useDeferredValue(query)
 
   const searchResults = React.useMemo(() => {
-    return searchNotes(deferredQuery)
-  }, [searchNotes, deferredQuery])
+    return searchNotes(`${baseQuery} ${deferredQuery}`)
+  }, [searchNotes, baseQuery, deferredQuery])
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)

@@ -28,8 +28,6 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
     return <div>Invalid date</div>
   }
 
-  const noteIds = state.context.dates[date] || []
-
   return (
     <Panel
       id={id}
@@ -42,7 +40,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
         <Calendar activeDate={date} dates={state.context.dates} />
         <div className="p-4">
           <LinkHighlightProvider href={`/dates/${date}`}>
-            <NoteList key={date} ids={noteIds} />
+            <NoteList key={date} baseQuery={`date:${date}`} />
           </LinkHighlightProvider>
         </div>
       </div>

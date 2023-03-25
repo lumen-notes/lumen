@@ -29,14 +29,17 @@ export function parseNoteBody(body: string) {
         }
         break
       }
+
       case "tagLink": {
         tags.push(node.data.name)
         break
       }
+
       case "dateLink": {
         dates.push(node.data.date)
         break
       }
+
       case "noteLink": {
         links.push(node.data.id.toString())
         break
