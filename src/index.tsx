@@ -1,5 +1,5 @@
 import * as Tooltip from "@radix-ui/react-tooltip"
-import "@total-typescript/ts-reset/filter-boolean"
+import "@total-typescript/ts-reset"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
