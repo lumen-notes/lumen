@@ -9,9 +9,10 @@ import { useSearchNotes } from "./search-notes"
 
 type NoteListProps = {
   baseQuery?: string
+  noteCount?: number
 }
 
-export function NoteList({ baseQuery = "" }: NoteListProps) {
+export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
   const [query, setQuery] = useSearchParam("q", {
@@ -43,7 +44,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <SearchInput
-            placeholder="Search notes"
+            placeholder={
+              typeof noteCount !== "undefined"
+                ? `Search ${pluralize(noteCount, "note")}…`
+                : `Search notes…`
+            }
             value={query}
             onChange={(value) => {
               setQuery(value)
