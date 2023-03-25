@@ -20,6 +20,7 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
   const [state] = GlobalStateContext.useActor()
+  const noteIds = state.context.dates[date] || []
 
   // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
@@ -27,8 +28,6 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   if (!isValidDate) {
     return <div>Invalid date</div>
   }
-
-  const noteIds = state.context.dates[date] || []
 
   return (
     <Panel
@@ -42,7 +41,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
         <Calendar activeDate={date} dates={state.context.dates} />
         <div className="p-4">
           <LinkHighlightProvider href={`/dates/${date}`}>
-            <NoteList key={date} ids={noteIds} />
+            <NoteList key={date} baseQuery={`date:${date}`} noteCount={noteIds.length} />
           </LinkHighlightProvider>
         </div>
       </div>

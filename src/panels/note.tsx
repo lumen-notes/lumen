@@ -19,7 +19,11 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <h3 className="leading-none">Backlinks</h3>
 
         <LinkHighlightProvider href={`/${noteId}`}>
-          <NoteList key={noteId} ids={note?.backlinks || []} />
+          <NoteList
+            key={noteId}
+            baseQuery={`link:${noteId}`}
+            noteCount={note?.backlinks.length || 0}
+          />
         </LinkHighlightProvider>
       </div>
     </Panel>

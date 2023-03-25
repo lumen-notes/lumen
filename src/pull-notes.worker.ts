@@ -121,7 +121,8 @@ async function fetchLatestSha(context: Context) {
     }
   }
 
-  const ref = await response.json()
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ref = (await response.json()) as any
 
   return ref.object.sha
 }

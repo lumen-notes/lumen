@@ -6,11 +6,10 @@ import { GlobalStateContext } from "../global-state.machine"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
   const [state] = GlobalStateContext.useActor()
-
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="p-4">
-        <NoteList ids={state.context.sortedNoteIds} disableSort={true} />
+        <NoteList noteCount={Object.keys(state.context.notes).length} />
       </div>
     </Panel>
   )

@@ -87,7 +87,8 @@ export async function writeFile({ context, path, content }: WriteFileOptions) {
       Accept: "application/vnd.github.v3+json",
       Authorization: `Bearer ${context.authToken}`,
     },
-  }).then((response) => response.json())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }).then((response) => response.json() as any)
 
   const fileExists = Boolean(sha)
 
@@ -130,7 +131,8 @@ export async function deleteFile({ context, path }: DeleteFileOptions) {
       Accept: "application/vnd.github.v3+json",
       Authorization: `Bearer ${context.authToken}`,
     },
-  }).then((response) => response.json())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }).then((response) => response.json() as any)
 
   // Delete the file
   const response = await fetch(endpoint, {

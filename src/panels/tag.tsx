@@ -14,7 +14,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
     <Panel id={id} title={`#${name}`} icon={<TagIcon24 />} onClose={onClose}>
       <LinkHighlightProvider href={`/tags/${name}`}>
         <div className="p-4">
-          <NoteList key={name} ids={noteIds} />
+          <NoteList key={name} baseQuery={`tag:${name}`} noteCount={noteIds.length} />
         </div>
       </LinkHighlightProvider>
     </Panel>

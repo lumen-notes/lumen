@@ -53,7 +53,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
       <div className="flex flex-col gap-2 p-4">
         <div className="flex flex-col gap-2">
           <SearchInput
-            placeholder={`Search ${pluralize(sortedTags.length, "tag")}`}
+            placeholder={`Search ${pluralize(sortedTags.length, "tag")}…`}
             value={query}
             onChange={setQuery}
           />
