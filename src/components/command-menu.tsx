@@ -8,11 +8,11 @@ import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state.machine"
 import { GraphContext, pathToNodeId } from "../pages/graph"
-import { Note } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
+import { useSearchNotes } from "./search-notes"
 
 export function CommandMenu() {
   const [state, send] = GlobalStateContext.useActor()
@@ -23,10 +23,7 @@ export function CommandMenu() {
   const { panels, openPanel } = React.useContext(PanelsContext)
   const { selectNode } = React.useContext(GraphContext)
   const routerNavigate = useNavigate()
-  const [noteSearcher, setNoteSearcher] = React.useState<Searcher<
-    [string, Note],
-    Record<string, unknown>
-  > | null>(null)
+  const searchNotes = useSearchNotes()
 
   const openMenu = React.useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement
@@ -107,24 +104,6 @@ export function CommandMenu() {
     })
   }, [state.context.tags])
 
-  // Create note search index
-  // We use useEffect here to avoid blocking the first render while sorting the notes
-  React.useEffect(() => {
-    // Sort notes by when they were created in descending order
-    const entries = Object.entries(state.context.notes).sort(
-      (a, b) => parseInt(b[0]) - parseInt(a[0]),
-    )
-
-    const noteSearcher = new Searcher(entries, {
-      keySelector: ([id, { body }]) => body,
-      threshold: 0.8,
-    })
-
-    React.startTransition(() => {
-      setNoteSearcher(noteSearcher)
-    })
-  }, [state.context.notes])
-
   // Search tags
   const tagResults = React.useMemo(() => {
     return tagSearcher.search(deferredQuery)
@@ -132,8 +111,8 @@ export function CommandMenu() {
 
   // Search notes
   const noteResults = React.useMemo(() => {
-    return noteSearcher?.search(deferredQuery) ?? []
-  }, [noteSearcher, deferredQuery])
+    return searchNotes(deferredQuery)
+  }, [searchNotes, deferredQuery])
 
   // Only show the first 2 tags
   const numVisibleTags = 2
@@ -156,7 +135,7 @@ export function CommandMenu() {
       }}
     >
       <Card elevation={2}>
-        <Command.Input placeholder="Search or jump to..." value={query} onValueChange={setQuery} />
+        <Command.Input placeholder="Search or jump to…" value={query} onValueChange={setQuery} />
         <Command.List>
           {dateString ? (
             <Command.Group heading="Date">
