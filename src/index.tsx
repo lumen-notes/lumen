@@ -11,7 +11,6 @@ import { GlobalStateContext } from "./global-state.machine"
 import "./index.css"
 import { DatePage } from "./pages/date"
 import { FilePage } from "./pages/file"
-import { GraphPage } from "./pages/graph"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
@@ -35,7 +34,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                   <Route path="tags" element={<TagsPage />} />
                   <Route path="tags/:name" element={<TagPage />} />
                   <Route path="dates/:date" element={<DatePage />} />
-                  <Route path="graph" element={<GraphPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
               </Routes>

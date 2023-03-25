@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { GlobalStateContext } from "../global-state.machine"
-import { GraphContext, pathToNodeId } from "../pages/graph"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
@@ -21,7 +20,6 @@ export function CommandMenu() {
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query)
   const { panels, openPanel } = React.useContext(PanelsContext)
-  const { selectNode } = React.useContext(GraphContext)
   const routerNavigate = useNavigate()
   const searchNotes = useSearchNotes()
 
@@ -39,10 +37,7 @@ export function CommandMenu() {
 
   const navigate = React.useCallback(
     (url: string) => {
-      if (selectNode && pathToNodeId(url)) {
-        // If we're in a graph context, navigate by selecting the node in the graph
-        selectNode(pathToNodeId(url), { centerInView: true })
-      } else if (openPanel) {
+      if (openPanel) {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
       } else {
@@ -53,7 +48,7 @@ export function CommandMenu() {
       setIsOpen(false)
       setQuery("")
     },
-    [selectNode, openPanel, panels, routerNavigate],
+    [openPanel, panels, routerNavigate],
   )
 
   // Toggle the menu with `command + k`
