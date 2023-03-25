@@ -2,7 +2,9 @@ import * as HoverCard from "@radix-ui/react-hover-card"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
+import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
+import { stringify } from "yaml"
 import { GlobalStateContext } from "../global-state.machine"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
@@ -11,11 +13,11 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { Card } from "./card"
-import { Code } from "./code"
 import { FilePreview } from "./file-preview"
 import { useLink } from "./link-context"
+import { useSearchNotes } from "./search-notes"
+import { SyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
-import { stringify } from "yaml"
 
 export type MarkdownProps = {
   children: string
@@ -66,6 +68,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
           a: Link,
           img: Image,
           code: Code,
+          pre: (props) => <React.Fragment {...props} />,
           // @ts-ignore I don't know how to extend the list of accepted component keys
           noteLink: NoteLink,
           // @ts-ignore
@@ -79,7 +82,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 
       {Object.keys(frontmatter).length > 0 ? (
         <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
-          <Code className="language-yaml">{stringify(frontmatter)}</Code>
+          <SyntaxHighlighter language="yaml">{stringify(frontmatter)}</SyntaxHighlighter>
         </pre>
       ) : null}
     </div>
@@ -148,6 +151,46 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 
   // eslint-disable-next-line jsx-a11y/alt-text
   return <img {...props} />
+}
+
+function Code({ className, inline, children }: CodeProps) {
+  if (inline) {
+    return <code className={className}>{children}</code>
+  }
+
+  const language = className?.replace("language-", "")
+
+  if (language === "query") {
+    // Display the results of a query instead of the query itself
+    return <QueryResults query={String(children)} />
+  }
+
+  return (
+    <pre>
+      <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
+    </pre>
+  )
+}
+
+type QueryResultsProps = {
+  query: string
+}
+
+// TODO: Results should be considered links in the global notes object
+function QueryResults({ query }: QueryResultsProps) {
+  const searchNote = useSearchNotes()
+
+  const results = React.useMemo(() => searchNote(query), [searchNote, query])
+
+  return (
+    <ul>
+      {results.map(([id, note]) => (
+        <li key={id}>
+          <NoteLink id={id} text={note.title || id} />
+        </li>
+      ))}
+    </ul>
+  )
 }
 
 type NoteLinkProps = {
