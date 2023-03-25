@@ -10,19 +10,19 @@ import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
-import { Searcher } from "fast-fuzzy"
 import React from "react"
 import { GlobalStateContext } from "../global-state.machine"
-import { Note, NoteId } from "../types"
+import { NoteId } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { writeFile } from "../utils/file-system"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { Button } from "./button"
-import { IconButton } from "./icon-button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { fileCache } from "./file-preview"
+import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { useSearchNotes } from "./search-notes"
 
 const UPLOADS_DIRECTORY = "uploads"
 
@@ -386,11 +386,7 @@ function useTagCompletion() {
 
 function useNoteCompletion() {
   const actorRef = GlobalStateContext.useActorRef()
-  const timerRef = React.useRef<number>()
-  const searcherRef = React.useRef<Searcher<
-    [string, Note],
-    { keySelector: (entry: [string, Note]) => string; threshold: number }
-  > | null>(null)
+  const searchNotes = useSearchNotes()
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -403,28 +399,7 @@ function useNoteCompletion() {
       // "[[<query>" -> "<query>"
       const query = word.text.slice(2)
 
-      // Reset timer
-      window.clearTimeout(timerRef.current)
-      timerRef.current = window.setTimeout(() => {
-        // Clear search index after 1 second to avoid stale results
-        searcherRef.current = null
-      }, 1000)
-
-      const stateSnapshot = actorRef.getSnapshot()
-      const entries = Object.entries(stateSnapshot?.context.notes ?? {})
-      const recentEntries = (stateSnapshot?.context.sortedNoteIds || [])
-        .slice(0, 5)
-        .map((id): [string, Note | undefined] => [id, stateSnapshot?.context.notes[id]])
-
-      // Create search index if it doesn't exist
-      if (!searcherRef.current) {
-        searcherRef.current = new Searcher(entries, {
-          keySelector: ([id, { body }]) => body,
-          threshold: 0.8,
-        })
-      }
-
-      const results = query ? searcherRef.current.search(query) : recentEntries
+      const searchResults = searchNotes(query)
 
       const createNewNoteOption: Completion = {
         label: `Create new note "${query}"`,
@@ -452,7 +427,7 @@ function useNoteCompletion() {
         },
       }
 
-      const options = results.slice(0, 5).map(([id, note]): Completion => {
+      const options = searchResults.slice(0, 5).map(([id, note]): Completion => {
         const { content } = parseFrontmatter(note?.body || "")
         return {
           label: content || "",
@@ -481,7 +456,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [actorRef],
+    [searchNotes, actorRef],
   )
 
   return noteCompletion
