@@ -28,9 +28,6 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     const file = await readFile({ context: event.data, path: ".lumen/notes.json" })
     const schema = z.record(z.string())
     const noteData = schema.parse(JSON.parse(await file.text()))
-    const parsedNoteData = Object.entries(noteData).map(([id, body]) => {
-      return { id, body, ...parseNoteBody(body) }
-    })
 
     // Create a map of notes, tags, and dates
     const notesMap: Record<NoteId, Note> = {}
@@ -38,7 +35,9 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     const datesMap: Record<string, NoteId[]> = {}
 
     // Copy the parsed data into the maps
-    for (const { id, title, body, tags, dates, links, frontmatter } of parsedNoteData) {
+    for (const [id, body] of Object.entries(noteData)) {
+      const { title, tags, dates, links, frontmatter } = parseNoteBody(body)
+
       notesMap[id] = {
         title,
         body,
@@ -59,7 +58,7 @@ self.onmessage = async (event: MessageEvent<Context>) => {
     }
 
     // Add backlinks to notes
-    for (const { id, links } of parsedNoteData) {
+    for (const [id, { links }] of Object.entries(notesMap)) {
       for (const link of links) {
         notesMap[link]?.backlinks.push(id)
       }
