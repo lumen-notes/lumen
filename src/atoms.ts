@@ -1,21 +1,38 @@
 import { atomWithStorage } from "jotai/utils"
-import { NoteId, Note } from "./types"
+import { NoteId, Note, GitHubRepository } from "./types"
 import { parseNote } from "./utils/parse-note"
 import { atom } from "jotai"
 import { Searcher } from "fast-fuzzy"
+import { readFile } from "./utils/file-system"
+import { z } from "zod"
+
+// -----------------------------------------------------------------------------
+// GitHub
+// -----------------------------------------------------------------------------
+
+export const githubTokenAtom = atomWithStorage<string>(
+  "github_token",
+  import.meta.env.VITE_GITHUB_TOKEN,
+)
+
+export const githubRepoAtom = atomWithStorage<GitHubRepository>("github_repo", {
+  owner: "colebemis",
+  name: "notes",
+})
 
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------
 
-export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {
-  "1": "---\nhello: world\n---\n\n Note 1",
-  "2": "# Note 2",
-})
+export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
 
-export const noteCountAtom = atom((get) => {
-  const rawNotes = get(rawNotesAtom)
-  return Object.keys(rawNotes).length
+export const fetchNotesAtom = atom(null, async (get, set) => {
+  const githubToken = get(githubTokenAtom)
+  const githubRepo = get(githubRepoAtom)
+  // TODO: Check SHA
+  const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
+  const schema = z.record(z.string())
+  set(rawNotesAtom, schema.parse(JSON.parse(await file.text())))
 })
 
 export const upsertNoteAtom = atom(
@@ -32,7 +49,12 @@ export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
   set(rawNotesAtom, newRawNotes)
 })
 
-export const notesAtom = atom<Record<NoteId, Note>>((get) => {
+export const noteCountAtom = atom((get) => {
+  const rawNotes = get(rawNotesAtom)
+  return Object.keys(rawNotes).length
+})
+
+export const notesAtom = atom((get) => {
   const rawNotes = get(rawNotesAtom)
   const notes: Record<NoteId, Note> = {}
 
@@ -81,7 +103,7 @@ export const noteSearcherAtom = atom((get) => {
 // Tags
 // -----------------------------------------------------------------------------
 
-export const tagsAtom = atom<Record<string, NoteId[]>>((get) => {
+export const tagsAtom = atom((get) => {
   const notes = get(notesAtom)
   const tags: Record<string, NoteId[]> = {}
 
@@ -117,7 +139,7 @@ export const tagSearcherAtom = atom((get) => {
 // Dates
 // -----------------------------------------------------------------------------
 
-export const datesAtom = atom<Record<string, NoteId[]>>((get) => {
+export const datesAtom = atom((get) => {
   const notes = get(notesAtom)
   const dates: Record<string, NoteId[]> = {}
 

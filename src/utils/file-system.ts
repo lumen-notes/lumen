@@ -1,24 +1,25 @@
-import mime from "mime"
-import { Context } from "../global-state.machine"
 import { Buffer } from "buffer"
+import mime from "mime"
+import { GitHubRepository } from "../types"
 
 const GITHUB_ENDPOINT = "https://api.github.com"
 
 type ReadFileOptions = {
-  context: Context
+  githubToken: string
+  githubRepo: GitHubRepository
   path: string
 }
 
-export async function readFile({ context, path }: ReadFileOptions) {
+export async function readFile({ githubToken, githubRepo, path }: ReadFileOptions) {
   const response = await fetch(
-    `https://api.github.com/repos/${context.repoOwner}/${context.repoName}/contents/${
+    `https://api.github.com/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
       // Remove leading slash if present
       path.replace(/^\//, "")
     }`,
     {
       headers: {
         Accept: "application/vnd.github.raw",
-        Authorization: `Bearer ${context.authToken}`,
+        Authorization: `Bearer ${githubToken}`,
       },
     },
   )
@@ -70,13 +71,14 @@ export async function readFile({ context, path }: ReadFileOptions) {
 }
 
 type WriteFileOptions = {
-  context: Context
+  githubToken: string
+  githubRepo: GitHubRepository
   path: string
   content: string | ArrayBuffer
 }
 
-export async function writeFile({ context, path, content }: WriteFileOptions) {
-  const endpoint = `${GITHUB_ENDPOINT}/repos/${context.repoOwner}/${context.repoName}/contents/${
+export async function writeFile({ githubToken, githubRepo, path, content }: WriteFileOptions) {
+  const endpoint = `${GITHUB_ENDPOINT}/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
     // Remove leading slash if present
     path.replace(/^\//, "")
   }`
@@ -85,7 +87,7 @@ export async function writeFile({ context, path, content }: WriteFileOptions) {
   const { sha } = await fetch(endpoint, {
     headers: {
       Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${context.authToken}`,
+      Authorization: `Bearer ${githubToken}`,
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }).then((response) => response.json() as any)
@@ -96,7 +98,7 @@ export async function writeFile({ context, path, content }: WriteFileOptions) {
   const response = await fetch(endpoint, {
     method: "PUT",
     headers: {
-      Authorization: `Bearer ${context.authToken}`,
+      Authorization: `Bearer ${githubToken}`,
     },
     body: JSON.stringify({
       message: `${fileExists ? "Update" : "Create"} ${path}`,
@@ -115,12 +117,13 @@ export async function writeFile({ context, path, content }: WriteFileOptions) {
 }
 
 type DeleteFileOptions = {
-  context: Context
+  githubToken: string
+  githubRepo: GitHubRepository
   path: string
 }
 
-export async function deleteFile({ context, path }: DeleteFileOptions) {
-  const endpoint = `${GITHUB_ENDPOINT}/repos/${context.repoOwner}/${context.repoName}/contents/${
+export async function deleteFile({ githubToken, githubRepo, path }: DeleteFileOptions) {
+  const endpoint = `${GITHUB_ENDPOINT}/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
     // Remove leading slash if present
     path.replace(/^\//, "")
   }`
@@ -129,7 +132,7 @@ export async function deleteFile({ context, path }: DeleteFileOptions) {
   const { sha } = await fetch(endpoint, {
     headers: {
       Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${context.authToken}`,
+      Authorization: `Bearer ${githubToken}`,
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }).then((response) => response.json() as any)
@@ -138,7 +141,7 @@ export async function deleteFile({ context, path }: DeleteFileOptions) {
   const response = await fetch(endpoint, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${context.authToken}`,
+      Authorization: `Bearer ${githubToken}`,
     },
     body: JSON.stringify({
       message: `Delete ${path}`,

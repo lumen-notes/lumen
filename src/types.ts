@@ -14,3 +14,8 @@ export type Note = {
   // Derived from links
   backlinks: NoteId[]
 }
+
+export type GitHubRepository = {
+  owner: string
+  name: string
+}
