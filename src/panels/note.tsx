@@ -22,11 +22,14 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col gap-4 p-4">
         <NoteCard id={noteId} />
 
-        <h3 className="leading-none">Backlinks</h3>
-
-        <LinkHighlightProvider href={`/${noteId}`}>
-          <NoteList key={noteId} baseQuery={`link:${noteId}`} noteCount={backlinksCount} />
-        </LinkHighlightProvider>
+        {backlinksCount > 0 ? (
+          <>
+            <h3 className="leading-none">Backlinks</h3>
+            <LinkHighlightProvider href={`/${noteId}`}>
+              <NoteList key={noteId} baseQuery={`link:${noteId}`} noteCount={backlinksCount} />
+            </LinkHighlightProvider>
+          </>
+        ) : null}
       </div>
     </Panel>
   )
