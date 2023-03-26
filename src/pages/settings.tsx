@@ -7,7 +7,7 @@ import { SettingsIcon24 } from "../components/icons"
 import { Input } from "../components/input"
 import { Panel } from "../components/panel"
 import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
-import { useFetchNotes } from "../utils/use-fetch-notes"
+import { useFetchNotes } from "../utils/github-sync"
 
 export function SettingsPage() {
   const [githubToken, setGitHubToken] = useAtom(githubTokenAtom)

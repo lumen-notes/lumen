@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { Context } from "./global-state.machine"
 import { Note, NoteId } from "./types"
-import { readFile } from "./utils/file-system"
+import { readFile } from "./utils/github-fs"
 import { parseNote } from "./utils/parse-note"
 
 const timerLabel = "Pull notes"

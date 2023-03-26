@@ -1,7 +1,7 @@
 import React from "react"
 import { Outlet } from "react-router-dom"
 import { useEvent, useMedia, useNetworkState } from "react-use"
-import { useFetchNotes } from "../utils/use-fetch-notes"
+import { useFetchNotes } from "../utils/github-sync"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"

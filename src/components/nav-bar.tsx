@@ -9,7 +9,7 @@ import {
 } from "react-router-dom"
 import { useNetworkState } from "react-use"
 import { toDateString } from "../utils/date"
-import { useFetchNotes } from "../utils/use-fetch-notes"
+import { useFetchNotes } from "../utils/github-sync"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {

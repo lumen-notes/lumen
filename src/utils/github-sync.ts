@@ -3,7 +3,7 @@ import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { z } from "zod"
 import { githubRepoAtom, githubTokenAtom, rawNotesAtom } from "../global-atoms"
-import { readFile } from "./file-system"
+import { readFile } from "./github-fs"
 
 const isFetchingAtom = atom(false)
 const errorAtom = atom<Error | null>(null)

@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { LoadingIcon16 } from "../components/icons"
-import { readFile } from "../utils/file-system"
+import { readFile } from "../utils/github-fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
