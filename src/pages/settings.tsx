@@ -1,13 +1,19 @@
+import { useAtom } from "jotai"
+import { useNavigate } from "react-router-dom"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { CommandMenu } from "../components/command-menu"
 import { SettingsIcon24 } from "../components/icons"
 import { Input } from "../components/input"
 import { Panel } from "../components/panel"
-import { GlobalStateContext } from "../global-state.machine"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { useFetchNotes } from "../utils/use-fetch-notes"
 
 export function SettingsPage() {
-  const [state, send] = GlobalStateContext.useActor()
+  const [githubToken, setGitHubToken] = useAtom(githubTokenAtom)
+  const [githubRepo, setGitHubRepo] = useAtom(githubRepoAtom)
+  const { fetchNotes } = useFetchNotes()
+  const navigate = useNavigate()
   return (
     <>
       <CommandMenu />
@@ -24,22 +30,22 @@ export function SettingsPage() {
               onSubmit={(event) => {
                 event.preventDefault()
                 const formData = new FormData(event.currentTarget)
-                const authToken = String(formData.get("auth-token"))
+                const token = String(formData.get("token"))
                 const repoOwner = String(formData.get("repo-owner"))
                 const repoName = String(formData.get("repo-name"))
-                send({ type: "SET_CONTEXT", data: { authToken, repoOwner, repoName } })
+
+                setGitHubToken(token)
+                setGitHubRepo({ owner: repoOwner, name: repoName })
+
+                fetchNotes()
+                navigate("/")
               }}
             >
               <div className="grid gap-2">
                 <label htmlFor="auth-token" className="leading-4">
                   Personal access token
                 </label>
-                <Input
-                  id="auth-token"
-                  name="auth-token"
-                  spellCheck={false}
-                  defaultValue={state.context.authToken}
-                />
+                <Input id="token" name="token" spellCheck={false} defaultValue={githubToken} />
                 <p className="markdown text-text-secondary">
                   Generate a{" "}
                   <a
@@ -60,7 +66,7 @@ export function SettingsPage() {
                   id="repo-owner"
                   name="repo-owner"
                   spellCheck={false}
-                  defaultValue={state.context.repoOwner}
+                  defaultValue={githubRepo?.owner}
                 />
               </div>
               <div className="grid gap-2">
@@ -71,7 +77,7 @@ export function SettingsPage() {
                   id="repo-name"
                   name="repo-name"
                   spellCheck={false}
-                  defaultValue={state.context.repoName}
+                  defaultValue={githubRepo?.name}
                 />
               </div>
             </form>

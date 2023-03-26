@@ -32,11 +32,13 @@ export async function readFile({ githubToken, githubRepo, path }: ReadFileOption
 
       // Not found
       case 404:
-        throw new Error(`File not found: ${path}`)
+        throw new Error(`File not found: ${path} in ${githubRepo.owner}/${githubRepo.name}`)
 
       // Other error
       default:
-        throw new Error(`Failed to fetch file: ${path} (${response.status})`)
+        throw new Error(
+          `Failed to fetch file: ${path} in ${githubRepo.owner}/${githubRepo.name} (${response.status})`,
+        )
     }
   }
 
