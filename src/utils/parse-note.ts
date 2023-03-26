@@ -6,9 +6,15 @@ import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "./parse-frontmatter"
+import memoize from "fast-memoize"
 
-/** Extract metadata from a note */
-export function parseNote(rawBody: string) {
+/**
+ * Extract metadata from a note.
+ *
+ * We memoize this function because it's called a lot and it's expensive.
+ * We're intentionally sacrificing memory usage for runtime performance.
+ */
+export const parseNote = memoize((rawBody: string) => {
   let title = ""
   const tags: string[] = []
   const dates: string[] = []
@@ -48,4 +54,4 @@ export function parseNote(rawBody: string) {
   })
 
   return { frontmatter, title, dates, links, tags }
-}
+})
