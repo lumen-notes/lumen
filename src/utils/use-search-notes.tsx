@@ -14,9 +14,7 @@ type Query = {
   fuzzy: string
 }
 
-const SearchNotesContext = React.createContext<(query: string) => Array<[string, Note]>>(() => [])
-
-export const SearchNotesProvider = ({ children }: { children: React.ReactNode }) => {
+export const useSearchNotes = () => {
   const sortedNoteEntries = useAtomValue(sortedNoteEntriesAtom)
   const noteSearcher = useAtomValue(noteSearcherAtom)
 
@@ -32,12 +30,8 @@ export const SearchNotesProvider = ({ children }: { children: React.ReactNode })
     [sortedNoteEntries, noteSearcher],
   )
 
-  return <SearchNotesContext.Provider value={searchNotes}>{children}</SearchNotesContext.Provider>
+  return searchNotes
 }
-
-export const useSearchNotes = () => React.useContext(SearchNotesContext)
-
-// Utilities
 
 const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=]+)/g
 

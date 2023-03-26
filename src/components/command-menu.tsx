@@ -11,8 +11,8 @@ import { PanelsContext } from "../components/panels"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
+import { useSearchNotes } from "../utils/use-search-notes"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
-import { useSearchNotes } from "./search-notes"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()

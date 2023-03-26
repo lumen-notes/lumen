@@ -69,9 +69,6 @@ export const notesAtom = atom((get) => {
   // Derive backlinks
   for (const sourceId in notes) {
     for (const targetId of notes[sourceId].links) {
-      // Skip if the source and target are the same
-      if (sourceId === targetId) continue
-
       // Skip if the target note doesn't exist
       if (!notes[targetId]) continue
 

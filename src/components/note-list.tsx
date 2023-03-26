@@ -2,10 +2,10 @@ import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { pluralize } from "../utils/pluralize"
+import { useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
 import { NoteCard } from "./note-card"
 import { SearchInput } from "./search-input"
-import { useSearchNotes } from "./search-notes"
 
 type NoteListProps = {
   baseQuery?: string
