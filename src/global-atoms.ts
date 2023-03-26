@@ -51,11 +51,6 @@ export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
   set(rawNotesAtom, newRawNotes)
 })
 
-export const noteCountAtom = atom((get) => {
-  const rawNotes = get(rawNotesAtom)
-  return Object.keys(rawNotes).length
-})
-
 export const notesAtom = atom((get) => {
   const rawNotes = get(rawNotesAtom)
   const notes: Record<NoteId, Note> = {}
