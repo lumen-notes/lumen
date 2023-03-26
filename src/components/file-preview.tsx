@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubTokenAtom } from "../atoms"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { LoadingIcon16 } from "../components/icons"
 import { readFile } from "../utils/file-system"
 

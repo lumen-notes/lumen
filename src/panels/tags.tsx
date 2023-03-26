@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { z } from "zod"
-import { sortedTagEntriesAtom, tagSearcherAtom } from "../atoms"
+import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-atoms"
 import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"

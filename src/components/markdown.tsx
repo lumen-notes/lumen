@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
 import { stringify } from "yaml"
-import { notesAtom, tagsAtom } from "../atoms"
+import { notesAtom, tagsAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
@@ -179,7 +179,7 @@ type QueryResultsProps = {
   query: string
 }
 
-// TODO: Results should be considered links in the global notes object
+// TODO: All results should contain backlinks to the note that contains the query
 function QueryResults({ query }: QueryResultsProps) {
   const searchNote = useSearchNotes()
 

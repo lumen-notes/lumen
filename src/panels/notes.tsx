@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai"
-import { noteCountAtom } from "../atoms"
+import { noteCountAtom } from "../global-atoms"
 import { NoteIcon24 } from "../components/icons"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"

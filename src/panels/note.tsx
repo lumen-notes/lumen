@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { notesAtom } from "../atoms"
+import { notesAtom } from "../global-atoms"
 import { NoteIcon24 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
