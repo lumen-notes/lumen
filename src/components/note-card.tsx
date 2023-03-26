@@ -4,14 +4,16 @@ import copy from "copy-to-clipboard"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { deleteNoteAtom, notesAtom } from "../atoms"
+import { deleteNoteAtom, githubRepoAtom, notesAtom } from "../atoms"
 import { NoteId } from "../types"
+import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
   EditIcon16,
+  ExternalLinkIcon16,
   GitHubIcon16,
   GlobeIcon16,
   MailIcon16,
@@ -26,7 +28,6 @@ import {
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { PanelContext, Panels, PanelsContext } from "./panels"
-import { pluralize } from "../utils/pluralize"
 
 // Map frontmatter keys to note action menu items
 // See README.md#recognized-keys for more information
@@ -134,16 +135,17 @@ type NoteCardProps = {
 }
 
 export function NoteCard({ id, elevation }: NoteCardProps) {
-  // Note
+  // Atoms
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
   const note = useAtomValue(noteAtom)
   const deleteNote = useSetAtom(deleteNoteAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
 
-  // Panels
+  // Panel context
   const { closePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
 
@@ -225,8 +227,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     return <Card className="p-4">Not found</Card>
   }
 
-  return !isEditing ? (
-    // View mode
+  const viewMode = (
     <Card
       // Used to focus the note card after creating it
       data-note-id={id}
@@ -319,19 +320,19 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Copy ID
             </DropdownMenu.Item>
-            {/* {state.context.repoOwner && state.context.repoName ? (
+            {githubRepo ? (
               <>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                   icon={<ExternalLinkIcon16 />}
-                  href={`https://github.com/${state.context.repoOwner}/${state.context.repoName}/blob/main/${id}.md`}
+                  href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
               </>
-            ) : null} */}
+            ) : null}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
@@ -345,8 +346,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         </DropdownMenu>
       </div>
     </Card>
-  ) : (
-    // Edit mode
+  )
+
+  const editMode = (
     <NoteForm
       key={note.rawBody}
       id={id}
@@ -357,4 +359,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       onCancel={switchToViewing}
     />
   )
+
+  return !isEditing ? viewMode : editMode
 }

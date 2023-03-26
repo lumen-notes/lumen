@@ -15,7 +15,7 @@ export const githubTokenAtom = atomWithStorage<string>(
   import.meta.env.VITE_GITHUB_TOKEN,
 )
 
-export const githubRepoAtom = atomWithStorage<GitHubRepository>("github_repo", {
+export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", {
   owner: "colebemis",
   name: "notes",
 })
@@ -29,6 +29,8 @@ export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes",
 export const fetchNotesAtom = atom(null, async (get, set) => {
   const githubToken = get(githubTokenAtom)
   const githubRepo = get(githubRepoAtom)
+  if (!githubRepo) return
+
   // TODO: Check SHA
   const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
   const schema = z.record(z.string())
