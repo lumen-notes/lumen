@@ -1,10 +1,8 @@
-import { atomWithStorage } from "jotai/utils"
-import { NoteId, Note, GitHubRepository } from "./types"
-import { parseNote } from "./utils/parse-note"
-import { atom } from "jotai"
 import { Searcher } from "fast-fuzzy"
-import { readFile } from "./utils/file-system"
-import { z } from "zod"
+import { atom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
+import { GitHubRepository, Note, NoteId } from "./types"
+import { parseNote } from "./utils/parse-note"
 
 // -----------------------------------------------------------------------------
 // GitHub
@@ -25,17 +23,6 @@ export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_r
 // -----------------------------------------------------------------------------
 
 export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
-
-export const fetchNotesAtom = atom(null, async (get, set) => {
-  const githubToken = get(githubTokenAtom)
-  const githubRepo = get(githubRepoAtom)
-  if (!githubRepo) return
-
-  // TODO: Check SHA
-  const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
-  const schema = z.record(z.string())
-  set(rawNotesAtom, schema.parse(JSON.parse(await file.text())))
-})
 
 export const upsertNoteAtom = atom(
   null,
