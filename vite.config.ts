@@ -6,5 +6,8 @@ import { defineConfig } from "vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }), visualizer()],
+  plugins: [
+    react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
+    visualizer({ filename: "dist/stats.html" }),
+  ],
 })
