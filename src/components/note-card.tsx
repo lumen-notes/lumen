@@ -36,10 +36,10 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <>
-        <DropdownMenu.Item icon={<PhoneIcon16 />} href={`tel:${value}`}>
+        <DropdownMenu.Item key="call" icon={<PhoneIcon16 />} href={`tel:${value}`}>
           Call
         </DropdownMenu.Item>
-        <DropdownMenu.Item icon={<MessageIcon16 />} href={`sms:${value}`}>
+        <DropdownMenu.Item key="message" icon={<MessageIcon16 />} href={`sms:${value}`}>
           Message
         </DropdownMenu.Item>
       </>
@@ -49,7 +49,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     // TODO: Validate email address
     if (typeof value !== "string") return null
     return (
-      <DropdownMenu.Item icon={<MailIcon16 />} href={`mailto:${value}`}>
+      <DropdownMenu.Item key="email" icon={<MailIcon16 />} href={`mailto:${value}`}>
         Email
       </DropdownMenu.Item>
     )
@@ -60,6 +60,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     const url = hasProtocol ? value : `https://${value}`
     return (
       <DropdownMenu.Item
+        key="website"
         icon={<GlobeIcon16 />}
         href={url}
         target="_blank"
@@ -73,6 +74,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="map"
         icon={<MapsIcon16 />}
         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
         target="_blank"
@@ -86,6 +88,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="github"
         icon={<GitHubIcon16 />}
         href={`https://github.com/${value}`}
         target="_blank"
@@ -99,6 +102,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="twitter"
         icon={<TwitterIcon16 />}
         href={`https://twitter.com/${value}`}
         target="_blank"
@@ -112,6 +116,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="youtube"
         icon={<YouTubeIcon16 />}
         href={`https://youtube.com/@${value}`}
         target="_blank"
