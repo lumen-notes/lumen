@@ -2,8 +2,10 @@ import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import clsx from "clsx"
 import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } from "date-fns"
 import { toDate } from "date-fns-tz"
-import { AnimatePresence, motion } from "framer-motion"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
+import { datesAtom } from "../atoms"
 import { IconButton } from "../components/icon-button"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { useLink } from "../components/link-context"
@@ -11,16 +13,17 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { GlobalStateContext } from "../global-state.machine"
-import { NoteId } from "../types"
-import { DAY_NAMES, formatDate, formatDateDistance, MONTH_NAMES, toDateString } from "../utils/date"
+import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
-  const [state] = GlobalStateContext.useActor()
-  const noteIds = state.context.dates[date] || []
+  const noteCountAtom = React.useMemo(
+    () => selectAtom(datesAtom, (dates) => dates[date]?.length ?? 0),
+    [date],
+  )
+  const noteCount = useAtomValue(noteCountAtom)
 
   // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
@@ -38,10 +41,10 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <div className="flex flex-col">
-        <Calendar activeDate={date} dates={state.context.dates} />
+        <Calendar activeDate={date} />
         <div className="p-4">
           <LinkHighlightProvider href={`/dates/${date}`}>
-            <NoteList key={date} baseQuery={`date:${date}`} noteCount={noteIds.length} />
+            <NoteList key={date} baseQuery={`date:${date}`} noteCount={noteCount} />
           </LinkHighlightProvider>
         </div>
       </div>
@@ -49,15 +52,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   )
 }
 
-function Calendar({
-  activeDate: dateString,
-  dates,
-}: {
-  activeDate: string
-  dates: Record<string, NoteId[]>
-}) {
-  const [direction, setDirection] = React.useState<"previous" | "next">("next")
-
+function Calendar({ activeDate: dateString }: { activeDate: string }) {
   const date = toDate(dateString)
 
   const [startOfWeek, setStartOfWeek] = React.useState(() =>
@@ -79,10 +74,7 @@ function Calendar({
           <RovingFocusGroup.Item asChild>
             <IconButton
               aria-label="Previous week"
-              onClick={() => {
-                setDirection("previous")
-                setTimeout(() => setStartOfWeek(previousMonday(startOfWeek)))
-              }}
+              onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
             >
               <ChevronLeftIcon16 />
             </IconButton>
@@ -90,10 +82,7 @@ function Calendar({
           <RovingFocusGroup.Item asChild>
             <IconButton
               aria-label="Next week"
-              onClick={() => {
-                setDirection("next")
-                setTimeout(() => setStartOfWeek(nextMonday(startOfWeek)))
-              }}
+              onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
             >
               <ChevronRightIcon16 />
             </IconButton>
@@ -101,42 +90,29 @@ function Calendar({
         </RovingFocusGroup.Root>
       </div>
       <div className="grid">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={startOfWeek.toString()}
-            className="col-span-full row-span-full"
-            initial={{ x: direction === "next" ? "100%" : "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: direction === "next" ? "-100%" : "100%" }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-          >
-            <RovingFocusGroup.Root orientation="horizontal" className="flex">
-              {week.map((date) => (
-                <CalendarDate
-                  key={date.toISOString()}
-                  date={date}
-                  isActive={toDateString(date) === dateString}
-                  hasNotes={dates[toDateString(date)]?.length > 0}
-                />
-              ))}
-            </RovingFocusGroup.Root>
-          </motion.div>
-        </AnimatePresence>
+        <RovingFocusGroup.Root orientation="horizontal" className="flex">
+          {week.map((date) => (
+            <CalendarDate
+              key={date.toISOString()}
+              date={date}
+              isActive={toDateString(date) === dateString}
+            />
+          ))}
+        </RovingFocusGroup.Root>
       </div>
     </div>
   )
 }
 
-function CalendarDate({
-  date,
-  isActive = false,
-  hasNotes = false,
-}: {
-  date: Date
-  isActive?: boolean
-  hasNotes?: boolean
-}) {
+function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boolean }) {
   const Link = useLink()
+
+  const hasNotesAtom = React.useMemo(
+    () => selectAtom(datesAtom, (dates) => dates[toDateString(date)]?.length > 0),
+    [date],
+  )
+  const hasNotes = useAtomValue(hasNotesAtom)
+
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()

@@ -11,15 +11,17 @@ import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import clsx from "clsx"
 import React from "react"
-import { GlobalStateContext } from "../global-state.machine"
 import { NoteId } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { writeFile } from "../utils/file-system"
+// import { writeFile } from "../utils/file-system"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { fileCache } from "./file-preview"
+import { useSetAtom } from "jotai"
+import { useAtomCallback } from "jotai/utils"
+import { tagsAtom, upsertNoteAtom } from "../atoms"
 import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
 import { useSearchNotes } from "./search-notes"
@@ -28,18 +30,18 @@ const UPLOADS_DIRECTORY = "uploads"
 
 type NoteFormProps = {
   id?: NoteId
-  defaultBody?: string
+  defaultValue?: string
   elevation?: CardProps["elevation"]
   minHeight?: string | number
   maxHeight?: string | number
   codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
-  onSubmit?: (note: { id: NoteId; body: string }) => void
+  onSubmit?: (note: { id: NoteId; rawBody: string }) => void
   onCancel?: () => void
 }
 
 export function NoteForm({
   id,
-  defaultBody = "",
+  defaultValue = "",
   elevation = 0,
   minHeight,
   maxHeight,
@@ -47,43 +49,49 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
-  const [state, send] = GlobalStateContext.useActor()
+  const upsertNote = useSetAtom(upsertNoteAtom)
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
+
+  const onStateChange = React.useCallback(
+    (event: ViewUpdate) => setEditorHasFocus(event.view.hasFocus),
+    [],
+  )
 
   const {
     editorRef,
     view,
-    value: body = "",
+    value = "",
   } = useCodeMirror({
-    defaultValue: defaultBody,
-    placeholder: "Write a note...",
+    defaultValue,
+    placeholder: "Write a note…",
     viewRef: codeMirrorViewRef,
-    onStateChange: (event) => setEditorHasFocus(event.view.hasFocus),
+    onStateChange,
   })
 
-  function setBody(value: string) {
+  function setValue(newValue: string) {
     view?.dispatch({
-      changes: [{ from: 0, to: body.length, insert: value }],
+      changes: [{ from: 0, to: value.length, insert: newValue }],
     })
   }
 
   function handleSubmit() {
     // Don't create empty notes
-    if (!body) return
+    if (!value) return
 
     const note = {
       id: id ?? Date.now().toString(),
-      body: body,
+      rawBody: value,
     }
 
-    send({ type: "UPSERT_NOTE", ...note })
+    upsertNote(note)
+    // send({ type: "UPSERT_NOTE", ...note })
 
     onSubmit?.(note)
 
     // If we're creating a new note, reset the form after submitting
     if (!id) {
-      setBody(defaultBody)
+      setValue(defaultValue)
     }
   }
 
@@ -93,10 +101,10 @@ export function NoteForm({
       const fileExtension = file.name.split(".").pop()
       const fileName = file.name.replace(`.${fileExtension}`, "")
       const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
-      const arrayBuffer = await file.arrayBuffer()
+      // const arrayBuffer = await file.arrayBuffer()
 
       // Upload file
-      writeFile({ context: state.context, path: filePath, content: arrayBuffer })
+      // writeFile({ context: state.context, path: filePath, content: arrayBuffer })
 
       // Cache file
       fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
@@ -113,7 +121,7 @@ export function NoteForm({
       }
 
       const { from = 0, to = 0 } =
-        view?.state.selection.ranges[view?.state.selection.mainIndex] || {}
+        view?.state.selection.ranges[view?.state.selection.mainIndex] ?? {}
       const anchor = from + markdown.indexOf("]")
       const head = from + markdown.indexOf("[") + 1
 
@@ -193,7 +201,7 @@ export function NoteForm({
 
               // Clear and cancel on `escape`
               if (event.key === "Escape") {
-                setBody("")
+                setValue("")
                 onCancel?.()
               }
             }}
@@ -266,15 +274,14 @@ function useCodeMirror({
   const [editorElement, setEditorElement] = React.useState<HTMLElement>()
   const editorRef = React.useCallback((node: HTMLElement | null) => {
     if (!node) return
-
     setEditorElement(node)
   }, [])
-
   const newViewRef = React.useRef<EditorView>()
   const viewRef = providedViewRef ?? newViewRef
 
   const [value, setValue] = React.useState(defaultValue)
 
+  // Completions
   const noteCompletion = useNoteCompletion()
   const tagCompletion = useTagCompletion()
 
@@ -309,7 +316,15 @@ function useCodeMirror({
     return () => {
       view.destroy()
     }
-  }, [editorElement])
+  }, [
+    editorElement,
+    defaultValue,
+    placeholderValue,
+    onStateChange,
+    noteCompletion,
+    tagCompletion,
+    viewRef,
+  ])
 
   return { editorRef, view: viewRef.current, value }
 }
@@ -361,7 +376,7 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
 }
 
 function useTagCompletion() {
-  const actorRef = GlobalStateContext.useActorRef()
+  const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
 
   const tagCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -371,21 +386,21 @@ function useTagCompletion() {
         return null
       }
 
-      const tags = Object.keys(actorRef.getSnapshot()?.context.tags ?? {})
+      const tags = Object.keys(getTags())
 
       return {
         from: word.from + 1,
         options: tags.map((name) => ({ label: name })),
       }
     },
-    [actorRef],
+    [getTags],
   )
 
   return tagCompletion
 }
 
 function useNoteCompletion() {
-  const actorRef = GlobalStateContext.useActorRef()
+  const upsertNote = useSetAtom(upsertNoteAtom)
   const searchNotes = useSearchNotes()
 
   const noteCompletion = React.useCallback(
@@ -406,14 +421,10 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            body: `${query}\n\n#inbox`,
+            rawBody: `${query}\n\n#inbox`,
           }
 
-          // Create new note
-          actorRef.send({
-            type: "UPSERT_NOTE",
-            ...note,
-          })
+          upsertNote(note)
 
           // Insert link to new note
           const text = `${note.id}|${query}`
@@ -428,7 +439,7 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map(([id, note]): Completion => {
-        const { content } = parseFrontmatter(note?.body || "")
+        const { content } = parseFrontmatter(note?.rawBody || "")
         return {
           label: content || "",
           info: content,
@@ -456,7 +467,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, actorRef],
+    [searchNotes, upsertNote],
   )
 
   return noteCompletion

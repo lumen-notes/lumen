@@ -2,7 +2,7 @@ import { z } from "zod"
 import { Context } from "./global-state.machine"
 import { Note, NoteId } from "./types"
 import { readFile } from "./utils/file-system"
-import { parseNoteBody } from "./utils/parse-note-body"
+import { parseNote } from "./utils/parse-note"
 
 const timerLabel = "Pull notes"
 
@@ -36,11 +36,11 @@ self.onmessage = async (event: MessageEvent<Context>) => {
 
     // Copy the parsed data into the maps
     for (const [id, body] of Object.entries(noteData)) {
-      const { title, tags, dates, links, frontmatter } = parseNoteBody(body)
+      const { title, tags, dates, links, frontmatter } = parseNote(body)
 
       notesMap[id] = {
         title,
-        body,
+        rawBody: body,
         tags,
         dates,
         links,

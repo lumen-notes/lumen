@@ -2,8 +2,8 @@ import { createActorContext } from "@xstate/react"
 import { get, set } from "idb-keyval"
 import { assign, createMachine } from "xstate"
 import { Note, NoteId } from "./types"
-import { deleteFile, writeFile } from "./utils/file-system"
-import { parseNoteBody } from "./utils/parse-note-body"
+// import { deleteFile, writeFile } from "./utils/file-system"
+import { parseNote } from "./utils/parse-note"
 
 export const UPLOADS_DIRECTORY = "uploads"
 
@@ -148,7 +148,7 @@ const machine =
           },
         }),
         upsertNote: assign((context, event) => {
-          const { title, links, tags, dates, frontmatter } = parseNoteBody(event.body)
+          const { title, links, tags, dates, frontmatter } = parseNote(event.body)
 
           // Update backlinks
           const noteEntries = Object.entries(context.notes).map(([noteId, note]) => {
@@ -313,36 +313,33 @@ const machine =
           })
         },
         pushNotes: async (context) => {
-          const { authToken, repoOwner, repoName } = context
-
-          // Dont push if offline, no auth token, or no repo
-          if (!navigator.onLine || !authToken || !repoOwner || !repoName) {
-            return null
-          }
-
-          try {
-            // Push pending changes to GitHub
-            for (const id of context.pendingChanges.upsert) {
-              await writeFile({ context, path: `${id}.md`, content: context.notes[id].body })
-            }
-
-            for (const id of context.pendingChanges.delete) {
-              await deleteFile({ context, path: `${id}.md` })
-            }
-
-            return {
-              // Clear pending changes
-              pendingChanges: {
-                upsert: new Set<string>(),
-                delete: new Set<string>(),
-              },
-              // Clear error
-              error: "",
-            }
-          } catch (error) {
-            console.error(error)
-            return { error: (error as Error).message }
-          }
+          return null
+          // const { authToken, repoOwner, repoName } = context
+          // // Dont push if offline, no auth token, or no repo
+          // if (!navigator.onLine || !authToken || !repoOwner || !repoName) {
+          //   return null
+          // }
+          // try {
+          //   // Push pending changes to GitHub
+          //   for (const id of context.pendingChanges.upsert) {
+          //     await writeFile({ context, path: `${id}.md`, content: context.notes[id].body })
+          //   }
+          //   for (const id of context.pendingChanges.delete) {
+          //     await deleteFile({ context, path: `${id}.md` })
+          //   }
+          //   return {
+          //     // Clear pending changes
+          //     pendingChanges: {
+          //       upsert: new Set<string>(),
+          //       delete: new Set<string>(),
+          //     },
+          //     // Clear error
+          //     error: "",
+          //   }
+          // } catch (error) {
+          //   console.error(error)
+          //   return { error: (error as Error).message }
+          // }
         },
       },
     },

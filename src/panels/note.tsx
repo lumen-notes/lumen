@@ -1,15 +1,21 @@
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
+import React from "react"
+import { notesAtom } from "../atoms"
 import { NoteIcon24 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { GlobalStateContext } from "../global-state.machine"
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
-  const [state] = GlobalStateContext.useActor()
-  const note = state.context.notes[noteId]
+  const backlinksCountAtom = React.useMemo(
+    () => selectAtom(notesAtom, (notes) => notes[noteId]?.backlinks.length ?? 0),
+    [noteId],
+  )
+  const backlinksCount = useAtomValue(backlinksCountAtom)
 
   return (
     <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
@@ -19,11 +25,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <h3 className="leading-none">Backlinks</h3>
 
         <LinkHighlightProvider href={`/${noteId}`}>
-          <NoteList
-            key={noteId}
-            baseQuery={`link:${noteId}`}
-            noteCount={note?.backlinks.length || 0}
-          />
+          <NoteList key={noteId} baseQuery={`link:${noteId}`} noteCount={backlinksCount} />
         </LinkHighlightProvider>
       </div>
     </Panel>
