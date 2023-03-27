@@ -40,12 +40,9 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             </span>
           ) : null}
         </div>
-        <ul className="flex flex-col">
+        <ul className="flex flex-col divide-y divide-border-secondary">
           {searchResults.map(([name, noteIds]) => (
-            <li
-              key={name}
-              className="flex items-center justify-between border-b border-border-secondary py-3 last:border-b-0"
-            >
+            <li key={name} className="flex items-center justify-between py-3">
               <Panels.Link className="link" to={`/tags/${name}`} target="_blank">
                 #{name}
               </Panels.Link>
