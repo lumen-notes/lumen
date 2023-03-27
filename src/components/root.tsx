@@ -29,13 +29,6 @@ export function Root() {
   useEvent("visibilitychange", onVisibilityChange)
   // useEvent("online", onOnline)
 
-  // const pendingChangeCount =
-  //   state.context.pendingChanges.upsert.size + state.context.pendingChanges.delete.size
-
-  // if (state.matches("loadingContext")) {
-  //   return null
-  // }
-
   return (
     <div>
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] [@supports(height:100svh)]:h-[100svh]">
@@ -56,12 +49,6 @@ export function Root() {
         {!online ? (
           <div className="flex justify-center py-2 px-4 sm:justify-start sm:bg-bg-tertiary">
             <span>Offline</span>
-            {/* {pendingChangeCount > 0 ? (
-              <span>
-                <span className="px-2">·</span>
-                {pluralize(pendingChangeCount, "unpushed change")}
-              </span>
-            ) : null} */}
           </div>
         ) : null}
       </div>
