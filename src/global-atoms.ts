@@ -8,15 +8,9 @@ import { parseNote } from "./utils/parse-note"
 // GitHub
 // -----------------------------------------------------------------------------
 
-export const githubTokenAtom = atomWithStorage<string>(
-  "github_token",
-  import.meta.env.VITE_GITHUB_TOKEN,
-)
+export const githubTokenAtom = atomWithStorage("github_token", "")
 
-export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", {
-  owner: "colebemis",
-  name: "notes",
-})
+export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
 // -----------------------------------------------------------------------------
 // Notes

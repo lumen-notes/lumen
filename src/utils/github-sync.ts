@@ -21,6 +21,9 @@ const githubTokenCallback = (get: Getter) => get(githubTokenAtom)
 const githubRepoCallback = (get: Getter) => get(githubRepoAtom)
 
 export const useFetchNotes = () => {
+  // HACK: getGitHubToken() returns an empty string if the atom is not initialized
+  useAtom(githubTokenAtom)
+
   const [sha, setSha] = useAtom(shaAtom)
   const getGitHubToken = useAtomCallback(githubTokenCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
@@ -39,12 +42,12 @@ export const useFetchNotes = () => {
       const filePath = ".lumen/notes.json"
       const latestSha = await getFileSha({ githubToken, githubRepo, path: filePath })
 
-      if (process.env.NODE_ENV === "development") {
-        console.log(`SHA: ${latestSha} ${latestSha === sha ? "(cached)" : "(new)"}`)
+      if (process.env.NODE_ENV === "development" && latestSha) {
+        console.log(`SHA: ${latestSha} ${sha === latestSha ? "(cached)" : "(new)"}`)
       }
 
-      // Only fetch notes if the SHA has changed
-      if (latestSha !== sha) {
+      // Only fetch notes if the SHA is unknown or has changed
+      if (!sha || sha !== latestSha) {
         const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
         const fileSchema = z.record(z.string())
         const rawNotes = fileSchema.parse(JSON.parse(await file.text()))
