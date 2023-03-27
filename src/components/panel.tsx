@@ -4,7 +4,6 @@ import { DraggableCore } from "react-draggable"
 import { IconButton } from "./icon-button"
 import { CloseIcon16 } from "./icons"
 import { PanelContext } from "./panels"
-import { ScrollArea } from "./scroll-area"
 
 type PanelProps = {
   id?: string
@@ -124,7 +123,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           }}
         />
       </div>
-      <ScrollArea className="h-full" viewportClassName="scroll-pt-[4.5rem] scroll-pb-4">
+      <div className="flex h-full scroll-pt-[4.5rem] scroll-pb-4 flex-col overflow-auto [-webkit-transform:translateZ(0)]">
         <div
           className={
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
@@ -146,7 +145,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
           ) : null}
         </div>
         <div className="flex-grow">{children}</div>
-      </ScrollArea>
+      </div>
     </div>
   )
 }

@@ -30,7 +30,6 @@
     "@radix-ui/react-hover-card": "^1.0.0",
     "@radix-ui/react-portal": "^1.0.0",
     "@radix-ui/react-roving-focus": "^1.0.0",
-    "@radix-ui/react-scroll-area": "^1.0.2",
     "@radix-ui/react-slot": "^1.0.0",
     "@radix-ui/react-tooltip": "^1.0.0",
     "buffer": "^6.0.3",
