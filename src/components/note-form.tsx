@@ -387,9 +387,10 @@ function useCodeMirror({
     placeholderValue,
     onStateChange,
     onPaste,
-    noteCompletion,
-    tagCompletion,
     viewRef,
+    // TODO: Prevent noteCompletion and tagCompletion from being recreated when state changes
+    // noteCompletion,
+    // tagCompletion,
   ])
 
   return { editorRef, view: viewRef.current, value }
@@ -499,6 +500,7 @@ function useNoteCompletion() {
 
           view.dispatch({
             changes: { from, to, insert: text },
+            // TODO: Move cursor to end of ]]
             selection: { anchor, head },
           })
         },
