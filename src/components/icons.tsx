@@ -381,6 +381,15 @@ export function MapsIcon16() {
   )
 }
 
+export function QueryIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M0 2.95A1.95 1.95 0 0 1 1.95 1h12.1A1.95 1.95 0 0 1 16 2.95V10h-1.5V2.95a.45.45 0 0 0-.45-.45H1.95a.45.45 0 0 0-.45.45v9.6c0 .248.201.45.45.45h8.55v1.5H1.95A1.95 1.95 0 0 1 0 12.55v-9.6Z" />
+      <path d="M8.75 11.5c.764 0 1.475-.229 2.068-.621l3.402 3.401 1.06-1.06-3.401-3.402A3.75 3.75 0 1 0 8.75 11.5Zm0-1.5a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

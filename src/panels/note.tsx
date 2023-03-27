@@ -1,8 +1,9 @@
+import * as Tabs from "@radix-ui/react-tabs"
 import { search } from "fast-fuzzy"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { NoteIcon24 } from "../components/icons"
+import { NoteIcon24, QueryIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -36,30 +37,59 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col gap-4 p-4">
         <NoteCard id={noteId} />
 
-        {/* TODO: Tabs */}
-        <div className="flex flex-col gap-4">
-          <h3 className="leading-none">Backlinks</h3>
-          <LinkHighlightProvider href={`/${noteId}`}>
-            <NoteList
-              key={noteId}
-              baseQuery={`link:${noteId}`}
-              noteCount={note?.backlinks.length}
-            />
-          </LinkHighlightProvider>
-        </div>
+        <Tabs.Root defaultValue="backlinks">
+          <Tabs.List className="mb-4 flex gap-2 pb-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+            <TabsTrigger value="backlinks">
+              {/* TODO: Link icon */}
+              Backlinks
+              <span>{note?.backlinks.length}</span>
+            </TabsTrigger>
+            <TabsTrigger value="queries">
+              <QueryIcon16 />
+              Queries
+              <span>{matches.length}</span>
+            </TabsTrigger>
+          </Tabs.List>
 
-        <div className="flex flex-col gap-4">
-          <h3 className="leading-none">Matching queries</h3>
-          <LinkHighlightProvider href={`/${noteId}`}>
-            <NoteList
-              key={noteId}
-              baseQuery={`id:${matches.join(",")}`}
-              noteCount={matches.length}
-            />
-          </LinkHighlightProvider>
-        </div>
+          <Tabs.Content value="backlinks" className="outline-none">
+            <LinkHighlightProvider href={`/${noteId}`}>
+              <NoteList
+                key={noteId}
+                baseQuery={`link:${noteId}`}
+                noteCount={note?.backlinks.length}
+              />
+            </LinkHighlightProvider>
+          </Tabs.Content>
+
+          <Tabs.Content value="queries" className="outline-none">
+            <LinkHighlightProvider href={`/${noteId}`}>
+              <NoteList
+                key={noteId}
+                baseQuery={
+                  matches.length > 0
+                    ? `id:${matches.join(",")}`
+                    : // If there are no matches, we need to pass a query that
+                      // returns no results. We can't pass an empty string,
+                      // because that will return all the notes. Instead,
+                      // we use `id:noop` because no note can have that ID.
+                      `id:noop`
+                }
+                noteCount={matches.length}
+              />
+            </LinkHighlightProvider>
+          </Tabs.Content>
+        </Tabs.Root>
       </div>
     </Panel>
+  )
+}
+
+function TabsTrigger(props: Tabs.TabsTriggerProps) {
+  return (
+    <Tabs.Trigger
+      className=" focus-ring relative flex h-8 cursor-default items-center gap-2 rounded-sm px-3 leading-4 text-text-secondary hover:bg-bg-secondary data-[state=active]:text-text data-[state=active]:before:absolute data-[state=active]:before:-bottom-2 data-[state=active]:before:left-0 data-[state=active]:before:right-0 data-[state=active]:before:h-[0.125rem] data-[state=active]:before:w-full data-[state=active]:before:bg-text data-[state=active]:before:content-[''] coarse:h-10 coarse:px-4"
+      {...props}
+    />
   )
 }
 

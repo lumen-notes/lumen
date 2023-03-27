@@ -150,6 +150,10 @@ body {
   font-variant-numeric: slashed-zero;
 }
 
+button {
+  font-variant-numeric: slashed-zero;
+}
+
 /* Hide the browser's default cancel button on search inputs */
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;

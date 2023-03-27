@@ -31,6 +31,7 @@
     "@radix-ui/react-portal": "^1.0.0",
     "@radix-ui/react-roving-focus": "^1.0.0",
     "@radix-ui/react-slot": "^1.0.0",
+    "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.0",
     "buffer": "^6.0.3",
     "chrono-node": "^2.3.9",
