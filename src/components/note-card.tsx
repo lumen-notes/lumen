@@ -1,11 +1,12 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { deleteNoteAtom, githubRepoAtom, notesAtom } from "../global-atoms"
+import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { NoteId } from "../types"
+import { useDeleteNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -135,11 +136,10 @@ type NoteCardProps = {
 }
 
 export function NoteCard({ id, elevation }: NoteCardProps) {
-  // Atoms
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
   const note = useAtomValue(noteAtom)
-  const deleteNote = useSetAtom(deleteNoteAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const deleteNote = useDeleteNote()
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
@@ -152,9 +152,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   // Local state
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-  // const [state, send] = GlobalStateContext.useActor()
-  // const note = state.context.notes[id]
-  // const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
 
   const frontmatterItems = React.useMemo(() => {
     return Object.entries(frontmatterMap)
@@ -281,12 +278,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               {pluralize(note.backlinks.length, "backlink")}
             </span>
           ) : null}
-          {/* {isPending ? (
-            <span>
-              {" · "}
-              <span className="rounded-full bg-bg-pending px-2 text-text-pending">Not pushed</span>
-            </span>
-          ) : null} */}
         </span>
 
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>

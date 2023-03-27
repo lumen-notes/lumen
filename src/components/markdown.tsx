@@ -205,8 +205,6 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (n) => n[id]), [id])
   const note = useAtomValue(noteAtom)
   const Link = useLink()
-  // const [state] = GlobalStateContext.useActor()
-  // const { body } = state.context.notes[id]
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>

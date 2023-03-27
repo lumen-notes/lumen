@@ -4,6 +4,52 @@ import { GitHubRepository } from "../types"
 
 const GITHUB_ENDPOINT = "https://api.github.com"
 
+type GetFileShaOptions = {
+  githubToken: string
+  githubRepo: GitHubRepository
+  path: string
+}
+
+async function getFileSha({ githubToken, githubRepo, path }: GetFileShaOptions): Promise<string> {
+  const endpoint = `${GITHUB_ENDPOINT}/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
+    // Remove leading slash if present
+    path.replace(/^\//, "")
+  }`
+
+  // Get the SHA of the file
+  const response = await fetch(endpoint, {
+    headers: {
+      Accept: "application/vnd.github.v3+json",
+      Authorization: `Bearer ${githubToken}`,
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  })
+
+  if (!response.ok) {
+    console.error(response)
+    switch (response.status) {
+      // Unauthorized
+      case 401:
+        throw new Error(`Invalid GitHub token`)
+
+      // Not found
+      case 404:
+        throw new Error(`File not found: ${path} in ${githubRepo.owner}/${githubRepo.name}`)
+
+      // Other error
+      default:
+        throw new Error(
+          `Failed to get SHA of ${path} in ${githubRepo.owner}/${githubRepo.name} (${response.status})`,
+        )
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { sha } = (await response.json()) as any
+
+  return sha ?? ""
+}
+
 type ReadFileOptions = {
   githubToken: string
   githubRepo: GitHubRepository
@@ -25,6 +71,7 @@ export async function readFile({ githubToken, githubRepo, path }: ReadFileOption
   )
 
   if (!response.ok || !response.body) {
+    console.error(response)
     switch (response.status) {
       // Unauthorized
       case 401:
@@ -67,8 +114,8 @@ export async function readFile({ githubToken, githubRepo, path }: ReadFileOption
   })
 
   const blob = await new Response(stream).blob()
-  const mimeType = mime.getType(path) || ""
-  const filename = path.split("/").pop() || ""
+  const mimeType = mime.getType(path) ?? ""
+  const filename = path.split("/").pop() ?? ""
   return new File([blob], filename, { type: mimeType })
 }
 
@@ -86,14 +133,7 @@ export async function writeFile({ githubToken, githubRepo, path, content }: Writ
   }`
 
   // Get the SHA of the file
-  const { sha } = await fetch(endpoint, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${githubToken}`,
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  }).then((response) => response.json() as any)
-
+  const sha = await getFileSha({ githubToken, githubRepo, path })
   const fileExists = Boolean(sha)
 
   // Create or update the file
@@ -131,13 +171,7 @@ export async function deleteFile({ githubToken, githubRepo, path }: DeleteFileOp
   }`
 
   // Get the SHA of the file
-  const { sha } = await fetch(endpoint, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      Authorization: `Bearer ${githubToken}`,
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  }).then((response) => response.json() as any)
+  const sha = await getFileSha({ githubToken, githubRepo, path })
 
   // Delete the file
   const response = await fetch(endpoint, {

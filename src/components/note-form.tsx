@@ -17,6 +17,7 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import { tagsAtom, upsertNoteAtom } from "../global-atoms"
+import { useUpsertNote } from "../utils/github-sync"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Button } from "./button"
@@ -49,7 +50,7 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
-  const upsertNote = useSetAtom(upsertNoteAtom)
+  const upsertNote = useUpsertNote()
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
