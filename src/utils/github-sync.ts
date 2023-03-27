@@ -11,8 +11,8 @@ import {
 } from "../global-atoms"
 import { deleteFile, getFileSha, readFile, writeFile } from "./github-fs"
 
-// Store SHA to avoid re-fetching notes if they haven't changed
-const shaAtom = atomWithStorage<string>("sha", "")
+// Store SHA to avoid re-fetching notes if the SHA hasn't changed
+const shaAtom = atomWithStorage<string | null>("sha", null)
 
 const isFetchingAtom = atom(false)
 const errorAtom = atom<Error | null>(null)
@@ -42,15 +42,21 @@ export const useFetchNotes = () => {
       const filePath = ".lumen/notes.json"
       const latestSha = await getFileSha({ githubToken, githubRepo, path: filePath })
 
-      if (process.env.NODE_ENV === "development" && latestSha) {
+      if (process.env.NODE_ENV === "development") {
         console.log(`SHA: ${latestSha} ${sha === latestSha ? "(cached)" : "(new)"}`)
       }
 
-      // Only fetch notes if the SHA is unknown or has changed
+      // Only fetch notes if the SHA has changed
       if (!sha || sha !== latestSha) {
         const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
+        const fileText = await file.text()
+
+        // TODO: Remove after debugging ZodError
+        console.log(fileText)
+
         const fileSchema = z.record(z.string())
-        const rawNotes = fileSchema.parse(JSON.parse(await file.text()))
+        const rawNotes = fileSchema.parse(JSON.parse(fileText))
+
         setRawNotes(rawNotes)
         setSha(latestSha)
       }

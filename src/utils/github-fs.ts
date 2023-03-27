@@ -14,7 +14,7 @@ export async function getFileSha({
   githubToken,
   githubRepo,
   path,
-}: GetFileShaOptions): Promise<string> {
+}: GetFileShaOptions): Promise<string | null> {
   const endpoint = `${GITHUB_ENDPOINT}/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
     // Remove leading slash if present
     path.replace(/^\//, "")
@@ -31,13 +31,13 @@ export async function getFileSha({
 
   if (!response.ok) {
     // Failing to get the SHA is sometimes expected, so we don't throw an error
-    return ""
+    return null
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { sha } = (await response.json()) as any
 
-  return sha ?? ""
+  return sha ?? null
 }
 
 type ReadFileOptions = {
