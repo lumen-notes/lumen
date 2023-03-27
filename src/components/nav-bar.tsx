@@ -1,5 +1,6 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import clsx from "clsx"
+import { useAtomValue } from "jotai"
 import {
   NavLinkProps,
   NavLink as RouterNavLink,
@@ -7,7 +8,8 @@ import {
   useNavigate,
   useResolvedPath,
 } from "react-router-dom"
-import { useNetworkState } from "react-use"
+import { useEvent, useNetworkState } from "react-use"
+import { githubRepoAtom } from "../global-atoms"
 import { toDateString } from "../utils/date"
 import { useFetchNotes } from "../utils/github-sync"
 import { DropdownMenu } from "./dropdown-menu"
@@ -23,8 +25,6 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
-import { useAtomValue } from "jotai"
-import { githubRepoAtom } from "../global-atoms"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -34,6 +34,14 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
 
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
+
+  useEvent("keydown", (event: KeyboardEvent) => {
+    // Navigate to settings page with `command + ,`
+    if (event.key === "," && event.metaKey) {
+      navigate("/settings")
+      event.preventDefault()
+    }
+  })
 
   return (
     <nav
@@ -100,7 +108,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 {/* TODO: Sync icon */}
                 Reload
               </DropdownMenu.Item>
-              <DropdownMenu.Item onClick={() => navigate("/settings")}>
+              <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 {/* TODO: Settings icon */}
                 Settings
               </DropdownMenu.Item>
