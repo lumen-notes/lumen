@@ -23,13 +23,18 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
+import { useAtomValue } from "jotai"
+import { githubRepoAtom } from "../global-atoms"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
+  const githubRepo = useAtomValue(githubRepoAtom)
   const { fetchNotes } = useFetchNotes()
   const navigate = useNavigate()
+  const { online } = useNetworkState()
+
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
-  const { online } = useNetworkState()
+
   return (
     <nav
       className={clsx(
@@ -91,7 +96,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Send feedback
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={fetchNotes} disabled={!online}>
+              <DropdownMenu.Item onClick={fetchNotes} disabled={!online || !githubRepo}>
                 {/* TODO: Sync icon */}
                 Reload
               </DropdownMenu.Item>

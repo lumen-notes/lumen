@@ -7,7 +7,7 @@ import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
 
 export function Root() {
-  const { fetchNotes, isFetching, error } = useFetchNotes()
+  const { fetchNotes, isFetching, error: fetchError } = useFetchNotes()
 
   // We consider any viewport wider than 640px a desktop viewport.
   // This breakpoint is copied from Tailwind's default breakpoints.
@@ -39,10 +39,10 @@ export function Root() {
   return (
     <div>
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] [@supports(height:100svh)]:h-[100svh]">
-        {error ? (
+        {fetchError && !isFetching ? (
           <div className="flex items-center gap-3 bg-[crimson] py-2 px-4 text-[white]">
             <ErrorIcon16 />
-            <span>{error.message}</span>
+            <span>{fetchError.message}</span>
           </div>
         ) : null}
         <div className="flex h-[0%] w-full flex-grow flex-col-reverse sm:flex-row">
