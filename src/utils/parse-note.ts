@@ -6,19 +6,25 @@ import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "./parse-frontmatter"
+import memoize from "fast-memoize"
 
-/** Extracts metadata from a note body */
-export function parseNoteBody(body: string) {
+/**
+ * Extract metadata from a note.
+ *
+ * We memoize this function because it's called a lot and it's expensive.
+ * We're intentionally sacrificing memory usage for runtime performance.
+ */
+export const parseNote = memoize((rawBody: string) => {
   let title = ""
   const tags: string[] = []
   const dates: string[] = []
   const links: NoteId[] = []
 
-  const { frontmatter, content } = parseFrontmatter(body)
+  const { frontmatter, content } = parseFrontmatter(rawBody)
 
   const mdast = fromMarkdown(content, {
-    extensions: [tagLink(), dateLink(), noteLink()],
-    mdastExtensions: [tagLinkFromMarkdown(), dateLinkFromMarkdown(), noteLinkFromMarkdown()],
+    extensions: [dateLink(), noteLink(), tagLink()],
+    mdastExtensions: [dateLinkFromMarkdown(), noteLinkFromMarkdown(), tagLinkFromMarkdown()],
   })
 
   visit(mdast, (node) => {
@@ -27,11 +33,6 @@ export function parseNoteBody(body: string) {
         if (node.depth === 1 && !title) {
           title = toString(node)
         }
-        break
-      }
-
-      case "tagLink": {
-        tags.push(node.data.name)
         break
       }
 
@@ -44,8 +45,13 @@ export function parseNoteBody(body: string) {
         links.push(node.data.id.toString())
         break
       }
+
+      case "tagLink": {
+        tags.push(node.data.name)
+        break
+      }
     }
   })
 
-  return { title, tags, dates, links, frontmatter }
-}
+  return { frontmatter, title, dates, links, tags }
+})

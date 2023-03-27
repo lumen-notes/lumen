@@ -1,27 +1,32 @@
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
-import { Searcher } from "fast-fuzzy"
+import { useAtomValue, useSetAtom } from "jotai"
 import qs from "qs"
 import React from "react"
 import { useNavigate } from "react-router-dom"
+import { useEvent } from "react-use"
+import { tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
-import { GlobalStateContext } from "../global-state.machine"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
+import { useSearchNotes } from "../utils/use-search-notes"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
-import { useSearchNotes } from "./search-notes"
 
 export function CommandMenu() {
-  const [state, send] = GlobalStateContext.useActor()
+  const searchNotes = useSearchNotes()
+  const tagSearcher = useAtomValue(tagSearcherAtom)
+  const upsertNote = useSetAtom(upsertNoteAtom)
+
+  const { panels, openPanel } = React.useContext(PanelsContext)
+  const routerNavigate = useNavigate()
+
   const prevActiveElement = React.useRef<HTMLElement>()
+
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const deferredQuery = React.useDeferredValue(query)
-  const { panels, openPanel } = React.useContext(PanelsContext)
-  const routerNavigate = useNavigate()
-  const searchNotes = useSearchNotes()
 
   const openMenu = React.useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement
@@ -41,7 +46,7 @@ export function CommandMenu() {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
       } else {
-        // Otherwise, navigate by using the router
+        // Otherwise, navigate using the router
         routerNavigate(url)
       }
 
@@ -52,27 +57,22 @@ export function CommandMenu() {
   )
 
   // Toggle the menu with `command + k`
-  React.useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "k" && event.metaKey) {
-        if (isOpen) {
-          closeMenu()
-        } else {
-          const textSelection = window.getSelection()?.toString()
+  useEvent("keydown", (event: KeyboardEvent) => {
+    if (event.key === "k" && event.metaKey) {
+      if (isOpen) {
+        closeMenu()
+      } else {
+        const textSelection = window.getSelection()?.toString()
 
-          // If text is selected, use that as the initial query
-          if (textSelection) {
-            setQuery(textSelection)
-          }
-
-          openMenu()
+        // If text is selected, use that as the initial query
+        if (textSelection) {
+          setQuery(textSelection)
         }
+
+        openMenu()
       }
     }
-
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, openMenu, closeMenu])
+  })
 
   // Check if query can be parsed as a date
   const dateString = React.useMemo(() => {
@@ -86,18 +86,6 @@ export function CommandMenu() {
 
     return `${year}-${month}-${day}`
   }, [deferredQuery])
-
-  // Create tag search index
-  const tagSearcher = React.useMemo(() => {
-    const entries = Object.entries(state.context.tags)
-      .map(([name, noteIds]): [string, number] => [name, noteIds.length])
-      // Sort by note count in descending order then alphabetically
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    return new Searcher(entries, {
-      keySelector: ([name]) => name,
-      threshold: 0.8,
-    })
-  }, [state.context.tags])
 
   // Search tags
   const tagResults = React.useMemo(() => {
@@ -146,11 +134,11 @@ export function CommandMenu() {
           ) : null}
           {tagResults.length ? (
             <Command.Group heading="Tags">
-              {tagResults.slice(0, numVisibleTags).map(([name, noteCount]) => (
+              {tagResults.slice(0, numVisibleTags).map(([name, noteIds]) => (
                 <CommandItem
                   key={name}
                   icon={<TagIcon16 />}
-                  description={pluralize(noteCount, "note")}
+                  description={pluralize(noteIds.length, "note")}
                   onSelect={() => navigate(`/tags/${name}`)}
                 >
                   #{name}
@@ -169,8 +157,8 @@ export function CommandMenu() {
           ) : null}
           {deferredQuery ? (
             <Command.Group heading="Notes">
-              {noteResults.slice(0, numVisibleNotes).map(([id, { body }]) => {
-                const { content } = parseFrontmatter(body)
+              {noteResults.slice(0, numVisibleNotes).map(([id, note]) => {
+                const { content } = parseFrontmatter(note.rawBody)
                 return (
                   <CommandItem
                     key={id}
@@ -197,11 +185,11 @@ export function CommandMenu() {
                 onSelect={() => {
                   const note = {
                     id: Date.now().toString(),
-                    body: deferredQuery,
+                    rawBody: deferredQuery,
                   }
 
                   // Create new note
-                  send({ type: "UPSERT_NOTE", ...note })
+                  upsertNote(note)
 
                   // Navigate to new note
                   navigate(`/${note.id}`)

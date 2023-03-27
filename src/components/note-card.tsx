@@ -1,9 +1,12 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
-import { GlobalStateContext } from "../global-state.machine"
+import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { NoteId } from "../types"
+import { useDeleteNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -35,10 +38,10 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <>
-        <DropdownMenu.Item icon={<PhoneIcon16 />} href={`tel:${value}`}>
+        <DropdownMenu.Item key="call" icon={<PhoneIcon16 />} href={`tel:${value}`}>
           Call
         </DropdownMenu.Item>
-        <DropdownMenu.Item icon={<MessageIcon16 />} href={`sms:${value}`}>
+        <DropdownMenu.Item key="message" icon={<MessageIcon16 />} href={`sms:${value}`}>
           Message
         </DropdownMenu.Item>
       </>
@@ -48,7 +51,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     // TODO: Validate email address
     if (typeof value !== "string") return null
     return (
-      <DropdownMenu.Item icon={<MailIcon16 />} href={`mailto:${value}`}>
+      <DropdownMenu.Item key="email" icon={<MailIcon16 />} href={`mailto:${value}`}>
         Email
       </DropdownMenu.Item>
     )
@@ -59,6 +62,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     const url = hasProtocol ? value : `https://${value}`
     return (
       <DropdownMenu.Item
+        key="website"
         icon={<GlobeIcon16 />}
         href={url}
         target="_blank"
@@ -72,6 +76,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="map"
         icon={<MapsIcon16 />}
         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
         target="_blank"
@@ -85,6 +90,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="github"
         icon={<GitHubIcon16 />}
         href={`https://github.com/${value}`}
         target="_blank"
@@ -98,6 +104,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="twitter"
         icon={<TwitterIcon16 />}
         href={`https://twitter.com/${value}`}
         target="_blank"
@@ -111,6 +118,7 @@ const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | nu
     if (typeof value !== "string") return null
     return (
       <DropdownMenu.Item
+        key="youtube"
         icon={<YouTubeIcon16 />}
         href={`https://youtube.com/@${value}`}
         target="_blank"
@@ -128,15 +136,22 @@ type NoteCardProps = {
 }
 
 export function NoteCard({ id, elevation }: NoteCardProps) {
+  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
+  const note = useAtomValue(noteAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
+  const deleteNote = useDeleteNote()
+
+  // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
   const codeMirrorViewRef = React.useRef<EditorView>()
+
+  // Panel context
   const { closePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
+
+  // Local state
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-  const [state, send] = GlobalStateContext.useActor()
-  const note = state.context.notes[id]
-  const isPending = !state.matches("pushingNotes") && state.context.pendingChanges.upsert.has(id)
 
   const frontmatterItems = React.useMemo(() => {
     return Object.entries(frontmatterMap)
@@ -146,10 +161,13 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
+    // Wait for the editor to mount
     setTimeout(() => {
       const view = codeMirrorViewRef.current
       if (view) {
+        // Focus the editor
         view.focus()
+        // Move cursor to end of document
         view.dispatch({
           selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
         })
@@ -185,27 +203,28 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     }
   }, [])
 
-  const deleteNote = React.useCallback(
+  const handleDeleteNote = React.useCallback(
     (id: string) => {
+      // Move focus
       focusNextCard()
 
       // Update state
-      send({ type: "DELETE_NOTE", id })
+      deleteNote(id)
 
-      // Close any panels that are open for this note
+      // If the note is open in a panel, close it
       if (panel && panel.pathname.replace("/", "") === id && panel.index !== -1) {
         closePanel?.(panel.index)
       }
     },
-    [focusNextCard, panel, closePanel, send],
+    // [focusNextCard, panel, closePanel, send],
+    [focusNextCard, deleteNote, panel, closePanel],
   )
 
   if (!note) {
     return <Card className="p-4">Not found</Card>
   }
 
-  return !isEditing ? (
-    // View mode
+  const viewMode = (
     <Card
       // Used to focus the note card after creating it
       data-note-id={id}
@@ -222,7 +241,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Copy markdown with `command + c` if no text is selected
         if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-          copy(note.body)
+          copy(note.rawBody)
           event.preventDefault()
         }
 
@@ -240,13 +259,13 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         // Delete note with `command + backspace`
         if (event.metaKey && event.key === "Backspace") {
-          deleteNote(id)
+          handleDeleteNote(id)
           event.preventDefault()
         }
       }}
     >
       <div className="p-4 pb-1">
-        <Markdown>{note.body}</Markdown>
+        <Markdown>{note.rawBody}</Markdown>
       </div>
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">
@@ -257,12 +276,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <span>
               {" · "}
               {pluralize(note.backlinks.length, "backlink")}
-            </span>
-          ) : null}
-          {isPending ? (
-            <span>
-              {" · "}
-              <span className="rounded-full bg-bg-pending px-2 text-text-pending">Not pushed</span>
             </span>
           ) : null}
         </span>
@@ -286,7 +299,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<CopyIcon16 />}
-              onSelect={() => copy(note.body)}
+              onSelect={() => copy(note.rawBody)}
               shortcut={["⌘", "C"]}
             >
               Copy markdown
@@ -298,12 +311,12 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Copy ID
             </DropdownMenu.Item>
-            {state.context.repoOwner && state.context.repoName ? (
+            {githubRepo ? (
               <>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                   icon={<ExternalLinkIcon16 />}
-                  href={`https://github.com/${state.context.repoOwner}/${state.context.repoName}/blob/main/${id}.md`}
+                  href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -314,7 +327,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
-              onSelect={() => deleteNote(id)}
+              onSelect={() => handleDeleteNote(id)}
               shortcut={["⌘", "⌫"]}
               disabled={note.backlinks.length > 0}
             >
@@ -324,16 +337,19 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         </DropdownMenu>
       </div>
     </Card>
-  ) : (
-    // Edit mode
+  )
+
+  const editMode = (
     <NoteForm
-      key={note.body}
+      key={note.rawBody}
       id={id}
-      defaultBody={note.body}
+      defaultValue={note.rawBody}
       codeMirrorViewRef={codeMirrorViewRef}
       elevation={elevation}
       onSubmit={switchToViewing}
       onCancel={switchToViewing}
     />
   )
+
+  return !isEditing ? viewMode : editMode
 }

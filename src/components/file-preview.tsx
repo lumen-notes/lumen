@@ -1,7 +1,8 @@
+import { useAtomValue } from "jotai"
 import React from "react"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { LoadingIcon16 } from "../components/icons"
-import { GlobalStateContext } from "../global-state.machine"
-import { readFile } from "../utils/file-system"
+import { readFile } from "../utils/github-fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -11,10 +12,11 @@ type FilePreviewProps = {
 }
 
 export function FilePreview({ path, alt = "" }: FilePreviewProps) {
+  const githubToken = useAtomValue(githubTokenAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
   const cachedFile = fileCache.get(path)
-  const [state] = GlobalStateContext.useActor()
-  const [file, setFile] = React.useState<File | null>(cachedFile?.file || null)
-  const [url, setUrl] = React.useState(cachedFile?.url || "")
+  const [file, setFile] = React.useState<File | null>(cachedFile?.file ?? null)
+  const [url, setUrl] = React.useState(cachedFile?.url ?? "")
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
@@ -23,10 +25,11 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     }
 
     async function loadFile() {
+      if (!githubRepo) return
       try {
         setIsLoading(true)
 
-        const file = await readFile({ context: state.context, path })
+        const file = await readFile({ githubToken, githubRepo, path })
         const url = URL.createObjectURL(file)
 
         setFile(file)
@@ -40,7 +43,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         setIsLoading(false)
       }
     }
-  }, [file, state, path])
+  }, [file, githubToken, githubRepo, path])
 
   if (!file) {
     return isLoading ? (

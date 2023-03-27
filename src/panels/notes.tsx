@@ -1,15 +1,23 @@
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
+import React from "react"
 import { NoteIcon24 } from "../components/icons"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { GlobalStateContext } from "../global-state.machine"
+import { rawNotesAtom } from "../global-atoms"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
-  const [state] = GlobalStateContext.useActor()
+  const noteCountAtom = React.useMemo(
+    () => selectAtom(rawNotesAtom, (rawNotes) => Object.keys(rawNotes).length),
+    [],
+  )
+  const noteCount = useAtomValue(noteCountAtom)
+
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="p-4">
-        <NoteList noteCount={Object.keys(state.context.notes).length} />
+        <NoteList noteCount={noteCount} />
       </div>
     </Panel>
   )

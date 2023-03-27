@@ -1,21 +1,23 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
-import { stringify } from "yaml"
-import { GlobalStateContext } from "../global-state.machine"
+import yaml from "yamljs"
+import { notesAtom, tagsAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
+import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
 import { FilePreview } from "./file-preview"
 import { useLink } from "./link-context"
-import { useSearchNotes } from "./search-notes"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
 
@@ -83,7 +85,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 
       {Object.keys(frontmatter).length > 0 ? (
         <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
-          <SyntaxHighlighter language="yaml">{stringify(frontmatter)}</SyntaxHighlighter>
+          <SyntaxHighlighter language="yaml">{yaml.stringify(frontmatter)}</SyntaxHighlighter>
         </pre>
       ) : null}
     </div>
@@ -177,7 +179,7 @@ type QueryResultsProps = {
   query: string
 }
 
-// TODO: Results should be considered links in the global notes object
+// TODO: All results should contain backlinks to the note that contains the query
 function QueryResults({ query }: QueryResultsProps) {
   const searchNote = useSearchNotes()
 
@@ -200,9 +202,9 @@ type NoteLinkProps = {
 }
 
 function NoteLink({ id, text }: NoteLinkProps) {
+  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (n) => n[id]), [id])
+  const note = useAtomValue(noteAtom)
   const Link = useLink()
-  const [state] = GlobalStateContext.useActor()
-  const { body } = state.context.notes[id]
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
@@ -216,7 +218,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
             className="z-20 w-96 p-4 animate-in fade-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
             elevation={1}
           >
-            <Markdown>{body ?? "Not found"}</Markdown>
+            <Markdown>{note?.rawBody ?? "Not found"}</Markdown>
           </Card>
         </HoverCard.Content>
       </HoverCard.Portal>
@@ -230,8 +232,11 @@ type TagLinkProps = {
 
 function TagLink({ name }: TagLinkProps) {
   const Link = useLink()
-  const [state] = GlobalStateContext.useActor()
-  const notesCount = state.context.tags[name]?.length ?? 0
+  const noteCountAtom = React.useMemo(
+    () => selectAtom(tagsAtom, (tags) => tags[name]?.length ?? 0),
+    [name],
+  )
+  const noteCount = useAtomValue(noteCountAtom)
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
@@ -239,7 +244,7 @@ function TagLink({ name }: TagLinkProps) {
           #{name}
         </Link>
       </Tooltip.Trigger>
-      <Tooltip.Content>{pluralize(notesCount, "note")}</Tooltip.Content>
+      <Tooltip.Content>{pluralize(noteCount, "note")}</Tooltip.Content>
     </Tooltip>
   )
 }

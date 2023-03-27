@@ -1,7 +1,7 @@
+import { useAtomValue } from "jotai"
 import React from "react"
+import { noteSearcherAtom, sortedNoteEntriesAtom } from "../global-atoms"
 import { Note } from "../types"
-import { GlobalStateContext } from "../global-state.machine"
-import { Searcher } from "fast-fuzzy"
 
 type Qualifier = {
   key: string
@@ -14,44 +14,24 @@ type Query = {
   fuzzy: string
 }
 
-const SearchNotesContext = React.createContext<(query: string) => Array<[string, Note]>>(() => [])
-
-export const SearchNotesProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state] = GlobalStateContext.useActor()
-
-  const sortedEntries = React.useMemo(() => {
-    // Sort notes by when they were created in descending order
-    return Object.entries(state.context.notes).sort((a, b) => {
-      return parseInt(b[0]) - parseInt(a[0])
-    })
-  }, [state.context.notes])
-
-  // Create a search index
-  const searchIndex = React.useMemo(() => {
-    return new Searcher(sortedEntries, {
-      keySelector: ([id, { title, body }]) => [title, body],
-      threshold: 0.8,
-    })
-  }, [sortedEntries])
+export const useSearchNotes = () => {
+  const sortedNoteEntries = useAtomValue(sortedNoteEntriesAtom)
+  const noteSearcher = useAtomValue(noteSearcherAtom)
 
   const searchNotes = React.useCallback(
     (query: string) => {
-      // If there's no query, return all notes sorted by when they were created
-      if (!query) return sortedEntries
+      // If there's no query, return all notes
+      if (!query) return sortedNoteEntries
 
       const { fuzzy, qualifiers } = parseQuery(query)
-      const results = fuzzy ? searchIndex.search(fuzzy) : sortedEntries
+      const results = fuzzy ? noteSearcher.search(fuzzy) : sortedNoteEntries
       return filterResults(results, qualifiers)
     },
-    [sortedEntries, searchIndex],
+    [sortedNoteEntries, noteSearcher],
   )
 
-  return <SearchNotesContext.Provider value={searchNotes}>{children}</SearchNotesContext.Provider>
+  return searchNotes
 }
-
-export const useSearchNotes = () => React.useContext(SearchNotesContext)
-
-// Utilities
 
 const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=]+)/g
 
@@ -103,7 +83,7 @@ function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) 
 
         case "dates":
           // Match if the note's date count is in the qualifier's value range
-          value = qualifier.values.some((range) => isInRange(String(note.dates.length), range))
+          value = qualifier.values.some((range) => isInRange(note.dates.length, range))
           break
 
         case "link":
@@ -113,7 +93,7 @@ function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) 
 
         case "links":
           // Match if the note's link count is in the qualifier's value range
-          value = qualifier.values.some((range) => isInRange(String(note.links.length), range))
+          value = qualifier.values.some((range) => isInRange(note.links.length, range))
           break
 
         case "backlink":
@@ -123,7 +103,7 @@ function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) 
 
         case "backlinks":
           // Match if the note's backlink count is in the qualifier's value range
-          value = qualifier.values.some((value) => isInRange(String(note.backlinks.length), value))
+          value = qualifier.values.some((value) => isInRange(note.backlinks.length, value))
           break
 
         case "no":
@@ -160,7 +140,7 @@ function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) 
   })
 }
 
-function isInRange(value: string, range: string) {
+function isInRange(value: string | number, range: string) {
   if (range.startsWith(">=")) {
     return value >= range.slice(2)
   } else if (range.startsWith("<=")) {

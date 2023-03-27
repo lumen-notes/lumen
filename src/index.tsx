@@ -5,9 +5,7 @@ import ReactDOM from "react-dom/client"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
-import { SearchNotesProvider } from "./components/search-notes"
 import { ThemeColor } from "./components/theme-color"
-import { GlobalStateContext } from "./global-state.machine"
 import "./index.css"
 import { DatePage } from "./pages/date"
 import { FilePage } from "./pages/file"
@@ -19,29 +17,25 @@ import { TagsPage } from "./pages/tags"
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <GlobalStateContext.Provider>
-      <SearchNotesProvider>
-        <Tooltip.Provider>
-          <NewNoteDialog.Provider>
-            <NewNoteDialog />
-            <ThemeColor />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/file" element={<FilePage />} />
-                <Route path="/" element={<Root />}>
-                  <Route index element={<NotesPage />} />
-                  <Route path=":id" element={<NotePage />} />
-                  <Route path="tags" element={<TagsPage />} />
-                  <Route path="tags/:name" element={<TagPage />} />
-                  <Route path="dates/:date" element={<DatePage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </NewNoteDialog.Provider>
-        </Tooltip.Provider>
-      </SearchNotesProvider>
-    </GlobalStateContext.Provider>
+    <Tooltip.Provider>
+      <NewNoteDialog.Provider>
+        <NewNoteDialog />
+        <ThemeColor />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/file" element={<FilePage />} />
+            <Route path="/" element={<Root />}>
+              <Route index element={<NotesPage />} />
+              <Route path=":id" element={<NotePage />} />
+              <Route path="tags" element={<TagsPage />} />
+              <Route path="tags/:name" element={<TagPage />} />
+              <Route path="dates/:date" element={<DatePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </NewNoteDialog.Provider>
+    </Tooltip.Provider>
   </React.StrictMode>,
 )
 

@@ -1,16 +1,17 @@
-import { Searcher } from "fast-fuzzy"
+import { useAtomValue } from "jotai"
 import React from "react"
 import { z } from "zod"
+import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-atoms"
 import { TagIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { PanelProps, Panels } from "../components/panels"
 import { SearchInput } from "../components/search-input"
-import { GlobalStateContext } from "../global-state.machine"
 import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
-  const [state] = GlobalStateContext.useActor()
+  const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
+  const tagSearcher = useAtomValue(tagSearcherAtom)
 
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",
@@ -20,40 +21,16 @@ export function TagsPanel({ id, onClose }: PanelProps) {
 
   const deferredQuery = React.useDeferredValue(query)
 
-  // Sort tags alphabetically
-  const sortedTags = React.useMemo(
-    () =>
-      Object.entries(state.context.tags)
-        .map(([name, noteIds]): [string, number] => [name, noteIds.length])
-        .sort((a, b) => a[0].localeCompare(b[0])),
-    [state.context.tags],
-  )
-
-  // Create a search index
-  const searcher = React.useMemo(() => {
-    const entries = Object.entries(state.context.tags)
-      .map(([name, noteIds]): [string, number] => [name, noteIds.length])
-      // Sort by note count in descending order then alphabetically
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    return new Searcher(entries, {
-      keySelector: ([name]) => name,
-      threshold: 0.8,
-    })
-  }, [state.context.tags])
-
   const searchResults = React.useMemo(() => {
-    return searcher.search(deferredQuery)
-  }, [deferredQuery, searcher])
-
-  // Show the search results if the user has typed something, otherwise show all tags
-  const items = deferredQuery ? searchResults : sortedTags
+    return deferredQuery ? tagSearcher.search(deferredQuery) : sortedTagEntries
+  }, [tagSearcher, deferredQuery, sortedTagEntries])
 
   return (
     <Panel id={id} title="Tags" icon={<TagIcon24 />} onClose={onClose}>
       <div className="flex flex-col gap-2 p-4">
         <div className="flex flex-col gap-2">
           <SearchInput
-            placeholder={`Search ${pluralize(sortedTags.length, "tag")}…`}
+            placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
             value={query}
             onChange={setQuery}
           />
@@ -64,7 +41,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
           ) : null}
         </div>
         <ul className="flex flex-col">
-          {items.map(([name, noteCount]) => (
+          {searchResults.map(([name, noteIds]) => (
             <li
               key={name}
               className="flex items-center justify-between border-b border-border-secondary py-3 last:border-b-0"
@@ -72,7 +49,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
               <Panels.Link className="link" to={`/tags/${name}`} target="_blank">
                 #{name}
               </Panels.Link>
-              <span className="text-text-secondary">{pluralize(noteCount, "note")}</span>
+              <span className="text-text-secondary">{pluralize(noteIds.length, "note")}</span>
             </li>
           ))}
         </ul>
