@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { LoadingIcon16 } from "../components/icons"
-import { readFile } from "../utils/github-fs"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { readRawFile } from "../utils/github-fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -29,7 +29,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
       try {
         setIsLoading(true)
 
-        const file = await readFile({ githubToken, githubRepo, path })
+        const file = await readRawFile({ githubToken, githubRepo, path })
         const url = URL.createObjectURL(file)
 
         setFile(file)

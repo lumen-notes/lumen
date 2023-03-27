@@ -49,13 +49,8 @@ export const useFetchNotes = () => {
       // Only fetch notes if the SHA has changed
       if (!sha || sha !== latestSha) {
         const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
-        const fileText = await file.text()
-
-        // TODO: Remove after debugging ZodError
-        console.log(fileText)
-
         const fileSchema = z.record(z.string())
-        const rawNotes = fileSchema.parse(JSON.parse(fileText))
+        const rawNotes = fileSchema.parse(JSON.parse(file))
 
         setRawNotes(rawNotes)
         setSha(latestSha)

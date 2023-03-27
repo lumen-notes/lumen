@@ -34,8 +34,10 @@ export function Root() {
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] [@supports(height:100svh)]:h-[100svh]">
         {fetchError && !isFetching ? (
           <div className="flex items-center gap-3 bg-[crimson] py-2 px-4 text-[white]">
-            <ErrorIcon16 />
-            <span>{fetchError.message}</span>
+            <div>
+              <ErrorIcon16 />
+            </div>
+            <span className="truncate">{fetchError.message}</span>
           </div>
         ) : null}
         <div className="flex h-[0%] w-full flex-grow flex-col-reverse sm:flex-row">
