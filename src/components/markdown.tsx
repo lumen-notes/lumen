@@ -6,7 +6,7 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
-import { stringify } from "yaml"
+import yaml from "yamljs"
 import { notesAtom, tagsAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
@@ -85,7 +85,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 
       {Object.keys(frontmatter).length > 0 ? (
         <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
-          <SyntaxHighlighter language="yaml">{stringify(frontmatter)}</SyntaxHighlighter>
+          <SyntaxHighlighter language="yaml">{yaml.stringify(frontmatter)}</SyntaxHighlighter>
         </pre>
       ) : null}
     </div>

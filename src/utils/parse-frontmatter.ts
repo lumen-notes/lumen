@@ -1,4 +1,4 @@
-import { parse } from "yaml"
+import yaml from "yamljs"
 
 const FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
 
@@ -14,7 +14,7 @@ export function parseFrontmatter(markdown: string): {
   }
 
   const [, frontmatterYaml, content] = match
-  const frontmatter = parse(frontmatterYaml)
+  const frontmatter = yaml.parse(frontmatterYaml)
 
   return { frontmatter, content: content.trimStart() }
 }
