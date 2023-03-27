@@ -303,6 +303,33 @@ function useCodeMirror({
           setValue(value)
           onStateChange?.(event)
         }),
+        EditorView.domEventHandlers({
+          paste: (event, view) => {
+            const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
+            const isUrl = /^https?:\/\//.test(clipboardText)
+
+            // If the clipboard text is a URL, convert selected text into a markdown link
+            if (isUrl) {
+              const { selection } = view.state
+              const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
+              const selectedText = view?.state.doc.sliceString(from, to) ?? ""
+              const markdown = selectedText ? `[${selectedText}](${clipboardText})` : clipboardText
+
+              view.dispatch({
+                changes: {
+                  from,
+                  to,
+                  insert: markdown,
+                },
+                selection: {
+                  anchor: from + markdown.length,
+                },
+              })
+
+              event.preventDefault()
+            }
+          },
+        }),
         closeBrackets(),
         autocompletion({
           override: [dateCompletion, noteCompletion, tagCompletion],
