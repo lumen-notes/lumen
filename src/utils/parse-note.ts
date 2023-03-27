@@ -19,6 +19,7 @@ export const parseNote = memoize((rawBody: string) => {
   const tags: string[] = []
   const dates: string[] = []
   const links: NoteId[] = []
+  const queries: string[] = []
 
   const { frontmatter, content } = parseFrontmatter(rawBody)
 
@@ -50,8 +51,14 @@ export const parseNote = memoize((rawBody: string) => {
         tags.push(node.data.name)
         break
       }
+
+      case "code": {
+        if (node.lang === "query") {
+          queries.push(node.value)
+        }
+      }
     }
   })
 
-  return { frontmatter, title, dates, links, tags }
+  return { frontmatter, title, dates, links, tags, queries }
 })

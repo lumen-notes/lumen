@@ -10,6 +10,7 @@ export type Note = {
   dates: string[]
   links: NoteId[]
   tags: string[]
+  queries: string[]
 
   // Derived from links
   backlinks: NoteId[]

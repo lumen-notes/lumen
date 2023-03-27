@@ -35,7 +35,7 @@ export const useSearchNotes = () => {
 
 const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=]+)/g
 
-function parseQuery(query: string): Query {
+export function parseQuery(query: string): Query {
   const fuzzy = query.replace(QUALIFIER_REGEX, "").trim()
   const matches = query.matchAll(QUALIFIER_REGEX)
   const qualifiers: Qualifier[] = Array.from(matches)
@@ -53,7 +53,7 @@ function parseQuery(query: string): Query {
   return { fuzzy, qualifiers }
 }
 
-function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) {
+export function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) {
   return results.filter(([id, note]) => {
     return qualifiers.every((qualifier) => {
       let value = false
