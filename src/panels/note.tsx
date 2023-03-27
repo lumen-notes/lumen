@@ -3,7 +3,7 @@ import { search } from "fast-fuzzy"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { NoteIcon24, QueryIcon16 } from "../components/icons"
+import { LinkIcon16, NoteIcon24, QueryIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -40,7 +40,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <Tabs.Root defaultValue="backlinks">
           <Tabs.List className="mb-4 flex gap-2 pb-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
             <TabsTrigger value="backlinks">
-              {/* TODO: Link icon */}
+              <LinkIcon16 />
               Backlinks
               <span>{note?.backlinks.length}</span>
             </TabsTrigger>
