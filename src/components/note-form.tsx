@@ -386,6 +386,7 @@ function useCodeMirror({
     defaultValue,
     placeholderValue,
     onStateChange,
+    onPaste,
     noteCompletion,
     tagCompletion,
     viewRef,
