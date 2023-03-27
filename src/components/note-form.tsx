@@ -50,15 +50,27 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
-  const githubToken = useAtomValue(githubTokenAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
+  const attachFile = useAttachFile()
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
-  const onStateChange = React.useCallback(
+  const handleStateChange = React.useCallback(
     (event: ViewUpdate) => setEditorHasFocus(event.view.hasFocus),
     [],
+  )
+
+  const handlePaste = React.useCallback(
+    (event: ClipboardEvent, view: EditorView) => {
+      const [file] = Array.from(event.clipboardData?.files ?? [])
+
+      if (file) {
+        attachFile(file, view)
+        event.preventDefault()
+      }
+    },
+    [attachFile],
   )
 
   const {
@@ -69,7 +81,8 @@ export function NoteForm({
     defaultValue,
     placeholder: "Write a note…",
     viewRef: codeMirrorViewRef,
-    onStateChange,
+    onStateChange: handleStateChange,
+    onPaste: handlePaste,
   })
 
   function setValue(newValue: string) {
@@ -97,52 +110,6 @@ export function NoteForm({
     }
   }
 
-  async function attachFile(file: File) {
-    try {
-      // We can't upload a file if we don't know where to upload it to
-      if (!githubRepo) return
-
-      const fileId = Date.now().toString()
-      const fileExtension = file.name.split(".").pop()
-      const fileName = file.name.replace(`.${fileExtension}`, "")
-      const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
-      const arrayBuffer = await file.arrayBuffer()
-
-      // Upload file
-      writeFile({ githubToken, githubRepo, path: filePath, content: arrayBuffer })
-
-      // Cache file
-      fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
-
-      let markdown = `[${fileName}](${filePath})`
-
-      // Use markdown image syntax if file is an image, video, or audio
-      if (
-        file.type.startsWith("image/") ||
-        file.type.startsWith("video/") ||
-        file.type.startsWith("audio/")
-      ) {
-        markdown = `!${markdown}`
-      }
-
-      const { from = 0, to = 0 } =
-        view?.state.selection.ranges[view?.state.selection.mainIndex] ?? {}
-      const anchor = from + markdown.indexOf("]")
-      const head = from + markdown.indexOf("[") + 1
-
-      view?.dispatch({
-        // Replace the current selection with the markdown
-        changes: [{ from, to, insert: markdown }],
-        // Select the text content of the inserted markdown
-        selection: { anchor, head },
-      })
-
-      view?.focus()
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
 
   return (
@@ -156,7 +123,7 @@ export function NoteForm({
         const file = item.getAsFile()
 
         if (file) {
-          attachFile(file)
+          attachFile(file, view)
           event.preventDefault()
         }
 
@@ -211,18 +178,7 @@ export function NoteForm({
               }
             }}
           >
-            <div
-              ref={editorRef}
-              className="flex flex-shrink-0 flex-grow p-4 pb-1"
-              onPaste={(event) => {
-                const [file] = Array.from(event.clipboardData.files)
-
-                if (file) {
-                  attachFile(file)
-                  event.preventDefault()
-                }
-              }}
-            />
+            <div ref={editorRef} className="flex flex-shrink-0 flex-grow p-4 pb-1" />
             <div
               className={clsx(
                 "sticky bottom-0 flex justify-between rounded-lg p-2 backdrop-blur-md",
@@ -238,7 +194,7 @@ export function NoteForm({
                   const [file] = Array.from(files)
 
                   if (file) {
-                    attachFile(file)
+                    attachFile(file, view)
                   }
                 }}
               >
@@ -264,17 +220,92 @@ export function NoteForm({
   )
 }
 
+function useAttachFile() {
+  const getGitHubToken = useAtomCallback(React.useCallback((get) => get(githubTokenAtom), []))
+  const getGitHubRepo = useAtomCallback(React.useCallback((get) => get(githubRepoAtom), []))
+
+  const attachFile = React.useCallback(
+    async (file: File, view?: EditorView) => {
+      const githubToken = getGitHubToken()
+      const githubRepo = getGitHubRepo()
+
+      // We can't upload a file if we don't know where to upload it to
+      // or if we don't have a reference to the CodeMirror view
+      if (!githubRepo || !view) return
+
+      try {
+        const fileId = Date.now().toString()
+        const fileExtension = file.name.split(".").pop()
+        const fileName = file.name.replace(`.${fileExtension}`, "")
+        const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
+        const arrayBuffer = await file.arrayBuffer()
+
+        // Upload file
+        writeFile({ githubToken, githubRepo, path: filePath, content: arrayBuffer })
+
+        // Cache file
+        fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
+
+        // Get current selection
+        const { selection } = view.state
+        const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
+        const selectedText = view.state.doc.sliceString(from, to)
+
+        // Compose markdown
+        let markdown = `[${selectedText || fileName}](${filePath})`
+
+        // Use markdown image syntax if file is an image, video, or audio
+        if (
+          file.type.startsWith("image/") ||
+          file.type.startsWith("video/") ||
+          file.type.startsWith("audio/")
+        ) {
+          markdown = `!${markdown}`
+        }
+
+        // Prepare next selection
+        let anchor: number | undefined
+        let head: number | undefined
+
+        if (selectedText) {
+          // If there is a selection, move the cursor to the end of the inserted markdown
+          anchor = from + markdown.length
+        } else {
+          // Otherwise, select the text content of the inserted markdown so it's easy to change
+          anchor = from + markdown.indexOf("]")
+          head = from + markdown.indexOf("[") + 1
+        }
+
+        view?.dispatch({
+          // Replace the current selection with the markdown
+          changes: [{ from, to, insert: markdown }],
+          selection: { anchor, head },
+        })
+
+        view.focus()
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    [getGitHubRepo, getGitHubToken],
+  )
+
+  return attachFile
+}
+
 // Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
 function useCodeMirror({
   defaultValue,
   placeholder: placeholderValue = "",
   viewRef: providedViewRef,
   onStateChange,
+  onPaste,
 }: {
   defaultValue?: string
   placeholder?: string
   viewRef?: React.MutableRefObject<EditorView | undefined>
   onStateChange?: (event: ViewUpdate) => void
+  onPaste?: (event: ClipboardEvent, view: EditorView) => void
 }) {
   const [editorElement, setEditorElement] = React.useState<HTMLElement>()
   const editorRef = React.useCallback((node: HTMLElement | null) => {
@@ -328,6 +359,8 @@ function useCodeMirror({
 
               event.preventDefault()
             }
+
+            onPaste?.(event, view)
           },
         }),
         closeBrackets(),
