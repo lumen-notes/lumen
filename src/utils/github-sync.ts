@@ -58,6 +58,7 @@ export const useFetchNotes = () => {
       // Clear error
       setError(null)
     } catch (error) {
+      console.error(error)
       setError(error as Error)
     } finally {
       setIsFetching(false)

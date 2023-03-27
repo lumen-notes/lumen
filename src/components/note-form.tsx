@@ -13,10 +13,9 @@ import clsx from "clsx"
 import React from "react"
 import { NoteId } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
-// import { writeFile } from "../utils/file-system"
-import { useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
-import { tagsAtom, upsertNoteAtom } from "../global-atoms"
+import { githubRepoAtom, githubTokenAtom, tagsAtom, upsertNoteAtom } from "../global-atoms"
 import { useUpsertNote } from "../utils/github-sync"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { useSearchNotes } from "../utils/use-search-notes"
@@ -26,6 +25,7 @@ import { FileInputButton } from "./file-input-button"
 import { fileCache } from "./file-preview"
 import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
+import { writeFile } from "../utils/github-fs"
 
 const UPLOADS_DIRECTORY = "uploads"
 
@@ -50,6 +50,8 @@ export function NoteForm({
   onSubmit,
   onCancel,
 }: NoteFormProps) {
+  const githubToken = useAtomValue(githubTokenAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
 
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
@@ -86,7 +88,6 @@ export function NoteForm({
     }
 
     upsertNote(note)
-    // send({ type: "UPSERT_NOTE", ...note })
 
     onSubmit?.(note)
 
@@ -98,14 +99,17 @@ export function NoteForm({
 
   async function attachFile(file: File) {
     try {
+      // We can't upload a file if we don't know where to upload it to
+      if (!githubRepo) return
+
       const fileId = Date.now().toString()
       const fileExtension = file.name.split(".").pop()
       const fileName = file.name.replace(`.${fileExtension}`, "")
       const filePath = `/${UPLOADS_DIRECTORY}/${fileId}.${fileExtension}`
-      // const arrayBuffer = await file.arrayBuffer()
+      const arrayBuffer = await file.arrayBuffer()
 
       // Upload file
-      // writeFile({ context: state.context, path: filePath, content: arrayBuffer })
+      writeFile({ githubToken, githubRepo, path: filePath, content: arrayBuffer })
 
       // Cache file
       fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
@@ -238,7 +242,7 @@ export function NoteForm({
                   }
                 }}
               >
-                <IconButton aria-label="Attach file">
+                <IconButton aria-label="Attach file" disabled={!githubRepo}>
                   <PaperclipIcon16 />
                 </IconButton>
               </FileInputButton>
