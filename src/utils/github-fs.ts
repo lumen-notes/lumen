@@ -10,7 +10,11 @@ type GetFileShaOptions = {
   path: string
 }
 
-async function getFileSha({ githubToken, githubRepo, path }: GetFileShaOptions): Promise<string> {
+export async function getFileSha({
+  githubToken,
+  githubRepo,
+  path,
+}: GetFileShaOptions): Promise<string> {
   const endpoint = `${GITHUB_ENDPOINT}/repos/${githubRepo.owner}/${githubRepo.name}/contents/${
     // Remove leading slash if present
     path.replace(/^\//, "")
@@ -26,22 +30,8 @@ async function getFileSha({ githubToken, githubRepo, path }: GetFileShaOptions):
   })
 
   if (!response.ok) {
-    console.error(response)
-    switch (response.status) {
-      // Unauthorized
-      case 401:
-        throw new Error(`Invalid GitHub token`)
-
-      // Not found
-      case 404:
-        throw new Error(`File not found: ${path} in ${githubRepo.owner}/${githubRepo.name}`)
-
-      // Other error
-      default:
-        throw new Error(
-          `Failed to get SHA of ${path} in ${githubRepo.owner}/${githubRepo.name} (${response.status})`,
-        )
-    }
+    // Failing to get the SHA is sometimes expected, so we don't throw an error
+    return ""
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
 import { Getter, atom, useAtom, useSetAtom } from "jotai"
-import { useAtomCallback } from "jotai/utils"
+import { atomWithStorage, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { z } from "zod"
 import {
@@ -9,7 +9,10 @@ import {
   rawNotesAtom,
   upsertNoteAtom,
 } from "../global-atoms"
-import { deleteFile, readFile, writeFile } from "./github-fs"
+import { deleteFile, getFileSha, readFile, writeFile } from "./github-fs"
+
+// Store SHA to avoid re-fetching notes if they haven't changed
+const shaAtom = atomWithStorage<string>("sha", "")
 
 const isFetchingAtom = atom(false)
 const errorAtom = atom<Error | null>(null)
@@ -18,6 +21,7 @@ const githubTokenCallback = (get: Getter) => get(githubTokenAtom)
 const githubRepoCallback = (get: Getter) => get(githubRepoAtom)
 
 export const useFetchNotes = () => {
+  const [sha, setSha] = useAtom(shaAtom)
   const getGitHubToken = useAtomCallback(githubTokenCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
@@ -32,11 +36,21 @@ export const useFetchNotes = () => {
     try {
       setIsFetching(true)
 
-      const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
-      const fileSchema = z.record(z.string())
-      const rawNotes = fileSchema.parse(JSON.parse(await file.text()))
+      const filePath = ".lumen/notes.json"
+      const latestSha = await getFileSha({ githubToken, githubRepo, path: filePath })
 
-      setRawNotes(rawNotes)
+      if (process.env.NODE_ENV === "development") {
+        console.log(`SHA: ${latestSha} ${latestSha === sha ? "(cached)" : "(new)"}`)
+      }
+
+      // Only fetch notes if the SHA has changed
+      if (latestSha !== sha) {
+        const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
+        const fileSchema = z.record(z.string())
+        const rawNotes = fileSchema.parse(JSON.parse(await file.text()))
+        setRawNotes(rawNotes)
+        setSha(latestSha)
+      }
 
       // Clear error
       setError(null)
@@ -45,7 +59,7 @@ export const useFetchNotes = () => {
     } finally {
       setIsFetching(false)
     }
-  }, [getGitHubToken, getGitHubRepo, setRawNotes, setIsFetching, setError])
+  }, [sha, getGitHubToken, getGitHubRepo, setRawNotes, setSha, setIsFetching, setError])
 
   return { fetchNotes, isFetching, error }
 }
