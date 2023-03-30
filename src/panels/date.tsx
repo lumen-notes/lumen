@@ -1,11 +1,9 @@
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
-import clsx from "clsx"
 import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } from "date-fns"
 import { toDate } from "date-fns-tz"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { datesAtom } from "../global-atoms"
 import { IconButton } from "../components/icon-button"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { useLink } from "../components/link-context"
@@ -13,6 +11,8 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
+import { datesAtom } from "../global-atoms"
+import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
@@ -64,7 +64,7 @@ function Calendar({ activeDate: dateString }: { activeDate: string }) {
   const week = eachDayOfInterval({ start: startOfWeek, end: endOfWeek })
 
   return (
-    <div className="flex flex-col gap-2 overflow-hidden py-2 px-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+    <div className="flex flex-col gap-2 overflow-hidden px-2 py-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
       <div className="flex items-center justify-between">
         <span className="px-2 text-lg font-semibold">
           {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
@@ -125,7 +125,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
         key={date.toISOString()}
         to={`/dates/${toDateString(date)}`}
         aria-label={label}
-        className={clsx(
+        className={cx(
           "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
 
           // Underline the active day
@@ -144,8 +144,8 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
           {/* Show the first 3 letters of the day name when there's enough space */}
           <span className="hidden @[6rem]:inline">{dayName.slice(0, 3)}</span>
           <span
-            className={clsx(
-              isToday && "-my-[0.125rem] -mx-1 rounded-sm py-[0.125rem] px-1",
+            className={cx(
+              isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
               // Outline the current day
               isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
               // Make outline bolder if current day is active
