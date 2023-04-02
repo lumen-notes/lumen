@@ -2,7 +2,7 @@
 
 # Lumen
 
-An opinionated note-taking system for thinking, writing, learning, and mindfulness. Built for personal usage. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+An opinionated note-taking system for thinking, writing, learning, and mindfulness. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 ![Screenshot of the app](https://user-images.githubusercontent.com/4608155/213857201-286bee23-205c-4fbd-b962-22b789c38426.png)
 
