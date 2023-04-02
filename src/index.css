@@ -219,7 +219,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
-  @apply flex rounded-sm px-2 py-1 coarse:py-2 coarse:px-3;
+  @apply flex rounded-sm px-2 py-1 coarse:px-3 coarse:py-2;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
@@ -244,13 +244,11 @@ body:has([data-resizing="true"]) * {
   @apply leading-normal;
 }
 
-.markdown > :first-child,
-.markdown li:first-child {
+.markdown *:first-child {
   @apply mt-0;
 }
 
-.markdown > :last-child,
-.markdown li:last-child {
+.markdown *:last-child {
   @apply mb-0;
 }
 
@@ -328,6 +326,10 @@ body:has([data-resizing="true"]) * {
 .markdown ul,
 .markdown ol {
   @apply pl-12;
+}
+
+.markdown li:has(p) {
+  @apply my-3;
 }
 
 .markdown ul ul,
@@ -442,11 +444,11 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-dialog] {
-  @apply fixed top-2 left-1/2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-32;
+  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-32;
 }
 
 [cmdk-input] {
-  @apply w-full bg-transparent py-4 px-5 text-lg leading-none outline-none;
+  @apply w-full bg-transparent px-5 py-4 text-lg leading-none outline-none;
 }
 
 [cmdk-input]::placeholder {
@@ -472,7 +474,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-item] {
-  @apply cursor-default rounded-sm py-3 px-3 leading-4;
+  @apply cursor-default rounded-sm px-3 py-3 leading-4;
 }
 
 [cmdk-item][aria-selected] {
