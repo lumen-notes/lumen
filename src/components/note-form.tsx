@@ -428,9 +428,9 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
         label: formatDate(dateString),
         detail: formatDateDistance(dateString),
         apply: (view, completion, from, to) => {
-          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
           const text = `[[${dateString}]]`
 
+          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
           view.dispatch({
             changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
             selection: { anchor: from + text.length },
@@ -488,20 +488,18 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            rawBody: `${query}\n\n#inbox`,
+            rawBody: `# ${query}\n\n#inbox`,
           }
 
           upsertNote(note)
 
           // Insert link to new note
-          const text = `${note.id}|${query}`
-          const anchor = from + text.length
-          const head = anchor - query.length
+          const text = `[[${note.id}|${query}]]`
 
+          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
           view.dispatch({
-            changes: { from, to, insert: text },
-            // TODO: Move cursor to end of ]]
-            selection: { anchor, head },
+            changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
+            selection: { anchor: from + text.length },
           })
         },
       }
@@ -513,13 +511,12 @@ function useNoteCompletion() {
           info: content,
           apply: (view, completion, from, to) => {
             // Insert link to note
-            const text = `${id}|${note?.title || query}`
-            const anchor = from + text.length
-            const head = from + `${id}|`.length
+            const text = `[[${id}${note?.title ? `|${note.title}` : ""}]]`
 
+            const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
             view.dispatch({
-              changes: { from, to, insert: text },
-              selection: { anchor, head },
+              changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
+              selection: { anchor: from + text.length },
             })
           },
         }
@@ -530,7 +527,7 @@ function useNoteCompletion() {
       }
 
       return {
-        from: word.from + 2, // Insert after "[["
+        from: word.from,
         options,
         filter: false,
       }
