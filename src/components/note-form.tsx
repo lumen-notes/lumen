@@ -32,6 +32,7 @@ const UPLOADS_DIRECTORY = "uploads"
 type NoteFormProps = {
   id?: NoteId
   defaultValue?: string
+  placeholder?: string
   elevation?: CardProps["elevation"]
   minHeight?: string | number
   maxHeight?: string | number
@@ -43,6 +44,7 @@ type NoteFormProps = {
 export function NoteForm({
   id,
   defaultValue = "",
+  placeholder = "Write a note…",
   elevation = 0,
   minHeight,
   maxHeight,
@@ -79,7 +81,7 @@ export function NoteForm({
     value = "",
   } = useCodeMirror({
     defaultValue,
-    placeholder: "Write a note…",
+    placeholder,
     viewRef: codeMirrorViewRef,
     onStateChange: handleStateChange,
     onPaste: handlePaste,
