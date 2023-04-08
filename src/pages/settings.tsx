@@ -38,8 +38,10 @@ export function SettingsPage() {
                     }}
                   />
                   <div className="flex flex-col gap-1">
-                    <span className="text-sm leading-3">Signed in as</span>
-                    <span className="font-semibold leading-4">{githubUser.data.login}</span>
+                    <span className="text-sm leading-3 coarse:leading-4">Signed in as</span>
+                    <span className="font-semibold leading-4 coarse:leading-5">
+                      {githubUser.data.login}
+                    </span>
                   </div>
                 </div>
                 {/* <Button onClick={() => setGitHubToken("")}>Sign out</Button> */}
