@@ -4,7 +4,7 @@
 
 ![Status](https://badgen.net/badge/status/alpha/orange)
 
-A note-taking app for lifelong learners. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+The note-taking app for lifelong learners. Based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 ![Screenshot of the app](https://user-images.githubusercontent.com/4608155/213857201-286bee23-205c-4fbd-b962-22b789c38426.png)
 
