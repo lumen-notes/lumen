@@ -17,7 +17,7 @@ The note-taking app for lifelong learners. Based on the [Zettelkasten Method](ht
 | 🐣 Twitter   | [@lumen_notes](https://twitter.com/lumen_notes)                     | |
 
 
-## Guiding principles
+## Strong opinions, weakly held
 
 - Knowledge management and task management should be separate. Lumen is a tool for knowledge management not task management.
 - Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
