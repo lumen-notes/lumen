@@ -6,7 +6,6 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
-import yaml from "yamljs"
 import { notesAtom, tagsAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
@@ -20,6 +19,7 @@ import { FilePreview } from "./file-preview"
 import { useLink } from "./link-context"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
+import { sentenceCase } from "sentence-case"
 
 export type MarkdownProps = {
   children: string
@@ -82,12 +82,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
       >
         {content}
       </ReactMarkdown>
-
-      {Object.keys(frontmatter).length > 0 ? (
-        <pre className="mt-4 overflow-auto rounded-sm bg-bg-secondary p-3">
-          <SyntaxHighlighter language="yaml">{yaml.stringify(frontmatter)}</SyntaxHighlighter>
-        </pre>
-      ) : null}
+      <Frontmatter frontmatter={frontmatter} />
     </div>
   )
 })
@@ -118,6 +113,41 @@ function GitHubAvatar({ username }: { username: string }) {
       }}
     />
   )
+}
+
+function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) {
+  if (Object.keys(frontmatter).length === 0) return null
+  return (
+    <div className="mt-4 divide-y divide-border-secondary border-t border-border-secondary">
+      {Object.entries(frontmatter).map(([key, value]) => {
+        return (
+          <div key={key} className="grid gap-1 py-2 last:pb-0">
+            <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
+            <FrontmatterValue value={value} />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function formatFrontmatterKey(key: string) {
+  switch (key) {
+    case "isbn":
+      return "ISBN"
+    case "github":
+      return "GitHub"
+    default:
+      return sentenceCase(key)
+  }
+}
+
+function FrontmatterValue({ value }: { value: unknown }) {
+  if (typeof value === "string") {
+    return <Markdown>{value}</Markdown>
+  }
+
+  return <code>{JSON.stringify(value)}</code>
 }
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
@@ -215,7 +245,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
           <Card
-            className="z-20 w-96 p-4 animate-in fade-in data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2"
+            className="z-20 w-96 p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             elevation={1}
           >
             <Markdown>{note?.rawBody ?? "Not found"}</Markdown>
