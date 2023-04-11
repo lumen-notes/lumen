@@ -222,12 +222,11 @@ export const KitchenSink: StoryObj<typeof Markdown> = {
 }
 
 const book = `---
+author: Sönke Ahrens
 isbn: 978-1542866507
 ---
 
 # How to Take Smart Notes
-
-By Sönke Ahrens
 `
 
 export const Book: StoryObj<typeof Markdown> = {
@@ -237,7 +236,10 @@ export const Book: StoryObj<typeof Markdown> = {
 }
 
 const person = `---
+phone: 555-555-5555
+website: nat.org
 github: nat
+twitter: natfriedman
 ---
 
 # Nat Friedman
