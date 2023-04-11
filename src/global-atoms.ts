@@ -1,7 +1,6 @@
 import { Searcher } from "fast-fuzzy"
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { z } from "zod"
 import { GitHubRepository, Note, NoteId } from "./types"
 import { parseNote } from "./utils/parse-note"
 
