@@ -33,15 +33,22 @@ export const DAY_NAMES = [
  * @example
  * formatDate("1998-07-11") // "Tue, Jul 11 1998"
  */
-export function formatDate(dateString: string) {
+export function formatDate(
+  dateString: string,
+  { excludeDayOfWeek = false }: { excludeDayOfWeek?: boolean } = {},
+) {
   const date = new Date(dateString)
   const currentYear = new Date().getUTCFullYear()
   const year = date.getUTCFullYear()
   const month = MONTH_NAMES[date.getUTCMonth()].slice(0, 3)
   const day = date.getUTCDate()
-  const dayOfWeek = DAY_NAMES[date.getUTCDay()].slice(0, 3)
 
-  let formattedDate = `${dayOfWeek}, ${month} ${day}`
+  let formattedDate = `${month} ${day}`
+
+  if (!excludeDayOfWeek) {
+    const dayOfWeek = DAY_NAMES[date.getUTCDay()].slice(0, 3)
+    formattedDate = `${dayOfWeek}, ${formattedDate}`
+  }
 
   // Only show the year if it's not the current year
   if (year !== currentYear) {
@@ -85,5 +92,12 @@ export function toDateString(date: Date) {
   const year = date.getFullYear().toString().padStart(4, "0")
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
   const day = date.getDate().toString().padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+export function toDateStringUtc(date: Date) {
+  const year = date.getUTCFullYear().toString().padStart(4, "0")
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, "0")
+  const day = date.getUTCDate().toString().padStart(2, "0")
   return `${year}-${month}-${day}`
 }

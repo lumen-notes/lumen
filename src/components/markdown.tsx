@@ -6,20 +6,23 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
+import { sentenceCase } from "sentence-case"
 import { notesAtom, tagsAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { formatDate, formatDateDistance } from "../utils/date"
+import {
+  MONTH_NAMES,
+  formatDate,
+  formatDateDistance,
+  toDateString,
+  toDateStringUtc,
+} from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
 import { FilePreview } from "./file-preview"
-import { useLink } from "./link-context"
-import { SyntaxHighlighter } from "./syntax-highlighter"
-import { Tooltip } from "./tooltip"
-import { sentenceCase } from "sentence-case"
 import {
   GitHubIcon16,
   GlobeIcon16,
@@ -29,6 +32,9 @@ import {
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
+import { useLink } from "./link-context"
+import { SyntaxHighlighter } from "./syntax-highlighter"
+import { Tooltip } from "./tooltip"
 
 export type MarkdownProps = {
   children: string
@@ -152,6 +158,8 @@ function formatFrontmatterKey(key: string) {
 }
 
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
+  const Link = useLink()
+
   switch (key) {
     case "phone":
       if (typeof value !== "string") break
@@ -272,13 +280,88 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           </a>
         </div>
       )
+
+    case "birthday":
+      if (value instanceof Date) {
+        const dateString = toDateStringUtc(value)
+        const nextBirthday = getNextBirthday(value)
+        const nextBirthdayString = toDateString(nextBirthday)
+        const nextAge = nextBirthday.getFullYear() - value.getFullYear()
+        return (
+          <span>
+            <Link className="link" target="_blank" to={`/dates/${dateString}`}>
+              {formatDate(dateString, { excludeDayOfWeek: true })}
+            </Link>
+            <span className="text-text-secondary">
+              {" · "}
+              <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
+                {withSuffix(nextAge)} birthday
+              </Link>{" "}
+              is {formatDateDistance(toDateStringUtc(nextBirthday))}
+            </span>
+          </span>
+        )
+      } else if (typeof value === "string" && /^\d{2}-\d{2}$/.test(value)) {
+        const [month, day] = value.split("-").map((s) => parseInt(s, 10))
+        const nextBirthday = getNextBirthday(new Date(1900, month - 1, day))
+        const nextBirthdayString = toDateString(nextBirthday)
+        return (
+          <span>
+            {MONTH_NAMES[month - 1].slice(0, 3)} {day}
+            <span className="text-text-secondary">
+              {" · "}
+              <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
+                Next birthday
+              </Link>{" "}
+              is {formatDateDistance(toDateStringUtc(nextBirthday))}
+            </span>
+          </span>
+        )
+      }
+      break
   }
 
   if (typeof value === "string") {
     return <Markdown>{value}</Markdown>
   }
 
+  // TODO: If value is a list of strings, render them with a markdown list
+
   return <code>{JSON.stringify(value)}</code>
+}
+
+function getNextBirthday(birthday: Date): Date {
+  const today = new Date()
+  const currentYear = today.getFullYear()
+  const birthMonth = birthday.getUTCMonth()
+  const birthDay = birthday.getUTCDate()
+  const nextBirthday = new Date(currentYear, birthMonth, birthDay)
+
+  if (nextBirthday < today) {
+    nextBirthday.setFullYear(currentYear + 1)
+  }
+
+  return nextBirthday
+}
+
+function withSuffix(num: number): string {
+  const lastDigit = num % 10
+  const lastTwoDigits = num % 100
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
+    return `${num}th`
+  }
+
+  switch (lastDigit) {
+    case 1:
+      return `${num}st`
+    case 2:
+      return `${num}nd`
+    case 3:
+      return `${num}rd`
+    default:
+      return `${num}th`
+  }
 }
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
