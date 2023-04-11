@@ -7,14 +7,19 @@ export function parseFrontmatter(markdown: string): {
   frontmatter: Record<string, unknown>
   content: string
 } {
-  const match = markdown.match(FRONTMATTER_REGEX)
+  try {
+    const match = markdown.match(FRONTMATTER_REGEX)
 
-  if (!match) {
+    if (!match) {
+      return { frontmatter: {}, content: markdown }
+    }
+
+    const [, frontmatterYaml, content] = match
+    const frontmatter = yaml.parse(frontmatterYaml)
+
+    return { frontmatter, content: content.trimStart() }
+  } catch (error) {
+    console.error("Error parsing frontmatter", error)
     return { frontmatter: {}, content: markdown }
   }
-
-  const [, frontmatterYaml, content] = match
-  const frontmatter = yaml.parse(frontmatterYaml)
-
-  return { frontmatter, content: content.trimStart() }
 }
