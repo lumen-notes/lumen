@@ -213,10 +213,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     case "address":
       if (typeof value !== "string") break
       return (
-        <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <MapIcon16 />
-          </div>
+        <div>
           <a
             className="link link-external"
             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
