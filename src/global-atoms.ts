@@ -13,31 +13,6 @@ export const githubTokenAtom = atomWithStorage("github_token", "")
 
 export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
-const githubUserSchema = z.object({
-  login: z.string(),
-  avatar_url: z.string(),
-})
-
-export const githubUserAtom = atom<Promise<z.infer<typeof githubUserSchema> | null>>(
-  async (get) => {
-    const token = get(githubTokenAtom)
-    if (!token) return null
-
-    // Fetch authenticated user
-    const response = await fetch("https://api.github.com/user", {
-      headers: {
-        Authorization: `token ${token}`,
-      },
-    })
-
-    if (!response.ok) return null
-
-    const user = githubUserSchema.parse(await response.json())
-
-    return user
-  },
-)
-
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------
