@@ -15,6 +15,7 @@ import {
   MONTH_NAMES,
   formatDate,
   formatDateDistance,
+  getZodiacSign,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -305,17 +306,24 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         </div>
       )
 
+    // TODO: Create custom icons for each zodiac sign
     case "birthday":
       if (value instanceof Date) {
         const dateString = toDateStringUtc(value)
         const nextBirthday = getNextBirthday(value)
         const nextBirthdayString = toDateString(nextBirthday)
         const nextAge = nextBirthday.getFullYear() - value.getFullYear()
+        const zodiacSign = getZodiacSign(value)
         return (
           <span>
-            <Link className="link" target="_blank" to={`/dates/${dateString}`}>
-              {formatDate(dateString, { excludeDayOfWeek: true })}
-            </Link>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <Link className="link" target="_blank" to={`/dates/${dateString}`}>
+                  {formatDate(dateString, { excludeDayOfWeek: true })}
+                </Link>
+              </Tooltip.Trigger>
+              <Tooltip.Content>{zodiacSign}</Tooltip.Content>
+            </Tooltip>
             <span className="text-text-secondary">
               {" · "}
               <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
@@ -329,9 +337,17 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         const [month, day] = value.split("-").map((s) => parseInt(s, 10))
         const nextBirthday = getNextBirthday(new Date(1900, month - 1, day))
         const nextBirthdayString = toDateString(nextBirthday)
+        const zodiacSign = getZodiacSign(new Date(1900, month - 1, day))
         return (
           <span>
-            {MONTH_NAMES[month - 1].slice(0, 3)} {day}
+            <span className="inline-flex items-center gap-2">
+              <Tooltip>
+                <Tooltip.Trigger className="cursor-default">
+                  {MONTH_NAMES[month - 1].slice(0, 3)} {day}
+                </Tooltip.Trigger>
+                <Tooltip.Content>{zodiacSign}</Tooltip.Content>
+              </Tooltip>
+            </span>
             <span className="text-text-secondary">
               {" · "}
               <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
@@ -347,6 +363,15 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
 
   if (typeof value === "string") {
     return <Markdown>{value}</Markdown>
+  }
+
+  if (value instanceof Date) {
+    const dateString = toDateStringUtc(value)
+    return (
+      <div>
+        <DateLink date={dateString} />
+      </div>
+    )
   }
 
   // TODO: If value is a list of strings, render them with a markdown list
@@ -526,7 +551,7 @@ function DateLink({ date }: DateLinkProps) {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Link target="_blank" to={`/dates/${date}`}>
+        <Link className="link" target="_blank" to={`/dates/${date}`}>
           {formatDate(date)}
         </Link>
       </Tooltip.Trigger>
