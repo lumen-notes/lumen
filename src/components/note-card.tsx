@@ -11,124 +11,10 @@ import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import {
-  CopyIcon16,
-  EditIcon16,
-  ExternalLinkIcon16,
-  GitHubIcon16,
-  GlobeIcon16,
-  MailIcon16,
-  MapsIcon16,
-  MessageIcon16,
-  MoreIcon16,
-  PhoneIcon16,
-  TrashIcon16,
-  TwitterIcon16,
-  YouTubeIcon16,
-} from "./icons"
+import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteForm } from "./note-form"
 import { PanelContext, Panels, PanelsContext } from "./panels"
-
-// Map frontmatter keys to note action menu items
-// See README.md#recognized-keys for more information
-const frontmatterMap: Record<string, (value: unknown) => React.ReactElement | null> = {
-  phone: (value) => {
-    // TODO: Validate phone number
-    if (typeof value !== "string") return null
-    return (
-      <>
-        <DropdownMenu.Item key="call" icon={<PhoneIcon16 />} href={`tel:${value}`}>
-          Call
-        </DropdownMenu.Item>
-        <DropdownMenu.Item key="message" icon={<MessageIcon16 />} href={`sms:${value}`}>
-          Message
-        </DropdownMenu.Item>
-      </>
-    )
-  },
-  email: (value) => {
-    // TODO: Validate email address
-    if (typeof value !== "string") return null
-    return (
-      <DropdownMenu.Item key="email" icon={<MailIcon16 />} href={`mailto:${value}`}>
-        Email
-      </DropdownMenu.Item>
-    )
-  },
-  website: (value) => {
-    if (typeof value !== "string") return null
-    const hasProtocol = value.startsWith("http://") || value.startsWith("https://")
-    const url = hasProtocol ? value : `https://${value}`
-    return (
-      <DropdownMenu.Item
-        key="website"
-        icon={<GlobeIcon16 />}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Website
-      </DropdownMenu.Item>
-    )
-  },
-  address: (value) => {
-    if (typeof value !== "string") return null
-    return (
-      <DropdownMenu.Item
-        key="map"
-        icon={<MapsIcon16 />}
-        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Map
-      </DropdownMenu.Item>
-    )
-  },
-  github: (value) => {
-    if (typeof value !== "string") return null
-    return (
-      <DropdownMenu.Item
-        key="github"
-        icon={<GitHubIcon16 />}
-        href={`https://github.com/${value}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        GitHub profile
-      </DropdownMenu.Item>
-    )
-  },
-  twitter: (value) => {
-    if (typeof value !== "string") return null
-    return (
-      <DropdownMenu.Item
-        key="twitter"
-        icon={<TwitterIcon16 />}
-        href={`https://twitter.com/${value}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Twitter profile
-      </DropdownMenu.Item>
-    )
-  },
-  youtube: (value) => {
-    if (typeof value !== "string") return null
-    return (
-      <DropdownMenu.Item
-        key="youtube"
-        icon={<YouTubeIcon16 />}
-        href={`https://youtube.com/@${value}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        YouTube channel
-      </DropdownMenu.Item>
-    )
-  },
-}
 
 type NoteCardProps = {
   id: NoteId
@@ -152,12 +38,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   // Local state
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
-
-  const frontmatterItems = React.useMemo(() => {
-    return Object.entries(frontmatterMap)
-      .map(([key, value]) => value(note?.frontmatter[key]))
-      .filter(Boolean)
-  }, [note?.frontmatter])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -290,12 +170,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
               Edit
             </DropdownMenu.Item>
-            {frontmatterItems.length ? (
-              <>
-                <DropdownMenu.Separator />
-                {frontmatterItems}
-              </>
-            ) : null}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<CopyIcon16 />}

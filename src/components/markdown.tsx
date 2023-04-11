@@ -20,6 +20,15 @@ import { useLink } from "./link-context"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
 import { sentenceCase } from "sentence-case"
+import {
+  GitHubIcon16,
+  GlobeIcon16,
+  MailIcon16,
+  MapIcon16,
+  PhoneIcon16,
+  TwitterIcon16,
+  YouTubeIcon16,
+} from "./icons"
 
 export type MarkdownProps = {
   children: string
@@ -123,7 +132,7 @@ function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) 
         return (
           <div key={key} className="grid gap-1 py-2 last:pb-0">
             <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
-            <FrontmatterValue value={value} />
+            <FrontmatterValue entry={[key, value]} />
           </div>
         )
       })}
@@ -142,7 +151,127 @@ function formatFrontmatterKey(key: string) {
   }
 }
 
-function FrontmatterValue({ value }: { value: unknown }) {
+function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
+  switch (key) {
+    case "phone":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <div className="text-text-secondary">
+            <PhoneIcon16 />
+          </div>
+          <a className="link" href={`tel:${value}`}>
+            {value}
+          </a>
+        </div>
+      )
+
+    case "email":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <div className="text-text-secondary">
+            <MailIcon16 />
+          </div>
+          <a className="link" href={`mailto:${value}`}>
+            {value}
+          </a>
+        </div>
+      )
+
+    case "website":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <div className="text-text-secondary">
+            <GlobeIcon16 />
+          </div>
+          <a className="link link-external" href={value} target="_blank" rel="noopener noreferrer">
+            {value}
+          </a>
+        </div>
+      )
+
+    case "address":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <div className="text-text-secondary">
+            <MapIcon16 />
+          </div>
+          <a
+            className="link link-external"
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(value)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "isbn":
+      if (typeof value !== "string") break
+      return (
+        <a
+          className="link link-external"
+          href={`https://openlibrary.org/isbn/${value}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {value}
+        </a>
+      )
+
+    case "github":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <GitHubIcon16 />
+          <a
+            className="link link-external"
+            href={`https://github.com/${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "twitter":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <TwitterIcon16 />
+          <a
+            className="link link-external"
+            href={`https://twitter.com/${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "youtube":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <YouTubeIcon16 />
+          <a
+            className="link link-external"
+            href={`https://youtube.com/@${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+  }
+
   if (typeof value === "string") {
     return <Markdown>{value}</Markdown>
   }

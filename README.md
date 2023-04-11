@@ -10,12 +10,11 @@ The note-taking app for lifelong learners. Based on the [Zettelkasten Method](ht
 
 ## Links
 
-| Name         | URL                                                                 | Status                                                                                                                                                               |
-| :----------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🌐 Website   | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
+| Name             | URL                                                                 | Status                                                                                                                                                               |
+| :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🌐 Website       | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
 | 🛠️ Design system | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| 🐣 Twitter   | [@lumen_notes](https://twitter.com/lumen_notes)                     | |
-
+| 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |                                                                                                                                                                      |
 
 ## Strong opinions, weakly held
 
@@ -99,13 +98,13 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 
 | Key       | Description             | Enhancements                                                                                                 |
 | :-------- | :---------------------- | :----------------------------------------------------------------------------------------------------------- |
-| `phone`   | Phone number            | Adds "Call" and "Message" links to the note action menu.                                                     |
-| `email`   | Email address           | Adds an "Email" link to the note action menu.                                                                |
-| `website` | Website URL             | Adds a "Website" link to the note action menu.                                                               |
-| `address` | Physical address        | Adds a "Map" link to the note action menu.                                                                   |
-| `github`  | GitHub username         | Adds a "GitHub profile" link to the note action menu.                                                        |
-| `twitter` | Twitter username        | Adds a "Twitter profile" link to the note action menu.                                                       |
-| `youtube` | YouTube username        | Adds a "YouTube channel" link to the note action menu.                                                       |
+| `phone`   | Phone number            | Adds a phone link.                                                                                           |
+| `email`   | Email address           | Adds an email link.                                                                                          |
+| `website` | Website URL             | Adds a link to the website.                                                                                  |
+| `address` | Physical address        | Adds a link to Google Maps.                                                                                  |
+| `github`  | GitHub username         | Adds a link to the GitHub profile.                                                                           |
+| `twitter` | Twitter username        | Adds a link to the Twitter profile.                                                                          |
+| `youtube` | YouTube username        | Adds a link to the YouTube channel.                                                                          |
 | `isbn`    | Book ISBN-10 or ISBN-13 | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note. |
 
 ## Query language
