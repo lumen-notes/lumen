@@ -374,7 +374,10 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     )
   }
 
-  // TODO: If value is a list of strings, render them with a markdown list
+  // If value is a list of strings, render it with a markdown list
+  if (Array.isArray(value) && value.every((v) => typeof v === "string")) {
+    return <Markdown>{value.map((v) => `- ${v}`).join("\n")}</Markdown>
+  }
 
   return <code>{JSON.stringify(value)}</code>
 }
