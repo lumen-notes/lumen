@@ -158,7 +158,6 @@ export function CommandMenu() {
           {deferredQuery ? (
             <Command.Group heading="Notes">
               {noteResults.slice(0, numVisibleNotes).map(([id, note]) => {
-                const { content } = parseFrontmatter(note.rawBody)
                 return (
                   <CommandItem
                     key={id}
@@ -166,7 +165,12 @@ export function CommandMenu() {
                     icon={<NoteIcon16 />}
                     onSelect={() => navigate(`/${id}`)}
                   >
-                    {content}
+                    <span className="inline-flex gap-2">
+                      <span>{note.title || id}</span>
+                      <span className="text-text-secondary">
+                        {note.tags.map((tag) => `#${tag}`).join(" ")}
+                      </span>
+                    </span>
                   </CommandItem>
                 )
               })}
