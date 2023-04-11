@@ -399,6 +399,14 @@ export function LinkIcon16() {
   )
 }
 
+export function UnlinkIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="m10.086 3.086-1.75 1.75-1.06-1.06 1.75-1.75a3.5 3.5 0 0 1 4.949 4.949l-1.75 1.75-1.06-1.06 1.75-1.75a2 2 0 1 0-2.83-2.83ZM5.914 12.914l1.75-1.75 1.061 1.06-1.75 1.75a3.5 3.5 0 1 1-4.95-4.949l1.75-1.75 1.06 1.06-1.75 1.75a2 2 0 1 0 2.83 2.83ZM1.47 2.53l12 12 1.06-1.06-12-12-1.06 1.06Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

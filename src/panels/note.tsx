@@ -3,7 +3,7 @@ import { search } from "fast-fuzzy"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { LinkIcon16, NoteIcon24, QueryIcon16 } from "../components/icons"
+import { LinkIcon16, NoteIcon24, QueryIcon16, UnlinkIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -11,7 +11,7 @@ import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { notesAtom, sortedNoteEntriesAtom } from "../global-atoms"
 import { Note } from "../types"
-import { filterResults, parseQuery } from "../utils/use-search-notes"
+import { filterResults, parseQuery, useSearchNotes } from "../utils/use-search-notes"
 
 const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
   return entries.filter(([, note]) => note.queries.length > 0)
@@ -22,9 +22,16 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[noteId]), [noteId])
   const note = useAtomValue(noteAtom)
   const notesWithQueries = useAtomValue(notesWithQueriesAtom)
+  const searchNotes = useSearchNotes()
+
+  const unlinkedNoteCount = React.useMemo(() => {
+    if (!note) return 0
+    const query = `${note.title} -link:${noteId} -id:${noteId}`
+    return note.title ? searchNotes(query).length : 0
+  }, [note, noteId, searchNotes])
 
   // IDs of notes that contain a query that matches the current note
-  const matches = React.useMemo(() => {
+  const queryMatches = React.useMemo(() => {
     return notesWithQueries
       .filter(([, n]) => {
         return n.queries.some((query) => testQuery(query, note))
@@ -38,43 +45,50 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <NoteCard id={noteId} />
 
         <Tabs.Root defaultValue="backlinks">
-          <Tabs.List className="mb-4 flex gap-2 pb-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+          <Tabs.List className="mb-4 flex gap-2 overflow-auto pb-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
             <TabsTrigger value="backlinks">
               <LinkIcon16 />
               Backlinks
               <span>{note?.backlinks.length}</span>
             </TabsTrigger>
+            <TabsTrigger value="unlinked">
+              <UnlinkIcon16 />
+              Unlinked
+              <span>{unlinkedNoteCount}</span>
+            </TabsTrigger>
             <TabsTrigger value="queries">
               <QueryIcon16 />
               Queries
-              <span>{matches.length}</span>
+              <span>{queryMatches.length}</span>
             </TabsTrigger>
           </Tabs.List>
 
           <Tabs.Content value="backlinks" className="outline-none">
             <LinkHighlightProvider href={`/${noteId}`}>
-              <NoteList
-                key={noteId}
-                baseQuery={`link:${noteId}`}
-                noteCount={note?.backlinks.length}
-              />
+              <NoteList baseQuery={`link:${noteId}`} noteCount={note?.backlinks.length} />
             </LinkHighlightProvider>
+          </Tabs.Content>
+
+          <Tabs.Content value="unlinked" className="outline-none">
+            <NoteList
+              baseQuery={note?.title ? `${note.title} -link:${noteId} -id:${noteId}` : "id:noop"}
+              noteCount={unlinkedNoteCount}
+            />
           </Tabs.Content>
 
           <Tabs.Content value="queries" className="outline-none">
             <LinkHighlightProvider href={`/${noteId}`}>
               <NoteList
-                key={noteId}
                 baseQuery={
-                  matches.length > 0
-                    ? `id:${matches.join(",")}`
+                  queryMatches.length > 0
+                    ? `id:${queryMatches.join(",")}`
                     : // If there are no matches, we need to pass a query that
                       // returns no results. We can't pass an empty string,
                       // because that will return all the notes. Instead,
-                      // we use `id:noop` because no note can have that ID.
-                      `id:noop`
+                      // we use "id:noop" because no note can have that ID.
+                      "id:noop"
                 }
-                noteCount={matches.length}
+                noteCount={queryMatches.length}
               />
             </LinkHighlightProvider>
           </Tabs.Content>
