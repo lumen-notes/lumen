@@ -7,6 +7,7 @@ import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../types"
 import { parseFrontmatter } from "./parse-frontmatter"
 import memoize from "fast-memoize"
+import { getNextBirthday, toDateStringUtc } from "./date"
 
 /**
  * Extract metadata from a note.
@@ -59,6 +60,25 @@ export const parseNote = memoize((rawBody: string) => {
       }
     }
   })
+
+  // Check for dates in the frontmatter
+  for (const value of Object.values(frontmatter)) {
+    if (value instanceof Date) {
+      dates.push(toDateStringUtc(value))
+    }
+  }
+
+  // If `birthday` is set, add next birthday to dates
+  if (
+    frontmatter.birthday instanceof Date ||
+    (typeof frontmatter.birthday === "string" && /^\d{2}-\d{2}$/.test(frontmatter.birthday))
+  ) {
+    const date =
+      frontmatter.birthday instanceof Date
+        ? frontmatter.birthday
+        : new Date(`0000-${frontmatter.birthday}`)
+    dates.push(toDateStringUtc(getNextBirthday(date)))
+  }
 
   return { frontmatter, title, dates, links, tags, queries }
 })

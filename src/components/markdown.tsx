@@ -15,6 +15,7 @@ import {
   MONTH_NAMES,
   formatDate,
   formatDateDistance,
+  getNextBirthday,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -161,6 +162,7 @@ function formatFrontmatterKey(key: string) {
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
   const Link = useLink()
 
+  // Recognized frontmatter keys
   switch (key) {
     case "phone":
       if (typeof value !== "string") break
@@ -343,39 +345,27 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     }
   }
 
+  // If value is a string, render it as markdown
   if (typeof value === "string") {
     return <Markdown>{value}</Markdown>
   }
 
+  // If value is a date, render it as a link to the date page
   if (value instanceof Date) {
     const dateString = toDateStringUtc(value)
     return (
       <div>
-        <DateLink date={dateString} />
+        <DateLink className="link" date={dateString} />
       </div>
     )
   }
 
-  // If value is a list of strings, render it with a markdown list
+  // If value is a list of strings, render it as a markdown list
   if (Array.isArray(value) && value.every((v) => typeof v === "string")) {
     return <Markdown>{value.map((v) => `- ${v}`).join("\n")}</Markdown>
   }
 
   return <code>{JSON.stringify(value)}</code>
-}
-
-function getNextBirthday(birthday: Date): Date {
-  const today = new Date()
-  const currentYear = today.getFullYear()
-  const birthMonth = birthday.getUTCMonth()
-  const birthDay = birthday.getUTCDate()
-  const nextBirthday = new Date(currentYear, birthMonth, birthDay)
-
-  if (nextBirthday < today) {
-    nextBirthday.setFullYear(currentYear + 1)
-  }
-
-  return nextBirthday
 }
 
 function withSuffix(num: number): string {
@@ -529,14 +519,15 @@ function TagLink({ name }: TagLinkProps) {
 
 type DateLinkProps = {
   date: string
+  className?: string
 }
 
-function DateLink({ date }: DateLinkProps) {
+function DateLink({ date, className }: DateLinkProps) {
   const Link = useLink()
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Link className="link" target="_blank" to={`/dates/${date}`}>
+        <Link className={className} target="_blank" to={`/dates/${date}`}>
           {formatDate(date)}
         </Link>
       </Tooltip.Trigger>

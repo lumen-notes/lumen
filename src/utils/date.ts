@@ -101,3 +101,17 @@ export function toDateStringUtc(date: Date) {
   const day = date.getUTCDate().toString().padStart(2, "0")
   return `${year}-${month}-${day}`
 }
+
+export function getNextBirthday(birthday: Date): Date {
+  const today = new Date()
+  const currentYear = today.getFullYear()
+  const birthMonth = birthday.getUTCMonth()
+  const birthDay = birthday.getUTCDate()
+  const nextBirthday = new Date(currentYear, birthMonth, birthDay)
+
+  if (nextBirthday < today) {
+    nextBirthday.setFullYear(currentYear + 1)
+  }
+
+  return nextBirthday
+}
