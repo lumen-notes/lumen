@@ -55,6 +55,7 @@ export function parseQuery(query: string): Query {
 
 export function filterResults(results: Array<[string, Note]>, qualifiers: Qualifier[]) {
   return results.filter(([id, note]) => {
+    if (!note) return false
     return qualifiers.every((qualifier) => {
       let value = false
 
