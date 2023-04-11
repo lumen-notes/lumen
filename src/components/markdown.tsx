@@ -26,6 +26,7 @@ import { FilePreview } from "./file-preview"
 import {
   GitHubIcon16,
   GlobeIcon16,
+  InstagramIcon16,
   MailIcon16,
   MapIcon16,
   PhoneIcon16,
@@ -187,18 +188,25 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         </div>
       )
 
-    case "website":
+    case "website": {
       if (typeof value !== "string") break
+      const hasProtocol = value.startsWith("http://") || value.startsWith("https://")
       return (
         <div className="flex items-center gap-2">
           <div className="text-text-secondary">
             <GlobeIcon16 />
           </div>
-          <a className="link link-external" href={value} target="_blank" rel="noopener noreferrer">
+          <a
+            className="link link-external"
+            href={hasProtocol ? value : `https://${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {value}
           </a>
         </div>
       )
+    }
 
     case "address":
       if (typeof value !== "string") break
@@ -273,6 +281,22 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <a
             className="link link-external"
             href={`https://youtube.com/@${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "instagram":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <InstagramIcon16 />
+          <a
+            className="link link-external"
+            href={`https://instagram.com/${value}`}
             target="_blank"
             rel="noopener noreferrer"
           >
