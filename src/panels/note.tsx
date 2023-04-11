@@ -45,6 +45,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <NoteCard id={noteId} />
 
         <Tabs.Root defaultValue="backlinks">
+          {/* TODO: Move overflor items to a dropdown menu */}
           <Tabs.List className="mb-4 flex gap-2 overflow-auto pb-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
             <TabsTrigger value="backlinks">
               <LinkIcon16 />
