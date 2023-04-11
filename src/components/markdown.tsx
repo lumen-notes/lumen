@@ -15,7 +15,6 @@ import {
   MONTH_NAMES,
   formatDate,
   formatDateDistance,
-  getZodiacSign,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -306,59 +305,42 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         </div>
       )
 
-    // TODO: Create custom icons for each zodiac sign
-    case "birthday":
-      if (value instanceof Date) {
-        const dateString = toDateStringUtc(value)
-        const nextBirthday = getNextBirthday(value)
-        const nextBirthdayString = toDateString(nextBirthday)
-        const nextAge = nextBirthday.getFullYear() - value.getFullYear()
-        const zodiacSign = getZodiacSign(value)
-        return (
-          <span>
-            <Tooltip>
-              <Tooltip.Trigger asChild>
-                <Link className="link" target="_blank" to={`/dates/${dateString}`}>
-                  {formatDate(dateString, { excludeDayOfWeek: true })}
-                </Link>
-              </Tooltip.Trigger>
-              <Tooltip.Content>{zodiacSign}</Tooltip.Content>
-            </Tooltip>
-            <span className="text-text-secondary">
-              {" · "}
-              <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
-                {withSuffix(nextAge)} birthday
-              </Link>{" "}
-              is {formatDateDistance(toDateStringUtc(nextBirthday))}
-            </span>
-          </span>
-        )
-      } else if (typeof value === "string" && /^\d{2}-\d{2}$/.test(value)) {
-        const [month, day] = value.split("-").map((s) => parseInt(s, 10))
-        const nextBirthday = getNextBirthday(new Date(1900, month - 1, day))
-        const nextBirthdayString = toDateString(nextBirthday)
-        const zodiacSign = getZodiacSign(new Date(1900, month - 1, day))
-        return (
-          <span>
-            <span className="inline-flex items-center gap-2">
-              <Tooltip>
-                <Tooltip.Trigger className="cursor-default">
-                  {MONTH_NAMES[month - 1].slice(0, 3)} {day}
-                </Tooltip.Trigger>
-                <Tooltip.Content>{zodiacSign}</Tooltip.Content>
-              </Tooltip>
-            </span>
-            <span className="text-text-secondary">
-              {" · "}
-              <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
-                Next birthday
-              </Link>{" "}
-              is {formatDateDistance(toDateStringUtc(nextBirthday))}
-            </span>
-          </span>
-        )
+    case "birthday": {
+      // Skip if value is not a date or string in the format "MM-DD"
+      if (!(value instanceof Date || (typeof value === "string" && /^\d{2}-\d{2}$/.test(value)))) {
+        break
       }
-      break
+
+      const year = value instanceof Date ? value.getUTCFullYear() : null
+      const month = value instanceof Date ? value.getUTCMonth() : parseInt(value.split("-")[0]) - 1
+      const day = value instanceof Date ? value.getUTCDate() : parseInt(value.split("-")[1])
+      const dateString = value instanceof Date ? toDateStringUtc(value) : null
+
+      const nextBirthday = getNextBirthday(new Date(year ?? 0, month, day))
+      const nextBirthdayString = toDateString(nextBirthday)
+      const nextAge = year ? nextBirthday.getUTCFullYear() - year : null
+
+      return (
+        <span>
+          {dateString ? (
+            <Link className="link" target="_blank" to={`/dates/${dateString}`}>
+              {formatDate(dateString, { excludeDayOfWeek: true })}
+            </Link>
+          ) : (
+            <span>
+              {MONTH_NAMES[month].slice(0, 3)} {day}
+            </span>
+          )}
+          <span className="text-text-secondary">
+            {" · "}
+            <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
+              {nextAge ? withSuffix(nextAge) : "Next"} birthday
+            </Link>{" "}
+            is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
+          </span>
+        </span>
+      )
+    }
   }
 
   if (typeof value === "string") {
