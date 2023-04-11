@@ -21,9 +21,9 @@ export const parseNote = memoize((rawBody: string) => {
   const links: NoteId[] = []
   const queries: string[] = []
 
-  const { frontmatter, content } = parseFrontmatter(rawBody)
+  const { frontmatter } = parseFrontmatter(rawBody)
 
-  const mdast = fromMarkdown(content, {
+  const mdast = fromMarkdown(rawBody, {
     extensions: [dateLink(), noteLink(), tagLink()],
     mdastExtensions: [dateLinkFromMarkdown(), noteLinkFromMarkdown(), tagLinkFromMarkdown()],
   })

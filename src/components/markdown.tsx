@@ -213,14 +213,16 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     case "isbn":
       if (typeof value !== "string") break
       return (
-        <a
-          className="link link-external"
-          href={`https://openlibrary.org/isbn/${value}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {value}
-        </a>
+        <div>
+          <a
+            className="link link-external "
+            href={`https://openlibrary.org/isbn/${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
       )
 
     case "github":
