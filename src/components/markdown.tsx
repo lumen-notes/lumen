@@ -29,7 +29,6 @@ import {
   GlobeIcon16,
   InstagramIcon16,
   MailIcon16,
-  MapIcon16,
   PhoneIcon16,
   TwitterIcon16,
   YouTubeIcon16,
