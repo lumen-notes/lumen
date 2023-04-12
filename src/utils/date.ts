@@ -109,7 +109,10 @@ export function getNextBirthday(birthday: Date): Date {
   const birthDay = birthday.getUTCDate()
   const nextBirthday = new Date(currentYear, birthMonth, birthDay)
 
-  if (nextBirthday < today) {
+  // Reset the time to 00:00:00
+  today.setHours(0, 0, 0, 0)
+
+  if (nextBirthday.valueOf() < today.valueOf()) {
     nextBirthday.setFullYear(currentYear + 1)
   }
 
