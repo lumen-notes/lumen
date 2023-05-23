@@ -56,7 +56,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 async function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     try {
-      console.log("Registering service worker...")
+      console.log("Registering service worker…")
       const registration = await navigator.serviceWorker.register("/service-worker.js")
       console.log("Service worker registered:", registration)
     } catch (error) {
