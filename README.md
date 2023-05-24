@@ -67,7 +67,7 @@ Link to all other notes with the same tag.
 #<tag-name>
 ```
 
-> **Note**: Tag names must start with a letter and can contain letters, numbers, hyphens, and underscores.
+> **Note**: Tag names must start with a letter and can contain letters, numbers, hyphens, underscores, and forward slashes.
 
 | Example   | Rendered HTML                        |
 | :-------- | :----------------------------------- |

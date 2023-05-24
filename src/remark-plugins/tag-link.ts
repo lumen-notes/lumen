@@ -104,7 +104,7 @@ function isNumberChar(code: Code): boolean {
 /** Returns true if character is valid in tag names */
 function isNameChar(code: Code): boolean {
   if (code === null) return false
-  return isAlphaChar(code) || isNumberChar(code) || code === codes.underscore || code === codes.dash
+  return isAlphaChar(code) || isNumberChar(code) || code === codes.underscore || code === codes.dash || code === codes.slash
 }
 
 /**

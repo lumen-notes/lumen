@@ -236,7 +236,7 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { index: true, panel: NotesPanel },
   { path: ":id", panel: NotePanel },
   { path: "tags", panel: TagsPanel },
-  { path: "tags/:name", panel: TagPanel },
+  { path: "tags/*", panel: TagPanel },
   { path: "dates/:date", panel: DatePanel },
   { path: "file", panel: FilePanel },
 ]

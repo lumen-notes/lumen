@@ -9,7 +9,7 @@ import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
-  const { name = "" } = params
+  const { "*": name = "" } = params
   const noteCountAtom = React.useMemo(
     () => selectAtom(tagsAtom, (tags) => tags[name]?.length ?? 0),
     [name],

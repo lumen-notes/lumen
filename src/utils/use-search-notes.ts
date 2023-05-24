@@ -33,7 +33,7 @@ export const useSearchNotes = () => {
   return searchNotes
 }
 
-const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=]+)/g
+const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=/]+)/g
 
 export function parseQuery(query: string): Query {
   const fuzzy = query.replace(QUALIFIER_REGEX, "").trim()
