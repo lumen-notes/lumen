@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
-import { notesAtom, tagsAtom } from "../global-atoms"
+import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
@@ -20,7 +20,6 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
-import { pluralize } from "../utils/pluralize"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
 import { FilePreview } from "./file-preview"
@@ -496,20 +495,27 @@ type TagLinkProps = {
 
 function TagLink({ name }: TagLinkProps) {
   const Link = useLink()
-  const noteCountAtom = React.useMemo(
-    () => selectAtom(tagsAtom, (tags) => tags[name]?.length ?? 0),
-    [name],
-  )
-  const noteCount = useAtomValue(noteCountAtom)
   return (
-    <Tooltip>
-      <Tooltip.Trigger asChild>
-        <Link target="_blank" className="text-text-secondary" to={`/tags/${name}`}>
-          #{name}
-        </Link>
-      </Tooltip.Trigger>
-      <Tooltip.Content>{pluralize(noteCount, "note")}</Tooltip.Content>
-    </Tooltip>
+    <span className="text-text-secondary">
+      {name.split("/").map((part, i) => {
+        return (
+          <React.Fragment key={i}>
+            {i > 0 && <span>/</span>}
+            <Link
+              target="_blank"
+              className="text-text-secondary"
+              to={`/tags/${name
+                .split("/")
+                .slice(0, i + 1)
+                .join("/")}`}
+            >
+              {i === 0 ? "#" : ""}
+              {part}
+            </Link>
+          </React.Fragment>
+        )
+      })}
+    </span>
   )
 }
 

@@ -17,10 +17,10 @@ import { getNextBirthday, toDateStringUtc } from "./date"
  */
 export const parseNote = memoize((rawBody: string) => {
   let title = ""
-  const tags: string[] = []
-  const dates: string[] = []
-  const links: NoteId[] = []
-  const queries: string[] = []
+  const tags = new Set<string>()
+  const dates = new Set<string>()
+  const links = new Set<NoteId>()
+  const queries = new Set<string>()
 
   const { frontmatter } = parseFrontmatter(rawBody)
 
@@ -39,23 +39,31 @@ export const parseNote = memoize((rawBody: string) => {
       }
 
       case "dateLink": {
-        dates.push(node.data.date)
+        dates.add(node.data.date)
         break
       }
 
       case "noteLink": {
-        links.push(node.data.id.toString())
+        links.add(node.data.id.toString())
         break
       }
 
       case "tagLink": {
-        tags.push(node.data.name)
+        // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
+        node.data.name.split("/").forEach((_, index) => {
+          tags.add(
+            node.data.name
+              .split("/")
+              .slice(0, index + 1)
+              .join("/"),
+          )
+        })
         break
       }
 
       case "code": {
         if (node.lang === "query") {
-          queries.push(node.value)
+          queries.add(node.value)
         }
       }
     }
@@ -64,7 +72,7 @@ export const parseNote = memoize((rawBody: string) => {
   // Check for dates in the frontmatter
   for (const value of Object.values(frontmatter)) {
     if (value instanceof Date) {
-      dates.push(toDateStringUtc(value))
+      dates.add(toDateStringUtc(value))
     }
   }
 
@@ -77,8 +85,15 @@ export const parseNote = memoize((rawBody: string) => {
       frontmatter.birthday instanceof Date
         ? frontmatter.birthday
         : new Date(`0000-${frontmatter.birthday}`)
-    dates.push(toDateStringUtc(getNextBirthday(date)))
+    dates.add(toDateStringUtc(getNextBirthday(date)))
   }
 
-  return { frontmatter, title, dates, links, tags, queries }
+  return {
+    frontmatter,
+    title,
+    dates: Array.from(dates),
+    links: Array.from(links),
+    tags: Array.from(tags),
+    queries: Array.from(queries),
+  }
 })
