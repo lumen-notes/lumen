@@ -419,8 +419,13 @@ export function DotIcon8() {
 
 export function TriangleRightIcon8({ className }: { className?: string }) {
   return (
-    <svg className={cx("h-2 w-3", className)} viewBox="0 0 8 8" fill="currentColor" aria-hidden>
-      <path d="M7.24 3.566 1.748.427A.5.5 0 0 0 1 .862v6.276a.5.5 0 0 0 .748.435L7.24 4.434a.5.5 0 0 0 0-.868Z" />
+    <svg
+      className={cx("h-2 w-3 overflow-visible", className)}
+      viewBox="0 0 8 8"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M7.43 3.593 1.79-.435A.5.5 0 0 0 1-.028v8.056a.5.5 0 0 0 .79.407l5.64-4.028a.5.5 0 0 0 0-.814Z" />
     </svg>
   )
 }
