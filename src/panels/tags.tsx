@@ -50,11 +50,11 @@ export function TagsPanel({ id, onClose }: PanelProps) {
           <ul>
             {searchResults.map(([name]) => (
               <li key={name}>
-                <div className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2">
+                <div className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2 coarse:grid-cols-[2rem,1fr]">
                   <div className="grid place-items-center text-text-secondary">
                     <DotIcon8 />
                   </div>
-                  <span className="py-2 leading-4">
+                  <span className="py-2 leading-4 coarse:py-3">
                     <Link className="link" to={`/tags/${name}`} target="_blank">
                       {name}
                     </Link>
@@ -137,7 +137,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
   return (
     <li>
       <div
-        className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2"
+        className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2 coarse:grid-cols-[2rem,1fr]"
         style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}
       >
         {node.children.length > 0 ? (
@@ -155,7 +155,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             <DotIcon8 />
           </div>
         )}
-        <span className="py-2 leading-4">
+        <span className="py-2 leading-4 coarse:py-3">
           <Link className="link" to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
             {node.name}
           </Link>
