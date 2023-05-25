@@ -497,6 +497,7 @@ function TagLink({ name }: TagLinkProps) {
   const Link = useLink()
   return (
     <span className="text-text-secondary">
+      #
       {name.split("/").map((part, i) => {
         return (
           <React.Fragment key={i}>
@@ -509,7 +510,6 @@ function TagLink({ name }: TagLinkProps) {
                 .slice(0, i + 1)
                 .join("/")}`}
             >
-              {i === 0 ? "#" : ""}
               {part}
             </Link>
           </React.Fragment>

@@ -17,7 +17,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const noteCount = useAtomValue(noteCountAtom)
 
   return (
-    <Panel id={id} title={`#${name}`} icon={<TagIcon24 />} onClose={onClose}>
+    <Panel id={id} title={name} icon={<TagIcon24 />} onClose={onClose}>
       <LinkHighlightProvider href={`/tags/${name}`}>
         <div className="p-4">
           <NoteList key={name} baseQuery={`tag:${name}`} noteCount={noteCount} />

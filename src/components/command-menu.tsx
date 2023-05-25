@@ -140,7 +140,7 @@ export function CommandMenu() {
                   description={pluralize(noteIds.length, "note")}
                   onSelect={() => navigate(`/tags/${name}`)}
                 >
-                  #{name}
+                  {name}
                 </CommandItem>
               ))}
               {tagResults.length > numVisibleTags ? (

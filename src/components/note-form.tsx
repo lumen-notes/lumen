@@ -449,7 +449,7 @@ function useTagCompletion() {
 
   const tagCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
-      const word = context.matchBefore(/#[\w\-_\d]*/)
+      const word = context.matchBefore(/#[\w\-_\d/]*/)
 
       if (!word) {
         return null

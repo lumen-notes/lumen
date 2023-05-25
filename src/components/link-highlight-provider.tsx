@@ -13,8 +13,6 @@ export function LinkHighlightProvider({ href, children }: LinkHighlightProviderP
       <style>
         {`#${id} a[href="${href}"] {
           display: inline-block;
-          padding: 0 0.125rem;
-          margin: 0 -0.125rem;
           color: var(--color-text-highlight);
           background-color: var(--color-bg-highlight);
           text-decoration-color: currentColor;
