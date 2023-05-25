@@ -124,7 +124,7 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
         />
       </div>
       {/* translateZ(0) fixes a bug in Safari where the scrollbar would appear underneath the sticky header */}
-      <div className="flex h-full scroll-pt-[4.5rem] scroll-pb-4 flex-col overflow-auto coarse:[-webkit-transform:translateZ(0)]">
+      <div className="flex h-full scroll-pb-4 scroll-pt-[4.5rem] flex-col overflow-auto coarse:[-webkit-transform:translateZ(0)]">
         <div
           className={
             "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
@@ -188,7 +188,7 @@ function ResizeHandle({
           ref={handleRef}
           data-resizing={isDragging}
           className={clsx(
-            "absolute top-0 bottom-0 right-0 z-20 w-1 cursor-col-resize delay-75",
+            "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",
             !isResizing && "hover:bg-bg-secondary",
             isResizing && "bg-border-focus",
           )}
