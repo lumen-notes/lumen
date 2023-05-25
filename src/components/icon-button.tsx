@@ -23,7 +23,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ref={ref}
             type="button"
             className={cx(
-              "focus-ring inline-flex cursor-default justify-center rounded-sm p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50 coarse:p-3",
+              "focus-ring inline-flex cursor-default items-center justify-center rounded-sm p-2 text-text-secondary hover:bg-bg-secondary disabled:pointer-events-none disabled:opacity-50 coarse:p-3",
               className,
             )}
             {...props}
