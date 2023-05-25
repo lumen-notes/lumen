@@ -1,16 +1,19 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { z } from "zod"
-import { TagIcon24 } from "../components/icons"
+import { IconButton } from "../components/icon-button"
+import { DotIcon8, TagIcon24, TriangleRightIcon8 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-atoms"
+import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
+  const Link = useLink()
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
@@ -43,7 +46,26 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             </span>
           ) : null}
         </div>
-        <TagTree tree={tagTree} />
+        {deferredQuery ? (
+          <ul>
+            {searchResults.map(([name]) => (
+              <li key={name}>
+                <div className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2">
+                  <div className="grid place-items-center text-text-secondary">
+                    <DotIcon8 />
+                  </div>
+                  <span className="py-2 leading-4">
+                    <Link className="link" to={`/tags/${name}`} target="_blank">
+                      {name}
+                    </Link>
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <TagTree tree={tagTree} />
+        )}
       </div>
     </Panel>
   )
@@ -86,9 +108,8 @@ type TagTreeProps = {
   depth?: number
 }
 
+// TODO: Improve accessibility of the tree
 function TagTree({ tree, path = [], depth = 0 }: TagTreeProps) {
-  const Link = useLink()
-
   if (tree.length === 0) {
     return null
   }
@@ -96,21 +117,58 @@ function TagTree({ tree, path = [], depth = 0 }: TagTreeProps) {
   return (
     <ul>
       {tree.map((node) => {
-        return (
-          <li key={node.name}>
-            <span
-              className="inline-flex gap-2 py-2"
-              style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}
-            >
-              <Link className="link" to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
-                {node.name}
-              </Link>
-              <span className="text-text-secondary">{node.count}</span>
-            </span>
-            <TagTree tree={node.children} path={[...path, node.name]} depth={depth + 1} />
-          </li>
-        )
+        return <TagTreeItem key={node.name} node={node} path={path} depth={depth} />
       })}
     </ul>
+  )
+}
+
+type TagTreeItemProps = {
+  node: TagTreeNode
+  path?: string[]
+  depth?: number
+}
+
+function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
+  const Link = useLink()
+  // TODO: Persist expanded state
+  const [isExpanded, setIsExpanded] = React.useState(true)
+
+  return (
+    <li>
+      <div
+        className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2"
+        style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}
+      >
+        {node.children.length > 0 ? (
+          <IconButton
+            aria-label={isExpanded ? "Collapse" : "Expand"}
+            onClick={() => setIsExpanded(!isExpanded)}
+            disableTooltip
+          >
+            <TriangleRightIcon8
+              className={cx("transition-transform", isExpanded ? "rotate-90" : "rotate-0")}
+            />
+          </IconButton>
+        ) : (
+          <div className="grid place-items-center text-text-secondary">
+            <DotIcon8 />
+          </div>
+        )}
+        <span className="py-2 leading-4">
+          <Link className="link" to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
+            {node.name}
+          </Link>
+        </span>
+      </div>
+      <div hidden={!isExpanded}>
+        <TagTree
+          key={node.name}
+          tree={node.children}
+          path={[...path, node.name]}
+          depth={depth + 1}
+        />
+      </div>
+    </li>
   )
 }

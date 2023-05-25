@@ -1,3 +1,5 @@
+import { cx } from "../utils/cx"
+
 export function MoreIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
@@ -403,6 +405,22 @@ export function UnlinkIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="m10.086 3.086-1.75 1.75-1.06-1.06 1.75-1.75a3.5 3.5 0 0 1 4.949 4.949l-1.75 1.75-1.06-1.06 1.75-1.75a2 2 0 1 0-2.83-2.83ZM5.914 12.914l1.75-1.75 1.061 1.06-1.75 1.75a3.5 3.5 0 1 1-4.95-4.949l1.75-1.75 1.06 1.06-1.75 1.75a2 2 0 1 0 2.83 2.83ZM1.47 2.53l12 12 1.06-1.06-12-12-1.06 1.06Z" />
+    </svg>
+  )
+}
+
+export function DotIcon8() {
+  return (
+    <svg className="h-2 w-2" viewBox="0 0 8 8" fill="currentColor" aria-hidden>
+      <circle cx="4" cy="4" r="2" />
+    </svg>
+  )
+}
+
+export function TriangleRightIcon8({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-2 w-3", className)} viewBox="0 0 8 8" fill="currentColor" aria-hidden>
+      <path d="M7.24 3.566 1.748.427A.5.5 0 0 0 1 .862v6.276a.5.5 0 0 0 .748.435L7.24 4.434a.5.5 0 0 0 0-.868Z" />
     </svg>
   )
 }
