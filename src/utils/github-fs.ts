@@ -143,7 +143,7 @@ type WriteFileOptions = {
   githubToken: string
   githubRepo: GitHubRepository
   path: string
-  content: string
+  content: string | ArrayBuffer
   commitMessage?: string
 }
 
@@ -187,7 +187,7 @@ type WriteFilesOptions = {
   githubToken: string
   githubRepo: GitHubRepository
   // Map of file paths to file contents
-  files: Record<string, string | ArrayBuffer>
+  files: Record<string, string>
   commitMessage?: string
 }
 
