@@ -3,7 +3,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
-import { TagIcon24 } from "../components/icons"
+import { EditIcon16, TagIcon24, TrashIcon16 } from "../components/icons"
 import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -28,8 +28,11 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
 
   const openRenameForm = React.useCallback(() => {
     setIsRenaming(true)
-    prevActiveElement.current = document.activeElement as HTMLElement
-    setTimeout(() => nameInputRef.current?.focus())
+    // HACK: Wait for the panel dropdown to close and the rename form to mount
+    setTimeout(() => {
+      prevActiveElement.current = document.activeElement as HTMLElement
+      nameInputRef.current?.focus()
+    }, 1)
   }, [])
 
   const closeRenameForm = React.useCallback(() => {
@@ -38,12 +41,28 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   }, [])
 
   return (
-    <Panel id={id} title={name} icon={<TagIcon24 />} onClose={onClose}>
+    <Panel
+      id={id}
+      title={name}
+      icon={<TagIcon24 />}
+      actions={[
+        {
+          icon: <EditIcon16 />,
+          label: "Rename tag",
+          disabled: isRenaming,
+          onSelect: openRenameForm,
+        },
+        // TODO: Implement delete tag
+        {
+          icon: <TrashIcon16 />,
+          label: "Delete tag",
+          disabled: true,
+        },
+      ]}
+      onClose={onClose}
+    >
       <LinkHighlightProvider href={`/tags/${name}`}>
         <div className="p-4">
-          <Button disabled={isRenaming} onClick={openRenameForm}>
-            Rename tag
-          </Button>
           {isRenaming ? (
             <Card className="mb-4 p-4" elevation={1}>
               <h3 id="rename-tag-heading" className="mb-4 text-lg font-semibold !leading-none">
