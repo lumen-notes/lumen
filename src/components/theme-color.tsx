@@ -1,11 +1,11 @@
 import React from "react"
+import { useMount } from "react-use"
 
 /** Dyanmically change the theme color to match the background color */
 export function ThemeColor() {
-  React.useEffect(() => {
-    // Set initial theme color
-    setThemeColor()
+  useMount(setThemeColor)
 
+  React.useEffect(() => {
     // Update theme color when the user changes their theme preference
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)")
     prefersDark.addEventListener("change", setThemeColor)
