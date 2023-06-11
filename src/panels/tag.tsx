@@ -93,10 +93,8 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                   }}
                 />
                 <div className="grid grid-cols-2 gap-3">
-                  <Button shortcut={["esc"]} onClick={closeRenameForm}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" variant="primary" shortcut={["⏎"]}>
+                  <Button onClick={closeRenameForm}>Cancel</Button>
+                  <Button type="submit" variant="primary">
                     Save
                   </Button>
                 </div>
