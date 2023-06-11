@@ -6,6 +6,7 @@ import {
   deleteNoteAtom,
   githubRepoAtom,
   githubTokenAtom,
+  notesAtom,
   rawNotesAtom,
   upsertNoteAtom,
 } from "../global-atoms"
@@ -119,4 +120,56 @@ export function useDeleteNote() {
     },
     [deleteNote, getGitHubToken, getGitHubRepo],
   )
+}
+
+const notesCallback = (get: Getter) => get(notesAtom)
+
+export function useRenameTag() {
+  const getNotes = useAtomCallback(notesCallback)
+  const setRawNotes = useSetAtom(rawNotesAtom)
+
+  return React.useCallback(
+    async (oldName: string, newName: string) => {
+      const notes = getNotes()
+
+      // Notes that contain the old tag
+      const filteredNotes = filterObject(notes, (note) => {
+        return note.tags.includes(oldName)
+      })
+
+      // Find and replace the old tag with the new tag
+      const updatedRawNotes = mapObject(filteredNotes, (note, id) => {
+        return [id, note.rawBody.replace(`#${oldName}`, `#${newName}`)]
+      })
+
+      // Update state
+      setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+    },
+    [getNotes, setRawNotes],
+  )
+}
+
+function filterObject<T>(
+  obj: Record<string, T>,
+  fn: (value: T, key: string) => boolean,
+): Record<string, T> {
+  const result: Record<string, T> = {}
+  for (const key in obj) {
+    if (fn(obj[key], key)) {
+      result[key] = obj[key]
+    }
+  }
+  return result
+}
+
+function mapObject<T, U extends string | number | symbol, V>(
+  obj: Record<string, T>,
+  fn: (value: T, key: string) => [U, V],
+): Record<U, V> {
+  const result: Record<U, V> = {} as Record<U, V>
+  for (const key in obj) {
+    const [newKey, newValue] = fn(obj[key], key)
+    result[newKey] = newValue
+  }
+  return result
 }
