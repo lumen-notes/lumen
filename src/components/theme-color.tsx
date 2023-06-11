@@ -1,9 +1,10 @@
 import React from "react"
-import { useMount } from "react-use"
+import { useEvent, useMount } from "react-use"
 
 /** Dyanmically change the theme color to match the background color */
 export function ThemeColor() {
   useMount(setThemeColor)
+  useEvent("visibilitychange", setThemeColor)
 
   React.useEffect(() => {
     // Update theme color when the user changes their theme preference
