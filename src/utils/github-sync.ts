@@ -10,7 +10,7 @@ import {
   rawNotesAtom,
   upsertNoteAtom,
 } from "../global-atoms"
-import { deleteFile, getFileSha, readFile, writeFile } from "./github-fs"
+import { deleteFile, getFileSha, readFile, writeFile, writeFiles } from "./github-fs"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
 const shaAtom = atomWithStorage<string | null>("sha", null)
@@ -125,6 +125,8 @@ export function useDeleteNote() {
 const notesCallback = (get: Getter) => get(notesAtom)
 
 export function useRenameTag() {
+  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const getNotes = useAtomCallback(notesCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
 
@@ -144,8 +146,29 @@ export function useRenameTag() {
 
       // Update state
       setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+
+      // Push to GitHub
+      try {
+        const githubToken = getGitHubToken()
+        const githubRepo = getGitHubRepo()
+        if (!githubRepo) return
+
+        const files = mapObject(updatedRawNotes, (rawBody, id) => {
+          return [`${id}.md`, rawBody]
+        })
+
+        await writeFiles({
+          githubToken,
+          githubRepo,
+          files,
+          commitMessage: `Rename tag #${oldName} to #${newName}`,
+        })
+      } catch (error) {
+        // TODO: Display error
+        console.error(error)
+      }
     },
-    [getNotes, setRawNotes],
+    [getNotes, setRawNotes, getGitHubToken, getGitHubRepo],
   )
 }
 
