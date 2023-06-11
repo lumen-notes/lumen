@@ -147,7 +147,6 @@ type WriteFileOptions = {
   commitMessage?: string
 }
 
-// TODO: Handle errors
 export async function writeFile({
   githubToken,
   githubRepo,
@@ -192,6 +191,7 @@ type WriteFilesOptions = {
   commitMessage?: string
 }
 
+// TODO: Handle errors
 export async function writeFiles({
   githubToken,
   githubRepo,
