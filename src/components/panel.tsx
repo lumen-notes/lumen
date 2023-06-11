@@ -1,8 +1,9 @@
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
+import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CloseIcon16 } from "./icons"
+import { CloseIcon16, MoreIcon16 } from "./icons"
 import { PanelContext } from "./panels"
 
 type PanelProps = {
@@ -11,13 +12,27 @@ type PanelProps = {
   description?: string
   icon?: React.ReactNode
   children?: React.ReactNode
+  actions?: Array<{
+    label: string
+    disabled?: boolean
+    icon?: React.ReactNode
+    onSelect?: () => void
+  }>
   onClose?: () => void
 }
 
 const MIN_WIDTH = 512
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
-export function Panel({ id, title, description, icon, children, onClose }: PanelProps) {
+export function Panel({
+  id,
+  title,
+  description,
+  icon,
+  children,
+  actions = [],
+  onClose,
+}: PanelProps) {
   const [width, setWidth] = React.useState(MIN_WIDTH)
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)
@@ -139,11 +154,34 @@ export function Panel({ id, title, description, icon, children, onClose }: Panel
               ) : null}
             </div>
           </div>
-          {onClose ? (
-            <IconButton aria-label="Close panel" shortcut={["⌘", "X"]} onClick={() => onClose()}>
-              <CloseIcon16 />
-            </IconButton>
-          ) : null}
+          <div className="flex gap-2">
+            {actions.length > 0 ? (
+              <DropdownMenu modal={false}>
+                <DropdownMenu.Trigger asChild>
+                  <IconButton aria-label="Panel actions" disableTooltip>
+                    <MoreIcon16 />
+                  </IconButton>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  {actions.map(({ icon, label, disabled, onSelect }) => (
+                    <DropdownMenu.Item
+                      key={label}
+                      icon={icon}
+                      disabled={disabled}
+                      onSelect={onSelect}
+                    >
+                      {label}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            ) : null}
+            {onClose ? (
+              <IconButton aria-label="Close panel" shortcut={["⌘", "X"]} onClick={() => onClose()}>
+                <CloseIcon16 />
+              </IconButton>
+            ) : null}
+          </div>
         </div>
         <div className="flex-grow">{children}</div>
       </div>

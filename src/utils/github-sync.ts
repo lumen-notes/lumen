@@ -6,10 +6,11 @@ import {
   deleteNoteAtom,
   githubRepoAtom,
   githubTokenAtom,
+  notesAtom,
   rawNotesAtom,
   upsertNoteAtom,
 } from "../global-atoms"
-import { deleteFile, getFileSha, readFile, writeFile } from "./github-fs"
+import { deleteFile, getFileSha, readFile, writeFile, writeFiles } from "./github-fs"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
 const shaAtom = atomWithStorage<string | null>("sha", null)
@@ -119,4 +120,79 @@ export function useDeleteNote() {
     },
     [deleteNote, getGitHubToken, getGitHubRepo],
   )
+}
+
+const notesCallback = (get: Getter) => get(notesAtom)
+
+export function useRenameTag() {
+  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubRepo = useAtomCallback(githubRepoCallback)
+  const getNotes = useAtomCallback(notesCallback)
+  const setRawNotes = useSetAtom(rawNotesAtom)
+
+  return React.useCallback(
+    async (oldName: string, newName: string) => {
+      const notes = getNotes()
+
+      // Notes that contain the old tag
+      const filteredNotes = filterObject(notes, (note) => {
+        return note.tags.includes(oldName)
+      })
+
+      // Find and replace the old tag with the new tag
+      const updatedRawNotes = mapObject(filteredNotes, (note, id) => {
+        return [id, note.rawBody.replace(`#${oldName}`, `#${newName}`)]
+      })
+
+      // Update state
+      setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+
+      // Push to GitHub
+      try {
+        const githubToken = getGitHubToken()
+        const githubRepo = getGitHubRepo()
+        if (!githubRepo) return
+
+        const files = mapObject(updatedRawNotes, (rawBody, id) => {
+          return [`${id}.md`, rawBody]
+        })
+
+        await writeFiles({
+          githubToken,
+          githubRepo,
+          files,
+          commitMessage: `Rename tag #${oldName} to #${newName}`,
+        })
+      } catch (error) {
+        // TODO: Display error
+        console.error(error)
+      }
+    },
+    [getNotes, setRawNotes, getGitHubToken, getGitHubRepo],
+  )
+}
+
+function filterObject<T>(
+  obj: Record<string, T>,
+  fn: (value: T, key: string) => boolean,
+): Record<string, T> {
+  const result: Record<string, T> = {}
+  for (const key in obj) {
+    if (fn(obj[key], key)) {
+      result[key] = obj[key]
+    }
+  }
+  return result
+}
+
+function mapObject<T, U extends string | number | symbol, V>(
+  obj: Record<string, T>,
+  fn: (value: T, key: string) => [U, V],
+): Record<U, V> {
+  const result: Record<U, V> = {} as Record<U, V>
+  for (const key in obj) {
+    const [newKey, newValue] = fn(obj[key], key)
+    result[newKey] = newValue
+  }
+  return result
 }
