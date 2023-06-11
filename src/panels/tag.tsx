@@ -24,21 +24,10 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const panel = React.useContext(PanelContext)
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
-  const prevActiveElement = React.useRef<HTMLElement>()
 
-  const openRenameForm = React.useCallback(() => {
-    setIsRenaming(true)
-    // HACK: Wait for the panel dropdown to close and the rename form to mount
-    setTimeout(() => {
-      prevActiveElement.current = document.activeElement as HTMLElement
-      nameInputRef.current?.focus()
-    }, 1)
-  }, [])
+  const openRenameForm = React.useCallback(() => setIsRenaming(true), [])
 
-  const closeRenameForm = React.useCallback(() => {
-    setIsRenaming(false)
-    setTimeout(() => prevActiveElement.current?.focus())
-  }, [])
+  const closeRenameForm = React.useCallback(() => setIsRenaming(false), [])
 
   return (
     <Panel
@@ -95,6 +84,8 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                   title="Tag names must start with a letter and can contain letters, numbers, hyphens, underscores, and forward slashes."
                   pattern="^[a-zA-Z][a-zA-Z0-9\-_\/]*$"
                   required
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
                   onKeyDown={(event) => {
                     if (event.key === "Escape") {
                       closeRenameForm()
