@@ -381,6 +381,7 @@ body:has([data-resizing="true"]) * {
 
 .markdown a {
   @apply link;
+  word-break: break-all;
 }
 
 .markdown a[href^="http"] {
