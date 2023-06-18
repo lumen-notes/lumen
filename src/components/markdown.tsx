@@ -11,6 +11,7 @@ import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
+import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
   formatDate,
@@ -395,8 +396,21 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
     )
   }
 
-  // eslint-disable-next-line jsx-a11y/anchor-has-content
-  return <a target="_blank" rel="noopener noreferrer" {...props} />
+  console.log(props.children)
+
+  return (
+    // eslint-disable-next-line jsx-a11y/anchor-has-content
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+      className={cx(
+        // Break long links
+        String(props.children).startsWith("http") && "[word-break:break-all]",
+        props.className,
+      )}
+    />
+  )
 }
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
