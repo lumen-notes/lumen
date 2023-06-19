@@ -1,4 +1,5 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import { isToday } from "date-fns"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import qs from "qs"
@@ -317,6 +318,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       const nextBirthday = getNextBirthday(new Date(year ?? 0, month, day))
       const nextBirthdayString = toDateString(nextBirthday)
       const nextAge = year ? nextBirthday.getUTCFullYear() - year : null
+      const isBirthdayToday = isToday(nextBirthday)
 
       return (
         <span>
@@ -332,9 +334,14 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
-              {nextAge ? withSuffix(nextAge) : "Next"} birthday
+              {nextAge
+                ? `${withSuffix(nextAge)} birthday`
+                : isBirthdayToday
+                ? "Birthday"
+                : "Next birthday"}
             </Link>{" "}
-            is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
+            is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
+            {isBirthdayToday ? "🎂" : null}
           </span>
         </span>
       )
