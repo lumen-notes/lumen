@@ -57,11 +57,11 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
               Unlinked
               <span>{unlinkedNoteCount}</span>
             </TabsTrigger>
-            <TabsTrigger value="queries">
+            {/* <TabsTrigger value="queries">
               <QueryIcon16 />
               Queries
               <span>{queryMatches.length}</span>
-            </TabsTrigger>
+            </TabsTrigger> */}
           </Tabs.List>
 
           <Tabs.Content value="backlinks" className="outline-none">
@@ -77,7 +77,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
             />
           </Tabs.Content>
 
-          <Tabs.Content value="queries" className="outline-none">
+          {/* <Tabs.Content value="queries" className="outline-none">
             <LinkHighlightProvider href={`/${noteId}`}>
               <NoteList
                 baseQuery={
@@ -92,7 +92,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
                 noteCount={queryMatches.length}
               />
             </LinkHighlightProvider>
-          </Tabs.Content>
+          </Tabs.Content> */}
         </Tabs.Root>
       </div>
     </Panel>
