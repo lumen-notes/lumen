@@ -3,25 +3,25 @@ import { search } from "fast-fuzzy"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { LinkIcon16, NoteIcon24, QueryIcon16, UnlinkIcon16 } from "../components/icons"
+import { LinkIcon16, NoteIcon24, UnlinkIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { notesAtom, sortedNoteEntriesAtom } from "../global-atoms"
+import { notesAtom } from "../global-atoms"
 import { Note } from "../types"
 import { filterResults, parseQuery, useSearchNotes } from "../utils/use-search-notes"
 
-const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
-  return entries.filter(([, note]) => note.queries.length > 0)
-})
+// const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
+//   return entries.filter(([, note]) => note.queries.length > 0)
+// })
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[noteId]), [noteId])
   const note = useAtomValue(noteAtom)
-  const notesWithQueries = useAtomValue(notesWithQueriesAtom)
+  // const notesWithQueries = useAtomValue(notesWithQueriesAtom)
   const searchNotes = useSearchNotes()
 
   const unlinkedNoteCount = React.useMemo(() => {
@@ -31,13 +31,13 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   }, [note, noteId, searchNotes])
 
   // IDs of notes that contain a query that matches the current note
-  const queryMatches = React.useMemo(() => {
-    return notesWithQueries
-      .filter(([, n]) => {
-        return n.queries.some((query) => testQuery(query, note))
-      })
-      .map(([id]) => id)
-  }, [note, notesWithQueries])
+  // const queryMatches = React.useMemo(() => {
+  //   return notesWithQueries
+  //     .filter(([, n]) => {
+  //       return n.queries.some((query) => testQuery(query, note))
+  //     })
+  //     .map(([id]) => id)
+  // }, [note, notesWithQueries])
 
   return (
     <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
