@@ -9,7 +9,7 @@ import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { CopyIcon16, MoreIcon16 } from "../components/icons"
+import { CopyIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { ThemeColor } from "../components/theme-color"
 import { notesAtom } from "../global-atoms"
@@ -71,23 +71,31 @@ export function NotePage() {
         )}
       </div>
 
-      <Card elevation={1} className="sticky bottom-2 m-2 flex justify-between gap-2 rounded-md p-1">
-        <SegmentedControl>
-          <SegmentedControl.Button
-            shortcut={["esc"]}
-            selected={!isEditing}
-            onClick={() => setIsEditing(false)}
-          >
-            Read
-          </SegmentedControl.Button>
-          <SegmentedControl.Button
-            shortcut={["E"]}
-            selected={isEditing}
-            onClick={() => setIsEditing(true)}
-          >
-            Edit
-          </SegmentedControl.Button>
-        </SegmentedControl>
+      <Card
+        elevation={1}
+        className="sticky bottom-2 m-2 flex justify-between gap-2 overflow-auto rounded-md p-1"
+      >
+        <div className="flex items-center gap-2">
+          <SegmentedControl>
+            <SegmentedControl.Button selected={!isEditing} onClick={() => setIsEditing(false)}>
+              Read
+            </SegmentedControl.Button>
+            <SegmentedControl.Button selected={isEditing} onClick={() => setIsEditing(true)}>
+              Edit
+            </SegmentedControl.Button>
+          </SegmentedControl>
+          {isEditing ? (
+            <>
+              <div className="h-[50%] w-px bg-border-secondary" />
+              <IconButton aria-label="Attach file">
+                <PaperclipIcon16 />
+              </IconButton>
+              <Button variant="primary" shortcut={["⌘", "S"]} disabled>
+                Save
+              </Button>
+            </>
+          ) : null}
+        </div>
 
         <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
           <DropdownMenu.Trigger asChild>
