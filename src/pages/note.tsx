@@ -4,7 +4,7 @@ import React from "react"
 import { useParams } from "react-router-dom"
 import { Markdown } from "../components/markdown"
 import { notesAtom } from "../global-atoms"
-import "./note.css"
+import { ThemeColor } from "../components/theme-color"
 
 export function NotePage() {
   const { id = "" } = useParams()
@@ -13,7 +13,9 @@ export function NotePage() {
 
   // TODO: Edit mode
   return (
-    <div className="h-screen overflow-auto p-4 [@supports(height:100svh)]:h-[100svh]">
+    <div className="h-screen overflow-auto bg-bg p-4 [@supports(height:100svh)]:h-[100svh]">
+      {/* Make browser toolbar color match the note's background color */}
+      <ThemeColor propertyName="--color-bg" />
       {note ? <Markdown>{note.rawBody}</Markdown> : <div>Not found</div>}
     </div>
   )

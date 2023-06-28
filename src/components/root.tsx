@@ -5,6 +5,7 @@ import { useFetchNotes } from "../utils/github-sync"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
+import { ThemeColor } from "./theme-color"
 
 export function Root() {
   const { fetchNotes, isFetching, error: fetchError } = useFetchNotes()
@@ -31,9 +32,10 @@ export function Root() {
 
   return (
     <div>
-      <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] [@supports(height:100svh)]:h-[100svh]">
+      <ThemeColor />
+      <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
         {fetchError && !isFetching ? (
-          <div className="flex items-center gap-3 bg-[crimson] py-2 px-4 text-[white]">
+          <div className="flex items-center gap-3 bg-[crimson] px-4 py-2 text-[white]">
             <div>
               <ErrorIcon16 />
             </div>
@@ -49,13 +51,13 @@ export function Root() {
           </main>
         </div>
         {!online ? (
-          <div className="flex justify-center py-2 px-4 sm:justify-start sm:bg-bg-tertiary">
+          <div className="flex justify-center px-4 py-2 sm:justify-start sm:bg-bg-tertiary">
             <span>Offline</span>
           </div>
         ) : null}
       </div>
       {isFetching ? (
-        <div className="fixed top-2 right-2 sm:top-[unset] sm:bottom-2">
+        <div className="fixed right-2 top-2 sm:bottom-2 sm:top-[unset]">
           <Card
             elevation={1}
             className="flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"

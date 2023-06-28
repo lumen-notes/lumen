@@ -8,7 +8,6 @@ import { Button } from "./components/button"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
-import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { DatePage } from "./pages/date"
 import { FilePage } from "./pages/file"
@@ -33,7 +32,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <Tooltip.Provider>
         <NewNoteDialog.Provider>
           <NewNoteDialog />
-          <ThemeColor />
+
           <BrowserRouter>
             <Routes>
               <Route path="/file" element={<FilePage />} />
