@@ -5,7 +5,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useParams } from "react-router-dom"
 import { useEvent } from "react-use"
-import { Button } from "../components/button"
+import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
@@ -23,6 +23,19 @@ export function NotePage() {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
   useEvent("keydown", (event) => {
+    // Switch to editing with `e`
+    if (event.key === "e" && !isEditing) {
+      setIsEditing(true)
+      event.preventDefault()
+    }
+
+    // Switch to reading with `esc`
+    // TODO: Ignore escape if a dropdown is open
+    if (event.key === "Escape" && isEditing) {
+      setIsEditing(false)
+      event.preventDefault()
+    }
+
     // Copy markdown with `command + c` if no text is selected
     if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
       copy(note.rawBody)
@@ -60,10 +73,18 @@ export function NotePage() {
 
       <Card elevation={1} className="sticky bottom-2 m-2 flex justify-between gap-2 rounded-md p-1">
         <SegmentedControl>
-          <SegmentedControl.Button selected={!isEditing} onClick={() => setIsEditing(false)}>
+          <SegmentedControl.Button
+            shortcut={["esc"]}
+            selected={!isEditing}
+            onClick={() => setIsEditing(false)}
+          >
             Read
           </SegmentedControl.Button>
-          <SegmentedControl.Button selected={isEditing} onClick={() => setIsEditing(true)}>
+          <SegmentedControl.Button
+            shortcut={["E"]}
+            selected={isEditing}
+            onClick={() => setIsEditing(true)}
+          >
             Edit
           </SegmentedControl.Button>
         </SegmentedControl>
@@ -108,7 +129,10 @@ SegmentedControl.Button = ({
   selected = false,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<"button"> & { selected?: boolean }) => {
+}: React.ComponentPropsWithoutRef<"button"> & {
+  selected?: boolean
+  shortcut?: ButtonProps["shortcut"]
+}) => {
   return (
     <li>
       <RovingFocusGroup.Item asChild active={selected}>
