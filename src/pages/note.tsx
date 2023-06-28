@@ -29,7 +29,7 @@ export function NotePage() {
       event.preventDefault()
     }
 
-    // Switch to reading with `esc`
+    // Switch to viewing with `esc`
     // TODO: Ignore escape if a dropdown is open
     if (event.key === "Escape" && isEditing) {
       setIsEditing(false)
@@ -78,7 +78,7 @@ export function NotePage() {
         <div className="flex items-center gap-2">
           <SegmentedControl>
             <SegmentedControl.Button selected={!isEditing} onClick={() => setIsEditing(false)}>
-              Read
+              View
             </SegmentedControl.Button>
             <SegmentedControl.Button selected={isEditing} onClick={() => setIsEditing(true)}>
               Edit
@@ -90,36 +90,39 @@ export function NotePage() {
               <IconButton aria-label="Attach file">
                 <PaperclipIcon16 />
               </IconButton>
-              <Button variant="primary" shortcut={["⌘", "S"]} disabled>
-                Save
-              </Button>
             </>
           ) : null}
         </div>
 
-        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-          <DropdownMenu.Trigger asChild>
-            <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
-              <MoreIcon16 />
-            </IconButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item
-              icon={<CopyIcon16 />}
-              onSelect={() => copy(note.rawBody)}
-              shortcut={["⌘", "C"]}
-            >
-              Copy markdown
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<CopyIcon16 />}
-              onSelect={() => copy(id)}
-              shortcut={["⌘", "⇧", "C"]}
-            >
-              Copy ID
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
+        <div className="flex gap-2">
+          {/* <Button variant="primary" shortcut={["⌘", "S"]}>
+            Save
+          </Button> */}
+
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+            <DropdownMenu.Trigger asChild>
+              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+                <MoreIcon16 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(note.rawBody)}
+                shortcut={["⌘", "C"]}
+              >
+                Copy markdown
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(id)}
+                shortcut={["⌘", "⇧", "C"]}
+              >
+                Copy ID
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        </div>
       </Card>
     </div>
   )
