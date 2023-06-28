@@ -1,0 +1,4 @@
+body {
+  /* The background of note pages should be var(--color-bg) instead of var(--color-bg-inset) */
+  background-color: var(--color-bg);
+}

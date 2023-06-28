@@ -186,12 +186,13 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               Copy ID
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
+            {/* TODO: Hide this item on mobile */}
             <DropdownMenu.Item
               icon={<ExternalLinkIcon16 />}
               onSelect={() =>
                 window.open(
                   `/${id}`,
-                  undefined,
+                  `${id}`,
                   "toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=600",
                 )
               }
