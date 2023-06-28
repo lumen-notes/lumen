@@ -39,12 +39,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
               <Route path="/file" element={<FilePage />} />
               <Route path="/" element={<Root />}>
                 <Route index element={<NotesPage />} />
-                <Route path=":id" element={<NotePage />} />
                 <Route path="tags" element={<TagsPage />} />
                 <Route path="tags/*" element={<TagPage />} />
                 <Route path="dates/:date" element={<DatePage />} />
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
+              <Route path="/:id" element={<NotePage />} />
             </Routes>
           </BrowserRouter>
         </NewNoteDialog.Provider>

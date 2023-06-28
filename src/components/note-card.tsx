@@ -185,18 +185,28 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Copy ID
             </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<ExternalLinkIcon16 />}
+              onSelect={() =>
+                window.open(
+                  `/${id}`,
+                  undefined,
+                  "toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=600",
+                )
+              }
+            >
+              Open in new window
+            </DropdownMenu.Item>
             {githubRepo ? (
-              <>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                  icon={<ExternalLinkIcon16 />}
-                  href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Open in GitHub
-                </DropdownMenu.Item>
-              </>
+              <DropdownMenu.Item
+                icon={<ExternalLinkIcon16 />}
+                href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in GitHub
+              </DropdownMenu.Item>
             ) : null}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
