@@ -189,13 +189,17 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             {/* TODO: Hide this item on mobile */}
             <DropdownMenu.Item
               icon={<ExternalLinkIcon16 />}
-              onSelect={() =>
+              onSelect={() => {
+                const newWindowWidth = 600
+                const newWindowHeight = 600
                 window.open(
                   `/${id}`,
                   `${id}`,
-                  "toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=600, height=600",
+                  `toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${newWindowWidth}, height=${newWindowHeight}, top=${
+                    window.screen.height / 2 - newWindowHeight / 2
+                  }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
                 )
-              }
+              }}
             >
               Open in new window
             </DropdownMenu.Item>
