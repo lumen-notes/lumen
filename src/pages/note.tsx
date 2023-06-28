@@ -9,16 +9,17 @@ import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { CopyIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
+import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { ThemeColor } from "../components/theme-color"
-import { notesAtom } from "../global-atoms"
+import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 
 export function NotePage() {
   const { id = "" } = useParams()
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
   const note = useAtomValue(noteAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
@@ -120,6 +121,19 @@ export function NotePage() {
               >
                 Copy ID
               </DropdownMenu.Item>
+              {githubRepo ? (
+                <>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Item
+                    icon={<ExternalLinkIcon16 />}
+                    href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Open in GitHub
+                  </DropdownMenu.Item>
+                </>
+              ) : null}
             </DropdownMenu.Content>
           </DropdownMenu>
         </div>
