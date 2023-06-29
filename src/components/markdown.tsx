@@ -403,8 +403,6 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
     )
   }
 
-  console.log(props.children)
-
   return (
     // eslint-disable-next-line jsx-a11y/anchor-has-content
     <a
