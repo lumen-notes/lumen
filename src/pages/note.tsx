@@ -74,7 +74,7 @@ export function NotePage() {
 
       <Card
         elevation={1}
-        className="sticky bottom-2 m-2 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-md p-1"
+        className="sticky bottom-2 m-2 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-md bg-bg-overlay-backdrop p-1 backdrop-blur-md"
       >
         <div className="flex items-center gap-2">
           <SegmentedControl>
