@@ -1,3 +1,5 @@
+import { EditorSelection } from "@codemirror/state"
+import { EditorView } from "@codemirror/view"
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
@@ -11,6 +13,7 @@ import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
+import { NoteEditor } from "../components/note-editor"
 import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
@@ -22,18 +25,39 @@ export function NotePage() {
   const githubRepo = useAtomValue(githubRepoAtom)
   const [isEditing, setIsEditing] = React.useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+  const editorRef = React.useRef<EditorView>()
+
+  const switchToEditing = React.useCallback(() => {
+    setIsEditing(true)
+    // Wait for the editor to mount
+    setTimeout(() => {
+      const view = editorRef.current
+      if (view) {
+        // Focus the editor
+        view.focus()
+        // Move cursor to end of document
+        view.dispatch({
+          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+        })
+      }
+    })
+  }, [])
+
+  const switchToViewing = React.useCallback(() => {
+    setIsEditing(false)
+  }, [])
 
   useEvent("keydown", (event) => {
     // Switch to editing with `e`
     if (event.key === "e" && !isEditing) {
-      setIsEditing(true)
+      switchToEditing()
       event.preventDefault()
     }
 
     // Switch to viewing with `esc`
     // TODO: Ignore escape if a dropdown is open
     if (event.key === "Escape" && isEditing) {
-      setIsEditing(false)
+      switchToViewing()
       event.preventDefault()
     }
 
@@ -68,7 +92,7 @@ export function NotePage() {
         {!isEditing ? (
           <Markdown>{note.rawBody}</Markdown>
         ) : (
-          <pre className="whitespace-pre-wrap">{note.rawBody}</pre>
+          <NoteEditor editorRef={editorRef} defaultValue={note.rawBody} />
         )}
       </div>
 
