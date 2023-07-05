@@ -180,7 +180,7 @@ function Dialog() {
                 elevation={2}
                 minHeight="12rem"
                 maxHeight="50vh"
-                codeMirrorViewRef={editorRef}
+                editorRef={editorRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)
                   setTimeout(() => focusNoteCard(id))

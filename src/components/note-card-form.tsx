@@ -1,31 +1,19 @@
-import {
-  autocompletion,
-  closeBrackets,
-  Completion,
-  CompletionContext,
-  CompletionResult,
-} from "@codemirror/autocomplete"
-import { history } from "@codemirror/commands"
-import { EditorState } from "@codemirror/state"
-import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
-import { parseDate } from "chrono-node"
+import { EditorView, ViewUpdate } from "@codemirror/view"
 import clsx from "clsx"
-import React from "react"
-import { NoteId } from "../types"
-import { formatDate, formatDateDistance } from "../utils/date"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import { useAtomCallback } from "jotai/utils"
-import { githubRepoAtom, githubTokenAtom, tagsAtom, upsertNoteAtom } from "../global-atoms"
+import React from "react"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { NoteId } from "../types"
+import { writeFile } from "../utils/github-fs"
 import { useUpsertNote } from "../utils/github-sync"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
-import { useSearchNotes } from "../utils/use-search-notes"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
 import { fileCache } from "./file-preview"
 import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
-import { writeFile } from "../utils/github-fs"
+import { NoteEditor } from "./note-editor"
 
 const UPLOADS_DIRECTORY = "uploads"
 
@@ -36,7 +24,7 @@ type NoteCardFormProps = {
   elevation?: CardProps["elevation"]
   minHeight?: string | number
   maxHeight?: string | number
-  codeMirrorViewRef?: React.MutableRefObject<EditorView | undefined>
+  editorRef?: React.MutableRefObject<EditorView | undefined>
   onSubmit?: (note: { id: NoteId; rawBody: string }) => void
   onCancel?: () => void
 }
@@ -48,7 +36,7 @@ export function NoteCardForm({
   elevation = 0,
   minHeight,
   maxHeight,
-  codeMirrorViewRef,
+  editorRef: providedEditorRef,
   onSubmit,
   onCancel,
 }: NoteCardFormProps) {
@@ -56,12 +44,13 @@ export function NoteCardForm({
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
 
+  const newEditorRef = React.useRef<EditorView>()
+  const editorRef = providedEditorRef ?? newEditorRef
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
-  const handleStateChange = React.useCallback(
-    (event: ViewUpdate) => setEditorHasFocus(event.view.hasFocus),
-    [],
-  )
+  const handleStateChange = React.useCallback((event: ViewUpdate) => {
+    setEditorHasFocus(event.view.hasFocus)
+  }, [])
 
   const handlePaste = React.useCallback(
     (event: ClipboardEvent, view: EditorView) => {
@@ -75,25 +64,16 @@ export function NoteCardForm({
     [attachFile],
   )
 
-  const {
-    editorRef,
-    view,
-    value = "",
-  } = useCodeMirror({
-    defaultValue,
-    placeholder,
-    viewRef: codeMirrorViewRef,
-    onStateChange: handleStateChange,
-    onPaste: handlePaste,
-  })
-
   function setValue(newValue: string) {
-    view?.dispatch({
+    const value = editorRef.current?.state.doc.toString() ?? ""
+    editorRef.current?.dispatch({
       changes: [{ from: 0, to: value.length, insert: newValue }],
     })
   }
 
   function handleSubmit() {
+    const value = editorRef.current?.state.doc.toString() ?? ""
+
     // Don't create empty notes
     if (!value) return
 
@@ -125,7 +105,7 @@ export function NoteCardForm({
         const file = item.getAsFile()
 
         if (file) {
-          attachFile(file, view)
+          attachFile(file, editorRef.current)
           event.preventDefault()
         }
 
@@ -180,7 +160,14 @@ export function NoteCardForm({
               }
             }}
           >
-            <div ref={editorRef} className="flex flex-shrink-0 flex-grow p-4 pb-1" />
+            <NoteEditor
+              editorRef={editorRef}
+              defaultValue={defaultValue}
+              placeholder={placeholder}
+              className="flex flex-shrink-0 flex-grow p-4 pb-1"
+              onStateChange={handleStateChange}
+              onPaste={handlePaste}
+            />
             <div
               className={clsx(
                 "sticky bottom-0 flex justify-between rounded-lg p-2 backdrop-blur-md",
@@ -196,7 +183,7 @@ export function NoteCardForm({
                   const [file] = Array.from(files)
 
                   if (file) {
-                    attachFile(file, view)
+                    attachFile(file, editorRef.current)
                   }
                 }}
               >
@@ -293,249 +280,4 @@ function useAttachFile() {
   )
 
   return attachFile
-}
-
-// Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
-function useCodeMirror({
-  defaultValue,
-  placeholder: placeholderValue = "",
-  viewRef: providedViewRef,
-  onStateChange,
-  onPaste,
-}: {
-  defaultValue?: string
-  placeholder?: string
-  viewRef?: React.MutableRefObject<EditorView | undefined>
-  onStateChange?: (event: ViewUpdate) => void
-  onPaste?: (event: ClipboardEvent, view: EditorView) => void
-}) {
-  const [editorElement, setEditorElement] = React.useState<HTMLElement>()
-  const editorRef = React.useCallback((node: HTMLElement | null) => {
-    if (!node) return
-    setEditorElement(node)
-  }, [])
-  const newViewRef = React.useRef<EditorView>()
-  const viewRef = providedViewRef ?? newViewRef
-
-  const [value, setValue] = React.useState(defaultValue)
-
-  // Completions
-  const noteCompletion = useNoteCompletion()
-  const tagCompletion = useTagCompletion()
-
-  React.useEffect(() => {
-    if (!editorElement) return
-
-    const state = EditorState.create({
-      doc: defaultValue,
-      extensions: [
-        placeholder(placeholderValue),
-        history(),
-        EditorView.updateListener.of((event) => {
-          const value = event.view.state.doc.sliceString(0)
-          setValue(value)
-          onStateChange?.(event)
-        }),
-        EditorView.domEventHandlers({
-          paste: (event, view) => {
-            const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-            const isUrl = /^https?:\/\//.test(clipboardText)
-
-            // If the clipboard text is a URL, convert selected text into a markdown link
-            if (isUrl) {
-              const { selection } = view.state
-              const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
-              const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-              const markdown = selectedText ? `[${selectedText}](${clipboardText})` : clipboardText
-
-              view.dispatch({
-                changes: {
-                  from,
-                  to,
-                  insert: markdown,
-                },
-                selection: {
-                  anchor: from + markdown.length,
-                },
-              })
-
-              event.preventDefault()
-            }
-
-            onPaste?.(event, view)
-          },
-        }),
-        closeBrackets(),
-        autocompletion({
-          override: [dateCompletion, noteCompletion, tagCompletion],
-          icons: false,
-        }),
-      ],
-    })
-
-    const view = new EditorView({
-      state,
-      parent: editorElement,
-    })
-
-    viewRef.current = view
-
-    return () => {
-      view.destroy()
-    }
-  }, [
-    editorElement,
-    defaultValue,
-    placeholderValue,
-    onStateChange,
-    onPaste,
-    viewRef,
-    // TODO: Prevent noteCompletion and tagCompletion from being recreated when state changes
-    // noteCompletion,
-    // tagCompletion,
-  ])
-
-  return { editorRef, view: viewRef.current, value }
-}
-
-function dateCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/(\[\[[^\]|^|]*|\w*)/)
-
-  if (!word) {
-    return null
-  }
-
-  // "[[<query>" -> "<query>"
-  const query = word.text.replace(/^\[\[/, "")
-
-  if (!query) {
-    return null
-  }
-
-  const date = parseDate(query)
-
-  if (!date) {
-    return null
-  }
-
-  const year = String(date.getFullYear()).padStart(4, "0")
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const dateString = `${year}-${month}-${day}`
-
-  return {
-    from: word.from,
-    options: [
-      {
-        label: formatDate(dateString),
-        detail: formatDateDistance(dateString),
-        apply: (view, completion, from, to) => {
-          const text = `[[${dateString}]]`
-
-          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
-          view.dispatch({
-            changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
-            selection: { anchor: from + text.length },
-          })
-        },
-      },
-    ],
-    filter: false,
-  }
-}
-
-function useTagCompletion() {
-  const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
-
-  const tagCompletion = React.useCallback(
-    async (context: CompletionContext): Promise<CompletionResult | null> => {
-      const word = context.matchBefore(/#[\w\-_\d/]*/)
-
-      if (!word) {
-        return null
-      }
-
-      const tags = Object.keys(getTags())
-
-      return {
-        from: word.from + 1,
-        options: tags.map((name) => ({ label: name })),
-      }
-    },
-    [getTags],
-  )
-
-  return tagCompletion
-}
-
-function useNoteCompletion() {
-  const upsertNote = useSetAtom(upsertNoteAtom)
-  const searchNotes = useSearchNotes()
-
-  const noteCompletion = React.useCallback(
-    async (context: CompletionContext): Promise<CompletionResult | null> => {
-      const word = context.matchBefore(/\[\[[^\]|^|]*/)
-
-      if (!word) {
-        return null
-      }
-
-      // "[[<query>" -> "<query>"
-      const query = word.text.slice(2)
-
-      const searchResults = searchNotes(query)
-
-      const createNewNoteOption: Completion = {
-        label: `Create new note "${query}"`,
-        apply: (view, completion, from, to) => {
-          const note = {
-            id: Date.now().toString(),
-            rawBody: `# ${query}\n\n#inbox`,
-          }
-
-          upsertNote(note)
-
-          // Insert link to new note
-          const text = `[[${note.id}|${query}]]`
-
-          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
-          view.dispatch({
-            changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
-            selection: { anchor: from + text.length },
-          })
-        },
-      }
-
-      const options = searchResults.slice(0, 5).map(([id, note]): Completion => {
-        const { content } = parseFrontmatter(note?.rawBody || "")
-        return {
-          label: content || "",
-          info: content,
-          apply: (view, completion, from, to) => {
-            // Insert link to note
-            const text = `[[${id}${note?.title ? `|${note.title}` : ""}]]`
-
-            const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
-            view.dispatch({
-              changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
-              selection: { anchor: from + text.length },
-            })
-          },
-        }
-      })
-
-      if (query) {
-        options.push(createNewNoteOption)
-      }
-
-      return {
-        from: word.from,
-        options,
-        filter: false,
-      }
-    },
-    [searchNotes, upsertNote],
-  )
-
-  return noteCompletion
 }

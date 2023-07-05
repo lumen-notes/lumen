@@ -29,7 +29,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
-  const codeMirrorViewRef = React.useRef<EditorView>()
+  const editorRef = React.useRef<EditorView>()
 
   // Panel context
   const { closePanel } = React.useContext(PanelsContext)
@@ -43,7 +43,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     setIsEditing(true)
     // Wait for the editor to mount
     setTimeout(() => {
-      const view = codeMirrorViewRef.current
+      const view = editorRef.current
       if (view) {
         // Focus the editor
         view.focus()
@@ -246,8 +246,8 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       key={note.rawBody}
       id={id}
       defaultValue={note.rawBody}
-      codeMirrorViewRef={codeMirrorViewRef}
       elevation={elevation}
+      editorRef={editorRef}
       onSubmit={switchToViewing}
       onCancel={switchToViewing}
     />
