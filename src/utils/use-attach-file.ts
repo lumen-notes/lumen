@@ -1,13 +1,16 @@
 import { EditorView } from "@codemirror/view"
+import { useAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
+import { fileCache } from "../components/file-preview"
 import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { writeFile } from "../utils/github-fs"
-import { fileCache } from "../components/file-preview"
 
 const UPLOADS_DIRECTORY = "uploads"
 
 export function useAttachFile() {
+  // HACK: getGitHubToken() returns an empty string if the atom is not initialized
+  useAtom(githubTokenAtom)
   const getGitHubToken = useAtomCallback(React.useCallback((get) => get(githubTokenAtom), []))
   const getGitHubRepo = useAtomCallback(React.useCallback((get) => get(githubRepoAtom), []))
 
