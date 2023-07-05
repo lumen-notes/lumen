@@ -15,6 +15,7 @@ import React from "react"
 import { tagsAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
 
 type NoteEditorProps = {
@@ -66,8 +67,7 @@ function useCodeMirror({
   }, [])
   const newEditorRef = React.useRef<EditorView>()
   const editorRef = providedEditorRef ?? newEditorRef
-
-  // const [value, setValue] = React.useState(defaultValue)
+  const attachFile = useAttachFile()
 
   // Completions
   const noteCompletion = useNoteCompletion()
@@ -109,6 +109,14 @@ function useCodeMirror({
                 },
               })
 
+              event.preventDefault()
+            }
+
+            // If the clipboard contains a file, upload it
+            const [file] = Array.from(event.clipboardData?.files ?? [])
+
+            if (file) {
+              attachFile(file, view)
               event.preventDefault()
             }
 

@@ -52,18 +52,6 @@ export function NoteCardForm({
     setEditorHasFocus(event.view.hasFocus)
   }, [])
 
-  const handlePaste = React.useCallback(
-    (event: ClipboardEvent, view: EditorView) => {
-      const [file] = Array.from(event.clipboardData?.files ?? [])
-
-      if (file) {
-        attachFile(file, view)
-        event.preventDefault()
-      }
-    },
-    [attachFile],
-  )
-
   function setValue(newValue: string) {
     const value = editorRef.current?.state.doc.toString() ?? ""
     editorRef.current?.dispatch({
@@ -166,7 +154,6 @@ export function NoteCardForm({
               placeholder={placeholder}
               className="flex flex-shrink-0 flex-grow p-4 pb-1"
               onStateChange={handleStateChange}
-              onPaste={handlePaste}
             />
             <div
               className={clsx(
