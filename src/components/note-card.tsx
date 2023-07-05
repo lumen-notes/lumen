@@ -161,6 +161,10 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           event.preventDefault()
         }
       }}
+      onDoubleClick={(event) => {
+        openNoteWindow(id)
+        event.preventDefault()
+      }}
     >
       <div className="p-4 pb-1">
         <Markdown>{note.rawBody}</Markdown>
