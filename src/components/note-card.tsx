@@ -208,14 +208,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
               Copy ID
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
-            {/* TODO: Hide this item on mobile */}
             <DropdownMenu.Item
               icon={<ExternalLinkIcon16 />}
-              href={`/${id}`}
-              onClick={(event) => {
-                openNoteWindow(id)
-                event.preventDefault()
-              }}
+              onSelect={() => openNoteWindow(id)}
               shortcut={["⌘", "O"]}
             >
               Open in new window

@@ -29,6 +29,7 @@ export function NotePage() {
   const [isEditing, setIsEditing] = useSearchParam("edit", {
     defaultValue: false,
     schema: z.boolean(),
+    replace: true,
   })
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
@@ -116,10 +117,10 @@ export function NotePage() {
 
       <Card
         elevation={1}
-        className="sticky bottom-2 m-2 mt-0 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
+        className="sticky bottom-[env(safe-area-inset-bottom)] mx-2 mb-2 mt-0 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
       >
         <div className="flex items-center gap-2">
-          {/* TODO: Use tabs component */}
+          {/* TODO: Use tabs component: https://www.radix-ui.com/docs/primitives/components/tabs */}
           <SegmentedControl>
             <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
               View
@@ -139,6 +140,7 @@ export function NotePage() {
         </div>
 
         <div className="flex gap-2">
+          {/* TODO: Should this be disabled when there are no changes? */}
           <Button
             variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
             shortcut={["⌘", "⏎"]}
