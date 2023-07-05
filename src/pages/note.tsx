@@ -123,6 +123,9 @@ export function NotePage() {
       className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]"
       // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
       onDrop={(event) => {
+        // Only allow drop event if editing
+        if (!isEditing) return
+
         const [item] = Array.from(event.dataTransfer.items)
         const file = item.getAsFile()
 
@@ -143,7 +146,7 @@ export function NotePage() {
       }}
     >
       {/* Dropzone overlay */}
-      {isDraggingOver ? (
+      {isEditing && isDraggingOver ? (
         <div
           className="absolute inset-0 z-10 bg-bg-secondary"
           onDragLeave={(event) => {
