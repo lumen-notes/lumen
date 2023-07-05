@@ -11,13 +11,7 @@ import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import {
-  CopyIcon16,
-  ExternalLinkIcon16,
-  MoreIcon16,
-  PaperclipIcon16,
-  TrashIcon16,
-} from "../components/icons"
+import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { ThemeColor } from "../components/theme-color"
