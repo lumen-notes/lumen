@@ -7,7 +7,7 @@ import { DraggableCore } from "react-draggable"
 import { useMedia } from "react-use"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
-import { NoteForm } from "./note-form"
+import { NoteCardForm } from "./note-card-form"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -168,7 +168,7 @@ function Dialog() {
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
-              className="fixed top-2 left-2 right-2 z-20 sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:w-[var(--width)]"
+              className="fixed left-2 right-2 top-2 z-20 sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:w-[var(--width)]"
               style={{
                 // @ts-ignore
                 "--top": `${position.y}px`,
@@ -176,7 +176,7 @@ function Dialog() {
                 "--width": `${DIALOG_WIDTH}px`,
               }}
             >
-              <NoteForm
+              <NoteCardForm
                 elevation={2}
                 minHeight="12rem"
                 maxHeight="50vh"

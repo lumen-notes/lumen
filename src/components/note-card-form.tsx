@@ -29,7 +29,7 @@ import { writeFile } from "../utils/github-fs"
 
 const UPLOADS_DIRECTORY = "uploads"
 
-type NoteFormProps = {
+type NoteCardFormProps = {
   id?: NoteId
   defaultValue?: string
   placeholder?: string
@@ -41,7 +41,7 @@ type NoteFormProps = {
   onCancel?: () => void
 }
 
-export function NoteForm({
+export function NoteCardForm({
   id,
   defaultValue = "",
   placeholder = "Write a note…",
@@ -51,7 +51,7 @@ export function NoteForm({
   codeMirrorViewRef,
   onSubmit,
   onCancel,
-}: NoteFormProps) {
+}: NoteCardFormProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()

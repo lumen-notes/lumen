@@ -13,7 +13,7 @@ import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
-import { NoteForm } from "./note-form"
+import { NoteCardForm } from "./note-card-form"
 import { PanelContext, Panels, PanelsContext } from "./panels"
 
 type NoteCardProps = {
@@ -242,7 +242,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   )
 
   const editMode = (
-    <NoteForm
+    <NoteCardForm
       key={note.rawBody}
       id={id}
       defaultValue={note.rawBody}

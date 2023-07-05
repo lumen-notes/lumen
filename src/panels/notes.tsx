@@ -6,7 +6,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { rawNotesAtom } from "../global-atoms"
-import { NoteForm } from "../components/note-form"
+import { NoteCardForm } from "../components/note-card-form"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
   const noteCountAtom = React.useMemo(
@@ -19,7 +19,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
     <Panel id={id} title="Notes" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="p-4">
         {noteCount === 0 ? (
-          <NoteForm placeholder="Write your first note…" minHeight="12rem" />
+          <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
         ) : (
           <NoteList noteCount={noteCount} />
         )}
