@@ -11,7 +11,13 @@ import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
+import {
+  CopyIcon16,
+  ExternalLinkIcon16,
+  MoreIcon16,
+  PaperclipIcon16,
+  TrashIcon16,
+} from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { ThemeColor } from "../components/theme-color"
@@ -49,16 +55,6 @@ export function NotePage() {
     }
   }, [id, newValue, upsertNote])
 
-  const handleRevert = React.useCallback(() => {
-    editorRef.current?.dispatch({
-      changes: {
-        from: 0,
-        to: editorRef.current.state.doc.length,
-        insert: note.rawBody,
-      },
-    })
-  }, [note?.rawBody])
-
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
   }, [setIsEditing])
@@ -91,8 +87,6 @@ export function NotePage() {
       handleSave()
       event.preventDefault()
     }
-
-    // TODO: Add shortcut for reverting
 
     // Toggle edit mode with `command + e`
     if (event.key === "e" && event.metaKey) {
@@ -151,12 +145,8 @@ export function NotePage() {
         </div>
 
         <div className="flex gap-2">
-          <Button disabled={!newValue || newValue === note.rawBody} onClick={handleRevert}>
-            Revert
-          </Button>
           <Button
-            disabled={!newValue || newValue === note.rawBody}
-            variant="primary"
+            variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
             shortcut={["⌘", "⏎"]}
             onClick={handleSave}
           >
