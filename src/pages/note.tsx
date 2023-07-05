@@ -36,6 +36,7 @@ export function NotePage() {
     replace: true,
   })
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+  const [isDraggingOver, setIsDraggingOver] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
   const [newValue, setNewValue] = React.useState<string | undefined>()
 
@@ -118,7 +119,40 @@ export function NotePage() {
     )
   }
   return (
-    <div className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]">
+    <div
+      className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]"
+      // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+      onDrop={(event) => {
+        const [item] = Array.from(event.dataTransfer.items)
+        const file = item.getAsFile()
+
+        if (file) {
+          attachFile(file, editorRef.current)
+          event.preventDefault()
+        }
+
+        setIsDraggingOver(false)
+      }}
+      onDragOver={(event) => {
+        // Allow drop event
+        event.preventDefault()
+      }}
+      onDragEnter={(event) => {
+        setIsDraggingOver(true)
+        event.preventDefault()
+      }}
+    >
+      {/* Dropzone overlay */}
+      {isDraggingOver ? (
+        <div
+          className="absolute inset-0 z-10 bg-bg-secondary"
+          onDragLeave={(event) => {
+            setIsDraggingOver(false)
+            event.preventDefault()
+          }}
+        />
+      ) : null}
+
       {/* Make browser toolbar color match the note's background color */}
       <ThemeColor propertyName="--color-bg" />
 
