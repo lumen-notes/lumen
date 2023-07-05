@@ -135,7 +135,7 @@ function useCodeMirror({
     }
   }, [
     editorElement,
-    defaultValue,
+    // defaultValue,
     placeholderValue,
     onStateChange,
     onPaste,

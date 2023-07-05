@@ -192,7 +192,7 @@ body:has([data-resizing="true"]) * {
 /* Codemirror styles */
 
 .cm-editor {
-  @apply w-full font-mono;
+  @apply w-full cursor-text font-mono;
 }
 
 .cm-editor.cm-editor.cm-focused {

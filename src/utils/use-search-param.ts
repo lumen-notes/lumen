@@ -24,7 +24,7 @@ export function useSearchParam<T = string>(
 
   const [value, setValue] = useState(() => {
     try {
-      return schema.parse(searchParams[key])
+      return schema.parse(JSON.parse(String(searchParams[key])))
     } catch (error) {
       return defaultValue
     }

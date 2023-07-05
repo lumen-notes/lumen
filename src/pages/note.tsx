@@ -1,5 +1,4 @@
-import { EditorSelection } from "@codemirror/state"
-import { EditorView } from "@codemirror/view"
+import { EditorView, ViewUpdate } from "@codemirror/view"
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
@@ -7,6 +6,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useParams } from "react-router-dom"
 import { useEvent } from "react-use"
+import { z } from "zod"
 import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
@@ -17,50 +17,57 @@ import { NoteEditor } from "../components/note-editor"
 import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
+import { useUpsertNote } from "../utils/github-sync"
+import { useSearchParam } from "../utils/use-search-param"
 
 export function NotePage() {
   const { id = "" } = useParams()
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
   const note = useAtomValue(noteAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const [isEditing, setIsEditing] = React.useState(false)
+  const upsertNote = useUpsertNote()
+  const [isEditing, setIsEditing] = useSearchParam("edit", {
+    defaultValue: false,
+    schema: z.boolean(),
+  })
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
+  const [newValue, setNewValue] = React.useState<string | undefined>()
+
+  const handleEditorStateChange = React.useCallback((event: ViewUpdate) => {
+    if (event.docChanged) {
+      setNewValue(event.state.doc.toString())
+    }
+  }, [])
+
+  const handleSave = React.useCallback(() => {
+    if (newValue) {
+      upsertNote({
+        id,
+        rawBody: newValue,
+      })
+    }
+  }, [id, newValue, upsertNote])
+
+  const handleRevert = React.useCallback(() => {
+    editorRef.current?.dispatch({
+      changes: {
+        from: 0,
+        to: editorRef.current.state.doc.length,
+        insert: note.rawBody,
+      },
+    })
+  }, [note?.rawBody])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
-    // Wait for the editor to mount
-    setTimeout(() => {
-      const view = editorRef.current
-      if (view) {
-        // Focus the editor
-        view.focus()
-        // Move cursor to end of document
-        view.dispatch({
-          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
-        })
-      }
-    })
-  }, [])
+  }, [setIsEditing])
 
   const switchToViewing = React.useCallback(() => {
     setIsEditing(false)
-  }, [])
+  }, [setIsEditing])
 
   useEvent("keydown", (event) => {
-    // Switch to editing with `e`
-    if (event.key === "e" && !isEditing) {
-      switchToEditing()
-      event.preventDefault()
-    }
-
-    // Switch to viewing with `esc`
-    // TODO: Ignore escape if a dropdown is open
-    if (event.key === "Escape" && isEditing) {
-      switchToViewing()
-      event.preventDefault()
-    }
-
     // Copy markdown with `command + c` if no text is selected
     if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
       copy(note.rawBody)
@@ -78,6 +85,24 @@ export function NotePage() {
       setIsDropdownOpen(true)
       event.preventDefault()
     }
+
+    // Save with `command + enter`
+    if (event.key === "Enter" && event.metaKey) {
+      handleSave()
+      event.preventDefault()
+    }
+
+    // TODO: Add shortcut for reverting
+
+    // Toggle edit mode with `command + e`
+    if (event.key === "e" && event.metaKey) {
+      if (isEditing) {
+        switchToViewing()
+      } else {
+        switchToEditing()
+      }
+      event.preventDefault()
+    }
   })
 
   if (!note) {
@@ -90,22 +115,28 @@ export function NotePage() {
 
       <div className="w-full flex-grow p-4">
         {!isEditing ? (
-          <Markdown>{note.rawBody}</Markdown>
+          <Markdown>{newValue ?? note.rawBody}</Markdown>
         ) : (
-          <NoteEditor editorRef={editorRef} defaultValue={note.rawBody} />
+          <NoteEditor
+            className="flex h-full"
+            editorRef={editorRef}
+            defaultValue={newValue ?? note.rawBody}
+            onStateChange={handleEditorStateChange}
+          />
         )}
       </div>
 
       <Card
         elevation={1}
-        className="sticky bottom-2 m-2 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-md bg-bg-overlay-backdrop p-1 backdrop-blur-md"
+        className="sticky bottom-2 m-2 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-md bg-bg-overlay-backdrop p-2 backdrop-blur-md"
       >
         <div className="flex items-center gap-2">
+          {/* TODO: Use tabs component */}
           <SegmentedControl>
-            <SegmentedControl.Button selected={!isEditing} onClick={() => setIsEditing(false)}>
+            <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
               View
             </SegmentedControl.Button>
-            <SegmentedControl.Button selected={isEditing} onClick={() => setIsEditing(true)}>
+            <SegmentedControl.Button selected={isEditing} onClick={switchToEditing}>
               Edit
             </SegmentedControl.Button>
           </SegmentedControl>
@@ -120,9 +151,17 @@ export function NotePage() {
         </div>
 
         <div className="flex gap-2">
-          {/* <Button variant="primary" shortcut={["⌘", "S"]}>
+          <Button disabled={!newValue || newValue === note.rawBody} onClick={handleRevert}>
+            Revert
+          </Button>
+          <Button
+            disabled={!newValue || newValue === note.rawBody}
+            variant="primary"
+            shortcut={["⌘", "⏎"]}
+            onClick={handleSave}
+          >
             Save
-          </Button> */}
+          </Button>
 
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
@@ -169,7 +208,7 @@ export function NotePage() {
 function SegmentedControl({ children }: { children: React.ReactNode }) {
   return (
     <RovingFocusGroup.Root orientation="horizontal">
-      <ul className="flex gap-1 rounded-sm">{children}</ul>
+      <ul className="flex gap-2 rounded-sm">{children}</ul>
     </RovingFocusGroup.Root>
   )
 }
