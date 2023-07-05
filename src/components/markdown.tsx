@@ -334,11 +334,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
-              {nextAge
-                ? `${withSuffix(nextAge)} birthday`
-                : isBirthdayToday
-                ? "Birthday"
-                : "Next birthday"}
+              {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"}
             </Link>{" "}
             is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
             {isBirthdayToday ? "🎂" : null}
