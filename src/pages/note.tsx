@@ -1,3 +1,4 @@
+import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import copy from "copy-to-clipboard"
@@ -10,6 +11,7 @@ import { z } from "zod"
 import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
+import { FileInputButton } from "../components/file-input-button"
 import { IconButton } from "../components/icon-button"
 import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
@@ -18,8 +20,8 @@ import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { useUpsertNote } from "../utils/github-sync"
+import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchParam } from "../utils/use-search-param"
-import { EditorSelection } from "@codemirror/state"
 
 export function NotePage() {
   const { id = "" } = useParams()
@@ -27,6 +29,7 @@ export function NotePage() {
   const note = useAtomValue(noteAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
+  const attachFile = useAttachFile()
   const [isEditing, setIsEditing] = useSearchParam("edit", {
     defaultValue: false,
     schema: z.boolean(),
@@ -108,7 +111,11 @@ export function NotePage() {
   })
 
   if (!note) {
-    return <div>Not found</div>
+    return (
+      <div className="grid h-screen w-full place-items-center [@supports(height:100svh)]:h-[100svh]">
+        Not found
+      </div>
+    )
   }
   return (
     <div className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]">
@@ -146,9 +153,22 @@ export function NotePage() {
             {isEditing ? (
               <>
                 <div className="h-[50%] w-px bg-border-secondary" />
-                <IconButton aria-label="Attach file">
-                  <PaperclipIcon16 />
-                </IconButton>
+                <FileInputButton
+                  asChild
+                  onChange={(files) => {
+                    if (!files) return
+
+                    const [file] = Array.from(files)
+
+                    if (file) {
+                      attachFile(file, editorRef.current)
+                    }
+                  }}
+                >
+                  <IconButton aria-label="Attach file" disabled={!githubRepo}>
+                    <PaperclipIcon16 />
+                  </IconButton>
+                </FileInputButton>
               </>
             ) : null}
           </div>
