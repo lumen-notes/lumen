@@ -19,6 +19,7 @@ import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { useUpsertNote } from "../utils/github-sync"
 import { useSearchParam } from "../utils/use-search-param"
+import { EditorSelection } from "@codemirror/state"
 
 export function NotePage() {
   const { id = "" } = useParams()
@@ -52,6 +53,18 @@ export function NotePage() {
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
+    // Wait for the editor to mount
+    setTimeout(() => {
+      const view = editorRef.current
+      if (view) {
+        // Focus the editor
+        view.focus()
+        // Move cursor to end of document
+        view.dispatch({
+          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+        })
+      }
+    })
   }, [setIsEditing])
 
   const switchToViewing = React.useCallback(() => {
