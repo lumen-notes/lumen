@@ -128,78 +128,80 @@ export function NotePage() {
         )}
       </div>
 
-      <Card
-        elevation={1}
-        className="sticky bottom-[max(0.5rem,env(safe-area-inset-bottom))] mx-2 mb-2 flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
-      >
-        <div className="flex items-center gap-2">
-          {/* TODO: Use tabs component: https://www.radix-ui.com/docs/primitives/components/tabs */}
-          <SegmentedControl>
-            <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
-              View
-            </SegmentedControl.Button>
-            <SegmentedControl.Button selected={isEditing} onClick={switchToEditing}>
-              Edit
-            </SegmentedControl.Button>
-          </SegmentedControl>
-          {isEditing ? (
-            <>
-              <div className="h-[50%] w-px bg-border-secondary" />
-              <IconButton aria-label="Attach file">
-                <PaperclipIcon16 />
-              </IconButton>
-            </>
-          ) : null}
-        </div>
+      <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <Card
+          elevation={1}
+          className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
+        >
+          <div className="flex items-center gap-2">
+            {/* TODO: Use tabs component: https://www.radix-ui.com/docs/primitives/components/tabs */}
+            <SegmentedControl>
+              <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
+                View
+              </SegmentedControl.Button>
+              <SegmentedControl.Button selected={isEditing} onClick={switchToEditing}>
+                Edit
+              </SegmentedControl.Button>
+            </SegmentedControl>
+            {isEditing ? (
+              <>
+                <div className="h-[50%] w-px bg-border-secondary" />
+                <IconButton aria-label="Attach file">
+                  <PaperclipIcon16 />
+                </IconButton>
+              </>
+            ) : null}
+          </div>
 
-        <div className="flex gap-2">
-          {/* TODO: Should this be disabled when there are no changes? */}
-          <Button
-            variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
-            shortcut={["⌘", "⏎"]}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
+          <div className="flex gap-2">
+            {/* TODO: Should this be disabled when there are no changes? */}
+            <Button
+              variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
+              shortcut={["⌘", "⏎"]}
+              onClick={handleSave}
+            >
+              Save
+            </Button>
 
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-            <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
-                <MoreIcon16 />
-              </IconButton>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(note.rawBody)}
-                shortcut={["⌘", "C"]}
-              >
-                Copy markdown
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(id)}
-                shortcut={["⌘", "⇧", "C"]}
-              >
-                Copy ID
-              </DropdownMenu.Item>
-              {githubRepo ? (
-                <>
-                  <DropdownMenu.Separator />
-                  <DropdownMenu.Item
-                    icon={<ExternalLinkIcon16 />}
-                    href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open in GitHub
-                  </DropdownMenu.Item>
-                </>
-              ) : null}
-            </DropdownMenu.Content>
-          </DropdownMenu>
-        </div>
-      </Card>
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+              <DropdownMenu.Trigger asChild>
+                <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+                  <MoreIcon16 />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item
+                  icon={<CopyIcon16 />}
+                  onSelect={() => copy(note.rawBody)}
+                  shortcut={["⌘", "C"]}
+                >
+                  Copy markdown
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<CopyIcon16 />}
+                  onSelect={() => copy(id)}
+                  shortcut={["⌘", "⇧", "C"]}
+                >
+                  Copy ID
+                </DropdownMenu.Item>
+                {githubRepo ? (
+                  <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      icon={<ExternalLinkIcon16 />}
+                      href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open in GitHub
+                    </DropdownMenu.Item>
+                  </>
+                ) : null}
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          </div>
+        </Card>
+      </div>
     </div>
   )
 }
