@@ -211,7 +211,11 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             {/* TODO: Hide this item on mobile */}
             <DropdownMenu.Item
               icon={<ExternalLinkIcon16 />}
-              onSelect={() => openNoteWindow(id)}
+              href={`/${id}`}
+              onClick={(event) => {
+                openNoteWindow(id)
+                event.preventDefault()
+              }}
               shortcut={["⌘", "O"]}
             >
               Open in new window
