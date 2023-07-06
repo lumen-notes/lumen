@@ -5,16 +5,16 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
+import { Params } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
 import { Button, ButtonProps } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { FileInputButton } from "../components/file-input-button"
+import { FullscreenContainer } from "../components/fullscreen-container"
 import { IconButton } from "../components/icon-button"
 import {
-  ChevronLeftIcon16,
-  ChevronRightIcon16,
   CopyIcon16,
   ExternalLinkIcon16,
   MoreIcon16,
@@ -23,13 +23,11 @@ import {
 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
-import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchParam } from "../utils/use-search-param"
-import { Params } from "react-router-dom"
 
 type FullscreenNotePageProps = {
   params: Params<string>
@@ -132,40 +130,7 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   }
 
   return (
-    // translateZ(0) fixes a bug in Safari where the scrollbar would appear underneath the sticky header
-    <div className="flex min-h-full flex-col bg-bg coarse:[-webkit-transform:translateZ(0)]">
-      {/* Make browser toolbar color match the header color */}
-      <ThemeColor propertyName="--color-bg" />
-
-      {/* Header */}
-      <div
-        className={
-          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg to-bg-backdrop p-1 backdrop-blur-md"
-        }
-      >
-        <div className="flex flex-shrink items-center gap-4">
-          <div className="flex">
-            <IconButton disabled aria-label="Back">
-              <ChevronLeftIcon16 />
-            </IconButton>
-            <IconButton disabled aria-label="Forward">
-              <ChevronRightIcon16 />
-            </IconButton>
-          </div>
-          <div className="flex flex-shrink items-center gap-2">
-            <div className="flex-shrink-0 text-text-secondary">
-              <NoteIcon16 />
-            </div>
-            <div className="flex items-baseline gap-3 overflow-hidden">
-              <h2 className="flex-shrink-0 leading-4">Note</h2>
-              {/* {description ? (
-              <span className="truncate text-text-secondary">{description}</span>
-            ) : null} */}
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <FullscreenContainer title="Note" icon={<NoteIcon16 />} className="bg-bg">
       <div
         className="relative flex flex-grow flex-col bg-bg"
         // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
@@ -306,7 +271,7 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
           </Card>
         </div>
       </div>
-    </div>
+    </FullscreenContainer>
   )
 }
 
