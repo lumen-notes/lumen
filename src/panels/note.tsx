@@ -1,5 +1,4 @@
 import * as Tabs from "@radix-ui/react-tabs"
-import { search } from "fast-fuzzy"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
@@ -10,8 +9,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { notesAtom } from "../global-atoms"
-import { Note } from "../types"
-import { filterResults, parseQuery, useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search-notes"
 
 // const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
 //   return entries.filter(([, note]) => note.queries.length > 0)
@@ -114,19 +112,19 @@ function TabsTrigger(props: Tabs.TabsTriggerProps) {
  * We create a list with only one entry, and then pass it through the search
  * and filter functions. If the result is not empty, the note matches.
  */
-function testQuery(query: string, note: Note) {
-  const entries: [string, Note][] = [["", note]]
+// function testQuery(query: string, note: Note) {
+//   const entries: [string, Note][] = [["", note]]
 
-  const { fuzzy, qualifiers } = parseQuery(query)
+//   const { fuzzy, qualifiers } = parseQuery(query)
 
-  const results = fuzzy
-    ? search(fuzzy, entries, {
-        keySelector: ([, note]) => [note.title, note.rawBody],
-        threshold: 0.8,
-      })
-    : entries
+//   const results = fuzzy
+//     ? search(fuzzy, entries, {
+//         keySelector: ([, note]) => [note.title, note.rawBody],
+//         threshold: 0.8,
+//       })
+//     : entries
 
-  const filteredResults = filterResults(results, qualifiers)
+//   const filteredResults = filterResults(results, qualifiers)
 
-  return filteredResults.length > 0
-}
+//   return filteredResults.length > 0
+// }

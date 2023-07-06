@@ -42,8 +42,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <Route path="tags/*" element={<TagPage />} />
                 <Route path="dates/:date" element={<DatePage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path=":id" element={<NotePage />} />
               </Route>
-              <Route path="/:id" element={<NotePage />} />
             </Routes>
           </BrowserRouter>
         </NewNoteDialog.Provider>

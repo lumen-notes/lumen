@@ -2,6 +2,7 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 import { useEvent, useMedia, useNetworkState } from "react-use"
 import { useFetchNotes } from "../utils/github-sync"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
@@ -14,6 +15,8 @@ export function Root() {
   // This breakpoint is copied from Tailwind's default breakpoints.
   // Reference: https://tailwindcss.com/docs/responsive-design
   const isDesktop = useMedia("(min-width: 640px)")
+
+  const isFullscreen = useIsFullscreen()
 
   const { online } = useNetworkState()
 
@@ -43,9 +46,11 @@ export function Root() {
           </div>
         ) : null}
         <div className="flex h-[0%] w-full flex-grow flex-col-reverse sm:flex-row">
-          <div className="flex">
-            <NavBar position={isDesktop ? "left" : "bottom"} />
-          </div>
+          {!isFullscreen ? (
+            <div className="flex">
+              <NavBar position={isDesktop ? "left" : "bottom"} />
+            </div>
+          ) : null}
           <main className="w-full flex-grow overflow-auto">
             <Outlet />
           </main>
@@ -57,10 +62,10 @@ export function Root() {
         ) : null}
       </div>
       {isFetching ? (
-        <div className="fixed right-2 top-2 sm:bottom-2 sm:top-[unset]">
+        <div className="fixed right-2 top-2 z-10 sm:bottom-2 sm:top-[unset]">
           <Card
             elevation={1}
-            className="flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"
+            className=" flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"
             role="status"
             aria-label="Fetching notes"
           >
