@@ -127,10 +127,10 @@ export function NotePage() {
     )
   }
   return (
-    <div className="flex h-screen flex-col overflow-auto [@supports(height:100svh)]:h-[100svh]">
+    <div className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]">
       <div
         className={
-          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md"
+          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg to-bg-backdrop p-1 backdrop-blur-md"
         }
       >
         <div className="flex flex-shrink items-center gap-4">
@@ -193,7 +193,7 @@ export function NotePage() {
         ) : null}
 
         {/* Make browser toolbar color match the note's background color */}
-        <ThemeColor />
+        <ThemeColor propertyName="--color-bg" />
 
         <div className="w-full flex-grow p-4">
           {!isEditing ? (
