@@ -126,8 +126,13 @@ export function NotePage() {
       </div>
     )
   }
+
   return (
     <div className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]">
+      {/* Make browser toolbar color match the header color */}
+      <ThemeColor propertyName="--color-bg" />
+
+      {/* Header */}
       <div
         className={
           "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg to-bg-backdrop p-1 backdrop-blur-md"
@@ -155,6 +160,7 @@ export function NotePage() {
           </div>
         </div>
       </div>
+
       <div
         className="relative flex flex-grow flex-col bg-bg"
         // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
@@ -191,9 +197,6 @@ export function NotePage() {
             }}
           />
         ) : null}
-
-        {/* Make browser toolbar color match the note's background color */}
-        <ThemeColor propertyName="--color-bg" />
 
         <div className="w-full flex-grow p-4">
           {!isEditing ? (
