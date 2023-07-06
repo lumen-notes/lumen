@@ -128,7 +128,8 @@ export function NotePage() {
   }
 
   return (
-    <div className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]">
+    // translateZ(0) fixes a bug in Safari where the scrollbar would appear underneath the sticky header
+    <div className="flex h-screen flex-col overflow-auto bg-bg coarse:[-webkit-transform:translateZ(0)] [@supports(height:100svh)]:h-[100svh]">
       {/* Make browser toolbar color match the header color */}
       <ThemeColor propertyName="--color-bg" />
 
