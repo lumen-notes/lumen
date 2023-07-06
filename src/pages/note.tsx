@@ -13,10 +13,16 @@ import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { FileInputButton } from "../components/file-input-button"
 import { IconButton } from "../components/icon-button"
-import { CopyIcon16, ExternalLinkIcon16, MoreIcon16, PaperclipIcon16 } from "../components/icons"
+import {
+  CopyIcon16,
+  ExternalLinkIcon16,
+  MoreIcon16,
+  NoteIcon24,
+  PaperclipIcon16,
+} from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
-import { ThemeColor } from "../components/theme-color"
+// import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { useUpsertNote } from "../utils/github-sync"
@@ -119,145 +125,164 @@ export function NotePage() {
     )
   }
   return (
-    <div
-      className="flex h-screen flex-col overflow-auto bg-bg [@supports(height:100svh)]:h-[100svh]"
-      // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
-      onDrop={(event) => {
-        // Only allow drop event if editing
-        if (!isEditing) return
-
-        const [item] = Array.from(event.dataTransfer.items)
-        const file = item.getAsFile()
-
-        if (file) {
-          attachFile(file, editorRef.current)
-          event.preventDefault()
+    <div className="flex h-screen flex-col overflow-auto [@supports(height:100svh)]:h-[100svh]">
+      <div
+        className={
+          "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
         }
-
-        setIsDraggingOver(false)
-      }}
-      onDragOver={(event) => {
-        // Allow drop event
-        event.preventDefault()
-      }}
-      onDragEnter={(event) => {
-        setIsDraggingOver(true)
-        event.preventDefault()
-      }}
-    >
-      {/* Dropzone overlay */}
-      {isEditing && isDraggingOver ? (
-        <div
-          className="absolute inset-0 z-10 bg-bg-secondary"
-          onDragLeave={(event) => {
-            setIsDraggingOver(false)
-            event.preventDefault()
-          }}
-        />
-      ) : null}
-
-      {/* Make browser toolbar color match the note's background color */}
-      <ThemeColor propertyName="--color-bg" />
-
-      <div className="w-full flex-grow p-4">
-        {!isEditing ? (
-          <Markdown>{newValue ?? note.rawBody}</Markdown>
-        ) : (
-          <NoteEditor
-            className="flex h-full"
-            editorRef={editorRef}
-            defaultValue={newValue ?? note.rawBody}
-            onStateChange={handleEditorStateChange}
-          />
-        )}
+      >
+        <div className="flex flex-shrink items-center gap-2">
+          <div className="flex-shrink-0 text-text-secondary">
+            <NoteIcon24 />
+          </div>
+          <div className="flex items-baseline gap-3 overflow-hidden">
+            <h2 className="flex-shrink-0 text-xl font-semibold leading-6">Note</h2>
+            {/* {description ? (
+              <span className="truncate text-text-secondary">{description}</span>
+            ) : null} */}
+          </div>
+        </div>
       </div>
+      <div
+        className="relative flex flex-grow flex-col bg-bg"
+        // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+        onDrop={(event) => {
+          // Only allow drop event if editing
+          if (!isEditing) return
 
-      <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <Card
-          elevation={1}
-          className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-2">
-            {/* TODO: Use tabs component: https://www.radix-ui.com/docs/primitives/components/tabs */}
-            <SegmentedControl>
-              <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
-                View
-              </SegmentedControl.Button>
-              <SegmentedControl.Button selected={isEditing} onClick={switchToEditing}>
-                Edit
-              </SegmentedControl.Button>
-            </SegmentedControl>
-            {isEditing ? (
-              <>
-                <div className="h-[50%] w-px bg-border-secondary" />
-                <FileInputButton
-                  asChild
-                  onChange={(files) => {
-                    if (!files) return
+          const [item] = Array.from(event.dataTransfer.items)
+          const file = item.getAsFile()
 
-                    const [file] = Array.from(files)
+          if (file) {
+            attachFile(file, editorRef.current)
+            event.preventDefault()
+          }
 
-                    if (file) {
-                      attachFile(file, editorRef.current)
-                    }
-                  }}
-                >
-                  <IconButton aria-label="Attach file" disabled={!githubRepo}>
-                    <PaperclipIcon16 />
+          setIsDraggingOver(false)
+        }}
+        onDragOver={(event) => {
+          // Allow drop event
+          event.preventDefault()
+        }}
+        onDragEnter={(event) => {
+          setIsDraggingOver(true)
+          event.preventDefault()
+        }}
+      >
+        {/* Dropzone overlay */}
+        {isEditing && isDraggingOver ? (
+          <div
+            className="absolute inset-0 z-10 bg-bg-secondary"
+            onDragLeave={(event) => {
+              setIsDraggingOver(false)
+              event.preventDefault()
+            }}
+          />
+        ) : null}
+
+        {/* Make browser toolbar color match the note's background color */}
+        {/* <ThemeColor propertyName="--color-bg" /> */}
+
+        <div className="w-full flex-grow p-4">
+          {!isEditing ? (
+            <Markdown>{newValue ?? note.rawBody}</Markdown>
+          ) : (
+            <NoteEditor
+              className="flex h-full"
+              editorRef={editorRef}
+              defaultValue={newValue ?? note.rawBody}
+              onStateChange={handleEditorStateChange}
+            />
+          )}
+        </div>
+
+        <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          <Card
+            elevation={1}
+            className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2">
+              {/* TODO: Use tabs component: https://www.radix-ui.com/docs/primitives/components/tabs */}
+              <SegmentedControl>
+                <SegmentedControl.Button selected={!isEditing} onClick={switchToViewing}>
+                  View
+                </SegmentedControl.Button>
+                <SegmentedControl.Button selected={isEditing} onClick={switchToEditing}>
+                  Edit
+                </SegmentedControl.Button>
+              </SegmentedControl>
+              {isEditing ? (
+                <>
+                  <div className="h-[50%] w-px bg-border-secondary" />
+                  <FileInputButton
+                    asChild
+                    onChange={(files) => {
+                      if (!files) return
+
+                      const [file] = Array.from(files)
+
+                      if (file) {
+                        attachFile(file, editorRef.current)
+                      }
+                    }}
+                  >
+                    <IconButton aria-label="Attach file" disabled={!githubRepo}>
+                      <PaperclipIcon16 />
+                    </IconButton>
+                  </FileInputButton>
+                </>
+              ) : null}
+            </div>
+
+            <div className="flex gap-2">
+              {/* TODO: Should this be disabled when there are no changes? */}
+              <Button
+                variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
+                shortcut={["⌘", "⏎"]}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+                <DropdownMenu.Trigger asChild>
+                  <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+                    <MoreIcon16 />
                   </IconButton>
-                </FileInputButton>
-              </>
-            ) : null}
-          </div>
-
-          <div className="flex gap-2">
-            {/* TODO: Should this be disabled when there are no changes? */}
-            <Button
-              variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
-              shortcut={["⌘", "⏎"]}
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-
-            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-              <DropdownMenu.Trigger asChild>
-                <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
-                  <MoreIcon16 />
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">
-                <DropdownMenu.Item
-                  icon={<CopyIcon16 />}
-                  onSelect={() => copy(note.rawBody)}
-                  shortcut={["⌘", "C"]}
-                >
-                  Copy markdown
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<CopyIcon16 />}
-                  onSelect={() => copy(id)}
-                  shortcut={["⌘", "⇧", "C"]}
-                >
-                  Copy ID
-                </DropdownMenu.Item>
-                {githubRepo ? (
-                  <>
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Item
-                      icon={<ExternalLinkIcon16 />}
-                      href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Open in GitHub
-                    </DropdownMenu.Item>
-                  </>
-                ) : null}
-              </DropdownMenu.Content>
-            </DropdownMenu>
-          </div>
-        </Card>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">
+                  <DropdownMenu.Item
+                    icon={<CopyIcon16 />}
+                    onSelect={() => copy(note.rawBody)}
+                    shortcut={["⌘", "C"]}
+                  >
+                    Copy markdown
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<CopyIcon16 />}
+                    onSelect={() => copy(id)}
+                    shortcut={["⌘", "⇧", "C"]}
+                  >
+                    Copy ID
+                  </DropdownMenu.Item>
+                  {githubRepo ? (
+                    <>
+                      <DropdownMenu.Separator />
+                      <DropdownMenu.Item
+                        icon={<ExternalLinkIcon16 />}
+                        href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Open in GitHub
+                      </DropdownMenu.Item>
+                    </>
+                  ) : null}
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   )
