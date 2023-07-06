@@ -10,6 +10,7 @@ import { PanelsContext } from "../components/panels"
 import { tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 
@@ -17,6 +18,8 @@ export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const upsertNote = useSetAtom(upsertNoteAtom)
+
+  const isFullscreen = useIsFullscreen()
 
   const { panels, openPanel } = React.useContext(PanelsContext)
   const routerNavigate = useNavigate()
@@ -44,6 +47,9 @@ export function CommandMenu() {
       if (openPanel) {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
+      } else if (isFullscreen) {
+        // If we're in fullscreen mode, add `fullscreen=true` to the query string
+        routerNavigate(url.includes("?") ? `${url}&fullscreen=true` : `${url}?fullscreen=true`)
       } else {
         // Otherwise, navigate using the router
         routerNavigate(url)
@@ -52,7 +58,7 @@ export function CommandMenu() {
       setIsOpen(false)
       setQuery("")
     },
-    [openPanel, panels, routerNavigate],
+    [isFullscreen, openPanel, panels, routerNavigate],
   )
 
   // Toggle the menu with `command + k`

@@ -8,6 +8,8 @@ import { useMedia } from "react-use"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
+import { useNavigate } from "react-router-dom"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -45,6 +47,8 @@ function Provider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [position, setPosition] = React.useState(() => initialPosition())
   const editorRef = React.useRef<EditorView>()
+  const isFullscreen = useIsFullscreen()
+  const navigate = useNavigate()
 
   const focusPrevActiveElement = React.useCallback(() => {
     prevActiveElement.current?.focus()
@@ -56,7 +60,14 @@ function Provider({ children }: { children: React.ReactNode }) {
 
   const focusNoteCard = React.useCallback(
     (id: string) => {
+      // If we're in fullscreen mode, navigate to the new note
+      if (isFullscreen) {
+        navigate(`/${id}?fullscreen=true`)
+        return
+      }
+
       const noteElement = document.querySelector(`[data-note-id="${id}"]`)
+
       if (noteElement instanceof HTMLElement) {
         noteElement.focus()
       } else {
@@ -64,7 +75,7 @@ function Provider({ children }: { children: React.ReactNode }) {
         focusPrevActiveElement()
       }
     },
-    [focusPrevActiveElement],
+    [isFullscreen, navigate, focusPrevActiveElement],
   )
 
   const toggle = React.useCallback(() => {

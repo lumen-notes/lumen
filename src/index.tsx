@@ -30,10 +30,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Tooltip.Provider>
-        <NewNoteDialog.Provider>
-          <NewNoteDialog />
-
-          <BrowserRouter>
+        <BrowserRouter>
+          <NewNoteDialog.Provider>
+            <NewNoteDialog />
             <Routes>
               <Route path="/file" element={<FilePage />} />
               <Route path="/" element={<Root />}>
@@ -45,8 +44,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <Route path=":id" element={<NotePage />} />
               </Route>
             </Routes>
-          </BrowserRouter>
-        </NewNoteDialog.Provider>
+          </NewNoteDialog.Provider>
+        </BrowserRouter>
       </Tooltip.Provider>
     </ErrorBoundary>
   </React.StrictMode>,

@@ -124,9 +124,9 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
 
   if (!note) {
     return (
-      <div className="grid h-screen w-full place-items-center [@supports(height:100svh)]:h-[100svh]">
-        Not found
-      </div>
+      <FullscreenContainer title="Note" icon={<NoteIcon16 />} className="bg-bg">
+        <div className="grid w-full flex-grow place-items-center">Not found</div>
+      </FullscreenContainer>
     )
   }
 

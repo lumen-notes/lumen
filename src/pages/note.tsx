@@ -10,7 +10,12 @@ export function NotePage() {
   const params = useParams()
 
   if (isFullscreen) {
-    return <FullscreenNotePage params={params} />
+    return (
+      <>
+        <CommandMenu />
+        <FullscreenNotePage params={params} />
+      </>
+    )
   }
 
   return (
