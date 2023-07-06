@@ -169,18 +169,20 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
           />
         ) : null}
 
-        <div className="grid w-full flex-grow p-4">
-          {!isEditing ? (
+        {!isEditing ? (
+          <div className="w-full flex-grow p-4">
             <Markdown>{draftValue ?? note.rawBody}</Markdown>
-          ) : (
+          </div>
+        ) : (
+          <div className="grid w-full flex-grow p-4">
             <NoteEditor
               className="flex h-full"
               editorRef={editorRef}
               defaultValue={draftValue ?? note.rawBody}
               onStateChange={handleEditorStateChange}
             />
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <Card
