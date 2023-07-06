@@ -22,7 +22,7 @@ import {
 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
-// import { ThemeColor } from "../components/theme-color"
+import { ThemeColor } from "../components/theme-color"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { useUpsertNote } from "../utils/github-sync"
@@ -181,7 +181,7 @@ export function NotePage() {
         ) : null}
 
         {/* Make browser toolbar color match the note's background color */}
-        {/* <ThemeColor propertyName="--color-bg" /> */}
+        <ThemeColor />
 
         <div className="w-full flex-grow p-4">
           {!isEditing ? (
