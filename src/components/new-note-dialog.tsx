@@ -159,7 +159,7 @@ function Dialog() {
           {/* Overlay */}
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div
-            className="fixed inset-0 bg-bg-inset-backdrop backdrop-blur-sm animate-in fade-in sm:hidden"
+            className="fixed inset-0 z-10 bg-bg-inset-backdrop backdrop-blur-sm animate-in fade-in sm:hidden"
             onClick={() => {
               setIsOpen(false)
               focusPrevActiveElement()
