@@ -14,10 +14,12 @@ import { DropdownMenu } from "../components/dropdown-menu"
 import { FileInputButton } from "../components/file-input-button"
 import { IconButton } from "../components/icon-button"
 import {
+  ChevronLeftIcon16,
+  ChevronRightIcon16,
   CopyIcon16,
   ExternalLinkIcon16,
   MoreIcon16,
-  NoteIcon24,
+  NoteIcon16,
   PaperclipIcon16,
 } from "../components/icons"
 import { Markdown } from "../components/markdown"
@@ -128,18 +130,28 @@ export function NotePage() {
     <div className="flex h-screen flex-col overflow-auto [@supports(height:100svh)]:h-[100svh]">
       <div
         className={
-          "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
+          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md"
         }
       >
-        <div className="flex flex-shrink items-center gap-2">
-          <div className="flex-shrink-0 text-text-secondary">
-            <NoteIcon24 />
+        <div className="flex flex-shrink items-center gap-4">
+          <div className="flex">
+            <IconButton disabled aria-label="Back">
+              <ChevronLeftIcon16 />
+            </IconButton>
+            <IconButton disabled aria-label="Forward">
+              <ChevronRightIcon16 />
+            </IconButton>
           </div>
-          <div className="flex items-baseline gap-3 overflow-hidden">
-            <h2 className="flex-shrink-0 text-xl font-semibold leading-6">Note</h2>
-            {/* {description ? (
+          <div className="flex flex-shrink items-center gap-2">
+            <div className="flex-shrink-0 text-text-secondary">
+              <NoteIcon16 />
+            </div>
+            <div className="flex items-baseline gap-3 overflow-hidden">
+              <h2 className="flex-shrink-0 leading-4">Note</h2>
+              {/* {description ? (
               <span className="truncate text-text-secondary">{description}</span>
             ) : null} */}
+            </div>
           </div>
         </div>
       </div>
