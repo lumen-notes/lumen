@@ -12,9 +12,10 @@ import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
+import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
-import { PanelContext, Panels, PanelsContext } from "./panels"
+import { PanelContext, PanelsContext } from "./panels"
 
 type NoteCardProps = {
   id: NoteId
@@ -26,6 +27,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const note = useAtomValue(noteAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const deleteNote = useDeleteNote()
+  const Link = useLink()
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
@@ -171,9 +173,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       </div>
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">
-          <Panels.Link target="_blank" to={`/${id}`} className="link tracking-wide">
+          <Link target="_blank" to={`/${id}`} className="link tracking-wide">
             {id}
-          </Panels.Link>
+          </Link>
           {note.backlinks.length ? (
             <span>
               {" · "}
