@@ -10,8 +10,8 @@ type FullscreenContainerProps = {
   title: string
   description?: string
   icon?: React.ReactNode
+  elevation: -1 | 0
   children?: React.ReactNode
-  className?: string
   //   actions?: Array<{
   //     label: string
   //     disabled?: boolean
@@ -24,8 +24,8 @@ export function FullscreenContainer({
   title,
   description,
   icon,
+  elevation,
   children,
-  className,
 }: FullscreenContainerProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -33,16 +33,20 @@ export function FullscreenContainer({
   return (
     // translateZ(0) fixes a bug in Safari where the scrollbar would appear underneath the sticky header
     <div
-      className={cx("flex min-h-full flex-col coarse:[-webkit-transform:translateZ(0)]", className)}
+      className={cx(
+        "flex min-h-full flex-col coarse:[-webkit-transform:translateZ(0)]",
+        elevation === -1 ? "bg-bg-inset" : "bg-bg",
+      )}
     >
       {/* Make browser toolbar color match the header color */}
-      <ThemeColor propertyName="--color-bg" />
+      <ThemeColor propertyName={elevation === -1 ? "--color-bg-inset" : "--color-bg"} />
 
       {/* Header */}
       <div
-        className={
-          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg to-bg-backdrop p-1 backdrop-blur-md"
-        }
+        className={cx(
+          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b p-1 backdrop-blur-md",
+          elevation === -1 ? "from-bg-inset to-bg-inset-backdrop" : "from-bg to-bg-backdrop",
+        )}
       >
         <div className="flex flex-shrink items-center gap-4">
           <div className="flex">

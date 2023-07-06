@@ -124,14 +124,14 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
 
   if (!note) {
     return (
-      <FullscreenContainer title="Note" icon={<NoteIcon16 />} className="bg-bg">
+      <FullscreenContainer title="Note" icon={<NoteIcon16 />} elevation={0}>
         <div className="grid w-full flex-grow place-items-center">Not found</div>
       </FullscreenContainer>
     )
   }
 
   return (
-    <FullscreenContainer title="Note" icon={<NoteIcon16 />} className="bg-bg">
+    <FullscreenContainer title="Note" icon={<NoteIcon16 />} elevation={0}>
       <div
         className="relative flex flex-grow flex-col bg-bg"
         // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
