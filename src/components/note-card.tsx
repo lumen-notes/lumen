@@ -89,7 +89,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     window.open(
       `/${id}?fullscreen=true`,
       `${id}`,
-      `toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=${newWindowWidth}, height=${newWindowHeight}, top=${
+      `width=${newWindowWidth}, height=${newWindowHeight}, top=${
         window.screen.height / 2 - newWindowHeight / 2
       }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
     )
