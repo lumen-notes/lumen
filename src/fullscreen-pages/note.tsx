@@ -48,22 +48,23 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
-  const [newValue, setNewValue] = React.useState<string | undefined>()
+  // TODO: Save draft in local storage
+  const [draftValue, setDraftValue] = React.useState<string | undefined>()
 
   const handleEditorStateChange = React.useCallback((event: ViewUpdate) => {
     if (event.docChanged) {
-      setNewValue(event.state.doc.toString())
+      setDraftValue(event.state.doc.toString())
     }
   }, [])
 
   const handleSave = React.useCallback(() => {
-    if (newValue) {
+    if (draftValue) {
       upsertNote({
         id,
-        rawBody: newValue,
+        rawBody: draftValue,
       })
     }
-  }, [id, newValue, upsertNote])
+  }, [id, draftValue, upsertNote])
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -170,12 +171,12 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
 
         <div className="grid w-full flex-grow p-4">
           {!isEditing ? (
-            <Markdown>{newValue ?? note.rawBody}</Markdown>
+            <Markdown>{draftValue ?? note.rawBody}</Markdown>
           ) : (
             <NoteEditor
               className="flex h-full"
               editorRef={editorRef}
-              defaultValue={newValue ?? note.rawBody}
+              defaultValue={draftValue ?? note.rawBody}
               onStateChange={handleEditorStateChange}
             />
           )}
@@ -221,9 +222,9 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
 
             <div className="flex gap-2">
               {/* Only show save button when there are changes */}
-              {newValue && newValue !== note.rawBody ? (
+              {draftValue && draftValue !== note.rawBody ? (
                 <Button
-                  variant={newValue && newValue !== note.rawBody ? "primary" : "secondary"}
+                  variant={draftValue && draftValue !== note.rawBody ? "primary" : "secondary"}
                   shortcut={["⌘", "⏎"]}
                   onClick={handleSave}
                 >
