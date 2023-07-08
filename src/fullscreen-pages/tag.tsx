@@ -21,7 +21,7 @@ export function FullscreenTagPage({ params }: FullscreenTagPageProps) {
   const noteCount = useAtomValue(noteCountAtom)
 
   return (
-    <FullscreenContainer title={name} icon={<TagIcon16 />} elevation={-1}>
+    <FullscreenContainer title={name} icon={<TagIcon16 />}>
       <LinkHighlightProvider href={`/tags/${name}?fullscreen=true`}>
         <div className="p-4">
           <NoteList key={name} baseQuery={`tag:${name}`} noteCount={noteCount} />

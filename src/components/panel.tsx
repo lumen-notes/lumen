@@ -11,28 +11,15 @@ type PanelProps = {
   title: string
   description?: string
   icon?: React.ReactNode
+  actions?: React.ReactNode
   children?: React.ReactNode
-  actions?: Array<{
-    label: string
-    disabled?: boolean
-    icon?: React.ReactNode
-    onSelect?: () => void
-  }>
   onClose?: () => void
 }
 
 const MIN_WIDTH = 512
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
-export function Panel({
-  id,
-  title,
-  description,
-  icon,
-  children,
-  actions = [],
-  onClose,
-}: PanelProps) {
+export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
   const [width, setWidth] = React.useState(MIN_WIDTH)
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)
@@ -155,25 +142,14 @@ export function Panel({
             </div>
           </div>
           <div className="flex gap-2">
-            {actions.length > 0 ? (
+            {actions ? (
               <DropdownMenu modal={false}>
                 <DropdownMenu.Trigger asChild>
                   <IconButton aria-label="Panel actions" disableTooltip>
                     <MoreIcon16 />
                   </IconButton>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="end">
-                  {actions.map(({ icon, label, disabled, onSelect }) => (
-                    <DropdownMenu.Item
-                      key={label}
-                      icon={icon}
-                      disabled={disabled}
-                      onSelect={onSelect}
-                    >
-                      {label}
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Content>
+                <DropdownMenu.Content align="end">{actions}</DropdownMenu.Content>
               </DropdownMenu>
             ) : null}
             {onClose ? (

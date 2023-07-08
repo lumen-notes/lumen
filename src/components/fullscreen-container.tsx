@@ -2,29 +2,27 @@ import React from "react"
 import { LinkProps, Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
-import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
+import { ChevronLeftIcon16, ChevronRightIcon16, MoreIcon16 } from "./icons"
 import { LinkContext } from "./link-context"
 import { ThemeColor } from "./theme-color"
+import { DropdownMenu } from "./dropdown-menu"
 
 type FullscreenContainerProps = {
   title: string
   description?: string
   icon?: React.ReactNode
-  elevation: -1 | 0
+  elevation?: 0 | 1
+  // List of DropdownMenu.Item or DropdownMenu.Separator
+  actions?: React.ReactNode
   children?: React.ReactNode
-  //   actions?: Array<{
-  //     label: string
-  //     disabled?: boolean
-  //     icon?: React.ReactNode
-  //     onSelect?: () => void
-  //   }>
 }
 
 export function FullscreenContainer({
   title,
   description,
   icon,
-  elevation,
+  elevation = 0,
+  actions,
   children,
 }: FullscreenContainerProps) {
   const navigate = useNavigate()
@@ -35,17 +33,17 @@ export function FullscreenContainer({
     <div
       className={cx(
         "flex min-h-full flex-col coarse:[-webkit-transform:translateZ(0)]",
-        elevation === -1 ? "bg-bg-inset" : "bg-bg",
+        elevation === 0 ? "bg-bg-inset" : "bg-bg",
       )}
     >
       {/* Make browser toolbar color match the header color */}
-      <ThemeColor propertyName={elevation === -1 ? "--color-bg-inset" : "--color-bg"} />
+      <ThemeColor propertyName={elevation === 0 ? "--color-bg-inset" : "--color-bg"} />
 
       {/* Header */}
       <div
         className={cx(
           "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b p-1 backdrop-blur-md",
-          elevation === -1 ? "from-bg-inset to-bg-inset-backdrop" : "from-bg to-bg-backdrop",
+          elevation === 0 ? "from-bg-inset to-bg-inset-backdrop" : "from-bg to-bg-backdrop",
         )}
       >
         <div className="flex flex-shrink items-center gap-4">
@@ -75,6 +73,17 @@ export function FullscreenContainer({
             </div>
           </div>
         </div>
+
+        {actions ? (
+          <DropdownMenu modal={false}>
+            <DropdownMenu.Trigger asChild>
+              <IconButton aria-label="Actions" disableTooltip>
+                <MoreIcon16 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">{actions}</DropdownMenu.Content>
+          </DropdownMenu>
+        ) : null}
       </div>
 
       <LinkContext.Provider value={Link}>{children}</LinkContext.Provider>

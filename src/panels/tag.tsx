@@ -11,6 +11,7 @@ import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
 import { tagsAtom } from "../global-atoms"
 import { useRenameTag } from "../utils/github-sync"
+import { DropdownMenu } from "../components/dropdown-menu"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -34,20 +35,17 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       id={id}
       title={name}
       icon={<TagIcon24 />}
-      actions={[
-        {
-          icon: <EditIcon16 />,
-          label: "Rename tag",
-          disabled: isRenaming,
-          onSelect: openRenameForm,
-        },
-        // TODO: Implement delete tag
-        {
-          icon: <TrashIcon16 />,
-          label: "Delete tag",
-          disabled: true,
-        },
-      ]}
+      actions={
+        <>
+          <DropdownMenu.Item icon={<EditIcon16 />} disabled={isRenaming} onSelect={openRenameForm}>
+            Rename tag
+          </DropdownMenu.Item>
+          {/* TODO: Implement delete tag */}
+          <DropdownMenu.Item icon={<TrashIcon16 />} disabled={true}>
+            Delete tag
+          </DropdownMenu.Item>
+        </>
+      }
       onClose={onClose}
     >
       <LinkHighlightProvider href={`/tags/${name}`}>
