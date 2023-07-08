@@ -29,15 +29,16 @@ export function FullscreenContainer({
   const location = useLocation()
   console.log(location)
   return (
-    // translateZ(0) fixes a bug in Safari where the scrollbar would appear underneath the sticky header
-    <div
-      className={cx(
-        "flex min-h-full flex-col coarse:[-webkit-transform:translateZ(0)]",
-        elevation === 0 ? "bg-bg-inset" : "bg-bg",
-      )}
-    >
+    <div className={cx("flex min-h-full flex-col")}>
       {/* Make browser toolbar color match the header color */}
       <ThemeColor propertyName={elevation === 0 ? "--color-bg-inset" : "--color-bg"} />
+
+      {/* Make the body background color match the header color */}
+      <style>
+        {`body {
+          background-color: var(${elevation === 0 ? "--color-bg-inset" : "--color-bg"});
+        }`}
+      </style>
 
       {/* Header */}
       <div
