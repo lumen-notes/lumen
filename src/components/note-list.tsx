@@ -71,7 +71,7 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
             />
             <IconButton
               aria-label={`Show as ${viewType === "list" ? "cards" : "list"}`}
-              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary"
+              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
               onClick={() => {
                 setViewType(viewType === "list" ? "cards" : "list")
               }}
@@ -101,7 +101,7 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
                     data-note-id={id}
                     to={`/${id}`}
                     target="_blank"
-                    className="focus-ring flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary"
+                    className="focus-ring flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                   >
                     <NoteFavicon note={note} />
                     <span className="truncate text-text-secondary">
