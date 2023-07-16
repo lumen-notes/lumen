@@ -12,8 +12,8 @@ import { parseDate } from "chrono-node"
 import { useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
-import { tagsAtom, upsertNoteAtom } from "../global-atoms"
-import { formatDate, formatDateDistance } from "../utils/date"
+import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
+import { formatDate, formatDateDistance, toDateString } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
@@ -72,6 +72,7 @@ function useCodeMirror({
   // Completions
   const noteCompletion = useNoteCompletion()
   const tagCompletion = useTagCompletion()
+  const templateCompletion = useTemplateCompletion()
 
   React.useEffect(() => {
     if (!editorElement) return
@@ -125,7 +126,7 @@ function useCodeMirror({
         }),
         closeBrackets(),
         autocompletion({
-          override: [dateCompletion, noteCompletion, tagCompletion],
+          override: [dateCompletion, noteCompletion, tagCompletion, templateCompletion],
           icons: false,
         }),
       ],
@@ -151,6 +152,7 @@ function useCodeMirror({
     // TODO: Prevent noteCompletion and tagCompletion from being recreated when state changes
     // noteCompletion,
     // tagCompletion,
+    // templateCompletion,
   ])
 
   return { containerRef }
@@ -296,4 +298,54 @@ function useNoteCompletion() {
   )
 
   return noteCompletion
+}
+
+function useTemplateCompletion() {
+  const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
+
+  const tagCompletion = React.useCallback(
+    async (context: CompletionContext): Promise<CompletionResult | null> => {
+      const query = context.matchBefore(/\/.*/)
+
+      if (!query) {
+        return null
+      }
+
+      const templates = Object.values(getTemplates())
+
+      return {
+        from: query.from + 1,
+        options: templates.map(({ title, body }) => ({
+          label: title,
+          apply: (view, completion, from, to) => {
+            const startIndex = from - 1
+
+            // Example: {{date}} -> [[2021-01-01]]
+            let text = interpolate(body, { date: `[[${toDateString(new Date())}]]` })
+
+            // Find cursor position
+            const cursorIndex = text.indexOf("{{cursor}}")
+
+            // Remove "{{cursor}}" from template body
+            text = text.replace("{{cursor}}", "")
+
+            // Replace "/<query>" with template body
+            view.dispatch({
+              changes: { from: startIndex, to, insert: text },
+              selection: {
+                anchor: cursorIndex !== -1 ? startIndex + cursorIndex : startIndex + text.length,
+              },
+            })
+          },
+        })),
+      }
+    },
+    [getTemplates],
+  )
+
+  return tagCompletion
+}
+
+function interpolate(str: string, obj: Record<string, string>) {
+  return str.replace(/\{\{([^}]+)\}\}/g, (match, key) => obj[key.trim()] ?? match)
 }

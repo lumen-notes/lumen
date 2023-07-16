@@ -129,3 +129,29 @@ export const datesAtom = atom((get) => {
 
   return dates
 })
+
+// -----------------------------------------------------------------------------
+// Templates
+// -----------------------------------------------------------------------------
+
+export const templatesAtom = atom((get) => {
+  const notes = get(notesAtom)
+  const templates: Record<string, { title: string; body: string }> = {}
+
+  for (const id in notes) {
+    const templateTitle = notes[id].frontmatter.template
+
+    if (typeof templateTitle === "string") {
+      templates[id] = {
+        title: templateTitle,
+        body: notes[id].rawBody
+          // Remove the template frontmatter
+          .replace(/template:.*\n/, "")
+          // Remove empty frontmatter
+          .replace(/---[\s]*---[\s]*/, ""),
+      }
+    }
+  }
+
+  return templates
+})

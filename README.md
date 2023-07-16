@@ -108,6 +108,33 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 | `youtube`   | YouTube username                   | Adds a link to the YouTube channel.                                                                          |
 | `instagram` | Instagram username                 | Adds a link to the Instagram profile.                                                                        |
 | `isbn`      | Book ISBN-10 or ISBN-13            | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note. |
+| `template`  | Template name                      | Converts the note into a template with the given name.                                                       |
+
+## Templates
+
+Any note can be converted into a template by adding a `template` key to the note's [frontmatter](#metadata) with the name of the template as the value. Here's an example "Book" template:
+
+```
+---
+template: Book
+author:
+isbn:
+recommended_by:
+---
+
+#
+```
+
+To use a template, create a new note and type `/`. A list of available templates will appear. Select the template you want to use and press `Enter` to insert the template into the note.
+
+### Dynamic placeholders
+
+Templates can contain dynamic placeholders that are replaced when the template is inserted into a note. The supported placeholders are:
+
+| Placeholder  | Description                                                                                                                                                             |
+| :----------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `{{date}}`   | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links)                                                                                        |
+| `{{cursor}}` | The cursor position. Use this to specify where the cursor should be placed after the template is inserted. Only one `{{cursor}}` placeholder is supported per template. |
 
 ## Query language
 
