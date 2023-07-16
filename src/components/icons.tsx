@@ -58,6 +58,13 @@ export function NoteIcon16() {
     </svg>
   )
 }
+export function NoteTemplateIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M10.5 2h-5v1.5h5V2ZM12 13h2a.5.5 0 0 0 .5-.5v-1H16v1a2 2 0 0 1-2 2h-2V13ZM16 10V6.5h-1.5V10H16ZM1.5 4v1H0V4a2 2 0 0 1 2-2h2v1.5H2a.5.5 0 0 0-.5.5ZM0 10V6.5h1.5V10H0ZM0 11.5v1a2 2 0 0 0 2 2h2V13H2a.5.5 0 0 1-.5-.5v-1H0ZM14.5 4v1H16V4a2 2 0 0 0-2-2h-2v1.5h2a.5.5 0 0 1 .5.5ZM10.5 13h-5v1.5h5V13Z" />
+    </svg>
+  )
+}
 
 export function TagIcon24() {
   return (

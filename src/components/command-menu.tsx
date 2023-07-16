@@ -12,7 +12,14 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useSearchNotes } from "../utils/use-search-notes"
-import { CalendarIcon16, NoteIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
+import {
+  CalendarIcon16,
+  NoteIcon16,
+  NoteTemplateIcon16,
+  PlusIcon16,
+  SearchIcon16,
+  TagIcon16,
+} from "./icons"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
@@ -167,11 +174,21 @@ export function CommandMenu() {
                   <CommandItem
                     key={id}
                     value={id}
-                    icon={<NoteIcon16 />}
+                    icon={
+                      typeof note.frontmatter.template === "string" ? (
+                        <NoteTemplateIcon16 />
+                      ) : (
+                        <NoteIcon16 />
+                      )
+                    }
                     onSelect={() => navigate(`/${id}`)}
                   >
                     <span className="inline-flex gap-2">
-                      <span>{note.title || id}</span>
+                      {typeof note.frontmatter.template === "string" ? (
+                        <span>{note.frontmatter.template} template</span>
+                      ) : (
+                        <span>{note.title || id}</span>
+                      )}
                       <span className="text-text-secondary">
                         {note.tags
                           // Filter out tags that are parents of other tags

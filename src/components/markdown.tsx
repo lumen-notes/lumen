@@ -47,6 +47,14 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
 
   return (
     <div>
+      {typeof frontmatter?.template === "string" ? (
+        <div className="mb-3 flex items-center gap-2 text-text-secondary">
+          <span className="inline-block rounded-full bg-bg-secondary px-2 leading-5 ">
+            Template
+          </span>
+          <span>{frontmatter.template}</span>
+        </div>
+      ) : null}
       {typeof frontmatter?.isbn === "string" ? (
         // If the note has an ISBN, show the book cover
         <div className="mb-3 inline-flex">
@@ -99,10 +107,17 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
       >
         {content}
       </ReactMarkdown>
-      <Frontmatter frontmatter={frontmatter} />
+      <Frontmatter frontmatter={filterObject(frontmatter, ([key]) => key !== "template")} />
     </div>
   )
 })
+
+function filterObject<T extends Record<string, unknown>>(
+  obj: T,
+  predicate: (entry: [key: string, value: unknown]) => boolean,
+) {
+  return Object.fromEntries(Object.entries(obj).filter(predicate)) as T
+}
 
 function BookCover({ isbn }: { isbn: string }) {
   return (
