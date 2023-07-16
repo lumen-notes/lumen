@@ -136,14 +136,14 @@ export const datesAtom = atom((get) => {
 
 export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
-  const templates: Record<string, { title: string; body: string }> = {}
+  const templates: Record<string, { name: string; body: string }> = {}
 
   for (const id in notes) {
-    const templateTitle = notes[id].frontmatter.template
+    const templateName = notes[id].frontmatter.template
 
-    if (typeof templateTitle === "string") {
+    if (typeof templateName === "string") {
       templates[id] = {
-        title: templateTitle,
+        name: templateName,
         body: notes[id].rawBody
           // Remove the template frontmatter
           .replace(/template:.*\n/, "")

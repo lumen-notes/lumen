@@ -322,8 +322,8 @@ function useTemplateCompletion() {
 
       return {
         from: query.from + 1,
-        options: templates.map(({ title, body }) => ({
-          label: title,
+        options: templates.map(({ name, body }) => ({
+          label: name,
           apply: (view, completion, from, to) => {
             const startIndex = from - 1
 
