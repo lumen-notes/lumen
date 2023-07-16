@@ -3,7 +3,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
-import { EditIcon16, TagIcon24, TrashIcon16 } from "../components/icons"
+import { EditIcon16, ExternalLinkIcon16, TagIcon24, TrashIcon16 } from "../components/icons"
 import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -30,6 +30,18 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
 
   const closeRenameForm = React.useCallback(() => setIsRenaming(false), [])
 
+  const openTagWindow = React.useCallback((name: string) => {
+    const newWindowWidth = 600
+    const newWindowHeight = 600
+    window.open(
+      `/tags/${name}?fullscreen=true`,
+      `${name}`,
+      `width=${newWindowWidth}, height=${newWindowHeight}, top=${
+        window.screen.height / 2 - newWindowHeight / 2
+      }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
+    )
+  }, [])
+
   return (
     <Panel
       id={id}
@@ -37,6 +49,10 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon24 />}
       actions={
         <>
+          <DropdownMenu.Item icon={<ExternalLinkIcon16 />} onSelect={() => openTagWindow(name)}>
+            Open in new window
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
           <DropdownMenu.Item icon={<EditIcon16 />} disabled={isRenaming} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
