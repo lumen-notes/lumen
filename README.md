@@ -127,13 +127,13 @@ recommended_by:
 #
 ```
 
-To use this template, create a new note and type `/`. A list of available templates will appear. Select the "Book" template and press `Enter`.
+To use this template, create a new note and type `/`. A list of available templates will appear. Select the Book template and press `Enter` to insert the contents of the template into your new note.
 
 ### EJS
 
 Templates are rendered using [EJS](https://ejs.co/), a simple templating language that lets you embed JavaScript in your templates.
 
-Here's how we could use EJS to include the current date in our "Book" template:
+Here's how we could use EJS to include the current date in our Book template:
 
 ```
 ---
