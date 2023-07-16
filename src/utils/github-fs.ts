@@ -167,6 +167,7 @@ export async function writeFile({
       Authorization: `Bearer ${githubToken}`,
     },
     body: JSON.stringify({
+      // TODO: Use AI to generate more descriptive commit messages
       message: commitMessage ?? `${fileExists ? "Update" : "Create"} ${path}`,
       // @ts-ignore Despite the type definition, Buffer.from() does accept `string | ArrayBuffer`
       content: Buffer.from(content).toString("base64"),
