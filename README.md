@@ -94,7 +94,7 @@ read: true
 
 ### Recognized keys
 
-Frontmatter can contain any valid YAML key-value pairs. However, there are a few keys that Lumen recognizes and uses to enhance the user interface.
+Frontmatter can contain any valid YAML key-value pairs. However, there are a few keys that Lumen recognizes and uses to enhance the user interface:
 
 | Key         | Description                        | Enhancements                                                                                                 |
 | :---------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------- |
@@ -108,11 +108,13 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 | `youtube`   | YouTube username                   | Adds a link to the YouTube channel.                                                                          |
 | `instagram` | Instagram username                 | Adds a link to the Instagram profile.                                                                        |
 | `isbn`      | Book ISBN-10 or ISBN-13            | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note. |
-| `template`  | Template name                      | Converts the note into a template with the given name.                                                       |
+| `template`  | Template name                      | Turn the note into a template with the given name.                                                           |
 
 ## Templates
 
-Any note can be converted into a template by adding a `template` key to the note's [frontmatter](#metadata) with the name of the template as the value. Here's an example "Book" template:
+Any note can be turned into a template by adding a `template` key to the note's [frontmatter](#metadata) with the name of the template as the value.
+
+Here's an example "Book" template:
 
 ```
 ---
@@ -125,16 +127,54 @@ recommended_by:
 #
 ```
 
-To use a template, create a new note and type `/`. A list of available templates will appear. Select the template you want to use and press `Enter` to insert the template into the note.
+To use this template, create a new note and type `/`. A list of available templates will appear. Select the "Book" template and press `Enter`.
 
-### Dynamic placeholders
+### EJS
 
-Templates can contain dynamic placeholders that are replaced when the template is inserted into a note. The supported placeholders are:
+Templates are rendered using [EJS](https://ejs.co/), a simple templating language that lets you embed JavaScript in your templates.
 
-| Placeholder  | Description                                                                                                                                                             |
-| :----------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `{{date}}`   | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links)                                                                                        |
-| `{{cursor}}` | The cursor position. Use this to specify where the cursor should be placed after the template is inserted. Only one `{{cursor}}` placeholder is supported per template. |
+Here's how we could use EJS to include the current date in our "Book" template:
+
+```
+---
+template: Book
+author:
+isbn:
+recommended_by:
+date_saved: '<%= date %>'
+---
+
+#
+
+```
+
+When we use this template, the `<%= date %>` placeholder will be replaced with the current date in `[[YYYY-MM-DD]]` format.
+
+#### Global variables
+
+The following global variables are available in all templates:
+
+| Variable | Description                                                                      |
+| :------- | :------------------------------------------------------------------------------- |
+| `date`   | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links) |
+
+### Cursor position
+
+You can specify where the cursor should be placed after the template is inserted by adding a `{cursor}` placeholder to the template. For example:
+
+```
+---
+template: Book
+author:
+isbn:
+recommended_by:
+date_saved: '<%= date %>'
+---
+
+# {cursor}
+```
+
+> **Note**: Only one `{cursor}` placeholder is supported per template.
 
 ## Query language
 
@@ -210,3 +250,7 @@ Unrecognized qualifier keys are assumed to be frontmatter keys. For example, `re
 - [Obsidian](https://obsidian.md/)
 - [Logseq](https://logseq.com/)
 - [Roam Research](https://roamresearch.com)
+
+```
+
+```

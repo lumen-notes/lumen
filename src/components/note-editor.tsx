@@ -9,6 +9,7 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
+import ejs from "ejs"
 import { useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
@@ -326,14 +327,13 @@ function useTemplateCompletion() {
           apply: (view, completion, from, to) => {
             const startIndex = from - 1
 
-            // Example: {{date}} -> [[2021-01-01]]
-            let text = interpolate(body, { date: `[[${toDateString(new Date())}]]` })
+            let text = ejs.render(body, { date: `[[${toDateString(new Date())}]]` })
 
             // Find cursor position
-            const cursorIndex = text.indexOf("{{cursor}}")
+            const cursorIndex = text.indexOf("{cursor}")
 
-            // Remove "{{cursor}}" from template body
-            text = text.replace("{{cursor}}", "")
+            // Remove "{cursor}" from template body
+            text = text.replace("{cursor}", "")
 
             // Replace "/<query>" with template body
             view.dispatch({
@@ -350,8 +350,4 @@ function useTemplateCompletion() {
   )
 
   return tagCompletion
-}
-
-function interpolate(str: string, obj: Record<string, string>) {
-  return str.replace(/\{\{([^}]+)\}\}/g, (match, key) => obj[key.trim()] ?? match)
 }

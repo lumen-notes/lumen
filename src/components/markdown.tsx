@@ -48,75 +48,84 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
   return (
     <div>
       {typeof frontmatter?.template === "string" ? (
-        <div className="mb-3 flex items-center gap-2 text-text-secondary">
-          <span className="inline-block rounded-full bg-bg-secondary px-2 leading-5 ">
-            Template
-          </span>
-          <span>{frontmatter.template}</span>
-        </div>
-      ) : null}
-      {typeof frontmatter?.isbn === "string" ? (
-        // If the note has an ISBN, show the book cover
-        <div className="mb-3 inline-flex">
-          <BookCover isbn={frontmatter.isbn} />
-        </div>
-      ) : null}
-      {typeof frontmatter?.github === "string" ? (
-        // If the note has a GitHub username, show the GitHub avatar
-        <div className="mb-3 inline-flex">
-          <GitHubAvatar username={frontmatter.github} />
-        </div>
-      ) : null}
-      <ReactMarkdown
-        className="markdown"
-        remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
-        remarkRehypeOptions={{
-          handlers: {
-            // TODO: Improve type-safety of `node`
-            noteLink(h, node) {
-              return h(node, "noteLink", {
-                id: node.data.id,
-                text: node.data.text,
-              })
-            },
-            tagLink(h, node) {
-              return h(node, "tagLink", {
-                name: node.data.name,
-              })
-            },
-            dateLink(h, node) {
-              return h(node, "dateLink", {
-                date: node.data.date,
-              })
-            },
-          },
-        }}
-        components={{
-          a: Link,
-          img: Image,
-          // Delegate rendering of the <pre> element to the Code component
-          pre: ({ children }) => <>{children}</>,
-          code: Code,
-          // @ts-ignore I don't know how to extend the list of accepted component keys
-          noteLink: NoteLink,
-          // @ts-ignore
-          tagLink: TagLink,
-          // @ts-ignore
-          dateLink: DateLink,
-        }}
-      >
-        {content}
-      </ReactMarkdown>
-      <Frontmatter frontmatter={filterObject(frontmatter, ([key]) => key !== "template")} />
+        <>
+          <div className="mb-3 flex items-center gap-2 ">
+            <span className="inline-block rounded-full bg-bg-secondary px-2 leading-5 text-text-secondary ">
+              Template
+            </span>
+            <span>{frontmatter.template}</span>
+          </div>
+          {/* Render template as a code block */}
+          <MarkdownBody>{`\`\`\`\`\n${children // Remove the template frontmatter
+            .replace(/template:.*\n/, "")
+            // Remove empty frontmatter
+            .replace(/---[\s]*---[\s]*/, "")}\n\`\`\`\``}</MarkdownBody>
+        </>
+      ) : (
+        <>
+          {typeof frontmatter?.isbn === "string" ? (
+            // If the note has an ISBN, show the book cover
+            <div className="mb-3 inline-flex">
+              <BookCover isbn={frontmatter.isbn} />
+            </div>
+          ) : null}
+          {typeof frontmatter?.github === "string" ? (
+            // If the note has a GitHub username, show the GitHub avatar
+            <div className="mb-3 inline-flex">
+              <GitHubAvatar username={frontmatter.github} />
+            </div>
+          ) : null}
+          <MarkdownBody>{content}</MarkdownBody>
+          <Frontmatter frontmatter={frontmatter} />
+        </>
+      )}
     </div>
   )
 })
 
-function filterObject<T extends Record<string, unknown>>(
-  obj: T,
-  predicate: (entry: [key: string, value: unknown]) => boolean,
-) {
-  return Object.fromEntries(Object.entries(obj).filter(predicate)) as T
+function MarkdownBody({ children }: { children: string }) {
+  return (
+    <ReactMarkdown
+      className="markdown"
+      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
+      remarkRehypeOptions={{
+        handlers: {
+          // TODO: Improve type-safety of `node`
+          noteLink(h, node) {
+            return h(node, "noteLink", {
+              id: node.data.id,
+              text: node.data.text,
+            })
+          },
+          tagLink(h, node) {
+            return h(node, "tagLink", {
+              name: node.data.name,
+            })
+          },
+          dateLink(h, node) {
+            return h(node, "dateLink", {
+              date: node.data.date,
+            })
+          },
+        },
+      }}
+      components={{
+        a: Link,
+        img: Image,
+        // Delegate rendering of the <pre> element to the Code component
+        pre: ({ children }) => <>{children}</>,
+        code: Code,
+        // @ts-ignore I don't know how to extend the list of accepted component keys
+        noteLink: NoteLink,
+        // @ts-ignore
+        tagLink: TagLink,
+        // @ts-ignore
+        dateLink: DateLink,
+      }}
+    >
+      {children}
+    </ReactMarkdown>
+  )
 }
 
 function BookCover({ isbn }: { isbn: string }) {
