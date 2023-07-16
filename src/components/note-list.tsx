@@ -97,9 +97,11 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
               return (
                 <li key={id}>
                   <Link
+                    // Used for focus management
+                    data-note-id={id}
                     to={`/${id}`}
                     target="_blank"
-                    className="flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary"
+                    className="focus-ring flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary"
                   >
                     <NoteFavicon note={note} />
                     <span className="truncate text-text-secondary">
