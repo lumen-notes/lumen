@@ -172,6 +172,6 @@ function isInRange(value: string | number, range: string) {
   } else if (range.startsWith("<")) {
     return value < range.slice(1)
   } else {
-    return value === parseInt(range)
+    return value.toString() === range
   }
 }
