@@ -12,12 +12,12 @@ export function SearchInput({ shortcut = ["⌘", "F"], onChange, ...props }: Sea
   const ref = React.useRef<HTMLInputElement>(null)
   return (
     <div className="relative">
-      <div className="absolute top-0 bottom-0 left-4 flex items-center text-text-secondary">
+      <div className="absolute bottom-0 left-4 top-0 flex items-center text-text-secondary">
         <SearchIcon16 />
       </div>
       <input
         ref={ref}
-        className="focus-ring h-11 w-full rounded-md bg-bg-secondary px-4 pl-[2.75rem] [font-variant-numeric:inherit] [-webkit-appearance:none] placeholder:text-text-secondary focus-visible:bg-bg coarse:h-12"
+        className="focus-ring h-11 w-full rounded-md bg-bg-secondary px-4 pl-[2.75rem] [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary hover:bg-bg-tertiary focus-visible:bg-bg coarse:h-12"
         type="search"
         onChange={(e) => onChange?.(e.target.value)}
         {...props}
@@ -25,7 +25,7 @@ export function SearchInput({ shortcut = ["⌘", "F"], onChange, ...props }: Sea
       {shortcut && !props.value ? (
         <div
           aria-hidden
-          className="absolute top-0 bottom-0 right-4 flex items-center coarse:hidden"
+          className="absolute bottom-0 right-4 top-0 flex items-center coarse:hidden"
         >
           <Keys keys={shortcut} />
         </div>
@@ -33,7 +33,7 @@ export function SearchInput({ shortcut = ["⌘", "F"], onChange, ...props }: Sea
       {props.value ? (
         <div
           aria-hidden
-          className="absolute top-0 bottom-0 right-0 grid aspect-square place-items-center"
+          className="absolute bottom-0 right-0 top-0 grid aspect-square place-items-center"
         >
           <IconButton
             aria-label="Clear"
