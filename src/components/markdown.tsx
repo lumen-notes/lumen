@@ -228,7 +228,8 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
             target="_blank"
             rel="noopener noreferrer"
           >
-            {value}
+            {/* Remove protocol and trailing slash from the displayed URL */}
+            {value.replace(/^https?:\/\//, "").replace(/\/$/, "")}
           </a>
         </div>
       )
