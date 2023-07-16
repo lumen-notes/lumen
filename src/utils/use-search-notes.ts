@@ -128,6 +128,27 @@ export function filterResults(results: Array<[string, Note]>, qualifiers: Qualif
           })
           break
 
+        case "has":
+          // `has` is the opposite of `no`
+          value = !qualifier.values.some((value) => {
+            switch (value) {
+              case "backlinks":
+                return note.backlinks.length === 0
+              case "tag":
+              case "tags":
+                return note.tags.length === 0
+              case "date":
+              case "dates":
+                return note.dates.length === 0
+              case "link":
+              case "links":
+                return note.links.length === 0
+              default:
+                return !(value in note.frontmatter)
+            }
+          })
+          break
+
         default:
           if (qualifier.key in note.frontmatter) {
             // Match if the note's frontmatter value is in the qualifier's values
@@ -151,6 +172,6 @@ function isInRange(value: string | number, range: string) {
   } else if (range.startsWith("<")) {
     return value < range.slice(1)
   } else {
-    return value === range
+    return value === parseInt(range)
   }
 }
