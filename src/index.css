@@ -238,7 +238,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li .cm-completionDetail {
-  @apply ml-auto not-italic text-text-secondary;
+  @apply ml-2 not-italic text-text-secondary;
 }
 
 .cm-editor .cm-completionMatchedText {

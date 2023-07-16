@@ -269,7 +269,13 @@ function useNoteCompletion() {
       const options = searchResults.slice(0, 5).map(([id, note]): Completion => {
         const { content } = parseFrontmatter(note?.rawBody || "")
         return {
-          label: content || "",
+          label: note?.title || id,
+          detail: note.tags
+            // Filter out tags that are parents of other tags
+            // Example: #foo #foo/bar -> #foo/bar
+            .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+            .map((tag) => `#${tag}`)
+            .join(" "),
           info: content,
           apply: (view, completion, from, to) => {
             // Insert link to note
