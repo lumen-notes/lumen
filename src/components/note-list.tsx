@@ -5,9 +5,10 @@ import { pluralize } from "../utils/pluralize"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, ListIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
+import { CardsIcon16, ListIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
+import { NoteFavicon } from "./note-favicon"
 import { SearchInput } from "./search-input"
 type NoteListProps = {
   baseQuery?: string
@@ -100,9 +101,7 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
                     target="_blank"
                     className="flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary"
                   >
-                    <span className="text-text-secondary">
-                      {isTemplate ? <NoteTemplateIcon16 /> : <NoteIcon16 />}
-                    </span>
+                    <NoteFavicon note={note} />
                     <span className="truncate text-text-secondary">
                       <span className="text-text">
                         {isTemplate ? `${note.frontmatter.template} template` : note.title || id}

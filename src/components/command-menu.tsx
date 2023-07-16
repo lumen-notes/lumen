@@ -12,14 +12,8 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useSearchNotes } from "../utils/use-search-notes"
-import {
-  CalendarIcon16,
-  NoteIcon16,
-  NoteTemplateIcon16,
-  PlusIcon16,
-  SearchIcon16,
-  TagIcon16,
-} from "./icons"
+import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
+import { NoteFavicon } from "./note-favicon"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
@@ -174,13 +168,7 @@ export function CommandMenu() {
                   <CommandItem
                     key={id}
                     value={id}
-                    icon={
-                      typeof note.frontmatter.template === "string" ? (
-                        <NoteTemplateIcon16 />
-                      ) : (
-                        <NoteIcon16 />
-                      )
-                    }
+                    icon={<NoteFavicon note={note} />}
                     onSelect={() => navigate(`/${id}`)}
                   >
                     <span className="inline-flex gap-2">

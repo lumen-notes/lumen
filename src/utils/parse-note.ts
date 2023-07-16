@@ -17,6 +17,7 @@ import { getNextBirthday, toDateStringUtc } from "./date"
  */
 export const parseNote = memoize((rawBody: string) => {
   let title = ""
+  let url: string | null = null
   const tags = new Set<string>()
   const dates = new Set<string>()
   const links = new Set<NoteId>()
@@ -32,9 +33,16 @@ export const parseNote = memoize((rawBody: string) => {
   visit(mdast, (node) => {
     switch (node.type) {
       case "heading": {
-        if (node.depth === 1 && !title) {
-          title = toString(node)
+        // Only use the first heading
+        if (node.depth > 1 || title) return
+
+        title = toString(node)
+
+        // Is there a link in the title?
+        if (node.children.length === 1 && node.children[0].type === "link") {
+          url = node.children[0].url
         }
+
         break
       }
 
@@ -91,6 +99,7 @@ export const parseNote = memoize((rawBody: string) => {
   return {
     frontmatter,
     title,
+    url,
     dates: Array.from(dates),
     links: Array.from(links),
     tags: Array.from(tags),
