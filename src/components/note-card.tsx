@@ -120,7 +120,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
   const viewMode = (
     <Card
-      // Used to focus the note card after creating it
+      // Used for focus management
       data-note-id={id}
       ref={cardRef}
       tabIndex={0}
