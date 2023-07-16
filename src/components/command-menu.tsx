@@ -173,7 +173,12 @@ export function CommandMenu() {
                     <span className="inline-flex gap-2">
                       <span>{note.title || id}</span>
                       <span className="text-text-secondary">
-                        {note.tags.map((tag) => `#${tag}`).join(" ")}
+                        {note.tags
+                          // Filter out tags that are parents of other tags
+                          // Example: #foo #foo/bar -> #foo/bar
+                          .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+                          .map((tag) => `#${tag}`)
+                          .join(" ")}
                       </span>
                     </span>
                   </CommandItem>
