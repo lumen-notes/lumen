@@ -49,8 +49,8 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
     <div>
       {typeof frontmatter?.template === "string" ? (
         <>
-          <div className="mb-3 flex items-center gap-2 ">
-            <span className="inline-block rounded-full bg-bg-secondary px-2 leading-5 text-text-secondary ">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
               Template
             </span>
             <span>{frontmatter.template}</span>
