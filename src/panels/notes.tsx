@@ -21,7 +21,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
         {noteCount === 0 ? (
           <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
         ) : (
-          <NoteList noteCount={noteCount} />
+          <NoteList />
         )}
       </div>
     </Panel>

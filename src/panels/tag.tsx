@@ -1,5 +1,3 @@
-import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
@@ -9,17 +7,11 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
-import { tagsAtom } from "../global-atoms"
 import { useRenameTag } from "../utils/github-sync"
 import { DropdownMenu } from "../components/dropdown-menu"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
-  const noteCountAtom = React.useMemo(
-    () => selectAtom(tagsAtom, (tags) => tags[name]?.length ?? 0),
-    [name],
-  )
-  const noteCount = useAtomValue(noteCountAtom)
   const renameTag = useRenameTag()
   const { updatePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
@@ -116,7 +108,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
               </form>
             </Card>
           ) : null}
-          <NoteList key={name} baseQuery={`tag:${name}`} noteCount={noteCount} />
+          <NoteList key={name} baseQuery={`tag:${name}`} />
         </div>
       </LinkHighlightProvider>
     </Panel>

@@ -19,11 +19,6 @@ const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
-  const noteCountAtom = React.useMemo(
-    () => selectAtom(datesAtom, (dates) => dates[date]?.length ?? 0),
-    [date],
-  )
-  const noteCount = useAtomValue(noteCountAtom)
 
   // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
@@ -44,7 +39,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
         <Calendar activeDate={date} />
         <div className="p-4">
           <LinkHighlightProvider href={`/dates/${date}`}>
-            <NoteList key={date} baseQuery={`date:${date}`} noteCount={noteCount} />
+            <NoteList key={date} baseQuery={`date:${date}`} />
           </LinkHighlightProvider>
         </div>
       </div>

@@ -64,14 +64,13 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
 
           <Tabs.Content value="backlinks" className="outline-none">
             <LinkHighlightProvider href={`/${noteId}`}>
-              <NoteList baseQuery={`link:${noteId}`} noteCount={note?.backlinks.length} />
+              <NoteList baseQuery={`link:${noteId}`} />
             </LinkHighlightProvider>
           </Tabs.Content>
 
           <Tabs.Content value="unlinked" className="outline-none">
             <NoteList
               baseQuery={note?.title ? `${note.title} -link:${noteId} -id:${noteId}` : "id:noop"}
-              noteCount={unlinkedNoteCount}
             />
           </Tabs.Content>
 
@@ -87,7 +86,6 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
                       // we use "id:noop" because no note can have that ID.
                       "id:noop"
                 }
-                noteCount={queryMatches.length}
               />
             </LinkHighlightProvider>
           </Tabs.Content> */}

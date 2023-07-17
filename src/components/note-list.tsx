@@ -11,12 +11,12 @@ import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { SearchInput } from "./search-input"
 import { Button } from "./button"
+
 type NoteListProps = {
   baseQuery?: string
-  noteCount?: number
 }
 
-export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
+export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
   const [query, setQuery] = useSearchParam("q", {
@@ -61,11 +61,7 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
-              placeholder={
-                typeof noteCount !== "undefined"
-                  ? `Search ${pluralize(noteCount, "note")}…`
-                  : `Search notes…`
-              }
+              placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
               value={query}
               onChange={(value) => {
                 setQuery(value)
