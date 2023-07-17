@@ -376,7 +376,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown blockquote {
-  @apply border-l-2 border-border pl-3;
+  @apply border-l-2 border-border pl-3 italic;
 }
 
 .markdown a {
