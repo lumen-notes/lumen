@@ -67,7 +67,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       <LinkHighlightProvider href={`/tags/${name}`}>
         <div className="p-4">
           {isRenaming ? (
-            <Card className="mb-4 p-4" elevation={1}>
+            <Card className="mb-4 p-4">
               <h3 id="rename-tag-heading" className="mb-4 text-lg font-semibold !leading-none">
                 Rename tag
               </h3>
@@ -106,10 +106,10 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                     }
                   }}
                 />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="mt-2 grid grid-cols-2 gap-2">
                   <Button onClick={closeRenameForm}>Cancel</Button>
                   <Button type="submit" variant="primary">
-                    Save
+                    Rename
                   </Button>
                 </div>
               </form>
