@@ -34,6 +34,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
     const newWindowWidth = 600
     const newWindowHeight = 600
     window.open(
+      // TODO: Preserve the query params from the current panel
       `/tags/${name}?fullscreen=true`,
       `${name}`,
       `width=${newWindowWidth}, height=${newWindowHeight}, top=${
