@@ -154,9 +154,9 @@ When we use this template, the `<%= date %>` placeholder will be replaced with t
 
 The following global variables are available in all templates:
 
-| Variable | Description                                                                      |
-| :------- | :------------------------------------------------------------------------------- |
-| `date`   | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links) |
+| Name   | Type     | Description                                                                      |
+| :----- | :------- | :------------------------------------------------------------------------------- |
+| `date` | `string` | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links) |
 
 ### Cursor position
 
