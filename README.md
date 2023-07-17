@@ -19,7 +19,7 @@ A note-taking app for lifelong learners. Based on the [Zettelkasten Method](http
 ## Strong opinions, weakly held
 
 - Knowledge management and task management should be separate. Lumen is a tool for knowledge management not task management.
-- Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity.
+- Notes should be stored in [plain text files](https://sive.rs/plaintext) to ensure portability and longevity. You own your data. Forever.
 - Notes should be atomic and densely linked.
 - Notes should be accessible while offline.
 - Notes should be version controlled.
