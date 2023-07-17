@@ -434,7 +434,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
         // Break long links
         String(props.children).startsWith("http") && "[word-break:break-all]",
         // Insert favicon before h1 links
-        'before:mr-2 before:hidden before:h-6 before:w-4 before:bg-contain before:bg-center before:bg-no-repeat before:align-text-bottom before:content-[""] before:[background-image:var(--favicon-url)] [h1:first-child_>_&:first-child]:before:inline-block',
+        'before:my-1 before:mr-2 before:hidden before:h-4 before:w-4 before:bg-contain before:bg-center before:bg-no-repeat before:align-text-bottom before:content-[""] before:[background-image:var(--favicon-url)] [h1:first-child_>_&:first-child]:before:inline-block',
         props.className,
       )}
       style={{
