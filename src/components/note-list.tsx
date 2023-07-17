@@ -10,6 +10,7 @@ import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { SearchInput } from "./search-input"
+import { Button } from "./button"
 type NoteListProps = {
   baseQuery?: string
   noteCount?: number
@@ -43,12 +44,16 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
 
   const [bottomRef, bottomInView] = useInView()
 
+  const loadMore = React.useCallback(() => {
+    setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
+  }, [searchResults.length])
+
   React.useEffect(() => {
     if (bottomInView) {
-      // Render 10 more notes when the user scrolls to the bottom of the list
-      setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
+      // Load more notes when the user scrolls to the bottom of the list
+      loadMore()
     }
-  }, [bottomInView, searchResults.length])
+  }, [bottomInView, loadMore])
 
   return (
     <div>
@@ -124,7 +129,12 @@ export function NoteList({ baseQuery = "", noteCount }: NoteListProps) {
           </ul>
         ) : null}
       </div>
-      {searchResults.length > numVisibleNotes ? <div ref={bottomRef} /> : null}
+
+      {searchResults.length > numVisibleNotes ? (
+        <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
+          Load more
+        </Button>
+      ) : null}
     </div>
   )
 }
