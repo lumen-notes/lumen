@@ -30,7 +30,7 @@ _Notes in Lumen are..._
 
 - atomic
 - interconnected
-- written in markdown
+- written in [markdown](/docs/markdown-syntax.md)
 - stored as files on GitHub
 - version-controlled with Git
 - searchable
