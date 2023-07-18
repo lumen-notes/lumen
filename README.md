@@ -33,10 +33,10 @@ _Notes in Lumen are..._
 - written in markdown
 - stored as files on GitHub
 - version-controlled with Git
-- compatible with [other apps](#alternatives)
 - searchable
 - available offline
 - accessible on any device
+- compatible with [other apps](#alternatives)
 
 <br>
 
