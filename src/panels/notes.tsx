@@ -24,7 +24,7 @@ Follow these steps to get started:
 `
 
 const warningMessage = `
-⚠️ **Warning:** Lumen is experimental. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
+⚠️ **Warning:** Work in progress. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 `
 
 export function NotesPanel({ id, onClose }: PanelProps) {
