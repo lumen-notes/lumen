@@ -13,6 +13,11 @@ Lumen is a note-taking app for lifelong learners.
 Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
 
 <table>
+  <colgroup>
+    <col style="width:33.33%;">
+    <col style="width:33.33%;">
+    <col style="width:33.33%;">
+  </colgroup>
   <thead>
     <tr align="left">
       <th>🌱 Plant</th>
