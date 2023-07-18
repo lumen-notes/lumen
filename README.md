@@ -48,7 +48,7 @@ _Notes in Lumen are..._
 1. Write your first note in Lumen!
 1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 
-> **Warning**: Work in progress. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
+> **Warning**: Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 
 <br>
 
