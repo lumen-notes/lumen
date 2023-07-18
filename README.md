@@ -46,7 +46,7 @@ _Notes in Lumen are..._
 1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
 
-> **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
+> **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) to follow along.
 
 <br>
 
