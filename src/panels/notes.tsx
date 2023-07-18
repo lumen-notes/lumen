@@ -1,16 +1,15 @@
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
+import { Link } from "react-router-dom"
 import { NoteIcon24 } from "../components/icons"
+import { LinkContext } from "../components/link-context"
+import { Markdown } from "../components/markdown"
+import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { githubRepoAtom, githubTokenAtom, rawNotesAtom } from "../global-atoms"
-import { NoteCardForm } from "../components/note-card-form"
-import { Markdown } from "../components/markdown"
-import { Card } from "../components/card"
-import { Link } from "react-router-dom"
-import { LinkContext } from "../components/link-context"
 
 const welcomeMessage = `
 # Welcome to Lumen
