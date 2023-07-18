@@ -12,27 +12,18 @@ Lumen is a note-taking app for lifelong learners.
 
 Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
 
-<table>
-  <colgroup>
-    <col style="width:33.33%;">
-    <col style="width:33.33%;">
-    <col style="width:33.33%;">
-  </colgroup>
-  <thead>
-    <tr align="left">
-      <th>🌱 Plant</th>
-      <th>🌿 Grow</th>
-      <th>🌻 Harvest</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr valign="top">
-      <td>Write notes with <a href="/docs/markdown-syntax.md">markdown syntax</a> and store them as plain text files in a GitHub repository of your choice. You own your data, forever.</td>
-      <td>Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.</td>
-      <td>Access your notes from anywhere—even offline. Use Lumen's flexible <a href="/docs/query-language.md">query language</a> to find exactly what you're looking for.</td>
-    </tr>
-  </tbody>
-</table>
+### 🌱 Plant
+
+Write notes with [markdown syntax](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data, forever.
+
+### 🌿 Grow
+
+Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.
+
+### 🌻 Harvest
+
+Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
+
 
 <br>
 
@@ -51,8 +42,8 @@ _Notes in Lumen are..._
 
 ## Getting started
 
-1. Create a new GitHub repository to store your notes in using the [notes template repository](https://github.com/lumen-notes/lumen-template).
-1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
+1. Create a GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template).
+1. Generate a new GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
 1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
 
