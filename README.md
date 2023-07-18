@@ -12,27 +12,18 @@ Lumen is a note-taking app for lifelong learners.
 
 Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
 
-<table>
-  <colgroup>
-    <col style="width:33.33%;">
-    <col style="width:33.33%;">
-    <col style="width:33.33%;">
-  </colgroup>
-  <thead>
-    <tr align="left">
-      <th>🌱 Plant</th>
-      <th>🌿 Grow</th>
-      <th>🌻 Harvest</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr valign="top">
-      <td>Write notes with <a href="/docs/markdown-syntax.md">markdown syntax</a> and store them as plain text files in a GitHub repository of your choice. You own your data, forever.</td>
-      <td>Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.</td>
-      <td>Access your notes from anywhere—even offline. Use Lumen's flexible <a href="/docs/query-language.md">query language</a> to find exactly what you're looking for.</td>
-    </tr>
-  </tbody>
-</table>
+### 🌱 Plant
+
+Write notes with [markdown syntax](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data, forever.
+
+### 🌿 Grow
+
+Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.
+
+### 🌻 Harvest
+
+Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
+
 
 <br>
 
