@@ -43,7 +43,7 @@ _Notes in Lumen are..._
 
 1. Create a GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template).
 1. Generate a new GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
-1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
+1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
 
 > **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
@@ -64,7 +64,7 @@ _Notes in Lumen are..._
 
 | Description      | URL                                                                 | Status                                                                                                                                                               |
 | :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 App           | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
+| 💻 App           | [uselumen.com](https://app.uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
 | 🛠️ Design system | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
 | 😺 GitHub        | [lumen-notes/lumen](https://github.com/lumen-notes/lumen)           |                                                                                                                                                                      |
 | 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |
