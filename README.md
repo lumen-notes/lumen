@@ -36,18 +36,19 @@ _Notes in Lumen are..._
 - searchable
 - available offline
 - accessible on any device
+- compatible with [other apps](#alternatives)
 
 <br>
 
 ## Getting started
 
-1. Create a GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template).
-1. Generate a new GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
-1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
+1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [`.github/workflows/lumen.yml`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository.
+1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
+1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
+1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 
-> **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
-
+> **Warning**: Lumen is experimental. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 <br>
 
 ## Docs
@@ -64,8 +65,8 @@ _Notes in Lumen are..._
 
 | Description      | URL                                                                 | Status                                                                                                                                                               |
 | :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 App           | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
-| 🛠️ Design system | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
+| 💻 App           | [app.uselumen.com](https://app.uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
+| 🛠️ Design system | [storybook.uselumen.com](https://storybook.uselumen.com/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
 | 😺 GitHub        | [lumen-notes/lumen](https://github.com/lumen-notes/lumen)           |                                                                                                                                                                      |
 | 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |
 
@@ -74,16 +75,16 @@ _Notes in Lumen are..._
 ## Recommended reading
 
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
-- [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Introduction to the Zettelkasten Method by Sascha](https://zettelkasten.de/introduction/)
+- [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
 
 <br>
 
 ## Alternatives
 
+- [Obsidian](https://obsidian.md) — ⭐ Popular
 - [Logseq](https://logseq.com)
-- [Obsidian](https://obsidian.md)
 - [Reflect](https://reflect.app)
 - [Supernotes](https://supernotes.app)
 - [Roam Research](https://roamresearch.com)
