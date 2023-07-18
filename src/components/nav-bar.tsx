@@ -9,7 +9,7 @@ import {
   useResolvedPath,
 } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
-import { githubRepoAtom } from "../global-atoms"
+import { isGitHubConfiguredAtom } from "../global-atoms"
 import { toDateString } from "../utils/date"
 import { useFetchNotes } from "../utils/github-sync"
 import { DropdownMenu } from "./dropdown-menu"
@@ -27,7 +27,7 @@ import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const githubRepo = useAtomValue(githubRepoAtom)
+  const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
   const { fetchNotes } = useFetchNotes()
   const navigate = useNavigate()
   const { online } = useNetworkState()
@@ -117,12 +117,10 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={fetchNotes} disabled={!online || !githubRepo}>
-                {/* TODO: Sync icon */}
+              <DropdownMenu.Item onClick={fetchNotes} disabled={!online || !isGitHubConfigured}>
                 Reload
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
-                {/* TODO: Settings icon */}
                 Settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>

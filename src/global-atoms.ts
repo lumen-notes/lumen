@@ -12,6 +12,12 @@ export const githubTokenAtom = atomWithStorage("github_token", "")
 
 export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
+export const isGitHubConfiguredAtom = atom((get) => {
+  const githubToken = get(githubTokenAtom)
+  const githubRepo = get(githubRepoAtom)
+  return githubToken && githubRepo?.owner && githubRepo?.name
+})
+
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------

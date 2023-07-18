@@ -41,14 +41,14 @@ export function NotesPanel({ id, onClose }: PanelProps) {
       <div className="p-4">
         {!githubToken || !githubRepo?.owner || !githubRepo?.name ? (
           // If GitHub repository hasn't been configured
-          <Card className="p-4">
+          <div>
             <LinkContext.Provider value={Link}>
               <Markdown>{welcomeMessage.trim()}</Markdown>
               <div className="mt-4 rounded-sm bg-bg-highlight px-3 py-2 text-text-highlight">
                 <Markdown>{warningMessage.trim()}</Markdown>
               </div>
             </LinkContext.Provider>
-          </Card>
+          </div>
         ) : noteCount === 0 ? (
           // If GitHub repository has been configured but no notes exist
           <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
-import { tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
+import { isGitHubConfiguredAtom, tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -19,6 +19,9 @@ export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const upsertNote = useSetAtom(upsertNoteAtom)
+
+  const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
+  const disabled = !isGitHubConfigured
 
   const isFullscreen = useIsFullscreen()
 
@@ -64,7 +67,7 @@ export function CommandMenu() {
 
   // Toggle the menu with `command + k`
   useEvent("keydown", (event: KeyboardEvent) => {
-    if (event.key === "k" && event.metaKey) {
+    if (event.key === "k" && event.metaKey && !disabled) {
       if (isOpen) {
         closeMenu()
       } else {

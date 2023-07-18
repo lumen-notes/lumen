@@ -2,18 +2,21 @@ import { EditorView } from "@codemirror/view"
 import * as Portal from "@radix-ui/react-portal"
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import clsx from "clsx"
+import { useAtomValue } from "jotai"
 import React from "react"
 import { DraggableCore } from "react-draggable"
+import { useNavigate } from "react-router-dom"
 import { useMedia } from "react-use"
+import { isGitHubConfiguredAtom } from "../global-atoms"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
-import { useNavigate } from "react-router-dom"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  disabled: boolean
   toggle: () => void
   position: { x: number; y: number }
   setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>
@@ -25,6 +28,7 @@ const NewNoteDialogContext = React.createContext<{
 }>({
   isOpen: false,
   setIsOpen: () => {},
+  disabled: false,
   toggle: () => {},
   position: { x: 0, y: 0 },
   setPosition: () => {},
@@ -49,6 +53,9 @@ function Provider({ children }: { children: React.ReactNode }) {
   const editorRef = React.useRef<EditorView>()
   const isFullscreen = useIsFullscreen()
   const navigate = useNavigate()
+
+  const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
+  const disabled = !isGitHubConfigured
 
   const focusPrevActiveElement = React.useCallback(() => {
     prevActiveElement.current?.focus()
@@ -93,7 +100,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       // Toggle with `command + i`
-      if (event.key === "i" && event.metaKey) {
+      if (event.key === "i" && event.metaKey && !disabled) {
         toggle()
         event.preventDefault()
       }
@@ -101,12 +108,13 @@ function Provider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [toggle])
+  }, [toggle, disabled])
 
   const contextValue = React.useMemo(
     () => ({
       isOpen,
       setIsOpen,
+      disabled,
       toggle,
       position,
       setPosition,
@@ -119,6 +127,7 @@ function Provider({ children }: { children: React.ReactNode }) {
     [
       isOpen,
       setIsOpen,
+      disabled,
       toggle,
       position,
       setPosition,
@@ -216,7 +225,7 @@ function Trigger({
   className?: string
   tooltipSide?: TooltipContentProps["side"]
 }) {
-  const { isOpen, toggle, triggerRef } = React.useContext(NewNoteDialogContext)
+  const { isOpen, disabled, toggle, triggerRef } = React.useContext(NewNoteDialogContext)
   return (
     <IconButton
       ref={triggerRef}
@@ -225,6 +234,7 @@ function Trigger({
       shortcut={["⌘", "I"]}
       tooltipSide={tooltipSide}
       onClick={toggle}
+      disabled={disabled}
     >
       {isOpen ? <ComposeFillIcon24 /> : <ComposeIcon24 />}
     </IconButton>
