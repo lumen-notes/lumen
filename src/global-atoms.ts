@@ -68,14 +68,21 @@ export const sortedNoteEntriesAtom = atom((get) => {
   const notes = get(notesAtom)
   // Sort notes by when they were created in descending order
   return Object.entries(notes).sort((a, b) => {
-    return parseInt(b[0]) - parseInt(a[0])
+    // Put numeric IDs first
+    if (a[0].match(/^\d+$/) && !b[0].match(/^\d+$/)) {
+      return -1
+    } else if (!a[0].match(/^\d+$/) && b[0].match(/^\d+$/)) {
+      return 1
+    }
+
+    return b[0].localeCompare(a[0])
   })
 })
 
 export const noteSearcherAtom = atom((get) => {
   const sortedNoteEntries = get(sortedNoteEntriesAtom)
   return new Searcher(sortedNoteEntries, {
-    keySelector: ([, note]) => [note.title, note.rawBody],
+    keySelector: ([id, note]) => [note.title, note.rawBody, id],
     threshold: 0.8,
   })
 })

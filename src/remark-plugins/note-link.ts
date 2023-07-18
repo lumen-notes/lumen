@@ -204,7 +204,7 @@ export function noteLinkHtml(): HtmlExtension {
 // Register noteLink as an mdast node type
 interface NoteLink extends Node {
   type: "noteLink"
-  data: { id: number; text: string }
+  data: { id: string; text: string }
 }
 
 declare module "mdast" {
@@ -222,7 +222,7 @@ export function noteLinkFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
       [types.noteLink](token) {
-        this.enter({ type: "noteLink", data: { id: 0, text: "" } }, token)
+        this.enter({ type: "noteLink", data: { id: "", text: "" } }, token)
       },
       [types.noteLinkId](token) {
         id = this.sliceSerialize(token)
@@ -236,7 +236,7 @@ export function noteLinkFromMarkdown(): FromMarkdownExtension {
         const node = this.stack[this.stack.length - 1]
 
         if (node.type === "noteLink") {
-          node.data.id = Number(id)
+          node.data.id = id || ""
           node.data.text = text || id || ""
         }
 
