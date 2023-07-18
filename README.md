@@ -46,6 +46,7 @@ _Notes in Lumen are..._
 1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
 1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
+1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 
 > **Warning**: Lumen is experimental. Expect frequent breaking changes. Check out the [project board](https://github.com/orgs/lumen-notes/projects/2) to follow along.
 
