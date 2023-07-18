@@ -1,5 +1,3 @@
-> **Warning**: Experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
-
 # Lumen
 
 Lumen is a note-taking app for lifelong learners.
@@ -52,6 +50,8 @@ _Notes in Lumen are..._
 1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
 1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
+
+> **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
 
 <br>
 
