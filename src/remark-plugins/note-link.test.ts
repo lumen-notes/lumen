@@ -61,6 +61,26 @@ runTests([
     input: `[[123|hello]] [[456]]`,
     output: `<p><note-link id="123" text="hello" /> <note-link id="456" text="456" /></p>`,
   },
+  {
+    input: `[[123x]]`,
+    output: `<p><note-link id="123x" text="123x" /></p>`,
+  },
+  {
+    input: `[[x]]`,
+    output: `<p><note-link id="x" text="x" /></p>`,
+  },
+  {
+    input: `[[x|y]]`,
+    output: `<p><note-link id="x" text="y" /></p>`,
+  },
+  {
+    input: `[[Hello world|foo]]`,
+    output: `<p><note-link id="Hello world" text="foo" /></p>`,
+  },
+  {
+    input: `[[foo.bar]]`,
+    output: `<p><note-link id="foo.bar" text="foo.bar" /></p>`,
+  },
 
   // Invalid note links
   {
@@ -78,14 +98,6 @@ runTests([
   {
     input: `[[]]`,
     output: `<p>[[]]</p>`,
-  },
-  {
-    input: `[[123x]]`,
-    output: `<p>[[123x]]</p>`,
-  },
-  {
-    input: `[[x]]`,
-    output: `<p>[[x]]</p>`,
   },
   {
     input: `[[123]`,

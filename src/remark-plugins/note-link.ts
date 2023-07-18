@@ -41,7 +41,7 @@ export function noteLink(): Extension {
     }
 
     function enterId(code: Code): State | void {
-      if (isNumberChar(code)) {
+      if (isFilenameChar(code)) {
         effects.enter(types.noteLinkId)
         effects.consume(code)
         return continueId
@@ -51,10 +51,7 @@ export function noteLink(): Extension {
     }
 
     function continueId(code: Code): State | void {
-      if (isNumberChar(code)) {
-        effects.consume(code)
-        return continueId
-      } else if (isSeparatorChar(code)) {
+      if (isSeparatorChar(code)) {
         effects.exit(types.noteLinkId)
         effects.enter(types.noteLinkSeparator)
         effects.consume(code)
@@ -65,6 +62,9 @@ export function noteLink(): Extension {
         effects.enter(types.noteLinkMarker)
         effects.consume(code)
         return exitClosingMarker
+      } else if (isFilenameChar(code)) {
+        effects.consume(code)
+        return continueId
       } else {
         return nok(code)
       }
@@ -127,10 +127,32 @@ function isClosingMarkerChar(code: Code): boolean {
   return code === codes.rightSquareBracket
 }
 
-/** Returns true if character is a valid number character */
-function isNumberChar(code: Code): boolean {
+/** Returns true if character is a valid filename character */
+function isFilenameChar(code: Code): boolean {
   if (code === null) return false
-  return code >= codes.digit0 && code <= codes.digit9
+  return (
+    (code >= codes.digit0 && code <= codes.digit9) ||
+    (code >= codes.uppercaseA && code <= codes.uppercaseZ) ||
+    (code >= codes.lowercaseA && code <= codes.lowercaseZ) ||
+    code === codes.dash ||
+    code === codes.underscore ||
+    code === codes.dot ||
+    code === codes.tilde ||
+    code === codes.exclamationMark ||
+    code === codes.dollarSign ||
+    code === codes.ampersand ||
+    code === codes.apostrophe ||
+    code === codes.leftParenthesis ||
+    code === codes.rightParenthesis ||
+    code === codes.asterisk ||
+    code === codes.plusSign ||
+    code === codes.comma ||
+    code === codes.semicolon ||
+    code === codes.atSign ||
+    code === codes.leftCurlyBrace ||
+    code === codes.rightCurlyBrace ||
+    code === codes.space
+  )
 }
 
 /** Returns true if character is a valid separator character */
