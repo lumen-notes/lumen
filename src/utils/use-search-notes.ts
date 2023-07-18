@@ -61,6 +61,7 @@ export function filterResults(results: Array<[string, Note]>, qualifiers: Qualif
 
       switch (qualifier.key) {
         case "id":
+          // TODO: Add support for spaces in IDs
           // Match if the note's ID is in the qualifier's values
           value = qualifier.values.includes(id)
           break
