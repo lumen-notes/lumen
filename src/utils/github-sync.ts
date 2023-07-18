@@ -62,6 +62,10 @@ export const useFetchNotes = () => {
     } catch (error) {
       console.error(error)
       setError(error as Error)
+
+      // Clear notes
+      setRawNotes({})
+      setSha(null)
     } finally {
       setIsFetching(false)
     }

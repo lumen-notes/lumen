@@ -7,8 +7,12 @@ import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
 import { ThemeColor } from "./theme-color"
+import { useAtomValue } from "jotai"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 
 export function Root() {
+  const githubToken = useAtomValue(githubTokenAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
   const { fetchNotes, isFetching, error: fetchError } = useFetchNotes()
 
   // We consider any viewport wider than 640px a desktop viewport.
@@ -37,7 +41,8 @@ export function Root() {
     <div>
       <ThemeColor />
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-        {fetchError && !isFetching ? (
+        {/* Show error message if a GitHub repository has been configured but fetching notes fails */}
+        {fetchError && !isFetching && githubToken && githubRepo?.owner && githubRepo?.name ? (
           <div className="flex items-center gap-3 bg-[crimson] px-4 py-2 text-[white]">
             <div>
               <ErrorIcon16 />

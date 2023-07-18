@@ -22,6 +22,7 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
 import { FilePreview } from "./file-preview"
@@ -415,13 +416,18 @@ function withSuffix(num: number): string {
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const Link = useLink()
 
-  // Open local files in a panel
-  if (props.href?.startsWith("/")) {
+  // Open uploads in a panel
+  if (props.href?.startsWith(`/${UPLOADS_DIRECTORY}`)) {
     return (
       <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
         {props.children}
       </Link>
     )
+  }
+
+  // Render relative links with React Router
+  if (props.href?.startsWith("/")) {
+    return <Link to={props.href}>{props.children}</Link>
   }
 
   return (

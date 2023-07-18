@@ -6,7 +6,7 @@ import { fileCache } from "../components/file-preview"
 import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { writeFile } from "../utils/github-fs"
 
-const UPLOADS_DIRECTORY = "uploads"
+export const UPLOADS_DIRECTORY = "uploads"
 
 export function useAttachFile() {
   // HACK: getGitHubToken() returns an empty string if the atom is not initialized
