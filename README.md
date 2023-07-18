@@ -18,12 +18,11 @@ Write notes with [markdown syntax](/docs/markdown-syntax.md) and store them as p
 
 ### 🌿 Grow
 
-Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.
+Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover surprising new connections.
 
 ### 🌻 Harvest
 
 Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
-
 
 <br>
 
@@ -67,6 +66,7 @@ _Notes in Lumen are..._
 | :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 💻 App           | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
 | 🛠️ Design system | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
+| 😺 GitHub        | [lumen-notes/lumen](https://github.com/lumen-notes/lumen)           |                                                                                                                                                                      |
 | 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |
 
 <br>
