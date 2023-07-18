@@ -42,8 +42,8 @@ jobs:
       - name: Copy favicon into docs directory
         run: cp public/favicon.svg docs/favicon.svg
       - name: Fix relative links in markdown files
-        # Example: [Metadata](/docs/metadata.md) → [Metadata](/lumen/metadata)
-        run: find docs -type f -name "*.md" -exec sed -i 's|/docs/\(.*\).md|/lumen/\1|g' {} +
+        # Example: [Metadata](/docs/metadata.md) → [Metadata](/metadata)
+        run: find docs -type f -name "*.md" -exec sed -i 's|/docs/\(.*\).md|/\1|g' {} +
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
