@@ -16,14 +16,15 @@ const welcomeMessage = `
 
 Follow these steps to get started:
 
-1. Create a GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template).
-1. Generate a new GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
+1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [\`.github/workflows/lumen.yml\`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository.
+1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
 1. Paste your personal access token and repository details into the [settings page](/settings).
 1. Start writing [markdown](https://lumen-notes.github.io/lumen/markdown-syntax) notes in Lumen!
+1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 `
 
 const warningMessage = `
-**Warning:** Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) to follow along.
+**Warning:** Lumen is experimental. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 `
 
 export function NotesPanel({ id, onClose }: PanelProps) {
@@ -43,7 +44,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
           <div>
             <LinkContext.Provider value={Link}>
               <Markdown>{welcomeMessage.trim()}</Markdown>
-              <div className="mt-4 rounded-sm bg-bg-highlight px-3 py-2 text-text-highlight">
+              <div className="mt-5 rounded-sm bg-bg-secondary px-3 py-2">
                 <Markdown>{warningMessage.trim()}</Markdown>
               </div>
             </LinkContext.Provider>
