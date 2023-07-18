@@ -14,9 +14,22 @@ Lumen is a note-taking app for lifelong learners.
 
 Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
 
-| 🌱 Plant | 🌿 Grow | 🌻 Harvest |
-| :--- | :--- | :--- |
-| Write notes with [Markdown syntax](#markdown-syntax) and store them as plain text files in a GitHub repository of your choice. You own your data, forever. | Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surpising new connections. | Access your notes from anywhere—even offline. Use Lumen's flexible [query language](#query-language) to find exactly what you're looking for. |
+<table>
+  <thead>
+    <tr>
+      <th>🌱 Plant</th>
+      <th>🌿 Grow</th>
+      <th>🌻 Harvest</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Write notes with <a href="#markdown-syntax">Markdown syntax</a> and store them as plain text files in a GitHub repository of your choice. You own your data, forever.</td>
+      <td>Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.</td>
+      <td>Access your notes from anywhere—even offline. Use Lumen's flexible <a href="#query-language">query language</a> to find exactly what you're looking for.</td>
+    </tr>
+  </tbody>
+</table>
 
 <br>
 
@@ -265,11 +278,11 @@ Unrecognized qualifier keys are assumed to be frontmatter keys. For example, `re
 
 ## Links
 
-| Description             | URL                                                                 | Status                                                                                                                                                               |
+| Description      | URL                                                                 | Status                                                                                                                                                               |
 | :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 App       | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
+| 💻 App           | [uselumen.com](https://uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
 | 🛠️ Design system | [lumen-storybook.netlify.app](https://lumen-storybook.netlify.app/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     | 
+| 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |
 
 <br>
 
@@ -286,4 +299,3 @@ Unrecognized qualifier keys are assumed to be frontmatter keys. For example, `re
 - [Obsidian](https://obsidian.md/)
 - [Logseq](https://logseq.com/)
 - [Roam Research](https://roamresearch.com)
-
