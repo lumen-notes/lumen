@@ -21,8 +21,10 @@ Follow these steps to get started:
 1. Generate a new GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
 1. Paste your personal access token and repository details into the [settings page](/settings).
 1. Start writing [markdown](https://lumen-notes.github.io/lumen/markdown-syntax) notes in Lumen!
+`
 
-> **Warning**: Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) for progress updates.
+const warningMessage = `
+**Warning:** Lumen is experimental. Expect frequent breaking changes. See the [project board](https://github.com/orgs/lumen-notes/projects/2) to follow along.
 `
 
 export function NotesPanel({ id, onClose }: PanelProps) {
@@ -42,6 +44,9 @@ export function NotesPanel({ id, onClose }: PanelProps) {
           <Card className="p-4">
             <LinkContext.Provider value={Link}>
               <Markdown>{welcomeMessage.trim()}</Markdown>
+              <div className="mt-4 rounded-sm bg-bg-highlight px-3 py-2 text-text-highlight">
+                <Markdown>{warningMessage.trim()}</Markdown>
+              </div>
             </LinkContext.Provider>
           </Card>
         ) : noteCount === 0 ? (
