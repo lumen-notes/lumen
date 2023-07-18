@@ -20,8 +20,8 @@ jobs:
             // Create an empty object to store the notes
             const notes = {};
 
-            // Match all .md files with only numeric characters in the filename
-            const FILENAME_REGEX = /^\d+\.md$/
+            // Match all .md files
+            const FILENAME_REGEX = /.+\.md$/
 
             // Iterate through all the notes in the root directory
             fs.readdirSync(process.cwd())
