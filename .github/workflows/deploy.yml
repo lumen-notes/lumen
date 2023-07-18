@@ -33,7 +33,7 @@ jobs:
         run: cp README.md docs/README.md
       - name: Fix relative links in markdown files
         # Example: [Metadata](/docs/metadata.md) → [Metadata](/metadata.md)
-        run: find . -type f -name "*.md" -exec sed -i '' 's/\/docs\//\//g' {} +
+        run: find docs -type f -name "*.md" -exec sed -i '' 's/\/docs\//\//g' {} +
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
