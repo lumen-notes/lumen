@@ -81,6 +81,8 @@ _Notes in Lumen are..._
 
 ## Alternatives
 
-- [Obsidian](https://obsidian.md/)
-- [Logseq](https://logseq.com/)
+- [Obsidian](https://obsidian.md)
+- [Logseq](https://logseq.com)
+- [Reflect](https://reflect.app)
+- [Tana](https://tana.inc)
 - [Roam Research](https://roamresearch.com)
