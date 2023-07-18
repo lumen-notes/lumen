@@ -30,8 +30,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Remove h1 from README.md
-        # The default GitHub Pages template already includes an h1
+        # The default GitHub Pages theme already includes an h1
         run: sed -i '/^# .*/d' README.md
+      - name: Remove dark mode image from README.md
+        # The default GitHub Pages theme doesn't support dark mode
+        run: sed -i '/#gh-dark-mode-only)$/d' README.md
       - name: Copy README.md into docs directory
         run: cp README.md docs/README.md
       - name: Fix relative links in markdown files
