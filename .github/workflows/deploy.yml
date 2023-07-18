@@ -37,6 +37,8 @@ jobs:
         run: sed -i '/#gh-dark-mode-only)$/d' README.md
       - name: Copy README.md into docs directory
         run: cp README.md docs/README.md
+      - name: Copy favicon into docs directory
+        run: cp public/favicon.svg docs/favicon.svg
       - name: Fix relative links in markdown files
         # Example: [Metadata](/docs/metadata.md) → [Metadata](/lumen/metadata)
         run: find docs -type f -name "*.md" -exec sed -i 's|/docs/\(.*\).md|/lumen/\1|g' {} +
