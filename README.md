@@ -74,8 +74,8 @@ _Notes in Lumen are..._
 ## Recommended reading
 
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
-- [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Introduction to the Zettelkasten Method by Sascha](https://zettelkasten.de/introduction/)
+- [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
 
 <br>
