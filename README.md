@@ -82,8 +82,8 @@ _Notes in Lumen are..._
 
 ## Alternatives
 
+- [Obsidian](https://obsidian.md) — ⭐ Most popular
 - [Logseq](https://logseq.com)
-- [Obsidian](https://obsidian.md)
 - [Reflect](https://reflect.app)
 - [Supernotes](https://supernotes.app)
 - [Roam Research](https://roamresearch.com)
