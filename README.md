@@ -24,7 +24,7 @@ Think of Lumen as your private [digital garden](https://maggieappleton.com/garde
   </thead>
   <tbody>
     <tr valign="top">
-      <td>Write notes with <a href="#markdown-syntax">Markdown syntax</a> and store them as plain text files in a GitHub repository of your choice. You own your data, forever.</td>
+      <td>Write notes with <a href="/docs/markdown-syntax.md">Markdown syntax</a> and store them as plain text files in a GitHub repository of your choice. You own your data, forever.</td>
       <td>Connect your notes with links and tags. Lumen makes it easy to traverse your knowledge graph and discover surprising new connections.</td>
       <td>Access your notes from anywhere—even offline. Use Lumen's flexible <a href="#query-language">query language</a> to find exactly what you're looking for.</td>
     </tr>
