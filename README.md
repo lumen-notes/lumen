@@ -81,8 +81,11 @@ _Notes in Lumen are..._
 
 ## Alternatives
 
-- [Obsidian](https://obsidian.md)
 - [Logseq](https://logseq.com)
+- [Obsidian](https://obsidian.md)
 - [Reflect](https://reflect.app)
-- [Tana](https://tana.inc)
+- [Supernotes](https://supernotes.app)
 - [Roam Research](https://roamresearch.com)
+- [Tana](https://tana.inc)
+- [Tangent](https://www.tangentnotes.com)
+
