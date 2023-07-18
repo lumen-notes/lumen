@@ -49,6 +49,7 @@ _Notes in Lumen are..._
 1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 
 > **Warning**: Lumen is experimental. Expect frequent breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
+
 <br>
 
 ## Docs
