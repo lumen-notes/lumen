@@ -35,6 +35,10 @@ jobs:
       - name: Remove dark mode image from README.md
         # The default GitHub Pages theme doesn't support dark mode
         run: sed -i '/#gh-dark-mode-only)$/d' README.md
+      - name: Remove README.md symlink
+        run: rm docs/README.md
+      - name: Copy README.md into docs directory
+        run: cp README.md docs/README.md
       - name: Copy favicon into docs directory
         run: cp public/favicon.svg docs/favicon.svg
       - name: Fix relative links in markdown files
