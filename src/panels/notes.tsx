@@ -18,8 +18,8 @@ Follow these steps to get started:
 
 1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [\`.github/workflows/lumen.yml\`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository.
 1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
-1. Paste your personal access token and repository details into the [settings page](/settings).
-1. Start writing [markdown](https://lumen-notes.github.io/lumen/markdown-syntax) notes in Lumen!
+1. Paste your personal access token and repository details into Lumen's [settings page](/settings).
+1. Write your first note in Lumen!
 1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 `
 
