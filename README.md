@@ -252,6 +252,3 @@ Unrecognized qualifier keys are assumed to be frontmatter keys. For example, `re
 - [Logseq](https://logseq.com/)
 - [Roam Research](https://roamresearch.com)
 
-```
-
-```
