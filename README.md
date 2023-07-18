@@ -42,8 +42,8 @@ _Notes in Lumen are..._
 
 ## Getting started
 
-1. Create a new GitHub repository to store your notes in using the [notes template repository](https://github.com/lumen-notes/lumen-template).
-1. Generate a GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
+1. Create a GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template).
+1. Generate a new GitHub [personal access token](https://github.com/settings/tokens/new) with `repo` access.
 1. Paste your personal access token and repository details into Lumen's [settings page](https://uselumen.com/settings).
 1. Start writing [markdown](/docs/markdown-syntax.md) notes in Lumen!
 
