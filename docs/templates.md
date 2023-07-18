@@ -1,6 +1,6 @@
 # Templates
 
-Any note can be turned into a template by adding a `template` key to the note's [frontmatter](#metadata) with the name of the template as the value.
+Any note can be turned into a template by adding a `template` key to the note's [frontmatter](/docs/metadata.md) with the name of the template as the value.
 
 Here's an example "Book" template:
 
@@ -42,9 +42,9 @@ When we use this template, the `<%= date %>` placeholder will be replaced with t
 
 The following global variables are available in all templates:
 
-| Name   | Type     | Description                                                                      |
-| :----- | :------- | :------------------------------------------------------------------------------- |
-| `date` | `string` | The current date in `[[YYYY-MM-DD]]` format. See also: [Date links](#date-links) |
+| Name   | Type     | Description                                                                                                                              |
+| :----- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `date` | `string` | The current date in `[[YYYY-MM-DD]]` format. For more details on the date format, see [Date links](/docs/markdown-syntax.md#date-links). |
 
 ## Cursor position
 

@@ -38,4 +38,4 @@ Link to all other notes with the same tag.
 
 | Example   | Rendered HTML                        |
 | :-------- | :----------------------------------- |
-| `#recipe` | `<a href="/tags/recipe">#recipe</a>` |
+| `#recipe` | `#<a href="/tags/recipe">recipe</a>` |

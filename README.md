@@ -57,6 +57,12 @@ _Notes in Lumen are..._
 
 ## Docs
 
+- [Markdown syntax](/docs/markdown-syntax.md)
+- [Metadata](/docs/metadata.md)
+- [Templates](/docs/templates.md)
+- [Query language](/docs/query-language.md)
+- [Keyboard shortcuts](/docs/keyboard-shortcuts.md)
+
 <br>
 
 ## Links
