@@ -100,8 +100,21 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {/* TODO: Feedback icon */}
                 Send feedback
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                href="https://lumen-notes.github.io/lumen"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Documentation
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                href="https://lumen-notes.github.io/lumen/keyboard-shortcuts"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item onClick={fetchNotes} disabled={!online || !githubRepo}>
