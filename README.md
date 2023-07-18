@@ -83,11 +83,12 @@ _Notes in Lumen are..._
 
 ## Alternatives
 
-- [Obsidian](https://obsidian.md) — ⭐ Popular
+- [Foam](https://foambubble.github.io/foam)
 - [Logseq](https://logseq.com)
+- [Obsidian](https://obsidian.md) — ⭐ Popular
 - [Reflect](https://reflect.app)
-- [Supernotes](https://supernotes.app)
 - [Roam Research](https://roamresearch.com)
+- [Supernotes](https://supernotes.app)
 - [Tana](https://tana.inc)
 - [Tangent](https://www.tangentnotes.com)
 
