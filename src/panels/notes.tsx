@@ -17,6 +17,8 @@ const welcomeMessage = `
 
 Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
+[**Learn more**](https://uselumen.com)
+
 ---
 
 ## Getting started
