@@ -24,7 +24,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
 
   const unlinkedNoteCount = React.useMemo(() => {
     if (!note) return 0
-    const query = `${note.title} -link:${noteId} -id:${noteId}`
+    const query = `${note.title} -link:"${noteId}" -id:"${noteId}"`
     return note.title ? searchNotes(query).length : 0
   }, [note, noteId, searchNotes])
 
@@ -64,13 +64,15 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
 
           <Tabs.Content value="backlinks" className="outline-none">
             <LinkHighlightProvider href={`/${noteId}`}>
-              <NoteList baseQuery={`link:${noteId}`} />
+              <NoteList baseQuery={`link:"${noteId}"`} />
             </LinkHighlightProvider>
           </Tabs.Content>
 
           <Tabs.Content value="unlinked" className="outline-none">
             <NoteList
-              baseQuery={note?.title ? `${note.title} -link:${noteId} -id:${noteId}` : "id:noop"}
+              baseQuery={
+                note?.title ? `${note.title} -link:"${noteId}" -id:"${noteId}"` : "id:noop"
+              }
             />
           </Tabs.Content>
 

@@ -7,6 +7,7 @@ Search your notes with Lumen's [GitHub-style](https://docs.github.com/en/search-
 - To include multiple values in a qualifier, separate the values with commas. For example, `tag:article,book` matches notes with either the `article` OR `book` tag.
 - Qualifiers can also be used to filter notes based on numerical ranges. To do this, use one of the following operators before the qualifier value: `>`, `<`, `>=`, `<=`. For example, `backlinks:>10` matches notes with more than 10 backlinks; `date:>=2021-01-01` matches notes with a date on or after `2021-01-01`.
 - Text outside of qualifiers is used to fuzzy search the note's title and body. For example, `tag:recipe cookie` matches notes with the `recipe` tag that also contain the word "cookie" in the title or body.
+- To search for a value that contains spaces, wrap the value in quotes. For example, `genre:"science fiction"` matches notes with `genre: science fiction` in their [frontmatter](/docs/metadata.md).
 
 ## Qualifiers
 
@@ -24,4 +25,4 @@ Search your notes with Lumen's [GitHub-style](https://docs.github.com/en/search-
 | `no`        | `no:tag` matches notes without a tag. `no` can be used with any qualifier key or frontmatter key.                                          |
 | `has`       | `has:tag` matches notes with one or more tag. `has` can be used with any qualifier key or frontmatter key. `has` and `-no` are equivalent. |
 
-Unrecognized qualifier keys are assumed to be frontmatter keys. For example, `read:true` matches notes with `read: true` in their frontmatter.
+Unrecognized qualifier keys are assumed to be [frontmatter](/docs/metadata.md) keys. For example, `read:true` matches notes with `read: true` in their frontmatter.

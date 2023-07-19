@@ -33,7 +33,11 @@ export const useSearchNotes = () => {
   return searchNotes
 }
 
-const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[\w-,><=/]+)/g
+// eslint-disable-next-line no-useless-escape
+const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[^"\[\]| ]+|"[^"\[\]|]+")/g
+// Valid qualifiers:
+// - id:123
+// - id:"hello, world"
 
 export function parseQuery(query: string): Query {
   const fuzzy = query.replace(QUALIFIER_REGEX, "").trim()
@@ -42,9 +46,22 @@ export function parseQuery(query: string): Query {
     .map((match) => {
       if (!match.groups) return null
 
+      let values = []
+
+      if (match.groups.value.startsWith('"')) {
+        // If the value is quoted, remove the quotes
+        values = [match.groups.value.slice(1, -1)]
+      } else if (match.groups.value.includes(",")) {
+        // If the value is comma-separated, split it into an array
+        values = match.groups.value.split(",")
+      } else {
+        // Otherwise, just use the value as-is
+        values = [match.groups.value]
+      }
+
       return {
         key: match.groups.key,
-        values: match.groups.value.split(","),
+        values,
         exclude: Boolean(match.groups.exclude),
       }
     })
