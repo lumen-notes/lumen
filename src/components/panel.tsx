@@ -1,6 +1,8 @@
 import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
+import { z } from "zod"
+import { useSearchParam } from "../utils/use-search-param"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, MoreIcon16 } from "./icons"
@@ -20,7 +22,11 @@ const MIN_WIDTH = 512
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
-  const [width, setWidth] = React.useState(MIN_WIDTH)
+  const [width, setWidth] = useSearchParam("w", {
+    defaultValue: MIN_WIDTH,
+    schema: z.number(),
+    parse: Number,
+  })
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)
   const [activeNoteId, setActiveNoteId] = React.useState("")

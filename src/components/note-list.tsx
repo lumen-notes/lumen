@@ -19,9 +19,14 @@ type NoteListProps = {
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
+  const parseQuery = React.useCallback((value: unknown): string => {
+    return typeof value === "string" ? value : ""
+  }, [])
+
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",
     schema: z.string(),
+    parse: parseQuery,
     replace: true,
   })
 
@@ -31,9 +36,14 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
+  const parseViewType = React.useCallback((value: unknown): "list" | "cards" => {
+    return value === "list" ? "list" : "cards"
+  }, [])
+
   const [viewType, setViewType] = useSearchParam<"list" | "cards">("v", {
     defaultValue: "cards",
     schema: z.enum(["list", "cards"]),
+    parse: parseViewType,
     replace: true,
   })
 

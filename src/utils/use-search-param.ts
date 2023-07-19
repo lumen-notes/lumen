@@ -8,13 +8,18 @@ import { PanelContext, PanelsContext } from "../components/panels"
 type SearchParamOptions<T = string> = {
   defaultValue: T
   schema: Schema<T>
+  parse?: (value: unknown) => T
   replace?: boolean
+}
+
+function defaultParse<T>(value: unknown): T {
+  return value as T
 }
 
 // Reference: https://www.inkoop.io/blog/syncing-query-parameters-with-react-state/
 export function useSearchParam<T = string>(
   key: string,
-  { defaultValue, schema, replace = false }: SearchParamOptions<T>,
+  { defaultValue, schema, parse = defaultParse, replace = false }: SearchParamOptions<T>,
 ): [T, (value: T) => void] {
   const location = useLocation()
   const navigate = useNavigate()
@@ -24,8 +29,9 @@ export function useSearchParam<T = string>(
 
   const [value, setValue] = useState(() => {
     try {
-      return schema.parse(searchParams[key])
+      return schema.parse(parse(searchParams[key]))
     } catch (error) {
+      console.error(error)
       return defaultValue
     }
   })
