@@ -26,8 +26,11 @@ export const parseNote = memoize((rawBody: string) => {
   const { frontmatter } = parseFrontmatter(rawBody)
 
   const mdast = fromMarkdown(rawBody, {
-    extensions: [dateLink(), noteLink(), tagLink()],
-    mdastExtensions: [dateLinkFromMarkdown(), noteLinkFromMarkdown(), tagLinkFromMarkdown()],
+    // Note: It's important that dateLink is included after noteLink.
+    // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
+    // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
+    extensions: [noteLink(), tagLink(), dateLink()],
+    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
   })
 
   visit(mdast, (node) => {
