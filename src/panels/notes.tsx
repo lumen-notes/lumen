@@ -11,6 +11,7 @@ import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { githubRepoAtom, githubTokenAtom, rawNotesAtom } from "../global-atoms"
 
+// Copied from the "Getting started" section of the README
 const welcomeMessage = `
 # Welcome to Lumen
 
