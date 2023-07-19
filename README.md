@@ -18,7 +18,7 @@ Write notes with [markdown syntax](/docs/markdown-syntax.md) and store them as p
 
 ### 🌿 Grow
 
-Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover surprising new connections.
+Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover new connections.
 
 ### 🌻 Harvest
 
