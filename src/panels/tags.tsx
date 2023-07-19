@@ -13,7 +13,6 @@ import { pluralize } from "../utils/pluralize"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
-  const Link = useLink()
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
@@ -46,26 +45,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
             </span>
           ) : null}
         </div>
-        {deferredQuery ? (
-          <ul>
-            {searchResults.map(([name]) => (
-              <li key={name}>
-                <div className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2 coarse:grid-cols-[2rem,1fr]">
-                  <div className="grid place-items-center text-text-secondary">
-                    <DotIcon8 />
-                  </div>
-                  <span className="py-2 leading-4 coarse:py-3">
-                    <Link className="link" to={`/tags/${name}`} target="_blank">
-                      {name}
-                    </Link>
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <TagTree tree={tagTree} />
-        )}
+        <TagTree tree={tagTree} />
       </div>
     </Panel>
   )
