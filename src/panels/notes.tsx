@@ -27,7 +27,6 @@ Lumen is a note-taking app for lifelong learners, based on the Zettelkasten Meth
 1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231)
 1. Paste your personal access token and repository details into Lumen's [settings page](/settings)
 1. Write your first note in Lumen!
-1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing)
 `
 
 const warningMessage = `

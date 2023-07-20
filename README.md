@@ -47,6 +47,7 @@ _Notes in Lumen are..._
 1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings)
 1. Write your first note in [Lumen](https://app.uselumen.com)!
 1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing)
+1. Optional: Learn the [keyboard shortcuts](/docs/keyboard-shortcuts.md)
 
 > **Warning**: Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 
@@ -64,12 +65,12 @@ _Notes in Lumen are..._
 
 ## Links
 
-| Link | Status |
-| :--- | :--- |
-| [App](https://app.uselumen.com) | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys) |
-| [Storybook](https://storybook.uselumen.com/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| [GitHub](https://github.com/lumen-notes/lumen) | — |
-| [Twitter](https://twitter.com/lumen_notes) | — |
+| Link                                           | Status                                                                                                                                                               |
+| :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [App](https://app.uselumen.com)                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
+| [Storybook](https://storybook.uselumen.com/)   | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
+| [GitHub](https://github.com/lumen-notes/lumen) | —                                                                                                                                                                    |
+| [Twitter](https://twitter.com/lumen_notes)     | —                                                                                                                                                                    |
 
 <br>
 
@@ -92,4 +93,3 @@ _Notes in Lumen are..._
 - [Supernotes](https://supernotes.app)
 - [Tana](https://tana.inc)
 - [Tangent](https://www.tangentnotes.com)
-
