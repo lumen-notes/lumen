@@ -1,16 +1,16 @@
 import qs from "qs"
 import React from "react"
 import {
-  Link as RouterLink,
   LinkProps,
-  matchRoutes,
   Params,
+  Link as RouterLink,
+  matchRoutes,
   useLocation,
   useNavigate,
 } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
-import { DatePanel } from "../panels/date"
+import { CalendarPanel } from "../panels/calendar"
 import { FilePanel } from "../panels/file"
 import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
@@ -246,7 +246,7 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: ":id", panel: NotePanel },
   { path: "tags", panel: TagsPanel },
   { path: "tags/*", panel: TagPanel },
-  { path: "dates/:date", panel: DatePanel },
+  { path: "calendar", panel: CalendarPanel },
   { path: "file", panel: FilePanel },
 ]
 

@@ -1,14 +1,12 @@
-import { useParams } from "react-router-dom"
 import { CommandMenu } from "../components/command-menu"
 import { Panels } from "../components/panels"
-import { DatePanel } from "../panels/date"
+import { CalendarPanel } from "../panels/calendar"
 
-export function DatePage() {
-  const params = useParams()
+export function CalendarPage() {
   return (
     <Panels>
       <CommandMenu />
-      <DatePanel params={params} />
+      <CalendarPanel />
       <Panels.Outlet />
     </Panels>
   )

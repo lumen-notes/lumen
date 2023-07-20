@@ -583,7 +583,7 @@ function DateLink({ date, className }: DateLinkProps) {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Link className={className} target="_blank" to={`/dates/${date}`}>
+        <Link className={className} target="_blank" to={`/calendar?date=${date}`}>
           {formatDate(date)}
         </Link>
       </Tooltip.Trigger>

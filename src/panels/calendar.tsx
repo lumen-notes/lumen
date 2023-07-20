@@ -4,27 +4,34 @@ import { toDate } from "date-fns-tz"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
+import { useLocation } from "react-router-dom"
 import { IconButton } from "../components/icon-button"
 import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
-import { PanelProps } from "../components/panels"
+import { PanelContext, PanelProps } from "../components/panels"
 import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
 
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
-export function DatePanel({ id, params = {}, onClose }: PanelProps) {
-  const { date = "" } = params
+export function CalendarPanel({ id, onClose }: PanelProps) {
+  const location = useLocation()
+  const panel = React.useContext(PanelContext)
+  const date = new URLSearchParams(panel ? panel.search : location.search).get("date") || ""
 
   // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
 
   if (!isValidDate) {
-    return <div>Invalid date</div>
+    return (
+      <Panel id={id} title={date} icon={<CalendarIcon24 />} onClose={onClose}>
+        Invalid date
+      </Panel>
+    )
   }
 
   return (
@@ -118,7 +125,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
     <RovingFocusGroup.Item asChild active={isActive}>
       <Link
         key={date.toISOString()}
-        to={`/dates/${toDateString(date)}`}
+        to={`/calendar?date=${toDateString(date)}`}
         aria-label={label}
         className={cx(
           "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",

@@ -66,18 +66,12 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         </li>
         <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink
-            to={`/dates/${toDateString(new Date())}`}
+            to={`/calendar?date=${toDateString(new Date())}`}
             aria-label="Today"
             tooltipSide={tooltipSide}
             end
           >
-            {({ isActive }) =>
-              isActive ? (
-                <CalendarFillIcon24 date={new Date().getDate()} />
-              ) : (
-                <CalendarIcon24 date={new Date().getDate()} />
-              )
-            }
+            {({ isActive }) => (isActive ? <CalendarFillIcon24 /> : <CalendarIcon24 />)}
           </NavLink>
         </li>
         <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>

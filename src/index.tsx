@@ -9,7 +9,7 @@ import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
 import "./index.css"
-import { DatePage } from "./pages/date"
+import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
@@ -39,7 +39,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <Route index element={<NotesPage />} />
                 <Route path="tags" element={<TagsPage />} />
                 <Route path="tags/*" element={<TagPage />} />
-                <Route path="dates/:date" element={<DatePage />} />
+                <Route path="calendar" element={<CalendarPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path=":id" element={<NotePage />} />
               </Route>
