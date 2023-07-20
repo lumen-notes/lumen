@@ -445,7 +445,7 @@ export function DotIcon8() {
 export function TriangleRightIcon8({ className }: { className?: string }) {
   return (
     <svg
-      className={cx("h-2 w-3 overflow-visible", className)}
+      className={cx("h-2 w-2 overflow-visible", className)}
       viewBox="0 0 8 8"
       fill="currentColor"
       aria-hidden
