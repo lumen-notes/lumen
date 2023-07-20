@@ -30,7 +30,7 @@ Lumen is a note-taking app for lifelong learners, based on the Zettelkasten Meth
 `
 
 const warningMessage = `
-⚠️ **Warning:** Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
+⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for status updates.
 `
 
 export function NotesPanel({ id, onClose }: PanelProps) {

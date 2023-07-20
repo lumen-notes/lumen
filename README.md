@@ -47,7 +47,7 @@ _Notes in Lumen are..._
 1. Optional: [Install Lumen as an app](https://www.cdc.gov/niosh/mining/content/hearingloss/installPWA.html)
 1. Optional: Learn the [keyboard shortcuts](/docs/keyboard-shortcuts.md)
 
-> **Warning**: Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
+> **Warning**: Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for status updates.
 
 <br>
 
