@@ -15,7 +15,7 @@ import { githubRepoAtom, githubTokenAtom, rawNotesAtom } from "../global-atoms"
 const welcomeMessage = `
 # Welcome to Lumen 👋
 
-Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+Lumen is a note-taking app for lifelong learners, based on the Zettelkasten Method.
 
 [**Learn more**](https://uselumen.com)
 
