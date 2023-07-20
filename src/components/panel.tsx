@@ -45,7 +45,7 @@ export function Panel({ id, title, description, icon, actions, children, onClose
       // Used to restore focus to active note when moving focus between panels
       data-active-note-id={activeNoteId}
       id={id}
-      className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)]"
+      className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
       style={{
         // @ts-ignore TypeScript doesn't know about custom properties
         "--width": `${width}px`,
