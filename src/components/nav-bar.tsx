@@ -67,7 +67,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink
             to={`/calendar?date=${toDateString(new Date())}`}
-            aria-label="Today"
+            aria-label="Calendar"
             tooltipSide={tooltipSide}
             end
           >
