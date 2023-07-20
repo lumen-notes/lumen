@@ -42,11 +42,11 @@ _Notes in Lumen are..._
 
 ## Getting started
 
-1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [`.github/workflows/lumen.yml`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository.
-1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
-1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
+1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [`.github/workflows/lumen.yml`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository
+1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231)
+1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings)
 1. Write your first note in [Lumen](https://app.uselumen.com)!
-1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
+1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing)
 
 > **Warning**: Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
 
