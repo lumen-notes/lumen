@@ -4,9 +4,7 @@ Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Met
 
 [**Get started**](#getting-started)&nbsp;&nbsp;·&nbsp;&nbsp;[Open Lumen](https://app.uselumen.com)
 
-![Screenshot of the app (light)](https://user-images.githubusercontent.com/4608155/254137283-bf5a5822-d4fb-4d86-ad4f-d2c7f3b19607.png#gh-light-mode-only)
-
-![Screenshot of the app (dark)](https://user-images.githubusercontent.com/4608155/254137649-da61fd2c-dbb2-4e9e-b50a-3f9da1f23337.png#gh-dark-mode-only)
+![Screenshot of the app](https://github.com/lumen-notes/lumen/assets/4608155/cfc574e4-c798-486a-8f63-69fc96759ed2#ghlight-mode-only)
 
 <br>
 
@@ -76,8 +74,8 @@ _Notes in Lumen are..._
 
 ## Recommended reading
 
-- [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
 - [Introduction to the Zettelkasten Method by Sascha](https://zettelkasten.de/introduction/)
+- [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
 - [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
 
