@@ -22,9 +22,9 @@ Link to all other notes that reference the same date.
 [[YYYY-MM-DD]]
 ```
 
-| Example          | Rendered HTML                                       |
-| :--------------- | :-------------------------------------------------- |
-| `[[2021-07-11]]` | `<a href="/dates/2021-07-11">Sun, Jul 11, 2021</a>` |
+| Example          | Rendered HTML                                               |
+| :--------------- | :---------------------------------------------------------- |
+| `[[2021-07-11]]` | `<a href="/calendar?date=2021-07-11">Sun, Jul 11, 2021</a>` |
 
 ## Tag links
 

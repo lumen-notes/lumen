@@ -349,7 +349,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" target="_blank" to={`/dates/${dateString}`}>
+            <Link className="link" target="_blank" to={`/calendar?date=${dateString}`}>
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -359,7 +359,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           )}
           <span className="text-text-secondary">
             {" · "}
-            <Link className="link" target="_blank" to={`/dates/${nextBirthdayString}`}>
+            <Link className="link" target="_blank" to={`/calendar?date=${nextBirthdayString}`}>
               {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"}
             </Link>{" "}
             is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}

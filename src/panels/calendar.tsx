@@ -45,7 +45,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar activeDate={date} />
         <div className="p-4">
-          <LinkHighlightProvider href={`/dates/${date}`}>
+          <LinkHighlightProvider href={`/calendar?date=${date}`}>
             <NoteList key={date} baseQuery={`date:${date}`} />
           </LinkHighlightProvider>
         </div>
