@@ -2,7 +2,7 @@
 
 Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
-[**Get started →**](#getting-started)
+[**Get started**](#getting-started)&nbsp;&nbsp;·&nbsp;&nbsp;[Open Lumen](https://app.uselumen.com)
 
 ![Screenshot of the app (light)](https://user-images.githubusercontent.com/4608155/254137283-bf5a5822-d4fb-4d86-ad4f-d2c7f3b19607.png#gh-light-mode-only)
 
@@ -45,7 +45,7 @@ _Notes in Lumen are..._
 1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [`.github/workflows/lumen.yml`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository.
 1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231).
 1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings).
-1. Write your first note in Lumen!
+1. Write your first note in [Lumen](https://app.uselumen.com)!
 1. Optional: [Install Lumen as an app](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing).
 
 > **Warning**: Work in progress. Expect breaking changes. Follow me on [Twitter](https://twitter.com/colebemis) for status updates.
@@ -64,12 +64,12 @@ _Notes in Lumen are..._
 
 ## Links
 
-| Description      | URL                                                                 | Status                                                                                                                                                               |
-| :--------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 💻 App           | [app.uselumen.com](https://app.uselumen.com)                                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
-| 🛠️ Design system | [storybook.uselumen.com](https://storybook.uselumen.com/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| 😺 GitHub        | [lumen-notes/lumen](https://github.com/lumen-notes/lumen)           |                                                                                                                                                                      |
-| 🐣 Twitter       | [@lumen_notes](https://twitter.com/lumen_notes)                     |
+| Link | Status |
+| :--- | :--- |
+| [App](https://app.uselumen.com) | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys) |
+| [Storybook](https://storybook.uselumen.com/) | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
+| [GitHub](https://github.com/lumen-notes/lumen) | — |
+| [Twitter](https://twitter.com/lumen_notes) | — |
 
 <br>
 
