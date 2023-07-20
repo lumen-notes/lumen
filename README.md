@@ -40,6 +40,8 @@ _Notes in Lumen are..._
 
 ## Docs
 
+> ⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for status updates.
+
 - [Markdown syntax](/docs/markdown-syntax.md)
 - [Metadata](/docs/metadata.md)
 - [Templates](/docs/templates.md)
