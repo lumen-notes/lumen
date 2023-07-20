@@ -4,7 +4,8 @@ Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Met
 
 [**Open Lumen**](https://app.uselumen.com)
 
-![Screenshot of the app](https://github.com/lumen-notes/lumen/assets/4608155/a4abce0c-33e9-437c-9f8e-9b59e82476ab)
+
+![Screenshot of the app](https://github.com/lumen-notes/lumen/assets/4608155/d82c65fe-22db-4b44-a08e-ca7a5e066c61)
 
 
 <br>
