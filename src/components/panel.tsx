@@ -22,10 +22,16 @@ const MIN_WIDTH = 512
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
+  const parseWidth = React.useCallback((value: unknown) => {
+    if (typeof value === "number") return value
+    if (typeof value === "string") return parseInt(value, 10)
+    return MIN_WIDTH
+  }, [])
+
   const [width, setWidth] = useSearchParam("w", {
     defaultValue: MIN_WIDTH,
     schema: z.number(),
-    parse: Number,
+    parse: parseWidth,
   })
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)

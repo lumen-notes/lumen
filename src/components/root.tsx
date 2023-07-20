@@ -1,14 +1,15 @@
+import { useAtomValue } from "jotai"
 import React from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useMedia, useNetworkState } from "react-use"
+import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 import { useFetchNotes } from "../utils/github-sync"
+import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
 import { ThemeColor } from "./theme-color"
-import { useAtomValue } from "jotai"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
 
 export function Root() {
   const githubToken = useAtomValue(githubTokenAtom)
@@ -36,6 +37,26 @@ export function Root() {
   useEvent("load", onLoad)
   useEvent("visibilitychange", onVisibilityChange)
   // useEvent("online", onOnline)
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // Restore the previous search params for this path when the app loads if the current search params are empty
+  useEvent("load", () => {
+    const prevPathParams = getPrevPathParams(location.pathname)
+
+    if (location.search === "" && prevPathParams) {
+      navigate({
+        pathname: location.pathname,
+        search: prevPathParams,
+      })
+    }
+  })
+
+  // Save the search params in localStorage before closing the app
+  useEvent("beforeunload", () => {
+    savePathParams(location)
+  })
 
   return (
     <div>

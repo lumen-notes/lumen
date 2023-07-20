@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai"
 import {
   NavLinkProps,
   NavLink as RouterNavLink,
+  useLocation,
   useMatch,
   useNavigate,
   useResolvedPath,
@@ -25,6 +26,7 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
+import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
@@ -135,6 +137,8 @@ function NavLink({
   tooltipSide,
   ...props
 }: NavLinkProps & { tooltipSide?: TooltipContentProps["side"] }) {
+  const navigate = useNavigate()
+  const location = useLocation()
   const path = useResolvedPath(props.to)
   const match = useMatch({
     path: path.pathname,
@@ -152,6 +156,18 @@ function NavLink({
             isActive ? "text-text" : "text-text-secondary",
           )}
           {...props}
+          onClick={(event) => {
+            // Save the params for the current path before navigating
+            savePathParams(location)
+
+            const prevPathParams = getPrevPathParams(path.pathname)
+
+            if (prevPathParams) {
+              event.preventDefault()
+              // Navigate to the new path with the previous params for that path
+              navigate({ pathname: path.pathname, search: prevPathParams })
+            }
+          }}
         />
       </Tooltip.Trigger>
       <Tooltip.Content side={tooltipSide}>{props["aria-label"]}</Tooltip.Content>

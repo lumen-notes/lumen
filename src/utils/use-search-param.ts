@@ -36,6 +36,8 @@ export function useSearchParam<T = string>(
     }
   })
 
+  const valueRef = React.useRef(value)
+
   const setValueAndParam = React.useCallback(
     (value: T) => {
       setValue(value)
@@ -52,6 +54,18 @@ export function useSearchParam<T = string>(
     },
     [searchParams, key, navigate, location.pathname, replace, panel, updatePanel],
   )
+
+  // If location changes, update the value
+  React.useEffect(() => {
+    const searchParams = qs.parse(panel ? panel.search : location.search, {
+      ignoreQueryPrefix: true,
+    })
+
+    // If the value is already up to date, don't update it
+    if (valueRef.current !== parse(searchParams[key])) {
+      setValue(parse(searchParams[key]))
+    }
+  }, [location, panel, valueRef, parse, key])
 
   return [value, setValueAndParam]
 }

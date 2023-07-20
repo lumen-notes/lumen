@@ -37,9 +37,18 @@ export const PanelsContext = React.createContext<{
 export const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
 
 function Root({ children }: React.PropsWithChildren) {
+  const parsePanels = React.useCallback((value: unknown) => {
+    if (Array.isArray(value)) {
+      return value as string[]
+    }
+
+    return []
+  }, [])
+
   const [panels, setPanels] = useSearchParam("p", {
     defaultValue: [],
     schema: z.array(z.string()),
+    parse: parsePanels,
   })
 
   useEvent("keydown", (event) => {
