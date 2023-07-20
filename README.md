@@ -83,7 +83,9 @@ _Notes in Lumen are..._
 
 ## Alternatives
 
+- [Bear](https://bear.app)
 - [Foam](https://foambubble.github.io/foam)
+- [iA Writer](https://ia.net/writer)
 - [Logseq](https://logseq.com)
 - [Obsidian](https://obsidian.md) — ⭐ Popular
 - [Reflect](https://reflect.app)
