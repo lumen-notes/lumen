@@ -2,7 +2,7 @@
 
 Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
-[**Get started**](#getting-started)&nbsp;&nbsp;·&nbsp;&nbsp;[Open Lumen](https://app.uselumen.com)
+[**Open Lumen**](https://app.uselumen.com)
 
 ![Screenshot of the app](https://github.com/lumen-notes/lumen/assets/4608155/cfc574e4-c798-486a-8f63-69fc96759ed2#ghlight-mode-only)
 
@@ -35,19 +35,6 @@ _Notes in Lumen are..._
 - available offline
 - accessible on any device
 - compatible with [other apps](#alternatives)
-
-<br>
-
-## Getting started
-
-1. Create a new GitHub repository for your notes using the [notes template repository](https://github.com/lumen-notes/lumen-template) OR copy [`.github/workflows/lumen.yml`](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) into an existing repository
-1. Generate a GitHub [personal access token](https://github.com/settings/personal-access-tokens/new) with [read and write permissions for your repository contents](https://github.com/lumen-notes/lumen/assets/4608155/73cbee0b-eb3b-4934-b374-d972dcf7f231)
-1. Paste your personal access token and repository details into Lumen's [settings page](https://app.uselumen.com/settings)
-1. Write your first note in [Lumen](https://app.uselumen.com)!
-1. Optional: [Install Lumen as an app](https://www.cdc.gov/niosh/mining/content/hearingloss/installPWA.html)
-1. Optional: Learn the [keyboard shortcuts](/docs/keyboard-shortcuts.md)
-
-> **Warning**: Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for status updates.
 
 <br>
 
