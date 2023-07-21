@@ -1,11 +1,15 @@
-import { Note } from "../types"
+import { Note, templateSchema } from "../types"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
 
 export function NoteFavicon({ note }: { note: Note }) {
   let icon = <NoteIcon16 />
 
   // Template
-  if (typeof note.frontmatter.template === "string") {
+  const { success: isTemplate } = templateSchema
+    .omit({ body: true })
+    .safeParse(note.frontmatter.template)
+
+  if (isTemplate) {
     icon = <NoteTemplateIcon16 />
   }
 
