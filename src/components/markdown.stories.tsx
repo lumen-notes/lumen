@@ -1,8 +1,8 @@
-import { Markdown, MarkdownProps } from "./markdown"
-import { StoryObj } from "@storybook/react"
-import { Card } from "./card"
-import { findAllByTestId } from "@storybook/testing-library"
 import { expect } from "@storybook/jest"
+import { StoryObj } from "@storybook/react"
+import { within } from "@storybook/testing-library"
+import { Card } from "./card"
+import { Markdown, MarkdownProps } from "./markdown"
 
 export default {
   title: "Markdown",
@@ -236,7 +236,7 @@ export const Book: StoryObj<typeof Markdown> = {
     children: book,
   },
   play: async ({ canvasElement }) => {
-    await expect(await findAllByTestId(canvasElement, "book-cover")).toBeTruthy()
+    await expect(await within(canvasElement).findAllByTestId("book-cover")).toBeTruthy()
   },
 }
 
