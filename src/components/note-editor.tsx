@@ -9,15 +9,15 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
-import ejs from "ejs"
 import { useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
-import { formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
+import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
   className?: string
@@ -309,6 +309,7 @@ function useNoteCompletion() {
 
 function useTemplateCompletion() {
   const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
+  const insertTemplate = useInsertTemplate()
 
   const tagCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -319,35 +320,23 @@ function useTemplateCompletion() {
       }
 
       const templates = Object.values(getTemplates())
-      console.log(templates)
 
       return {
         from: query.from + 1,
-        options: templates.map(({ name, body }) => ({
-          label: name,
+        options: templates.map((template) => ({
+          label: template.name,
           apply: (view, completion, from, to) => {
-            const startIndex = from - 1
-
-            let text = ejs.render(body, { date: `[[${toDateString(new Date())}]]` })
-
-            // Find cursor position
-            const cursorIndex = text.indexOf("{cursor}")
-
-            // Remove "{cursor}" from template body
-            text = text.replace("{cursor}", "")
-
-            // Replace "/<query>" with template body
+            // Remove "/<query>" from editor
             view.dispatch({
-              changes: { from: startIndex, to, insert: text },
-              selection: {
-                anchor: cursorIndex !== -1 ? startIndex + cursorIndex : startIndex + text.length,
-              },
+              changes: { from: from - 1, to, insert: "" },
             })
+
+            insertTemplate(template, view)
           },
         })),
       }
     },
-    [getTemplates],
+    [getTemplates, insertTemplate],
   )
 
   return tagCompletion
