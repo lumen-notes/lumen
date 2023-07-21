@@ -55,7 +55,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
       {parsedTemplate.success ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-semibold leading-4">{parsedTemplate.data.name}</span>
+            <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
             <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
               Template
             </span>
