@@ -1,8 +1,12 @@
-const path = require("path")
 module.exports = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
-    { name: "@storybook/addon-essentials", options: { backgrounds: false } },
+    {
+      name: "@storybook/addon-essentials",
+      options: {
+        backgrounds: false,
+      },
+    },
     "@storybook/addon-links",
     "@storybook/addon-interactions",
   ],
@@ -11,6 +15,6 @@ module.exports = {
     options: {},
   },
   docs: {
-    docsPage: true,
+    autodocs: true,
   },
 }
