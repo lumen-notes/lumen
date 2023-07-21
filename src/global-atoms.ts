@@ -1,8 +1,9 @@
 import { Searcher } from "fast-fuzzy"
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { GitHubRepository, Note, NoteId } from "./types"
+import { GitHubRepository, Note, NoteId, Template, templateSchema } from "./types"
 import { parseNote } from "./utils/parse-note"
+import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
 // -----------------------------------------------------------------------------
 // GitHub
@@ -149,20 +150,23 @@ export const datesAtom = atom((get) => {
 
 export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
-  const templates: Record<string, { name: string; body: string }> = {}
+  const templates: Record<string, Template> = {}
 
   for (const id in notes) {
-    const templateName = notes[id].frontmatter.template
+    const template = notes[id].frontmatter.template
 
-    if (typeof templateName === "string") {
-      templates[id] = {
-        name: templateName,
-        body: notes[id].rawBody
-          // Remove the template frontmatter
-          .replace(/template:.*\n/, "")
-          // Remove empty frontmatter
-          .replace(/---[\s]*---[\s]*/, ""),
-      }
+    // Skip if note isn't a template
+    if (!template) continue
+
+    try {
+      const parsedTemplate = templateSchema.omit({ body: true }).parse(template)
+
+      const body = removeTemplateFrontmatter(notes[id].rawBody)
+
+      templates[id] = { ...parsedTemplate, body }
+    } catch (error) {
+      // Template frontmatter didn't match the schema
+      console.error(error)
     }
   }
 

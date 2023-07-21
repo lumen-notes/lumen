@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export type NoteId = string
 
 export type Note = {
@@ -21,3 +23,21 @@ export type GitHubRepository = {
   owner: string
   name: string
 }
+
+export const templateInputSchema = z.object({
+  type: z.literal("string"),
+  required: z.boolean().optional(),
+  default: z.string().optional(),
+  description: z.string().optional(),
+})
+
+export const templateSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  inputs: z.record(templateInputSchema).optional(),
+  body: z.string(),
+})
+
+export type TemplateInput = z.infer<typeof templateInputSchema>
+
+export type Template = z.infer<typeof templateSchema>

@@ -12,6 +12,7 @@ import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
+import { templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -22,6 +23,7 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
@@ -46,22 +48,34 @@ export type MarkdownProps = {
 export const Markdown = React.memo(({ children }: MarkdownProps) => {
   const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
+  const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
+
   return (
     <div>
-      {typeof frontmatter?.template === "string" ? (
-        <>
-          <div className="mb-4 flex items-center gap-2">
+      {parsedTemplate.success ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold leading-4">{parsedTemplate.data.name}</span>
             <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
               Template
             </span>
-            <span>{frontmatter.template}</span>
           </div>
+          {/* TODO: Display more input metadata (type, description, etc.) */}
+          {parsedTemplate.data.inputs ? (
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-text-secondary">Inputs</span>
+              <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
+                {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
+                  <div key={name}>
+                    <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
           {/* Render template as a code block */}
-          <MarkdownBody>{`\`\`\`\`\n${children // Remove the template frontmatter
-            .replace(/template:.*\n/, "")
-            // Remove empty frontmatter
-            .replace(/---[\s]*---[\s]*/, "")}\n\`\`\`\``}</MarkdownBody>
-        </>
+          <MarkdownBody>{`\`\`\`\n${removeTemplateFrontmatter(children)}\n\`\`\`\``}</MarkdownBody>
+        </div>
       ) : (
         <>
           {typeof frontmatter?.isbn === "string" ? (
