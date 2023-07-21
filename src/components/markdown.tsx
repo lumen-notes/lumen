@@ -66,7 +66,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         <>
           {frontmatter?.isbn ? (
             // If the note has an ISBN, show the book cover
-            <div className="mb-3 inline-flex">
+            <div className="mb-3 inline-flex" data-testid="book-cover">
               <BookCover isbn={`${frontmatter.isbn}`} />
             </div>
           ) : null}
