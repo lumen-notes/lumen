@@ -41,6 +41,7 @@ export function useSearchParam<T = string>(
   const setValueAndParam = React.useCallback(
     (value: T) => {
       setValue(value)
+      valueRef.current = value
 
       React.startTransition(() => {
         const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
@@ -63,7 +64,9 @@ export function useSearchParam<T = string>(
 
     // If the value is already up to date, don't update it
     if (valueRef.current !== parse(searchParams[key])) {
-      setValue(parse(searchParams[key]))
+      const newValue = parse(searchParams[key])
+      setValue(newValue)
+      valueRef.current = newValue
     }
   }, [location, panel, valueRef, parse, key])
 

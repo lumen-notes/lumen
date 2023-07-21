@@ -38,11 +38,7 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
-  const [isEditing, setIsEditing] = useSearchParam("edit", {
-    defaultValue: false,
-    schema: z.boolean(),
-    replace: true,
-  })
+
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
   // TODO: Save draft in local storage
@@ -53,6 +49,17 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
       setDraftValue(event.state.doc.toString())
     }
   }, [])
+
+  const parseIsEditing = React.useCallback((value: unknown) => {
+    return typeof value === "string" ? value === "true" : false
+  }, [])
+
+  const [isEditing, setIsEditing] = useSearchParam("edit", {
+    defaultValue: false,
+    schema: z.boolean(),
+    replace: true,
+    parse: parseIsEditing,
+  })
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -104,8 +111,11 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
       event.preventDefault()
     }
 
-    // Save with `command + enter`
-    if (event.key === "Enter" && event.metaKey && isEditing) {
+    // Save with `command + enter` or `command + s`
+    if (
+      ((event.metaKey && event.key === "Enter") || (event.metaKey && event.key === "s")) &&
+      isEditing
+    ) {
       handleSave()
       event.preventDefault()
     }

@@ -1,11 +1,11 @@
 import React from "react"
-import { LinkProps, Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
+import { LinkProps, Link as RouterLink, useNavigate } from "react-router-dom"
 import { cx } from "../utils/cx"
+import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16, MoreIcon16 } from "./icons"
 import { LinkContext } from "./link-context"
 import { ThemeColor } from "./theme-color"
-import { DropdownMenu } from "./dropdown-menu"
 
 type FullscreenContainerProps = {
   title: string
@@ -26,8 +26,6 @@ export function FullscreenContainer({
   children,
 }: FullscreenContainerProps) {
   const navigate = useNavigate()
-  const location = useLocation()
-  console.log(location)
   return (
     <div className={cx("flex min-h-full flex-col")}>
       {/* Make browser toolbar color match the header color */}
