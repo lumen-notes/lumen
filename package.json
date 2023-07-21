@@ -85,6 +85,7 @@
     "@types/d3-selection": "^3.0.3",
     "@types/d3-zoom": "^3.0.1",
     "@types/mdast": "^3.0.10",
+    "@types/mime": "^3.0.1",
     "@types/prismjs": "^1.26.0",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.0.15",
