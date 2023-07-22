@@ -38,7 +38,7 @@ import {
   YouTubeIcon16,
 } from "./icons"
 import { useLink } from "./link-context"
-import { SyntaxHighlighter } from "./syntax-highlighter"
+import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
 
 export type MarkdownProps = {
@@ -74,7 +74,11 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
             </div>
           ) : null}
           {/* Render template as a code block */}
-          <MarkdownBody>{`\`\`\`\n${removeTemplateFrontmatter(children)}\n\`\`\`\``}</MarkdownBody>
+          <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+            <TemplateSyntaxHighlighter>
+              {removeTemplateFrontmatter(children)}
+            </TemplateSyntaxHighlighter>
+          </pre>
         </div>
       ) : (
         <>
@@ -173,7 +177,7 @@ function GitHubAvatar({ username }: { username: string }) {
 
 function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) {
   if (Object.keys(frontmatter).length === 0) return null
-  console.log(frontmatter)
+
   return (
     <div className="mt-4 divide-y divide-border-secondary border-t border-border-secondary">
       {Object.entries(frontmatter)
