@@ -3,6 +3,7 @@ import { StoryObj } from "@storybook/react"
 import { within } from "@storybook/testing-library"
 import { Card } from "./card"
 import { Markdown, MarkdownProps } from "./markdown"
+import { Children } from "react"
 
 export default {
   title: "Markdown",
@@ -223,9 +224,10 @@ export const KitchenSink: StoryObj<typeof Markdown> = {
   },
 }
 
+const isbn = "9781542866507"
 const book = `---
 author: Sönke Ahrens
-isbn: 9781542866507
+isbn: ${isbn}
 ---
 
 # How to Take Smart Notes
@@ -236,7 +238,9 @@ export const Book: StoryObj<typeof Markdown> = {
     children: book,
   },
   play: async ({ canvasElement }) => {
-    await expect(await within(canvasElement).findAllByTestId("book-cover")).toBeTruthy()
+    const canvas = within(canvasElement)
+    expect(await canvas.findByText("Book cover")).toBeTruthy()
+    expect(await canvas.findByRole("link", { name: isbn })).toBeTruthy()
   },
 }
 

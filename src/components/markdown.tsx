@@ -84,7 +84,7 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         <>
           {frontmatter?.isbn ? (
             // If the note has an ISBN, show the book cover
-            <div className="mb-3 inline-flex" data-testid="book-cover">
+            <div className="mb-3 inline-flex">
               <BookCover isbn={`${frontmatter.isbn}`} />
             </div>
           ) : null}
@@ -274,7 +274,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       )
 
     case "isbn":
-      if (typeof value !== "string") break
       return (
         <div>
           <a
@@ -283,7 +282,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
             target="_blank"
             rel="noopener noreferrer"
           >
-            {value}
+            {`${value}`}
           </a>
         </div>
       )
