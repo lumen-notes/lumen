@@ -45,13 +45,7 @@ export function SettingsPage() {
                 <label htmlFor="auth-token" className="leading-4">
                   Personal access token
                 </label>
-                <Input
-                  id="token"
-                  name="token"
-                  type="password"
-                  spellCheck={false}
-                  defaultValue={githubToken}
-                />
+                <Input id="token" name="token" spellCheck={false} defaultValue={githubToken} />
                 <p className="markdown text-text-secondary">
                   Generate a{" "}
                   <a

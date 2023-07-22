@@ -78,10 +78,10 @@ export const Markdown = React.memo(({ children }: MarkdownProps) => {
         </div>
       ) : (
         <>
-          {typeof frontmatter?.isbn === "string" ? (
+          {frontmatter?.isbn ? (
             // If the note has an ISBN, show the book cover
             <div className="mb-3 inline-flex">
-              <BookCover isbn={frontmatter.isbn} />
+              <BookCover isbn={`${frontmatter.isbn}`} />
             </div>
           ) : null}
           {typeof frontmatter?.github === "string" ? (
