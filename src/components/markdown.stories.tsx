@@ -3,7 +3,6 @@ import { StoryObj } from "@storybook/react"
 import { within } from "@storybook/testing-library"
 import { Card } from "./card"
 import { Markdown, MarkdownProps } from "./markdown"
-import { Children } from "react"
 
 export default {
   title: "Markdown",
