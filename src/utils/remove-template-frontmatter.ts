@@ -1,12 +1,11 @@
-import { parseFrontmatter } from "./parse-frontmatter"
-import yaml from "yamljs"
-
+/** Removes the template definition from the frontmatter of a note */
 export function removeTemplateFrontmatter(rawBody: string) {
-  const { frontmatter, content } = parseFrontmatter(rawBody)
-  const { template: _, ...frontmatterWithoutTemplate } = frontmatter
-  const frontmatterString = yaml
-    .stringify(frontmatterWithoutTemplate)
-    .replace(/\n$/g, "")
-    .replace(/null/g, "")
-  return frontmatterString !== "{}" ? `---\n${frontmatterString}\n---\n\n${content}` : content
+  const lines = rawBody.split("\n")
+  // Start is the line that starts with "template:"
+  const templateStart = lines.findIndex((line) => line.startsWith("template:"))
+  // End is the first line that's not indented
+  const templateEnd = lines.findIndex(
+    (line, index) => index > templateStart && !line.startsWith(" "),
+  )
+  return lines.filter((_, index) => index < templateStart || index >= templateEnd).join("\n")
 }

@@ -320,6 +320,7 @@ function useTemplateCompletion() {
       }
 
       const templates = Object.values(getTemplates())
+      console.log({ templates })
 
       return {
         from: query.from + 1,

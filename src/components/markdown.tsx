@@ -173,16 +173,20 @@ function GitHubAvatar({ username }: { username: string }) {
 
 function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) {
   if (Object.keys(frontmatter).length === 0) return null
+  console.log(frontmatter)
   return (
     <div className="mt-4 divide-y divide-border-secondary border-t border-border-secondary">
-      {Object.entries(frontmatter).map(([key, value]) => {
-        return (
-          <div key={key} className="grid gap-1 py-2 last:pb-0">
-            <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
-            <FrontmatterValue entry={[key, value]} />
-          </div>
-        )
-      })}
+      {Object.entries(frontmatter)
+        // Filter out empty values
+        .filter(([, value]) => Boolean(value))
+        .map(([key, value]) => {
+          return (
+            <div key={key} className="grid gap-1 py-2 last:pb-0">
+              <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
+              <FrontmatterValue entry={[key, value]} />
+            </div>
+          )
+        })}
     </div>
   )
 }

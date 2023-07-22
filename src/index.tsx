@@ -5,7 +5,7 @@ import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/button"
-import { InsertTemplateProvider } from "./components/insert-template"
+import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
@@ -31,24 +31,23 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Tooltip.Provider>
-        <InsertTemplateProvider>
-          <BrowserRouter>
-            <NewNoteDialog.Provider>
-              <NewNoteDialog />
-              <Routes>
-                <Route path="/file" element={<FilePage />} />
-                <Route path="/" element={<Root />}>
-                  <Route index element={<NotesPage />} />
-                  <Route path="tags" element={<TagsPage />} />
-                  <Route path="tags/*" element={<TagPage />} />
-                  <Route path="calendar" element={<CalendarPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path=":id" element={<NotePage />} />
-                </Route>
-              </Routes>
-            </NewNoteDialog.Provider>
-          </BrowserRouter>
-        </InsertTemplateProvider>
+        <BrowserRouter>
+          <NewNoteDialog.Provider>
+            <NewNoteDialog />
+            <InsertTemplateDialog />
+            <Routes>
+              <Route path="/file" element={<FilePage />} />
+              <Route path="/" element={<Root />}>
+                <Route index element={<NotesPage />} />
+                <Route path="tags" element={<TagsPage />} />
+                <Route path="tags/*" element={<TagPage />} />
+                <Route path="calendar" element={<CalendarPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path=":id" element={<NotePage />} />
+              </Route>
+            </Routes>
+          </NewNoteDialog.Provider>
+        </BrowserRouter>
       </Tooltip.Provider>
     </ErrorBoundary>
   </React.StrictMode>,

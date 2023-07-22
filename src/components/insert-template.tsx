@@ -8,171 +8,110 @@ import { Card } from "./card"
 import { Button } from "./button"
 import { Input } from "./input"
 import { sentenceCase } from "sentence-case"
+import { atom, useAtom, useSetAtom } from "jotai"
+import { IconButton } from "./icon-button"
+import { CloseIcon16 } from "./icons"
 
-const InsertTemplateContext = React.createContext<(template: Template, view: EditorView) => void>(
-  () => {},
-)
+// Template pending insertion into editor because it requires user input
+const pendingTemplateAtom = atom<{ template: Template; editor: EditorView } | null>(null)
 
 export function useInsertTemplate() {
-  return React.useContext(InsertTemplateContext)
-}
+  const setPendingTemplate = useSetAtom(pendingTemplateAtom)
 
-async function getSiteTitle(url: string) {
-  const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`)
-  const { contents } = (await response.json()) as any
-  const title = contents.match(/<title>(?<title>.*)<\/title>/)?.groups?.title ?? ""
-  return title
-}
-
-export function InsertTemplateProvider({ children }: { children: React.ReactNode }) {
-  // const [isDialogOpen, setIsDialogOpen] = React.useState(true)
-  const [template, setTemplate] = React.useState<Template | null>(null)
-  const viewRef = React.useRef<EditorView>()
-
-  const insertTemplate = React.useCallback((template: Template, view: EditorView) => {
-    if (template.inputs) {
-      setTemplate(template)
-      viewRef.current = view
-      return
-    }
-
-    let text = ejs.render(template.body, { date: `[[${toDateString(new Date())}]]` })
-
-    // Find cursor position
-    const cursorIndex = text.indexOf("{cursor}")
-
-    // Remove "{cursor}" from template body
-    text = text.replace("{cursor}", "")
-
-    const from = view.state.selection.main.from
-    const to = view.state.selection.main.to
-
-    // Insert template at current cursor position
-    view.dispatch({
-      changes: {
-        from,
-        to,
-        insert: text,
-      },
-      selection: {
-        anchor: cursorIndex !== -1 ? from + cursorIndex : from + text.length,
-      },
-    })
-  }, [])
-
-  const closeDialog = React.useCallback(() => {
-    setTemplate(null)
-    console.log(viewRef.current)
-    setTimeout(() => viewRef.current?.focus())
-    // viewRef.current?.focus()
-  }, [])
-
-  const handleSubmit = React.useCallback(
-    async (template: Template, args: Record<string, unknown>) => {
-      const view = viewRef.current
-      if (!view) return
-
-      let text = await ejs.render(
-        template.body,
-        {
-          date: `[[${toDateString(new Date())}]]`,
-          getSiteTitle,
-          ...args,
-        },
-        { async: true },
-      )
-
-      // Find cursor position
-      const cursorIndex = text.indexOf("{cursor}")
-
-      // Remove "{cursor}" from template body
-      text = text.replace("{cursor}", "")
-
-      const from = view.state.selection.main.from
-      const to = view.state.selection.main.to
-
-      // Insert template at current cursor position
-      view.dispatch({
-        changes: {
-          from,
-          to,
-          insert: text,
-        },
-        selection: {
-          anchor: cursorIndex !== -1 ? from + cursorIndex : from + text.length,
-        },
-      })
-
-      closeDialog()
+  const insertTemplate = React.useCallback(
+    (template: Template, editor: EditorView) => {
+      if (template.inputs) {
+        // If template has inputs, open dialog
+        setPendingTemplate({ template, editor })
+      } else {
+        // Otherwise, insert template immediately
+        renderAndInsert(template, editor)
+      }
     },
-    [closeDialog],
+    [setPendingTemplate],
   )
 
-  return (
-    <InsertTemplateContext.Provider value={insertTemplate}>
-      <>
-        {children}
-        <TemplateFormDialog
-          template={template}
-          onSubmit={handleSubmit}
-          onOpenChange={closeDialog}
-        />
-      </>
-    </InsertTemplateContext.Provider>
-  )
-}
-
-type TemplateFormDialogProps = {
-  template?: Template | null
-  onSubmit?: (template: Template, args: Record<string, unknown>) => void
-  onOpenChange?: (open: boolean) => void
+  return insertTemplate
 }
 
 // TODO: Handle errors
 // TODO: Show loading indicator
-function TemplateFormDialog({ template, onSubmit, onOpenChange }: TemplateFormDialogProps) {
-  if (!template) return null
+// TODO: Prevent other dialogs from opening while this one is open
+export function InsertTemplateDialog() {
+  const [pendingTemplate, setPendingTemplate] = useAtom(pendingTemplateAtom)
+
+  function handleClose() {
+    setPendingTemplate(null)
+
+    // Focus editor after dialog closes
+    const editor = pendingTemplate?.editor
+
+    if (editor) {
+      setTimeout(() => editor.focus())
+    }
+  }
+
+  // Don't render dialog if there's no pending template
+  if (!pendingTemplate) return null
+
+  const { template } = pendingTemplate
 
   return (
-    <Dialog.Root open onOpenChange={onOpenChange}>
+    <Dialog.Root open onOpenChange={handleClose}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm" />
+        <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-inset-backdrop" />
         <Dialog.Content asChild>
           <Card
             elevation={2}
-            className="fixed left-[50%] top-[50%] z-20 max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] overflow-auto focus:outline-none"
+            className="fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]"
           >
             <div className="grid gap-5 p-4">
-              <Dialog.Title className="text-xl font-semibold !leading-none">
-                {template.name}
-              </Dialog.Title>
+              <div className="flex items-center justify-between">
+                <Dialog.Title className="text-xl font-semibold leading-5">
+                  {template.name}
+                </Dialog.Title>
+                <Dialog.Close asChild>
+                  <IconButton aria-label="Close" className="-m-[6px]">
+                    <CloseIcon16 />
+                  </IconButton>
+                </Dialog.Close>
+              </div>
               <form
                 className="grid gap-4"
                 onSubmit={(event) => {
                   event.preventDefault()
+
                   const formData = new FormData(event.currentTarget)
                   const args = Object.fromEntries(formData.entries())
-                  console.log(args)
-                  onSubmit?.(template, args)
+
+                  renderAndInsert(pendingTemplate.template, pendingTemplate.editor, args)
+
+                  handleClose()
                 }}
               >
-                {Object.entries(template?.inputs ?? {}).map(([name, { required }]) => (
-                  <div key={name} className="grid gap-2">
-                    <label htmlFor={name} className="leading-4">
-                      {formatLabel(name)}
-                      {required ? " *" : ""}
-                    </label>
-                    <Input id={name} name={name} type="text" required={required} />
-                  </div>
-                ))}
-                <div className="mt-2 grid grid-cols-2 gap-3">
-                  <Dialog.Close asChild>
-                    <Button type="button">Cancel</Button>
-                  </Dialog.Close>
-                  <Button type="submit" variant="primary">
-                    Insert
-                  </Button>
-                </div>
+                {Object.entries(template.inputs ?? {}).map(
+                  ([name, { required, default: defaultValue }], index) => (
+                    <div key={name} className="grid gap-2">
+                      <label htmlFor={name} className="leading-4">
+                        {formatLabel(name)}
+                        {required ? <span className="ml-1 text-text-secondary">*</span> : null}
+                      </label>
+                      <Input
+                        id={name}
+                        name={name}
+                        type="text"
+                        required={required}
+                        defaultValue={defaultValue}
+                        // Focus first input instead of close button
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus={index === 0}
+                      />
+                    </div>
+                  ),
+                )}
+                <Button type="submit" variant="primary" className="mt-2 ">
+                  Insert
+                </Button>
               </form>
             </div>
           </Card>
@@ -193,4 +132,57 @@ function formatLabel(key: string) {
     default:
       return sentenceCase(key)
   }
+}
+
+async function renderAndInsert(
+  template: Template,
+  editor: EditorView,
+  args: Record<string, unknown> = {},
+) {
+  let text = await ejs.render(
+    template.body,
+    { date: `[[${toDateString(new Date())}]]`, ...args },
+    { async: true },
+  )
+
+  text = removeEmptyFrontmatterComments(text)
+
+  // Find cursor position
+  const cursorIndex = text.indexOf("{cursor}")
+
+  // Remove "{cursor}" from template body
+  text = text.replace("{cursor}", "")
+
+  const from = editor.state.selection.main.from
+  const to = editor.state.selection.main.to
+
+  // Insert template at current cursor position
+  editor.dispatch({
+    changes: {
+      from,
+      to,
+      insert: text,
+    },
+    selection: {
+      anchor: cursorIndex !== -1 ? from + cursorIndex : from + text.length,
+    },
+  })
+}
+
+// TODO: Why might this be necessary?
+function removeEmptyFrontmatterComments(text: string) {
+  const lines = text.split("\n")
+  const frontmatterStart = lines.findIndex((line) => line.startsWith("---"))
+  const frontmatterEnd =
+    lines.slice(frontmatterStart + 1).findIndex((line) => line.startsWith("---")) +
+    frontmatterStart +
+    1
+  const frontmatterLines = lines
+    .slice(frontmatterStart, frontmatterEnd + 1)
+    .filter((line) => line.trim() !== "#")
+  return lines
+    .slice(0, frontmatterStart)
+    .concat(frontmatterLines)
+    .concat(lines.slice(frontmatterEnd + 1))
+    .join("\n")
 }

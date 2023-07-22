@@ -448,7 +448,7 @@ body:has([data-resizing="true"]) * {
 }
 
 [cmdk-dialog] {
-  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-32;
+  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-[10vh];
 }
 
 [cmdk-input] {
