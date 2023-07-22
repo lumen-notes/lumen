@@ -145,7 +145,7 @@ async function renderAndInsert(
     { async: true },
   )
 
-  text = removeEmptyFrontmatterComments(text)
+  text = removeFrontmatterComments(text)
 
   // Find cursor position
   const cursorIndex = text.indexOf("{cursor}")
@@ -169,8 +169,7 @@ async function renderAndInsert(
   })
 }
 
-// TODO: Why might this be necessary?
-function removeEmptyFrontmatterComments(text: string) {
+function removeFrontmatterComments(text: string) {
   const lines = text.split("\n")
   const frontmatterStart = lines.findIndex((line) => line.startsWith("---"))
   const frontmatterEnd =
@@ -179,7 +178,7 @@ function removeEmptyFrontmatterComments(text: string) {
     1
   const frontmatterLines = lines
     .slice(frontmatterStart, frontmatterEnd + 1)
-    .filter((line) => line.trim() !== "#")
+    .filter((line) => !line.startsWith("#"))
   return lines
     .slice(0, frontmatterStart)
     .concat(frontmatterLines)
