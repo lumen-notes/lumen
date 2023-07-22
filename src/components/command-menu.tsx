@@ -8,6 +8,7 @@ import { useEvent } from "react-use"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
 import { isGitHubConfiguredAtom, tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
+import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -167,6 +168,9 @@ export function CommandMenu() {
           {deferredQuery ? (
             <Command.Group heading="Notes">
               {noteResults.slice(0, numVisibleNotes).map(([id, note]) => {
+                const parsedTemplate = templateSchema
+                  .omit({ body: true })
+                  .safeParse(note.frontmatter.template)
                 return (
                   <CommandItem
                     key={id}
@@ -175,8 +179,8 @@ export function CommandMenu() {
                     onSelect={() => navigate(`/${id}`)}
                   >
                     <span className="inline-flex gap-2">
-                      {typeof note.frontmatter.template === "string" ? (
-                        <span>{note.frontmatter.template} template</span>
+                      {parsedTemplate.success ? (
+                        <span>{parsedTemplate.data.name} template</span>
                       ) : (
                         <span>{note.title || id}</span>
                       )}

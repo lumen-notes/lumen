@@ -1,13 +1,8 @@
-import { Note } from "../types"
+import { Note, templateSchema } from "../types"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
 
 export function NoteFavicon({ note }: { note: Note }) {
   let icon = <NoteIcon16 />
-
-  // Template
-  if (typeof note.frontmatter.template === "string") {
-    icon = <NoteTemplateIcon16 />
-  }
 
   // GitHub avatar
   if (typeof note.frontmatter.github === "string") {
@@ -48,6 +43,15 @@ export function NoteFavicon({ note }: { note: Note }) {
         aria-hidden
       />
     )
+  }
+
+  // Template
+  const { success: isTemplate } = templateSchema
+    .omit({ body: true })
+    .safeParse(note.frontmatter.template)
+
+  if (isTemplate) {
+    icon = <NoteTemplateIcon16 />
   }
 
   return <span className="inline-grid h-4 w-4 place-items-center text-text-secondary">{icon}</span>

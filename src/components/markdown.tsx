@@ -12,6 +12,7 @@ import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
+import { templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -22,6 +23,7 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
@@ -36,7 +38,7 @@ import {
   YouTubeIcon16,
 } from "./icons"
 import { useLink } from "./link-context"
-import { SyntaxHighlighter } from "./syntax-highlighter"
+import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
 
 export type MarkdownProps = {
@@ -46,22 +48,38 @@ export type MarkdownProps = {
 export const Markdown = React.memo(({ children }: MarkdownProps) => {
   const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
+  const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
+
   return (
     <div>
-      {typeof frontmatter?.template === "string" ? (
-        <>
-          <div className="mb-4 flex items-center gap-2">
+      {parsedTemplate.success ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
             <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
               Template
             </span>
-            <span>{frontmatter.template}</span>
           </div>
+          {/* TODO: Display more input metadata (type, description, etc.) */}
+          {parsedTemplate.data.inputs ? (
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-text-secondary">Inputs</span>
+              <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
+                {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
+                  <div key={name}>
+                    <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
           {/* Render template as a code block */}
-          <MarkdownBody>{`\`\`\`\`\n${children // Remove the template frontmatter
-            .replace(/template:.*\n/, "")
-            // Remove empty frontmatter
-            .replace(/---[\s]*---[\s]*/, "")}\n\`\`\`\``}</MarkdownBody>
-        </>
+          <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+            <TemplateSyntaxHighlighter>
+              {removeTemplateFrontmatter(children)}
+            </TemplateSyntaxHighlighter>
+          </pre>
+        </div>
       ) : (
         <>
           {frontmatter?.isbn ? (
@@ -159,16 +177,20 @@ function GitHubAvatar({ username }: { username: string }) {
 
 function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) {
   if (Object.keys(frontmatter).length === 0) return null
+
   return (
     <div className="mt-4 divide-y divide-border-secondary border-t border-border-secondary">
-      {Object.entries(frontmatter).map(([key, value]) => {
-        return (
-          <div key={key} className="grid gap-1 py-2 last:pb-0">
-            <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
-            <FrontmatterValue entry={[key, value]} />
-          </div>
-        )
-      })}
+      {Object.entries(frontmatter)
+        // Filter out empty values
+        .filter(([, value]) => Boolean(value))
+        .map(([key, value]) => {
+          return (
+            <div key={key} className="grid gap-1 py-2 last:pb-0">
+              <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
+              <FrontmatterValue entry={[key, value]} />
+            </div>
+          )
+        })}
     </div>
   )
 }
