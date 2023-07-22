@@ -195,6 +195,11 @@ function removeFrontmatterComments(text: string) {
     lines.slice(frontmatterStart + 1).findIndex((line) => line.startsWith("---")) +
     frontmatterStart +
     1
+
+  if (frontmatterStart === -1 || frontmatterEnd === -1) {
+    return text
+  }
+
   const frontmatterLines = lines
     .slice(frontmatterStart, frontmatterEnd + 1)
     .filter((line) => !line.startsWith("#"))
