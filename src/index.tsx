@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/button"
+import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <BrowserRouter>
           <NewNoteDialog.Provider>
             <NewNoteDialog />
+            <InsertTemplateDialog />
             <Routes>
               <Route path="/file" element={<FilePage />} />
               <Route path="/" element={<Root />}>

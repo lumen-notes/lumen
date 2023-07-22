@@ -68,6 +68,7 @@
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
   --color-text-pending: hsl(30, 94%, 15%);
+  --color-text-danger: hsl(349, 86%, 27%);
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
@@ -120,6 +121,7 @@
     /* Colors */
     --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
     --color-text-pending: hsl(30, 100%, 90%);
+    --color-text-danger: hsl(3, 100%, 83%);
     --color-bg-highlight: hsl(var(--h-highlight) 30% 18%);
     --color-bg-pending: hsl(30, 90%, 15%);
     --color-border-focus: hsl(200, 100%, 70%);
@@ -444,11 +446,11 @@ body:has([data-resizing="true"]) * {
 /* Cmdk styles */
 
 [cmdk-overlay] {
-  @apply fixed inset-0 z-20 bg-bg-inset-backdrop backdrop-blur-sm animate-in fade-in;
+  @apply fixed inset-0 z-20 bg-bg-inset-backdrop animate-in fade-in;
 }
 
 [cmdk-dialog] {
-  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-32;
+  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-[10vh];
 }
 
 [cmdk-input] {

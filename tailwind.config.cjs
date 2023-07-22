@@ -33,6 +33,7 @@ module.exports = {
       "text-tertiary": "var(--color-text-tertiary)",
       "text-highlight": "var(--color-text-highlight)",
       "text-pending": "var(--color-text-pending)",
+      "text-danger": "var(--color-text-danger)",
       bg: "var(--color-bg)",
       "bg-inset": "var(--color-bg-inset)",
       "bg-overlay": "var(--color-bg-overlay)",

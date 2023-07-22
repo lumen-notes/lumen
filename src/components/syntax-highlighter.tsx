@@ -23,3 +23,14 @@ export function SyntaxHighlighter({ language, children }: SyntaxHighlighterProps
   const html = Prism.highlight(String(children), Prism.languages[language], language)
   return <code className="prism" dangerouslySetInnerHTML={{ __html: html }} />
 }
+
+const EJS_REGEX = /<%([\s\S]+?)%>/g
+
+export function TemplateSyntaxHighlighter({ children }: { children: string }) {
+  const html = children.replace(EJS_REGEX, (_, code) => {
+    const highlighted = Prism.highlight(code, Prism.languages.javascript, "javascript")
+    return `<span class="token punctuation">&lt;%</span><span>${highlighted}</span><span class="token punctuation">%&gt;</span>`
+  })
+
+  return <code className="prism" dangerouslySetInnerHTML={{ __html: html }} />
+}
