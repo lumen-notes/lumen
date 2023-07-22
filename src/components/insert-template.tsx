@@ -34,8 +34,6 @@ export function useInsertTemplate() {
   return insertTemplate
 }
 
-// TODO: Handle errors
-// TODO: Show loading indicator
 // TODO: Prevent other dialogs from opening while this one is open
 export function InsertTemplateDialog() {
   const [pendingTemplate, setPendingTemplate] = useAtom(pendingTemplateAtom)
