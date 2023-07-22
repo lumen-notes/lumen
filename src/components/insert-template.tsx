@@ -90,11 +90,11 @@ export function InsertTemplateDialog() {
           >
             <div className="grid gap-5 p-4">
               <div className="flex items-center justify-between">
-                <Dialog.Title className="text-xl font-semibold leading-5">
+                <Dialog.Title className="text-xl font-semibold leading-4">
                   {template.name}
                 </Dialog.Title>
                 <Dialog.Close asChild>
-                  <IconButton aria-label="Close" className="-m-[6px]">
+                  <IconButton aria-label="Close" className="-m-2">
                     <CloseIcon16 />
                   </IconButton>
                 </Dialog.Close>

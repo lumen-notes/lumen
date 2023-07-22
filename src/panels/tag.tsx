@@ -1,7 +1,13 @@
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
-import { EditIcon16, ExternalLinkIcon16, TagIcon24, TrashIcon16 } from "../components/icons"
+import {
+  CloseIcon16,
+  EditIcon16,
+  ExternalLinkIcon16,
+  TagIcon24,
+  TrashIcon16,
+} from "../components/icons"
 import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -9,6 +15,7 @@ import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
 import { useRenameTag } from "../utils/github-sync"
 import { DropdownMenu } from "../components/dropdown-menu"
+import { IconButton } from "../components/icon-button"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -61,9 +68,14 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
         <div className="p-4">
           {isRenaming ? (
             <Card className="mb-4 p-4">
-              <h3 id="rename-tag-heading" className="mb-4 text-lg font-semibold !leading-none">
-                Rename tag
-              </h3>
+              <div className="mb-4 flex items-center justify-between">
+                <h3 id="rename-tag-heading" className="text-xl font-semibold leading-4">
+                  Rename tag
+                </h3>
+                <IconButton aria-label="Close" className="-m-2" onClick={closeRenameForm}>
+                  <CloseIcon16 />
+                </IconButton>
+              </div>
               <form
                 aria-labelledby="rename-tag-heading"
                 className="grid gap-4"
@@ -83,26 +95,25 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                 <label htmlFor="name" className="sr-only">
                   Name
                 </label>
-                <Input
-                  ref={nameInputRef}
-                  id="name"
-                  name="name"
-                  defaultValue={name}
-                  title="Tag names must start with a letter and can contain letters, numbers, hyphens, underscores, and forward slashes."
-                  pattern="^[a-zA-Z][a-zA-Z0-9\-_\/]*$"
-                  required
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  autoFocus
-                  onKeyDown={(event) => {
-                    if (event.key === "Escape") {
-                      closeRenameForm()
-                    }
-                  }}
-                />
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  <Button onClick={closeRenameForm}>Cancel</Button>
-                  <Button type="submit" variant="primary">
-                    Rename
+                <div className="flex  gap-2">
+                  <Input
+                    ref={nameInputRef}
+                    id="name"
+                    name="name"
+                    defaultValue={name}
+                    title="Tag names must start with a letter and can contain letters, numbers, hyphens, underscores, and forward slashes."
+                    pattern="^[a-zA-Z][a-zA-Z0-9\-_\/]*$"
+                    required
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") {
+                        closeRenameForm()
+                      }
+                    }}
+                  />
+                  <Button type="submit" variant="primary" className="!h-full">
+                    Save
                   </Button>
                 </div>
               </form>
