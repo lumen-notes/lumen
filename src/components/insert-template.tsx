@@ -10,7 +10,7 @@ import { Input } from "./input"
 import { sentenceCase } from "sentence-case"
 import { atom, useAtom, useSetAtom } from "jotai"
 import { IconButton } from "./icon-button"
-import { CloseIcon16 } from "./icons"
+import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 
 // Template pending insertion into editor because it requires user input
 const pendingTemplateAtom = atom<{ template: Template; editor: EditorView } | null>(null)
@@ -39,6 +39,8 @@ export function useInsertTemplate() {
 // TODO: Prevent other dialogs from opening while this one is open
 export function InsertTemplateDialog() {
   const [pendingTemplate, setPendingTemplate] = useAtom(pendingTemplateAtom)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState<Error | null>(null)
 
   function handleClose() {
     setPendingTemplate(null)
@@ -48,6 +50,27 @@ export function InsertTemplateDialog() {
 
     if (editor) {
       setTimeout(() => editor.focus())
+    }
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    if (!pendingTemplate) return
+
+    event.preventDefault()
+
+    const formData = new FormData(event.currentTarget)
+    const args = Object.fromEntries(formData.entries())
+
+    try {
+      setIsLoading(true)
+      await renderAndInsert(pendingTemplate.template, pendingTemplate.editor, args)
+      setError(null)
+      handleClose()
+    } catch (error) {
+      console.error(error)
+      setError(error as Error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -76,19 +99,7 @@ export function InsertTemplateDialog() {
                   </IconButton>
                 </Dialog.Close>
               </div>
-              <form
-                className="grid gap-4"
-                onSubmit={(event) => {
-                  event.preventDefault()
-
-                  const formData = new FormData(event.currentTarget)
-                  const args = Object.fromEntries(formData.entries())
-
-                  renderAndInsert(pendingTemplate.template, pendingTemplate.editor, args)
-
-                  handleClose()
-                }}
-              >
+              <form className="grid gap-4" onSubmit={handleSubmit}>
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
                     <div key={name} className="grid gap-2">
@@ -109,9 +120,19 @@ export function InsertTemplateDialog() {
                     </div>
                   ),
                 )}
-                <Button type="submit" variant="primary" className="mt-2 ">
-                  Insert
+                <Button type="submit" variant="primary" className="mt-2" disabled={isLoading}>
+                  {isLoading ? <LoadingIcon16 /> : "Insert"}
                 </Button>
+                {error ? (
+                  <div className="flex items-start gap-2 leading-5 text-text-danger">
+                    <div className="grid h-5 flex-shrink-0 place-items-center">
+                      <ErrorIcon16 />
+                    </div>
+                    <p>
+                      <span className="font-semibold">Error:</span> {error.message}
+                    </p>
+                  </div>
+                ) : null}
               </form>
             </div>
           </Card>
