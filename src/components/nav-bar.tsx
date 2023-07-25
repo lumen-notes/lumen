@@ -1,6 +1,6 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import clsx from "clsx"
-import { useAtomValue } from "jotai"
+import React from "react"
 import {
   NavLinkProps,
   NavLink as RouterNavLink,
@@ -10,9 +10,9 @@ import {
   useResolvedPath,
 } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
-import { isGitHubConfiguredAtom } from "../global-atoms"
 import { toDateString } from "../utils/date"
 import { useFetchNotes } from "../utils/github-sync"
+import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
@@ -26,11 +26,8 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
-import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import React from "react"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
   const { fetchNotes } = useFetchNotes()
   const navigate = useNavigateWithCache()
   const { online } = useNetworkState()
@@ -114,7 +111,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={fetchNotes} disabled={!online || !isGitHubConfigured}>
+              <DropdownMenu.Item onClick={fetchNotes} disabled={!online}>
                 Reload
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>

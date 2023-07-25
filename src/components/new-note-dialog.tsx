@@ -7,7 +7,7 @@ import React from "react"
 import { DraggableCore } from "react-draggable"
 import { useNavigate } from "react-router-dom"
 import { useMedia } from "react-use"
-import { isGitHubConfiguredAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
@@ -54,8 +54,9 @@ function Provider({ children }: { children: React.ReactNode }) {
   const isFullscreen = useIsFullscreen()
   const navigate = useNavigate()
 
-  const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
-  const disabled = !isGitHubConfigured
+  const githubUser = useAtomValue(githubUserAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
+  const disabled = !githubUser || !githubRepo
 
   const focusPrevActiveElement = React.useCallback(() => {
     prevActiveElement.current?.focus()

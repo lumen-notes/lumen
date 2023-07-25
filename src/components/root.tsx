@@ -9,7 +9,6 @@ import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { NavBar } from "./nav-bar"
-import { ThemeColor } from "./theme-color"
 
 export function Root() {
   const githubUser = useAtomValue(githubUserAtom)
@@ -60,7 +59,6 @@ export function Root() {
 
   return (
     <div>
-      <ThemeColor />
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
         {/* Show error message if a GitHub repository has been configured but fetching notes fails */}
         {fetchError && !isFetching && githubUser && githubRepo?.owner && githubRepo?.name ? (

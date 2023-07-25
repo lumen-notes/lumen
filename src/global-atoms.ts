@@ -13,12 +13,6 @@ export const githubUserAtom = atomWithStorage<GitHubUser | null>("github_user", 
 
 export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
-export const isGitHubConfiguredAtom = atom((get) => {
-  const githubUser = get(githubUserAtom)
-  const githubRepo = get(githubRepoAtom)
-  return githubUser !== null && githubRepo?.owner && githubRepo?.name
-})
-
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------

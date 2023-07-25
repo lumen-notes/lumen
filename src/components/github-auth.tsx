@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
@@ -6,10 +6,14 @@ import { cx } from "../utils/cx"
 import { Button } from "./button"
 import { GitHubAvatar } from "./github-avatar"
 import { shaAtom } from "../utils/github-sync"
+import { RepositoryPicker } from "./repository-picker"
+import { LumenLogo } from "./lumen-logo"
+import { Card } from "./card"
 
-export function GitHubAuth() {
+export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
-  const setGitHubUser = useSetAtom(githubUserAtom)
+  const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
 
   useEvent("load", () => {
     // Get token and username from URL
@@ -29,7 +33,37 @@ export function GitHubAuth() {
     navigate({ search: searchParams.toString() }, { replace: true })
   })
 
-  return null
+  return !githubUser || !githubRepo ? (
+    <div className="grid min-h-screen place-items-center p-4 [@supports(min-height:100svh)]:min-h-[100svh]">
+      <div className="flex w-full max-w-sm flex-col items-start">
+        <LumenLogo size={24} className="mb-8" />
+        {!githubUser ? (
+          <>
+            <h1 className="mb-1 text-xl font-semibold">Welcome to Lumen</h1>
+            <p className="mb-8 text-text-secondary">
+              Lumen is a note-taking app for lifelong learners.{" "}
+              <a className="link link-external" href="https://uselumen.com">
+                Learn more
+              </a>
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="mb-1 text-xl font-semibold">Choose a repository</h1>
+            <p className="mb-8 text-text-secondary">
+              Store your notes as markdown files in a GitHub repository of your choice.
+            </p>
+          </>
+        )}
+        <div className="grid w-full gap-5">
+          <SignedInUser />
+          {githubUser ? <RepositoryPicker /> : null}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div>{children}</div>
+  )
 }
 
 export function SignInButton({ className }: { className?: string }) {
@@ -60,7 +94,7 @@ export function SignedInUser() {
   if (!githubUser) return <SignInButton />
 
   return (
-    <div className="flex items-center justify-between rounded-sm bg-bg-secondary p-3">
+    <Card className="flex items-center justify-between px-4 py-3">
       <div className="flex items-center gap-2">
         <GitHubAvatar username={githubUser.username} />
         <div className="flex flex-col">
@@ -79,6 +113,6 @@ export function SignedInUser() {
       >
         Sign out
       </Button>
-    </div>
+    </Card>
   )
 }
