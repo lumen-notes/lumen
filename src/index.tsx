@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/button"
+import { GitHubAuth } from "./components/github-auth"
 import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <NewNoteDialog.Provider>
             <NewNoteDialog />
             <InsertTemplateDialog />
+            <GitHubAuth />
             <Routes>
               <Route path="/file" element={<FilePage />} />
               <Route path="/" element={<Root />}>
