@@ -8,6 +8,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
+import { RepositoryPicker } from "../components/repository-picker"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
   const githubUser = useAtomValue(githubUserAtom)
@@ -21,13 +22,11 @@ export function NotesPanel({ id, onClose }: PanelProps) {
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="p-4">
-        {!githubUser || !githubRepo?.owner || !githubRepo?.name ? (
-          // If GitHub repository hasn't been configured
-          <div>
-            <SignInButton />
-          </div>
+        {!githubUser ? (
+          <SignInButton />
+        ) : !githubRepo ? (
+          <RepositoryPicker />
         ) : noteCount === 0 ? (
-          // If GitHub repository has been configured but no notes exist
           <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
         ) : (
           <NoteList />

@@ -13,7 +13,7 @@ import {
 import { deleteFile, getFileSha, readFile, writeFile, writeFiles } from "./github-fs"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
-const shaAtom = atomWithStorage<string | null>("sha", null)
+export const shaAtom = atomWithStorage<string | null>("sha", null)
 
 const isFetchingAtom = atom(false)
 const errorAtom = atom<Error | null>(null)

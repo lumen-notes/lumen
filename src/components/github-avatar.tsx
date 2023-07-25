@@ -1,12 +1,17 @@
-import React from "react"
+type GitHubAvatarProps = {
+  username: string
+  size?: number
+}
 
-export function GitHubAvatar({ username }: { username: string }) {
+export function GitHubAvatar({ username, size = 32 }: GitHubAvatarProps) {
   return (
     <div
       aria-hidden
-      className="inline-block h-8 w-8 flex-shrink-0 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary"
+      className="inline-block flex-shrink-0 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary"
       style={{
-        backgroundImage: `url(https://github.com/${username}.png?size=64)`,
+        width: size,
+        height: size,
+        backgroundImage: `url(https://github.com/${username}.png?size=${size * 2})`,
       }}
     />
   )

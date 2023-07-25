@@ -1,10 +1,11 @@
 import { useAtom, useSetAtom } from "jotai"
 import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
-import { githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { Button } from "./button"
 import { GitHubAvatar } from "./github-avatar"
+import { shaAtom } from "../utils/github-sync"
 
 export function GitHubAuth() {
   const navigate = useNavigate()
@@ -52,6 +53,9 @@ export function SignInButton({ className }: { className?: string }) {
 
 export function SignedInUser() {
   const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
+  const setGitHubRepo = useSetAtom(githubRepoAtom)
+  const setRawNotes = useSetAtom(rawNotesAtom)
+  const setSha = useSetAtom(shaAtom)
 
   if (!githubUser) return <SignInButton />
 
@@ -61,13 +65,16 @@ export function SignedInUser() {
         <GitHubAvatar username={githubUser.username} />
         <div className="flex flex-col">
           <span className="text-sm">Signed in as</span>
-          <span className="font-semibold">{githubUser.username}</span>
+          <span className="font-semibold">@{githubUser.username}</span>
         </div>
       </div>
       <Button
         className="flex-shrink-0"
         onClick={() => {
           setGitHubUser(null)
+          setGitHubRepo(null)
+          setRawNotes({})
+          setSha(null)
         }}
       >
         Sign out
