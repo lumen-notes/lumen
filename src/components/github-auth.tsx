@@ -1,6 +1,5 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { useNavigate } from "react-router-dom"
-import { useEvent } from "react-use"
 import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { Button } from "./button"
@@ -9,29 +8,30 @@ import { shaAtom } from "../utils/github-sync"
 import { RepositoryPicker } from "./repository-picker"
 import { LumenLogo } from "./lumen-logo"
 import { Card } from "./card"
+import React from "react"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
   const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
 
-  useEvent("load", () => {
+  React.useEffect(() => {
     // Get token and username from URL
     const token = new URLSearchParams(window.location.search).get("token")
     const username = new URLSearchParams(window.location.search).get("username")
 
-    if (!token || !username) return
+    if (token && username) {
+      // Save token and username
+      setGitHubUser({ token, username })
 
-    // Save token and username
-    setGitHubUser({ token, username })
+      // Remove access token from URL
+      const searchParams = new URLSearchParams(window.location.search)
+      searchParams.delete("token")
+      searchParams.delete("username")
 
-    // Remove access token from URL
-    const searchParams = new URLSearchParams(window.location.search)
-    searchParams.delete("token")
-    searchParams.delete("username")
-
-    navigate({ search: searchParams.toString() }, { replace: true })
-  })
+      navigate({ search: searchParams.toString() }, { replace: true })
+    }
+  }, [])
 
   return !githubUser || !githubRepo ? (
     <div className="grid min-h-screen place-items-center p-4 [@supports(min-height:100svh)]:min-h-[100svh]">
