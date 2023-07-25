@@ -34,7 +34,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   }, [])
 
   return !githubUser || !githubRepo ? (
-    <div className="grid min-h-screen place-items-center pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(min-height:100svh)]:min-h-[100svh]">
+    <div className="flex min-h-screen items-center justify-center pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] coarse:items-end coarse:sm:items-center [@supports(min-height:100svh)]:min-h-[100svh]">
       <div className="flex w-full max-w-sm flex-col items-start p-4">
         <LumenLogo size={24} className="mb-8" />
         {!githubUser ? (
