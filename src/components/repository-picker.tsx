@@ -32,13 +32,20 @@ export function RepositoryPicker() {
           name="repo-owner"
           spellCheck={false}
           defaultValue={githubRepo?.owner}
+          required
         />
       </div>
       <div className="grid gap-2">
         <label htmlFor="repo-name" className="leading-4">
           Repository name
         </label>
-        <Input id="repo-name" name="repo-name" spellCheck={false} defaultValue={githubRepo?.name} />
+        <Input
+          id="repo-name"
+          name="repo-name"
+          spellCheck={false}
+          defaultValue={githubRepo?.name}
+          required
+        />
       </div>
       <Button type="submit" variant="primary" className="mt-2">
         Save
