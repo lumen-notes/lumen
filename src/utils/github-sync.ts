@@ -5,7 +5,7 @@ import { z } from "zod"
 import {
   deleteNoteAtom,
   githubRepoAtom,
-  githubTokenAtom,
+  githubUserAtom,
   notesAtom,
   rawNotesAtom,
   upsertNoteAtom,
@@ -18,30 +18,34 @@ const shaAtom = atomWithStorage<string | null>("sha", null)
 const isFetchingAtom = atom(false)
 const errorAtom = atom<Error | null>(null)
 
-const githubTokenCallback = (get: Getter) => get(githubTokenAtom)
+const githubUserCallback = (get: Getter) => get(githubUserAtom)
 const githubRepoCallback = (get: Getter) => get(githubRepoAtom)
 
 export const useFetchNotes = () => {
-  // HACK: getGitHubToken() returns an empty string if the atom is not initialized
-  useAtom(githubTokenAtom)
+  // HACK: getGitHubUser() returns an empty string if the atom is not initialized
+  useAtom(githubUserAtom)
 
   const [sha, setSha] = useAtom(shaAtom)
-  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubUser = useAtomCallback(githubUserCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
   const [isFetching, setIsFetching] = useAtom(isFetchingAtom)
   const [error, setError] = useAtom(errorAtom)
 
   const fetchNotes = React.useCallback(async () => {
-    const githubToken = getGitHubToken()
+    const githubUser = getGitHubUser()
     const githubRepo = getGitHubRepo()
-    if (!githubRepo) return
+    if (!githubUser || !githubRepo) return
 
     try {
       setIsFetching(true)
 
       const filePath = ".lumen/notes.json"
-      const latestSha = await getFileSha({ githubToken, githubRepo, path: filePath })
+      const latestSha = await getFileSha({
+        githubToken: githubUser.token,
+        githubRepo,
+        path: filePath,
+      })
 
       if (process.env.NODE_ENV === "development") {
         console.log(`SHA: ${latestSha} ${sha === latestSha ? "(cached)" : "(new)"}`)
@@ -49,7 +53,11 @@ export const useFetchNotes = () => {
 
       // Only fetch notes if the SHA has changed
       if (!sha || sha !== latestSha) {
-        const file = await readFile({ githubToken, githubRepo, path: ".lumen/notes.json" })
+        const file = await readFile({
+          githubToken: githubUser.token,
+          githubRepo,
+          path: ".lumen/notes.json",
+        })
         const fileSchema = z.record(z.string())
         const rawNotes = fileSchema.parse(JSON.parse(file))
 
@@ -69,13 +77,13 @@ export const useFetchNotes = () => {
     } finally {
       setIsFetching(false)
     }
-  }, [sha, getGitHubToken, getGitHubRepo, setRawNotes, setSha, setIsFetching, setError])
+  }, [sha, getGitHubUser, getGitHubRepo, setRawNotes, setSha, setIsFetching, setError])
 
   return { fetchNotes, isFetching, error }
 }
 
 export function useUpsertNote() {
-  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubUser = useAtomCallback(githubUserCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const upsertNote = useSetAtom(upsertNoteAtom)
 
@@ -86,22 +94,27 @@ export function useUpsertNote() {
 
       // Push to GitHub
       try {
-        const githubToken = getGitHubToken()
+        const githubUser = getGitHubUser()
         const githubRepo = getGitHubRepo()
-        if (!githubRepo) return
+        if (!githubUser || !githubRepo) return
 
-        await writeFile({ githubToken, githubRepo, path: `${id}.md`, content: rawBody })
+        await writeFile({
+          githubToken: githubUser.token,
+          githubRepo,
+          path: `${id}.md`,
+          content: rawBody,
+        })
       } catch (error) {
         // TODO: Display error
         console.error(error)
       }
     },
-    [upsertNote, getGitHubToken, getGitHubRepo],
+    [upsertNote, getGitHubUser, getGitHubRepo],
   )
 }
 
 export function useDeleteNote() {
-  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubUser = useAtomCallback(githubUserCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const deleteNote = useSetAtom(deleteNoteAtom)
 
@@ -112,24 +125,24 @@ export function useDeleteNote() {
 
       // Push to GitHub
       try {
-        const githubToken = getGitHubToken()
+        const githubUser = getGitHubUser()
         const githubRepo = getGitHubRepo()
-        if (!githubRepo) return
+        if (!githubUser || !githubRepo) return
 
-        await deleteFile({ githubToken, githubRepo, path: `${id}.md` })
+        await deleteFile({ githubToken: githubUser.token, githubRepo, path: `${id}.md` })
       } catch (error) {
         // TODO: Display error
         console.error(error)
       }
     },
-    [deleteNote, getGitHubToken, getGitHubRepo],
+    [deleteNote, getGitHubUser, getGitHubRepo],
   )
 }
 
 const notesCallback = (get: Getter) => get(notesAtom)
 
 export function useRenameTag() {
-  const getGitHubToken = useAtomCallback(githubTokenCallback)
+  const getGitHubUser = useAtomCallback(githubUserCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const getNotes = useAtomCallback(notesCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
@@ -153,16 +166,16 @@ export function useRenameTag() {
 
       // Push to GitHub
       try {
-        const githubToken = getGitHubToken()
+        const githubUser = getGitHubUser()
         const githubRepo = getGitHubRepo()
-        if (!githubRepo) return
+        if (!githubUser || !githubRepo) return
 
         const files = mapObject(updatedRawNotes, (rawBody, id) => {
           return [`${id}.md`, rawBody]
         })
 
         await writeFiles({
-          githubToken,
+          githubToken: githubUser.token,
           githubRepo,
           files,
           commitMessage: `Rename tag #${oldName} to #${newName}`,
@@ -172,7 +185,7 @@ export function useRenameTag() {
         console.error(error)
       }
     },
-    [getNotes, setRawNotes, getGitHubToken, getGitHubRepo],
+    [getNotes, setRawNotes, getGitHubUser, getGitHubRepo],
   )
 }
 

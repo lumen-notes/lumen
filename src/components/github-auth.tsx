@@ -1,26 +1,29 @@
-import { useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
-import { githubTokenAtom } from "../global-atoms"
+import { githubUserAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { Button } from "./button"
+import { GitHubAvatar } from "./github-avatar"
 
 export function GitHubAuth() {
   const navigate = useNavigate()
-  const setGitHubToken = useSetAtom(githubTokenAtom)
+  const setGitHubUser = useSetAtom(githubUserAtom)
 
   useEvent("load", () => {
-    // Get access token from URL
-    const accessToken = new URLSearchParams(window.location.search).get("access_token")
+    // Get token and username from URL
+    const token = new URLSearchParams(window.location.search).get("token")
+    const username = new URLSearchParams(window.location.search).get("username")
 
-    if (!accessToken) return
+    if (!token || !username) return
 
-    // Save access token
-    setGitHubToken(accessToken)
+    // Save token and username
+    setGitHubUser({ token, username })
 
     // Remove access token from URL
     const searchParams = new URLSearchParams(window.location.search)
-    searchParams.delete("access_token")
+    searchParams.delete("token")
+    searchParams.delete("username")
 
     navigate({ search: searchParams.toString() }, { replace: true })
   })
@@ -44,5 +47,31 @@ export function SignInButton({ className }: { className?: string }) {
     >
       Sign in with GitHub
     </Button>
+  )
+}
+
+export function SignedInUser() {
+  const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
+
+  if (!githubUser) return <SignInButton />
+
+  return (
+    <div className="flex items-center justify-between rounded-sm bg-bg-secondary p-3">
+      <div className="flex items-center gap-2">
+        <GitHubAvatar username={githubUser.username} />
+        <div className="flex flex-col">
+          <span className="text-sm">Signed in as</span>
+          <span className="font-semibold">{githubUser.username}</span>
+        </div>
+      </div>
+      <Button
+        className="flex-shrink-0"
+        onClick={() => {
+          setGitHubUser(null)
+        }}
+      >
+        Sign out
+      </Button>
+    </div>
   )
 }

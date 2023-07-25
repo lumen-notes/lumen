@@ -6,11 +6,12 @@ import { CommandMenu } from "../components/command-menu"
 import { SettingsIcon24 } from "../components/icons"
 import { Input } from "../components/input"
 import { Panel } from "../components/panel"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { useFetchNotes } from "../utils/github-sync"
+import { SignedInUser } from "../components/github-auth"
 
 export function SettingsPage() {
-  const [githubToken, setGitHubToken] = useAtom(githubTokenAtom)
+  const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
   const [githubRepo, setGitHubRepo] = useAtom(githubRepoAtom)
   const { fetchNotes } = useFetchNotes()
   const navigate = useNavigate()
@@ -22,8 +23,9 @@ export function SettingsPage() {
           <Card className="grid gap-5 p-4">
             <div className="grid gap-2">
               <h3 className="text-xl font-semibold leading-4">GitHub</h3>
-              <p>Store your notes as Markdown files in a GitHub repository of your choice.</p>
+              <p>Store your notes as markdown files in a GitHub repository of your choice.</p>
             </div>
+            <SignedInUser />
             <form
               id="github-form"
               className="flex flex-col gap-4"
@@ -34,7 +36,12 @@ export function SettingsPage() {
                 const repoOwner = String(formData.get("repo-owner"))
                 const repoName = String(formData.get("repo-name"))
 
-                setGitHubToken(token)
+                if (token) {
+                  setGitHubUser({ username: githubUser?.username ?? "", token })
+                } else {
+                  setGitHubUser(null)
+                }
+
                 setGitHubRepo({ owner: repoOwner, name: repoName })
 
                 fetchNotes()
@@ -45,7 +52,12 @@ export function SettingsPage() {
                 <label htmlFor="auth-token" className="leading-4">
                   Personal access token
                 </label>
-                <Input id="token" name="token" spellCheck={false} defaultValue={githubToken} />
+                <Input
+                  id="token"
+                  name="token"
+                  spellCheck={false}
+                  defaultValue={githubUser?.token}
+                />
                 <p className="markdown text-text-secondary">
                   Generate a{" "}
                   <a

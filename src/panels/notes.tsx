@@ -7,10 +7,10 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { githubRepoAtom, githubTokenAtom, rawNotesAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
-  const githubToken = useAtomValue(githubTokenAtom)
+  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const noteCountAtom = React.useMemo(
     () => selectAtom(rawNotesAtom, (rawNotes) => Object.keys(rawNotes).length),
@@ -21,7 +21,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon24 />} onClose={onClose}>
       <div className="p-4">
-        {!githubToken || !githubRepo?.owner || !githubRepo?.name ? (
+        {!githubUser || !githubRepo?.owner || !githubRepo?.name ? (
           // If GitHub repository hasn't been configured
           <div>
             <SignInButton />

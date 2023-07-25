@@ -3,25 +3,25 @@ import { useAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { fileCache } from "../components/file-preview"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { writeFile } from "../utils/github-fs"
 
 export const UPLOADS_DIRECTORY = "uploads"
 
 export function useAttachFile() {
-  // HACK: getGitHubToken() returns an empty string if the atom is not initialized
-  useAtom(githubTokenAtom)
-  const getGitHubToken = useAtomCallback(React.useCallback((get) => get(githubTokenAtom), []))
+  // HACK: getGitHubUser() returns an empty string if the atom is not initialized
+  useAtom(githubUserAtom)
+  const getGitHubUser = useAtomCallback(React.useCallback((get) => get(githubUserAtom), []))
   const getGitHubRepo = useAtomCallback(React.useCallback((get) => get(githubRepoAtom), []))
 
   const attachFile = React.useCallback(
     async (file: File, view?: EditorView) => {
-      const githubToken = getGitHubToken()
+      const githubUser = getGitHubUser()
       const githubRepo = getGitHubRepo()
 
       // We can't upload a file if we don't know where to upload it to
       // or if we don't have a reference to the CodeMirror view
-      if (!githubRepo || !view) return
+      if (!githubUser || !githubRepo || !view) return
 
       try {
         const fileId = Date.now().toString()
@@ -31,7 +31,12 @@ export function useAttachFile() {
         const arrayBuffer = await file.arrayBuffer()
 
         // Upload file
-        writeFile({ githubToken, githubRepo, path: filePath, content: arrayBuffer })
+        writeFile({
+          githubToken: githubUser.token,
+          githubRepo,
+          path: filePath,
+          content: arrayBuffer,
+        })
 
         // Cache file
         fileCache.set(filePath, { file, url: URL.createObjectURL(file) })
@@ -77,7 +82,7 @@ export function useAttachFile() {
         console.error(error)
       }
     },
-    [getGitHubRepo, getGitHubToken],
+    [getGitHubRepo, getGitHubUser],
   )
 
   return attachFile

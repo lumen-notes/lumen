@@ -24,6 +24,11 @@ export type GitHubRepository = {
   name: string
 }
 
+export type GitHubUser = {
+  token: string
+  username: string
+}
+
 export const templateInputSchema = z.object({
   type: z.literal("string"),
   required: z.boolean().optional(),

@@ -40,6 +40,7 @@ import {
 import { useLink } from "./link-context"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
+import { GitHubAvatar } from "./github-avatar"
 
 export type MarkdownProps = {
   children: string
@@ -160,18 +161,6 @@ function BookCover({ isbn }: { isbn: string }) {
     >
       <span className="sr-only">Book cover</span>
     </a>
-  )
-}
-
-function GitHubAvatar({ username }: { username: string }) {
-  return (
-    <div
-      aria-hidden
-      className="inline-block h-8 w-8 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary"
-      style={{
-        backgroundImage: `url(https://github.com/${username}.png?size=64)`,
-      }}
-    />
   )
 }
 

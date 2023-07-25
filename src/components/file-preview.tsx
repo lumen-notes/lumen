@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { readRawFile } from "../utils/github-fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
@@ -12,7 +12,7 @@ type FilePreviewProps = {
 }
 
 export function FilePreview({ path, alt = "" }: FilePreviewProps) {
-  const githubToken = useAtomValue(githubTokenAtom)
+  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const cachedFile = fileCache.get(path)
   const [file, setFile] = React.useState<File | null>(cachedFile?.file ?? null)
@@ -25,11 +25,11 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     }
 
     async function loadFile() {
-      if (!githubRepo) return
+      if (!githubUser || !githubRepo) return
       try {
         setIsLoading(true)
 
-        const file = await readRawFile({ githubToken, githubRepo, path })
+        const file = await readRawFile({ githubToken: githubUser.token, githubRepo, path })
         const url = URL.createObjectURL(file)
 
         setFile(file)
@@ -43,7 +43,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         setIsLoading(false)
       }
     }
-  }, [file, githubToken, githubRepo, path])
+  }, [file, githubUser, githubRepo, path])
 
   if (!file) {
     return isLoading ? (

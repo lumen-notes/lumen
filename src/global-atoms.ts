@@ -1,7 +1,7 @@
 import { Searcher } from "fast-fuzzy"
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { GitHubRepository, Note, NoteId, Template, templateSchema } from "./types"
+import { GitHubRepository, GitHubUser, Note, NoteId, Template, templateSchema } from "./types"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
@@ -9,14 +9,14 @@ import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 // GitHub
 // -----------------------------------------------------------------------------
 
-export const githubTokenAtom = atomWithStorage("github_token", "")
+export const githubUserAtom = atomWithStorage<GitHubUser | null>("github_user", null)
 
 export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
 export const isGitHubConfiguredAtom = atom((get) => {
-  const githubToken = get(githubTokenAtom)
+  const githubUser = get(githubUserAtom)
   const githubRepo = get(githubRepoAtom)
-  return githubToken && githubRepo?.owner && githubRepo?.name
+  return githubUser !== null && githubRepo?.owner && githubRepo?.name
 })
 
 // -----------------------------------------------------------------------------

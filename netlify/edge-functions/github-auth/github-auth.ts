@@ -21,16 +21,16 @@ export default async (request: Request) => {
       }),
     })
 
-    const { error, access_token } = await response.json()
+    const { error, access_token: token } = await response.json()
 
     if (error) {
       throw new Error(error)
     }
 
-    const username = await getUsername(access_token)
+    const username = await getUsername(token)
 
     const redirectUrl = new URL(state || "https://uselumen.com")
-    redirectUrl.searchParams.set("access_token", access_token)
+    redirectUrl.searchParams.set("token", token)
     redirectUrl.searchParams.set("username", username)
 
     return Response.redirect(`${redirectUrl}`)
