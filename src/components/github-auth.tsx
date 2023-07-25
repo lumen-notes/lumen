@@ -1,14 +1,14 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import { useNavigate } from "react-router-dom"
-import { githubRepoAtom, githubUserAtom, rawNotesAtom } from "../global-atoms"
-import { cx } from "../utils/cx"
-import { Button } from "./button"
-import { GitHubAvatar } from "./github-avatar"
-import { shaAtom } from "../utils/github-sync"
-import { RepositoryPicker } from "./repository-picker"
-import { LumenLogo } from "./lumen-logo"
-import { Card } from "./card"
 import React from "react"
+import { useNavigate } from "react-router-dom"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { cx } from "../utils/cx"
+import { shaAtom } from "../utils/github-sync"
+import { Button } from "./button"
+import { Card } from "./card"
+import { GitHubAvatar } from "./github-avatar"
+import { LumenLogo } from "./lumen-logo"
+import { RepositoryPicker } from "./repository-picker"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
@@ -86,10 +86,8 @@ export function SignInButton({ className }: { className?: string }) {
 }
 
 export function SignedInUser() {
-  const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
-  const setGitHubRepo = useSetAtom(githubRepoAtom)
-  const setRawNotes = useSetAtom(rawNotesAtom)
-  const setSha = useSetAtom(shaAtom)
+  const githubUser = useAtomValue(githubUserAtom)
+  const signOut = useSignOut()
 
   if (!githubUser) return <SignInButton />
 
@@ -102,17 +100,21 @@ export function SignedInUser() {
           <span className="font-semibold">@{githubUser.username}</span>
         </div>
       </div>
-      <Button
-        className="flex-shrink-0"
-        onClick={() => {
-          setGitHubUser(null)
-          setGitHubRepo(null)
-          setRawNotes({})
-          setSha(null)
-        }}
-      >
+      <Button className="flex-shrink-0" onClick={signOut}>
         Sign out
       </Button>
     </Card>
   )
+}
+
+export function useSignOut() {
+  const setGitHubUser = useSetAtom(githubUserAtom)
+  const setSha = useSetAtom(shaAtom)
+
+  return () => {
+    setGitHubUser(null)
+
+    // Always refetch notes when signing back in
+    setSha(null)
+  }
 }

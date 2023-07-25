@@ -26,10 +26,12 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
+import { useSignOut } from "./github-auth"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const { fetchNotes } = useFetchNotes()
   const navigate = useNavigateWithCache()
+  const signOut = useSignOut()
   const { online } = useNetworkState()
 
   // Open tooltips on the side opposite to the nav bar.
@@ -89,12 +91,14 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content side={tooltipSide} align="end">
+              <DropdownMenu.Item onClick={signOut}>Sign out</DropdownMenu.Item>
+              <DropdownMenu.Separator />
               <DropdownMenu.Item
                 href="https://github.com/colebemis/lumen/issues/new"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Send feedback
+                Share feedback
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 href="https://lumen-notes.github.io/lumen"
