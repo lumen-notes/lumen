@@ -78,7 +78,7 @@ _Notes in Lumen are..._
 - [Foam](https://foambubble.github.io/foam)
 - [iA Writer](https://ia.net/writer)
 - [Logseq](https://logseq.com)
-- [Obsidian](https://obsidian.md) — ⭐ Popular
+- [Obsidian](https://obsidian.md)
 - [Reflect](https://reflect.app)
 - [Roam Research](https://roamresearch.com)
 - [Supernotes](https://supernotes.app)
