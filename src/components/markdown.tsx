@@ -263,7 +263,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       )
 
     case "isbn":
-      if (typeof value !== "string") break
       return (
         <div>
           <a
@@ -272,7 +271,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
             target="_blank"
             rel="noopener noreferrer"
           >
-            {value}
+            {`${value}`}
           </a>
         </div>
       )
