@@ -131,7 +131,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
 function NavLink({
   tooltipSide,
   ...props
-}: NavLinkProps & { tooltipSide?: TooltipContentProps["side"] }) {
+}: Omit<NavLinkProps, "to"> & { to: string; tooltipSide?: TooltipContentProps["side"] }) {
   const navigate = useNavigateWithCache()
   const path = useResolvedPath(props.to)
   const match = useMatch({
@@ -152,7 +152,7 @@ function NavLink({
           {...props}
           onClick={(event) => {
             event.preventDefault()
-            navigate(path.pathname)
+            navigate(props.to)
           }}
         />
       </Tooltip.Trigger>
