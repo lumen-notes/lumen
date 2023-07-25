@@ -10,6 +10,7 @@ import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { Root } from "./components/root"
+import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
@@ -36,18 +37,20 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <NewNoteDialog.Provider>
             <NewNoteDialog />
             <InsertTemplateDialog />
-            <GitHubAuth />
-            <Routes>
-              <Route path="/file" element={<FilePage />} />
-              <Route path="/" element={<Root />}>
-                <Route index element={<NotesPage />} />
-                <Route path="tags" element={<TagsPage />} />
-                <Route path="tags/*" element={<TagPage />} />
-                <Route path="calendar" element={<CalendarPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path=":id" element={<NotePage />} />
-              </Route>
-            </Routes>
+            <ThemeColor />
+            <GitHubAuth>
+              <Routes>
+                <Route path="/file" element={<FilePage />} />
+                <Route path="/" element={<Root />}>
+                  <Route index element={<NotesPage />} />
+                  <Route path="tags" element={<TagsPage />} />
+                  <Route path="tags/*" element={<TagPage />} />
+                  <Route path="calendar" element={<CalendarPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path=":id" element={<NotePage />} />
+                </Route>
+              </Routes>
+            </GitHubAuth>
           </NewNoteDialog.Provider>
         </BrowserRouter>
       </Tooltip.Provider>
