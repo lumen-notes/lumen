@@ -27,11 +27,12 @@ import {
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
+import React from "react"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const isGitHubConfigured = useAtomValue(isGitHubConfiguredAtom)
   const { fetchNotes } = useFetchNotes()
-  const navigate = useNavigate()
+  const navigate = useNavigateWithCache()
   const { online } = useNetworkState()
 
   // Open tooltips on the side opposite to the nav bar.
@@ -130,9 +131,8 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
 function NavLink({
   tooltipSide,
   ...props
-}: NavLinkProps & { tooltipSide?: TooltipContentProps["side"] }) {
-  const navigate = useNavigate()
-  const location = useLocation()
+}: Omit<NavLinkProps, "to"> & { to: string; tooltipSide?: TooltipContentProps["side"] }) {
+  const navigate = useNavigateWithCache()
   const path = useResolvedPath(props.to)
   const match = useMatch({
     path: path.pathname,
@@ -151,20 +151,34 @@ function NavLink({
           )}
           {...props}
           onClick={(event) => {
-            // Save the params for the current path before navigating
-            savePathParams(location)
-
-            const prevPathParams = getPrevPathParams(path.pathname)
-
-            if (prevPathParams) {
-              event.preventDefault()
-              // Navigate to the new path with the previous params for that path
-              navigate({ pathname: path.pathname, search: prevPathParams })
-            }
+            event.preventDefault()
+            navigate(props.to)
           }}
         />
       </Tooltip.Trigger>
       <Tooltip.Content side={tooltipSide}>{props["aria-label"]}</Tooltip.Content>
     </Tooltip>
+  )
+}
+
+function useNavigateWithCache() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  return React.useCallback(
+    (to: string) => {
+      // Save the params for the current path before navigating
+      savePathParams(location)
+
+      const prevPathParams = getPrevPathParams(to)
+
+      if (prevPathParams) {
+        // Navigate to the new path with the previous params for that path
+        navigate({ pathname: to, search: prevPathParams })
+      } else {
+        navigate(to)
+      }
+    },
+    [navigate, location],
   )
 }

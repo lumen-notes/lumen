@@ -1,4 +1,5 @@
 import { Note, templateSchema } from "../types"
+import { GitHubAvatar } from "./github-avatar"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
 
 export function NoteFavicon({ note }: { note: Note }) {
@@ -6,15 +7,7 @@ export function NoteFavicon({ note }: { note: Note }) {
 
   // GitHub avatar
   if (typeof note.frontmatter.github === "string") {
-    icon = (
-      <div
-        aria-hidden
-        className="inline-block h-4 w-4 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary"
-        style={{
-          backgroundImage: `url(https://github.com/${note.frontmatter.github}.png?size=32)`,
-        }}
-      />
-    )
+    icon = <GitHubAvatar username={note.frontmatter.github} size={16} />
   }
 
   // Note has a URL

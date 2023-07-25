@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { Outlet, useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useMedia, useNetworkState } from "react-use"
-import { githubRepoAtom, githubTokenAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { useFetchNotes } from "../utils/github-sync"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -12,7 +12,7 @@ import { NavBar } from "./nav-bar"
 import { ThemeColor } from "./theme-color"
 
 export function Root() {
-  const githubToken = useAtomValue(githubTokenAtom)
+  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const { fetchNotes, isFetching, error: fetchError } = useFetchNotes()
 
@@ -63,7 +63,7 @@ export function Root() {
       <ThemeColor />
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
         {/* Show error message if a GitHub repository has been configured but fetching notes fails */}
-        {fetchError && !isFetching && githubToken && githubRepo?.owner && githubRepo?.name ? (
+        {fetchError && !isFetching && githubUser && githubRepo?.owner && githubRepo?.name ? (
           <div className="flex items-center gap-3 bg-[crimson] px-4 py-2 text-[white]">
             <div>
               <ErrorIcon16 />
