@@ -137,7 +137,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
         )}
         <span className="py-2 leading-4 ">
           <Link
-            className="inline-block rounded-full bg-bg-secondary px-2 py-1 leading-4 ring-1 ring-inset ring-border-secondary hover:bg-bg-tertiary coarse:px-3 coarse:py-2"
+            className="focus-ring inline-block rounded-full bg-bg-secondary px-2 py-1 leading-4 ring-1 ring-inset ring-border-secondary hover:bg-bg-tertiary coarse:px-3 coarse:py-2"
             to={`/tags/${[...path, node.name].join("/")}`}
             target="_blank"
           >
