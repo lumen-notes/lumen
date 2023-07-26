@@ -135,9 +135,13 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             <DotIcon8 />
           </div>
         )}
-        <span className="py-2 leading-4 coarse:py-3">
-          <Link className="link" to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
-            {node.name}
+        <span className="py-2 leading-4 ">
+          <Link
+            className="inline-block rounded-full bg-bg-secondary px-2 py-1 leading-4 ring-1 ring-inset ring-border-secondary hover:bg-bg-tertiary coarse:px-3 coarse:py-2"
+            to={`/tags/${[...path, node.name].join("/")}`}
+            target="_blank"
+          >
+            {node.name} <span className="text-text-secondary">{node.count}</span>
           </Link>
         </span>
       </div>
