@@ -8,7 +8,7 @@ import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
 import { LumenLogo } from "./lumen-logo"
-import { RepositoryPicker } from "./repository-picker"
+import { RepoForm } from "./repo-form"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
@@ -55,9 +55,9 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
             </p>
           </>
         )}
-        <div className="grid w-full gap-5">
+        <div className="grid w-full gap-4">
           <SignedInUser />
-          {githubUser ? <RepositoryPicker /> : null}
+          {githubUser ? <RepoForm /> : null}
         </div>
       </div>
     </div>
@@ -97,7 +97,7 @@ export function SignedInUser() {
         <GitHubAvatar username={githubUser.username} />
         <div className="flex flex-col">
           <span className="text-sm">Signed in as</span>
-          <span className="font-semibold">@{githubUser.username}</span>
+          <span className="font-semibold">{githubUser.username}</span>
         </div>
       </div>
       <Button className="flex-shrink-0" onClick={signOut}>

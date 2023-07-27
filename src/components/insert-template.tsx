@@ -11,6 +11,7 @@ import { sentenceCase } from "sentence-case"
 import { atom, useAtom, useSetAtom } from "jotai"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
+import { Markdown } from "./markdown"
 
 // Template pending insertion into editor because it requires user input
 const pendingTemplateAtom = atom<{ template: Template; editor: EditorView } | null>(null)
@@ -122,13 +123,11 @@ export function InsertTemplateDialog() {
                   {isLoading ? <LoadingIcon16 /> : "Insert"}
                 </Button>
                 {error ? (
-                  <div className="flex items-start gap-2 leading-5 text-text-danger">
+                  <div className="flex items-start gap-2 text-text-danger">
                     <div className="grid h-5 flex-shrink-0 place-items-center">
                       <ErrorIcon16 />
                     </div>
-                    <p>
-                      <span className="font-semibold">Error:</span> {error.message}
-                    </p>
+                    <Markdown>{error.message}</Markdown>
                   </div>
                 ) : null}
               </form>
