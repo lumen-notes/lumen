@@ -24,7 +24,7 @@ export function SettingsPage() {
           {githubUser && githubRepo ? (
             !isEditingRepo ? (
               <Card className="flex items-center justify-between p-4">
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 coarse:gap-2">
                   <span className="text-sm leading-3 text-text-secondary">Repository</span>
                   <a
                     href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
