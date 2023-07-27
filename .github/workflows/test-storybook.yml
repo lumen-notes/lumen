@@ -1,20 +1,27 @@
 name: Storybook Tests
-on: [push]
+on: 
+  check_run:
+    types: [completed]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    if: >-
-      github.event.deployment_status.state == 'success'
+    # if: >-
+    #   github.event.deployment_status.state == 'success'
     # ^ && github.event.deployment_status.?? => there must be a filter for the 'lumen-storybook' deployment
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-          cache: "npm"
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npm run test:storybook
-        env:
-          TARGET_URL: '${{ github.event.deployment_status.url }}'
+      - run: >-
+          echo '${{ github.event.check_run }}'
+          echo '${{ github.event.check_run.conclusion }}'
+          echo '${{ github.event.check_run.deployment }}'
+          echo '${{ github.event.check_run.details_url }}'
+      # - uses: actions/checkout@v3
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18.x
+      #     cache: "npm"
+      # - run: npm ci
+      # - run: npx playwright install --with-deps
+      # - run: npm run test:storybook
+      #   env:
+      #     TARGET_URL: '${{ github.event.deployment_status.url }}'
