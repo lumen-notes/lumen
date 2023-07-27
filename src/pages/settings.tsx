@@ -4,10 +4,16 @@ import { SignedInUser } from "../components/github-auth"
 import { SettingsIcon24 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { RepoForm } from "../components/repo-form"
-import { githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import React from "react"
+import { Button } from "../components/button"
+import { Card } from "../components/card"
 
 export function SettingsPage() {
   const githubUser = useAtomValue(githubUserAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
+  const [isEditingRepo, setIsEditingRepo] = React.useState(false)
+
   return (
     <>
       <CommandMenu />
@@ -15,7 +21,31 @@ export function SettingsPage() {
         <div className="grid gap-4 p-4">
           <h3 className="text-xl font-semibold leading-4">GitHub</h3>
           <SignedInUser />
-          {githubUser ? <RepoForm /> : null}
+          {githubUser && githubRepo ? (
+            !isEditingRepo ? (
+              <Card className="flex items-center justify-between px-4 py-3">
+                <div className="flex flex-col">
+                  <span className="text-sm">Connected to</span>
+                  <a
+                    href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
+                    className="link link-external font-semibold"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {githubRepo.owner}/{githubRepo.name}
+                  </a>
+                </div>
+                <Button className="flex-shrink-0" onClick={() => setIsEditingRepo(true)}>
+                  Change
+                </Button>
+              </Card>
+            ) : (
+              <RepoForm
+                onSubmit={() => setIsEditingRepo(false)}
+                onCancel={() => setIsEditingRepo(false)}
+              />
+            )
+          ) : null}
         </div>
       </Panel>
     </>

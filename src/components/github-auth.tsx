@@ -94,10 +94,12 @@ export function SignedInUser() {
   return (
     <Card className="flex items-center justify-between px-4 py-3">
       <div className="flex items-center gap-2">
-        <GitHubAvatar username={githubUser.username} />
         <div className="flex flex-col">
           <span className="text-sm">Signed in as</span>
-          <span className="font-semibold">{githubUser.username}</span>
+          <span className="font-semibold">
+            <GitHubAvatar username={githubUser.username} size={16} className="mr-1 align-middle" />
+            {githubUser.username}
+          </span>
         </div>
       </div>
       <Button className="flex-shrink-0" onClick={signOut}>

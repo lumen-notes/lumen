@@ -10,14 +10,68 @@ import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { Input } from "./input"
 import { Markdown } from "./markdown"
 
-export function RepoForm() {
+type RepoFormProps = {
+  onSubmit?: (repo: GitHubRepository) => void
+  onCancel?: () => void
+}
+
+export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
   const githubUser = useAtomValue(githubUserAtom)
   const [githubRepo, setGitHubRepo] = useAtom(githubRepoAtom)
   const { fetchNotes } = useFetchNotes()
+  const [repoType, setRepoType] = React.useState<"new" | "existing">(
+    githubRepo ? "existing" : "new",
+  )
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
-  async function selectExistRepo({ owner, name }: GitHubRepository) {
+  async function createRepo({ owner, name }: GitHubRepository) {
+    if (!githubUser) return
+
+    setIsLoading(true)
+
+    // Create repo from template
+    const response = await fetch(
+      `https://api.github.com/repos/lumen-notes/notes-template/generate`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `token ${githubUser.token}`,
+        },
+        body: JSON.stringify({
+          owner,
+          name,
+          private: true,
+        }),
+      },
+    )
+
+    if (!response.ok) {
+      setIsLoading(false)
+      console.error(await response.json())
+
+      if (response.status === 422) {
+        setError(new Error("Repository already exists."))
+      } else {
+        setError(new Error("Failed to create repository. Please try again."))
+      }
+
+      return
+    }
+
+    // 1 second delay to allow GitHub API to catch up
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    // Reset loading and error state
+    setIsLoading(false)
+    setError(null)
+
+    setGitHubRepo({ owner, name })
+    fetchNotes()
+    onSubmit?.({ owner, name })
+  }
+
+  async function selectExistingRepo({ owner, name }: GitHubRepository) {
     if (!githubUser) return
 
     setIsLoading(true)
@@ -29,11 +83,7 @@ export function RepoForm() {
 
     if (!response.ok) {
       setIsLoading(false)
-      setError(
-        new Error(
-          "Repository does not exist. Please double check the owner and name and try again.",
-        ),
-      )
+      setError(new Error("Repository does not exist."))
       return
     }
 
@@ -58,6 +108,7 @@ export function RepoForm() {
 
     setGitHubRepo({ owner, name })
     fetchNotes()
+    onSubmit?.({ owner, name })
   }
 
   return (
@@ -69,20 +120,29 @@ export function RepoForm() {
           event.preventDefault()
 
           const formData = new FormData(event.currentTarget)
+          const repoType = String(formData.get("repo-type"))
           const owner = String(formData.get("repo-owner"))
           const name = String(formData.get("repo-name"))
 
-          selectExistRepo({ owner, name })
+          if (repoType === "new") {
+            await createRepo({ owner, name })
+          } else {
+            await selectExistingRepo({ owner, name })
+          }
         }}
       >
-        {/* <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
+            {/* TODO: Style radio buttons */}
             <input
               type="radio"
               id="repo-new"
               name="repo-type"
-              value="personal"
-              defaultChecked={!githubRepo}
+              value="new"
+              defaultChecked={repoType === "new"}
+              onChange={(event) => {
+                if (event.target.checked) setRepoType("new")
+              }}
             />
             <label htmlFor="repo-new" className="leading-4">
               Create a new repository
@@ -94,13 +154,16 @@ export function RepoForm() {
               id="repo-existing"
               name="repo-type"
               value="existing"
-              defaultChecked={!!githubRepo}
+              defaultChecked={repoType === "existing"}
+              onChange={(event) => {
+                if (event.target.checked) setRepoType("existing")
+              }}
             />
             <label htmlFor="repo-existing" className="leading-4">
               Select an existing repository
             </label>
           </div>
-        </div> */}
+        </div>
         <div className="flex flex-col gap-4">
           <div className="grid flex-grow gap-2">
             <label htmlFor="repo-owner" className="leading-4">
@@ -129,9 +192,21 @@ export function RepoForm() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? <LoadingIcon16 /> : "Select"}
-          </Button>
+          <div className="flex gap-2">
+            {onCancel ? (
+              <Button className="w-full" onClick={onCancel}>
+                Cancel
+              </Button>
+            ) : null}
+            <Button
+              type="submit"
+              className="w-full flex-grow"
+              variant="primary"
+              disabled={isLoading}
+            >
+              {isLoading ? <LoadingIcon16 /> : repoType === "new" ? "Create" : "Select"}
+            </Button>
+          </div>
           {error ? (
             <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)] ">
               <div className="grid h-5 flex-shrink-0 place-items-center">
