@@ -121,8 +121,8 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
 
           const formData = new FormData(event.currentTarget)
           const repoType = String(formData.get("repo-type"))
-          const owner = String(formData.get("repo-owner"))
-          const name = String(formData.get("repo-name"))
+          const owner = String(formData.get("repo-owner")).trim()
+          const name = String(formData.get("repo-name")).trim()
 
           if (repoType === "new") {
             await createRepo({ owner, name })
@@ -131,7 +131,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           }
         }}
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 coarse:gap-4">
           <div className="flex items-center gap-2">
             {/* TODO: Style radio buttons */}
             <input
