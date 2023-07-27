@@ -1,7 +1,5 @@
 name: Storybook Tests
-on: 
-  check_run:
-    types: [completed]
+on: deployment_status
 jobs:
   test:
     timeout-minutes: 60
