@@ -92,15 +92,13 @@ export function SignedInUser() {
   if (!githubUser) return <SignInButton />
 
   return (
-    <Card className="flex items-center justify-between px-4 py-3">
-      <div className="flex items-center gap-2">
-        <div className="flex flex-col">
-          <span className="text-sm">Signed in as</span>
-          <span className="font-semibold">
-            <GitHubAvatar username={githubUser.username} size={16} className="mr-1 align-middle" />
-            {githubUser.username}
-          </span>
-        </div>
+    <Card className="flex items-center justify-between px-4 py-4">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm leading-3 text-text-secondary">Account</span>
+        <span className="font-semibold leading-5">
+          <GitHubAvatar username={githubUser.username} size={16} className="mr-1 align-middle" />
+          {githubUser.username}
+        </span>
       </div>
       <Button className="flex-shrink-0" onClick={signOut}>
         Sign out

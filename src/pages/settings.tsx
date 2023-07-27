@@ -23,12 +23,12 @@ export function SettingsPage() {
           <SignedInUser />
           {githubUser && githubRepo ? (
             !isEditingRepo ? (
-              <Card className="flex items-center justify-between px-4 py-3">
-                <div className="flex flex-col">
-                  <span className="text-sm">Connected to</span>
+              <Card className="flex items-center justify-between p-4">
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm leading-3 text-text-secondary">Repository</span>
                   <a
                     href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
-                    className="link link-external font-semibold"
+                    className="link link-external font-semibold leading-5"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
