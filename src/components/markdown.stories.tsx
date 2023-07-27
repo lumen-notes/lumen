@@ -1,6 +1,8 @@
-import { Markdown, MarkdownProps } from "./markdown"
+import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
+import { within } from "@storybook/testing-library"
 import { Card } from "./card"
+import { Markdown, MarkdownProps } from "./markdown"
 
 export default {
   title: "Markdown",
@@ -221,9 +223,10 @@ export const KitchenSink: StoryObj<typeof Markdown> = {
   },
 }
 
+const isbn = "9781542866507"
 const book = `---
 author: Sönke Ahrens
-isbn: 978-1542866507
+isbn: ${isbn}
 ---
 
 # How to Take Smart Notes
@@ -232,6 +235,11 @@ isbn: 978-1542866507
 export const Book: StoryObj<typeof Markdown> = {
   args: {
     children: book,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    expect(await canvas.findByText("Book cover")).toBeTruthy()
+    expect(await canvas.findByRole("link", { name: isbn })).toBeTruthy()
   },
 }
 
