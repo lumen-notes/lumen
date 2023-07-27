@@ -40,7 +40,7 @@ jobs:
       - name: Copy README.md into docs directory
         run: cp README.md docs/README.md
       - name: Copy favicon into docs directory
-        run: cp public/favicon.svg docs/favicon.svg
+        run: cp public/favicon-production.svg docs/favicon.svg
       - name: Fix relative links in markdown files
         # Example: [Metadata](/docs/metadata.md) → [Metadata](/metadata)
         run: find docs -type f -name "*.md" -exec sed -i 's|/docs/\(.*\).md|/\1|g' {} +
