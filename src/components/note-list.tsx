@@ -87,8 +87,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     )
   }, [searchResults])
 
-  console.log(sortedTagFrequencies)
-
   return (
     <div>
       <div className="flex flex-col gap-4">
