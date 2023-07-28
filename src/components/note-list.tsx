@@ -124,7 +124,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
               <PillButton
                 key={tag}
-                onClick={() => setQuery(query ? `${query} tag:${tag}` : `tag:${tag}`)}
+                onClick={(event) => {
+                  const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+                  setQuery(query ? `${query} ${qualifier}` : qualifier)
+                }}
               >
                 {tag}
                 <span className="text-text-secondary">{frequency}</span>
@@ -143,7 +146,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       key={tag}
                       icon={<TagIcon16 />}
                       trailingVisual={<span className="text-text-secondary">{frequency}</span>}
-                      onClick={() => setQuery(query ? `${query} tag:${tag}` : `tag:${tag}`)}
+                      onClick={(event) => {
+                        const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+                        setQuery(query ? `${query} ${qualifier}` : qualifier)
+                      }}
                     >
                       {tag}
                     </DropdownMenu.Item>
