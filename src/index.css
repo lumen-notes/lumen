@@ -152,6 +152,11 @@ body {
   font-variant-numeric: slashed-zero;
 }
 
+/* .docs-story is the container for storybook stories on docs pages */
+.docs-story {
+  @apply bg-bg-inset;
+}
+
 button {
   font-variant-numeric: slashed-zero;
 }
