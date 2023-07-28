@@ -192,7 +192,9 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     >
       {!isEditing ? (
         <div className="w-full flex-grow p-4">
-          <Markdown>{draftValue ?? note.rawBody}</Markdown>
+          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+            {draftValue ?? note.rawBody}
+          </Markdown>
         </div>
       ) : (
         <div

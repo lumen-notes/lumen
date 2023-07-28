@@ -6,7 +6,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { githubRepoAtom, notesAtom } from "../global-atoms"
 import { NoteId } from "../types"
-import { useDeleteNote } from "../utils/github-sync"
+import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
@@ -27,6 +27,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
   const note = useAtomValue(noteAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const deleteNote = useDeleteNote()
+  const upsertNote = useUpsertNote()
   const Link = useLink()
 
   // Refs
@@ -169,7 +170,9 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       // }}
     >
       <div className="p-4 pb-1">
-        <Markdown>{note.rawBody}</Markdown>
+        <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+          {note.rawBody}
+        </Markdown>
       </div>
       <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
         <span className="px-2 text-text-secondary">

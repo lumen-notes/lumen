@@ -1,6 +1,7 @@
 import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
-import { within } from "@storybook/testing-library"
+import { userEvent, within } from "@storybook/testing-library"
+import React from "react"
 import { Card } from "./card"
 import { Markdown, MarkdownProps } from "./markdown"
 
@@ -256,5 +257,42 @@ twitter: natfriedman
 export const Person: StoryObj<typeof Markdown> = {
   args: {
     children: person,
+  },
+}
+
+const taskList = `- [ ] Task 1
+- [x] Task 2
+- [ ] Task 3
+`
+
+function MarkdownWithState({ children }: MarkdownProps) {
+  const [value, setValue] = React.useState(children)
+  return <Markdown onChange={setValue}>{value}</Markdown>
+}
+
+export const TaskList: StoryObj<typeof Markdown> = {
+  args: {
+    children: taskList,
+  },
+  render: (args: MarkdownProps) => {
+    return (
+      <Card className="mx-auto max-w-lg p-4">
+        <MarkdownWithState>{args.children}</MarkdownWithState>
+      </Card>
+    )
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const checkboxes = await canvas.findAllByRole("checkbox")
+
+    // Check that the checkboxes are in the right state initially
+    expect(checkboxes).toHaveLength(3)
+    expect(checkboxes[0]).not.toBeChecked()
+    expect(checkboxes[1]).toBeChecked()
+    expect(checkboxes[2]).not.toBeChecked()
+
+    // Check that clicking the first checkbox updates the state
+    await userEvent.click(checkboxes[0])
+    expect(checkboxes[0]).toBeChecked()
   },
 }

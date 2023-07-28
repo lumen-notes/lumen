@@ -44,62 +44,74 @@ import { GitHubAvatar } from "./github-avatar"
 
 export type MarkdownProps = {
   children: string
+  onChange?: (value: string) => void
 }
 
-export const Markdown = React.memo(({ children }: MarkdownProps) => {
+const MarkdownContext = React.createContext<{
+  markdown: string
+  onChange?: (value: string) => void
+}>({
+  markdown: "",
+})
+
+export const Markdown = React.memo(({ children, onChange }: MarkdownProps) => {
   const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
   const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
 
+  const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
+
   return (
-    <div>
-      {parsedTemplate.success ? (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
-            <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
-              Template
-            </span>
-          </div>
-          {/* TODO: Display more input metadata (type, description, etc.) */}
-          {parsedTemplate.data.inputs ? (
-            <div className="flex flex-col gap-1">
-              <span className="text-sm text-text-secondary">Inputs</span>
-              <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
-                {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
-                  <div key={name}>
-                    <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
-                  </div>
-                ))}
+    <MarkdownContext.Provider value={contextValue}>
+      <div>
+        {parsedTemplate.success ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
+              <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
+                Template
+              </span>
+            </div>
+            {/* TODO: Display more input metadata (type, description, etc.) */}
+            {parsedTemplate.data.inputs ? (
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-text-secondary">Inputs</span>
+                <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
+                  {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
+                    <div key={name}>
+                      <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : null}
-          {/* Render template as a code block */}
-          <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
-            <TemplateSyntaxHighlighter>
-              {removeTemplateFrontmatter(children)}
-            </TemplateSyntaxHighlighter>
-          </pre>
-        </div>
-      ) : (
-        <>
-          {frontmatter?.isbn ? (
-            // If the note has an ISBN, show the book cover
-            <div className="mb-3 inline-flex">
-              <BookCover isbn={`${frontmatter.isbn}`} />
-            </div>
-          ) : null}
-          {typeof frontmatter?.github === "string" ? (
-            // If the note has a GitHub username, show the GitHub avatar
-            <div className="mb-3 inline-flex">
-              <GitHubAvatar username={frontmatter.github} />
-            </div>
-          ) : null}
-          <MarkdownBody>{content}</MarkdownBody>
-          <Frontmatter frontmatter={frontmatter} />
-        </>
-      )}
-    </div>
+            ) : null}
+            {/* Render template as a code block */}
+            <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+              <TemplateSyntaxHighlighter>
+                {removeTemplateFrontmatter(children)}
+              </TemplateSyntaxHighlighter>
+            </pre>
+          </div>
+        ) : (
+          <>
+            {frontmatter?.isbn ? (
+              // If the note has an ISBN, show the book cover
+              <div className="mb-3 inline-flex">
+                <BookCover isbn={`${frontmatter.isbn}`} />
+              </div>
+            ) : null}
+            {typeof frontmatter?.github === "string" ? (
+              // If the note has a GitHub username, show the GitHub avatar
+              <div className="mb-3 inline-flex">
+                <GitHubAvatar username={frontmatter.github} />
+              </div>
+            ) : null}
+            <MarkdownBody>{content}</MarkdownBody>
+            <Frontmatter frontmatter={frontmatter} />
+          </>
+        )}
+      </div>
+    </MarkdownContext.Provider>
   )
 })
 
@@ -132,6 +144,7 @@ function MarkdownBody({ children }: { children: string }) {
       components={{
         a: Link,
         img: Image,
+        input: Checkbox,
         // Delegate rendering of the <pre> element to the Code component
         pre: ({ children }) => <>{children}</>,
         code: Code,
@@ -403,6 +416,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
   return <code>{JSON.stringify(value)}</code>
 }
 
+/** Adds the appropriate suffix to a number (e.g. "1st", "2nd", "3rd", "4th", etc.) */
 function withSuffix(num: number): string {
   const lastDigit = num % 10
   const lastTwoDigits = num % 100
@@ -499,6 +513,43 @@ function Code({ className, inline, children }: CodeProps) {
     <pre>
       <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
     </pre>
+  )
+}
+
+function Checkbox({ checked }: { checked?: boolean }) {
+  const { markdown, onChange } = React.useContext(MarkdownContext)
+
+  return (
+    <input
+      type="checkbox"
+      checked={checked}
+      disabled={!onChange}
+      onChange={(event) => {
+        // Find the index of the checkbox that was clicked
+        const container = event.target.closest(".markdown")
+
+        if (!container) return
+
+        const checkboxElements = container.querySelectorAll("input[type=checkbox]")
+
+        const index = Array.from(checkboxElements).indexOf(event.target)
+
+        if (index === -1) return
+
+        // Find all the checkboxes in the markdown string
+        const markdownCheckboxes = Array.from(markdown.matchAll(/- \[[ x]\]/g))
+
+        if (index >= markdownCheckboxes.length) return
+
+        // Update the corresponding checkbox in the markdown string
+        const newValue =
+          markdown.slice(0, markdownCheckboxes[index].index) +
+          (event.target.checked ? "- [x]" : "- [ ]") +
+          markdown.slice((markdownCheckboxes[index].index ?? 0) + 5)
+
+        onChange?.(newValue)
+      }}
+    />
   )
 }
 

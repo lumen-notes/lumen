@@ -338,7 +338,7 @@ body:has([data-resizing="true"]) * {
 
 .markdown ul,
 .markdown ol {
-  @apply pl-12;
+  @apply pl-9;
 }
 
 .markdown li:has(p) {
