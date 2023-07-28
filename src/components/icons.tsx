@@ -455,9 +455,9 @@ export function TriangleRightIcon8({ className }: { className?: string }) {
   )
 }
 
-export function CheckIcon16() {
+export function CheckIcon16({ className }: { className?: string }) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="m12.05 4.85-4.95 6.6a.75.75 0 0 1-1.186.019L3.446 8.383l1.171-.937 1.864 2.33L10.85 3.95l1.2.9Z" />{" "}
     </svg>
   )

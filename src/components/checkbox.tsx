@@ -15,8 +15,8 @@ export const Checkbox = React.forwardRef<
     )}
     {...props}
   >
-    <CheckboxPrimitive.Indicator className="text-bg">
-      <CheckIcon16 />
+    <CheckboxPrimitive.Indicator>
+      <CheckIcon16 className="text-bg coarse:h-5 coarse:w-5" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))
