@@ -1,5 +1,9 @@
 name: Lumen
 on: [workflow_call]
+# Cancel running workflow when a new workflow is triggered on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   lumen:
     runs-on: ubuntu-latest
