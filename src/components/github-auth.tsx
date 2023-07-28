@@ -95,7 +95,7 @@ export function SignedInUser() {
     <Card className="flex items-center justify-between px-4 py-4">
       <div className="flex flex-col gap-1 coarse:gap-2">
         <span className="text-sm leading-3 text-text-secondary">Account</span>
-        <span className="font-semibold leading-5">
+        <span className="leading-5">
           <GitHubAvatar username={githubUser.username} size={16} className="mr-1 align-middle" />
           {githubUser.username}
         </span>
