@@ -6,6 +6,7 @@ import { DotIcon8, TagIcon24, TriangleRightIcon8 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
+import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
@@ -136,13 +137,12 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
           </div>
         )}
         <span className="py-2 leading-4 ">
-          <Link
-            className="focus-ring inline-block rounded-full bg-bg-secondary px-2 py-1 leading-4 ring-1 ring-inset ring-border-secondary hover:bg-bg-tertiary coarse:px-3 coarse:py-2"
-            to={`/tags/${[...path, node.name].join("/")}`}
-            target="_blank"
-          >
-            {node.name} <span className="text-text-secondary">{node.count}</span>
-          </Link>
+          <PillButton asChild>
+            <Link to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
+              {node.name}
+              <span className="text-text-secondary">{node.count}</span>
+            </Link>
+          </PillButton>
         </span>
       </div>
       <div hidden={!isExpanded}>

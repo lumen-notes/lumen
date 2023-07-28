@@ -6,11 +6,13 @@ import { pluralize } from "../utils/pluralize"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
+import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, ListIcon16 } from "./icons"
+import { CardsIcon16, ListIcon16, TagIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
+import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
 type NoteListProps = {
@@ -66,6 +68,27 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     }
   }, [bottomInView, loadMore])
 
+  const numVisibleTags = 4
+
+  const sortedTagFrequencies = React.useMemo(() => {
+    const frequencyMap = new Map<string, number>()
+
+    for (const [, note] of searchResults) {
+      for (const tag of note.tags) {
+        frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
+      }
+    }
+
+    return (
+      [...frequencyMap.entries()]
+        // Filter out tags that every note has
+        .filter(([, frequency]) => frequency < searchResults.length)
+        .sort((a, b) => b[1] - a[1])
+    )
+  }, [searchResults])
+
+  console.log(sortedTagFrequencies)
+
   return (
     <div>
       <div className="flex flex-col gap-4">
@@ -97,6 +120,39 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </span>
           ) : null}
         </div>
+
+        {sortedTagFrequencies.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
+              <PillButton
+                key={tag}
+                onClick={() => setQuery(query ? `${query} tag:${tag}` : `tag:${tag}`)}
+              >
+                {tag}
+                <span className="text-text-secondary">{frequency}</span>
+              </PillButton>
+            ))}
+            {sortedTagFrequencies.length > numVisibleTags ? (
+              <DropdownMenu>
+                <DropdownMenu.Trigger asChild>
+                  <PillButton variant="outline">+ {sortedTagFrequencies.length - 5}</PillButton>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
+                    <DropdownMenu.Item
+                      key={tag}
+                      icon={<TagIcon16 />}
+                      trailingVisual={<span className="text-text-secondary">{frequency}</span>}
+                      onClick={() => setQuery(query ? `${query} tag:${tag}` : `tag:${tag}`)}
+                    >
+                      {tag}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            ) : null}
+          </div>
+        ) : null}
 
         {viewType === "cards"
           ? searchResults.slice(0, numVisibleNotes).map(([id]) => <NoteCard key={id} id={id} />)
