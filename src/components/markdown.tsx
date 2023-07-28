@@ -27,7 +27,9 @@ import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search-notes"
 import { Card } from "./card"
+import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
+import { GitHubAvatar } from "./github-avatar"
 import {
   GitHubIcon16,
   GlobeIcon16,
@@ -40,7 +42,6 @@ import {
 import { useLink } from "./link-context"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
-import { GitHubAvatar } from "./github-avatar"
 
 export type MarkdownProps = {
   children: string
@@ -144,7 +145,7 @@ function MarkdownBody({ children }: { children: string }) {
       components={{
         a: Link,
         img: Image,
-        input: Checkbox,
+        input: CheckboxInput,
         // Delegate rendering of the <pre> element to the Code component
         pre: ({ children }) => <>{children}</>,
         code: Code,
@@ -516,23 +517,26 @@ function Code({ className, inline, children }: CodeProps) {
   )
 }
 
-function Checkbox({ checked }: { checked?: boolean }) {
+function CheckboxInput({ checked }: { checked?: boolean }) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
+  const checkedRef = React.useRef<HTMLButtonElement>(null)
 
   return (
-    <input
-      type="checkbox"
+    <Checkbox
+      ref={checkedRef}
       checked={checked}
       disabled={!onChange}
-      onChange={(event) => {
+      onCheckedChange={(checked) => {
+        if (!checkedRef.current) return
+
         // Find the index of the checkbox that was clicked
-        const container = event.target.closest(".markdown")
+        const container = checkedRef.current.closest(".markdown")
 
         if (!container) return
 
-        const checkboxElements = container.querySelectorAll("input[type=checkbox]")
+        const checkboxElements = container.querySelectorAll("[role=checkbox]")
 
-        const index = Array.from(checkboxElements).indexOf(event.target)
+        const index = Array.from(checkboxElements).indexOf(checkedRef.current)
 
         if (index === -1) return
 
@@ -544,7 +548,7 @@ function Checkbox({ checked }: { checked?: boolean }) {
         // Update the corresponding checkbox in the markdown string
         const newValue =
           markdown.slice(0, markdownCheckboxes[index].index) +
-          (event.target.checked ? "- [x]" : "- [ ]") +
+          (checked ? "- [x]" : "- [ ]") +
           markdown.slice((markdownCheckboxes[index].index ?? 0) + 5)
 
         onChange?.(newValue)

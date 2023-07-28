@@ -353,15 +353,17 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown li {
-  @apply my-1;
+  @apply my-1 coarse:my-2;
 }
 
-.markdown li:has([type="checkbox"]) {
+.markdown li:has([type="checkbox"]),
+.markdown li:has([role="checkbox"]) {
   @apply relative list-none;
 }
 
-.markdown li [type="checkbox"] {
-  @apply absolute -left-2 h-5 -translate-x-full align-middle;
+.markdown li [type="checkbox"],
+.markdown li [role="checkbox"] {
+  @apply absolute -left-2 mt-0.5 -translate-x-full;
 }
 
 .markdown ::marker {
