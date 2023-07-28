@@ -19,7 +19,7 @@
     "test:coverage": "vitest run --coverage",
     "test:storybook": "test-storybook",
     "test:storybook:watch": "test-storybook --watch",
-    "test:storybook:ci": "concurrently -k -s first -n \"server,test\" -c \"magenta,blue\" \"npm run build:storybook --quiet && npx http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && npm run test:storybook\"",
+    "test:storybook:ci": "concurrently -k -s first -n \"storybook,test\" -c \"magenta,blue\" \"npm run build:storybook --quiet && npx http-server storybook-static --port 6006 --silent\" \"wait-on tcp:6006 && npm run test:storybook\"",
     "benchmark": "vite-node scripts/benchmark.ts",
     "postinstall": "patch-package"
   },
@@ -113,6 +113,7 @@
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.13",
+    "http-server": "^14.1.1",
     "patch-package": "^6.4.7",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
@@ -125,6 +126,7 @@
     "vite": "^4.4.5",
     "vite-node": "^0.24.3",
     "vitest": "^0.21.1",
+    "wait-on": "^7.0.1",
     "workbox-cli": "^6.5.4"
   },
   "prettier": {
