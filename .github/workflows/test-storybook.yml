@@ -1,18 +1,23 @@
 name: Storybook Tests
-on: deployment_status
+on:
+  issue_comment:
+    types: [edited]
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    # if: >-
-    #   github.event.deployment_status.state == 'success'
-    # ^ && github.event.deployment_status.?? => there must be a filter for the 'lumen-storybook' deployment
+    if: ${{ github.event.issue.pull_request }}
     steps:
-      - run: >-
-          echo '${{ github.event.check_run }}'
-          echo '${{ github.event.check_run.conclusion }}'
-          echo '${{ github.event.check_run.deployment }}'
-          echo '${{ github.event.check_run.details_url }}'
+      - run: |
+          echo A comment on PR $NUMBER
+          echo $SENDER
+          echo $COMMENT
+          echo $CHANGES
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+          SENDER: ${{ github.event.issue_comment.sender }}
+          COMMENT : ${{ github.event.issue_comment.comment }}
+          CHANGES : ${{ github.event.issue_comment.changes }}
       # - uses: actions/checkout@v3
       # - uses: actions/setup-node@v3
       #   with:
