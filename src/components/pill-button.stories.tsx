@@ -15,9 +15,9 @@ export const Fill = {
   },
 }
 
-export const Outline = {
+export const Dashed = {
   args: {
     children: "Pill button",
-    variant: "outline",
+    variant: "dashed",
   },
 }
