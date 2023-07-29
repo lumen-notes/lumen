@@ -71,7 +71,13 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
             tooltipSide={tooltipSide}
             end
           >
-            {({ isActive }) => (isActive ? <CalendarFillIcon24 /> : <CalendarIcon24 />)}
+            {({ isActive }) =>
+              isActive ? (
+                <CalendarFillIcon24 date={new Date().getDate()} />
+              ) : (
+                <CalendarIcon24 date={new Date().getDate()} />
+              )
+            }
           </NavLink>
         </li>
         <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>

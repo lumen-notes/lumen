@@ -111,17 +111,15 @@ export function CalendarIcon24({ date }: { date?: number }) {
         clipRule="evenodd"
         d="M5 3.5h14A1.5 1.5 0 0 1 20.5 5v14a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V5A1.5 1.5 0 0 1 5 3.5ZM2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5Zm16 2H6v1.5h12V7Z"
       />
-      {date !== undefined ? (
-        <text
-          textAnchor="middle"
-          x={12}
-          y={18}
-          fontSize="10px"
-          className="font-mono font-semibold leading-none"
-        >
-          {date}
-        </text>
-      ) : null}
+      <text
+        textAnchor="middle"
+        x={12}
+        y={18}
+        fontSize="10px"
+        className="font-mono font-semibold leading-none"
+      >
+        {date}
+      </text>
     </svg>
   )
 }
