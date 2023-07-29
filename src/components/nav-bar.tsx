@@ -116,7 +116,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item onClick={fetchNotes} disabled={!online}>
-                Reload
+                Refresh
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings
