@@ -136,9 +136,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             {sortedTagFrequencies.length > numVisibleTags ? (
               <DropdownMenu>
                 <DropdownMenu.Trigger asChild>
-                  <PillButton variant="dashed">
-                    +{sortedTagFrequencies.length - numVisibleTags}
-                  </PillButton>
+                  <PillButton variant="dashed">Show more</PillButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content>
                   {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
