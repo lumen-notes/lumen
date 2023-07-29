@@ -8,10 +8,17 @@ export default {
   },
 }
 
-export const Fill = {
+export const Primary = {
   args: {
     children: "Pill button",
-    variant: "fill",
+    variant: "primary",
+  },
+}
+
+export const Secondary = {
+  args: {
+    children: "Pill button",
+    variant: "secondary",
   },
 }
 

@@ -463,6 +463,14 @@ export function CheckIcon16({ className }: { className?: string }) {
   )
 }
 
+export function CloseIcon12({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-3 w-3", className)} viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+      <path d="M10.56 2.5 7.008 6.054 10.56 9.48l-1.04 1.08-3.574-3.446L2.5 10.56 1.44 9.5l3.426-3.427L1.44 2.77l1.04-1.08 3.447 3.324L9.5 1.439 10.56 2.5Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

@@ -3,12 +3,12 @@ import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { templateSchema } from "../types"
 import { pluralize } from "../utils/pluralize"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { parseQuery, useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
@@ -22,14 +22,14 @@ type NoteListProps = {
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
-  const parseQuery = React.useCallback((value: unknown): string => {
+  const parseQueryParam = React.useCallback((value: unknown): string => {
     return typeof value === "string" ? value : ""
   }, [])
 
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",
     schema: z.string(),
-    parse: parseQuery,
+    parse: parseQueryParam,
     replace: true,
   })
 
@@ -87,6 +87,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     )
   }, [searchResults])
 
+  const tagQualifiers = React.useMemo(() => {
+    return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
+  }, [deferredQuery])
+
   return (
     <div>
       <div className="flex flex-col gap-4">
@@ -119,8 +123,36 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           ) : null}
         </div>
 
-        {sortedTagFrequencies.length > 0 ? (
+        {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
           <div className="flex flex-wrap gap-2">
+            {tagQualifiers.map((qualifier) => (
+              <PillButton
+                key={qualifier.values.join(",")}
+                variant="primary"
+                onClick={() => {
+                  const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(",")}`
+
+                  const index = query.indexOf(text)
+
+                  if (index === -1) return
+
+                  const newQuery =
+                    query.slice(0, index) + query.slice(index + text.length).trimStart()
+
+                  // Remove the tag qualifier from the query
+                  setQuery(newQuery.trim())
+                }}
+              >
+                {qualifier.exclude ? <span className="italic">not</span> : null}
+                {qualifier.values.map((value, index) => (
+                  <React.Fragment key={value}>
+                    {index > 0 ? <span className="italic">or</span> : null}
+                    <span key={value}>{value}</span>
+                  </React.Fragment>
+                ))}
+                <CloseIcon12 className="-mr-0.5" />
+              </PillButton>
+            ))}
             {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
               <PillButton
                 key={tag}
