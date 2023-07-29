@@ -29,14 +29,26 @@ type ItemProps = RadixDropdownMenu.DropdownMenuItemProps &
     icon?: React.ReactNode
     shortcut?: string[]
     trailingVisual?: React.ReactNode
+    variant?: "default" | "danger"
   }
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
-  ({ className, icon, shortcut, trailingVisual, href, children, ...props }, ref) => {
+  ({ className, icon, shortcut, trailingVisual, variant, href, children, ...props }, ref) => {
     const content = (
       <>
-        <div className="flex flex-grow items-center gap-3 coarse:gap-4">
-          {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
+        <div
+          className={cx(
+            "flex flex-grow items-center gap-3 coarse:gap-4",
+            variant === "danger" && "text-text-danger",
+          )}
+        >
+          {icon ? (
+            <div
+              className={cx("flex text-text-secondary", variant === "danger" && "text-text-danger")}
+            >
+              {icon}
+            </div>
+          ) : null}
           <span>{children}</span>
         </div>
         {trailingVisual}

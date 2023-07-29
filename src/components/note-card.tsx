@@ -232,6 +232,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             ) : null}
             <DropdownMenu.Separator />
             <DropdownMenu.Item
+              variant="danger"
               icon={<TrashIcon16 />}
               onSelect={() => handleDeleteNote(id)}
               shortcut={["⌘", "⌫"]}

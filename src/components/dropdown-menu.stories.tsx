@@ -27,7 +27,7 @@ export const Default = {
             Open in GitHub
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
-          <DropdownMenu.Item icon={<TrashIcon16 />} shortcut={["⌘", "⌫"]} disabled>
+          <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} shortcut={["⌘", "⌫"]} disabled>
             Delete
           </DropdownMenu.Item>
         </DropdownMenu.Content>
