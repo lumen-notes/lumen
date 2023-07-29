@@ -469,6 +469,21 @@ export function CloseIcon12({ className }: { className?: string }) {
   )
 }
 
+export function ShareIcon16({ className, ...props }: React.ComponentPropsWithoutRef<"svg">) {
+  return (
+    <svg
+      className={cx("h-4 w-4", className)}
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden
+      {...props}
+    >
+      <path d="M8 .19 3.69 4.5l1.06 1.06 2.5-2.5V11h1.5V3.06l2.5 2.5 1.06-1.06L8 .19Z" />
+      <path d="M1 9v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9h-1.5v5a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V9H1Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

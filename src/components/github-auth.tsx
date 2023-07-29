@@ -77,7 +77,7 @@ export function SignInButton({ className }: { className?: string }) {
         }&state=${
           // URL to redirect to after signing in
           encodeURIComponent(window.location.href)
-        }&scope=repo`
+        }&scope=repo,gist`
       }}
     >
       Sign in with GitHub

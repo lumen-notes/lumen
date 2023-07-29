@@ -4,14 +4,22 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { githubRepoAtom, notesAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom, notesAtom } from "../global-atoms"
 import { NoteId } from "../types"
+import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CopyIcon16, EditIcon16, ExternalLinkIcon16, MoreIcon16, TrashIcon16 } from "./icons"
+import {
+  CopyIcon16,
+  EditIcon16,
+  ExternalLinkIcon16,
+  MoreIcon16,
+  ShareIcon16,
+  TrashIcon16,
+} from "./icons"
 import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
@@ -25,6 +33,7 @@ type NoteCardProps = {
 export function NoteCard({ id, elevation }: NoteCardProps) {
   const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
   const note = useAtomValue(noteAtom)
+  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const deleteNote = useDeleteNote()
   const upsertNote = useUpsertNote()
@@ -220,16 +229,35 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Open in new window
             </DropdownMenu.Item>
-            {githubRepo ? (
-              <DropdownMenu.Item
-                icon={<ExternalLinkIcon16 />}
-                href={`https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${id}.md`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in GitHub
-              </DropdownMenu.Item>
-            ) : null}
+            <DropdownMenu.Item
+              icon={<ExternalLinkIcon16 />}
+              href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in GitHub
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<ShareIcon16 />}
+              onSelect={async () => {
+                const url = await exportAsGist({
+                  githubToken: githubUser?.token ?? "",
+                  noteId: id,
+                  note,
+                })
+
+                // TODO: Show a toast
+
+                // Copy Gist URL to clipboard
+                copy(url)
+
+                // Open Gist in new tab
+                window.open(url, "_blank")
+              }}
+            >
+              Export as Gist
+            </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
               variant="danger"
