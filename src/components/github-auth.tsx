@@ -11,6 +11,7 @@ import { GitHubAvatar } from "./github-avatar"
 import { Input } from "./input"
 import { LumenLogo } from "./lumen-logo"
 import { RepoForm } from "./repo-form"
+import { LoadingIcon16 } from "./icons"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
@@ -20,7 +21,6 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   React.useEffect(() => {
     // Get token and username from URL
     const token = new URLSearchParams(window.location.search).get("token")
-    // TODO: why use window.location.search instead of useSearchParam("username")
     const username = new URLSearchParams(window.location.search).get("username")
 
     if (token && username) {
@@ -137,11 +137,12 @@ export function useSignOut() {
 function UseGithubToken() {
   const githubPersonalTokenInput = "github-personal-token"
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
-
+  const [isLoading, setIsLoading] = useState(false)
   return (
     <form
       className="flex flex-grow flex-col gap-4"
       onSubmit={async (event) => {
+        setIsLoading(true)
         event.preventDefault()
         try {
           const formData = new FormData(event.currentTarget)
@@ -152,6 +153,8 @@ function UseGithubToken() {
           console.error("UseGithubToken", error)
           // @ts-ignore
           setErrorMessage(error.toString())
+        } finally {
+          setIsLoading(false)
         }
       }}
     >
@@ -164,8 +167,8 @@ function UseGithubToken() {
       <h4 className={clsx("text-center text-text-danger", !errorMessage && "hidden")}>
         {errorMessage}
       </h4>
-      <Button variant="primary" type="submit">
-        Use GitHub Personal Token
+      <Button variant="primary" type="submit" disabled={isLoading}>
+        {isLoading ? <LoadingIcon16 /> : "Use GitHub Personal Token"}
       </Button>
     </form>
   )
