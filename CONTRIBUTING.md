@@ -1,5 +1,6 @@
 # Contributing
 
+<!-- TODO: update -->
 ## Local development
 
 1. Clone the repository using your preferred method:
@@ -15,7 +16,7 @@
    gh repo clone lumen-notes/lumen
    ```
 
-1. Create a `.env.local` file in the root directory with the following variables:
+2. Create a `.env.local` file in the root directory with the following variables:
 
    ```shell
    VITE_GITHUB_CLIENT_ID=30db9c210d682a9624e7
@@ -24,16 +25,16 @@
 
    > Note: Ask @colebemis for the `GITHUB_CLIENT_SECRET` value.
 
-1. Install the dependencies:
+3. Install the dependencies:
 
    ```shell
    npm install
    ```
 
-1. Start the development server:
+4. Start the development server:
 
    ```shell
    npm run dev:netlify
    ```
 
-1. Open the app at http://localhost:8888.
+5. Open the app at http://localhost:8888.

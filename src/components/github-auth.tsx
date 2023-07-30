@@ -1,5 +1,6 @@
+import clsx from "clsx"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import React from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
@@ -7,6 +8,7 @@ import { shaAtom } from "../utils/github-sync"
 import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
+import { Input } from "./input"
 import { LumenLogo } from "./lumen-logo"
 import { RepoForm } from "./repo-form"
 
@@ -18,6 +20,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   React.useEffect(() => {
     // Get token and username from URL
     const token = new URLSearchParams(window.location.search).get("token")
+    // TODO: why use window.location.search instead of useSearchParam("username")
     const username = new URLSearchParams(window.location.search).get("username")
 
     if (token && username) {
@@ -66,7 +69,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   )
 }
 
-export function SignInButton({ className }: { className?: string }) {
+function SignInButton({ className }: { className?: string }) {
   return (
     <Button
       variant="primary"
@@ -89,7 +92,19 @@ export function SignedInUser() {
   const githubUser = useAtomValue(githubUserAtom)
   const signOut = useSignOut()
 
-  if (!githubUser) return <SignInButton />
+  if (!githubUser) {
+    return (
+      <>
+        {import.meta.env.DEV && (
+          <>
+            <UseGithubToken />
+            <div className="h-px bg-border-secondary" />
+          </>
+        )}
+        <SignInButton />
+      </>
+    )
+  }
 
   return (
     <Card className="flex items-center justify-between px-4 py-4">
@@ -117,4 +132,60 @@ export function useSignOut() {
     // Always refetch notes when signing back in
     setSha(null)
   }
+}
+
+function UseGithubToken() {
+  const githubPersonalTokenInput = "github-personal-token"
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+
+  return (
+    <form
+      className="flex flex-grow flex-col gap-4"
+      onSubmit={async (event) => {
+        event.preventDefault()
+        try {
+          const formData = new FormData(event.currentTarget)
+          const githubPersonalToken = String(formData.get(githubPersonalTokenInput))
+          const username = await getUsername(githubPersonalToken)
+          window.location.href = `/?token=${githubPersonalToken}&username=${username}`
+        } catch (error) {
+          console.error("UseGithubToken", error)
+          // @ts-ignore
+          setErrorMessage(error.toString())
+        }
+      }}
+    >
+      <Input
+        name={githubPersonalTokenInput}
+        placeholder="GitHub Personal Token"
+        spellCheck={false}
+        required
+      />
+      <h4 className={clsx("text-center text-text-danger", !errorMessage && "hidden")}>
+        {errorMessage}
+      </h4>
+      <Button variant="primary" type="submit">
+        Use GitHub Personal Token
+      </Button>
+    </form>
+  )
+}
+
+async function getUsername(token: string) {
+  const response = await fetch("https://api.github.com/user", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  if (response.status === 401) {
+    throw new Error("Invalid token")
+  }
+  if (!response.ok) {
+    throw new Error("Unknown error")
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { login: username } = (await response.json()) as any
+
+  return username
 }
