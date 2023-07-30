@@ -97,7 +97,7 @@ export function SignedInUser() {
       <>
         {import.meta.env.DEV && (
           <>
-            <UseGithubToken />
+            <SignInWithToken />
             <div className="h-px bg-border-secondary" />
           </>
         )}
@@ -134,7 +134,7 @@ export function useSignOut() {
   }
 }
 
-function UseGithubToken() {
+function SignInWithToken() {
   const githubPersonalTokenInput = "github-personal-token"
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(false)
