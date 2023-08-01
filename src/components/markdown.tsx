@@ -7,6 +7,7 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkGfm from "remark-gfm"
+import remarkEmoji from "remark-emoji"
 import { sentenceCase } from "sentence-case"
 import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
@@ -120,7 +121,7 @@ function MarkdownBody({ children }: { children: string }) {
   return (
     <ReactMarkdown
       className="markdown"
-      remarkPlugins={[remarkGfm, remarkNoteLink, remarkTagLink, remarkDateLink]}
+      remarkPlugins={[remarkGfm, remarkEmoji, remarkNoteLink, remarkTagLink, remarkDateLink]}
       remarkRehypeOptions={{
         handlers: {
           // TODO: Improve type-safety of `node`
