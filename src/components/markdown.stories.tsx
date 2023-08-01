@@ -296,3 +296,14 @@ export const TaskList: StoryObj<typeof Markdown> = {
     expect(checkboxes[0]).toBeChecked()
   },
 }
+
+const emoji = `# Emoji
+
+:smile: :+1: :rocket: :tada: :sparkles: :heart: :fire: :100: :clap: :pray: :muscle: :sparkling_heart: :ok_hand: :handshake: :pray: :heart_eyes: :sunglasses:
+`
+
+export const Emoji: StoryObj<typeof Markdown> = {
+  args: {
+    children: emoji,
+  },
+}

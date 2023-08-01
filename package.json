@@ -68,6 +68,7 @@
     "react-markdown": "^8.0.3",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.4.0",
+    "remark-emoji": "^3.1.2",
     "remark-gfm": "^3.0.1",
     "sentence-case": "^3.0.4",
     "tailwind-merge": "^1.8.1",
