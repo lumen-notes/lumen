@@ -367,7 +367,7 @@ function emojiCompletion(context: CompletionContext): CompletionResult | null {
     from: start,
     options: results.slice(0, 10).map((result) => ({
       label: `${result.emoji} ${result.name}`,
-      apply: `:${result.name}:`,
+      apply: result.emoji,
     })),
     filter: false,
   }
