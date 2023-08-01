@@ -58,6 +58,7 @@
     "micromark-util-types": "^1.0.2",
     "mime": "^3.0.0",
     "netlify-cli": "^15.9.1",
+    "node-emoji": "^2.1.0",
     "prismjs": "^1.29.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
