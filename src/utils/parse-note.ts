@@ -1,13 +1,17 @@
+import memoize from "fast-memoize"
 import { fromMarkdown } from "mdast-util-from-markdown"
+import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
+import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
-import { NoteId } from "../types"
-import { parseFrontmatter } from "./parse-frontmatter"
-import memoize from "fast-memoize"
+import { NoteId, Task } from "../types"
 import { getNextBirthday, toDateStringUtc } from "./date"
+import { parseFrontmatter } from "./parse-frontmatter"
+
+export const TASK_TAG = "task"
 
 /**
  * Extract metadata from a note.
@@ -15,23 +19,33 @@ import { getNextBirthday, toDateStringUtc } from "./date"
  * We memoize this function because it's called a lot and it's expensive.
  * We're intentionally sacrificing memory usage for runtime performance.
  */
-export const parseNote = memoize((rawBody: string) => {
+export const parseNote = memoize((id: NoteId, rawBody: string) => {
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
   const dates = new Set<string>()
   const links = new Set<NoteId>()
   const queries = new Set<string>()
+  const tasks: Task[] = []
 
   const { frontmatter } = parseFrontmatter(rawBody)
 
-  const mdast = fromMarkdown(rawBody, {
-    // Note: It's important that dateLink is included after noteLink.
-    // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
-    // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
-    extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
-  })
+  // Note: It's important that dateLink is included after noteLink.
+  // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
+  // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
+  const mdast = fromMarkdown(
+    rawBody,
+    // @ts-ignore TODO: Fix types
+    {
+      extensions: [gfmTaskListItem(), noteLink(), tagLink(), dateLink()],
+      mdastExtensions: [
+        gfmTaskListItemFromMarkdown(),
+        noteLinkFromMarkdown(),
+        tagLinkFromMarkdown(),
+        dateLinkFromMarkdown(),
+      ],
+    },
+  )
 
   visit(mdast, (node) => {
     switch (node.type) {
@@ -76,6 +90,47 @@ export const parseNote = memoize((rawBody: string) => {
         if (node.lang === "query") {
           queries.add(node.value)
         }
+        break
+      }
+
+      case "listItem": {
+        // Task list item
+        if (node.checked !== null && node.checked !== undefined) {
+          if (!node.position?.start) break
+
+          const text =
+            rawBody
+              .slice(node.position.start.offset, node.position?.end.offset)
+              // "- [ ] Example" -> "Example"
+              .match(/\[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
+
+          const title =
+            text
+              // Remove dates
+              .replace(/\[\[\d{4}-\d{2}-\d{2}\]\]/g, "")
+              // Remove tags
+              .replace(/#[a-zA-Z][\w-/]*/g, "")
+              // Remove extra spaces
+              .replace(/ +/g, " ")
+              .trim() || ""
+
+          const { dates, links, tags } = parseNote(id, text)
+
+          // Only add tasks with the `task` tag
+          if (!tags.includes(TASK_TAG)) break
+
+          tasks.push({
+            noteId: id,
+            start: node.position.start,
+            rawBody: text,
+            completed: node.checked,
+            title,
+            dates,
+            links,
+            tags,
+          })
+        }
+        break
       }
     }
   })
@@ -107,5 +162,6 @@ export const parseNote = memoize((rawBody: string) => {
     links: Array.from(links),
     tags: Array.from(tags),
     queries: Array.from(queries),
+    tasks,
   }
 })

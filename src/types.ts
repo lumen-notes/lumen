@@ -1,8 +1,12 @@
+import { Point } from "unist"
 import { z } from "zod"
 
 export type NoteId = string
 
 export type Note = {
+  // Markdown file name
+  id: NoteId
+
   // Raw body of the markdown file
   rawBody: string
 
@@ -14,9 +18,21 @@ export type Note = {
   links: NoteId[]
   tags: string[]
   queries: string[]
+  tasks: Task[]
 
   // Derived from links
   backlinks: NoteId[]
+}
+
+export type Task = {
+  noteId: NoteId
+  start: Point
+  rawBody: string
+  completed: boolean
+  title: string
+  dates: string[]
+  links: NoteId[]
+  tags: string[]
 }
 
 export type GitHubRepository = {
