@@ -94,18 +94,22 @@ export const parseNote = memoize((rawBody: string) => {
       case "listItem": {
         // Task list item
         if (node.checked !== null && node.checked !== undefined) {
-          const id = window.crypto.randomUUID()
+          // const id = window.crypto.randomUUID()
           const text =
             rawBody
               .slice(node.position?.start.offset, node.position?.end.offset)
               // "- [ ] Example" -> "Example"
               .match(/\[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
 
+          const { dates, links, tags } = parseNote(text)
+
           tasks.push({
-            id,
             start: node.position?.start,
             rawBody: text,
             completed: node.checked,
+            dates,
+            links,
+            tags,
           })
         }
         break

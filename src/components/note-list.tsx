@@ -29,6 +29,7 @@ type NoteListProps = {
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
   const upsertNote = useUpsertNote()
+  const Link = useLink()
 
   const parseQueryParam = React.useCallback((value: unknown): string => {
     return typeof value === "string" ? value : ""
@@ -65,7 +66,14 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     replace: true,
   })
 
-  const Link = useLink()
+  const tasks = React.useMemo(() => {
+    return (
+      searchResults
+        .flatMap(([id, note]) => note.tasks.map((task) => ({ id, note, task })))
+        // .filter((task) => !task.completed)
+        .sort((a, b) => (a.task.completed === b.task.completed ? 0 : a.task.completed ? 1 : -1))
+    )
+  }, [searchResults])
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
@@ -88,10 +96,13 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    for (const [, note] of searchResults) {
-      for (const tag of note.tags) {
-        frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
-      }
+    const tags =
+      viewType === "tasks"
+        ? tasks.flatMap((task) => task.note.tags)
+        : searchResults.flatMap(([, note]) => note.tags)
+
+    for (const tag of tags) {
+      frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
     }
 
     return (
@@ -100,7 +111,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         .filter(([, frequency]) => frequency < searchResults.length)
         .sort((a, b) => b[1] - a[1])
     )
-  }, [searchResults])
+  }, [viewType, tasks, searchResults])
 
   const tagQualifiers = React.useMemo(() => {
     return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
@@ -112,7 +123,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
-              placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
+              placeholder={
+                viewType === "tasks"
+                  ? `Search ${pluralize(tasks.length, "task")}…`
+                  : `Search ${pluralize(searchResults.length, "note")}…`
+              }
               value={query}
               onChange={(value) => {
                 setQuery(value)
@@ -282,8 +297,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               )
               .map(({ id, note, task }) => (
                 <li
-                  key={task.id}
-                  className="flex items-start gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
+                  key={`${id}-${task.start?.offset}`}
+                  className="focus-ring flex items-start gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+                  tabIndex={0}
                 >
                   <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
                     <Checkbox

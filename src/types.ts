@@ -22,10 +22,12 @@ export type Note = {
 }
 
 export type Task = {
-  id: string
   start?: Point
   rawBody: string
   completed: boolean
+  dates: string[]
+  links: NoteId[]
+  tags: string[]
 }
 
 export type GitHubRepository = {
