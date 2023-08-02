@@ -25,6 +25,7 @@ export type Task = {
   start?: Point
   rawBody: string
   completed: boolean
+  title: string
   dates: string[]
   links: NoteId[]
   tags: string[]

@@ -1,7 +1,9 @@
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
-import { templateSchema } from "../types"
+import { Note, NoteId, Task, templateSchema } from "../types"
+import { formatDateDistance } from "../utils/date"
+import { useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { parseQuery, useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
@@ -16,7 +18,8 @@ import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { useUpsertNote } from "../utils/github-sync"
+import { PanelContext } from "./panels"
+import { useLocation } from "react-router-dom"
 
 const viewTypeSchema = z.enum(["list", "cards", "tasks"])
 
@@ -28,7 +31,6 @@ type NoteListProps = {
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const upsertNote = useUpsertNote()
   const Link = useLink()
 
   const parseQueryParam = React.useCallback((value: unknown): string => {
@@ -69,9 +71,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const tasks = React.useMemo(() => {
     return (
       searchResults
-        .flatMap(([id, note]) => note.tasks.map((task) => ({ id, note, task })))
-        // .filter((task) => !task.completed)
-        .sort((a, b) => (a.task.completed === b.task.completed ? 0 : a.task.completed ? 1 : -1))
+        // TODO: Filter out templates
+        .flatMap(([noteId, note]) => note.tasks.map((task) => ({ task, noteId, note })))
+      // TODO: Sort uncompleted tasks first
+      // .sort((a, b) => (a.task.completed === b.task.completed ? 0 : a.task.completed ? 1 : -1))
     )
   }, [searchResults])
 
@@ -289,36 +292,14 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
         {viewType === "tasks" ? (
           <ul className="flex flex-col">
-            {searchResults
-              .flatMap(([id, note]) => note.tasks.map((task) => ({ id, note, task })))
-              // .filter((task) => !task.completed)
-              .sort((a, b) =>
-                a.task.completed === b.task.completed ? 0 : a.task.completed ? 1 : -1,
-              )
-              .map(({ id, note, task }) => (
-                <li
-                  key={`${id}-${task.start?.offset}`}
-                  className="focus-ring flex items-start gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
-                  // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-                  tabIndex={0}
-                >
-                  <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
-                    <Checkbox
-                      checked={task.completed}
-                      onCheckedChange={(checked) => {
-                        upsertNote({
-                          id,
-                          rawBody:
-                            note.rawBody.slice(0, task.start?.offset) +
-                            (checked ? "- [x]" : "- [ ]") +
-                            note.rawBody.slice((task.start?.offset ?? 0) + 5),
-                        })
-                      }}
-                    />
-                  </span>
-                  <Markdown>{task.rawBody}</Markdown>
-                </li>
-              ))}
+            {tasks.map(({ task, noteId, note }) => (
+              <TaskItem
+                key={`${noteId}-${task.start?.offset}`}
+                task={task}
+                noteId={noteId}
+                note={note}
+              />
+            ))}
           </ul>
         ) : null}
       </div>
@@ -341,4 +322,52 @@ function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
     case "tasks":
       return <TaskListIcon16 />
   }
+}
+
+function TaskItem({ task, noteId, note }: { task: Task; noteId: NoteId; note: Note }) {
+  const upsertNote = useUpsertNote()
+  const Link = useLink()
+  const location = useLocation()
+  const panel = React.useContext(PanelContext)
+
+  const inCalendarPanel = panel ? panel.pathname === "/calendar" : location.pathname === "/calendar"
+
+  return (
+    <li
+      className="flex items-start gap-3 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-focus coarse:px-4 coarse:py-3"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+    >
+      <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
+        <Checkbox
+          checked={task.completed}
+          onCheckedChange={(checked) => {
+            upsertNote({
+              id: noteId,
+              rawBody:
+                note.rawBody.slice(0, task.start?.offset) +
+                (checked ? "- [x]" : "- [ ]") +
+                note.rawBody.slice((task.start?.offset ?? 0) + 5),
+            })
+          }}
+        />
+      </span>
+      <div className="space-y-1">
+        <Markdown>{task.title}</Markdown>
+        {!inCalendarPanel && task.dates.length > 0 ? (
+          <div className="text-text-secondary">
+            {/* TODO: Handle multiple dates */}
+            <Link
+              key={task.dates[0]}
+              to={`/calendar?date=${task.dates[0]}&v=tasks`}
+              target="_blank"
+              className="link"
+            >
+              {formatDateDistance(task.dates[0])}
+            </Link>
+          </div>
+        ) : null}
+      </div>
+    </li>
+  )
 }
