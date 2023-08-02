@@ -16,6 +16,7 @@ import React from "react"
 import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
@@ -278,10 +279,7 @@ function useNoteCompletion() {
         const { content } = parseFrontmatter(note?.rawBody || "")
         return {
           label: note?.title || note.id,
-          detail: note.tags
-            // Filter out tags that are parents of other tags
-            // Example: #foo #foo/bar -> #foo/bar
-            .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+          detail: removeParentTags(note.tags)
             .map((tag) => `#${tag}`)
             .join(" "),
           info: content,

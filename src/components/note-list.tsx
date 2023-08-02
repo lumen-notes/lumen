@@ -24,6 +24,7 @@ import { PanelContext } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 import { TagLink } from "./tag-link"
+import { removeParentTags } from "../utils/remove-parent-tags"
 
 const viewTypeSchema = z.enum(["list", "cards", "tasks"])
 
@@ -107,13 +108,30 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
     }
 
+    const frequencyEntries = [...frequencyMap.entries()]
+    console.log(
+      frequencyEntries.filter(([tag, frequency]) =>
+        frequencyEntries.filter(([otherTag]) => otherTag !== tag && otherTag.startsWith(tag)),
+      ),
+    )
+
     return (
-      [...frequencyMap.entries()]
+      frequencyEntries
         // Filter out tags that every note has
         .filter(
           ([, frequency]) =>
             frequency < (viewType === "tasks" ? taskResults.length : noteResults.length),
         )
+        // Filter out parent tags if the all the childs tag has the same frequency
+        .filter(([tag, frequency]) => {
+          const childTags = frequencyEntries.filter(
+            ([otherTag]) => otherTag !== tag && otherTag.startsWith(tag),
+          )
+
+          if (childTags.length === 0) return true
+
+          return !childTags.every(([, otherFrequency]) => otherFrequency === frequency)
+        })
         .sort((a, b) => b[1] - a[1])
     )
   }, [viewType, taskResults, noteResults])
@@ -278,10 +296,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                           : note.title || note.id}
                       </span>
                       <span className="ml-2 ">
-                        {note.tags
-                          // Filter out tags that are parents of other tags
-                          // Example: #foo #foo/bar -> #foo/bar
-                          .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+                        {removeParentTags(note.tags)
                           .map((tag) => `#${tag}`)
                           .join(" ")}
                       </span>
@@ -372,7 +387,7 @@ function TaskItem({ task }: { task: Task }) {
               {formatDateDistance(task.dates[0])}
             </Link>
           ) : null}
-          {task.tags.map((tag) => (
+          {removeParentTags(task.tags).map((tag) => (
             <TagLink key={tag} name={tag} />
           ))}
         </div>

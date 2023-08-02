@@ -11,6 +11,7 @@ import { tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
 import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
+import { removeParentTags } from "../utils/remove-parent-tags"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useSearchNotes } from "../utils/use-search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
@@ -182,10 +183,7 @@ export function CommandMenu() {
                         <span>{note.title || note.id}</span>
                       )}
                       <span className="text-text-secondary">
-                        {note.tags
-                          // Filter out tags that are parents of other tags
-                          // Example: #foo #foo/bar -> #foo/bar
-                          .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+                        {removeParentTags(note.tags)
                           .map((tag) => `#${tag}`)
                           .join(" ")}
                       </span>
