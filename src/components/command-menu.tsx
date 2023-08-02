@@ -164,22 +164,22 @@ export function CommandMenu() {
           ) : null}
           {deferredQuery ? (
             <Command.Group heading="Notes">
-              {noteResults.slice(0, numVisibleNotes).map(([id, note]) => {
+              {noteResults.slice(0, numVisibleNotes).map((note) => {
                 const parsedTemplate = templateSchema
                   .omit({ body: true })
                   .safeParse(note.frontmatter.template)
                 return (
                   <CommandItem
-                    key={id}
-                    value={id}
+                    key={note.id}
+                    value={note.id}
                     icon={<NoteFavicon note={note} />}
-                    onSelect={() => navigate(`/${id}`)}
+                    onSelect={() => navigate(`/${note.id}`)}
                   >
                     <span className="inline-flex gap-2">
                       {parsedTemplate.success ? (
                         <span>{parsedTemplate.data.name} template</span>
                       ) : (
-                        <span>{note.title || id}</span>
+                        <span>{note.title || note.id}</span>
                       )}
                       <span className="text-text-secondary">
                         {note.tags

@@ -570,9 +570,9 @@ function QueryResults({ query }: QueryResultsProps) {
 
   return (
     <ul>
-      {results.map(([id, note]) => (
-        <li key={id}>
-          <NoteLink id={id} text={note.title || id} />
+      {results.map((note) => (
+        <li key={note.id}>
+          <NoteLink id={note.id} text={note.title || note.id} />
         </li>
       ))}
     </ul>
