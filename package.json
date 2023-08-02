@@ -75,6 +75,7 @@
     "tailwind-merge": "^1.8.1",
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.0",
+    "urlcat": "^3.1.0",
     "yamljs": "^0.3.0",
     "zod": "^3.18.0"
   },

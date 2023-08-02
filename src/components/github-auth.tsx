@@ -2,6 +2,7 @@ import clsx from "clsx"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import urlcat from "urlcat"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { shaAtom } from "../utils/github-sync"
@@ -75,12 +76,11 @@ function SignInButton({ className }: { className?: string }) {
       variant="primary"
       className={cx("w-full", className)}
       onClick={() => {
-        window.location.href = `https://github.com/login/oauth/authorize?client_id=${
-          import.meta.env.VITE_GITHUB_CLIENT_ID
-        }&state=${
-          // URL to redirect to after signing in
-          encodeURIComponent(window.location.href)
-        }&scope=repo,gist`
+        window.location.href = urlcat("https://github.com/login/oauth/authorize", {
+          client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
+          state: window.location.href,
+          scope: "repo,gist",
+        })
       }}
     >
       Sign in with GitHub
