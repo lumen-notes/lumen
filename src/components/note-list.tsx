@@ -274,14 +274,18 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
         {viewType === "tasks" ? (
           <ul className="flex flex-col">
-            {searchResults.map(([id, note]) =>
-              note.tasks
-                // .filter((task) => !task.completed)
-                .map((task) => (
-                  <li
-                    key={task.id}
-                    className="flex items-center gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
-                  >
+            {searchResults
+              .flatMap(([id, note]) => note.tasks.map((task) => ({ id, note, task })))
+              // .filter((task) => !task.completed)
+              .sort((a, b) =>
+                a.task.completed === b.task.completed ? 0 : a.task.completed ? 1 : -1,
+              )
+              .map(({ id, note, task }) => (
+                <li
+                  key={task.id}
+                  className="flex items-start gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
+                >
+                  <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
                     <Checkbox
                       checked={task.completed}
                       onCheckedChange={(checked) => {
@@ -294,10 +298,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                         })
                       }}
                     />
-                    <Markdown>{task.rawBody}</Markdown>
-                  </li>
-                )),
-            )}
+                  </span>
+                  <Markdown>{task.rawBody}</Markdown>
+                </li>
+              ))}
           </ul>
         ) : null}
       </div>
