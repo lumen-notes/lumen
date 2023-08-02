@@ -11,6 +11,8 @@ import { NoteId, Task } from "../types"
 import { getNextBirthday, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
 
+export const TASK_TAG = "task"
+
 /**
  * Extract metadata from a note.
  *
@@ -113,6 +115,9 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
               .trim() || ""
 
           const { dates, links, tags } = parseNote(id, text)
+
+          // Only add tasks with the `task` tag
+          if (!tags.includes(TASK_TAG)) break
 
           tasks.push({
             noteId: id,
