@@ -1,6 +1,5 @@
-import clsx from "clsx"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
-import React, { useState } from "react"
+import React from "react"
 import { useNavigate } from "react-router-dom"
 import urlcat from "urlcat"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
@@ -9,10 +8,8 @@ import { shaAtom } from "../utils/github-sync"
 import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
-import { Input } from "./input"
 import { LumenLogo } from "./lumen-logo"
 import { RepoForm } from "./repo-form"
-import { LoadingIcon16 } from "./icons"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const navigate = useNavigate()
@@ -71,11 +68,28 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
 }
 
 function SignInButton({ className }: { className?: string }) {
+  const setGitHubUser = useSetAtom(githubUserAtom)
   return (
     <Button
       variant="primary"
       className={cx("w-full", className)}
-      onClick={() => {
+      onClick={async () => {
+        // Sign in with a personal access token in local development
+        if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
+          try {
+            const token = import.meta.env.VITE_GITHUB_PAT
+            const username = await getUsername(token)
+            setGitHubUser({ username, token })
+          } catch (error) {
+            console.error(error)
+          }
+          return
+        }
+        console.log(
+          "🚀 ===> ~ file: github-auth.tsx:72 ~ SignInButton ~ setGitHubUser:",
+          setGitHubUser,
+        )
+
         window.location.href = urlcat("https://github.com/login/oauth/authorize", {
           client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
           state: window.location.href,
@@ -92,19 +106,7 @@ export function SignedInUser() {
   const githubUser = useAtomValue(githubUserAtom)
   const signOut = useSignOut()
 
-  if (!githubUser) {
-    return (
-      <>
-        {import.meta.env.DEV && (
-          <>
-            <SignInWithToken />
-            <div className="h-px bg-border-secondary" />
-          </>
-        )}
-        <SignInButton />
-      </>
-    )
-  }
+  if (!githubUser) return <SignInButton />
 
   return (
     <Card className="flex items-center justify-between px-4 py-4">
@@ -132,46 +134,6 @@ export function useSignOut() {
     // Always refetch notes when signing back in
     setSha(null)
   }
-}
-
-function SignInWithToken() {
-  const githubPersonalTokenInput = "github-personal-token"
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
-  const [isLoading, setIsLoading] = useState(false)
-  return (
-    <form
-      className="flex flex-grow flex-col gap-4"
-      onSubmit={async (event) => {
-        setIsLoading(true)
-        event.preventDefault()
-        try {
-          const formData = new FormData(event.currentTarget)
-          const githubPersonalToken = String(formData.get(githubPersonalTokenInput))
-          const username = await getUsername(githubPersonalToken)
-          window.location.href = `/?token=${githubPersonalToken}&username=${username}`
-        } catch (error) {
-          console.error("UseGithubToken", error)
-          // @ts-ignore
-          setErrorMessage(error.toString())
-        } finally {
-          setIsLoading(false)
-        }
-      }}
-    >
-      <Input
-        name={githubPersonalTokenInput}
-        placeholder="GitHub Personal Token"
-        spellCheck={false}
-        required
-      />
-      <h4 className={clsx("text-center text-text-danger", !errorMessage && "hidden")}>
-        {errorMessage}
-      </h4>
-      <Button variant="primary" type="submit" disabled={isLoading}>
-        {isLoading ? <LoadingIcon16 /> : "Use GitHub Personal Token"}
-      </Button>
-    </form>
-  )
 }
 
 async function getUsername(token: string) {
