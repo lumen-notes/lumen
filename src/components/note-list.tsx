@@ -366,7 +366,7 @@ function TaskItem({ task }: { task: Task }) {
           {!inCalendarPanel && task.dates.length > 0 ? (
             <Link
               key={task.dates[0]}
-              to={`/calendar?date=${task.dates[0]}&v=tasks`}
+              to={`/calendar?date=${task.dates[0]}`}
               target="_blank"
               className="link"
             >
