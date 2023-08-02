@@ -98,6 +98,12 @@ export function filterResults<T extends Note | Task>(results: Array<T>, qualifie
 
 export function testQualifiers(qualifiers: Qualifier[], item: Note | Task) {
   return qualifiers.every((qualifier) => {
+    const frontmatter =
+      "frontmatter" in item
+        ? item.frontmatter
+        : // Add `completed` state to task frontmatter
+          { completed: item.completed }
+
     let value = false
 
     switch (qualifier.key) {
@@ -168,8 +174,7 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note | Task) {
             case "links":
               return item.links.length === 0
             default:
-              if (!("frontmatter" in item)) return false
-              return !(value in item.frontmatter)
+              return !(value in frontmatter)
           }
         })
         break
@@ -191,18 +196,15 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note | Task) {
             case "links":
               return item.links.length === 0
             default:
-              if (!("frontmatter" in item)) return false
-              return !(value in item.frontmatter)
+              return !(value in frontmatter)
           }
         })
         break
 
       default:
-        if (!("frontmatter" in item)) break
-
-        if (qualifier.key in item.frontmatter) {
+        if (qualifier.key in frontmatter) {
           // Match if the item's frontmatter value is in the qualifier's values
-          value = qualifier.values.includes(String(item.frontmatter[qualifier.key]))
+          value = qualifier.values.includes(String(frontmatter[qualifier.key]))
         }
         break
     }
