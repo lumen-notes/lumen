@@ -1,3 +1,4 @@
+import { Point } from "unist"
 import { z } from "zod"
 
 export type NoteId = string
@@ -14,9 +15,17 @@ export type Note = {
   links: NoteId[]
   tags: string[]
   queries: string[]
+  tasks: Task[]
 
   // Derived from links
   backlinks: NoteId[]
+}
+
+export type Task = {
+  id: string
+  start?: Point
+  rawBody: string
+  completed: boolean
 }
 
 export type GitHubRepository = {

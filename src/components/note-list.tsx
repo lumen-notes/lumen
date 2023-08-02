@@ -6,14 +6,21 @@ import { pluralize } from "../utils/pluralize"
 import { parseQuery, useSearchNotes } from "../utils/use-search-notes"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
+import { Checkbox } from "./checkbox"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16, TaskListIcon16 } from "./icons"
 import { useLink } from "./link-context"
+import { Markdown } from "./markdown"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
+import { useUpsertNote } from "../utils/github-sync"
+
+const viewTypeSchema = z.enum(["list", "cards", "tasks"])
+
+type ViewType = z.infer<typeof viewTypeSchema>
 
 type NoteListProps = {
   baseQuery?: string
@@ -21,6 +28,7 @@ type NoteListProps = {
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
+  const upsertNote = useUpsertNote()
 
   const parseQueryParam = React.useCallback((value: unknown): string => {
     return typeof value === "string" ? value : ""
@@ -39,13 +47,20 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
-  const parseViewType = React.useCallback((value: unknown): "list" | "cards" => {
-    return value === "list" ? "list" : "cards"
+  const parseViewType = React.useCallback((value: unknown): ViewType => {
+    switch (value) {
+      case "list":
+        return "list"
+      case "tasks":
+        return "tasks"
+      default:
+        return "cards"
+    }
   }, [])
 
-  const [viewType, setViewType] = useSearchParam<"list" | "cards">("v", {
+  const [viewType, setViewType] = useSearchParam<ViewType>("v", {
     defaultValue: "cards",
-    schema: z.enum(["list", "cards"]),
+    schema: viewTypeSchema,
     parse: parseViewType,
     replace: true,
   })
@@ -106,15 +121,40 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 setNumVisibleNotes(10)
               }}
             />
-            <IconButton
-              aria-label={`Show as ${viewType === "list" ? "cards" : "list"}`}
-              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-              onClick={() => {
-                setViewType(viewType === "list" ? "cards" : "list")
-              }}
-            >
-              {viewType === "list" ? <CardsIcon16 /> : <ListIcon16 />}
-            </IconButton>
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  disableTooltip
+                  aria-label="Change view"
+                  className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                >
+                  <ViewTypeIcon viewType={viewType} />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end" minWidth="8rem">
+                <DropdownMenu.Item
+                  icon={<CardsIcon16 />}
+                  selected={viewType === "cards"}
+                  onClick={() => setViewType("cards")}
+                >
+                  Cards
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ListIcon16 />}
+                  selected={viewType === "list"}
+                  onClick={() => setViewType("list")}
+                >
+                  List
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<TaskListIcon16 />}
+                  selected={viewType === "tasks"}
+                  onClick={() => setViewType("tasks")}
+                >
+                  Tasks
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
@@ -231,13 +271,53 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             })}
           </ul>
         ) : null}
+
+        {viewType === "tasks" ? (
+          <ul className="flex flex-col">
+            {searchResults.map(([id, note]) =>
+              note.tasks
+                // .filter((task) => !task.completed)
+                .map((task) => (
+                  <li
+                    key={task.id}
+                    className="flex items-center gap-3 rounded-md px-3 py-2 coarse:px-4 coarse:py-3"
+                  >
+                    <Checkbox
+                      checked={task.completed}
+                      onCheckedChange={(checked) => {
+                        upsertNote({
+                          id,
+                          rawBody:
+                            note.rawBody.slice(0, task.start?.offset) +
+                            (checked ? "- [x]" : "- [ ]") +
+                            note.rawBody.slice((task.start?.offset ?? 0) + 5),
+                        })
+                      }}
+                    />
+                    <Markdown>{task.rawBody}</Markdown>
+                  </li>
+                )),
+            )}
+          </ul>
+        ) : null}
       </div>
 
-      {searchResults.length > numVisibleNotes ? (
+      {viewType !== "tasks" && searchResults.length > numVisibleNotes ? (
         <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
           Load more
         </Button>
       ) : null}
     </div>
   )
+}
+
+function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
+  switch (viewType) {
+    case "cards":
+      return <CardsIcon16 />
+    case "list":
+      return <ListIcon16 />
+    case "tasks":
+      return <TaskListIcon16 />
+  }
 }

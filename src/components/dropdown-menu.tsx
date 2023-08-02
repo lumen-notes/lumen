@@ -4,18 +4,24 @@ import React from "react"
 import { cx } from "../utils/cx"
 import { Card } from "./card"
 import { Keys } from "./keys"
+import { CheckIcon16 } from "./icons"
 
 const Root = RadixDropdownMenu.Root
 
 const Trigger = RadixDropdownMenu.Trigger
 
-const Content = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuContentProps>(
-  ({ children, ...props }, ref) => (
+type ContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
+  minWidth?: number | string
+}
+
+const Content = React.forwardRef<HTMLDivElement, ContentProps>(
+  ({ children, minWidth = "16rem", ...props }, ref) => (
     <Portal.Root>
       <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
         <Card
           elevation={1}
-          className="z-20 max-h-[50vh] min-w-[16rem] overflow-auto rounded-md p-1 animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-20 max-h-[50vh] overflow-auto rounded-md p-1 animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          style={{ minWidth }}
         >
           {children}
         </Card>
@@ -30,10 +36,14 @@ type ItemProps = RadixDropdownMenu.DropdownMenuItemProps &
     shortcut?: string[]
     trailingVisual?: React.ReactNode
     variant?: "default" | "danger"
+    selected?: boolean
   }
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
-  ({ className, icon, shortcut, trailingVisual, variant, href, children, ...props }, ref) => {
+  (
+    { className, icon, shortcut, trailingVisual, variant, selected, href, children, ...props },
+    ref,
+  ) => {
     const content = (
       <>
         <div
@@ -56,6 +66,13 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
           <div className="flex coarse:hidden">
             <Keys keys={shortcut} />
           </div>
+        ) : null}
+        {selected !== undefined ? (
+          selected ? (
+            <CheckIcon16 className="-m-1 text-text-secondary" />
+          ) : (
+            <div className="-m-1 h-4 w-4" />
+          )
         ) : null}
       </>
     )
