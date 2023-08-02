@@ -202,6 +202,57 @@ function filterObject<T>(
   return result
 }
 
+export function useDeleteTag() {
+  const getGitHubUser = useAtomCallback(githubUserCallback)
+  const getGitHubRepo = useAtomCallback(githubRepoCallback)
+  const getNotes = useAtomCallback(notesCallback)
+  const setRawNotes = useSetAtom(rawNotesAtom)
+
+  return React.useCallback(
+    async (tagName: string) => {
+      const notes = getNotes()
+
+      // Notes that contain the tag to be deleted
+      const filteredNotes = filterObject(notes, (note) => {
+        return note.tags.includes(tagName)
+      })
+
+      // Regex to match the tag and its children
+      const tagRegex = new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, 'g');
+
+      // Find and replace the tag with an empty string
+      const updatedRawNotes = mapObject(filteredNotes, (note, id) => {
+        return [id, note.rawBody.replace(tagRegex, ``)]
+      })
+
+      // Update state
+      setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+
+      // Push to GitHub
+      try {
+        const githubUser = getGitHubUser()
+        const githubRepo = getGitHubRepo()
+        if (!githubUser || !githubRepo) return
+
+        const files = mapObject(updatedRawNotes, (rawBody, id) => {
+          return [`${id}.md`, rawBody]
+        })
+
+        await writeFiles({
+          githubToken: githubUser.token,
+          githubRepo,
+          files,
+          commitMessage: `Delete tag #${tagName}`,
+        })
+      } catch (error) {
+        // TODO: Display error
+        console.error(error)
+      }
+    },
+    [getNotes, setRawNotes, getGitHubUser, getGitHubRepo],
+  )
+}
+
 function mapObject<T, U extends string | number | symbol, V>(
   obj: Record<string, T>,
   fn: (value: T, key: string) => [U, V],
