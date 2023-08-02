@@ -280,7 +280,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       id={id}
       defaultValue={note.rawBody}
       elevation={elevation}
-      minHeight="12rem"
+      // minHeight="12rem"
       editorRef={editorRef}
       onSubmit={switchToViewing}
       onCancel={switchToViewing}

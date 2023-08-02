@@ -168,13 +168,7 @@ function Dialog() {
         <Portal.Root>
           {/* Overlay */}
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div
-            className="fixed inset-0 z-10 bg-bg-inset-backdrop animate-in fade-in sm:hidden"
-            onClick={() => {
-              setIsOpen(false)
-              focusPrevActiveElement()
-            }}
-          />
+          <div className="fixed inset-0 z-10 bg-bg-inset-backdrop animate-in fade-in sm:hidden" />
           <DraggableCore
             onDrag={(event, data) =>
               setPosition({
@@ -199,7 +193,7 @@ function Dialog() {
             >
               <NoteCardForm
                 elevation={2}
-                minHeight="12rem"
+                minHeight={isDesktop ? "16rem" : "50vh"}
                 maxHeight="50vh"
                 editorRef={editorRef}
                 onSubmit={({ id }) => {
