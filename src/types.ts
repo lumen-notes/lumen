@@ -4,6 +4,9 @@ import { z } from "zod"
 export type NoteId = string
 
 export type Note = {
+  // Markdown file name
+  id: NoteId
+
   // Raw body of the markdown file
   rawBody: string
 
@@ -22,7 +25,8 @@ export type Note = {
 }
 
 export type Task = {
-  start?: Point
+  noteId: NoteId
+  start: Point
   rawBody: string
   completed: boolean
   title: string

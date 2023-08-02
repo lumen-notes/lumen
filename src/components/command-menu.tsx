@@ -12,7 +12,7 @@ import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 

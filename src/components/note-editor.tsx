@@ -17,7 +17,7 @@ import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { useAttachFile } from "../utils/use-attach-file"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {

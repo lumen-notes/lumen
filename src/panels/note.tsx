@@ -9,7 +9,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { notesAtom } from "../global-atoms"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search"
 
 // const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
 //   return entries.filter(([, note]) => note.queries.length > 0)

@@ -1,7 +1,7 @@
 import { Searcher } from "fast-fuzzy"
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { GitHubRepository, GitHubUser, Note, NoteId, Template, templateSchema } from "./types"
+import { GitHubRepository, GitHubUser, Note, NoteId, Task, Template, templateSchema } from "./types"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
@@ -40,7 +40,7 @@ export const notesAtom = atom((get) => {
   // Parse notes
   for (const id in rawNotes) {
     const rawBody = rawNotes[id]
-    notes[id] = { rawBody, ...parseNote(rawBody), backlinks: [] }
+    notes[id] = { id, rawBody, ...parseNote(id, rawBody), backlinks: [] }
   }
 
   // Derive backlinks
@@ -59,25 +59,25 @@ export const notesAtom = atom((get) => {
   return notes
 })
 
-export const sortedNoteEntriesAtom = atom((get) => {
+export const sortedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
   // Sort notes by when they were created in descending order
-  return Object.entries(notes).sort((a, b) => {
+  return Object.values(notes).sort((a, b) => {
     // Put numeric IDs first
-    if (a[0].match(/^\d+$/) && !b[0].match(/^\d+$/)) {
+    if (a.id.match(/^\d+$/) && !b.id.match(/^\d+$/)) {
       return -1
-    } else if (!a[0].match(/^\d+$/) && b[0].match(/^\d+$/)) {
+    } else if (!a.id.match(/^\d+$/) && b.id.match(/^\d+$/)) {
       return 1
     }
 
-    return b[0].localeCompare(a[0])
+    return b.id.localeCompare(a.id)
   })
 })
 
 export const noteSearcherAtom = atom((get) => {
-  const sortedNoteEntries = get(sortedNoteEntriesAtom)
-  return new Searcher(sortedNoteEntries, {
-    keySelector: ([id, note]) => [note.title, note.rawBody, id],
+  const sortedNotes = get(sortedNotesAtom)
+  return new Searcher(sortedNotes, {
+    keySelector: (note) => [note.title, note.rawBody, note.id],
     threshold: 0.8,
   })
 })
@@ -165,4 +165,29 @@ export const templatesAtom = atom((get) => {
   }
 
   return templates
+})
+
+// -----------------------------------------------------------------------------
+// Tasks
+// -----------------------------------------------------------------------------
+
+export const tasksAtom = atom((get) => {
+  const sortedNotes = get(sortedNotesAtom)
+  const tasks: Task[] = []
+
+  for (const note of sortedNotes) {
+    for (const task of note.tasks) {
+      tasks.push(task)
+    }
+  }
+
+  return tasks
+})
+
+export const taskSearcherAtom = atom((get) => {
+  const tasks = get(tasksAtom)
+  return new Searcher(tasks, {
+    keySelector: (task) => [task.title, task.rawBody],
+    threshold: 0.8,
+  })
 })

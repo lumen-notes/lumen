@@ -17,7 +17,7 @@ import { parseFrontmatter } from "./parse-frontmatter"
  * We memoize this function because it's called a lot and it's expensive.
  * We're intentionally sacrificing memory usage for runtime performance.
  */
-export const parseNote = memoize((rawBody: string) => {
+export const parseNote = memoize((id: NoteId, rawBody: string) => {
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
@@ -94,18 +94,29 @@ export const parseNote = memoize((rawBody: string) => {
       case "listItem": {
         // Task list item
         if (node.checked !== null && node.checked !== undefined) {
+          if (!node.position?.start) break
+
           const text =
             rawBody
-              .slice(node.position?.start.offset, node.position?.end.offset)
+              .slice(node.position.start.offset, node.position?.end.offset)
               // "- [ ] Example" -> "Example"
               .match(/\[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
 
-          const title = text.replace(/\[\[\d{4}-\d{2}-\d{2}\]\]/g, "").trim() || ""
+          const title =
+            text
+              // Remove dates
+              .replace(/\[\[\d{4}-\d{2}-\d{2}\]\]/g, "")
+              // Remove tags
+              .replace(/#[a-zA-Z][\w-/]*/g, "")
+              // Remove extra spaces
+              .replace(/ +/g, " ")
+              .trim() || ""
 
-          const { dates, links, tags } = parseNote(text)
+          const { dates, links, tags } = parseNote(id, text)
 
           tasks.push({
-            start: node.position?.start,
+            noteId: id,
+            start: node.position.start,
             rawBody: text,
             completed: node.checked,
             title,
