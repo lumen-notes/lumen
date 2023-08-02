@@ -24,7 +24,6 @@ import { PanelContext } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 import { TagLink } from "./tag-link"
-import { TASK_TAG } from "../utils/parse-note"
 
 const viewTypeSchema = z.enum(["list", "cards", "tasks"])
 
@@ -373,11 +372,9 @@ function TaskItem({ task }: { task: Task }) {
               {formatDateDistance(task.dates[0])}
             </Link>
           ) : null}
-          {task.tags
-            .filter((tag) => tag !== TASK_TAG)
-            .map((tag) => (
-              <TagLink key={tag} name={tag} />
-            ))}
+          {task.tags.map((tag) => (
+            <TagLink key={tag} name={tag} />
+          ))}
         </div>
       </div>
     </li>
