@@ -44,6 +44,11 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   }, [])
 
   const handleDeleteTag = React.useCallback(() => {
+    // Confirm deletion
+    if (!window.confirm(`Are you sure you want to delete the "${name}" tag?`)) {
+      return
+    }
+
     // Close the current tag panel
     onClose?.()
 
