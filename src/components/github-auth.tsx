@@ -85,10 +85,6 @@ function SignInButton({ className }: { className?: string }) {
           }
           return
         }
-        console.log(
-          "🚀 ===> ~ file: github-auth.tsx:72 ~ SignInButton ~ setGitHubUser:",
-          setGitHubUser,
-        )
 
         window.location.href = urlcat("https://github.com/login/oauth/authorize", {
           client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
