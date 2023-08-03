@@ -13,13 +13,14 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
-import { useRenameTag } from "../utils/github-sync"
+import { useRenameTag, useDeleteTag } from "../utils/github-sync"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
   const renameTag = useRenameTag()
+  const deleteTag = useDeleteTag()
   const { updatePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
   const [isRenaming, setIsRenaming] = React.useState(false)
@@ -42,6 +43,14 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
     )
   }, [])
 
+  const handleDeleteTag = React.useCallback(() => {
+    // Close the current tag panel
+    onClose?.()
+
+    // Update state
+    deleteTag(name)
+  }, [onClose, deleteTag, name])
+
   return (
     <Panel
       id={id}
@@ -56,8 +65,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
           <DropdownMenu.Item icon={<EditIcon16 />} disabled={isRenaming} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
-          {/* TODO: Implement delete tag */}
-          <DropdownMenu.Item icon={<TrashIcon16 />} disabled={true}>
+          <DropdownMenu.Item icon={<TrashIcon16 />} onSelect={handleDeleteTag}>
             Delete tag
           </DropdownMenu.Item>
         </>
