@@ -19,10 +19,13 @@ import { IconButton } from "./icon-button"
 import {
   CardsIcon16,
   CloseIcon12,
+  EditIcon16,
   ListIcon16,
   MoreIcon16,
+  NoteIcon16,
   TagIcon16,
   TaskListIcon16,
+  TrashIcon16,
 } from "./icons"
 import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
@@ -366,14 +369,26 @@ function TaskItem({ task }: { task: Task }) {
 
   const inCalendarPanel = panel ? panel.pathname === "/calendar" : location.pathname === "/calendar"
 
+  // Local state
+  // const [isEditing, setIsEditing] = React.useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
       data-note-id={task.noteId}
       className="flex items-start rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-focus"
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
+      onKeyDown={(event) => {
+        // Open dropdown with `command + .`
+        if (event.key === "." && event.metaKey) {
+          setIsDropdownOpen(true)
+          event.preventDefault()
+        }
+      }}
     >
-      <div className="flex flex-grow items-start gap-3 px-3 py-[0.625rem] coarse:px-4 coarse:py-3">
+      <div className="flex flex-grow items-start gap-3 px-3 py-[0.625rem] pr-0 coarse:px-4 coarse:py-3">
         <span className="grid h-5 place-items-center coarse:h-6">
           <Checkbox
             priority={task.priority}
@@ -411,15 +426,30 @@ function TaskItem({ task }: { task: Task }) {
           </div>
         </div>
       </div>
-      <IconButton
-        aria-label="Task actions"
-        shortcut={["⌘", "."]}
-        tooltipSide="top"
-        className="m-1"
-        disabled
-      >
-        <MoreIcon16 />
-      </IconButton>
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+        <DropdownMenu.Trigger asChild>
+          <IconButton
+            aria-label="Task actions"
+            shortcut={["⌘", "."]}
+            tooltipSide="top"
+            className="m-1"
+          >
+            <MoreIcon16 />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end">
+          <DropdownMenu.Item icon={<EditIcon16 />} shortcut={["E"]} disabled>
+            Edit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item icon={<NoteIcon16 />} shortcut={["N"]} disabled>
+            Go to note
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} shortcut={["⌘", "⌫"]} disabled>
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
     </li>
   )
 }
