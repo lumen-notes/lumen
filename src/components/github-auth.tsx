@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { useNavigate } from "react-router-dom"
+import urlcat from "urlcat"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { shaAtom } from "../utils/github-sync"
@@ -66,18 +67,34 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   )
 }
 
-export function SignInButton({ className }: { className?: string }) {
+function SignInButton({ className }: { className?: string }) {
+  const setGitHubUser = useSetAtom(githubUserAtom)
   return (
     <Button
       variant="primary"
       className={cx("w-full", className)}
-      onClick={() => {
-        window.location.href = `https://github.com/login/oauth/authorize?client_id=${
-          import.meta.env.VITE_GITHUB_CLIENT_ID
-        }&state=${
-          // URL to redirect to after signing in
-          encodeURIComponent(window.location.href)
-        }&scope=repo,gist`
+      onClick={async () => {
+        // Sign in with a personal access token in local development
+        if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
+          try {
+            const token = import.meta.env.VITE_GITHUB_PAT
+            const username = await getUsername(token)
+            setGitHubUser({ username, token })
+          } catch (error) {
+            console.error(error)
+          }
+          return
+        }
+        console.log(
+          "🚀 ===> ~ file: github-auth.tsx:72 ~ SignInButton ~ setGitHubUser:",
+          setGitHubUser,
+        )
+
+        window.location.href = urlcat("https://github.com/login/oauth/authorize", {
+          client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
+          state: window.location.href,
+          scope: "repo,gist",
+        })
       }}
     >
       Sign in with GitHub
@@ -117,4 +134,23 @@ export function useSignOut() {
     // Always refetch notes when signing back in
     setSha(null)
   }
+}
+
+async function getUsername(token: string) {
+  const response = await fetch("https://api.github.com/user", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  if (response.status === 401) {
+    throw new Error("Invalid token")
+  }
+  if (!response.ok) {
+    throw new Error("Unknown error")
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { login: username } = (await response.json()) as any
+
+  return username
 }

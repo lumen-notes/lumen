@@ -15,14 +15,21 @@
    gh repo clone lumen-notes/lumen
    ```
 
-1. Create a `.env.local` file in the root directory with the following variables:
+1. Setup login with GitHub:
 
-   ```shell
-   VITE_GITHUB_CLIENT_ID=30db9c210d682a9624e7
-   GITHUB_CLIENT_SECRET=...
-   ```
+    - Create a Github Personal Token and login with it.
 
-   > Note: Ask @colebemis for the `GITHUB_CLIENT_SECRET` value.
+    - Use GitHub OAuth app:
+
+      1. Create a `.env.local` file in the root directory with the following variables:
+
+          ```shell
+          VITE_GITHUB_CLIENT_ID=30db9c210d682a9624e7
+          GITHUB_CLIENT_SECRET=...
+          ```
+
+          > Note: Ask @colebemis for the `GITHUB_CLIENT_SECRET` value.
+    
 
 1. Install the dependencies:
 
