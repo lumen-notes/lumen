@@ -2,45 +2,35 @@
 
 ## Local development
 
-1. Clone the repository using your preferred method:
+1.  Clone the repository using your preferred method:
 
-   ```shell
-   # HTTPS
-   git clone https://github.com/lumen-notes/lumen.git
+    ```shell
+    # HTTPS
+    git clone https://github.com/lumen-notes/lumen.git
 
-   # SSH
-   git clone git@github.com:lumen-notes/lumen.git
+    # SSH
+    git clone git@github.com:lumen-notes/lumen.git
 
-   # GitHub CLI
-   gh repo clone lumen-notes/lumen
-   ```
+    # GitHub CLI
+    gh repo clone lumen-notes/lumen
+    ```
 
-1. Setup login with GitHub:
+1.  Generate a GitHub [personal access token (classic)](https://github.com/settings/tokens/new) with `repo` and `gist` scopes, then add it to a `.env.local` file in the root directory:
 
-    - Create a Github Personal Token and login with it.
+    ```shell
+    VITE_GITHUB_PAT=<your token here>
+    ```
 
-    - Use GitHub OAuth app:
+1.  Install the dependencies:
 
-      1. Create a `.env.local` file in the root directory with the following variables:
+    ```shell
+    npm install
+    ```
 
-          ```shell
-          VITE_GITHUB_CLIENT_ID=30db9c210d682a9624e7
-          GITHUB_CLIENT_SECRET=...
-          ```
+1.  Start the development server:
 
-          > Note: Ask @colebemis for the `GITHUB_CLIENT_SECRET` value.
-    
+    ```shell
+    npm run dev:netlify
+    ```
 
-1. Install the dependencies:
-
-   ```shell
-   npm install
-   ```
-
-1. Start the development server:
-
-   ```shell
-   npm run dev:netlify
-   ```
-
-1. Open the app at http://localhost:8888.
+1.  Open the app at http://localhost:8888.
