@@ -6,13 +6,36 @@ export default {
   parameters: {
     layout: "centered",
   },
-  argTypes: {
-    disabled: { control: "boolean" },
-  },
 }
 
 export const Default = {
   args: {
     disabled: false,
+  },
+}
+
+export const Checked = {
+  args: {
+    checked: true,
+    disabled: false,
+  },
+}
+
+export const Disabled = {
+  args: {
+    checked: true,
+    disabled: true,
+  },
+}
+
+export const Priority1 = {
+  args: {
+    priority: 1,
+  },
+}
+
+export const Priority2 = {
+  args: {
+    priority: 2,
   },
 }

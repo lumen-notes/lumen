@@ -68,7 +68,7 @@
   --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
   --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
   --color-text-pending: hsl(30, 94%, 15%);
-  --color-text-danger: hsl(349, 86%, 27%);
+  --color-text-danger: hsl(350, 86%, 27%);
   --color-bg: hsl(var(--h) var(--s) var(--l-bg));
   --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
   --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
@@ -84,6 +84,12 @@
   --color-border-focus: hsl(200, 100%, 40%);
   --color-node: var(--color-text-secondary);
   --color-edge: hsl(var(--h) var(--s) var(--l-edge));
+
+  /* Priority colors */
+  --hsl-priority-1: 0deg 60% 50%;
+  --hsl-priority-2: 30deg 90% 50%;
+  --a-bg-priority: 0.1;
+  --a-bg-priority-hover: 0.2;
 
   /* Syntax colors */
   /* Based on https://rosepinetheme.com/palette */
@@ -125,6 +131,10 @@
     --color-bg-highlight: hsl(var(--h-highlight) 30% 18%);
     --color-bg-pending: hsl(30, 90%, 15%);
     --color-border-focus: hsl(200, 100%, 70%);
+
+    /* Priority colors */
+    --hsl-priority-1: 0deg 100% 70%;
+    --hsl-priority-2: 30deg 100% 60%;
 
     /* Syntax colors */
     --color-syntax-yellow: hsl(30, 76%, 72%);
