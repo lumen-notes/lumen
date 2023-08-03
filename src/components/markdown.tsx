@@ -6,14 +6,14 @@ import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps } from "react-markdown/lib/ast-to-react"
-import remarkGfm from "remark-gfm"
 import remarkEmoji from "remark-emoji"
+import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
 import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { templateSchema } from "../types"
+import { Task, templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -521,12 +521,24 @@ function Code({ className, inline, children }: CodeProps) {
 function CheckboxInput({ checked }: { checked?: boolean }) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
   const checkedRef = React.useRef<HTMLButtonElement>(null)
+  const [priority, setPriority] = React.useState<Task["priority"]>(4)
+
+  // TODO: Implement this without an effect
+  React.useLayoutEffect(() => {
+    const parent = checkedRef.current?.parentElement
+    const p1 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p1"]')
+    const p2 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p2"]')
+    const p3 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p3"]')
+    const priority = p1 ? 1 : p2 ? 2 : p3 ? 3 : 4
+    setPriority(priority)
+  }, [])
 
   return (
     <Checkbox
       ref={checkedRef}
       checked={checked}
       disabled={!onChange}
+      priority={priority}
       onCheckedChange={(checked) => {
         if (!checkedRef.current) return
 
