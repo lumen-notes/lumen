@@ -237,7 +237,6 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
             >
               Open in GitHub
             </DropdownMenu.Item>
-            <DropdownMenu.Separator />
             <DropdownMenu.Item
               icon={<ShareIcon16 />}
               onSelect={async () => {

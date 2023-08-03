@@ -65,7 +65,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
           <DropdownMenu.Item icon={<EditIcon16 />} disabled={isRenaming} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
-          <DropdownMenu.Item icon={<TrashIcon16 />} onSelect={handleDeleteTag}>
+          <DropdownMenu.Item icon={<TrashIcon16 />} variant="danger" onSelect={handleDeleteTag}>
             Delete tag
           </DropdownMenu.Item>
         </>
