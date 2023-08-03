@@ -231,7 +231,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-scroller {
-  @apply leading-normal;
+  @apply leading-5;
   font-family: unset;
 }
 
@@ -271,7 +271,7 @@ body:has([data-resizing="true"]) * {
 /* Markdown styles */
 
 .markdown {
-  @apply leading-normal;
+  @apply leading-6;
 }
 
 .markdown *:first-child {
@@ -294,7 +294,7 @@ body:has([data-resizing="true"]) * {
 .markdown ol,
 .markdown table,
 .markdown blockquote {
-  @apply my-3;
+  @apply my-4;
 }
 
 .markdown hr {
@@ -316,11 +316,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown h1 {
-  @apply text-xl !leading-snug;
+  @apply text-xl coarse:!leading-7;
 }
 
 .markdown h2 {
-  @apply text-lg !leading-snug;
+  @apply text-lg;
 }
 
 .markdown pre {
@@ -380,7 +380,7 @@ body:has([data-resizing="true"]) * {
 
 .markdown li [type="checkbox"],
 .markdown li [role="checkbox"] {
-  @apply absolute -left-2 mt-0.5 -translate-x-full;
+  @apply absolute -left-2 mt-1 -translate-x-full coarse:mt-0.5;
 }
 
 .markdown ::marker {

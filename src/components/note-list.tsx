@@ -9,13 +9,21 @@ import { NoteId, Task, templateSchema } from "../types"
 import { formatDateDistance } from "../utils/date"
 import { useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
+import { removeParentTags } from "../utils/remove-parent-tags"
 import { parseQuery, useSearchNotes, useSearchTasks } from "../utils/use-search"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { Checkbox } from "./checkbox"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16, TaskListIcon16 } from "./icons"
+import {
+  CardsIcon16,
+  CloseIcon12,
+  ListIcon16,
+  MoreIcon16,
+  TagIcon16,
+  TaskListIcon16,
+} from "./icons"
 import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCard } from "./note-card"
@@ -24,7 +32,6 @@ import { PanelContext } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 import { TagLink } from "./tag-link"
-import { removeParentTags } from "../utils/remove-parent-tags"
 
 const viewTypeSchema = z.enum(["list", "cards", "tasks"])
 
@@ -362,46 +369,57 @@ function TaskItem({ task }: { task: Task }) {
   return (
     <li
       data-note-id={task.noteId}
-      className="flex items-start gap-3 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-focus coarse:px-4 coarse:py-3"
+      className="flex items-start rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-focus"
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
     >
-      <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
-        <Checkbox
-          priority={task.priority}
-          checked={task.completed}
-          onCheckedChange={(checked) => {
-            upsertNote({
-              id: task.noteId,
-              rawBody:
-                note.rawBody.slice(0, task.start?.offset) +
-                (checked ? "- [x]" : "- [ ]") +
-                note.rawBody.slice((task.start?.offset ?? 0) + 5),
-            })
-          }}
-        />
-      </span>
-      <div className="space-y-0.5">
-        <Markdown>{task.title}</Markdown>
-        <div className="space-x-2 text-text-secondary [&:empty]:hidden">
-          {!inCalendarPanel && task.dates.length > 0 ? (
-            <Link
-              key={task.dates[0]}
-              to={`/calendar?date=${task.dates[0]}`}
-              target="_blank"
-              className="link"
-            >
-              {formatDateDistance(task.dates[0])}
-            </Link>
-          ) : null}
-          {!inCalendarPanel && task.dates.length > 0 && task.tags.length > 0 ? (
-            <span>·</span>
-          ) : null}
-          {removeParentTags(task.tags).map((tag) => (
-            <TagLink key={tag} name={tag} />
-          ))}
+      <div className="flex flex-grow items-start gap-3 px-3 py-[0.625rem] coarse:px-4 coarse:py-3">
+        <span className="grid h-5 place-items-center coarse:h-6">
+          <Checkbox
+            priority={task.priority}
+            checked={task.completed}
+            onCheckedChange={(checked) => {
+              upsertNote({
+                id: task.noteId,
+                rawBody:
+                  note.rawBody.slice(0, task.start?.offset) +
+                  (checked ? "- [x]" : "- [ ]") +
+                  note.rawBody.slice((task.start?.offset ?? 0) + 5),
+              })
+            }}
+          />
+        </span>
+        <div className="flex-grow space-y-1 [&_*]:!leading-5 coarse:[&_*]:!leading-6">
+          <Markdown>{task.title}</Markdown>
+          <div className="space-x-2 text-text-secondary [&:empty]:hidden">
+            {!inCalendarPanel && task.dates.length > 0 ? (
+              <Link
+                key={task.dates[0]}
+                to={`/calendar?date=${task.dates[0]}`}
+                target="_blank"
+                className="link"
+              >
+                {formatDateDistance(task.dates[0])}
+              </Link>
+            ) : null}
+            {!inCalendarPanel && task.dates.length > 0 && task.tags.length > 0 ? (
+              <span>·</span>
+            ) : null}
+            {removeParentTags(task.tags).map((tag) => (
+              <TagLink key={tag} name={tag} />
+            ))}
+          </div>
         </div>
       </div>
+      <IconButton
+        aria-label="Task actions"
+        shortcut={["⌘", "."]}
+        tooltipSide="top"
+        className="m-1"
+        disabled
+      >
+        <MoreIcon16 />
+      </IconButton>
     </li>
   )
 }
