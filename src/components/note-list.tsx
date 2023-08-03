@@ -362,6 +362,7 @@ function TaskItem({ task }: { task: Task }) {
     >
       <span className="grid h-[calc(1.5_*_var(--font-size-base))] place-items-center">
         <Checkbox
+          priority={task.priority}
           checked={task.completed}
           onCheckedChange={(checked) => {
             upsertNote({

@@ -30,6 +30,7 @@ export type Task = {
   rawBody: string
   completed: boolean
   title: string
+  priority: 1 | 2 | 3 | 4
   dates: string[]
   links: NoteId[]
   tags: string[]

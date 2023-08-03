@@ -114,12 +114,18 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
 
           const { dates, links, tags } = parseNote(id, text)
 
+          let priority: Task["priority"] = 4
+          if (tags.includes("p1")) priority = 1
+          else if (tags.includes("p2")) priority = 2
+          else if (tags.includes("p3")) priority = 3
+
           tasks.push({
             noteId: id,
             start: node.position.start,
             rawBody: text,
             completed: node.checked,
             title,
+            priority,
             dates,
             links,
             tags,

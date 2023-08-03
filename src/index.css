@@ -88,6 +88,7 @@
   /* Priority colors */
   --hsl-priority-1: 0deg 60% 50%;
   --hsl-priority-2: 30deg 90% 50%;
+  --hsl-priority-3: 200deg 100% 40%;
   --a-bg-priority: 0.1;
   --a-bg-priority-hover: 0.2;
 
@@ -135,6 +136,7 @@
     /* Priority colors */
     --hsl-priority-1: 0deg 100% 70%;
     --hsl-priority-2: 30deg 100% 60%;
+    --hsl-priority-3: 200deg 100% 70%;
 
     /* Syntax colors */
     --color-syntax-yellow: hsl(30, 76%, 72%);
