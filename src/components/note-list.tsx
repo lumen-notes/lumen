@@ -57,7 +57,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   }, [searchNotes, baseQuery, deferredQuery])
 
   const taskResults = React.useMemo(() => {
-    return searchTasks(`${baseQuery} ${deferredQuery}`)
+    return (
+      searchTasks(`${baseQuery} ${deferredQuery}`)
+        // Sort by priority
+        .sort((a, b) => a.priority - b.priority)
+    )
   }, [searchTasks, baseQuery, deferredQuery])
 
   const parseViewType = React.useCallback((value: unknown): ViewType => {
