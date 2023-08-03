@@ -76,6 +76,19 @@ export function TaskItem({ task }: { task: Task }) {
     setTimeout(() => containerRef.current?.focus())
   }, [])
 
+  const setCompleted = React.useCallback(
+    (completed: boolean) => {
+      upsertNote({
+        id: task.noteId,
+        rawBody:
+          note.rawBody.slice(0, task.start?.offset) +
+          (completed ? "- [x]" : "- [ ]") +
+          note.rawBody.slice((task.start?.offset ?? 0) + 5),
+      })
+    },
+    [note, task, upsertNote],
+  )
+
   if (isEditing) {
     return (
       <TaskItemForm
@@ -113,6 +126,11 @@ export function TaskItem({ task }: { task: Task }) {
         if (event.key === "Enter") {
           navigate(`/${task.noteId}`)
         }
+
+        // Toggle completed with `space`
+        if (event.key === " ") {
+          setCompleted(!task.completed)
+        }
       }}
     >
       <div className="flex flex-grow items-start gap-3 px-3 py-[0.625rem] pr-0 coarse:px-4 coarse:py-3">
@@ -120,15 +138,7 @@ export function TaskItem({ task }: { task: Task }) {
           <Checkbox
             priority={task.priority}
             checked={task.completed}
-            onCheckedChange={(checked) => {
-              upsertNote({
-                id: task.noteId,
-                rawBody:
-                  note.rawBody.slice(0, task.start?.offset) +
-                  (checked ? "- [x]" : "- [ ]") +
-                  note.rawBody.slice((task.start?.offset ?? 0) + 5),
-              })
-            }}
+            onCheckedChange={setCompleted}
           />
         </span>
         <div className="flex-grow space-y-1 [&_*]:!leading-5 coarse:[&_*]:!leading-6">
