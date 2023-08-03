@@ -113,11 +113,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     }
 
     const frequencyEntries = [...frequencyMap.entries()]
-    console.log(
-      frequencyEntries.filter(([tag, frequency]) =>
-        frequencyEntries.filter(([otherTag]) => otherTag !== tag && otherTag.startsWith(tag)),
-      ),
-    )
 
     return (
       frequencyEntries
