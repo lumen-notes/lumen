@@ -387,6 +387,9 @@ function TaskItem({ task }: { task: Task }) {
               {formatDateDistance(task.dates[0])}
             </Link>
           ) : null}
+          {!inCalendarPanel && task.dates.length > 0 && task.tags.length > 0 ? (
+            <span>·</span>
+          ) : null}
           {removeParentTags(task.tags).map((tag) => (
             <TagLink key={tag} name={tag} />
           ))}
