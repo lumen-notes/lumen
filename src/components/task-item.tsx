@@ -1,7 +1,7 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import React from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { Task } from "../types"
 import { formatDateDistance } from "../utils/date"
 import { useUpsertNote } from "../utils/github-sync"
@@ -16,8 +16,9 @@ import { EditIcon16, MoreIcon16, NoteIcon16, TrashIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
-import { PanelContext } from "./panels"
+import { PanelContext, PanelsContext } from "./panels"
 import { TagLink } from "./tag-link"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
 
 export function TaskItem({ task }: { task: Task }) {
   const note = useNoteById(task.noteId)
@@ -25,7 +26,10 @@ export function TaskItem({ task }: { task: Task }) {
   const Link = useLink()
   const location = useLocation()
   const panel = React.useContext(PanelContext)
+  const { openPanel } = React.useContext(PanelsContext)
   const inCalendarPanel = panel ? panel.pathname === "/calendar" : location.pathname === "/calendar"
+  const isFullscreen = useIsFullscreen()
+  const routerNavigate = useNavigate()
 
   // Local state
   const [isEditing, setIsEditing] = React.useState(false)
@@ -34,6 +38,22 @@ export function TaskItem({ task }: { task: Task }) {
   // Refs
   const containerRef = React.useRef<HTMLLIElement>(null)
   const editorRef = React.useRef<EditorView>()
+
+  const navigate = React.useCallback(
+    (url: string) => {
+      if (openPanel) {
+        // If we're in a panels context, navigate by opening a panel
+        openPanel(url, panel?.index)
+      } else if (isFullscreen) {
+        // If we're in fullscreen mode, add `fullscreen=true` to the query string
+        routerNavigate(url.includes("?") ? `${url}&fullscreen=true` : `${url}?fullscreen=true`)
+      } else {
+        // Otherwise, navigate using the router
+        routerNavigate(url)
+      }
+    },
+    [isFullscreen, openPanel, panel, routerNavigate],
+  )
 
   const switchToEditing = React.useCallback(() => {
     setIsEditing(true)
@@ -87,6 +107,11 @@ export function TaskItem({ task }: { task: Task }) {
         if (event.key === "e") {
           switchToEditing()
           event.preventDefault()
+        }
+
+        // Go to note with `enter`
+        if (event.key === "Enter") {
+          navigate(`/${task.noteId}`)
         }
       }}
     >
@@ -143,7 +168,12 @@ export function TaskItem({ task }: { task: Task }) {
           <DropdownMenu.Item icon={<EditIcon16 />} shortcut={["E"]} onSelect={switchToEditing}>
             Edit
           </DropdownMenu.Item>
-          <DropdownMenu.Item icon={<NoteIcon16 />} shortcut={["G"]} disabled>
+          <DropdownMenu.Item
+            icon={<NoteIcon16 />}
+            shortcut={["⏎"]}
+            // TODO: Use the Link component
+            onSelect={() => navigate(`/${task.noteId}`)}
+          >
             Go to note
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
