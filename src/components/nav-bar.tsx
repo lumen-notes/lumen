@@ -174,14 +174,16 @@ function useNavigateWithCache() {
 
   return React.useCallback(
     (to: string) => {
+      const pathname = to.split("?")[0]
+
       // Save the params for the current path before navigating
       savePathParams(location)
 
-      const prevPathParams = getPrevPathParams(to)
+      const prevPathParams = getPrevPathParams(pathname)
 
       if (prevPathParams) {
         // Navigate to the new path with the previous params for that path
-        navigate({ pathname: to, search: prevPathParams })
+        navigate({ pathname, search: prevPathParams })
       } else {
         navigate(to)
       }
