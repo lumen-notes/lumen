@@ -366,7 +366,7 @@ body:has([data-resizing="true"]) * {
 .markdown ul ol,
 .markdown ol ul,
 .markdown ol ol {
-  @apply my-2;
+  @apply my-1;
 }
 
 .markdown li {
