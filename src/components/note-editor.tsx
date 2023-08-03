@@ -130,6 +130,7 @@ function useCodeMirror({
             // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
             if (
               (event.key === "Escape" || event.key === "Enter") &&
+              !event.metaKey &&
               document.querySelector(".cm-tooltip-autocomplete")
             ) {
               event.stopImmediatePropagation()
