@@ -12,7 +12,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cx(
-          "relative rounded-lg border border-transparent ring-1 ring-border-secondary after:pointer-events-none after:absolute after:inset-0 after:rounded-lg dark:border-border-secondary dark:ring-[rgba(0,0,0,0.6)]",
+          "relative rounded-md border border-transparent ring-1 ring-border-secondary after:pointer-events-none after:absolute after:inset-0 after:rounded-md dark:border-border-secondary dark:ring-[rgba(0,0,0,0.6)]",
           elevation === 0 && "bg-bg shadow-sm",
           elevation === 1 && "bg-bg-overlay shadow-lg",
           elevation === 2 && "bg-bg-overlay shadow-xl",

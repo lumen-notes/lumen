@@ -11,8 +11,6 @@ export function removeTemplateFrontmatter(rawBody: string) {
 
   const body = lines.filter((_, index) => index < templateStart || index >= templateEnd).join("\n")
 
-  console.log(body.replace(/---[\s]*---[\s]*/, ""))
-  // return body
   // Remove '---' if there's nothing else in the frontmatter
   return body.replace(/---[\s]*---[\s]*/, "")
 }

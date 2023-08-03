@@ -26,7 +26,7 @@ import {
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
 import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
@@ -570,9 +570,9 @@ function QueryResults({ query }: QueryResultsProps) {
 
   return (
     <ul>
-      {results.map(([id, note]) => (
-        <li key={id}>
-          <NoteLink id={id} text={note.title || id} />
+      {results.map((note) => (
+        <li key={note.id}>
+          <NoteLink id={note.id} text={note.title || note.id} />
         </li>
       ))}
     </ul>

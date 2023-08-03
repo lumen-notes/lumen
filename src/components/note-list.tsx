@@ -1,19 +1,44 @@
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useInView } from "react-intersection-observer"
+import { useLocation } from "react-router-dom"
 import { z } from "zod"
-import { templateSchema } from "../types"
+import { notesAtom } from "../global-atoms"
+import { NoteId, Task, templateSchema } from "../types"
+import { formatDateDistance } from "../utils/date"
+import { useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
-import { parseQuery, useSearchNotes } from "../utils/use-search-notes"
+import { removeParentTags } from "../utils/remove-parent-tags"
+import { parseQuery, useSearchNotes, useSearchTasks } from "../utils/use-search"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
+import { Checkbox } from "./checkbox"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import {
+  CardsIcon16,
+  CloseIcon12,
+  EditIcon16,
+  ListIcon16,
+  MoreIcon16,
+  NoteIcon16,
+  TagIcon16,
+  TaskListIcon16,
+  TrashIcon16,
+} from "./icons"
 import { useLink } from "./link-context"
+import { Markdown } from "./markdown"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
+import { PanelContext } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
+import { TagLink } from "./tag-link"
+
+const viewTypeSchema = z.enum(["list", "cards", "tasks"])
+
+type ViewType = z.infer<typeof viewTypeSchema>
 
 type NoteListProps = {
   baseQuery?: string
@@ -21,6 +46,8 @@ type NoteListProps = {
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
+  const searchTasks = useSearchTasks()
+  const Link = useLink()
 
   const parseQueryParam = React.useCallback((value: unknown): string => {
     return typeof value === "string" ? value : ""
@@ -35,22 +62,35 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
   const deferredQuery = React.useDeferredValue(query)
 
-  const searchResults = React.useMemo(() => {
+  const noteResults = React.useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
-  const parseViewType = React.useCallback((value: unknown): "list" | "cards" => {
-    return value === "list" ? "list" : "cards"
+  const taskResults = React.useMemo(() => {
+    return (
+      searchTasks(`${baseQuery} ${deferredQuery}`)
+        // Sort by priority
+        .sort((a, b) => a.priority - b.priority)
+    )
+  }, [searchTasks, baseQuery, deferredQuery])
+
+  const parseViewType = React.useCallback((value: unknown): ViewType => {
+    switch (value) {
+      case "list":
+        return "list"
+      case "tasks":
+        return "tasks"
+      default:
+        return "cards"
+    }
   }, [])
 
-  const [viewType, setViewType] = useSearchParam<"list" | "cards">("v", {
+  const [viewType, setViewType] = useSearchParam<ViewType>("v", {
     defaultValue: "cards",
-    schema: z.enum(["list", "cards"]),
+    schema: viewTypeSchema,
     parse: parseViewType,
     replace: true,
   })
-
-  const Link = useLink()
 
   // Only render the first 10 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
@@ -58,8 +98,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const [bottomRef, bottomInView] = useInView()
 
   const loadMore = React.useCallback(() => {
-    setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
-  }, [searchResults.length])
+    setNumVisibleNotes((num) => Math.min(num + 10, noteResults.length))
+  }, [noteResults.length])
 
   React.useEffect(() => {
     if (bottomInView) {
@@ -73,19 +113,46 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    for (const [, note] of searchResults) {
-      for (const tag of note.tags) {
-        frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
-      }
+    const tags =
+      viewType === "tasks"
+        ? taskResults.flatMap((task) => task.tags)
+        : noteResults.flatMap((note) => note.tags)
+
+    for (const tag of tags) {
+      frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
     }
 
+    const frequencyEntries = [...frequencyMap.entries()]
+
     return (
-      [...frequencyMap.entries()]
+      frequencyEntries
         // Filter out tags that every note has
-        .filter(([, frequency]) => frequency < searchResults.length)
-        .sort((a, b) => b[1] - a[1])
+        .filter(
+          ([, frequency]) =>
+            frequency < (viewType === "tasks" ? taskResults.length : noteResults.length),
+        )
+        // Filter out parent tags if the all the childs tag has the same frequency
+        .filter(([tag, frequency]) => {
+          const childTags = frequencyEntries.filter(
+            ([otherTag]) => otherTag !== tag && otherTag.startsWith(tag),
+          )
+
+          if (childTags.length === 0) return true
+
+          return !childTags.every(([, otherFrequency]) => otherFrequency === frequency)
+        })
+        .sort((a, b) => {
+          if (viewType === "tasks") {
+            // Put p1, p2, p3, etc. tags at the start
+            if (a[0].startsWith("p") && !b[0].startsWith("p")) return -1
+            if (!a[0].startsWith("p") && b[0].startsWith("p")) return 1
+            if (a[0].startsWith("p") && b[0].startsWith("p")) return a[0].localeCompare(b[0])
+          }
+
+          return b[1] - a[1]
+        })
     )
-  }, [searchResults])
+  }, [viewType, taskResults, noteResults])
 
   const tagQualifiers = React.useMemo(() => {
     return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
@@ -97,7 +164,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
-              placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
+              placeholder={
+                viewType === "tasks"
+                  ? `Search ${pluralize(taskResults.length, "task")}…`
+                  : `Search ${pluralize(noteResults.length, "note")}…`
+              }
               value={query}
               onChange={(value) => {
                 setQuery(value)
@@ -106,19 +177,44 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 setNumVisibleNotes(10)
               }}
             />
-            <IconButton
-              aria-label={`Show as ${viewType === "list" ? "cards" : "list"}`}
-              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-              onClick={() => {
-                setViewType(viewType === "list" ? "cards" : "list")
-              }}
-            >
-              {viewType === "list" ? <CardsIcon16 /> : <ListIcon16 />}
-            </IconButton>
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  disableTooltip
+                  aria-label="Change view"
+                  className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                >
+                  <ViewTypeIcon viewType={viewType} />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end" minWidth="8rem">
+                <DropdownMenu.Item
+                  icon={<CardsIcon16 />}
+                  selected={viewType === "cards"}
+                  onClick={() => setViewType("cards")}
+                >
+                  Cards
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ListIcon16 />}
+                  selected={viewType === "list"}
+                  onClick={() => setViewType("list")}
+                >
+                  List
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<TaskListIcon16 />}
+                  selected={viewType === "tasks"}
+                  onClick={() => setViewType("tasks")}
+                >
+                  Tasks
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
-              {pluralize(searchResults.length, "result")}
+              {pluralize(noteResults.length, "result")}
             </span>
           ) : null}
         </div>
@@ -191,21 +287,22 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         ) : null}
 
         {viewType === "cards"
-          ? searchResults.slice(0, numVisibleNotes).map(([id]) => <NoteCard key={id} id={id} />)
+          ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
           : null}
 
         {viewType === "list" ? (
           <ul>
-            {searchResults.slice(0, numVisibleNotes).map(([id, note]) => {
+            {noteResults.slice(0, numVisibleNotes).map((note) => {
               const parsedTemplate = templateSchema
                 .omit({ body: true })
                 .safeParse(note.frontmatter.template)
               return (
-                <li key={id}>
+                // TODO: Move this into a NoteItem component
+                <li key={note.id}>
                   <Link
                     // Used for focus management
-                    data-note-id={id}
-                    to={`/${id}`}
+                    data-note-id={note.id}
+                    to={`/${note.id}`}
                     target="_blank"
                     className="focus-ring flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                   >
@@ -214,13 +311,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       <span className="text-text">
                         {parsedTemplate.success
                           ? `${parsedTemplate.data.name} template`
-                          : note.title || id}
+                          : note.title || note.id}
                       </span>
                       <span className="ml-2 ">
-                        {note.tags
-                          // Filter out tags that are parents of other tags
-                          // Example: #foo #foo/bar -> #foo/bar
-                          .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+                        {removeParentTags(note.tags)
                           .map((tag) => `#${tag}`)
                           .join(" ")}
                       </span>
@@ -231,13 +325,133 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             })}
           </ul>
         ) : null}
+
+        {viewType === "tasks" ? (
+          <ul className="flex flex-col">
+            {taskResults.map((task) => (
+              <TaskItem key={`${task.noteId}-${task.start.offset}`} task={task} />
+            ))}
+          </ul>
+        ) : null}
       </div>
 
-      {searchResults.length > numVisibleNotes ? (
+      {viewType !== "tasks" && noteResults.length > numVisibleNotes ? (
         <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
           Load more
         </Button>
       ) : null}
     </div>
+  )
+}
+
+function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
+  switch (viewType) {
+    case "cards":
+      return <CardsIcon16 />
+    case "list":
+      return <ListIcon16 />
+    case "tasks":
+      return <TaskListIcon16 />
+  }
+}
+
+// TODO: Move this to the utils directory
+function useNoteById(id: NoteId) {
+  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
+  const note = useAtomValue(noteAtom)
+  return note
+}
+
+function TaskItem({ task }: { task: Task }) {
+  const note = useNoteById(task.noteId)
+  const upsertNote = useUpsertNote()
+  const Link = useLink()
+  const location = useLocation()
+  const panel = React.useContext(PanelContext)
+
+  const inCalendarPanel = panel ? panel.pathname === "/calendar" : location.pathname === "/calendar"
+
+  // Local state
+  // const [isEditing, setIsEditing] = React.useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+
+  return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <li
+      data-note-id={task.noteId}
+      className="flex items-start rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-border-focus"
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      onKeyDown={(event) => {
+        // Open dropdown with `command + .`
+        if (event.key === "." && event.metaKey) {
+          setIsDropdownOpen(true)
+          event.preventDefault()
+        }
+      }}
+    >
+      <div className="flex flex-grow items-start gap-3 px-3 py-[0.625rem] pr-0 coarse:px-4 coarse:py-3">
+        <span className="grid h-5 place-items-center coarse:h-6">
+          <Checkbox
+            priority={task.priority}
+            checked={task.completed}
+            onCheckedChange={(checked) => {
+              upsertNote({
+                id: task.noteId,
+                rawBody:
+                  note.rawBody.slice(0, task.start?.offset) +
+                  (checked ? "- [x]" : "- [ ]") +
+                  note.rawBody.slice((task.start?.offset ?? 0) + 5),
+              })
+            }}
+          />
+        </span>
+        <div className="flex-grow space-y-1 [&_*]:!leading-5 coarse:[&_*]:!leading-6">
+          <Markdown>{task.title}</Markdown>
+          <div className="space-x-2 text-text-secondary [&:empty]:hidden">
+            {!inCalendarPanel && task.dates.length > 0 ? (
+              <Link
+                key={task.dates[0]}
+                to={`/calendar?date=${task.dates[0]}`}
+                target="_blank"
+                className="link"
+              >
+                {formatDateDistance(task.dates[0])}
+              </Link>
+            ) : null}
+            {!inCalendarPanel && task.dates.length > 0 && task.tags.length > 0 ? (
+              <span>·</span>
+            ) : null}
+            {removeParentTags(task.tags).map((tag) => (
+              <TagLink key={tag} name={tag} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+        <DropdownMenu.Trigger asChild>
+          <IconButton
+            aria-label="Task actions"
+            shortcut={["⌘", "."]}
+            tooltipSide="top"
+            className="m-1"
+          >
+            <MoreIcon16 />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end">
+          <DropdownMenu.Item icon={<EditIcon16 />} shortcut={["E"]} disabled>
+            Edit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item icon={<NoteIcon16 />} shortcut={["N"]} disabled>
+            Go to note
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} shortcut={["⌘", "⌫"]} disabled>
+            Delete
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
+    </li>
   )
 }

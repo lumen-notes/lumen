@@ -485,6 +485,14 @@ export function ShareIcon16({ className, ...props }: React.ComponentPropsWithout
   )
 }
 
+export function TaskListIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M9 2h6v1.5H9V2ZM9 7h6v1.5H9V7ZM9 12h6v1.5H9V12ZM2.5 2.5h3v3h-3v-3ZM2 1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2ZM7.044 9.81l-3.197 4.617a.75.75 0 0 1-1.22.018l-1.676-2.27 1.207-.89L3.21 12.71l2.6-3.755 1.233.854Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

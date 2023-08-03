@@ -16,8 +16,9 @@ import React from "react"
 import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
-import { useSearchNotes } from "../utils/use-search-notes"
+import { useSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
@@ -274,20 +275,17 @@ function useNoteCompletion() {
         },
       }
 
-      const options = searchResults.slice(0, 5).map(([id, note]): Completion => {
+      const options = searchResults.slice(0, 5).map((note): Completion => {
         const { content } = parseFrontmatter(note?.rawBody || "")
         return {
-          label: note?.title || id,
-          detail: note.tags
-            // Filter out tags that are parents of other tags
-            // Example: #foo #foo/bar -> #foo/bar
-            .filter((tag) => !note.tags.some((t) => t.startsWith(tag) && t !== tag))
+          label: note?.title || note.id,
+          detail: removeParentTags(note.tags)
             .map((tag) => `#${tag}`)
             .join(" "),
           info: content,
           apply: (view, completion, from, to) => {
             // Insert link to note
-            const text = `[[${id}${note?.title ? `|${note.title}` : ""}]]`
+            const text = `[[${note.id}${note?.title ? `|${note.title}` : ""}]]`
 
             const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
             view.dispatch({

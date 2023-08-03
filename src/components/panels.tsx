@@ -175,31 +175,37 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const navigate = useNavigate()
   const { openPanel, updatePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
+
+  // Preserve the view type when navigating between panels
+  const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
+  const to = props.to.toString()
+  const url = to.includes("?") ? `${to}&v=${viewType}` : `${to}?v=${viewType}`
+
   return (
     <RouterLink
       {...props}
       ref={ref}
       onClick={(event) => {
-        if (typeof props.to !== "string" || event.metaKey || event.ctrlKey || event.shiftKey) {
+        if (event.metaKey || event.ctrlKey || event.shiftKey) {
           return
         }
 
         // If we're not in a panels context, use the router's navigate function
         if (!openPanel || !updatePanel) {
-          navigate(props.to, { replace: props.replace })
+          navigate(url, { replace: props.replace })
           event.preventDefault()
           return
         }
 
         // Open link in a new panel
         if (target === "_blank") {
-          openPanel?.(props.to, panel?.index)
+          openPanel?.(url, panel?.index)
           event.preventDefault()
         }
 
         // Open link in the current panel
         if (target === "_self") {
-          const [pathname, search] = props.to.split("?")
+          const [pathname, search] = url.split("?")
 
           if (panel) {
             updatePanel?.(panel?.index, { pathname, search })
