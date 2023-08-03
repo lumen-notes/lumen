@@ -131,7 +131,14 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
           return !childTags.every(([, otherFrequency]) => otherFrequency === frequency)
         })
-        .sort((a, b) => b[1] - a[1])
+        .sort((a, b) => {
+          // Put p1, p2, p3, etc. tags at the start
+          if (a[0].startsWith("p") && !b[0].startsWith("p")) return -1
+          if (!a[0].startsWith("p") && b[0].startsWith("p")) return 1
+          if (a[0].startsWith("p") && b[0].startsWith("p")) return a[0].localeCompare(b[0])
+
+          return b[1] - a[1]
+        })
     )
   }, [viewType, taskResults, noteResults])
 
