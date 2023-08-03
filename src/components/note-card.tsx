@@ -128,7 +128,22 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
     return <Card className="p-4">Not found</Card>
   }
 
-  const viewMode = (
+  if (isEditing) {
+    return (
+      <NoteCardForm
+        key={note.rawBody}
+        id={id}
+        defaultValue={note.rawBody}
+        elevation={elevation}
+        // minHeight="12rem"
+        editorRef={editorRef}
+        onSubmit={switchToViewing}
+        onCancel={switchToViewing}
+      />
+    )
+  }
+
+  return (
     <Card
       // Used for focus management
       data-note-id={id}
@@ -272,19 +287,4 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       </div>
     </Card>
   )
-
-  const editMode = (
-    <NoteCardForm
-      key={note.rawBody}
-      id={id}
-      defaultValue={note.rawBody}
-      elevation={elevation}
-      // minHeight="12rem"
-      editorRef={editorRef}
-      onSubmit={switchToViewing}
-      onCancel={switchToViewing}
-    />
-  )
-
-  return !isEditing ? viewMode : editMode
 }

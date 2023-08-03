@@ -126,6 +126,15 @@ function useCodeMirror({
 
             onPaste?.(event, view)
           },
+          keydown: (event) => {
+            // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
+            if (
+              (event.key === "Escape" || event.key === "Enter") &&
+              document.querySelector(".cm-tooltip-autocomplete")
+            ) {
+              event.stopImmediatePropagation()
+            }
+          },
         }),
         closeBrackets(),
         autocompletion({

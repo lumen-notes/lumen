@@ -100,7 +100,7 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
             rawBody
               .slice(node.position.start.offset, node.position?.end.offset)
               // "- [ ] Example" -> "Example"
-              .match(/\[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
+              .match(/^- \[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
 
           const title =
             text
