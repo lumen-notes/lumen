@@ -1,7 +1,5 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { isToday } from "date-fns"
-import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
@@ -9,7 +7,6 @@ import { CodeProps } from "react-markdown/lib/ast-to-react"
 import remarkEmoji from "remark-emoji"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
-import { notesAtom } from "../global-atoms"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
@@ -26,6 +23,7 @@ import {
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
+import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
 import { Checkbox } from "./checkbox"
@@ -597,8 +595,7 @@ type NoteLinkProps = {
 }
 
 function NoteLink({ id, text }: NoteLinkProps) {
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (n) => n[id]), [id])
-  const note = useAtomValue(noteAtom)
+  const note = useNoteById(id)
   const Link = useLink()
   return (
     <HoverCard.Root>

@@ -2,7 +2,6 @@ import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Params } from "react-router-dom"
 import { useEvent } from "react-use"
@@ -22,9 +21,10 @@ import {
 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
-import { githubRepoAtom, notesAtom } from "../global-atoms"
+import { githubRepoAtom } from "../global-atoms"
 import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"
+import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchParam } from "../utils/use-search-param"
 
 type FullscreenNotePageProps = {
@@ -33,8 +33,7 @@ type FullscreenNotePageProps = {
 
 export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const { id = "" } = params
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
-  const note = useAtomValue(noteAtom)
+  const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()

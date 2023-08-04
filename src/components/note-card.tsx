@@ -2,13 +2,13 @@ import { EditorSelection } from "@codemirror/state"
 import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import React from "react"
-import { githubRepoAtom, githubUserAtom, notesAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { NoteId } from "../types"
 import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
+import { useNoteById } from "../utils/use-note-by-id"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -31,8 +31,7 @@ type NoteCardProps = {
 }
 
 export function NoteCard({ id, elevation }: NoteCardProps) {
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
-  const note = useAtomValue(noteAtom)
+  const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const deleteNote = useDeleteNote()

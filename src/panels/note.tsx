@@ -1,6 +1,4 @@
 import * as Tabs from "@radix-ui/react-tabs"
-import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
 import React from "react"
 import { LinkIcon16, NoteIcon24, UnlinkIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
@@ -8,7 +6,7 @@ import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { notesAtom } from "../global-atoms"
+import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
 
 // const notesWithQueriesAtom = selectAtom(sortedNoteEntriesAtom, (entries) => {
@@ -17,8 +15,7 @@ import { useSearchNotes } from "../utils/use-search"
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { id: noteId = "" } = params
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[noteId]), [noteId])
-  const note = useAtomValue(noteAtom)
+  const note = useNoteById(noteId)
   // const notesWithQueries = useAtomValue(notesWithQueriesAtom)
   const searchNotes = useSearchNotes()
 
