@@ -1,14 +1,16 @@
 import React from "react"
 import { useLink } from "./link-context"
+import { cx } from "../utils/cx"
 
 type TagLinkProps = {
   name: string
+  className?: string
 }
 
-export function TagLink({ name }: TagLinkProps) {
+export function TagLink({ name, className }: TagLinkProps) {
   const Link = useLink()
   return (
-    <span className="text-text-secondary">
+    <span className={cx("text-text-secondary", className)}>
       #
       {name.split("/").map((part, i) => {
         return (
@@ -16,7 +18,7 @@ export function TagLink({ name }: TagLinkProps) {
             {i > 0 && <span>/</span>}
             <Link
               target="_blank"
-              className="link text-text-secondary"
+              className="link"
               to={`/tags/${name
                 .split("/")
                 .slice(0, i + 1)

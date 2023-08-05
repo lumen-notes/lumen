@@ -22,6 +22,7 @@ import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { PanelContext, PanelsContext } from "./panels"
 import { TagLink } from "./tag-link"
+import { cx } from "../utils/cx"
 
 export function TaskItem({ task }: { task: Task }) {
   const note = useNoteById(task.noteId)
@@ -153,7 +154,12 @@ export function TaskItem({ task }: { task: Task }) {
             onCheckedChange={setCompleted}
           />
         </span>
-        <div className="flex-grow space-y-1 [&_*]:!leading-5 coarse:[&_*]:!leading-6">
+        <div
+          className={cx(
+            "flex-grow space-y-1 [&_*]:!leading-5 coarse:[&_*]:!leading-6",
+            task.completed && "text-text-secondary",
+          )}
+        >
           <Markdown>{task.title}</Markdown>
           <div className="space-x-2 text-text-secondary [&:empty]:hidden">
             {!inCalendarPanel && task.dates.length > 0 ? (
