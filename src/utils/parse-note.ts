@@ -96,11 +96,9 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
         if (node.checked !== null && node.checked !== undefined) {
           if (!node.position?.start) break
 
-          const text =
-            rawBody
-              .slice(node.position.start.offset, node.position?.end.offset)
-              // "- [ ] Example" -> "Example"
-              .match(/^- \[( |x)\] (?<rawBody>[^\n]+)\n?/)?.groups?.rawBody || ""
+          const text = getTaskBody(
+            rawBody.slice(node.position.start.offset, node.position?.end.offset),
+          )
 
           const title =
             text
@@ -166,3 +164,12 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
     tasks,
   }
 })
+
+export function getTaskBody(text: string) {
+  return (
+    text
+      .split("\n")[0]
+      // "- [ ] Example" -> "Example"
+      .match(/^- \[( |x)\] (?<rawBody>.+)/)?.groups?.rawBody || ""
+  )
+}

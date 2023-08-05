@@ -3,7 +3,7 @@ import { isToday } from "date-fns"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { CodeProps } from "react-markdown/lib/ast-to-react"
+import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import remarkEmoji from "remark-emoji"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
@@ -41,6 +41,7 @@ import {
 import { useLink } from "./link-context"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
+import { getTaskBody, parseNote } from "../utils/parse-note"
 
 export type MarkdownProps = {
   children: string
@@ -145,6 +146,7 @@ function MarkdownBody({ children }: { children: string }) {
         a: Link,
         img: Image,
         input: CheckboxInput,
+        li: ListItem,
         // Delegate rendering of the <pre> element to the Code component
         pre: ({ children }) => <>{children}</>,
         code: Code,
@@ -516,20 +518,44 @@ function Code({ className, inline, children }: CodeProps) {
   )
 }
 
+const TaskListItemContext = React.createContext<{
+  position?: Position
+  priority: Task["priority"]
+} | null>(null)
+
+function ListItem({ node, ordered, index, ...props }: LiProps) {
+  const { markdown } = React.useContext(MarkdownContext)
+  const isTaskListItem = props.className?.includes("task-list-item")
+
+  if (isTaskListItem) {
+    const rawBody = getTaskBody(
+      markdown.slice(node.position?.start.offset, node.position?.end.offset),
+    )
+
+    const { tags } = parseNote("", rawBody)
+
+    let priority: Task["priority"] = 4
+    if (tags.includes("p1")) priority = 1
+    else if (tags.includes("p2")) priority = 2
+    else if (tags.includes("p3")) priority = 3
+
+    return (
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
+      <TaskListItemContext.Provider value={{ position: node.position, priority }}>
+        <li {...props} />
+      </TaskListItemContext.Provider>
+    )
+  }
+
+  return <li {...props} />
+}
+
 function CheckboxInput({ checked }: { checked?: boolean }) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
+  const { position, priority } = React.useContext(TaskListItemContext) ?? {}
   const checkedRef = React.useRef<HTMLButtonElement>(null)
-  const [priority, setPriority] = React.useState<Task["priority"]>(4)
 
-  // TODO: Implement this without an effect
-  React.useLayoutEffect(() => {
-    const parent = checkedRef.current?.parentElement
-    const p1 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p1"]')
-    const p2 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p2"]')
-    const p3 = parent?.querySelector<HTMLAnchorElement>('a[href^="/tags/p3"]')
-    const priority = p1 ? 1 : p2 ? 2 : p3 ? 3 : 4
-    setPriority(priority)
-  }, [])
+  console.log(checked, position, priority)
 
   return (
     <Checkbox
@@ -538,29 +564,13 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
       disabled={!onChange}
       priority={priority}
       onCheckedChange={(checked) => {
-        if (!checkedRef.current) return
-
-        // Find the index of the checkbox that was clicked
-        const container = checkedRef.current.closest(".markdown")
-
-        if (!container) return
-
-        const checkboxElements = container.querySelectorAll("[role=checkbox]")
-
-        const index = Array.from(checkboxElements).indexOf(checkedRef.current)
-
-        if (index === -1) return
-
-        // Find all the checkboxes in the markdown string
-        const markdownCheckboxes = Array.from(markdown.matchAll(/- \[[ x]\]/g))
-
-        if (index >= markdownCheckboxes.length) return
+        if (!position) return
 
         // Update the corresponding checkbox in the markdown string
         const newValue =
-          markdown.slice(0, markdownCheckboxes[index].index) +
+          markdown.slice(0, position.start.offset) +
           (checked ? "- [x]" : "- [ ]") +
-          markdown.slice((markdownCheckboxes[index].index ?? 0) + 5)
+          markdown.slice((position.start.offset ?? 0) + 5)
 
         onChange?.(newValue)
       }}
