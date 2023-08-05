@@ -181,6 +181,12 @@ function useNavigateWithCache() {
 
       const prevPathParams = getPrevPathParams(pathname)
 
+      // Clicking the nav link for the current page resets the params for that pages
+      if (location.pathname === pathname) {
+        navigate(to)
+        return
+      }
+
       if (prevPathParams) {
         // Navigate to the new path with the previous params for that path
         navigate({ pathname, search: prevPathParams })

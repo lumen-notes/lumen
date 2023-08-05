@@ -1,6 +1,9 @@
 import React from "react"
+import { useLocation } from "react-router-dom"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
+import { DropdownMenu } from "../components/dropdown-menu"
+import { IconButton } from "../components/icon-button"
 import {
   CloseIcon16,
   EditIcon16,
@@ -13,9 +16,8 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
-import { useRenameTag, useDeleteTag } from "../utils/github-sync"
-import { DropdownMenu } from "../components/dropdown-menu"
-import { IconButton } from "../components/icon-button"
+import { useDeleteTag, useRenameTag } from "../utils/github-sync"
+import { openNewWindow } from "../utils/open-new-window"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -23,25 +25,13 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const deleteTag = useDeleteTag()
   const { updatePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
+  const location = useLocation()
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
   const openRenameForm = React.useCallback(() => setIsRenaming(true), [])
 
   const closeRenameForm = React.useCallback(() => setIsRenaming(false), [])
-
-  const openTagWindow = React.useCallback((name: string) => {
-    const newWindowWidth = 600
-    const newWindowHeight = 600
-    window.open(
-      // TODO: Preserve the query params from the current panel
-      `/tags/${name}?fullscreen=true`,
-      `${name}`,
-      `width=${newWindowWidth}, height=${newWindowHeight}, top=${
-        window.screen.height / 2 - newWindowHeight / 2
-      }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
-    )
-  }, [])
 
   const handleDeleteTag = React.useCallback(() => {
     // Confirm deletion
@@ -63,7 +53,15 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon24 />}
       actions={
         <>
-          <DropdownMenu.Item icon={<ExternalLinkIcon16 />} onSelect={() => openTagWindow(name)}>
+          <DropdownMenu.Item
+            icon={<ExternalLinkIcon16 />}
+            onSelect={() => {
+              const url = panel
+                ? `${panel.pathname}?${panel.search}`
+                : `${location.pathname}?${location.search}`
+              openNewWindow(url)
+            }}
+          >
             Open in new window
           </DropdownMenu.Item>
           <DropdownMenu.Separator />

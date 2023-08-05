@@ -6,7 +6,12 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useLocation } from "react-router-dom"
 import { IconButton } from "../components/icon-button"
-import { CalendarIcon24, ChevronLeftIcon16, ChevronRightIcon16 } from "../components/icons"
+import {
+  CalendarIcon24,
+  ChevronLeftIcon16,
+  ChevronRightIcon16,
+  ExternalLinkIcon16,
+} from "../components/icons"
 import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -15,6 +20,8 @@ import { PanelContext, PanelProps } from "../components/panels"
 import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { DropdownMenu } from "../components/dropdown-menu"
+import { openNewWindow } from "../utils/open-new-window"
 
 export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
@@ -41,6 +48,22 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       description={formatDateDistance(date)}
       icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
+      actions={
+        <>
+          <DropdownMenu.Item
+            icon={<ExternalLinkIcon16 />}
+            onSelect={() => {
+              const url = panel
+                ? `${panel.pathname}?${panel.search}`
+                : `${location.pathname}${location.search}`
+              console.log(url)
+              openNewWindow(url)
+            }}
+          >
+            Open in new window
+          </DropdownMenu.Item>
+        </>
+      }
     >
       <div className="flex flex-col">
         <Calendar activeDate={date} />
