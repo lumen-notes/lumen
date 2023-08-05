@@ -555,8 +555,6 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
   const { position, priority } = React.useContext(TaskListItemContext) ?? {}
   const checkedRef = React.useRef<HTMLButtonElement>(null)
 
-  console.log(checked, position, priority)
-
   return (
     <Checkbox
       ref={checkedRef}

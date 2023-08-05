@@ -1,11 +1,15 @@
 import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
+import { Getter } from "jotai"
+import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import { notesAtom } from "../global-atoms"
 import { Task } from "../types"
 import { formatDateDistance } from "../utils/date"
-import { useUpsertNote } from "../utils/github-sync"
+import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
 import { removeParentTags } from "../utils/remove-parent-tags"
+import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useNoteById } from "../utils/use-note-by-id"
 import { Button } from "./button"
 import { Card } from "./card"
@@ -18,11 +22,11 @@ import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { PanelContext, PanelsContext } from "./panels"
 import { TagLink } from "./tag-link"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
 
 export function TaskItem({ task }: { task: Task }) {
   const note = useNoteById(task.noteId)
   const upsertNote = useUpsertNote()
+  const deleteTask = useDeleteTask()
   const Link = useLink()
   const location = useLocation()
   const panel = React.useContext(PanelContext)
@@ -125,11 +129,19 @@ export function TaskItem({ task }: { task: Task }) {
         // Go to note with `enter`
         if (event.key === "Enter") {
           navigate(`/${task.noteId}`)
+          event.preventDefault()
         }
 
         // Toggle completed with `space`
         if (event.key === " ") {
           setCompleted(!task.completed)
+          event.preventDefault()
+        }
+
+        // Delete task with `command + backspace`
+        if (event.key === "Backspace" && event.metaKey) {
+          deleteTask(task)
+          event.preventDefault()
         }
       }}
     >
@@ -187,7 +199,12 @@ export function TaskItem({ task }: { task: Task }) {
             Go to note
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
-          <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} shortcut={["⌘", "⌫"]} disabled>
+          <DropdownMenu.Item
+            variant="danger"
+            icon={<TrashIcon16 />}
+            shortcut={["⌘", "⌫"]}
+            onSelect={() => deleteTask(task)}
+          >
             Delete
           </DropdownMenu.Item>
         </DropdownMenu.Content>
@@ -273,4 +290,42 @@ function TaskItemForm({ task, editorRef, onSubmit, onCancel }: TaskItemFormProps
       </form>
     </Card>
   )
+}
+
+const notesCallback = (get: Getter) => get(notesAtom)
+
+function useDeleteTask() {
+  const upsertNote = useUpsertNote()
+  const deleteNote = useDeleteNote()
+  const getNotes = useAtomCallback(notesCallback)
+
+  const deleteTask = React.useCallback(
+    (task: Task) => {
+      const notes = getNotes()
+      const note = notes[task.noteId]
+
+      const taskLength = `- [ ] ${task.rawBody}`.length
+
+      const newRawBody =
+        note.rawBody.slice(0, task.start.offset) +
+        note.rawBody.slice((task.start.offset ?? 0) + taskLength).trimStart()
+
+      console.log(newRawBody)
+
+      // If the task is the only thing in the note, delete the note
+      if (!newRawBody) {
+        deleteNote(note.id)
+
+        return
+      }
+
+      upsertNote({
+        id: note.id,
+        rawBody: newRawBody,
+      })
+    },
+    [deleteNote, getNotes, upsertNote],
+  )
+
+  return deleteTask
 }
