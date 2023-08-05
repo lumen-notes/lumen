@@ -178,8 +178,8 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 
   // Preserve the view type when navigating between panels
   const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
-  const to = props.to.toString()
-  const url = to.includes("?") ? `${to}&v=${viewType}` : `${to}?v=${viewType}`
+  const [pathname, search] = props.to.toString().split("?")
+  const url = `${pathname}?${qs.stringify({ v: viewType, ...qs.parse(search) })}`
 
   return (
     <RouterLink

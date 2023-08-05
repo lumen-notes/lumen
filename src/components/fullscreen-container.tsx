@@ -1,5 +1,6 @@
+import qs from "qs"
 import React from "react"
-import { LinkProps, Link as RouterLink, useNavigate } from "react-router-dom"
+import { LinkProps, Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
 import { cx } from "../utils/cx"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -68,7 +69,9 @@ export function FullscreenContainer({
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
             <div className="flex items-baseline gap-3 overflow-hidden">
               <h2 className="flex-shrink-0 leading-4">{title}</h2>
-              {/* {description ? (<span className="truncate text-text-secondary">{description}</span>) : null} */}
+              {description ? (
+                <span className="truncate text-text-secondary">{description}</span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -91,21 +94,27 @@ export function FullscreenContainer({
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(({ to, ...props }, ref) => {
-  let url = to
+  const location = useLocation()
 
-  // Add `fullscreen=true` to the query string
-  if (typeof to === "string") {
-    // Check if `to` contains a query string
-    url = to.includes("?") ? `${to}&fullscreen=true` : `${to}?fullscreen=true`
-  } else {
-    url = { ...to, search: to.search ? `${to.search}&fullscreen=true` : "?fullscreen=true" }
+  const viewType = new URLSearchParams(location.search).get("v")
+
+  const [pathname, search] = to.toString().split("?")
+
+  // Preserve the view type and add `fullscreen=true` to the query string
+  const combinedSearch = {
+    v: viewType,
+    fullscreen: true,
+    ...qs.parse(search),
   }
 
   return (
     <RouterLink
       {...props}
       ref={ref}
-      to={url}
+      to={{
+        pathname,
+        search: qs.stringify(combinedSearch),
+      }}
       // Always open links in the same tab in fullscreen mode
       target="_self"
     />

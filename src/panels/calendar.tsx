@@ -16,7 +16,7 @@ import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
 
-const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 export function CalendarPanel({ id, onClose }: PanelProps) {
   const location = useLocation()
@@ -54,7 +54,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
   )
 }
 
-function Calendar({ activeDate: dateString }: { activeDate: string }) {
+export function Calendar({ activeDate: dateString }: { activeDate: string }) {
   const date = toDate(dateString)
 
   const [startOfWeek, setStartOfWeek] = React.useState(() =>

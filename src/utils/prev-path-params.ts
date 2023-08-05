@@ -10,6 +10,12 @@ export function savePathParams(location: Location) {
     JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}"),
   )
 
+  // Don't cache fullscreen pages
+  const fullscreen = new URLSearchParams(location.search).get("fullscreen")
+  if (fullscreen && fullscreen !== "false") {
+    return
+  }
+
   window.localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({ ...prevPathParams, [location.pathname]: location.search }),
