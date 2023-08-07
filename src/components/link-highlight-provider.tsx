@@ -12,7 +12,6 @@ export function LinkHighlightProvider({ href, children }: LinkHighlightProviderP
     <div id={id}>
       <style>
         {`#${id} a[href="${href}"] {
-          display: inline-block;
           color: var(--color-text-highlight);
           background-color: var(--color-bg-highlight);
           text-decoration-color: currentColor;
