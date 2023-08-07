@@ -195,7 +195,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
-              {pluralize(noteResults.length, "result")}
+              {pluralize(viewType === "tasks" ? taskResults.length : noteResults.length, "result")}
             </span>
           ) : null}
         </div>
