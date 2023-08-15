@@ -200,72 +200,104 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           ) : null}
         </div>
 
-        {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
-          <div className="flex flex-wrap gap-2">
-            {tagQualifiers.map((qualifier) => (
-              <PillButton
-                key={qualifier.values.join(",")}
-                variant="primary"
-                onClick={() => {
-                  const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(",")}`
+        <div className="flex flex-wrap gap-2 empty:hidden">
+          {viewType === "tasks" ? (
+            // Quickly see tasks that are not completed
+            <PillButton
+              variant={deferredQuery.includes("-completed:true") ? "primary" : "secondary"}
+              onClick={() => {
+                const text = "-completed:true"
+                const index = query.indexOf(text)
 
-                  const index = query.indexOf(text)
-
-                  if (index === -1) return
-
+                if (index === -1) {
+                  // If the qualifier is not already in the query, add it
+                  const newQuery = query ? `${query} ${text}` : text
+                  setQuery(newQuery.trim())
+                } else {
+                  // Otherwise, remove it
                   const newQuery =
                     query.slice(0, index) + query.slice(index + text.length).trimStart()
-
-                  // Remove the tag qualifier from the query
                   setQuery(newQuery.trim())
-                }}
-              >
-                {qualifier.exclude ? <span className="italic">not</span> : null}
-                {qualifier.values.map((value, index) => (
-                  <React.Fragment key={value}>
-                    {index > 0 ? <span className="italic">or</span> : null}
-                    <span key={value}>{value}</span>
-                  </React.Fragment>
-                ))}
+                }
+              }}
+            >
+              not completed
+              {deferredQuery.includes("-completed:true") ? (
                 <CloseIcon12 className="-mr-0.5" />
-              </PillButton>
-            ))}
-            {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
-              <PillButton
-                key={tag}
-                onClick={(event) => {
-                  const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                  setQuery(query ? `${query} ${qualifier}` : qualifier)
-                }}
-              >
-                {tag}
-                <span className="text-text-secondary">{frequency}</span>
-              </PillButton>
-            ))}
-            {sortedTagFrequencies.length > numVisibleTags ? (
-              <DropdownMenu>
-                <DropdownMenu.Trigger asChild>
-                  <PillButton variant="dashed">Show more</PillButton>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
-                    <DropdownMenu.Item
-                      key={tag}
-                      icon={<TagIcon16 />}
-                      trailingVisual={<span className="text-text-secondary">{frequency}</span>}
-                      onClick={(event) => {
-                        const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                        setQuery(query ? `${query} ${qualifier}` : qualifier)
-                      }}
-                    >
-                      {tag}
-                    </DropdownMenu.Item>
+              ) : (
+                <span className="text-text-secondary">
+                  {taskResults.filter((task) => !task.completed).length}
+                </span>
+              )}
+            </PillButton>
+          ) : null}
+          {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
+            <>
+              {tagQualifiers.map((qualifier) => (
+                <PillButton
+                  key={qualifier.values.join(",")}
+                  variant="primary"
+                  onClick={() => {
+                    const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(",")}`
+
+                    const index = query.indexOf(text)
+
+                    if (index === -1) return
+
+                    const newQuery =
+                      query.slice(0, index) + query.slice(index + text.length).trimStart()
+
+                    // Remove the tag qualifier from the query
+                    setQuery(newQuery.trim())
+                  }}
+                >
+                  {qualifier.exclude ? <span>not</span> : null}
+                  {qualifier.values.map((value, index) => (
+                    <React.Fragment key={value}>
+                      {index > 0 ? <span>or</span> : null}
+                      <span key={value}>{value}</span>
+                    </React.Fragment>
                   ))}
-                </DropdownMenu.Content>
-              </DropdownMenu>
-            ) : null}
-          </div>
-        ) : null}
+                  <CloseIcon12 className="-mr-0.5" />
+                </PillButton>
+              ))}
+              {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
+                <PillButton
+                  key={tag}
+                  onClick={(event) => {
+                    const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+                    setQuery(query ? `${query} ${qualifier}` : qualifier)
+                  }}
+                >
+                  {tag}
+                  <span className="text-text-secondary">{frequency}</span>
+                </PillButton>
+              ))}
+              {sortedTagFrequencies.length > numVisibleTags ? (
+                <DropdownMenu>
+                  <DropdownMenu.Trigger asChild>
+                    <PillButton variant="dashed">Show more</PillButton>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content>
+                    {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
+                      <DropdownMenu.Item
+                        key={tag}
+                        icon={<TagIcon16 />}
+                        trailingVisual={<span className="text-text-secondary">{frequency}</span>}
+                        onClick={(event) => {
+                          const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+                          setQuery(query ? `${query} ${qualifier}` : qualifier)
+                        }}
+                      >
+                        {tag}
+                      </DropdownMenu.Item>
+                    ))}
+                  </DropdownMenu.Content>
+                </DropdownMenu>
+              ) : null}
+            </>
+          ) : null}
+        </div>
 
         {viewType === "cards"
           ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
