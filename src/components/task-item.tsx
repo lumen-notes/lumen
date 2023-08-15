@@ -161,13 +161,13 @@ export function TaskItem({ task }: { task: Task }) {
           )}
         >
           <Markdown>{task.title}</Markdown>
-          <div className="space-x-2 text-text-secondary [&:empty]:hidden">
+          <div className="space-x-2 text-text-secondary [word-break:break-word] [&:empty]:hidden">
             {!inCalendarPanel && task.dates.length > 0 ? (
               <Link
                 key={task.dates[0]}
                 to={`/calendar?date=${task.dates[0]}`}
                 target="_blank"
-                className="link"
+                className="link whitespace-nowrap"
               >
                 {formatDateDistance(task.dates[0])}
               </Link>
