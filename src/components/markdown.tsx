@@ -552,7 +552,7 @@ function ListItem({ node, ordered, index, ...props }: LiProps) {
 
 function CheckboxInput({ checked }: { checked?: boolean }) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
-  const { position, priority } = React.useContext(TaskListItemContext) ?? {}
+  const { position } = React.useContext(TaskListItemContext) ?? {}
   const checkedRef = React.useRef<HTMLButtonElement>(null)
 
   return (
@@ -560,7 +560,7 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
       ref={checkedRef}
       checked={checked}
       disabled={!onChange}
-      priority={priority}
+      // priority={priority}
       onCheckedChange={(checked) => {
         if (!position) return
 
