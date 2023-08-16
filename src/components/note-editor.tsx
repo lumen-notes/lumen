@@ -90,6 +90,7 @@ function useCodeMirror({
           // setValue(value)
           onStateChange?.(event)
         }),
+        EditorView.contentAttributes.of({ spellcheck: "true", autocorrect: "on" }),
         EditorView.domEventHandlers({
           paste: (event, view) => {
             const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
