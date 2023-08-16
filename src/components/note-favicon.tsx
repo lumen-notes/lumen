@@ -14,6 +14,7 @@ export function NoteFavicon({ note }: { note: Note }) {
   if (note.url) {
     icon = (
       <div
+        data-testid="note-favicon-url"
         aria-hidden
         className="inline-block h-4 w-4 bg-contain bg-center bg-no-repeat"
         style={{
@@ -26,9 +27,10 @@ export function NoteFavicon({ note }: { note: Note }) {
   }
 
   // Book
-  if (typeof note.frontmatter.isbn === "string") {
+  if (note.frontmatter.isbn) {
     icon = (
       <div
+        data-testid="note-favicon-book"
         className="focus-ring inline-block aspect-[3/4] h-4 rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
         style={{
           backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg)`,

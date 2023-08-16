@@ -9,6 +9,7 @@ type GitHubAvatarProps = {
 export function GitHubAvatar({ username, size = 32, className }: GitHubAvatarProps) {
   return (
     <div
+      data-testid="github-avatar"
       aria-hidden
       className={cx(
         "inline-block flex-shrink-0 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary",
