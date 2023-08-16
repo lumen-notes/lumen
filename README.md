@@ -72,7 +72,6 @@ Notes in Lumen are...
 
 ## Alternatives
 
-- [Apple Notes](https://apps.apple.com/us/app/notes/id1110145109)
 - [Bear](https://bear.app)
 - [Foam](https://foambubble.github.io/foam)
 - [iA Writer](https://ia.net/writer)
