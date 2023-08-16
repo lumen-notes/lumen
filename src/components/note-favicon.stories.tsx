@@ -15,6 +15,8 @@ export default {
   ),
 }
 
+type Story = StoryObj<typeof NoteFavicon>
+
 const noteStubbed: Note = {
   backlinks: [],
   dates: [],
@@ -29,7 +31,7 @@ const noteStubbed: Note = {
   url: null,
 }
 
-export const Github: StoryObj<typeof NoteFavicon> = {
+export const Github: Story = {
   args: {
     note: {
       ...noteStubbed,
@@ -41,7 +43,7 @@ export const Github: StoryObj<typeof NoteFavicon> = {
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "github-avatar"),
 }
 
-export const WithUrl: StoryObj<typeof NoteFavicon> = {
+export const WithUrl: Story = {
   args: {
     note: {
       ...noteStubbed,
@@ -51,7 +53,7 @@ export const WithUrl: StoryObj<typeof NoteFavicon> = {
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "note-favicon-url"),
 }
 
-export const Book: StoryObj<typeof NoteFavicon> = {
+export const Book: Story = {
   args: {
     note: {
       ...noteStubbed,
@@ -63,7 +65,7 @@ export const Book: StoryObj<typeof NoteFavicon> = {
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "note-favicon-book"),
 }
 
-export const Template: StoryObj<typeof NoteFavicon> = {
+export const Template: Story = {
   args: {
     note: {
       ...noteStubbed,
