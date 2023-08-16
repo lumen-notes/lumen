@@ -12,7 +12,7 @@ Think of Lumen as your private [digital garden](https://maggieappleton.com/garde
 
 ### 🌱 Plant
 
-Write notes with [markdown syntax](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data, forever.
+Write notes with [markdown](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data, forever.
 
 ### 🌿 Grow
 
@@ -24,7 +24,7 @@ Access your notes from anywhere—even offline. Use Lumen's flexible [query lang
 
 <br>
 
-_Notes in Lumen are..._
+Notes in Lumen are...
 
 - atomic
 - interconnected
