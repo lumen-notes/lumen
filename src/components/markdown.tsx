@@ -7,7 +7,9 @@ import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import remarkEmoji from "remark-emoji"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
+import { z } from "zod"
 import { remarkDateLink } from "../remark-plugins/date-link"
+import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
 import { Task, templateSchema } from "../types"
@@ -21,6 +23,7 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { getTaskBody, parseNote } from "../utils/parse-note"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
@@ -38,15 +41,14 @@ import {
   YouTubeIcon16,
 } from "./icons"
 import { useLink } from "./link-context"
+import { NoteFavicon } from "./note-favicon"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
-import { getTaskBody, parseNote } from "../utils/parse-note"
-import { z } from "zod"
 import { WebsiteFavicon } from "./website-favicon"
-import { NoteFavicon } from "./note-favicon"
 
 export type MarkdownProps = {
   children: string
+  hideFrontmatter?: boolean
   onChange?: (value: string) => void
 }
 
@@ -57,77 +59,92 @@ const MarkdownContext = React.createContext<{
   markdown: "",
 })
 
-export const Markdown = React.memo(({ children, onChange }: MarkdownProps) => {
-  const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
+export const Markdown = React.memo(
+  ({ children, hideFrontmatter = false, onChange }: MarkdownProps) => {
+    const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
-  const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
+    const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
 
-  const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
+    const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
 
-  return (
-    <MarkdownContext.Provider value={contextValue}>
-      <div>
-        {parsedTemplate.success ? (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
-              <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
-                Template
-              </span>
-            </div>
-            {/* TODO: Display more input metadata (type, description, etc.) */}
-            {parsedTemplate.data.inputs ? (
-              <div className="flex flex-col gap-1">
-                <span className="text-sm text-text-secondary">Inputs</span>
-                <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
-                  {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
-                    <div key={name}>
-                      <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
-                    </div>
-                  ))}
+    return (
+      <MarkdownContext.Provider value={contextValue}>
+        <div>
+          {parsedTemplate.success ? (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
+                <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
+                  Template
+                </span>
+              </div>
+              {/* TODO: Display more input metadata (type, description, etc.) */}
+              {parsedTemplate.data.inputs ? (
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm text-text-secondary">Inputs</span>
+                  <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
+                    {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
+                      <div key={name}>
+                        <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ) : null}
-            {/* Render template as a code block */}
-            <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
-              <TemplateSyntaxHighlighter>
-                {removeTemplateFrontmatter(children)}
-              </TemplateSyntaxHighlighter>
-            </pre>
-          </div>
-        ) : (
-          <>
-            {frontmatter?.isbn ? (
-              // If the note has an ISBN, show the book cover
-              <div className="mb-3 inline-flex">
-                <BookCover isbn={`${frontmatter.isbn}`} />
-              </div>
-            ) : null}
-            {typeof frontmatter?.github === "string" ? (
-              // If the note has a GitHub username, show the GitHub avatar
-              <div className="mb-3 inline-flex">
-                <GitHubAvatar username={frontmatter.github} />
-              </div>
-            ) : null}
-            <MarkdownBody>{content}</MarkdownBody>
-            <Frontmatter frontmatter={frontmatter} />
-          </>
-        )}
-      </div>
-    </MarkdownContext.Provider>
-  )
-})
+              ) : null}
+              {/* Render template as a code block */}
+              <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+                <TemplateSyntaxHighlighter>
+                  {removeTemplateFrontmatter(children)}
+                </TemplateSyntaxHighlighter>
+              </pre>
+            </div>
+          ) : (
+            <>
+              {frontmatter?.isbn ? (
+                // If the note has an ISBN, show the book cover
+                <div className="mb-3 inline-flex">
+                  <BookCover isbn={`${frontmatter.isbn}`} />
+                </div>
+              ) : null}
+              {typeof frontmatter?.github === "string" ? (
+                // If the note has a GitHub username, show the GitHub avatar
+                <div className="mb-3 inline-flex">
+                  <GitHubAvatar username={frontmatter.github} />
+                </div>
+              ) : null}
+              <MarkdownBody>{content}</MarkdownBody>
+              {!hideFrontmatter ? <Frontmatter frontmatter={frontmatter} /> : null}
+            </>
+          )}
+        </div>
+      </MarkdownContext.Provider>
+    )
+  },
+)
 
 function MarkdownBody({ children }: { children: string }) {
   return (
     <ReactMarkdown
       className="markdown"
-      remarkPlugins={[remarkGfm, remarkEmoji, remarkNoteLink, remarkTagLink, remarkDateLink]}
+      remarkPlugins={[
+        remarkGfm,
+        remarkEmoji,
+        remarkNoteLink,
+        remarkNoteEmbed,
+        remarkTagLink,
+        remarkDateLink,
+      ]}
       remarkRehypeOptions={{
         handlers: {
           // TODO: Improve type-safety of `node`
           noteLink(h, node) {
             return h(node, "noteLink", {
+              id: node.data.id,
+              text: node.data.text,
+            })
+          },
+          noteEmbed(h, node) {
+            return h(node, "noteEmbed", {
               id: node.data.id,
               text: node.data.text,
             })
@@ -154,6 +171,8 @@ function MarkdownBody({ children }: { children: string }) {
         code: Code,
         // @ts-ignore I don't know how to extend the list of accepted component keys
         noteLink: NoteLink,
+        // @ts-ignore
+        noteEmbed: NoteEmbed,
         // @ts-ignore
         tagLink: TagLink,
         // @ts-ignore
@@ -648,6 +667,26 @@ function NoteLink({ id, text }: NoteLinkProps) {
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
+  )
+}
+
+type NoteEmbedProps = {
+  id: string
+  text: string
+}
+
+function NoteEmbed({ id, text }: NoteEmbedProps) {
+  const note = useNoteById(id)
+  const Link = useLink()
+  return (
+    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
+      <Markdown hideFrontmatter>{note?.rawBody ?? "Not found"}</Markdown>
+      <div className="mt-2 text-sm text-text-secondary">
+        <Link target="_blank" to={`/${id}`}>
+          Source
+        </Link>
+      </div>
+    </div>
   )
 }
 

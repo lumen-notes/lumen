@@ -14,6 +14,18 @@ Link to another note using its ID.
 | :-------------------------------- | :------------------------------------------ |
 | `[[1652342106359\|Randie Bemis]]` | `<a href="/1652342106359">Randie Bemis</a>` |
 
+## Note embeds
+
+Embed the contents of another note using its ID.
+
+```
+![[<note-id>]]
+```
+
+| Example              | Rendered HTML                  |
+| :------------------- | :----------------------------- |
+| `![[1652342106359]]` | Contents of note 1652342106359 |
+
 ## Date links
 
 Link to all other notes that reference the same date.

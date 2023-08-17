@@ -5,6 +5,7 @@ import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
+import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId, Task } from "../types"
@@ -35,10 +36,11 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
     rawBody,
     // @ts-ignore TODO: Fix types
     {
-      extensions: [gfmTaskListItem(), noteLink(), tagLink(), dateLink()],
+      extensions: [gfmTaskListItem(), noteLink(), noteEmbed(), tagLink(), dateLink()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
         noteLinkFromMarkdown(),
+        noteEmbedFromMarkdown(),
         tagLinkFromMarkdown(),
         dateLinkFromMarkdown(),
       ],
@@ -66,6 +68,8 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
         break
       }
 
+      // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
+      case "noteEmbed":
       case "noteLink": {
         links.add(node.data.id.toString())
         break
