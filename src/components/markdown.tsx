@@ -204,7 +204,7 @@ function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) 
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className="mt-4 border-t border-border-secondary pt-1 @container">
+    <div className="mt-4 @container">
       {Object.entries(frontmatter)
         // Filter out empty values
         .filter(([, value]) => Boolean(value))
@@ -426,7 +426,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span className="space-x-2">
           {parsedTags.data.map((tag) => (
-            <TagLink key={tag} name={tag} className="link" />
+            <TagLink key={tag} name={tag} />
           ))}
         </span>
       )
@@ -722,7 +722,7 @@ function TagLink({ name, className }: TagLinkProps) {
             {i > 0 && <span>/</span>}
             <Link
               target="_blank"
-              className="text-text-secondary"
+              className="link text-text-secondary"
               to={`/tags/${name
                 .split("/")
                 .slice(0, i + 1)
