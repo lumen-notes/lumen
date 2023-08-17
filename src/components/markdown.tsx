@@ -183,7 +183,7 @@ function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) 
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className="mt-4 divide-y divide-border-secondary border-t border-border-secondary">
+    <div className="mt-4 border-t border-border-secondary pt-1">
       {Object.entries(frontmatter)
         // Filter out empty values
         .filter(([, value]) => Boolean(value))
