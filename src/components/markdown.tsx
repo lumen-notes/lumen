@@ -412,11 +412,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     }
   }
 
-  // If value is a string, render it as markdown
-  if (typeof value === "string") {
-    return <Markdown>{value}</Markdown>
-  }
-
   // Tags
   if (key === "tags") {
     const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
@@ -424,13 +419,18 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
 
     if (parsedTags.success) {
       return (
-        <span className="space-x-2">
+        <span className="inline-flex flex-wrap gap-x-2 gap-y-1">
           {parsedTags.data.map((tag) => (
             <TagLink key={tag} name={tag} />
           ))}
         </span>
       )
     }
+  }
+
+  // If value is a string, render it as markdown
+  if (typeof value === "string") {
+    return <Markdown>{value}</Markdown>
   }
 
   // If value is a date, render it as a link to the date page
