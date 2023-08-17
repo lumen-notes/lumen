@@ -31,7 +31,6 @@ import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
   GitHubIcon16,
-  GlobeIcon16,
   InstagramIcon16,
   MailIcon16,
   PhoneIcon16,
