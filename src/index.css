@@ -294,7 +294,7 @@ body:has([data-resizing="true"]) * {
 .markdown ol,
 .markdown table,
 .markdown blockquote {
-  @apply my-4;
+  @apply my-3;
 }
 
 .markdown hr {

@@ -1,8 +1,14 @@
 import { Note, templateSchema } from "../types"
+import { cx } from "../utils/cx"
 import { GitHubAvatar } from "./github-avatar"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
+import { WebsiteFavicon } from "./website-favicon"
 
-export function NoteFavicon({ note }: { note: Note }) {
+type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
+  note: Note
+}
+
+export function NoteFavicon({ note, className, ...props }: NoteFaviconProps) {
   let icon = <NoteIcon16 data-testid="favicon-default" />
 
   // GitHub
@@ -14,18 +20,7 @@ export function NoteFavicon({ note }: { note: Note }) {
 
   // URL
   if (note.url) {
-    icon = (
-      <div
-        data-testid="favicon-url"
-        aria-hidden
-        className="inline-block h-4 w-4 bg-contain bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(
-            note.url,
-          )}&size=32)`,
-        }}
-      />
-    )
+    icon = <WebsiteFavicon data-testid="favicon-url" url={note.url} />
   }
 
   // Book
@@ -51,5 +46,12 @@ export function NoteFavicon({ note }: { note: Note }) {
     icon = <NoteTemplateIcon16 data-testid="favicon-template" />
   }
 
-  return <span className="inline-grid h-4 w-4 place-items-center text-text-secondary">{icon}</span>
+  return (
+    <span
+      className={cx("inline-grid h-4 w-4 place-items-center text-text-secondary", className)}
+      {...props}
+    >
+      {icon}
+    </span>
+  )
 }

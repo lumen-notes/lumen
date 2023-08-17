@@ -18,7 +18,7 @@ type PanelProps = {
   onClose?: () => void
 }
 
-const MIN_WIDTH = 512
+const MIN_WIDTH = 560
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {

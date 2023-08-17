@@ -42,6 +42,9 @@ import { useLink } from "./link-context"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { Tooltip } from "./tooltip"
 import { getTaskBody, parseNote } from "../utils/parse-note"
+import { z } from "zod"
+import { WebsiteFavicon } from "./website-favicon"
+import { NoteFavicon } from "./note-favicon"
 
 export type MarkdownProps = {
   children: string
@@ -183,14 +186,16 @@ function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) 
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className="mt-4 border-t border-border-secondary pt-1">
+    <div className="mt-4 border-t border-border-secondary pt-1 @container">
       {Object.entries(frontmatter)
         // Filter out empty values
         .filter(([, value]) => Boolean(value))
         .map(([key, value]) => {
           return (
-            <div key={key} className="grid gap-1 py-2 last:pb-0">
-              <h3 className="text-sm/4 text-text-secondary">{formatFrontmatterKey(key)}</h3>
+            <div key={key} className="grid gap-1 py-2 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]">
+              <h3 className="text-sm/4 text-text-secondary @[24rem]:text-base/6">
+                {formatFrontmatterKey(key)}
+              </h3>
               <FrontmatterValue entry={[key, value]} />
             </div>
           )
@@ -244,17 +249,11 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     case "website": {
       if (typeof value !== "string") break
       const hasProtocol = value.startsWith("http://") || value.startsWith("https://")
+      const href = hasProtocol ? value : `https://${value}`
       return (
         <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <GlobeIcon16 />
-          </div>
-          <a
-            className="link link-external"
-            href={hasProtocol ? value : `https://${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <WebsiteFavicon url={href} />
+          <a className="link link-external" href={href} target="_blank" rel="noopener noreferrer">
             {/* Remove protocol and trailing slash from the displayed URL */}
             {value.replace(/^https?:\/\//, "").replace(/\/$/, "")}
           </a>
@@ -441,6 +440,14 @@ function withSuffix(num: number): string {
 
 function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const Link = useLink()
+  const ref = React.useRef<HTMLAnchorElement>(null)
+  const [isFirst, setIsFirst] = React.useState(false)
+
+  React.useEffect(() => {
+    if (ref.current) {
+      setIsFirst(checkIsFirst(ref.current))
+    }
+  }, [])
 
   // Open uploads in a panel
   if (props.href?.startsWith(`/${UPLOADS_DIRECTORY}`)) {
@@ -456,26 +463,33 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
     return <Link to={props.href}>{props.children}</Link>
   }
 
+  let children: React.ReactNode = props.children
+
+  // If the text content of the link is a URL, remove the protocol and trailing slash
+  const urlSchema = z.tuple([z.string().url()])
+  const parsedChildren = urlSchema.safeParse(props.children)
+  if (parsedChildren.success) {
+    children = parsedChildren.data[0].replace(/^https?:\/\//, "").replace(/\/$/, "")
+  }
+
   return (
     // eslint-disable-next-line jsx-a11y/anchor-has-content
     <a
+      ref={ref}
       target="_blank"
       rel="noopener noreferrer"
       {...props}
       className={cx(
         // Break long links
         String(props.children).startsWith("http") && "[word-break:break-all]",
-        // Insert favicon before h1 links
-        'before:my-1 before:mr-2 before:hidden before:h-4 before:w-4 before:bg-contain before:bg-center before:bg-no-repeat before:align-text-bottom before:content-[""] before:[background-image:var(--favicon-url)] [h1:first-child_>_&:first-child]:before:inline-block',
         props.className,
       )}
-      style={{
-        // @ts-expect-error
-        "--favicon-url": `url(https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(
-          props.href ?? "",
-        )}&size=32)`,
-      }}
-    />
+    >
+      {isFirst ? (
+        <WebsiteFavicon url={props.href ?? ""} className="mr-2 align-sub [h1>a>&]:align-baseline" />
+      ) : null}
+      {children}
+    </a>
   )
 }
 
@@ -605,10 +619,22 @@ type NoteLinkProps = {
 function NoteLink({ id, text }: NoteLinkProps) {
   const note = useNoteById(id)
   const Link = useLink()
+  const ref = React.useRef<HTMLAnchorElement>(null)
+  const [isFirst, setIsFirst] = React.useState(false)
+
+  React.useEffect(() => {
+    if (ref.current) {
+      setIsFirst(checkIsFirst(ref.current))
+    }
+  }, [])
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link target="_blank" to={`/${id}`}>
+        <Link ref={ref} target="_blank" to={`/${id}`}>
+          {isFirst ? (
+            <NoteFavicon note={note} className="mr-2 align-sub [h1>a>&]:align-baseline" />
+          ) : null}
           {text}
         </Link>
       </HoverCard.Trigger>
@@ -673,4 +699,12 @@ function DateLink({ date, className }: DateLinkProps) {
       <Tooltip.Content>{formatDateDistance(date)}</Tooltip.Content>
     </Tooltip>
   )
+}
+
+/**
+ * Checks if the given element is the first child of its parent.
+ * If there is a text node before the element, it is NOT considered the first child.
+ */
+function checkIsFirst(element: HTMLElement) {
+  return element.previousSibling === null
 }
