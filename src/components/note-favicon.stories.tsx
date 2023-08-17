@@ -1,23 +1,20 @@
-import { StoryObj } from "@storybook/react"
-import { Note } from "../types"
-import { Card } from "./card"
-import { NoteFavicon } from "./note-favicon"
-import { within } from "@storybook/testing-library"
 import { expect } from "@storybook/jest"
+import { StoryObj } from "@storybook/react"
+import { within } from "@storybook/testing-library"
+import { Note } from "../types"
+import { NoteFavicon } from "./note-favicon"
 
 export default {
   title: "NoteFavicon",
   component: NoteFavicon,
-  render: (args: { note: Note }) => (
-    <Card className="mx-auto max-w-lg p-4">
-      <NoteFavicon {...args} />
-    </Card>
-  ),
+  parameters: {
+    layout: "centered",
+  },
 }
 
 type Story = StoryObj<typeof NoteFavicon>
 
-const noteStubbed: Note = {
+const emptyNote: Note = {
   backlinks: [],
   dates: [],
   frontmatter: {},
@@ -31,52 +28,59 @@ const noteStubbed: Note = {
   url: null,
 }
 
-export const Github: Story = {
+export const Default: Story = {
+  args: {
+    note: emptyNote,
+  },
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-default"),
+}
+
+export const IsTemplate: Story = {
   args: {
     note: {
-      ...noteStubbed,
+      ...emptyNote,
       frontmatter: {
-        github: "lumen-notes",
+        template: {
+          name: "example",
+        },
       },
     },
   },
-  play: async ({ canvasElement }) => expectFavicon(canvasElement, "github-avatar"),
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-template"),
 }
 
-export const WithUrl: Story = {
+export const HasIsbn: Story = {
   args: {
     note: {
-      ...noteStubbed,
-      url: "https://example.com",
-    },
-  },
-  play: async ({ canvasElement }) => expectFavicon(canvasElement, "note-favicon-url"),
-}
-
-export const Book: Story = {
-  args: {
-    note: {
-      ...noteStubbed,
+      ...emptyNote,
       frontmatter: {
         isbn: 9781542866507,
       },
     },
   },
-  play: async ({ canvasElement }) => expectFavicon(canvasElement, "note-favicon-book"),
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-isbn"),
 }
 
-export const Template: Story = {
+export const HasUrl: Story = {
   args: {
     note: {
-      ...noteStubbed,
+      ...emptyNote,
+      url: "https://google.com",
+    },
+  },
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-url"),
+}
+
+export const HasGithub: Story = {
+  args: {
+    note: {
+      ...emptyNote,
       frontmatter: {
-        template: {
-          name: "name-template",
-        },
+        github: "colebemis",
       },
     },
   },
-  play: async ({ canvasElement }) => expectFavicon(canvasElement, "note-template-icon16"),
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-github"),
 }
 
 const expectFavicon = async (canvasElement: HTMLElement, favicon: string) => {

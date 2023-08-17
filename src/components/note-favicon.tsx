@@ -3,18 +3,20 @@ import { GitHubAvatar } from "./github-avatar"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
 
 export function NoteFavicon({ note }: { note: Note }) {
-  let icon = <NoteIcon16 />
+  let icon = <NoteIcon16 data-testid="favicon-default" />
 
-  // GitHub avatar
+  // GitHub
   if (typeof note.frontmatter.github === "string") {
-    icon = <GitHubAvatar username={note.frontmatter.github} size={16} />
+    icon = (
+      <GitHubAvatar data-testid="favicon-github" username={note.frontmatter.github} size={16} />
+    )
   }
 
-  // Note has a URL
+  // URL
   if (note.url) {
     icon = (
       <div
-        data-testid="note-favicon-url"
+        data-testid="favicon-url"
         aria-hidden
         className="inline-block h-4 w-4 bg-contain bg-center bg-no-repeat"
         style={{
@@ -30,7 +32,7 @@ export function NoteFavicon({ note }: { note: Note }) {
   if (note.frontmatter.isbn) {
     icon = (
       <div
-        data-testid="note-favicon-book"
+        data-testid="favicon-isbn"
         className="focus-ring inline-block aspect-[3/4] h-4 rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
         style={{
           backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg)`,
@@ -46,7 +48,7 @@ export function NoteFavicon({ note }: { note: Note }) {
     .safeParse(note.frontmatter.template)
 
   if (isTemplate) {
-    icon = <NoteTemplateIcon16 />
+    icon = <NoteTemplateIcon16 data-testid="favicon-template" />
   }
 
   return <span className="inline-grid h-4 w-4 place-items-center text-text-secondary">{icon}</span>
