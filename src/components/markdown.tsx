@@ -417,6 +417,22 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     return <Markdown>{value}</Markdown>
   }
 
+  // Tags
+  if (key === "tags") {
+    const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
+    const parsedTags = tagsSchema.safeParse(value)
+
+    if (parsedTags.success) {
+      return (
+        <span className="space-x-2">
+          {parsedTags.data.map((tag) => (
+            <TagLink key={tag} name={tag} className="link" />
+          ))}
+        </span>
+      )
+    }
+  }
+
   // If value is a date, render it as a link to the date page
   if (value instanceof Date) {
     const dateString = toDateStringUtc(value)
@@ -692,12 +708,13 @@ function NoteEmbed({ id, text }: NoteEmbedProps) {
 
 type TagLinkProps = {
   name: string
+  className?: string
 }
 
-function TagLink({ name }: TagLinkProps) {
+function TagLink({ name, className }: TagLinkProps) {
   const Link = useLink()
   return (
-    <span className="text-text-secondary">
+    <span className={cx("text-text-secondary", className)}>
       #
       {name.split("/").map((part, i) => {
         return (

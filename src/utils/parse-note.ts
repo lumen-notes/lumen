@@ -4,6 +4,7 @@ import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
+import { z } from "zod"
 import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
@@ -155,6 +156,24 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
         ? frontmatter.birthday
         : new Date(`0000-${frontmatter.birthday}`)
     dates.add(toDateStringUtc(getNextBirthday(date)))
+  }
+
+  // Add tags from frontmatter
+  const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
+  const parsedTags = tagsSchema.safeParse(frontmatter.tags)
+
+  if (parsedTags.success) {
+    parsedTags.data.forEach((tag) =>
+      tag.split("/").forEach((_, index) => {
+        tags.add(
+          tag
+            .split("/")
+            .slice(0, index + 1)
+            .join("/"),
+        )
+      }),
+    )
+    console.log(tags)
   }
 
   return {
