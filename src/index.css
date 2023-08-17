@@ -397,7 +397,12 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown blockquote {
-  @apply border-l-[3px] border-border pl-3 italic;
+  @apply relative pl-3 italic;
+}
+
+.markdown blockquote::before {
+  @apply absolute left-0 text-text-secondary;
+  content: "“";
 }
 
 .markdown a {
