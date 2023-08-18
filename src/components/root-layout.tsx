@@ -17,15 +17,15 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   const onLoad = React.useCallback(() => fetchNotes(), [fetchNotes])
 
-  // const onVisibilityChange = React.useCallback(() => {
-  //   if (document.visibilityState === "visible") {
-  //     fetchNotes()
-  //   }
-  // }, [fetchNotes])
+  const onVisibilityChange = React.useCallback(() => {
+    if (document.visibilityState === "visible") {
+      fetchNotes()
+    }
+  }, [fetchNotes])
 
   // Fetch notes when the app loads, becomes visible, or comes online .
   useEvent("load", onLoad)
-  // useEvent("visibilitychange", onVisibilityChange)
+  useEvent("visibilitychange", onVisibilityChange)
   // useEvent("online", onOnline)
 
   const location = useLocation()
