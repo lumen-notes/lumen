@@ -4,6 +4,7 @@ const ENDPOINT = "https://app.uselumen.com"
 
 const iframe = document.querySelector("iframe")
 
+// TODO: github-repo, gist, book, video
 /** @type {'website'} */
 const contentType = "website"
 
