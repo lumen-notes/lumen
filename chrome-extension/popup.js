@@ -31,7 +31,7 @@ function getDateString() {
 }
 
 /**
- * @typedef {('website'|'github-repo'|'gist')} ContentType
+ * @typedef {('default'|'github-repo'|'gist')} ContentType
  */
 
 // TODO: book, video, article, tweet
@@ -51,7 +51,7 @@ function getContentType(tab) {
     return "github-repo"
   }
 
-  return "website"
+  return "default"
 }
 
 /**
@@ -65,11 +65,11 @@ function getNoteBody({ tab, contentType, date }) {
   switch (contentType) {
     case "gist": {
       const title = tab.title.replace(/ · GitHub$/, "")
-      const authorUrl = tab.url.replace(/\/[^/]+$/, "")
+      const ownerUrl = tab.url.replace(/\/[^/]+$/, "")
       return `---
-author: ${authorUrl}
+owner: ${ownerUrl}
 date_saved: ${date}
-tags: [${contentType}]
+tags: [bookmark, ${contentType}]
 ---
 
 # [${title}](${tab.url})
@@ -83,7 +83,7 @@ tags: [${contentType}]
       return `---
 owner: ${ownerUrl}
 date_saved: ${date}
-tags: [${contentType}]
+tags: [bookmark, ${contentType}]
 ---
 
 # [${owner}/${repo}](${tab.url})
@@ -95,7 +95,7 @@ ${description}
     default: {
       return `---
 date_saved: ${date}
-tags: [${contentType}]
+tags: [bookmark]
 ---
 
 # [${tab.title}](${tab.url})
