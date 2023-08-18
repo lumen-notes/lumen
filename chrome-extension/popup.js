@@ -1,5 +1,7 @@
 /* eslint-env webextensions */
 
+const ENDPOINT = "https://app.uselumen.com"
+
 const iframe = document.querySelector("iframe")
 
 /** @type {'website'} */
@@ -18,7 +20,7 @@ tags: [${contentType}]
 `
 
 // Change src of iframe
-iframe.src = `http://localhost:8888/new?body=${encodeURIComponent(body)}`
+iframe.src = `${ENDPOINT}/new?body=${encodeURIComponent(body)}`
 
 async function getActiveTab() {
   const options = { active: true, lastFocusedWindow: true }
