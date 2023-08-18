@@ -316,8 +316,6 @@ function useDeleteTask() {
         note.rawBody.slice(0, task.start.offset) +
         note.rawBody.slice((task.start.offset ?? 0) + taskLength).trimStart()
 
-      console.log(newRawBody)
-
       // If the task is the only thing in the note, delete the note
       if (!newRawBody) {
         deleteNote(note.id)

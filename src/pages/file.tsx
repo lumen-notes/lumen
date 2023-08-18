@@ -8,7 +8,7 @@ export function FilePage() {
   const path = searchParams.get("path") || ""
 
   return (
-    <div className="grid h-screen place-items-center">
+    <div className="grid h-full place-items-center">
       <ThemeColor />
       <FilePreview path={path} />
     </div>

@@ -9,7 +9,7 @@ import { GitHubAuth } from "./components/github-auth"
 import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
 import { NewNoteDialog } from "./components/new-note-dialog"
-import { Root } from "./components/root"
+import { RootLayout } from "./components/root-layout"
 import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { CalendarPage } from "./pages/calendar"
@@ -20,6 +20,7 @@ import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
+import { NavLayout } from "./components/nav-layout"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -40,18 +41,20 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <InsertTemplateDialog />
             <ThemeColor />
             <GitHubAuth>
-              <Routes>
-                <Route path="/new" element={<NewPage />} />
-                <Route path="/file" element={<FilePage />} />
-                <Route path="/" element={<Root />}>
-                  <Route index element={<NotesPage />} />
-                  <Route path="tags" element={<TagsPage />} />
-                  <Route path="tags/*" element={<TagPage />} />
-                  <Route path="calendar" element={<CalendarPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path=":id" element={<NotePage />} />
-                </Route>
-              </Routes>
+              <RootLayout>
+                <Routes>
+                  <Route path="/new" element={<NewPage />} />
+                  <Route path="/file" element={<FilePage />} />
+                  <Route path="/" element={<NavLayout />}>
+                    <Route index element={<NotesPage />} />
+                    <Route path="tags" element={<TagsPage />} />
+                    <Route path="tags/*" element={<TagPage />} />
+                    <Route path="calendar" element={<CalendarPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path=":id" element={<NotePage />} />
+                  </Route>
+                </Routes>
+              </RootLayout>
             </GitHubAuth>
           </NewNoteDialog.Provider>
         </BrowserRouter>

@@ -56,7 +56,6 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
               const url = panel
                 ? `${panel.pathname}?${panel.search}`
                 : `${location.pathname}${location.search}`
-              console.log(url)
               openNewWindow(url)
             }}
           >

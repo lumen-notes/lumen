@@ -173,7 +173,6 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
         )
       }),
     )
-    console.log(tags)
   }
 
   return {

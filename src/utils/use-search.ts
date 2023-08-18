@@ -18,17 +18,25 @@ export const useSearchNotes = () => {
   const sortedNotes = useAtomValue(sortedNotesAtom)
   const noteSearcher = useAtomValue(noteSearcherAtom)
 
-  const searchNotes = React.useCallback(
-    (query: string) => {
-      // If there's no query, return all notes
-      if (!query) return sortedNotes
+  const sortedNotesRef = React.useRef(sortedNotes)
+  const noteSearcherRef = React.useRef(noteSearcher)
 
-      const { fuzzy, qualifiers } = parseQuery(query)
-      const results = fuzzy ? noteSearcher.search(fuzzy) : sortedNotes
-      return filterResults(results, qualifiers)
-    },
-    [sortedNotes, noteSearcher],
-  )
+  React.useEffect(() => {
+    sortedNotesRef.current = sortedNotes
+  }, [sortedNotes])
+
+  React.useEffect(() => {
+    noteSearcherRef.current = noteSearcher
+  }, [noteSearcher])
+
+  const searchNotes = React.useCallback((query: string) => {
+    // If there's no query, return all notes
+    if (!query) return sortedNotesRef.current
+
+    const { fuzzy, qualifiers } = parseQuery(query)
+    const results = fuzzy ? noteSearcherRef.current.search(fuzzy) : sortedNotesRef.current
+    return filterResults(results, qualifiers)
+  }, [])
 
   return searchNotes
 }

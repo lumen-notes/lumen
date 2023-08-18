@@ -10,16 +10,14 @@ export function NewPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="h-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-      <FullscreenContainer title="New note" icon={<NoteIcon16 />} elevation={1}>
-        <CommandMenu />
-        <FullscreenNoteForm
-          defaultValue={body}
-          onSubmit={(note) => {
-            navigate(`/${note.id}?fullscreen=true`, { replace: true })
-          }}
-        />
-      </FullscreenContainer>
-    </div>
+    <FullscreenContainer title="New note" icon={<NoteIcon16 />} elevation={1}>
+      <CommandMenu />
+      <FullscreenNoteForm
+        defaultValue={body}
+        onSubmit={(note) => {
+          navigate(`/${note.id}?fullscreen=true`, { replace: true })
+        }}
+      />
+    </FullscreenContainer>
   )
 }
