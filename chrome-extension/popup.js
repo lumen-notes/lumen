@@ -4,21 +4,13 @@ const ENDPOINT = "https://app.uselumen.com"
 
 const iframe = document.querySelector("iframe")
 
-// TODO: github-repo, gist, book, video, article, tweet
-/** @type {'website'} */
-const contentType = "website"
-
-const { title, url } = await getActiveTab()
-
 const date = getDateString()
 
-const body = `---
-date_saved: ${date}
-tags: [${contentType}]
----
+const tab = await getActiveTab()
 
-# [${title}](${url})
-`
+const contentType = getContentType(tab)
+
+const body = getNoteBody({ tab, contentType, date })
 
 // Change src of iframe
 iframe.src = `${ENDPOINT}/new?body=${encodeURIComponent(body)}`
@@ -36,4 +28,60 @@ function getDateString() {
   const month = String(today.getMonth() + 1).padStart(2, "0")
   const day = String(today.getDate()).padStart(2, "0")
   return `${year}-${month}-${day}`
+}
+
+/**
+ * @typedef {('website'|'github-repo')} ContentType
+ */
+
+// TODO: github-repo, gist, book, video, article, tweet
+/**
+ * Determine content type of a tab
+ * @param {chrome.tabs.Tab} tab
+ * @returns {ContentType}
+ */
+function getContentType(tab) {
+  const githubRepoRegex = /^https:\/\/github\.com\/[^/]+\/[^/]+/
+  if (githubRepoRegex.test(tab.url)) {
+    return "github-repo"
+  }
+
+  return "website"
+}
+
+/**
+ * @param {object} options
+ * @param {chrome.tabs.Tab} options.tab
+ * @param {ContentType} options.contentType
+ * @param {string} options.date
+ * @returns {string}
+ */
+function getNoteBody({ tab, contentType, date }) {
+  switch (contentType) {
+    case "github-repo": {
+      const [repoName] = tab.url.split("/").slice(-2)
+      const ownerUrl = tab.url.replace(/\/[^/]+$/, "")
+      const description = tab.title.split(": ")[1] || ""
+      return `---
+owner: ${ownerUrl}
+date_saved: ${date}
+tags: [${contentType}]
+---
+
+# [${repoName}](${tab.url})
+
+${description}
+`
+    }
+
+    default: {
+      return `---
+date_saved: ${date}
+tags: [${contentType}]
+---
+
+# [${tab.title}](${tab.url})
+`
+    }
+  }
 }
