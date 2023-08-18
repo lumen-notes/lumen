@@ -12,6 +12,7 @@ import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
+import { openNewWindow } from "../utils/open-new-window"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -102,15 +103,21 @@ function Provider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       // Toggle with `command + i`
-      if (event.key === "i" && event.metaKey && !disabled) {
+      if (event.key === "i" && event.metaKey && !event.shiftKey && !disabled) {
         toggle()
+        event.preventDefault()
+      }
+
+      // Open /new with `command + shift + i`
+      if (event.key === "i" && event.metaKey && event.shiftKey && !disabled) {
+        openNewWindow("/new")
         event.preventDefault()
       }
     }
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [toggle, disabled])
+  }, [toggle, navigate, disabled])
 
   const contextValue = React.useMemo(
     () => ({
