@@ -59,7 +59,7 @@ function getContentType(tab) {
 function getNoteBody({ tab, contentType, date }) {
   switch (contentType) {
     case "github-repo": {
-      const [repoName] = tab.url.split("/").slice(-2)
+      const [owner, repo] = tab.url.split("/").slice(-2)
       const ownerUrl = tab.url.replace(/\/[^/]+$/, "")
       const description = tab.title.split(": ")[1] || ""
       return `---
@@ -68,7 +68,7 @@ date_saved: ${date}
 tags: [${contentType}]
 ---
 
-# [${repoName}](${tab.url})
+# [${owner}/${repo}](${tab.url})
 
 ${description}
 `
