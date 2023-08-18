@@ -75,7 +75,8 @@ function useCodeMirror({
 
   // Completions
   const noteCompletion = useNoteCompletion()
-  const tagCompletion = useTagCompletion()
+  const tagSyntaxCompletion = useTagSyntaxCompletion() // #tag
+  const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
   const templateCompletion = useTemplateCompletion()
 
   React.useEffect(() => {
@@ -145,7 +146,8 @@ function useCodeMirror({
             emojiCompletion,
             dateCompletion,
             noteCompletion,
-            tagCompletion,
+            tagSyntaxCompletion,
+            tagPropertyCompletion,
             templateCompletion,
           ],
           icons: false,
@@ -225,7 +227,11 @@ function dateCompletion(context: CompletionContext): CompletionResult | null {
   }
 }
 
-function useTagCompletion() {
+/**
+ * Autocomplete tags when the user types "#"
+ * @example #tag
+ */
+function useTagSyntaxCompletion() {
   const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
 
   const tagCompletion = React.useCallback(
@@ -236,11 +242,54 @@ function useTagCompletion() {
         return null
       }
 
-      const tags = Object.keys(getTags())
+      const tags = Object.entries(getTags())
+        // Sort tags by frequency
+        .sort((a, b) => b[1].length - a[1].length)
+        .map(([name]) => name)
 
       return {
         from: word.from + 1,
-        options: tags.map((name) => ({ label: name })),
+        options: tags
+          .filter((tag) => tag.includes(word.text.slice(1)))
+          .slice(0, 10)
+          .map((name) => ({ label: name })),
+        filter: false,
+      }
+    },
+    [getTags],
+  )
+
+  return tagCompletion
+}
+
+/**
+ * Autocomplete tags when using the `tags` property
+ * @example tags: [tag]
+ */
+function useTagPropertyCompletion() {
+  const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
+
+  const tagCompletion = React.useCallback(
+    async (context: CompletionContext): Promise<CompletionResult | null> => {
+      const word = context.matchBefore(/tags: +\[[\w-/, ]*/)
+      const lastTagMatch = word?.text.match(/[\w-/]+$/)
+
+      if (!word) {
+        return null
+      }
+
+      const tags = Object.entries(getTags())
+        // Sort tags by frequency
+        .sort((a, b) => b[1].length - a[1].length)
+        .map(([name]) => name)
+
+      return {
+        from: word.from + (lastTagMatch?.index ?? word.text.length),
+        options: tags
+          .filter((tag) => tag.includes(lastTagMatch?.[0] ?? ""))
+          .slice(0, 10)
+          .map((name) => ({ label: name })),
+        filter: false,
       }
     },
     [getTags],
