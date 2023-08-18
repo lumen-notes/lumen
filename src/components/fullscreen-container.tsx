@@ -33,7 +33,7 @@ export function FullscreenContainer({
 }: FullscreenContainerProps) {
   const navigate = useNavigate()
   return (
-    <div className={cx("flex h-screen min-h-full flex-col", className)}>
+    <div className={cx("flex min-h-full flex-col", className)}>
       {/* Make browser toolbar color match the header color */}
       <ThemeColor propertyName={elevation === 0 ? "--color-bg-inset" : "--color-bg"} />
 
