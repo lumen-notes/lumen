@@ -5,7 +5,7 @@ import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { DraggableCore } from "react-draggable"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useMedia } from "react-use"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -52,11 +52,12 @@ function Provider({ children }: { children: React.ReactNode }) {
   const [position, setPosition] = React.useState(() => initialPosition())
   const editorRef = React.useRef<EditorView>()
   const isFullscreen = useIsFullscreen()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const disabled = !githubUser || !githubRepo
+  const disabled = !githubUser || !githubRepo || location.pathname === "/new"
 
   const focusPrevActiveElement = React.useCallback(() => {
     prevActiveElement.current?.focus()
