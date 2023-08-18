@@ -14,7 +14,28 @@ type Query = {
   fuzzy: string
 }
 
-export const useSearchNotes = () => {
+export function useSearchNotes() {
+  const sortedNotes = useAtomValue(sortedNotesAtom)
+  const noteSearcher = useAtomValue(noteSearcherAtom)
+
+  const searchNotes = React.useCallback(
+    (query: string) => {
+      // If there's no query, return all notes
+      if (!query) return sortedNotes
+
+      const { fuzzy, qualifiers } = parseQuery(query)
+      const results = fuzzy ? noteSearcher.search(fuzzy) : sortedNotes
+      return filterResults(results, qualifiers)
+    },
+    [sortedNotes, noteSearcher],
+  )
+
+  return searchNotes
+}
+
+// The same as useSearchNotes except the function value doesn't change when the notes change.
+// This is useful for implementing note autocomplete in CodeMirror.
+export function useStableSearchNotes() {
   const sortedNotes = useAtomValue(sortedNotesAtom)
   const noteSearcher = useAtomValue(noteSearcherAtom)
 

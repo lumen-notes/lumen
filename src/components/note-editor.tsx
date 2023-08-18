@@ -18,7 +18,7 @@ import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
-import { useSearchNotes } from "../utils/use-search"
+import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
@@ -49,6 +49,7 @@ export function NoteEditor({
   return <div ref={containerRef} className={className} />
 }
 
+// TODO: Use @uiw/react-codemirror
 // Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
 function useCodeMirror({
   defaultValue,
@@ -250,7 +251,7 @@ function useTagCompletion() {
 
 function useNoteCompletion() {
   const upsertNote = useSetAtom(upsertNoteAtom)
-  const searchNotes = useSearchNotes()
+  const searchNotes = useStableSearchNotes()
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
