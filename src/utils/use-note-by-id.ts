@@ -4,8 +4,9 @@ import React from "react"
 import { notesAtom } from "../global-atoms"
 import { NoteId } from "../types"
 
-export function useNoteById(id: NoteId) {
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id]), [id])
+export function useNoteById(id?: NoteId) {
+  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes[id || ""]), [id])
   const note = useAtomValue(noteAtom)
+  if (!id || !note) return null
   return note
 }

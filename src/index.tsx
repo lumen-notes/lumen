@@ -14,6 +14,7 @@ import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
+import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
@@ -40,6 +41,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <ThemeColor />
             <GitHubAuth>
               <Routes>
+                <Route path="/new" element={<NewPage />} />
                 <Route path="/file" element={<FilePage />} />
                 <Route path="/" element={<Root />}>
                   <Route index element={<NotesPage />} />

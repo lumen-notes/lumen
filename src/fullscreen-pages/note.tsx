@@ -1,29 +1,18 @@
 import { EditorSelection } from "@codemirror/state"
-import { EditorView, ViewUpdate } from "@codemirror/view"
+import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { Params } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
-import { Button } from "../components/button"
-import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
-import { FileInputButton } from "../components/file-input-button"
 import { FullscreenContainer } from "../components/fullscreen-container"
-import { IconButton } from "../components/icon-button"
-import {
-  CopyIcon16,
-  EditIcon16,
-  ExternalLinkIcon16,
-  NoteIcon16,
-  PaperclipIcon16,
-} from "../components/icons"
+import { FullscreenNoteForm } from "../components/fullscreen-note-form"
+import { CopyIcon16, EditIcon16, ExternalLinkIcon16, NoteIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
-import { NoteEditor } from "../components/note-editor"
 import { githubRepoAtom } from "../global-atoms"
 import { useUpsertNote } from "../utils/github-sync"
-import { useAttachFile } from "../utils/use-attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchParam } from "../utils/use-search-param"
 
@@ -36,18 +25,8 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
-  const attachFile = useAttachFile()
-
-  const [isDraggingOver, setIsDraggingOver] = React.useState(false)
   const editorRef = React.useRef<EditorView>()
   // TODO: Save draft in local storage
-  const [draftValue, setDraftValue] = React.useState<string | undefined>()
-
-  const handleEditorStateChange = React.useCallback((event: ViewUpdate) => {
-    if (event.docChanged) {
-      setDraftValue(event.state.doc.toString())
-    }
-  }, [])
 
   const parseIsEditing = React.useCallback((value: unknown) => {
     return typeof value === "string" ? value === "true" : false
@@ -80,27 +59,10 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     setIsEditing(false)
   }, [setIsEditing])
 
-  const handleSave = React.useCallback(() => {
-    if (draftValue) {
-      upsertNote({
-        id,
-        rawBody: draftValue,
-      })
-    }
-
-    switchToViewing()
-  }, [id, draftValue, upsertNote, switchToViewing])
-
-  const handleCancel = React.useCallback(() => {
-    // Revert changes
-    setDraftValue(undefined)
-    switchToViewing()
-  }, [switchToViewing])
-
   useEvent("keydown", (event) => {
     // Copy markdown with `command + c` if no text is selected
     if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-      copy(note.rawBody)
+      copy(note?.rawBody || "")
       event.preventDefault()
     }
 
@@ -110,24 +72,9 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
       event.preventDefault()
     }
 
-    // Save with `command + enter` or `command + s`
-    if (
-      ((event.metaKey && event.key === "Enter") || (event.metaKey && event.key === "s")) &&
-      isEditing
-    ) {
-      handleSave()
-      event.preventDefault()
-    }
-
     // Switch to editing with `e`
     if (event.key === "e" && !isEditing) {
       switchToEditing()
-      event.preventDefault()
-    }
-
-    // Cancel editing with `escape`
-    if (event.key === "Escape" && isEditing) {
-      handleCancel()
       event.preventDefault()
     }
   })
@@ -192,87 +139,17 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
       {!isEditing ? (
         <div className="w-full flex-grow p-4">
           <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
-            {draftValue ?? note.rawBody}
+            {note.rawBody}
           </Markdown>
         </div>
       ) : (
-        <div
-          className="relative flex flex-grow flex-col bg-bg"
-          // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
-          onDrop={(event) => {
-            // Only allow drop event if editing
-            if (!isEditing) return
-
-            const [item] = Array.from(event.dataTransfer.items)
-            const file = item.getAsFile()
-
-            if (file) {
-              attachFile(file, editorRef.current)
-              event.preventDefault()
-            }
-
-            setIsDraggingOver(false)
-          }}
-          onDragOver={(event) => {
-            // Allow drop event
-            event.preventDefault()
-          }}
-          onDragEnter={(event) => {
-            setIsDraggingOver(true)
-            event.preventDefault()
-          }}
-        >
-          {/* Dropzone overlay */}
-          {isEditing && isDraggingOver ? (
-            <div
-              className="absolute inset-0 z-10 bg-bg-secondary"
-              onDragLeave={(event) => {
-                setIsDraggingOver(false)
-                event.preventDefault()
-              }}
-            />
-          ) : null}
-          <div className="grid w-full flex-grow p-4">
-            <NoteEditor
-              className="flex h-full"
-              editorRef={editorRef}
-              defaultValue={draftValue ?? note.rawBody}
-              onStateChange={handleEditorStateChange}
-            />
-          </div>
-          <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-            <Card
-              elevation={1}
-              className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
-            >
-              <FileInputButton
-                asChild
-                onChange={(files) => {
-                  if (!files) return
-
-                  const [file] = Array.from(files)
-
-                  if (file) {
-                    attachFile(file, editorRef.current)
-                  }
-                }}
-              >
-                <IconButton aria-label="Attach file" disabled={!githubRepo}>
-                  <PaperclipIcon16 />
-                </IconButton>
-              </FileInputButton>
-
-              <div className="flex gap-2">
-                <Button shortcut={["esc"]} onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button variant="primary" shortcut={["⌘", "⏎"]} onClick={handleSave}>
-                  Save
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </div>
+        <FullscreenNoteForm
+          id={id}
+          defaultValue={note.rawBody}
+          editorRef={editorRef}
+          onSubmit={switchToViewing}
+          onCancel={switchToViewing}
+        />
       )}
     </FullscreenContainer>
   )
