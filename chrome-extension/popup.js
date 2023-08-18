@@ -31,16 +31,21 @@ function getDateString() {
 }
 
 /**
- * @typedef {('website'|'github-repo')} ContentType
+ * @typedef {('website'|'github-repo'|'gist')} ContentType
  */
 
-// TODO: github-repo, gist, book, video, article, tweet
+// TODO: book, video, article, tweet
 /**
  * Determine content type of a tab
  * @param {chrome.tabs.Tab} tab
  * @returns {ContentType}
  */
 function getContentType(tab) {
+  const gistRegex = /^https:\/\/gist\.github\.com\/[^/]+\/[^/]+/
+  if (gistRegex.test(tab.url)) {
+    return "gist"
+  }
+
   const githubRepoRegex = /^https:\/\/github\.com\/[^/]+\/[^/]+/
   if (githubRepoRegex.test(tab.url)) {
     return "github-repo"
@@ -58,6 +63,19 @@ function getContentType(tab) {
  */
 function getNoteBody({ tab, contentType, date }) {
   switch (contentType) {
+    case "gist": {
+      const title = tab.title.replace(/ · GitHub$/, "")
+      const authorUrl = tab.url.replace(/\/[^/]+$/, "")
+      return `---
+author: ${authorUrl}
+date_saved: ${date}
+tags: [${contentType}]
+---
+
+# [${title}](${tab.url})
+`
+    }
+
     case "github-repo": {
       const [owner, repo] = tab.url.split("/").slice(-2)
       const ownerUrl = tab.url.replace(/\/[^/]+$/, "")
