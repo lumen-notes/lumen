@@ -23,7 +23,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
     }
   }, [fetchNotes])
 
-  // Fetch notes when the app loads, becomes visible, or comes online .
+  // Fetch notes when the app loads, becomes visible, or comes online
   useEvent("load", onLoad)
   useEvent("visibilitychange", onVisibilityChange)
   // useEvent("online", onOnline)
