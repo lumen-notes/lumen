@@ -8,6 +8,9 @@ import { ChevronLeftIcon16, ChevronRightIcon16, MoreIcon16 } from "./icons"
 import { LinkContext } from "./link-context"
 import { ThemeColor } from "./theme-color"
 
+// Used to check if a component is inside a FullscreenContainer
+export const FullscreenContainerContext = React.createContext<boolean>(false)
+
 type FullscreenContainerProps = {
   title: string
   description?: string
@@ -15,6 +18,7 @@ type FullscreenContainerProps = {
   elevation?: 0 | 1
   // List of DropdownMenu.Item or DropdownMenu.Separator
   actions?: React.ReactNode
+  className?: string
   children?: React.ReactNode
 }
 
@@ -24,11 +28,12 @@ export function FullscreenContainer({
   icon,
   elevation = 0,
   actions,
+  className,
   children,
 }: FullscreenContainerProps) {
   const navigate = useNavigate()
   return (
-    <div className={cx("flex min-h-full flex-col")}>
+    <div className={cx("flex min-h-full flex-col", className)}>
       {/* Make browser toolbar color match the header color */}
       <ThemeColor propertyName={elevation === 0 ? "--color-bg-inset" : "--color-bg"} />
 
@@ -88,7 +93,11 @@ export function FullscreenContainer({
         ) : null}
       </div>
 
-      <LinkContext.Provider value={Link}>{children}</LinkContext.Provider>
+      <LinkContext.Provider value={Link}>
+        <FullscreenContainerContext.Provider value={true}>
+          {children}
+        </FullscreenContainerContext.Provider>
+      </LinkContext.Provider>
     </div>
   )
 }

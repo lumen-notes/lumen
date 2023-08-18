@@ -5,13 +5,14 @@ import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { DraggableCore } from "react-draggable"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useMedia } from "react-use"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
+import { openNewWindow } from "../utils/open-new-window"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -52,11 +53,12 @@ function Provider({ children }: { children: React.ReactNode }) {
   const [position, setPosition] = React.useState(() => initialPosition())
   const editorRef = React.useRef<EditorView>()
   const isFullscreen = useIsFullscreen()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const disabled = !githubUser || !githubRepo
+  const disabled = !githubUser || !githubRepo || location.pathname === "/new"
 
   const focusPrevActiveElement = React.useCallback(() => {
     prevActiveElement.current?.focus()
@@ -101,15 +103,21 @@ function Provider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       // Toggle with `command + i`
-      if (event.key === "i" && event.metaKey && !disabled) {
+      if (event.key === "i" && event.metaKey && !event.shiftKey && !disabled) {
         toggle()
+        event.preventDefault()
+      }
+
+      // Open /new with `command + shift + i`
+      if (event.key === "i" && event.metaKey && event.shiftKey && !disabled) {
+        openNewWindow("/new")
         event.preventDefault()
       }
     }
 
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
-  }, [toggle, disabled])
+  }, [toggle, navigate, disabled])
 
   const contextValue = React.useMemo(
     () => ({
