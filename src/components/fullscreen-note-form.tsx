@@ -140,7 +140,7 @@ export function FullscreenNoteForm({
               </Button>
             ) : null}
             <Button variant="primary" shortcut={["⌘", "⏎"]} onClick={handleSubmit}>
-              {id ? "Save" : "Add"}
+              Save
             </Button>
           </div>
         </Card>
