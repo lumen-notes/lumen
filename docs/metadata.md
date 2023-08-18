@@ -25,7 +25,6 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 | :---------- | :--------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- |
 | `phone`     | Phone number                       | Adds a phone link.                                                                                                                      |
 | `email`     | Email address                      | Adds an email link.                                                                                                                     |
-| `website`   | Website URL                        | Adds a link to the website.                                                                                                             |
 | `address`   | Physical address                   | Adds a link to Google Maps.                                                                                                             |
 | `birthday`  | Birthday (`YYYY-MM-DD` or `MM-DD`) | Displays time until the next birthday.                                                                                                  |
 | `github`    | GitHub username                    | Adds a link to the GitHub profile.                                                                                                      |

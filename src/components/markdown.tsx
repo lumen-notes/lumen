@@ -264,21 +264,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         </div>
       )
 
-    case "website": {
-      if (typeof value !== "string") break
-      const hasProtocol = value.startsWith("http://") || value.startsWith("https://")
-      const href = hasProtocol ? value : `https://${value}`
-      return (
-        <div className="flex items-center gap-2">
-          <WebsiteFavicon url={href} />
-          <a className="link link-external" href={href} target="_blank" rel="noopener noreferrer">
-            {/* Remove protocol and trailing slash from the displayed URL */}
-            {value.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-          </a>
-        </div>
-      )
-    }
-
     case "address":
       if (typeof value !== "string") break
       return (
@@ -410,14 +395,12 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
         </span>
       )
     }
-  }
 
-  // Tags
-  if (key === "tags") {
-    const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
-    const parsedTags = tagsSchema.safeParse(value)
+    case "tags": {
+      const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
+      const parsedTags = tagsSchema.safeParse(value)
+      if (!parsedTags.success) break
 
-    if (parsedTags.success) {
       return (
         <span className="inline-flex flex-wrap gap-x-2 gap-y-1">
           {parsedTags.data.map((tag) => (
@@ -443,8 +426,8 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     )
   }
 
-  // If value is a list of strings, render it as a markdown list
-  if (Array.isArray(value) && value.every((v) => typeof v === "string")) {
+  // If value is a list of strings or numbers, render it as a markdown list
+  if (Array.isArray(value) && value.every((v) => typeof v === "string" || typeof v === "number")) {
     return <Markdown>{value.map((v) => `- ${v}`).join("\n")}</Markdown>
   }
 
