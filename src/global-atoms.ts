@@ -127,8 +127,8 @@ export const datesAtom = atom((get) => {
   const notes = get(notesAtom)
   const dates: Record<string, NoteId[]> = {}
 
-  for (const id in notes) {
-    for (const date of notes.get(id)?.dates ?? []) {
+  for (const { id, dates: notesDates } of notes.values()) {
+    for (const date of notesDates) {
       // If the date doesn't exist, create it
       if (!dates[date]) dates[date] = []
       // If the note isn't already linked to the date, link it
@@ -147,8 +147,8 @@ export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
   const templates: Record<string, Template> = {}
 
-  for (const note of notes.values()) {
-    const template = note.frontmatter.template
+  for (const { id, rawBody, frontmatter } of notes.values()) {
+    const template = frontmatter["template"]
 
     // Skip if note isn't a template
     if (!template) continue
@@ -156,9 +156,9 @@ export const templatesAtom = atom((get) => {
     try {
       const parsedTemplate = templateSchema.omit({ body: true }).parse(template)
 
-      const body = removeTemplateFrontmatter(note.rawBody)
+      const body = removeTemplateFrontmatter(rawBody)
 
-      templates[note.id] = { ...parsedTemplate, body }
+      templates[id] = { ...parsedTemplate, body }
     } catch (error) {
       // Template frontmatter didn't match the schema
       console.error(error)
@@ -176,8 +176,8 @@ export const tasksAtom = atom((get) => {
   const sortedNotes = get(sortedNotesAtom)
   const tasks: Task[] = []
 
-  for (const note of sortedNotes) {
-    for (const task of note.tasks) {
+  for (const { tasks: notesTasks } of sortedNotes) {
+    for (const task of notesTasks) {
       tasks.push(task)
     }
   }
