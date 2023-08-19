@@ -35,12 +35,12 @@ export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
 
 export const notesAtom = atom((get) => {
   const rawNotes = get(rawNotesAtom)
-  const notes: Record<NoteId, Note> = {}
+  const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
   for (const id in rawNotes) {
     const rawBody = rawNotes[id]
-    notes[id] = { id, rawBody, ...parseNote(id, rawBody), backlinks: [] }
+    notes.set(id, { id, rawBody, ...parseNote(id, rawBody), backlinks: [] })
   }
 
   // Derive backlinks

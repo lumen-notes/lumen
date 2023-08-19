@@ -634,7 +634,10 @@ type NoteLinkProps = {
 }
 
 function NoteLink({ id, text }: NoteLinkProps) {
+  console.log("🚀 ===> ~ file: markdown.tsx:637 ~ NoteLink ~ text:", text)
   const note = useNoteById(id)
+  console.log("🚀 ===> ~ file: markdown.tsx:638 ~ NoteLink ~ id:", id)
+  console.log("🚀 ===> ~ file: markdown.tsx:638 ~ NoteLink ~ note:", note)
   const Link = useLink()
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
