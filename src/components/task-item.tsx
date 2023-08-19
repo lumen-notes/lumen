@@ -86,9 +86,9 @@ export function TaskItem({ task }: { task: Task }) {
       upsertNote({
         id: task.noteId,
         rawBody:
-          note.rawBody.slice(0, task.start?.offset) +
+          note?.rawBody.slice(0, task.start?.offset) +
           (completed ? "- [x]" : "- [ ]") +
-          note.rawBody.slice((task.start?.offset ?? 0) + 5),
+          note?.rawBody.slice((task.start?.offset ?? 0) + 5),
       })
     },
     [note, task, upsertNote],
@@ -236,6 +236,7 @@ function TaskItemForm({ task, editorRef, onSubmit, onCancel }: TaskItemFormProps
   }, [])
 
   function handleSubmit() {
+    if (!note) return
     const editorValue = editorRef.current?.state.doc.toString() ?? ""
 
     // Don't submit if the value is empty
