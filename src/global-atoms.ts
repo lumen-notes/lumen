@@ -61,8 +61,9 @@ export const notesAtom = atom((get) => {
 
 export const sortedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
+
   // Sort notes by when they were created in descending order
-  return Object.values(notes).sort((a, b) => {
+  return [...notes.values()].sort((a, b) => {
     // Put numeric IDs first
     if (a.id.match(/^\d+$/) && !b.id.match(/^\d+$/)) {
       return -1
