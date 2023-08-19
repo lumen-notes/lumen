@@ -45,14 +45,14 @@ export const notesAtom = atom((get) => {
 
   // Derive backlinks
   for (const sourceId in notes) {
-    for (const targetId of notes[sourceId].links) {
+    for (const targetId of notes.get(sourceId)?.links ?? []) {
       // Skip if the target note doesn't exist
-      if (!notes[targetId]) continue
+      if (!notes.has(targetId)) continue
 
       // Skip if the source note is already a backlink
-      if (notes[targetId].backlinks.includes(sourceId)) continue
+      if (notes.get(targetId)?.backlinks.includes(sourceId)) continue
 
-      notes[targetId].backlinks.push(sourceId)
+      notes.get(targetId)?.backlinks.push(sourceId)
     }
   }
 
@@ -91,7 +91,7 @@ export const tagsAtom = atom((get) => {
   const tags: Record<string, NoteId[]> = {}
 
   for (const id in notes) {
-    for (const tag of notes[id].tags) {
+    for (const tag of notes.get(id)?.tags ?? []) {
       // If the tag doesn't exist, create it
       if (!tags[tag]) tags[tag] = []
       // If the note isn't already linked to the tag, link it
@@ -127,7 +127,7 @@ export const datesAtom = atom((get) => {
   const dates: Record<string, NoteId[]> = {}
 
   for (const id in notes) {
-    for (const date of notes[id].dates) {
+    for (const date of notes.get(id)?.dates ?? []) {
       // If the date doesn't exist, create it
       if (!dates[date]) dates[date] = []
       // If the note isn't already linked to the date, link it
@@ -146,8 +146,8 @@ export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
   const templates: Record<string, Template> = {}
 
-  for (const id in notes) {
-    const template = notes[id].frontmatter.template
+  for (const note of notes.values()) {
+    const template = note.frontmatter.template
 
     // Skip if note isn't a template
     if (!template) continue
@@ -155,9 +155,9 @@ export const templatesAtom = atom((get) => {
     try {
       const parsedTemplate = templateSchema.omit({ body: true }).parse(template)
 
-      const body = removeTemplateFrontmatter(notes[id].rawBody)
+      const body = removeTemplateFrontmatter(note.rawBody)
 
-      templates[id] = { ...parsedTemplate, body }
+      templates[note.id] = { ...parsedTemplate, body }
     } catch (error) {
       // Template frontmatter didn't match the schema
       console.error(error)
