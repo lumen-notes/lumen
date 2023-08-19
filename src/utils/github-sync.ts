@@ -151,15 +151,12 @@ export function useRenameTag() {
     async (oldName: string, newName: string) => {
       const notes = getNotes()
 
-      // Notes that contain the old tag
-      const filteredNotes = filterObject(notes, (note) => {
-        return note.tags.includes(oldName)
-      })
-
-      // Find and replace the old tag with the new tag
-      const updatedRawNotes = mapObject(filteredNotes, (note, id) => {
-        return [id, note.rawBody.replace(`#${oldName}`, `#${newName}`)]
-      })
+      const updatedRawNotes = [...notes.values()]
+        .filter((note) => note.tags.includes(oldName))
+        .reduce<Record<string, string>>((updatedRawNotes, note) => {
+          updatedRawNotes[note.id] = note.rawBody.replace(`#${oldName}`, `#${newName}`)
+          return updatedRawNotes
+        }, {})
 
       // Update state
       setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
@@ -189,19 +186,6 @@ export function useRenameTag() {
   )
 }
 
-function filterObject<T>(
-  obj: Record<string, T>,
-  fn: (value: T, key: string) => boolean,
-): Record<string, T> {
-  const result: Record<string, T> = {}
-  for (const key in obj) {
-    if (fn(obj[key], key)) {
-      result[key] = obj[key]
-    }
-  }
-  return result
-}
-
 export function useDeleteTag() {
   const getGitHubUser = useAtomCallback(githubUserCallback)
   const getGitHubRepo = useAtomCallback(githubRepoCallback)
@@ -212,18 +196,16 @@ export function useDeleteTag() {
     async (tagName: string) => {
       const notes = getNotes()
 
-      // Notes that contain the tag to be deleted
-      const filteredNotes = filterObject(notes, (note) => {
-        return note.tags.includes(tagName)
-      })
-
       // Regex to match the tag and its children
-      const tagRegex = new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, 'g');
+      const tagRegex = new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g")
 
-      // Find and replace the tag with an empty string
-      const updatedRawNotes = mapObject(filteredNotes, (note, id) => {
-        return [id, note.rawBody.replace(tagRegex, ``)]
-      })
+      const updatedRawNotes = [...notes.values()]
+        // Notes that contain the tag to be deleted
+        .filter((note) => note.tags.includes(tagName))
+        .reduce<Record<string, string>>((updatedRawNotes, note) => {
+          updatedRawNotes[note.id] = note.rawBody.replace(tagRegex, ``)
+          return updatedRawNotes
+        }, {})
 
       // Update state
       setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
