@@ -91,8 +91,8 @@ export const tagsAtom = atom((get) => {
   const notes = get(notesAtom)
   const tags: Record<string, NoteId[]> = {}
 
-  for (const id in notes) {
-    for (const tag of notes.get(id)?.tags ?? []) {
+  for (const { id, tags: notesTags } of notes.values()) {
+    for (const tag of notesTags) {
       // If the tag doesn't exist, create it
       if (!tags[tag]) tags[tag] = []
       // If the note isn't already linked to the tag, link it
