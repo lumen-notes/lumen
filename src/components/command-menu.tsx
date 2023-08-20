@@ -1,15 +1,16 @@
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import qs from "qs"
 import React from "react"
 import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
 import { PanelsContext } from "../components/panels"
-import { tagSearcherAtom, upsertNoteAtom } from "../global-atoms"
+import { tagSearcherAtom } from "../global-atoms"
 import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -20,7 +21,7 @@ import { NoteFavicon } from "./note-favicon"
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
-  const upsertNote = useSetAtom(upsertNoteAtom)
+  const upsertNote = useUpsertNote()
 
   const isFullscreen = useIsFullscreen()
 
