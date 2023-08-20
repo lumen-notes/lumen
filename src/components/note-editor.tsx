@@ -9,12 +9,12 @@ import { history } from "@codemirror/commands"
 import { EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
-import { useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import * as emoji from "node-emoji"
 import React from "react"
-import { tagsAtom, templatesAtom, upsertNoteAtom } from "../global-atoms"
+import { tagsAtom, templatesAtom } from "../global-atoms"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { useUpsertNote } from "../utils/github-sync"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
@@ -299,7 +299,7 @@ function useTagPropertyCompletion() {
 }
 
 function useNoteCompletion() {
-  const upsertNote = useSetAtom(upsertNoteAtom)
+  const upsertNote = useUpsertNote()
   const searchNotes = useStableSearchNotes()
 
   const noteCompletion = React.useCallback(
