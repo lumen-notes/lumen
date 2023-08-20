@@ -83,12 +83,13 @@ export function TaskItem({ task }: { task: Task }) {
 
   const setCompleted = React.useCallback(
     (completed: boolean) => {
+      if (!note) return
       upsertNote({
         id: task.noteId,
         rawBody:
-          note?.rawBody.slice(0, task.start?.offset) +
+          note.rawBody.slice(0, task.start?.offset) +
           (completed ? "- [x]" : "- [ ]") +
-          note?.rawBody.slice((task.start?.offset ?? 0) + 5),
+          note.rawBody.slice((task.start?.offset ?? 0) + 5),
       })
     },
     [note, task, upsertNote],
