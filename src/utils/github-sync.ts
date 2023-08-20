@@ -152,8 +152,10 @@ export function useRenameTag() {
       const notes = getNotes()
 
       const updatedRawNotes = [...notes.values()]
+        // Notes that contain the old tag
         .filter((note) => note.tags.includes(oldName))
         .reduce<Record<string, string>>((updatedRawNotes, note) => {
+          // Find and replace the old tag with the new tag
           updatedRawNotes[note.id] = note.rawBody.replace(`#${oldName}`, `#${newName}`)
           return updatedRawNotes
         }, {})
@@ -203,6 +205,7 @@ export function useDeleteTag() {
         // Notes that contain the tag to be deleted
         .filter((note) => note.tags.includes(tagName))
         .reduce<Record<string, string>>((updatedRawNotes, note) => {
+          // Find and replace the tag with an empty string
           updatedRawNotes[note.id] = note.rawBody.replace(tagRegex, ``)
           return updatedRawNotes
         }, {})
