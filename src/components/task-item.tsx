@@ -83,6 +83,7 @@ export function TaskItem({ task }: { task: Task }) {
 
   const setCompleted = React.useCallback(
     (completed: boolean) => {
+      if (!note) return
       upsertNote({
         id: task.noteId,
         rawBody:
@@ -236,6 +237,7 @@ function TaskItemForm({ task, editorRef, onSubmit, onCancel }: TaskItemFormProps
   }, [])
 
   function handleSubmit() {
+    if (!note) return
     const editorValue = editorRef.current?.state.doc.toString() ?? ""
 
     // Don't submit if the value is empty
