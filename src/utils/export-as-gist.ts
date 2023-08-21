@@ -32,7 +32,7 @@ export async function exportAsGist({
     },
     body: JSON.stringify({
       description,
-      public: true,
+      public: false,
       files: {
         [filename]: {
           content: note.rawBody,
