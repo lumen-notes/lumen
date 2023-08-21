@@ -35,24 +35,22 @@ export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
 
 export const notesAtom = atom((get) => {
   const rawNotes = get(rawNotesAtom)
-  const notes: Record<NoteId, Note> = {}
+  const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
   for (const id in rawNotes) {
     const rawBody = rawNotes[id]
-    notes[id] = { id, rawBody, ...parseNote(id, rawBody), backlinks: [] }
+    notes.set(id, { id, rawBody, ...parseNote(id, rawBody), backlinks: [] })
   }
 
   // Derive backlinks
-  for (const sourceId in notes) {
-    for (const targetId of notes[sourceId].links) {
-      // Skip if the target note doesn't exist
-      if (!notes[targetId]) continue
-
+  for (const { id: sourceId, links } of notes.values()) {
+    for (const targetId of links) {
+      const backlinks = notes.get(targetId)?.backlinks
       // Skip if the source note is already a backlink
-      if (notes[targetId].backlinks.includes(sourceId)) continue
+      if (backlinks?.includes(sourceId)) continue
 
-      notes[targetId].backlinks.push(sourceId)
+      backlinks?.push(sourceId)
     }
   }
 
@@ -61,8 +59,9 @@ export const notesAtom = atom((get) => {
 
 export const sortedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
+
   // Sort notes by when they were created in descending order
-  return Object.values(notes).sort((a, b) => {
+  return [...notes.values()].sort((a, b) => {
     // Put numeric IDs first
     if (a.id.match(/^\d+$/) && !b.id.match(/^\d+$/)) {
       return -1
@@ -90,8 +89,8 @@ export const tagsAtom = atom((get) => {
   const notes = get(notesAtom)
   const tags: Record<string, NoteId[]> = {}
 
-  for (const id in notes) {
-    for (const tag of notes[id].tags) {
+  for (const { id, tags: notesTags } of notes.values()) {
+    for (const tag of notesTags) {
       // If the tag doesn't exist, create it
       if (!tags[tag]) tags[tag] = []
       // If the note isn't already linked to the tag, link it
@@ -126,8 +125,8 @@ export const datesAtom = atom((get) => {
   const notes = get(notesAtom)
   const dates: Record<string, NoteId[]> = {}
 
-  for (const id in notes) {
-    for (const date of notes[id].dates) {
+  for (const { id, dates: notesDates } of notes.values()) {
+    for (const date of notesDates) {
       // If the date doesn't exist, create it
       if (!dates[date]) dates[date] = []
       // If the note isn't already linked to the date, link it
@@ -146,8 +145,8 @@ export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
   const templates: Record<string, Template> = {}
 
-  for (const id in notes) {
-    const template = notes[id].frontmatter.template
+  for (const { id, rawBody, frontmatter } of notes.values()) {
+    const template = frontmatter["template"]
 
     // Skip if note isn't a template
     if (!template) continue
@@ -155,7 +154,7 @@ export const templatesAtom = atom((get) => {
     try {
       const parsedTemplate = templateSchema.omit({ body: true }).parse(template)
 
-      const body = removeTemplateFrontmatter(notes[id].rawBody)
+      const body = removeTemplateFrontmatter(rawBody)
 
       templates[id] = { ...parsedTemplate, body }
     } catch (error) {
@@ -175,8 +174,8 @@ export const tasksAtom = atom((get) => {
   const sortedNotes = get(sortedNotesAtom)
   const tasks: Task[] = []
 
-  for (const note of sortedNotes) {
-    for (const task of note.tasks) {
+  for (const { tasks: notesTasks } of sortedNotes) {
+    for (const task of notesTasks) {
       tasks.push(task)
     }
   }

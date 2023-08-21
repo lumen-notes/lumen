@@ -310,7 +310,8 @@ function useDeleteTask() {
   const deleteTask = React.useCallback(
     (task: Task) => {
       const notes = getNotes()
-      const note = notes[task.noteId]
+      const note = notes.get(task.noteId)
+      if (!note) return
 
       const taskLength = `- [ ] ${task.rawBody}`.length
 
