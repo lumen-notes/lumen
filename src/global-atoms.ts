@@ -89,12 +89,12 @@ export const tagsAtom = atom((get) => {
   const notes = get(notesAtom)
   const tags: Record<string, NoteId[]> = {}
 
-  for (const { id, tags: notesTags } of notes.values()) {
-    for (const tag of notesTags) {
+  for (const note of notes.values()) {
+    for (const tag of note.tags) {
       // If the tag doesn't exist, create it
       if (!tags[tag]) tags[tag] = []
       // If the note isn't already linked to the tag, link it
-      if (!tags[tag].includes(id)) tags[tag].push(id)
+      if (!tags[tag].includes(note.id)) tags[tag].push(note.id)
     }
   }
 
@@ -125,12 +125,12 @@ export const datesAtom = atom((get) => {
   const notes = get(notesAtom)
   const dates: Record<string, NoteId[]> = {}
 
-  for (const { id, dates: notesDates } of notes.values()) {
-    for (const date of notesDates) {
+  for (const note of notes.values()) {
+    for (const date of note.dates) {
       // If the date doesn't exist, create it
       if (!dates[date]) dates[date] = []
       // If the note isn't already linked to the date, link it
-      if (!dates[date].includes(id)) dates[date].push(id)
+      if (!dates[date].includes(note.id)) dates[date].push(note.id)
     }
   }
 
