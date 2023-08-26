@@ -24,6 +24,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
+import { getShortcut } from "../utils/shortcuts"
 
 type NoteCardProps = {
   id: NoteId
@@ -155,36 +156,42 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         if (event.key === "e") {
           switchToEditing()
           event.preventDefault()
+          return
+        }
+
+        // Copy id with `command + ctrl + c`
+        if (getShortcut(event) === "copy-note-id") {
+          copy(id)
+          event.preventDefault()
+          return
         }
 
         // Copy markdown with `command + c` if no text is selected
-        if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
+        if (getShortcut(event) === "copy-markdown" && !window.getSelection()?.toString()) {
           copy(note.rawBody)
           event.preventDefault()
-        }
-
-        // Copy id with `command + shift + c`
-        if (event.metaKey && event.shiftKey && event.key == "c") {
-          copy(id)
-          event.preventDefault()
+          return
         }
 
         // Open dropdown with `command + .`
         if (event.key === "." && event.metaKey) {
           setIsDropdownOpen(true)
           event.preventDefault()
+          return
         }
 
         // Delete note with `command + backspace`
         if (event.metaKey && event.key === "Backspace") {
           handleDeleteNote(id)
           event.preventDefault()
+          return
         }
 
         // Open note in new window with `command + o`
         if (event.metaKey && event.key === "o") {
           openNoteWindow(id)
           event.preventDefault()
+          return
         }
       }}
       // onDoubleClick={(event) => {

@@ -15,6 +15,7 @@ import { githubRepoAtom } from "../global-atoms"
 import { useUpsertNote } from "../utils/github-sync"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchParam } from "../utils/use-search-param"
+import { getShortcut } from "../utils/shortcuts"
 
 type FullscreenNotePageProps = {
   params: Params<string>
@@ -60,22 +61,26 @@ export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   }, [setIsEditing])
 
   useEvent("keydown", (event) => {
-    // Copy markdown with `command + c` if no text is selected
-    if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-      copy(note?.rawBody || "")
+    // Copy id with `command + shift + c`
+    if (getShortcut(event) === "copy-note-id") {
+      copy(id)
+      event.stopPropagation()
       event.preventDefault()
+      return
     }
 
-    // Copy id with `command + shift + c`
-    if (event.metaKey && event.shiftKey && event.key == "c") {
-      copy(id)
+    // Copy markdown with `command + c` if no text is selected
+    if (getShortcut(event) === "copy-markdown" && !window.getSelection()?.toString()) {
+      copy(note?.rawBody || "")
       event.preventDefault()
+      return
     }
 
     // Switch to editing with `e`
     if (event.key === "e" && !isEditing) {
       switchToEditing()
       event.preventDefault()
+      return
     }
   })
 
