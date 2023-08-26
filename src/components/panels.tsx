@@ -18,6 +18,7 @@ import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
 import { useSearchParam } from "../utils/use-search-param"
 import { LinkContext } from "./link-context"
+import { getShortcut } from "../utils/shortcuts"
 
 type PanelValue = {
   id: string
@@ -52,40 +53,55 @@ function Root({ children }: React.PropsWithChildren) {
   })
 
   useEvent("keydown", (event) => {
-    // Focus prev/next panel with `command + shift + left/right`
-    if (
-      (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
-      event.metaKey &&
-      event.shiftKey
-    ) {
-      const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
+    // Focus prev/next panel with `option + [shift] + left/right`
+    const getPanelElements = () =>
+      Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
+    const getPanelsAndFocusedPanelIndex = () => {
+      const panelElements = getPanelElements()
+      return {
+        panelElements,
+        focusedPanelIndex: panelElements.findIndex((panelElement) =>
+          panelElement.contains(document.activeElement),
+        ),
+      }
+    }
 
-      const focusedPanelElement = panelElements.find((panelElement) =>
-        panelElement.contains(document.activeElement),
-      )
-
-      const focusedPanelIndex = focusedPanelElement
-        ? panelElements.indexOf(focusedPanelElement)
-        : -1
-
-      if (event.key === "ArrowLeft" && event.altKey) {
-        const firstPanel = panelElements[0]
+    switch (getShortcut(event)) {
+      case "first-panel": {
+        const firstPanel = getPanelElements()[0]
         focusPanel(firstPanel)
-      } else if (event.key === "ArrowRight" && event.altKey) {
+        return
+      }
+
+      case "last-panel": {
+        const panelElements = getPanelElements()
         const lastPanel = panelElements[panelElements.length - 1]
         focusPanel(lastPanel)
-      } else if (event.key === "ArrowLeft" && focusedPanelIndex > 0) {
-        // If the user presses the left arrow key and focus is not on the first panel,
-        // move focus to the previous panel
-        const prevPanel = panelElements[focusedPanelIndex - 1]
-        focusPanel(prevPanel)
-        event.preventDefault()
-      } else if (event.key === "ArrowRight" && focusedPanelIndex < panelElements.length - 1) {
-        // If the user presses the right arrow key and focus is not on the last panel,
-        // move focus to the next panel
-        const nextPanel = panelElements[focusedPanelIndex + 1]
-        focusPanel(nextPanel)
-        event.preventDefault()
+        return
+      }
+
+      case "prev-panel": {
+        const { panelElements, focusedPanelIndex } = getPanelsAndFocusedPanelIndex()
+        if (focusedPanelIndex > 0) {
+          // If the user presses the left arrow key and focus is not on the first panel,
+          // move focus to the previous panel
+          const prevPanel = panelElements[focusedPanelIndex - 1]
+          focusPanel(prevPanel)
+          event.preventDefault()
+        }
+        return
+      }
+
+      case "next-panel": {
+        const { panelElements, focusedPanelIndex } = getPanelsAndFocusedPanelIndex()
+        if (focusedPanelIndex < panelElements.length - 1) {
+          // If the user presses the right arrow key and focus is not on the last panel,
+          // move focus to the next panel
+          const nextPanel = panelElements[focusedPanelIndex + 1]
+          focusPanel(nextPanel)
+          event.preventDefault()
+        }
+        return
       }
     }
   })
