@@ -53,8 +53,8 @@ export function Panel({ id, title, description, icon, actions, children, onClose
         "--left": panel ? `${(panel.index + 1) * 8}px` : 0,
       }}
       onKeyDown={(event) => {
-        // Close with `command + x` if no text is selected
-        if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
+        // Close with `Esc` if no text is selected
+        if (event.key === "Escape") {
           onClose?.()
           event.preventDefault()
         }
