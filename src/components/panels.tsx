@@ -249,7 +249,7 @@ export type PanelProps = {
 
 const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType<PanelProps> }> = [
   { index: true, panel: NotesPanel },
-  { path: ":id", panel: NotePanel },
+  { path: "*", panel: NotePanel },
   { path: "tags", panel: TagsPanel },
   { path: "tags/*", panel: TagPanel },
   { path: "calendar", panel: CalendarPanel },

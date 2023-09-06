@@ -14,7 +14,7 @@ import { useSearchNotes } from "../utils/use-search"
 // })
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
-  const { id: noteId = "" } = params
+  const { "*": noteId = "" } = params
   const note = useNoteById(noteId)
   // const notesWithQueries = useAtomValue(notesWithQueriesAtom)
   const searchNotes = useSearchNotes()

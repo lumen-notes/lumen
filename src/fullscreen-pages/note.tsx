@@ -21,7 +21,7 @@ type FullscreenNotePageProps = {
 }
 
 export function FullscreenNotePage({ params }: FullscreenNotePageProps) {
-  const { id = "" } = params
+  const { "*": id = "" } = params
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
