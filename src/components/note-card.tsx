@@ -187,10 +187,16 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           event.preventDefault()
         }
       }}
-      // onDoubleClick={(event) => {
-      //   openNoteWindow(id)
-      //   event.preventDefault()
-      // }}
+      draggable
+      onDragStart={(event) => {
+        const { left = 0, top = 0 } = cardRef.current?.getBoundingClientRect() ?? {}
+        // Distance from cursor to top left corner of card
+        const position = { x: left - event.clientX, y: top - event.clientY }
+        const node = { type: "note", position, data: { noteId: id } }
+
+        event.dataTransfer.setData("application/reactflow", JSON.stringify(node))
+        event.dataTransfer.effectAllowed = "move"
+      }}
     >
       <div className="p-4 pb-1">
         <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>

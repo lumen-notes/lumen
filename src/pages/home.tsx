@@ -6,10 +6,12 @@ import ReactFlow, {
   Node,
   NodeProps,
   OnNodesChange,
+  ReactFlowInstance,
   SelectionMode,
   applyNodeChanges,
 } from "reactflow"
 import "reactflow/dist/base.css"
+import { z } from "zod"
 import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteId } from "../types"
@@ -51,7 +53,12 @@ function NewNoteNode() {
   )
 }
 
+const panOnDrag = [1, 2]
+
 export function HomePage() {
+  const reactFlowContainer = React.useRef<HTMLDivElement>(null)
+  const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
+
   const nodeTypes = React.useMemo(() => ({ note: NoteNode, newNote: NewNoteNode }), [])
 
   const [nodes, setNodes] = React.useState<Node[]>(initialNodes)
@@ -61,18 +68,67 @@ export function HomePage() {
     [],
   )
 
+  const onDrop = React.useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault()
+
+      if (!reactFlowInstance || !reactFlowContainer.current) return
+
+      const reactFlowRect = reactFlowContainer.current?.getBoundingClientRect()
+
+      const dataSchema = z.object({
+        type: z.literal("note"),
+        position: z.object({ x: z.number(), y: z.number() }),
+        data: z.object({ noteId: z.string() }),
+      })
+      const data = event.dataTransfer.getData("application/reactflow")
+      const parsedData = dataSchema.parse(JSON.parse(data))
+
+      const id = window.crypto.randomUUID()
+
+      const position = reactFlowInstance.project({
+        x: event.clientX - reactFlowRect.left,
+        y: event.clientY - reactFlowRect.top,
+      })
+
+      const node = {
+        ...parsedData,
+        id,
+        position: {
+          x: position.x + parsedData.position.x,
+          y: position.y + parsedData.position.y,
+        },
+      }
+
+      setNodes((n) => [...n, node])
+    },
+    [reactFlowInstance],
+  )
+
+  const onDragOver = React.useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    event.dataTransfer.dropEffect = "move"
+  }, [])
+
   return (
-    <div className="h-full">
-      <ReactFlow
-        nodeTypes={nodeTypes}
-        nodes={nodes}
-        onNodesChange={onNodesChange}
-        selectionMode={SelectionMode.Partial}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background color="var(--color-text-tertiary)" />
-        <Controls />
-        {/* <MiniMap
+    <div className="grid h-full grid-cols-[1fr_auto]">
+      <div ref={reactFlowContainer}>
+        <ReactFlow
+          nodeTypes={nodeTypes}
+          nodes={nodes}
+          panOnScroll
+          selectionOnDrag
+          panOnDrag={panOnDrag}
+          selectionMode={SelectionMode.Partial}
+          proOptions={{ hideAttribution: true }}
+          onInit={setReactFlowInstance}
+          onNodesChange={onNodesChange}
+          onDrop={onDrop}
+          onDragOver={onDragOver}
+        >
+          <Background color="var(--color-border-secondary)" gap={16} size={2} />
+          <Controls />
+          {/* <MiniMap
           ariaLabel="Mini map"
           pannable
           zoomable
@@ -80,7 +136,11 @@ export function HomePage() {
           maskColor="var(--color-bg-secondary)"
           nodeColor="var(--color-bg-tertiary)"
         /> */}
-      </ReactFlow>
+        </ReactFlow>
+      </div>
+      <div className="w-[24rem] border-l border-border-secondary p-4">
+        <NoteCard id="1652342106359" />
+      </div>
     </div>
   )
 }
