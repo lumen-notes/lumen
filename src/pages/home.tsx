@@ -11,6 +11,7 @@ import ReactFlow, {
 } from "reactflow"
 import "reactflow/dist/base.css"
 import { NoteCard } from "../components/note-card"
+import { NoteCardForm } from "../components/note-card-form"
 import { NoteId } from "../types"
 
 const initialNodes = [
@@ -26,6 +27,12 @@ const initialNodes = [
     position: { x: 800, y: 400 },
     data: { noteId: "1652342106359" },
   },
+  {
+    id: "3",
+    type: "newNote",
+    position: { x: 800, y: 0 },
+    data: {},
+  },
 ]
 
 function NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
@@ -36,8 +43,16 @@ function NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
   )
 }
 
+function NewNoteNode() {
+  return (
+    <div className="w-[500px]">
+      <NoteCardForm />
+    </div>
+  )
+}
+
 export function HomePage() {
-  const nodeTypes = React.useMemo(() => ({ note: NoteNode }), [])
+  const nodeTypes = React.useMemo(() => ({ note: NoteNode, newNote: NewNoteNode }), [])
 
   const [nodes, setNodes] = React.useState<Node[]>(initialNodes)
 
