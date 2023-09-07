@@ -12,7 +12,7 @@ const nodes = [
 export function HomePage() {
   return (
     <div className="h-full">
-      <ReactFlow nodes={nodes}>
+      <ReactFlow nodes={nodes} proOptions={{ hideAttribution: true }}>
         <Background />
         <Controls />
       </ReactFlow>
