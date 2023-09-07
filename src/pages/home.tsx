@@ -2,13 +2,14 @@ import React from "react"
 import ReactFlow, {
   Background,
   Controls,
+  MiniMap,
   Node,
   NodeProps,
   OnNodesChange,
   SelectionMode,
   applyNodeChanges,
 } from "reactflow"
-import "reactflow/dist/style.css"
+import "reactflow/dist/base.css"
 import { NoteCard } from "../components/note-card"
 import { NoteId } from "../types"
 
@@ -54,8 +55,16 @@ export function HomePage() {
         selectionMode={SelectionMode.Partial}
         proOptions={{ hideAttribution: true }}
       >
-        <Background />
+        <Background color="var(--color-text-tertiary)" />
         <Controls />
+        <MiniMap
+          ariaLabel="Mini map"
+          pannable
+          zoomable
+          className="overflow-hidden rounded-md border border-transparent !bg-bg-overlay shadow-md ring-1 ring-border-secondary dark:border-border-secondary dark:ring-[rgba(0,0,0,0.6)] [&_.react-flow\_\_minimap-mask]:opacity-0 [&_.react-flow\_\_minimap-mask]:transition-opacity [&_.react-flow\_\_minimap-mask]:hover:opacity-100"
+          maskColor="var(--color-bg-secondary)"
+          nodeColor="var(--color-bg-tertiary)"
+        />
       </ReactFlow>
     </div>
   )
