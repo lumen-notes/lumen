@@ -8,19 +8,20 @@ import { Button } from "./components/button"
 import { GitHubAuth } from "./components/github-auth"
 import { InsertTemplateDialog } from "./components/insert-template"
 import { Markdown } from "./components/markdown"
+import { NavLayout } from "./components/nav-layout"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { RootLayout } from "./components/root-layout"
 import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
+import { HomePage } from "./pages/home"
 import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
-import { NavLayout } from "./components/nav-layout"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -47,6 +48,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                   <Route path="/file" element={<FilePage />} />
                   <Route path="/" element={<NavLayout />}>
                     <Route index element={<NotesPage />} />
+                    <Route path="home" element={<HomePage />} />
                     <Route path="tags" element={<TagsPage />} />
                     <Route path="tags/*" element={<TagPage />} />
                     <Route path="calendar" element={<CalendarPage />} />
