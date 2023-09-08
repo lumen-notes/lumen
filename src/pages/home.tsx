@@ -15,32 +15,9 @@ import ReactFlow, {
 import "reactflow/dist/base.css"
 import { z } from "zod"
 import { NoteCard } from "../components/note-card"
-import { NoteCardForm } from "../components/note-card-form"
+import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
-
-const initialNodes = [
-  {
-    id: "1",
-    type: "note",
-    position: { x: 0, y: 0 },
-    style: { width: 500 },
-    data: { noteId: "1694032625739" },
-  },
-  {
-    id: "2",
-    type: "note",
-    position: { x: 800, y: 400 },
-    style: { width: 500 },
-    data: { noteId: "1652342106359" },
-  },
-  {
-    id: "3",
-    type: "newNote",
-    position: { x: 800, y: 0 },
-    style: { width: 500 },
-    data: {},
-  },
-]
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 
 const resizeControlStyle = {
   background: "transparent",
@@ -48,7 +25,7 @@ const resizeControlStyle = {
   width: 8,
 }
 
-function NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
+function _NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
   return (
     <>
       <div className="w-full">
@@ -58,35 +35,19 @@ function NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
         position="right"
         variant={ResizeControlVariant.Line}
         style={resizeControlStyle}
+        minWidth={200}
       />
       <NodeResizeControl
         position="left"
         variant={ResizeControlVariant.Line}
         style={resizeControlStyle}
+        minWidth={200}
       />
     </>
   )
 }
 
-function NewNoteNode() {
-  return (
-    <>
-      <div className="w-full">
-        <NoteCardForm minHeight="16rem" maxHeight="50vh" />
-      </div>
-      <NodeResizeControl
-        position="right"
-        variant={ResizeControlVariant.Line}
-        style={resizeControlStyle}
-      />
-      <NodeResizeControl
-        position="left"
-        variant={ResizeControlVariant.Line}
-        style={resizeControlStyle}
-      />
-    </>
-  )
-}
+const NoteNode = React.memo(_NoteNode)
 
 const panOnDrag = [1, 2]
 
@@ -94,9 +55,9 @@ export function HomePage() {
   const reactFlowContainer = React.useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
 
-  const nodeTypes = React.useMemo(() => ({ note: NoteNode, newNote: NewNoteNode }), [])
+  const nodeTypes = React.useMemo(() => ({ note: NoteNode }), [])
 
-  const [nodes, setNodes] = React.useState<Node[]>(initialNodes)
+  const [nodes, setNodes] = React.useState<Node[]>([])
 
   const onNodesChange: OnNodesChange = React.useCallback(
     (changes) => setNodes((n) => applyNodeChanges(changes, n)),
@@ -148,23 +109,25 @@ export function HomePage() {
 
   return (
     <div className="grid h-full grid-cols-[1fr_auto]">
-      <div ref={reactFlowContainer}>
-        <ReactFlow
-          nodeTypes={nodeTypes}
-          nodes={nodes}
-          panOnScroll
-          selectionOnDrag
-          panOnDrag={panOnDrag}
-          selectionMode={SelectionMode.Partial}
-          proOptions={{ hideAttribution: true }}
-          onInit={setReactFlowInstance}
-          onNodesChange={onNodesChange}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-        >
-          <Background color="var(--color-border-secondary)" gap={16} size={2} />
-          <Controls />
-          {/* <MiniMap
+      <PanelGroup direction="horizontal">
+        <Panel>
+          <div className="h-full w-full" ref={reactFlowContainer}>
+            <ReactFlow
+              nodeTypes={nodeTypes}
+              nodes={nodes}
+              panOnScroll
+              selectionOnDrag
+              panOnDrag={panOnDrag}
+              selectionMode={SelectionMode.Partial}
+              proOptions={{ hideAttribution: true }}
+              onInit={setReactFlowInstance}
+              onNodesChange={onNodesChange}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+            >
+              <Background color="var(--color-border-secondary)" gap={16} size={2} />
+              <Controls />
+              {/* <MiniMap
           ariaLabel="Mini map"
           pannable
           zoomable
@@ -172,11 +135,18 @@ export function HomePage() {
           maskColor="var(--color-bg-secondary)"
           nodeColor="var(--color-bg-tertiary)"
         /> */}
-        </ReactFlow>
-      </div>
-      <div className="w-[24rem] border-l border-border-secondary p-4">
-        <NoteCard id="1652342106359" />
-      </div>
+            </ReactFlow>
+          </div>
+        </Panel>
+        <PanelResizeHandle className="group relative -mx-0.5 px-0.5 hover:bg-border-secondary data-[resize-handle-active]:bg-border-focus">
+          <div className="h-full w-px bg-border-secondary group-hover:hidden group-data-[resize-handle-active]:hidden" />
+        </PanelResizeHandle>
+        <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
+          <div className="p-4">
+            <NoteList />
+          </div>
+        </Panel>
+      </PanelGroup>
     </div>
   )
 }

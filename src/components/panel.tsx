@@ -215,7 +215,7 @@ function ResizeHandle({
           data-resizing={isDragging}
           className={clsx(
             "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",
-            !isResizing && "hover:bg-bg-secondary",
+            !isResizing && "hover:bg-border-secondary",
             isResizing && "bg-border-focus",
           )}
         />
