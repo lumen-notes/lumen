@@ -3,7 +3,9 @@ import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { v4 as uuid } from "uuid"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { attachNodeData } from "../pages/home"
 import { NoteId } from "../types"
 import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
@@ -193,18 +195,18 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
 
         if (!rect) return
 
-        // Distance from cursor to top left corner of card
+        // Perserve the position of the note card relative to the cursor
         const position = { x: rect.left - event.clientX, y: rect.top - event.clientY }
 
         const node = {
+          id: uuid(),
           type: "note",
           position,
           style: { width: rect.width },
           data: { noteId: id },
-        }
+        } as const
 
-        event.dataTransfer.setData("application/reactflow", JSON.stringify(node))
-        event.dataTransfer.effectAllowed = "move"
+        attachNodeData(event, node)
       }}
     >
       <div className="p-4 pb-1">

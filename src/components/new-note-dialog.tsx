@@ -7,7 +7,9 @@ import React from "react"
 import { DraggableCore } from "react-draggable"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useMedia } from "react-use"
+import { v4 as uuid } from "uuid"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { attachNodeData } from "../pages/home"
 import { openNewWindow } from "../utils/open-new-window"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
@@ -233,6 +235,18 @@ function Trigger({
       tooltipSide={tooltipSide}
       onClick={toggle}
       disabled={disabled}
+      draggable
+      onDragStart={(event) => {
+        const node = {
+          id: uuid(),
+          type: "newNote",
+          position: { x: -1 * (DIALOG_WIDTH / 2), y: -128 },
+          style: { width: DIALOG_WIDTH },
+          data: { noteId: "1694145644875" },
+        } as const
+
+        attachNodeData(event, node)
+      }}
     >
       {isOpen ? <ComposeFillIcon24 /> : <ComposeIcon24 />}
     </IconButton>

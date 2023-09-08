@@ -1,4 +1,5 @@
 import React from "react"
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
   Background,
   Controls,
@@ -15,9 +16,9 @@ import ReactFlow, {
 import "reactflow/dist/base.css"
 import { z } from "zod"
 import { NoteCard } from "../components/note-card"
+import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 
 const resizeControlStyle = {
   background: "transparent",
@@ -25,7 +26,7 @@ const resizeControlStyle = {
   width: 8,
 }
 
-function _NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
+const NoteNode = React.memo(({ data }: NodeProps<{ noteId: NoteId }>) => {
   return (
     <>
       <div className="w-full">
@@ -45,18 +46,50 @@ function _NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
       />
     </>
   )
-}
+})
 
-const NoteNode = React.memo(_NoteNode)
+const NewNoteNode = React.memo(() => {
+  return (
+    <>
+      <div className="w-full">
+        <NoteCardForm minHeight="16rem" maxHeight="50vh" />
+      </div>
+      <NodeResizeControl
+        position="right"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+        minWidth={200}
+      />
+      <NodeResizeControl
+        position="left"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+        minWidth={200}
+      />
+    </>
+  )
+})
+
+const nodeTypes = { note: NoteNode, newNote: NewNoteNode }
+
+const nodeSchema = z.object({
+  id: z.string(),
+  type: z.enum(["note", "newNote"]),
+  position: z.object({ x: z.number(), y: z.number() }),
+  style: z.record(z.unknown()).optional(),
+  data: z.record(z.unknown()),
+})
 
 const panOnDrag = [1, 2]
+
+export function attachNodeData(event: React.DragEvent, node: Zod.infer<typeof nodeSchema>) {
+  event.dataTransfer.setData("application/reactflow", JSON.stringify(node))
+  event.dataTransfer.effectAllowed = "move"
+}
 
 export function HomePage() {
   const reactFlowContainer = React.useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
-
-  const nodeTypes = React.useMemo(() => ({ note: NoteNode }), [])
-
   const [nodes, setNodes] = React.useState<Node[]>([])
 
   const onNodesChange: OnNodesChange = React.useCallback(
@@ -72,32 +105,20 @@ export function HomePage() {
 
       const reactFlowRect = reactFlowContainer.current?.getBoundingClientRect()
 
-      const dataSchema = z.object({
-        type: z.literal("note"),
-        position: z.object({ x: z.number(), y: z.number() }),
-        style: z.object({ width: z.number() }),
-        data: z.object({ noteId: z.string() }),
-      })
       const data = event.dataTransfer.getData("application/reactflow")
-      const parsedData = dataSchema.parse(JSON.parse(data))
+      const node = nodeSchema.parse(JSON.parse(data))
 
-      const id = window.crypto.randomUUID()
-
-      const position = reactFlowInstance.project({
+      const offset = reactFlowInstance.project({
         x: event.clientX - reactFlowRect.left,
         y: event.clientY - reactFlowRect.top,
       })
 
-      const node = {
-        ...parsedData,
-        id,
-        position: {
-          x: position.x + parsedData.position.x,
-          y: position.y + parsedData.position.y,
-        },
+      const position = {
+        x: offset.x + node.position.x,
+        y: offset.y + node.position.y,
       }
 
-      setNodes((n) => [...n, node])
+      setNodes((nodes) => [...nodes, { ...node, position }])
     },
     [reactFlowInstance],
   )

@@ -38,6 +38,7 @@
     "@radix-ui/react-slot": "^1.0.0",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.0",
+    "@types/uuid": "^9.0.3",
     "buffer": "^6.0.3",
     "chrono-node": "^2.3.9",
     "clsx": "^1.2.1",
@@ -81,6 +82,7 @@
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.0",
     "urlcat": "^3.1.0",
+    "uuid": "^9.0.0",
     "yamljs": "^0.3.0",
     "zod": "^3.18.0"
   },
