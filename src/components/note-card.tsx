@@ -189,10 +189,19 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       }}
       draggable
       onDragStart={(event) => {
-        const { left = 0, top = 0 } = cardRef.current?.getBoundingClientRect() ?? {}
+        const rect = cardRef.current?.getBoundingClientRect()
+
+        if (!rect) return
+
         // Distance from cursor to top left corner of card
-        const position = { x: left - event.clientX, y: top - event.clientY }
-        const node = { type: "note", position, data: { noteId: id } }
+        const position = { x: rect.left - event.clientX, y: rect.top - event.clientY }
+
+        const node = {
+          type: "note",
+          position,
+          style: { width: rect.width },
+          data: { noteId: id },
+        }
 
         event.dataTransfer.setData("application/reactflow", JSON.stringify(node))
         event.dataTransfer.effectAllowed = "move"

@@ -5,8 +5,10 @@ import ReactFlow, {
   // MiniMap,
   Node,
   NodeProps,
+  NodeResizeControl,
   OnNodesChange,
   ReactFlowInstance,
+  ResizeControlVariant,
   SelectionMode,
   applyNodeChanges,
 } from "reactflow"
@@ -21,35 +23,68 @@ const initialNodes = [
     id: "1",
     type: "note",
     position: { x: 0, y: 0 },
+    style: { width: 500 },
     data: { noteId: "1694032625739" },
   },
   {
     id: "2",
     type: "note",
     position: { x: 800, y: 400 },
+    style: { width: 500 },
     data: { noteId: "1652342106359" },
   },
   {
     id: "3",
     type: "newNote",
     position: { x: 800, y: 0 },
+    style: { width: 500 },
     data: {},
   },
 ]
 
+const resizeControlStyle = {
+  background: "transparent",
+  border: "none",
+  width: 8,
+}
+
 function NoteNode({ data }: NodeProps<{ noteId: NoteId }>) {
   return (
-    <div className="w-[500px]">
-      <NoteCard id={data.noteId} />
-    </div>
+    <>
+      <div className="w-full">
+        <NoteCard id={data.noteId} />
+      </div>
+      <NodeResizeControl
+        position="right"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+      />
+      <NodeResizeControl
+        position="left"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+      />
+    </>
   )
 }
 
 function NewNoteNode() {
   return (
-    <div className="w-[500px]">
-      <NoteCardForm />
-    </div>
+    <>
+      <div className="w-full">
+        <NoteCardForm minHeight="16rem" maxHeight="50vh" />
+      </div>
+      <NodeResizeControl
+        position="right"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+      />
+      <NodeResizeControl
+        position="left"
+        variant={ResizeControlVariant.Line}
+        style={resizeControlStyle}
+      />
+    </>
   )
 }
 
@@ -79,6 +114,7 @@ export function HomePage() {
       const dataSchema = z.object({
         type: z.literal("note"),
         position: z.object({ x: z.number(), y: z.number() }),
+        style: z.object({ width: z.number() }),
         data: z.object({ noteId: z.string() }),
       })
       const data = event.dataTransfer.getData("application/reactflow")

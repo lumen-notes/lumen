@@ -413,7 +413,7 @@ body:has([data-resizing="true"]) * {
   @apply link-external;
 }
 
-/* Syntax highlighting */
+/* Prism styles */
 
 .prism .comment {
   color: var(--color-text-secondary);
@@ -509,4 +509,11 @@ body:has([data-resizing="true"]) * {
 
 [cmdk-item][aria-selected] {
   @apply bg-bg-secondary;
+}
+
+/* React Flow styles */
+
+.react-flow__node-note {
+  /* The height of note nodes should match the content height */
+  height: auto !important;
 }
