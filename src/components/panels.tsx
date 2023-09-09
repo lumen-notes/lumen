@@ -52,7 +52,7 @@ function Root({ children }: React.PropsWithChildren) {
   })
 
   useEvent("keydown", (event) => {
-    // Focus prev/next panel with `option + [shift] + left/right`
+    // Focus prev/next panel with `option + shift + left/right`
     const getPanelElements = () =>
       Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
     const getPanelsAndFocusedPanelIndex = () => {
