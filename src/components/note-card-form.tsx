@@ -135,6 +135,7 @@ export function NoteCardForm({
               if (event.key === "Enter" && event.metaKey) {
                 handleSubmit()
                 event.preventDefault()
+                event.stopPropagation()
               }
 
               // Clear and cancel on `escape`

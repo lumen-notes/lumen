@@ -101,14 +101,14 @@ function Provider({ children }: { children: React.ReactNode }) {
   }, [isOpen, focusPrevActiveElement, focusNoteEditor])
 
   useEvent("keydown", (event) => {
-    // Toggle dialog with `command + i`
-    if (event.key === "i" && event.metaKey && !event.shiftKey && !disabled) {
+    // Toggle dialog with `command + enter`
+    if (event.key === "Enter" && event.metaKey && !event.shiftKey && !disabled) {
       toggle()
       event.preventDefault()
     }
 
-    // Open /new in new window with `command + shift + i`
-    if (event.key === "i" && event.metaKey && event.shiftKey && !disabled) {
+    // Open /new in new window with `command + shift + enter`
+    if (event.key === "Enter" && event.metaKey && event.shiftKey && !disabled) {
       openNewWindow("/new")
       event.preventDefault()
     }
