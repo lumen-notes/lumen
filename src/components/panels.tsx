@@ -55,14 +55,10 @@ function Root({ children }: React.PropsWithChildren) {
     // Focus prev/next panel with `option + shift + left/right`
     const getPanelElements = () =>
       Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
-    const getPanelsAndFocusedPanelIndex = () => {
-      const panelElements = getPanelElements()
-      return {
-        panelElements,
-        focusedPanelIndex: panelElements.findIndex((panelElement) =>
-          panelElement.contains(document.activeElement),
-        ),
-      }
+    const getPanelsAndFocusedPanelIndex = (panelElements: HTMLElement[]) => {
+      return panelElements.findIndex((panelElement) =>
+        panelElement.contains(document.activeElement),
+      )
     }
 
     if (event.key === "ArrowLeft" && event.altKey && event.shiftKey) {
@@ -79,7 +75,8 @@ function Root({ children }: React.PropsWithChildren) {
     }
 
     if (event.key === "ArrowLeft" && event.altKey) {
-      const { panelElements, focusedPanelIndex } = getPanelsAndFocusedPanelIndex()
+      const panelElements = getPanelElements()
+      const focusedPanelIndex = getPanelsAndFocusedPanelIndex(panelElements)
       if (focusedPanelIndex > 0) {
         // If the user presses the left arrow key and focus is not on the first panel,
         // move focus to the previous panel
@@ -91,7 +88,8 @@ function Root({ children }: React.PropsWithChildren) {
     }
 
     if (event.key === "ArrowRight" && event.altKey) {
-      const { panelElements, focusedPanelIndex } = getPanelsAndFocusedPanelIndex()
+      const panelElements = getPanelElements()
+      const focusedPanelIndex = getPanelsAndFocusedPanelIndex(panelElements)
       if (focusedPanelIndex < panelElements.length - 1) {
         // If the user presses the right arrow key and focus is not on the last panel,
         // move focus to the next panel
