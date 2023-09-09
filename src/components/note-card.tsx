@@ -24,7 +24,6 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
-import { getShortcut } from "../utils/shortcuts"
 
 type NoteCardProps = {
   id: NoteId
@@ -160,14 +159,14 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         }
 
         // Copy id with `command + ctrl + c`
-        if (getShortcut(event) === "copy-note-id") {
+        if (event.metaKey && event.ctrlKey && event.key == "c") {
           copy(id)
           event.preventDefault()
           return
         }
 
         // Copy markdown with `command + c` if no text is selected
-        if (getShortcut(event) === "copy-markdown" && !window.getSelection()?.toString()) {
+        if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
           copy(note.rawBody)
           event.preventDefault()
           return
