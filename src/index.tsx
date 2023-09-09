@@ -51,7 +51,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                     <Route path="tags/*" element={<TagPage />} />
                     <Route path="calendar" element={<CalendarPage />} />
                     <Route path="settings" element={<SettingsPage />} />
-                    <Route path=":id" element={<NotePage />} />
+                    <Route path="*" element={<NotePage />} />
                   </Route>
                 </Routes>
               </RootLayout>

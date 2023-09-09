@@ -1,5 +1,12 @@
 name: Lumen
-on: [workflow_call]
+on:
+  workflow_call:
+    inputs:
+      notes:
+        type: string
+        description: "Glob pattern to match note files. All note files must be markdown files."
+        required: false
+        default: "**/*.md"
 # Cancel running workflow when a new workflow is triggered on the same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -24,16 +31,21 @@ jobs:
             // Create an empty object to store the notes
             const notes = {};
 
-            // Match all .md files
-            const FILENAME_REGEX = /.+\.md$/
+            const globber = await glob.create('${{ inputs.notes }}')
+            const files = await globber.glob()
 
-            // Iterate through all the notes in the root directory
-            fs.readdirSync(process.cwd())
-              .filter((filename) => FILENAME_REGEX.test(filename))
+            // Iterate through all the notes
+            files
+              // Ignore non-markdown files
+              .filter((filename) => filename.endsWith('.md'))
               .forEach((filename) => {
-                // Remove the .md extension from the filename
-                const id = path.basename(filename, '.md');
 
+                // Relative path
+                const relativePath = path.relative(process.cwd(), filename);
+
+                // Remove the .md extension from the filename
+                const id = relativePath.replace(/\.md$/, '');
+                
                 // Read the body of the note
                 const body = fs.readFileSync(filename, 'utf8');
 
