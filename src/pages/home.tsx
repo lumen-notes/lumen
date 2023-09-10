@@ -67,6 +67,9 @@ const NewNoteNode = React.memo(({ id, selected }: NodeProps) => {
               ),
             )
           }}
+          onCancel={() => {
+            setNodes((nodes) => nodes.filter((node) => node.id !== id))
+          }}
         />
       </div>
       <NodeResizeControl
