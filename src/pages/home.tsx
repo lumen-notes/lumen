@@ -12,6 +12,7 @@ import ReactFlow, {
   ResizeControlVariant,
   SelectionMode,
   applyNodeChanges,
+  Panel as ReactFlowPanel,
 } from "reactflow"
 import "reactflow/dist/base.css"
 import { z } from "zod"
@@ -21,8 +22,14 @@ import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
 import { atom, useAtom, useSetAtom } from "jotai"
 import { IconButton } from "../components/icon-button"
-import { ChevronLeftIcon16, ChevronRightIcon16, NoteIcon16 } from "../components/icons"
+import {
+  ChevronLeftIcon16,
+  ChevronRightIcon16,
+  NoteIcon16,
+  SidebarIcon16,
+} from "../components/icons"
 import { cx } from "../utils/cx"
+import { Card } from "../components/card"
 
 const nodesAtom = atom<Node[]>([])
 
@@ -112,6 +119,7 @@ export function HomePage() {
   const reactFlowContainer = React.useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
   const [nodes, setNodes] = useAtom(nodesAtom)
+  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true)
 
   const onNodesChange: OnNodesChange = React.useCallback(
     (changes) => setNodes((n) => applyNodeChanges(changes, n)),
@@ -178,6 +186,20 @@ export function HomePage() {
             >
               <Background color="var(--color-border-secondary)" gap={16} size={2} />
               <Controls />
+              {!isSidebarExpanded ? (
+                <ReactFlowPanel position="top-right" style={{ margin: 4 }}>
+                  <Card className="rounded-sm">
+                    <IconButton
+                      aria-label="Expand sidebar"
+                      aria-expanded={false}
+                      onClick={() => setIsSidebarExpanded(true)}
+                      className="p-[calc(0.5rem-1px)]"
+                    >
+                      <SidebarIcon16 />
+                    </IconButton>
+                  </Card>
+                </ReactFlowPanel>
+              ) : null}
               {/* <MiniMap
           ariaLabel="Mini map"
           pannable
@@ -189,50 +211,61 @@ export function HomePage() {
             </ReactFlow>
           </div>
         </Panel>
-        <PanelResizeHandle className="group relative -mx-0.5 px-0.5 hover:bg-border-secondary data-[resize-handle-active]:bg-border-focus">
-          <div className="h-full w-px bg-border-secondary group-hover:hidden group-data-[resize-handle-active]:hidden" />
-        </PanelResizeHandle>
-        <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
-          <div
-            className={cx(
-              "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md",
-            )}
-          >
-            <div className="flex flex-shrink items-center gap-4">
-              <div className="flex">
+        {isSidebarExpanded ? (
+          <>
+            <PanelResizeHandle className="group relative z-20 -mx-0.5 px-0.5 hover:bg-border-secondary data-[resize-handle-active]:bg-border-focus">
+              <div className="h-full w-px bg-border-secondary group-hover:opacity-0 group-data-[resize-handle-active]:opacity-0" />
+            </PanelResizeHandle>
+            <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
+              <div
+                className={cx(
+                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md",
+                )}
+              >
+                <div className="flex flex-shrink items-center gap-4">
+                  <div className="flex">
+                    <IconButton
+                      aria-label="Back"
+                      disabled
+                      // onClick={() => navigate(-1)}
+                      // shortcut={["⌘", "["]}
+                      // TODO: Disable when at the beginning of history
+                    >
+                      <ChevronLeftIcon16 />
+                    </IconButton>
+                    <IconButton
+                      aria-label="Forward"
+                      disabled
+                      // onClick={() => navigate(1)}
+                      // shortcut={["⌘", "]"]}
+                      // TODO: Disable when at the end of history
+                    >
+                      <ChevronRightIcon16 />
+                    </IconButton>
+                  </div>
+                  <div className="flex flex-shrink items-center gap-2">
+                    <div className="flex-shrink-0 text-text-secondary">
+                      <NoteIcon16 />
+                    </div>
+                    <div className="flex items-baseline gap-3 overflow-hidden">
+                      <h2 className="flex-shrink-0 leading-4">Notes</h2>
+                    </div>
+                  </div>
+                </div>
                 <IconButton
-                  aria-label="Back"
-                  disabled
-                  // onClick={() => navigate(-1)}
-                  // shortcut={["⌘", "["]}
-                  // TODO: Disable when at the beginning of history
+                  aria-label="Collapse sidebar"
+                  aria-expanded={true}
+                  onClick={() => setIsSidebarExpanded(false)}
                 >
-                  <ChevronLeftIcon16 />
-                </IconButton>
-                <IconButton
-                  aria-label="Forward"
-                  disabled
-                  // onClick={() => navigate(1)}
-                  // shortcut={["⌘", "]"]}
-                  // TODO: Disable when at the end of history
-                >
-                  <ChevronRightIcon16 />
+                  <SidebarIcon16 />
                 </IconButton>
               </div>
-              <div className="flex flex-shrink items-center gap-2">
-                <div className="flex-shrink-0 text-text-secondary">
-                  <NoteIcon16 />
-                </div>
-                <div className="flex items-baseline gap-3 overflow-hidden">
-                  <h2 className="flex-shrink-0 leading-4">Notes</h2>
-                </div>
+              <div className="p-4">
+                <NoteList />
               </div>
-            </div>
-          </div>
-          <div className="p-4">
-            <NoteList />
-          </div>
-        </Panel>
+            </Panel>
+          </>
+        ) : null}
       </PanelGroup>
     </div>
   )

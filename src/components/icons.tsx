@@ -493,6 +493,14 @@ export function TaskListIcon16({ className }: { className?: string }) {
   )
 }
 
+export function SidebarIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M1.95 1A1.95 1.95 0 0 0 0 2.95v9.6a1.95 1.95 0 0 0 1.95 1.95h12.1A1.95 1.95 0 0 0 16 12.55v-9.6A1.95 1.95 0 0 0 14.05 1H1.95ZM1.5 2.95a.45.45 0 0 1 .45-.45H9.5V13H1.95a.45.45 0 0 1-.45-.45v-9.6ZM11 13V2.5h3.05a.45.45 0 0 1 .45.45v9.6a.45.45 0 0 1-.45.45H11Z" />
+    </svg>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {
