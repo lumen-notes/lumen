@@ -20,6 +20,9 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
 import { atom, useAtom, useSetAtom } from "jotai"
+import { IconButton } from "../components/icon-button"
+import { ChevronLeftIcon16, ChevronRightIcon16, NoteIcon16 } from "../components/icons"
+import { cx } from "../utils/cx"
 
 const nodesAtom = atom<Node[]>([])
 
@@ -190,6 +193,42 @@ export function HomePage() {
           <div className="h-full w-px bg-border-secondary group-hover:hidden group-data-[resize-handle-active]:hidden" />
         </PanelResizeHandle>
         <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
+          <div
+            className={cx(
+              "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md",
+            )}
+          >
+            <div className="flex flex-shrink items-center gap-4">
+              <div className="flex">
+                <IconButton
+                  aria-label="Back"
+                  disabled
+                  // onClick={() => navigate(-1)}
+                  // shortcut={["⌘", "["]}
+                  // TODO: Disable when at the beginning of history
+                >
+                  <ChevronLeftIcon16 />
+                </IconButton>
+                <IconButton
+                  aria-label="Forward"
+                  disabled
+                  // onClick={() => navigate(1)}
+                  // shortcut={["⌘", "]"]}
+                  // TODO: Disable when at the end of history
+                >
+                  <ChevronRightIcon16 />
+                </IconButton>
+              </div>
+              <div className="flex flex-shrink items-center gap-2">
+                <div className="flex-shrink-0 text-text-secondary">
+                  <NoteIcon16 />
+                </div>
+                <div className="flex items-baseline gap-3 overflow-hidden">
+                  <h2 className="flex-shrink-0 leading-4">Notes</h2>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="p-4">
             <NoteList />
           </div>
