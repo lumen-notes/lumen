@@ -19,6 +19,9 @@ import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
+import { atom, useAtom, useSetAtom } from "jotai"
+
+const nodesAtom = atom<Node[]>([])
 
 const resizeControlStyle = {
   background: "transparent",
@@ -26,11 +29,11 @@ const resizeControlStyle = {
   width: 8,
 }
 
-const NoteNode = React.memo(({ data }: NodeProps<{ noteId: NoteId }>) => {
+const NoteNode = React.memo(({ data, selected }: NodeProps<{ noteId: NoteId }>) => {
   return (
     <>
       <div className="w-full">
-        <NoteCard id={data.noteId} />
+        <NoteCard id={data.noteId} selected={selected} />
       </div>
       <NodeResizeControl
         position="right"
@@ -48,11 +51,23 @@ const NoteNode = React.memo(({ data }: NodeProps<{ noteId: NoteId }>) => {
   )
 })
 
-const NewNoteNode = React.memo(() => {
+const NewNoteNode = React.memo(({ id, selected }: NodeProps) => {
+  const setNodes = useSetAtom(nodesAtom)
   return (
     <>
       <div className="w-full">
-        <NoteCardForm minHeight="16rem" maxHeight="50vh" />
+        <NoteCardForm
+          minHeight="16rem"
+          maxHeight="50vh"
+          selected={selected}
+          onSubmit={({ id: noteId }) => {
+            setNodes((nodes) =>
+              nodes.map((node) =>
+                node.id === id ? { ...node, type: "note", data: { noteId } } : node,
+              ),
+            )
+          }}
+        />
       </div>
       <NodeResizeControl
         position="right"
@@ -90,11 +105,11 @@ export function attachNodeData(event: React.DragEvent, node: Zod.infer<typeof no
 export function HomePage() {
   const reactFlowContainer = React.useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
-  const [nodes, setNodes] = React.useState<Node[]>([])
+  const [nodes, setNodes] = useAtom(nodesAtom)
 
   const onNodesChange: OnNodesChange = React.useCallback(
     (changes) => setNodes((n) => applyNodeChanges(changes, n)),
-    [],
+    [setNodes],
   )
 
   const onDrop = React.useCallback(
@@ -118,9 +133,18 @@ export function HomePage() {
         y: offset.y + node.position.y,
       }
 
-      setNodes((nodes) => [...nodes, { ...node, position }])
+      setNodes((nodes) => [
+        // De-select all nodes
+        ...nodes.map((node) => ({ ...node, selected: false })),
+        {
+          ...node,
+          position,
+          // Select the new node
+          selected: true,
+        },
+      ])
     },
-    [reactFlowInstance],
+    [reactFlowInstance, setNodes],
   )
 
   const onDragOver = React.useCallback((event: React.DragEvent<HTMLDivElement>) => {

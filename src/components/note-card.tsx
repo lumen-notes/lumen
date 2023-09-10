@@ -30,9 +30,10 @@ import { PanelContext, PanelsContext } from "./panels"
 type NoteCardProps = {
   id: NoteId
   elevation?: CardProps["elevation"]
+  selected?: boolean
 }
 
-export function NoteCard({ id, elevation }: NoteCardProps) {
+export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -136,6 +137,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         id={id}
         defaultValue={note.rawBody}
         elevation={elevation}
+        selected={selected}
         // minHeight="12rem"
         editorRef={editorRef}
         onSubmit={switchToViewing}
@@ -150,6 +152,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       data-note-id={id}
       ref={cardRef}
       tabIndex={0}
+      focusVisible={selected}
       className="flex flex-col"
       elevation={elevation}
       onKeyDown={(event) => {
