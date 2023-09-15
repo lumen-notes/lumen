@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { z } from "zod"
 import { IconButton } from "../components/icon-button"
-import { DotIcon8, TagIcon24, TriangleRightIcon8 } from "../components/icons"
+import { DotIcon8, TagIcon16, TriangleRightIcon8 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
@@ -32,7 +32,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   const tagTree = React.useMemo(() => buildTagTree(searchResults), [searchResults])
 
   return (
-    <Panel id={id} title="Tags" icon={<TagIcon24 />} onClose={onClose}>
+    <Panel id={id} title="Tags" icon={<TagIcon16 />} onClose={onClose}>
       <div className="flex flex-col gap-2 p-4">
         <div className="flex flex-col gap-2">
           <SearchInput

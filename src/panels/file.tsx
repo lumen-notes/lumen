@@ -13,6 +13,7 @@ export function FilePanel({ id, onClose }: PanelProps) {
       id={id}
       title="File"
       description={path.split("/").pop()}
+      // TODO: Create 16px file icon
       icon={<FileIcon24 />}
       onClose={onClose}
     >

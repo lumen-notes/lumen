@@ -1,3 +1,4 @@
+import { atom, useAtom, useSetAtom } from "jotai"
 import React from "react"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
@@ -9,18 +10,14 @@ import ReactFlow, {
   NodeResizeControl,
   OnNodesChange,
   ReactFlowInstance,
+  Panel as ReactFlowPanel,
   ResizeControlVariant,
   SelectionMode,
   applyNodeChanges,
-  Panel as ReactFlowPanel,
 } from "reactflow"
 import "reactflow/dist/base.css"
 import { z } from "zod"
-import { NoteCard } from "../components/note-card"
-import { NoteCardForm } from "../components/note-card-form"
-import { NoteList } from "../components/note-list"
-import { NoteId } from "../types"
-import { atom, useAtom, useSetAtom } from "jotai"
+import { Card } from "../components/card"
 import { IconButton } from "../components/icon-button"
 import {
   ChevronLeftIcon16,
@@ -28,8 +25,11 @@ import {
   NoteIcon16,
   SidebarIcon16,
 } from "../components/icons"
+import { NoteCard } from "../components/note-card"
+import { NoteCardForm } from "../components/note-card-form"
+import { NoteList } from "../components/note-list"
+import { NoteId } from "../types"
 import { cx } from "../utils/cx"
-import { Card } from "../components/card"
 
 const nodesAtom = atom<Node[]>([])
 
@@ -187,7 +187,7 @@ export function HomePage() {
               <Background color="var(--color-border-secondary)" gap={16} size={2} />
               <Controls />
               {!isSidebarExpanded ? (
-                <ReactFlowPanel position="top-right" style={{ margin: 4 }}>
+                <ReactFlowPanel position="top-right" style={{ margin: 8 }}>
                   <Card className="rounded-sm">
                     <IconButton
                       aria-label="Expand sidebar"
@@ -219,7 +219,7 @@ export function HomePage() {
             <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
               <div
                 className={cx(
-                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-1 backdrop-blur-md",
+                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 backdrop-blur-md",
                 )}
               >
                 <div className="flex flex-shrink items-center gap-4">
@@ -248,7 +248,7 @@ export function HomePage() {
                       <NoteIcon16 />
                     </div>
                     <div className="flex items-baseline gap-3 overflow-hidden">
-                      <h2 className="flex-shrink-0 leading-4">Notes</h2>
+                      <h2 className="flex-shrink-0 text-lg font-semibold leading-4">Notes</h2>
                     </div>
                   </div>
                 </div>

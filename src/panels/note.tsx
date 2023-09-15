@@ -1,6 +1,6 @@
 import * as Tabs from "@radix-ui/react-tabs"
 import React from "react"
-import { LinkIcon16, NoteIcon24, UnlinkIcon16 } from "../components/icons"
+import { LinkIcon16, NoteIcon16, UnlinkIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -35,7 +35,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   // }, [note, notesWithQueries])
 
   return (
-    <Panel id={id} title="Note" icon={<NoteIcon24 />} onClose={onClose}>
+    <Panel id={id} title="Note" icon={<NoteIcon16 />} onClose={onClose}>
       <div className="flex flex-col gap-4 p-4">
         <NoteCard id={noteId} />
 

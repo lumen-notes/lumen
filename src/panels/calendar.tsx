@@ -7,6 +7,7 @@ import React from "react"
 import { useLocation } from "react-router-dom"
 import { IconButton } from "../components/icon-button"
 import {
+  CalendarIcon16,
   CalendarIcon24,
   ChevronLeftIcon16,
   ChevronRightIcon16,
@@ -46,7 +47,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       id={id}
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
+      icon={<CalendarIcon16 />}
       onClose={onClose}
       actions={
         <>
@@ -65,7 +66,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       }
     >
       <div className="flex flex-col">
-        <Calendar activeDate={date} />
+        <Calendar key={date} activeDate={date} />
         <div className="p-4">
           <LinkHighlightProvider href={`/calendar?date=${date}`}>
             <NoteList key={date} baseQuery={`date:${date}`} />

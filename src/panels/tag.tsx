@@ -8,7 +8,7 @@ import {
   CloseIcon16,
   EditIcon16,
   ExternalLinkIcon16,
-  TagIcon24,
+  TagIcon16,
   TrashIcon16,
 } from "../components/icons"
 import { Input } from "../components/input"
@@ -50,7 +50,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
     <Panel
       id={id}
       title={name}
-      icon={<TagIcon24 />}
+      icon={<TagIcon16 />}
       actions={
         <>
           <DropdownMenu.Item
