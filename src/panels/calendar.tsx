@@ -5,10 +5,10 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useLocation } from "react-router-dom"
+import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
   CalendarIcon16,
-  CalendarIcon24,
   ChevronLeftIcon16,
   ChevronRightIcon16,
   ExternalLinkIcon16,
@@ -21,7 +21,6 @@ import { PanelContext, PanelProps } from "../components/panels"
 import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
-import { DropdownMenu } from "../components/dropdown-menu"
 import { openNewWindow } from "../utils/open-new-window"
 
 export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
