@@ -1,4 +1,5 @@
-import { atom, useAtom, useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
 import React from "react"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
@@ -27,7 +28,8 @@ import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
 
-const nodesAtom = atom<Node[]>([])
+// TODO: Store in a file
+const nodesAtom = atomWithStorage<Node[]>("canvas_nodes", [])
 
 const resizeControlStyle = {
   background: "transparent",
