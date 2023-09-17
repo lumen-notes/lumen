@@ -209,11 +209,11 @@ export function CanvasPage() {
             <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
               <div
                 className={cx(
-                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 backdrop-blur-md",
+                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 pl-4 backdrop-blur-md",
                 )}
               >
                 <div className="flex flex-shrink items-center gap-4">
-                  <div className="flex">
+                  {/* <div className="flex">
                     <IconButton
                       aria-label="Back"
                       disabled
@@ -232,7 +232,7 @@ export function CanvasPage() {
                     >
                       <ChevronRightIcon16 />
                     </IconButton>
-                  </div>
+                  </div> */}
                   <div className="flex flex-shrink items-center gap-2">
                     <div className="flex-shrink-0 text-text-secondary">
                       <NoteIcon16 />
