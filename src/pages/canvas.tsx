@@ -4,7 +4,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
   Background,
   Controls,
-  // MiniMap,
   Node,
   NodeProps,
   NodeResizeControl,
@@ -115,7 +114,7 @@ export function attachNodeData(event: React.DragEvent, node: Zod.infer<typeof no
   event.dataTransfer.effectAllowed = "move"
 }
 
-export function HomePage() {
+export function CanvasPage() {
   const reactFlowContainer = React.useRef<HTMLDivElement>(null)
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
   const [nodes, setNodes] = useAtom(nodesAtom)
@@ -188,26 +187,17 @@ export function HomePage() {
               <Controls />
               {!isSidebarExpanded ? (
                 <ReactFlowPanel position="top-right" style={{ margin: 8 }}>
-                  <Card className="rounded-sm">
+                  <Card className="rounded-sm after:rounded-sm">
                     <IconButton
                       aria-label="Expand sidebar"
                       aria-expanded={false}
                       onClick={() => setIsSidebarExpanded(true)}
-                      className="p-[calc(0.5rem-1px)]"
                     >
                       <SidebarIcon16 />
                     </IconButton>
                   </Card>
                 </ReactFlowPanel>
               ) : null}
-              {/* <MiniMap
-          ariaLabel="Mini map"
-          pannable
-          zoomable
-          className="overflow-hidden rounded-md border border-transparent !bg-bg-overlay shadow-md ring-1 ring-border-secondary dark:border-border-secondary dark:ring-[rgba(0,0,0,0.6)] [&_.react-flow\_\_minimap-mask]:opacity-0 [&_.react-flow\_\_minimap-mask]:transition-opacity [&_.react-flow\_\_minimap-mask]:hover:opacity-100"
-          maskColor="var(--color-bg-secondary)"
-          nodeColor="var(--color-bg-tertiary)"
-        /> */}
             </ReactFlow>
           </div>
         </Panel>

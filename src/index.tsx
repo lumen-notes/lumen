@@ -15,7 +15,7 @@ import { ThemeColor } from "./components/theme-color"
 import "./index.css"
 import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
-import { HomePage } from "./pages/home"
+import { CanvasPage } from "./pages/canvas"
 import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
@@ -48,7 +48,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                   <Route path="/file" element={<FilePage />} />
                   <Route path="/" element={<NavLayout />}>
                     <Route index element={<NotesPage />} />
-                    <Route path="home" element={<HomePage />} />
+                    <Route path="canvas" element={<CanvasPage />} />
                     <Route path="tags" element={<TagsPage />} />
                     <Route path="tags/*" element={<TagPage />} />
                     <Route path="calendar" element={<CalendarPage />} />
