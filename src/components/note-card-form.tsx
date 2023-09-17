@@ -20,6 +20,7 @@ type NoteCardFormProps = {
   elevation?: CardProps["elevation"]
   minHeight?: string | number
   maxHeight?: string | number
+  selected?: boolean
   editorRef?: React.MutableRefObject<EditorView | undefined>
   onSubmit?: (note: { id: NoteId; rawBody: string }) => void
   onCancel?: () => void
@@ -32,6 +33,7 @@ export function NoteCardForm({
   elevation = 0,
   minHeight,
   maxHeight,
+  selected = false,
   editorRef: providedEditorRef,
   onSubmit,
   onCancel,
@@ -81,7 +83,7 @@ export function NoteCardForm({
   return (
     <Card
       elevation={elevation}
-      focusVisible={editorHasFocus}
+      focusVisible={editorHasFocus || selected}
       className="relative flex flex-col"
       // Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
       onDrop={(event) => {

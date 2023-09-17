@@ -146,7 +146,7 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
   )
 }
 
-export function CalendarIcon16() {
+export function CalendarIcon16({ date }: { date?: number }) {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M13 4H3v1.5h10V4Z" />
@@ -155,6 +155,16 @@ export function CalendarIcon16() {
         clipRule="evenodd"
         d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm2-.5h12a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5Z"
       />
+      <text
+        textAnchor="middle"
+        x={8}
+        y={12.5}
+        fontSize="7.5px"
+        fill="currentColor"
+        className="font-mono font-bold leading-none"
+      >
+        {date}
+      </text>
     </svg>
   )
 }
@@ -199,6 +209,14 @@ export function PlusIcon16() {
   )
 }
 
+export function MinusIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M1 7v1.5h13.5V7H1Z" />
+    </svg>
+  )
+}
+
 export function ChevronLeftIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
@@ -235,6 +253,14 @@ export function FileIcon24() {
         clipRule="evenodd"
         d="M13.757 1a3 3 0 0 1 2.122.879L20.12 6.12A3 3 0 0 1 21 8.243V20a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h7.757ZM4.5 20V4A1.5 1.5 0 0 1 6 2.5h7v5.75c0 .414.336.75.75.75h5.75v11a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20ZM19.303 7.5a1.503 1.503 0 0 0-.242-.318l-4.243-4.243a1.498 1.498 0 0 0-.318-.242V7.5h4.803Z"
       />
+    </svg>
+  )
+}
+
+export function FileIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M2 2a2 2 0 0 1 2-2h4.672a2 2 0 0 1 1.414.586l4.328 4.328A2 2 0 0 1 15 6.328V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2Zm11.5 5H9.25C8.56 7 8 6.44 8 5.75V1.5H4a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7Zm-.621-1.5L9.5 2.121V5.5h3.379Z" />
     </svg>
   )
 }
@@ -489,6 +515,14 @@ export function TaskListIcon16({ className }: { className?: string }) {
   return (
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M9 2h6v1.5H9V2ZM9 7h6v1.5H9V7ZM9 12h6v1.5H9V12ZM2.5 2.5h3v3h-3v-3ZM2 1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2ZM7.044 9.81l-3.197 4.617a.75.75 0 0 1-1.22.018l-1.676-2.27 1.207-.89L3.21 12.71l2.6-3.755 1.233.854Z" />
+    </svg>
+  )
+}
+
+export function SidebarIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M1.95 1A1.95 1.95 0 0 0 0 2.95v9.6a1.95 1.95 0 0 0 1.95 1.95h12.1A1.95 1.95 0 0 0 16 12.55v-9.6A1.95 1.95 0 0 0 14.05 1H1.95ZM1.5 2.95a.45.45 0 0 1 .45-.45H9.5V13H1.95a.45.45 0 0 1-.45-.45v-9.6ZM11 13V2.5h3.05a.45.45 0 0 1 .45.45v9.6a.45.45 0 0 1-.45.45H11Z" />
     </svg>
   )
 }

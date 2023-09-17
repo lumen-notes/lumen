@@ -141,13 +141,13 @@ export function Panel({ id, title, description, icon, actions, children, onClose
       <div className="flex h-full scroll-pb-4 scroll-pt-[4.5rem] flex-col overflow-auto coarse:[-webkit-transform:translateZ(0)]">
         <div
           className={
-            "sticky top-0 z-10 flex h-[3.5rem] shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-4 backdrop-blur-md"
+            "sticky top-0 z-10 flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 pl-4 backdrop-blur-md coarse:h-14"
           }
         >
-          <div className="flex flex-shrink items-center gap-2">
+          <div className="flex flex-shrink items-center gap-3">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
             <div className="flex items-baseline gap-3 overflow-hidden">
-              <h2 className="flex-shrink-0 text-xl font-semibold leading-6">{title}</h2>
+              <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
               {description ? (
                 <span className="truncate text-text-secondary">{description}</span>
               ) : null}
@@ -215,7 +215,7 @@ function ResizeHandle({
           data-resizing={isDragging}
           className={clsx(
             "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",
-            !isResizing && "hover:bg-bg-secondary",
+            !isResizing && "hover:bg-border-secondary",
             isResizing && "bg-border-focus",
           )}
         />

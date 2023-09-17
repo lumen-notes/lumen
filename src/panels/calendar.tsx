@@ -5,9 +5,10 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useLocation } from "react-router-dom"
+import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
-  CalendarIcon24,
+  CalendarIcon16,
   ChevronLeftIcon16,
   ChevronRightIcon16,
   ExternalLinkIcon16,
@@ -20,7 +21,6 @@ import { PanelContext, PanelProps } from "../components/panels"
 import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
-import { DropdownMenu } from "../components/dropdown-menu"
 import { openNewWindow } from "../utils/open-new-window"
 
 export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
@@ -35,7 +35,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
 
   if (!isValidDate) {
     return (
-      <Panel id={id} title={date} icon={<CalendarIcon24 />} onClose={onClose}>
+      <Panel id={id} title={date} icon={<CalendarIcon16 />} onClose={onClose}>
         Invalid date
       </Panel>
     )
@@ -46,7 +46,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       id={id}
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon24 date={new Date(date).getUTCDate()} />}
+      icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
       actions={
         <>
@@ -65,7 +65,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       }
     >
       <div className="flex flex-col">
-        <Calendar activeDate={date} />
+        <Calendar key={date} activeDate={date} />
         <div className="p-4">
           <LinkHighlightProvider href={`/calendar?date=${date}`}>
             <NoteList key={date} baseQuery={`date:${date}`} />

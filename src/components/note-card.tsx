@@ -3,7 +3,9 @@ import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { v4 as uuid } from "uuid"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { attachNodeData } from "../pages/canvas"
 import { NoteId } from "../types"
 import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
@@ -28,9 +30,10 @@ import { PanelContext, PanelsContext } from "./panels"
 type NoteCardProps = {
   id: NoteId
   elevation?: CardProps["elevation"]
+  selected?: boolean
 }
 
-export function NoteCard({ id, elevation }: NoteCardProps) {
+export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -134,6 +137,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
         id={id}
         defaultValue={note.rawBody}
         elevation={elevation}
+        selected={selected}
         // minHeight="12rem"
         editorRef={editorRef}
         onSubmit={switchToViewing}
@@ -148,6 +152,7 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
       data-note-id={id}
       ref={cardRef}
       tabIndex={0}
+      focusVisible={selected}
       className="flex flex-col"
       elevation={elevation}
       onKeyDown={(event) => {
@@ -187,10 +192,25 @@ export function NoteCard({ id, elevation }: NoteCardProps) {
           event.preventDefault()
         }
       }}
-      // onDoubleClick={(event) => {
-      //   openNoteWindow(id)
-      //   event.preventDefault()
-      // }}
+      draggable
+      onDragStart={(event) => {
+        const rect = cardRef.current?.getBoundingClientRect()
+
+        if (!rect) return
+
+        // Perserve the position of the note card relative to the cursor
+        const position = { x: rect.left - event.clientX, y: rect.top - event.clientY }
+
+        const node = {
+          id: uuid(),
+          type: "note",
+          position,
+          style: { width: rect.width },
+          data: { noteId: id },
+        } as const
+
+        attachNodeData(event, node)
+      }}
     >
       <div className="p-4 pb-1">
         <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
