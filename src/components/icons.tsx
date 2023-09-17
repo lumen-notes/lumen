@@ -199,6 +199,14 @@ export function PlusIcon16() {
   )
 }
 
+export function MinusIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M1 7v1.5h13.5V7H1Z" />
+    </svg>
+  )
+}
+
 export function ChevronLeftIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>

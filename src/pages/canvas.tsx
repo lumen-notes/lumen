@@ -3,7 +3,6 @@ import React from "react"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
   Background,
-  Controls,
   Node,
   NodeProps,
   NodeResizeControl,
@@ -13,17 +12,15 @@ import ReactFlow, {
   ResizeControlVariant,
   SelectionMode,
   applyNodeChanges,
+  useReactFlow,
+  useViewport,
 } from "reactflow"
 import "reactflow/dist/base.css"
 import { z } from "zod"
 import { Card } from "../components/card"
+import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import {
-  ChevronLeftIcon16,
-  ChevronRightIcon16,
-  NoteIcon16,
-  SidebarIcon16,
-} from "../components/icons"
+import { MinusIcon16, NoteIcon16, PlusIcon16, SidebarIcon16 } from "../components/icons"
 import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
@@ -184,7 +181,9 @@ export function CanvasPage() {
               onDragOver={onDragOver}
             >
               <Background color="var(--color-border-secondary)" gap={16} size={2} />
-              <Controls />
+              <ReactFlowPanel position="bottom-left" style={{ margin: 8 }}>
+                <ZoomControls />
+              </ReactFlowPanel>
               {!isSidebarExpanded ? (
                 <ReactFlowPanel position="top-right" style={{ margin: 8 }}>
                   <Card className="rounded-sm after:rounded-sm">
@@ -258,5 +257,41 @@ export function CanvasPage() {
         ) : null}
       </PanelGroup>
     </div>
+  )
+}
+
+function ZoomControls() {
+  const { zoomIn, zoomOut, zoomTo, fitView } = useReactFlow()
+  const { zoom } = useViewport()
+  return (
+    <Card className="flex rounded-sm after:rounded-sm [&_button:first-child]:rounded-l-sm [&_button:last-child]:rounded-r-sm [&_button]:rounded-none">
+      <IconButton
+        aria-label="Zoom out"
+        // shortcut={["⌘", "-"]}
+        onClick={() => zoomOut()}
+      >
+        <MinusIcon16 />
+      </IconButton>
+      <DropdownMenu>
+        <DropdownMenu.Trigger asChild>
+          <button className="focus-ring inline-block p-2 leading-4 hover:bg-bg-secondary">
+            {Math.round(zoom * 100)}%
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="center" minWidth="8rem">
+          <DropdownMenu.Item onSelect={() => fitView({ padding: 0.1 })}>
+            Zoom to fit
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onSelect={() => zoomTo(1)}>Zoom to 100%</DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
+      <IconButton
+        aria-label="Zoom in"
+        onClick={() => zoomIn()}
+        // shortcut={["⌘", "="]}
+      >
+        <PlusIcon16 />
+      </IconButton>
+    </Card>
   )
 }
