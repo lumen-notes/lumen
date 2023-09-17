@@ -25,7 +25,7 @@ export function FullscreenCalendarPage() {
     <FullscreenContainer
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon16 />}
+      icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
     >
       <div className="flex flex-col">
         <Calendar activeDate={date} />
