@@ -234,7 +234,7 @@ export function CanvasPage() {
                       <ChevronRightIcon16 />
                     </IconButton>
                   </div> */}
-                  <div className="flex flex-shrink items-center gap-2">
+                  <div className="flex flex-shrink items-center gap-3">
                     <div className="flex-shrink-0 text-text-secondary">
                       <NoteIcon16 />
                     </div>

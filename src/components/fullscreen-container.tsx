@@ -70,7 +70,7 @@ export function FullscreenContainer({
               <ChevronRightIcon16 />
             </IconButton>
           </div>
-          <div className="flex flex-shrink items-center gap-2">
+          <div className="flex flex-shrink items-center gap-3">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
             <div className="flex items-baseline gap-3 overflow-hidden">
               <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
