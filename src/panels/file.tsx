@@ -1,6 +1,6 @@
 import React from "react"
 import { FilePreview } from "../components/file-preview"
-import { FileIcon24 } from "../components/icons"
+import { FileIcon16 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps } from "../components/panels"
 
@@ -14,7 +14,7 @@ export function FilePanel({ id, onClose }: PanelProps) {
       title="File"
       description={path.split("/").pop()}
       // TODO: Create 16px file icon
-      icon={<FileIcon24 />}
+      icon={<FileIcon16 />}
       onClose={onClose}
     >
       <div className="grid h-full w-full place-items-center">

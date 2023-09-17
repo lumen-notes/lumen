@@ -247,6 +247,14 @@ export function FileIcon24() {
   )
 }
 
+export function FileIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M2 2a2 2 0 0 1 2-2h4.672a2 2 0 0 1 1.414.586l4.328 4.328A2 2 0 0 1 15 6.328V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2Zm11.5 5H9.25C8.56 7 8 6.44 8 5.75V1.5H4a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7Zm-.621-1.5L9.5 2.121V5.5h3.379Z" />
+    </svg>
+  )
+}
+
 export function ComposeIcon24() {
   return (
     <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
