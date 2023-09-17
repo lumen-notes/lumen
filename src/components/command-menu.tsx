@@ -133,7 +133,7 @@ export function CommandMenu() {
             <Command.Group heading="Date">
               <CommandItem
                 key={dateString}
-                icon={<CalendarIcon16 />}
+                icon={<CalendarIcon16 date={new Date(dateString).getUTCDate()} />}
                 description={formatDateDistance(dateString)}
                 onSelect={() => navigate(`/calendar?date=${dateString}`)}
               >

@@ -36,7 +36,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
 
   if (!isValidDate) {
     return (
-      <Panel id={id} title={date} icon={<CalendarIcon24 />} onClose={onClose}>
+      <Panel id={id} title={date} icon={<CalendarIcon16 />} onClose={onClose}>
         Invalid date
       </Panel>
     )
@@ -47,7 +47,7 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
       id={id}
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon16 />}
+      icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
       actions={
         <>

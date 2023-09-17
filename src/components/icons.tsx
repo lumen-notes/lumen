@@ -146,7 +146,7 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
   )
 }
 
-export function CalendarIcon16() {
+export function CalendarIcon16({ date }: { date?: number }) {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M13 4H3v1.5h10V4Z" />
@@ -155,6 +155,16 @@ export function CalendarIcon16() {
         clipRule="evenodd"
         d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm2-.5h12a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5Z"
       />
+      <text
+        textAnchor="middle"
+        x={8}
+        y={12.5}
+        fontSize="7.5px"
+        fill="currentColor"
+        className="font-mono font-bold leading-none"
+      >
+        {date}
+      </text>
     </svg>
   )
 }
