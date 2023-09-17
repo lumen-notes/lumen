@@ -20,10 +20,10 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
       <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
         <Card
           elevation={1}
-          className="z-20 max-h-[50vh] overflow-auto rounded-md p-1 animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="z-20 overflow-hidden rounded-md animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
           style={{ minWidth }}
         >
-          {children}
+          <div className="max-h-[50vh] overflow-auto p-1">{children}</div>
         </Card>
       </RadixDropdownMenu.Content>
     </Portal.Root>
