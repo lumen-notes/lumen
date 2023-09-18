@@ -4,20 +4,34 @@ import { z } from "zod"
 import { templateSchema } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
-import { parseQuery, useSearchNotes, useSearchTasks } from "../utils/use-search"
+import {
+  parseQuery,
+  useSearchNotes,
+  // useSearchTasks
+} from "../utils/use-search"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16, TaskListIcon16 } from "./icons"
+import {
+  CardsIcon16,
+  CloseIcon12,
+  ListIcon16,
+  TagIcon16,
+  // TaskListIcon16
+} from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { TaskItem } from "./task-item"
+// import { TaskItem } from "./task-item"
 
-const viewTypeSchema = z.enum(["list", "cards", "tasks"])
+const viewTypeSchema = z.enum([
+  "list",
+  "cards",
+  // "tasks"
+])
 
 type ViewType = z.infer<typeof viewTypeSchema>
 
@@ -27,7 +41,7 @@ type NoteListProps = {
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const searchTasks = useSearchTasks()
+  // const searchTasks = useSearchTasks()
   const Link = useLink()
 
   const parseQueryParam = React.useCallback((value: unknown): string => {
@@ -47,20 +61,20 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
-  const taskResults = React.useMemo(() => {
-    return (
-      searchTasks(`${baseQuery} ${deferredQuery}`)
-        // Sort by priority
-        .sort((a, b) => a.priority - b.priority)
-    )
-  }, [searchTasks, baseQuery, deferredQuery])
+  // const taskResults = React.useMemo(() => {
+  //   return (
+  //     searchTasks(`${baseQuery} ${deferredQuery}`)
+  //       // Sort by priority
+  //       .sort((a, b) => a.priority - b.priority)
+  //   )
+  // }, [searchTasks, baseQuery, deferredQuery])
 
   const parseViewType = React.useCallback((value: unknown): ViewType => {
     switch (value) {
       case "list":
         return "list"
-      case "tasks":
-        return "tasks"
+      // case "tasks":
+      //   return "tasks"
       default:
         return "cards"
     }
@@ -94,10 +108,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    const tags =
-      viewType === "tasks"
-        ? taskResults.flatMap((task) => task.tags)
-        : noteResults.flatMap((note) => note.tags)
+    // const tags =
+    //   viewType === "tasks"
+    //     ? taskResults.flatMap((task) => task.tags)
+    //     : noteResults.flatMap((note) => note.tags)
+    const tags = noteResults.flatMap((note) => note.tags)
 
     for (const tag of tags) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
@@ -110,7 +125,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         // Filter out tags that every note has
         .filter(
           ([, frequency]) =>
-            frequency < (viewType === "tasks" ? taskResults.length : noteResults.length),
+            // frequency < (viewType === "tasks" ? taskResults.length : noteResults.length),
+            frequency < noteResults.length,
         )
         // Filter out parent tags if the all the childs tag has the same frequency
         .filter(([tag, frequency]) => {
@@ -123,17 +139,21 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           return !childTags.every(([, otherFrequency]) => otherFrequency === frequency)
         })
         .sort((a, b) => {
-          if (viewType === "tasks") {
-            // Put p1, p2, p3, etc. tags at the start
-            if (a[0].startsWith("p") && !b[0].startsWith("p")) return -1
-            if (!a[0].startsWith("p") && b[0].startsWith("p")) return 1
-            if (a[0].startsWith("p") && b[0].startsWith("p")) return a[0].localeCompare(b[0])
-          }
+          // if (viewType === "tasks") {
+          //   // Put p1, p2, p3, etc. tags at the start
+          //   if (a[0].startsWith("p") && !b[0].startsWith("p")) return -1
+          //   if (!a[0].startsWith("p") && b[0].startsWith("p")) return 1
+          //   if (a[0].startsWith("p") && b[0].startsWith("p")) return a[0].localeCompare(b[0])
+          // }
 
           return b[1] - a[1]
         })
     )
-  }, [viewType, taskResults, noteResults])
+  }, [
+    viewType,
+    // taskResults,
+    noteResults,
+  ])
 
   const tagQualifiers = React.useMemo(() => {
     return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
@@ -146,9 +166,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
               placeholder={
-                viewType === "tasks"
-                  ? `Search ${pluralize(taskResults.length, "task")}…`
-                  : `Search ${pluralize(noteResults.length, "note")}…`
+                // viewType === "tasks"
+                //   ? `Search ${pluralize(taskResults.length, "task")}…`
+                //   : `Search ${pluralize(noteResults.length, "note")}…`
+                `Search ${pluralize(noteResults.length, "note")}…`
               }
               value={query}
               onChange={(value) => {
@@ -183,25 +204,26 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 >
                   List
                 </DropdownMenu.Item>
-                <DropdownMenu.Item
+                {/* <DropdownMenu.Item
                   icon={<TaskListIcon16 />}
                   selected={viewType === "tasks"}
                   onClick={() => setViewType("tasks")}
                 >
                   Tasks
-                </DropdownMenu.Item>
+                </DropdownMenu.Item> */}
               </DropdownMenu.Content>
             </DropdownMenu>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
-              {pluralize(viewType === "tasks" ? taskResults.length : noteResults.length, "result")}
+              {/* {pluralize(viewType === "tasks" ? taskResults.length : noteResults.length, "result")} */}
+              {pluralize(noteResults.length, "result")}
             </span>
           ) : null}
         </div>
 
         <div className="flex flex-wrap gap-2 empty:hidden">
-          {viewType === "tasks" ? (
+          {/* {viewType === "tasks" ? (
             // Quickly see tasks that are not completed
             <PillButton
               variant={deferredQuery.includes("-completed:true") ? "primary" : "secondary"}
@@ -230,7 +252,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 </span>
               )}
             </PillButton>
-          ) : null}
+          ) : null} */}
           {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
             <>
               {tagQualifiers.map((qualifier) => (
@@ -339,20 +361,23 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           </ul>
         ) : null}
 
-        {viewType === "tasks" ? (
+        {/* {viewType === "tasks" ? (
           <ul className="flex flex-col">
             {taskResults.map((task) => (
               <TaskItem key={`${task.noteId}-${task.start.offset}`} task={task} />
             ))}
           </ul>
-        ) : null}
+        ) : null} */}
       </div>
 
-      {viewType !== "tasks" && noteResults.length > numVisibleNotes ? (
-        <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
-          Load more
-        </Button>
-      ) : null}
+      {
+        // viewType !== "tasks" &&
+        noteResults.length > numVisibleNotes ? (
+          <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
+            Load more
+          </Button>
+        ) : null
+      }
     </div>
   )
 }
@@ -363,7 +388,7 @@ function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
       return <CardsIcon16 />
     case "list":
       return <ListIcon16 />
-    case "tasks":
-      return <TaskListIcon16 />
+    // case "tasks":
+    //   return <TaskListIcon16 />
   }
 }
