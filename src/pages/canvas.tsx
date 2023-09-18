@@ -1,7 +1,7 @@
 import { useAtom, useSetAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import React from "react"
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
+import { ImperativePanelHandle, Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import ReactFlow, {
   Background,
   Node,
@@ -27,6 +27,7 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
+import { PanelCallbackRef } from "react-resizable-panels/dist/declarations/src/types"
 
 // TODO: Store in a file
 const nodesAtom = atomWithStorage<Node[]>("canvas_nodes", [])
@@ -118,6 +119,7 @@ export function CanvasPage() {
   const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance | null>(null)
   const [nodes, setNodes] = useAtom(nodesAtom)
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true)
+  const sidebarRef = React.useRef<ImperativePanelHandle>(null)
 
   const onNodesChange: OnNodesChange = React.useCallback(
     (changes) => setNodes((n) => applyNodeChanges(changes, n)),
@@ -166,8 +168,8 @@ export function CanvasPage() {
 
   return (
     <div className="grid h-full grid-cols-[1fr_auto]">
-      <PanelGroup direction="horizontal">
-        <Panel>
+      <PanelGroup direction="horizontal" units="pixels">
+        <Panel minSize={400}>
           <div className="h-full w-full" ref={reactFlowContainer}>
             <ReactFlow
               nodeTypes={nodeTypes}
@@ -192,7 +194,7 @@ export function CanvasPage() {
                     <IconButton
                       aria-label="Expand sidebar"
                       aria-expanded={false}
-                      onClick={() => setIsSidebarExpanded(true)}
+                      onClick={() => sidebarRef.current?.expand()}
                     >
                       <SidebarIcon16 />
                     </IconButton>
@@ -202,19 +204,30 @@ export function CanvasPage() {
             </ReactFlow>
           </div>
         </Panel>
-        {isSidebarExpanded ? (
-          <>
-            <PanelResizeHandle className="group relative z-20 -mx-0.5 px-0.5 hover:bg-border-secondary data-[resize-handle-active]:bg-border-focus">
-              <div className="h-full w-px bg-border-secondary group-hover:opacity-0 group-data-[resize-handle-active]:opacity-0" />
-            </PanelResizeHandle>
-            <Panel minSize={30} maxSize={50} defaultSize={40} style={{ overflow: "auto" }}>
-              <div
-                className={cx(
-                  "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 pl-4 backdrop-blur-md",
-                )}
-              >
-                <div className="flex flex-shrink items-center gap-4">
-                  {/* <div className="flex">
+        <PanelResizeHandle className="group relative z-20 -mx-0.5 px-0.5 hover:bg-border-secondary data-[resize-handle-active]:bg-border-focus">
+          <div
+            className={cx(
+              "h-full w-px group-hover:opacity-0 group-data-[resize-handle-active]:opacity-0",
+              isSidebarExpanded ? "bg-border-secondary" : "bg-transparent",
+            )}
+          />
+        </PanelResizeHandle>
+        <Panel
+          ref={sidebarRef}
+          minSize={400}
+          maxSize={800}
+          defaultSize={560}
+          style={{ overflow: "auto" }}
+          collapsible
+          onCollapse={(collapsed) => setIsSidebarExpanded(!collapsed)}
+        >
+          <div
+            className={cx(
+              "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b from-bg-inset to-bg-inset-backdrop p-2 pl-4 backdrop-blur-md",
+            )}
+          >
+            <div className="flex flex-shrink items-center gap-4">
+              {/* <div className="flex">
                     <IconButton
                       aria-label="Back"
                       disabled
@@ -234,29 +247,27 @@ export function CanvasPage() {
                       <ChevronRightIcon16 />
                     </IconButton>
                   </div> */}
-                  <div className="flex flex-shrink items-center gap-3">
-                    <div className="flex-shrink-0 text-text-secondary">
-                      <NoteIcon16 />
-                    </div>
-                    <div className="flex items-baseline gap-3 overflow-hidden">
-                      <h2 className="flex-shrink-0 text-lg font-semibold leading-4">Notes</h2>
-                    </div>
-                  </div>
+              <div className="flex flex-shrink items-center gap-3">
+                <div className="flex-shrink-0 text-text-secondary">
+                  <NoteIcon16 />
                 </div>
-                <IconButton
-                  aria-label="Collapse sidebar"
-                  aria-expanded={true}
-                  onClick={() => setIsSidebarExpanded(false)}
-                >
-                  <SidebarIcon16 />
-                </IconButton>
+                <div className="flex items-baseline gap-3 overflow-hidden">
+                  <h2 className="flex-shrink-0 text-lg font-semibold leading-4">Notes</h2>
+                </div>
               </div>
-              <div className="p-4">
-                <NoteList />
-              </div>
-            </Panel>
-          </>
-        ) : null}
+            </div>
+            <IconButton
+              aria-label="Collapse sidebar"
+              aria-expanded={true}
+              onClick={() => sidebarRef.current?.collapse()}
+            >
+              <SidebarIcon16 />
+            </IconButton>
+          </div>
+          <div className="p-4">
+            <NoteList />
+          </div>
+        </Panel>
       </PanelGroup>
     </div>
   )
