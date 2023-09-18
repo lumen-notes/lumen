@@ -27,7 +27,6 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
-import { PanelCallbackRef } from "react-resizable-panels/dist/declarations/src/types"
 
 // TODO: Store in a file
 const nodesAtom = atomWithStorage<Node[]>("canvas_nodes", [])
