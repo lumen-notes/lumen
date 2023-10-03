@@ -6,7 +6,7 @@ import {
   CompletionResult,
 } from "@codemirror/autocomplete"
 import { history } from "@codemirror/commands"
-import { EditorState } from "@codemirror/state"
+import { EditorSelection, EditorState } from "@codemirror/state"
 import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
 import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
@@ -20,34 +20,168 @@ import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
+import { createTheme } from "@uiw/codemirror-themes"
 
 type NoteEditorProps = {
   className?: string
   defaultValue?: string
   placeholder?: string
-  editorRef?: React.MutableRefObject<EditorView | undefined>
+  editorRef?: React.MutableRefObject<ReactCodeMirrorRef>
+  autoFocus?: boolean
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
 }
 
-export function NoteEditor({
-  className,
-  defaultValue = "",
-  placeholder = "Write a note…",
-  editorRef,
-  onStateChange,
-  onPaste,
-}: NoteEditorProps) {
-  const { containerRef } = useCodeMirror({
-    defaultValue,
-    placeholder,
-    editorRef,
-    onStateChange,
-    onPaste,
-  })
+const theme = createTheme({
+  theme: "light",
+  settings: {
+    background: "transparent",
+    lineHighlight: "transparent",
+    foreground: "var(--color-text)",
+    caret: "var(--color-border-focus)",
+    selection: "var(--color-bg-selection)",
+  },
+  styles: [],
+})
 
-  return <div ref={containerRef} className={className} />
-}
+// TODO: `command + enter` also adds a new line
+// TODO: Starts at zero height
+// TODO: Pressing escape with a tooltip open switches back to view mode
+
+export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
+  (
+    {
+      className,
+      defaultValue = "",
+      placeholder = "Write a note…",
+      autoFocus = false,
+      onStateChange,
+      onPaste,
+    },
+    ref,
+  ) => {
+    const attachFile = useAttachFile()
+
+    // Completions
+    const noteCompletion = useNoteCompletion()
+    const tagSyntaxCompletion = useTagSyntaxCompletion() // #tag
+    const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
+    const templateCompletion = useTemplateCompletion()
+
+    return (
+      <CodeMirror
+        ref={ref}
+        className={className}
+        placeholder={placeholder}
+        value={defaultValue}
+        theme={theme}
+        basicSetup={{
+          lineNumbers: false,
+          highlightActiveLine: false,
+          highlightSelectionMatches: false,
+          bracketMatching: false,
+        }}
+        onCreateEditor={(view) => {
+          if (autoFocus) {
+            // Focus the editor
+            view.focus()
+            // Move cursor to end of document
+            view.dispatch({
+              selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+            })
+          }
+        }}
+        extensions={[
+          EditorView.updateListener.of((event) => {
+            onStateChange?.(event)
+            console.log(event)
+          }),
+          EditorView.contentAttributes.of({ spellcheck: "true" }),
+          EditorView.domEventHandlers({
+            paste: (event, view) => {
+              const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
+              const isUrl = /^https?:\/\//.test(clipboardText)
+
+              // If the clipboard text is a URL, convert selected text into a markdown link
+              if (isUrl) {
+                const { selection } = view.state
+                const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
+                const selectedText = view?.state.doc.sliceString(from, to) ?? ""
+                const markdown = selectedText
+                  ? `[${selectedText}](${clipboardText})`
+                  : clipboardText
+
+                view.dispatch({
+                  changes: {
+                    from,
+                    to,
+                    insert: markdown,
+                  },
+                  selection: {
+                    anchor: from + markdown.length,
+                  },
+                })
+
+                event.preventDefault()
+              }
+
+              // If the clipboard contains a file, upload it
+              const [file] = Array.from(event.clipboardData?.files ?? [])
+
+              if (file) {
+                attachFile(file, view)
+                event.preventDefault()
+              }
+
+              onPaste?.(event, view)
+            },
+            keydown: (event) => {
+              // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
+              // if (
+              //   (event.key === "Escape" || event.key === "Enter") &&
+              //   !event.metaKey &&
+              //   document.querySelector(".cm-tooltip-autocomplete")
+              // ) {
+              //   event.stopImmediatePropagation()
+              // }
+            },
+          }),
+          autocompletion({
+            override: [
+              emojiCompletion,
+              dateCompletion,
+              noteCompletion,
+              tagSyntaxCompletion,
+              tagPropertyCompletion,
+              templateCompletion,
+            ],
+            icons: false,
+          }),
+        ]}
+      />
+    )
+  },
+)
+
+// export function NoteEditor({
+//   className,
+//   defaultValue = "",
+//   placeholder = "Write a note…",
+//   editorRef,
+//   onStateChange,
+//   onPaste,
+// }: NoteEditorProps) {
+//   const { containerRef } = useCodeMirror({
+//     defaultValue,
+//     placeholder,
+//     editorRef,
+//     onStateChange,
+//     onPaste,
+//   })
+
+//   return <div ref={containerRef} className={className} />
+// }
 
 // TODO: Use @uiw/react-codemirror
 // Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/

@@ -1,5 +1,5 @@
 import { EditorSelection } from "@codemirror/state"
-import { EditorView } from "@codemirror/view"
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
@@ -41,7 +41,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
-  const editorRef = React.useRef<EditorView>()
+  const editorRef = React.useRef<ReactCodeMirrorRef>(null)
 
   // Panel context
   const { closePanel } = React.useContext(PanelsContext)
@@ -55,13 +55,14 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     setIsEditing(true)
     // Wait for the editor to mount
     setTimeout(() => {
-      const view = editorRef.current
-      if (view) {
+      const editor = editorRef.current
+
+      if (editor) {
         // Focus the editor
-        view.focus()
+        editor.view?.focus()
         // Move cursor to end of document
-        view.dispatch({
-          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+        editor.view?.dispatch({
+          selection: EditorSelection.cursor(editor.view.state.doc.sliceString(0).length),
         })
       }
     })
@@ -131,13 +132,15 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   if (isEditing) {
     return (
       <NoteCardForm
+        editorRef={editorRef}
         key={note.rawBody}
         id={id}
         defaultValue={note.rawBody}
         elevation={elevation}
         selected={selected}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
+        autoFocus
         // minHeight="12rem"
-        editorRef={editorRef}
         onSubmit={switchToViewing}
         onCancel={switchToViewing}
       />
