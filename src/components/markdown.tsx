@@ -650,7 +650,11 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Trigger asChild>
         <Link ref={ref} target="_blank" to={`/${id}`}>
           {isFirst && note ? (
-            <NoteFavicon note={note} className="mr-2 align-sub [h1>a>&]:align-baseline" />
+            <NoteFavicon
+              note={note}
+              className="mr-2 align-sub [h1>a>&]:align-baseline"
+              fallback={null}
+            />
           ) : null}
           {text}
         </Link>

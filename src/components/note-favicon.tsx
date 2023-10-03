@@ -6,10 +6,16 @@ import { WebsiteFavicon } from "./website-favicon"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
   note: Note
+  fallback?: React.ReactNode
 }
 
-export function NoteFavicon({ note, className, ...props }: NoteFaviconProps) {
-  let icon = <NoteIcon16 data-testid="favicon-default" />
+export function NoteFavicon({
+  note,
+  className,
+  fallback = <NoteIcon16 data-testid="favicon-default" />,
+  ...props
+}: NoteFaviconProps) {
+  let icon = fallback
 
   // GitHub
   if (typeof note.frontmatter.github === "string") {
@@ -44,6 +50,10 @@ export function NoteFavicon({ note, className, ...props }: NoteFaviconProps) {
 
   if (isTemplate) {
     icon = <NoteTemplateIcon16 data-testid="favicon-template" />
+  }
+
+  if (!icon) {
+    return null
   }
 
   return (
