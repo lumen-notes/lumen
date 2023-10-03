@@ -3,9 +3,7 @@ import { EditorView } from "@codemirror/view"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
-import { v4 as uuid } from "uuid"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
-import { attachNodeData } from "../pages/canvas"
 import { NoteId } from "../types"
 import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
@@ -191,25 +189,6 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           openNoteWindow(id)
           event.preventDefault()
         }
-      }}
-      draggable
-      onDragStart={(event) => {
-        const rect = cardRef.current?.getBoundingClientRect()
-
-        if (!rect) return
-
-        // Perserve the position of the note card relative to the cursor
-        const position = { x: rect.left - event.clientX, y: rect.top - event.clientY }
-
-        const node = {
-          id: uuid(),
-          type: "note",
-          position,
-          style: { width: rect.width },
-          data: { noteId: id },
-        } as const
-
-        attachNodeData(event, node)
       }}
     >
       <div className="p-4 pb-1">
