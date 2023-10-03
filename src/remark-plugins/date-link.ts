@@ -216,6 +216,7 @@ export function dateLinkHtml(): HtmlExtension {
 // Register dateLink as an mdast node type
 interface DateLink extends Node {
   type: "dateLink"
+  value: string
   data: { date: string }
 }
 
@@ -233,7 +234,7 @@ export function dateLinkFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
       [types.dateLink](token) {
-        this.enter({ type: "dateLink", data: { date: "" } }, token)
+        this.enter({ type: "dateLink", value: "", data: { date: "" } }, token)
       },
       [types.dateLinkFull](token) {
         date = this.sliceSerialize(token)
@@ -245,6 +246,7 @@ export function dateLinkFromMarkdown(): FromMarkdownExtension {
 
         if (node.type === "dateLink" && date) {
           node.data.date = date
+          node.value = date
         }
 
         this.exit(token)

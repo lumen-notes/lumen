@@ -104,7 +104,13 @@ function isNumberChar(code: Code): boolean {
 /** Returns true if character is valid in tag names */
 function isNameChar(code: Code): boolean {
   if (code === null) return false
-  return isAlphaChar(code) || isNumberChar(code) || code === codes.underscore || code === codes.dash || code === codes.slash
+  return (
+    isAlphaChar(code) ||
+    isNumberChar(code) ||
+    code === codes.underscore ||
+    code === codes.dash ||
+    code === codes.slash
+  )
 }
 
 /**
@@ -125,6 +131,7 @@ export function tagLinkHtml(): HtmlExtension {
 // Register tagLink as an mdast node type
 interface TagLink extends Node {
   type: "tagLink"
+  value: string
   data: { name: string }
 }
 
@@ -142,7 +149,7 @@ export function tagLinkFromMarkdown(): FromMarkdownExtension {
   return {
     enter: {
       [types.tagLink](token) {
-        this.enter({ type: "tagLink", data: { name: "" } }, token)
+        this.enter({ type: "tagLink", value: "", data: { name: "" } }, token)
       },
       [types.tagLinkName](token) {
         name = this.sliceSerialize(token)
@@ -154,6 +161,7 @@ export function tagLinkFromMarkdown(): FromMarkdownExtension {
 
         if (node.type === "tagLink") {
           node.data.name = name || ""
+          node.value = `#${name}`
         }
 
         this.exit(token)
