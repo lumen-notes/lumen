@@ -47,7 +47,7 @@ export function FullscreenContainer({
       {/* Header */}
       <div
         className={cx(
-          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b p-2 backdrop-blur-md",
+          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b p-1 backdrop-blur-md",
           elevation === 0 ? "from-bg-inset to-bg-inset-backdrop" : "from-bg to-bg-backdrop",
         )}
       >
@@ -73,7 +73,7 @@ export function FullscreenContainer({
           <div className="flex flex-shrink items-center gap-3">
             <div className="flex-shrink-0 text-text-secondary">{icon}</div>
             <div className="flex items-baseline gap-3 overflow-hidden">
-              <h2 className="flex-shrink-0 text-lg font-semibold leading-6">{title}</h2>
+              <h2 className="flex-shrink-0 leading-4">{title}</h2>
               {description ? (
                 <span className="truncate text-text-secondary">{description}</span>
               ) : null}
