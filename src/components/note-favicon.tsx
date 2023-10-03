@@ -6,16 +6,16 @@ import { WebsiteFavicon } from "./website-favicon"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
   note: Note
-  fallback?: React.ReactNode
+  defaultFavicon?: React.ReactNode
 }
 
 export function NoteFavicon({
   note,
   className,
-  fallback = <NoteIcon16 data-testid="favicon-default" />,
+  defaultFavicon = <NoteIcon16 data-testid="favicon-default" />,
   ...props
 }: NoteFaviconProps) {
-  let icon = fallback
+  let icon = defaultFavicon
 
   // GitHub
   if (typeof note.frontmatter.github === "string") {

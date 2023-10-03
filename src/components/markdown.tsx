@@ -653,7 +653,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
             <NoteFavicon
               note={note}
               className="mr-2 align-sub [h1>a>&]:align-baseline"
-              fallback={null}
+              defaultFavicon={null}
             />
           ) : null}
           {text}
