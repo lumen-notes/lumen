@@ -320,7 +320,7 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            rawBody: `# ${query}\n\n#inbox`,
+            rawBody: `# ${query}`,
           }
 
           upsertNote(note)
