@@ -1,13 +1,13 @@
 import {
   autocompletion,
-  closeBrackets,
   Completion,
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete"
-import { history } from "@codemirror/commands"
-import { EditorSelection, EditorState } from "@codemirror/state"
-import { EditorView, placeholder, ViewUpdate } from "@codemirror/view"
+import { EditorSelection } from "@codemirror/state"
+import { EditorView, ViewUpdate } from "@codemirror/view"
+import { createTheme } from "@uiw/codemirror-themes"
+import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
 import * as emoji from "node-emoji"
@@ -20,8 +20,6 @@ import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
 import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
-import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
-import { createTheme } from "@uiw/codemirror-themes"
 
 type NoteEditorProps = {
   className?: string
@@ -45,10 +43,6 @@ const theme = createTheme({
   styles: [],
 })
 
-// TODO: `command + enter` also adds a new line
-// TODO: Starts at zero height
-// TODO: Pressing escape with a tooltip open switches back to view mode
-
 export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   (
     {
@@ -68,6 +62,8 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const tagSyntaxCompletion = useTagSyntaxCompletion() // #tag
     const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
     const templateCompletion = useTemplateCompletion()
+
+    const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
 
     return (
       <CodeMirror
@@ -92,11 +88,26 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
             })
           }
         }}
+        onUpdate={onStateChange}
+        onKeyDownCapture={(event) => {
+          // Command + Enter is reserved for submitting the form so we need to prevent the default behavior
+          if (event.key === "Enter" && event.metaKey) {
+            event.preventDefault()
+          }
+
+          setIsTooltipOpen(Boolean(document.querySelector(".cm-tooltip-autocomplete")))
+        }}
+        onKeyDown={(event) => {
+          // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
+          if (
+            (event.key === "Escape" || event.key === "Enter") &&
+            !event.metaKey &&
+            isTooltipOpen
+          ) {
+            event.stopPropagation()
+          }
+        }}
         extensions={[
-          EditorView.updateListener.of((event) => {
-            onStateChange?.(event)
-            console.log(event)
-          }),
           EditorView.contentAttributes.of({ spellcheck: "true" }),
           EditorView.domEventHandlers({
             paste: (event, view) => {
@@ -136,16 +147,6 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
 
               onPaste?.(event, view)
             },
-            keydown: (event) => {
-              // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
-              // if (
-              //   (event.key === "Escape" || event.key === "Enter") &&
-              //   !event.metaKey &&
-              //   document.querySelector(".cm-tooltip-autocomplete")
-              // ) {
-              //   event.stopImmediatePropagation()
-              // }
-            },
           }),
           autocompletion({
             override: [
@@ -163,157 +164,6 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     )
   },
 )
-
-// export function NoteEditor({
-//   className,
-//   defaultValue = "",
-//   placeholder = "Write a note…",
-//   editorRef,
-//   onStateChange,
-//   onPaste,
-// }: NoteEditorProps) {
-//   const { containerRef } = useCodeMirror({
-//     defaultValue,
-//     placeholder,
-//     editorRef,
-//     onStateChange,
-//     onPaste,
-//   })
-
-//   return <div ref={containerRef} className={className} />
-// }
-
-// TODO: Use @uiw/react-codemirror
-// Reference: https://www.codiga.io/blog/implement-codemirror-6-in-react/
-function useCodeMirror({
-  defaultValue,
-  placeholder: placeholderValue = "",
-  editorRef: providedEditorRef,
-  onStateChange,
-  onPaste,
-}: {
-  defaultValue?: string
-  placeholder?: string
-  editorRef?: React.MutableRefObject<EditorView | undefined>
-  onStateChange?: (event: ViewUpdate) => void
-  onPaste?: (event: ClipboardEvent, view: EditorView) => void
-}) {
-  const [editorElement, setEditorElement] = React.useState<HTMLElement>()
-  const containerRef = React.useCallback((node: HTMLElement | null) => {
-    if (!node) return
-    setEditorElement(node)
-  }, [])
-  const newEditorRef = React.useRef<EditorView>()
-  const editorRef = providedEditorRef ?? newEditorRef
-  const attachFile = useAttachFile()
-
-  // Completions
-  const noteCompletion = useNoteCompletion()
-  const tagSyntaxCompletion = useTagSyntaxCompletion() // #tag
-  const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
-  const templateCompletion = useTemplateCompletion()
-
-  React.useEffect(() => {
-    if (!editorElement) return
-
-    const state = EditorState.create({
-      doc: defaultValue,
-      extensions: [
-        placeholder(placeholderValue),
-        history(),
-        EditorView.updateListener.of((event) => {
-          // const value = event.view.state.doc.sliceString(0)
-          // setValue(value)
-          onStateChange?.(event)
-        }),
-        EditorView.contentAttributes.of({ spellcheck: "true", autocorrect: "on" }),
-        EditorView.domEventHandlers({
-          paste: (event, view) => {
-            const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-            const isUrl = /^https?:\/\//.test(clipboardText)
-
-            // If the clipboard text is a URL, convert selected text into a markdown link
-            if (isUrl) {
-              const { selection } = view.state
-              const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
-              const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-              const markdown = selectedText ? `[${selectedText}](${clipboardText})` : clipboardText
-
-              view.dispatch({
-                changes: {
-                  from,
-                  to,
-                  insert: markdown,
-                },
-                selection: {
-                  anchor: from + markdown.length,
-                },
-              })
-
-              event.preventDefault()
-            }
-
-            // If the clipboard contains a file, upload it
-            const [file] = Array.from(event.clipboardData?.files ?? [])
-
-            if (file) {
-              attachFile(file, view)
-              event.preventDefault()
-            }
-
-            onPaste?.(event, view)
-          },
-          keydown: (event) => {
-            // Don't propagate Escape and Enter keydown events to the parent element if autocomplete is open
-            if (
-              (event.key === "Escape" || event.key === "Enter") &&
-              !event.metaKey &&
-              document.querySelector(".cm-tooltip-autocomplete")
-            ) {
-              event.stopImmediatePropagation()
-            }
-          },
-        }),
-        closeBrackets(),
-        autocompletion({
-          override: [
-            emojiCompletion,
-            dateCompletion,
-            noteCompletion,
-            tagSyntaxCompletion,
-            tagPropertyCompletion,
-            templateCompletion,
-          ],
-          icons: false,
-        }),
-      ],
-    })
-
-    const view = new EditorView({
-      state,
-      parent: editorElement,
-    })
-
-    editorRef.current = view
-
-    return () => {
-      view.destroy()
-    }
-  }, [
-    editorElement,
-    // defaultValue,
-    placeholderValue,
-    onStateChange,
-    onPaste,
-    editorRef,
-    // TODO: Prevent noteCompletion and tagCompletion from being recreated when state changes
-    // noteCompletion,
-    // tagCompletion,
-    // templateCompletion,
-  ])
-
-  return { containerRef }
-}
 
 function dateCompletion(context: CompletionContext): CompletionResult | null {
   const word = context.matchBefore(/(\[\[[^\]|^|]*|\w*)/)

@@ -54,7 +54,8 @@ export function NoteCardForm({
   }, [])
 
   function setValue(newValue: string) {
-    const value = editorRef.current?.state?.doc.toString() ?? ""
+    console.log(editorRef.current?.view)
+    const value = editorRef.current?.view?.state.doc.toString() ?? ""
     editorRef.current?.view?.dispatch({
       changes: [{ from: 0, to: value.length, insert: newValue }],
     })
@@ -79,6 +80,11 @@ export function NoteCardForm({
     if (!id) {
       setValue(defaultValue)
     }
+  }
+
+  function handleCancel() {
+    setValue(defaultValue)
+    onCancel?.()
   }
 
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
@@ -144,8 +150,8 @@ export function NoteCardForm({
 
               // Clear and cancel on `escape`
               if (event.key === "Escape") {
-                setValue("")
-                onCancel?.()
+                handleCancel()
+                event.stopPropagation()
               }
             }}
           >
@@ -183,7 +189,7 @@ export function NoteCardForm({
               </FileInputButton>
               <div className="flex gap-2">
                 {onCancel ? (
-                  <Button shortcut={["esc"]} onClick={onCancel}>
+                  <Button shortcut={["esc"]} onClick={handleCancel}>
                     Cancel
                   </Button>
                 ) : null}

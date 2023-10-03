@@ -24,6 +24,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
+import { cx } from "../utils/cx"
 
 type NoteCardProps = {
   id: NoteId
@@ -129,163 +130,161 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     return <Card className="p-4">Not found</Card>
   }
 
-  if (isEditing) {
-    return (
-      <NoteCardForm
-        editorRef={editorRef}
-        key={note.rawBody}
-        id={id}
-        defaultValue={note.rawBody}
-        elevation={elevation}
-        selected={selected}
-        // eslint-disable-next-line jsx-a11y/no-autofocus
-        autoFocus
-        // minHeight="12rem"
-        onSubmit={switchToViewing}
-        onCancel={switchToViewing}
-      />
-    )
-  }
-
   return (
-    <Card
-      // Used for focus management
-      data-note-id={id}
-      ref={cardRef}
-      tabIndex={0}
-      focusVisible={selected}
-      className="flex flex-col"
-      elevation={elevation}
-      onKeyDown={(event) => {
-        // Switch to editing with `e`
-        if (event.key === "e") {
-          switchToEditing()
-          event.preventDefault()
-        }
+    <>
+      <Card
+        // Used for focus management
+        data-note-id={id}
+        ref={cardRef}
+        tabIndex={0}
+        focusVisible={selected}
+        className={cx("flex flex-col", isEditing && "hidden")}
+        elevation={elevation}
+        onKeyDown={(event) => {
+          // Switch to editing with `e`
+          if (event.key === "e") {
+            switchToEditing()
+            event.preventDefault()
+          }
 
-        // Copy markdown with `command + c` if no text is selected
-        if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-          copy(note.rawBody)
-          event.preventDefault()
-        }
+          // Copy markdown with `command + c` if no text is selected
+          if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
+            copy(note.rawBody)
+            event.preventDefault()
+          }
 
-        // Copy id with `command + shift + c`
-        if (event.metaKey && event.shiftKey && event.key == "c") {
-          copy(id)
-          event.preventDefault()
-        }
+          // Copy id with `command + shift + c`
+          if (event.metaKey && event.shiftKey && event.key == "c") {
+            copy(id)
+            event.preventDefault()
+          }
 
-        // Open dropdown with `command + .`
-        if (event.key === "." && event.metaKey) {
-          setIsDropdownOpen(true)
-          event.preventDefault()
-        }
+          // Open dropdown with `command + .`
+          if (event.key === "." && event.metaKey) {
+            setIsDropdownOpen(true)
+            event.preventDefault()
+          }
 
-        // Delete note with `command + backspace`
-        if (event.metaKey && event.key === "Backspace") {
-          handleDeleteNote(id)
-          event.preventDefault()
-        }
+          // Delete note with `command + backspace`
+          if (event.metaKey && event.key === "Backspace") {
+            handleDeleteNote(id)
+            event.preventDefault()
+          }
 
-        // Open note in new window with `command + o`
-        if (event.metaKey && event.key === "o") {
-          openNoteWindow(id)
-          event.preventDefault()
-        }
-      }}
-    >
-      <div className="p-4 pb-1">
-        <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
-          {note.rawBody}
-        </Markdown>
+          // Open note in new window with `command + o`
+          if (event.metaKey && event.key === "o") {
+            openNoteWindow(id)
+            event.preventDefault()
+          }
+        }}
+      >
+        <div className="p-4 pb-1">
+          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+            {note.rawBody}
+          </Markdown>
+        </div>
+        <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
+          <span className="px-2 text-text-secondary">
+            <Link target="_blank" to={`/${id}`} className="link tracking-wide">
+              {id}
+            </Link>
+            {note.backlinks.length ? (
+              <span>
+                {" · "}
+                {pluralize(note.backlinks.length, "backlink")}
+              </span>
+            ) : null}
+          </span>
+
+          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+            <DropdownMenu.Trigger asChild>
+              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+                <MoreIcon16 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
+                Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(note.rawBody)}
+                shortcut={["⌘", "C"]}
+              >
+                Copy markdown
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<CopyIcon16 />}
+                onSelect={() => copy(id)}
+                shortcut={["⌘", "⇧", "C"]}
+              >
+                Copy ID
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item
+                icon={<ExternalLinkIcon16 />}
+                onSelect={() => openNoteWindow(id)}
+                shortcut={["⌘", "O"]}
+              >
+                Open in new window
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<ExternalLinkIcon16 />}
+                href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in GitHub
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<ShareIcon16 />}
+                onSelect={async () => {
+                  const url = await exportAsGist({
+                    githubToken: githubUser?.token ?? "",
+                    noteId: id,
+                    note,
+                  })
+
+                  // TODO: Show a toast
+
+                  // Copy Gist URL to clipboard
+                  copy(url)
+
+                  // Open Gist in new tab
+                  window.open(url, "_blank")
+                }}
+              >
+                Export as Gist
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item
+                variant="danger"
+                icon={<TrashIcon16 />}
+                onSelect={() => handleDeleteNote(id)}
+                shortcut={["⌘", "⌫"]}
+                disabled={note.backlinks.length > 0}
+              >
+                Delete
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
+        </div>
+      </Card>
+      <div hidden={!isEditing}>
+        <NoteCardForm
+          editorRef={editorRef}
+          key={note.rawBody}
+          id={id}
+          defaultValue={note.rawBody}
+          elevation={elevation}
+          selected={selected}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
+          onSubmit={switchToViewing}
+          onCancel={switchToViewing}
+        />
       </div>
-      <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
-        <span className="px-2 text-text-secondary">
-          <Link target="_blank" to={`/${id}`} className="link tracking-wide">
-            {id}
-          </Link>
-          {note.backlinks.length ? (
-            <span>
-              {" · "}
-              {pluralize(note.backlinks.length, "backlink")}
-            </span>
-          ) : null}
-        </span>
-
-        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-          <DropdownMenu.Trigger asChild>
-            <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
-              <MoreIcon16 />
-            </IconButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
-              Edit
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item
-              icon={<CopyIcon16 />}
-              onSelect={() => copy(note.rawBody)}
-              shortcut={["⌘", "C"]}
-            >
-              Copy markdown
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<CopyIcon16 />}
-              onSelect={() => copy(id)}
-              shortcut={["⌘", "⇧", "C"]}
-            >
-              Copy ID
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item
-              icon={<ExternalLinkIcon16 />}
-              onSelect={() => openNoteWindow(id)}
-              shortcut={["⌘", "O"]}
-            >
-              Open in new window
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<ExternalLinkIcon16 />}
-              href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open in GitHub
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<ShareIcon16 />}
-              onSelect={async () => {
-                const url = await exportAsGist({
-                  githubToken: githubUser?.token ?? "",
-                  noteId: id,
-                  note,
-                })
-
-                // TODO: Show a toast
-
-                // Copy Gist URL to clipboard
-                copy(url)
-
-                // Open Gist in new tab
-                window.open(url, "_blank")
-              }}
-            >
-              Export as Gist
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item
-              variant="danger"
-              icon={<TrashIcon16 />}
-              onSelect={() => handleDeleteNote(id)}
-              shortcut={["⌘", "⌫"]}
-              disabled={note.backlinks.length > 0}
-            >
-              Delete
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
-      </div>
-    </Card>
+    </>
   )
 }
