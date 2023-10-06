@@ -54,7 +54,6 @@ export function NoteCardForm({
   }, [])
 
   function setValue(newValue: string) {
-    console.log(editorRef.current?.view)
     const value = editorRef.current?.view?.state.doc.toString() ?? ""
     editorRef.current?.view?.dispatch({
       changes: [{ from: 0, to: value.length, insert: newValue }],

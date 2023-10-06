@@ -1,5 +1,5 @@
 import { EditorSelection } from "@codemirror/state"
-import { EditorView } from "@codemirror/view"
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
@@ -51,7 +51,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
-  const editorRef = React.useRef<EditorView>()
+  const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   // TODO: Save draft in local storage
 
   const parseIsEditing = React.useCallback((value: unknown) => {
@@ -69,7 +69,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     setIsEditing(true)
     // Wait for the editor to mount
     setTimeout(() => {
-      const view = editorRef.current
+      const view = editorRef.current?.view
       if (view) {
         // Focus the editor
         view.focus()
