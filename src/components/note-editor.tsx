@@ -108,7 +108,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           }
         }}
         extensions={[
-          EditorView.contentAttributes.of({ spellcheck: "true" }),
+          // EditorView.contentAttributes.of({ spellcheck: "true", autocorrect: "on" }),
           EditorView.domEventHandlers({
             paste: (event, view) => {
               const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
