@@ -1,4 +1,4 @@
-import { EditorView } from "@codemirror/view"
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { githubRepoAtom } from "../global-atoms"
@@ -16,7 +16,7 @@ type FullscreenNoteFormProps = {
   id?: NoteId
   defaultValue?: string
   placeholder?: string
-  editorRef?: React.MutableRefObject<EditorView | undefined>
+  editorRef?: React.MutableRefObject<ReactCodeMirrorRef | null>
   onSubmit?: (note: { id: NoteId; rawBody: string }) => void
   onCancel?: () => void
 }
@@ -33,11 +33,11 @@ export function FullscreenNoteForm({
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
-  const newEditorRef = React.useRef<EditorView>()
+  const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
   const editorRef = providedEditorRef ?? newEditorRef
 
   function handleSubmit() {
-    const value = editorRef.current?.state.doc.toString() ?? ""
+    const value = editorRef.current?.view?.state.doc.toString() ?? ""
 
     // Don't create empty notes
     if (!id && !value) return
@@ -62,7 +62,7 @@ export function FullscreenNoteForm({
         const file = item.getAsFile()
 
         if (file) {
-          attachFile(file, editorRef.current)
+          attachFile(file, editorRef.current?.view)
           event.preventDefault()
         }
 
@@ -105,9 +105,9 @@ export function FullscreenNoteForm({
       ) : null}
       <div className="grid w-full flex-grow p-4">
         <NoteEditor
+          ref={editorRef}
           className="flex h-full"
           placeholder={placeholder}
-          editorRef={editorRef}
           defaultValue={defaultValue}
         />
       </div>
@@ -124,7 +124,7 @@ export function FullscreenNoteForm({
               const [file] = Array.from(files)
 
               if (file) {
-                attachFile(file, editorRef.current)
+                attachFile(file, editorRef.current?.view)
               }
             }}
           >

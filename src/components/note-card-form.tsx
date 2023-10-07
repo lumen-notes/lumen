@@ -1,4 +1,5 @@
-import { EditorView, ViewUpdate } from "@codemirror/view"
+import { ViewUpdate } from "@codemirror/view"
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
@@ -21,7 +22,8 @@ type NoteCardFormProps = {
   minHeight?: string | number
   maxHeight?: string | number
   selected?: boolean
-  editorRef?: React.MutableRefObject<EditorView | undefined>
+  autoFocus?: boolean
+  editorRef?: React.MutableRefObject<ReactCodeMirrorRef | null>
   onSubmit?: (note: { id: NoteId; rawBody: string }) => void
   onCancel?: () => void
 }
@@ -34,6 +36,7 @@ export function NoteCardForm({
   minHeight,
   maxHeight,
   selected = false,
+  autoFocus = false,
   editorRef: providedEditorRef,
   onSubmit,
   onCancel,
@@ -42,7 +45,7 @@ export function NoteCardForm({
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
 
-  const newEditorRef = React.useRef<EditorView>()
+  const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
   const editorRef = providedEditorRef ?? newEditorRef
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
 
@@ -51,14 +54,14 @@ export function NoteCardForm({
   }, [])
 
   function setValue(newValue: string) {
-    const value = editorRef.current?.state.doc.toString() ?? ""
-    editorRef.current?.dispatch({
+    const value = editorRef.current?.view?.state.doc.toString() ?? ""
+    editorRef.current?.view?.dispatch({
       changes: [{ from: 0, to: value.length, insert: newValue }],
     })
   }
 
   function handleSubmit() {
-    const value = editorRef.current?.state.doc.toString() ?? ""
+    const value = editorRef.current?.view?.state.doc.toString() ?? ""
 
     // Don't create empty notes
     if (!value) return
@@ -78,6 +81,11 @@ export function NoteCardForm({
     }
   }
 
+  function handleCancel() {
+    setValue(defaultValue)
+    onCancel?.()
+  }
+
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
 
   return (
@@ -91,7 +99,7 @@ export function NoteCardForm({
         const file = item.getAsFile()
 
         if (file) {
-          attachFile(file, editorRef.current)
+          attachFile(file, editorRef.current?.view)
           event.preventDefault()
         }
 
@@ -141,16 +149,18 @@ export function NoteCardForm({
 
               // Clear and cancel on `escape`
               if (event.key === "Escape") {
-                setValue("")
-                onCancel?.()
+                handleCancel()
+                event.stopPropagation()
               }
             }}
           >
             <NoteEditor
-              editorRef={editorRef}
+              ref={editorRef}
+              className="flex flex-shrink-0 flex-grow p-4 pb-1"
               defaultValue={defaultValue}
               placeholder={placeholder}
-              className="flex flex-shrink-0 flex-grow p-4 pb-1"
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus={autoFocus}
               onStateChange={handleStateChange}
             />
             <div
@@ -168,7 +178,7 @@ export function NoteCardForm({
                   const [file] = Array.from(files)
 
                   if (file) {
-                    attachFile(file, editorRef.current)
+                    attachFile(file, editorRef.current?.view)
                   }
                 }}
               >
@@ -178,7 +188,7 @@ export function NoteCardForm({
               </FileInputButton>
               <div className="flex gap-2">
                 {onCancel ? (
-                  <Button shortcut={["esc"]} onClick={onCancel}>
+                  <Button shortcut={["esc"]} onClick={handleCancel}>
                     Cancel
                   </Button>
                 ) : null}

@@ -43,6 +43,7 @@ module.exports = {
       "bg-secondary": "var(--color-bg-secondary)",
       "bg-tertiary": "var(--color-bg-tertiary)",
       "bg-highlight": "var(--color-bg-highlight)",
+      "bg-selection": "var(--color-bg-selection)",
       "bg-pending": "var(--color-bg-pending)",
       border: "var(--color-border)",
       "border-secondary": "var(--color-border-secondary)",

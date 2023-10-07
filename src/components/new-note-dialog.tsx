@@ -1,6 +1,6 @@
-import { EditorView } from "@codemirror/view"
 import * as Portal from "@radix-ui/react-portal"
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
+import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
@@ -21,7 +21,7 @@ const NewNoteDialogContext = React.createContext<{
   toggle: () => void
   position: { x: number; y: number }
   setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>
-  editorRef: React.MutableRefObject<EditorView | undefined>
+  editorRef: React.MutableRefObject<ReactCodeMirrorRef | null>
   triggerRef: React.RefObject<HTMLButtonElement>
   focusNoteCard: (id: string) => void
   focusNoteEditor: () => void
@@ -33,7 +33,7 @@ const NewNoteDialogContext = React.createContext<{
   toggle: () => {},
   position: { x: 0, y: 0 },
   setPosition: () => {},
-  editorRef: { current: undefined },
+  editorRef: { current: null },
   triggerRef: React.createRef(),
   focusNoteCard: () => {},
   focusNoteEditor: () => {},
@@ -51,7 +51,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   const prevActiveElement = React.useRef<HTMLElement>()
   const [isOpen, setIsOpen] = React.useState(false)
   const [position, setPosition] = React.useState(() => initialPosition())
-  const editorRef = React.useRef<EditorView>()
+  const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const isFullscreen = useIsFullscreen()
   const location = useLocation()
   const navigate = useNavigate()
@@ -65,7 +65,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const focusNoteEditor = React.useCallback(() => {
-    editorRef.current?.focus()
+    setTimeout(() => editorRef.current?.view?.focus(), 1)
   }, [])
 
   const focusNoteCard = React.useCallback(
@@ -198,6 +198,8 @@ function Dialog() {
                 elevation={2}
                 minHeight={isDesktop ? "16rem" : "50vh"}
                 maxHeight="50vh"
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
                 editorRef={editorRef}
                 onSubmit={({ id }) => {
                   setIsOpen(false)
