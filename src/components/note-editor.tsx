@@ -4,7 +4,7 @@ import {
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete"
-import { EditorSelection, EditorState } from "@codemirror/state"
+import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import { createTheme } from "@uiw/codemirror-themes"
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
