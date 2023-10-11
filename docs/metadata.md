@@ -8,7 +8,7 @@ In the following note, we've included two pieces of metadata in the frontmatter:
 
 ```
 ---
-ibsn: 978-1542866507
+isbn: 978-1542866507
 read: true
 ---
 
