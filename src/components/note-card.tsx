@@ -3,16 +3,20 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { Drawer } from "vaul"
 import { githubRepoAtom, githubUserAtom } from "../global-atoms"
 import { NoteId } from "../types"
+import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
 import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { useNoteById } from "../utils/use-note-by-id"
+import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
+  CloseIcon16,
   CopyIcon16,
   EditIcon16,
   ExternalLinkIcon16,
@@ -22,9 +26,8 @@ import {
 } from "./icons"
 import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
-import { NoteCardForm } from "./note-card-form"
+import { NoteEditor } from "./note-editor"
 import { PanelContext, PanelsContext } from "./panels"
-import { cx } from "../utils/cx"
 
 type NoteCardProps = {
   id: NoteId
@@ -69,10 +72,10 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     })
   }, [])
 
-  const switchToViewing = React.useCallback(() => {
-    setIsEditing(false)
-    setTimeout(() => cardRef.current?.focus())
-  }, [])
+  // const switchToViewing = React.useCallback(() => {
+  //   setIsEditing(false)
+  //   setTimeout(() => cardRef.current?.focus())
+  // }, [])
 
   const focusNextCard = React.useCallback(() => {
     if (cardRef.current) {
@@ -138,7 +141,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
         ref={cardRef}
         tabIndex={0}
         focusVisible={selected}
-        className={cx("flex flex-col", isEditing && "hidden")}
+        className={cx("flex flex-col", false && isEditing && "hidden")}
         elevation={elevation}
         onKeyDown={(event) => {
           // Switch to editing with `e`
@@ -178,6 +181,33 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           }
         }}
       >
+        <Drawer.Root open={isEditing} onOpenChange={(open) => setIsEditing(open)}>
+          {/* <Drawer.Trigger asChild>
+            <button>Open Drawer</button>
+          </Drawer.Trigger> */}
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-bg-inset-backdrop" />
+            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[96vh] flex-col rounded-t-lg bg-bg-overlay outline-none ring-1 ring-border-secondary dark:ring-0">
+              <div className="flex items-center justify-between border-b border-border-secondary p-2">
+                <Drawer.Title className="sr-only">Edit note</Drawer.Title>
+                <Drawer.Close asChild>
+                  <IconButton aria-label="Close" shortcut={["esc"]} className="justify-self-start">
+                    <CloseIcon16 />
+                  </IconButton>
+                </Drawer.Close>
+                <Button variant="primary" className="justify-self-end">
+                  Save
+                </Button>
+              </div>
+              <NoteEditor
+                className="h-full overflow-auto p-4"
+                defaultValue={note.rawBody}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+              />
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
         <div className="p-4 pb-1">
           <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
             {note.rawBody}
@@ -271,7 +301,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </DropdownMenu>
         </div>
       </Card>
-      <div hidden={!isEditing}>
+      {/* <div hidden={!isEditing}>
         <NoteCardForm
           editorRef={editorRef}
           key={note.rawBody}
@@ -284,7 +314,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           onSubmit={switchToViewing}
           onCancel={switchToViewing}
         />
-      </div>
+      </div> */}
     </>
   )
 }
