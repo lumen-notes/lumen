@@ -187,7 +187,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </Drawer.Trigger> */}
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-bg-inset-backdrop" />
-            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[96vh] flex-col rounded-t-lg bg-bg-overlay outline-none ring-1 ring-border-secondary dark:ring-0">
+            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[96svh] flex-col rounded-t-lg bg-bg-overlay outline-none ring-1 ring-border-secondary dark:ring-0">
               <div className="flex items-center justify-between border-b border-border-secondary p-2">
                 <Drawer.Title className="sr-only">Edit note</Drawer.Title>
                 <Drawer.Close asChild>
