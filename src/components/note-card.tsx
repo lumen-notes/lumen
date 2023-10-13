@@ -207,7 +207,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
                 onPointerUp={(event) => event.stopPropagation()}
               >
                 <NoteEditor
-                  className="h-full overflow-auto p-4"
+                  className="h-full overflow-auto p-4 [&_.cm-editor]:h-full"
                   defaultValue={note.rawBody}
                   // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus
