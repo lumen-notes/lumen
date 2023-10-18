@@ -12,26 +12,42 @@ import {
   ChevronLeftIcon16,
   ChevronRightIcon16,
   ExternalLinkIcon16,
+  TriangleRightIcon8,
 } from "../components/icons"
 import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
+import { NoteCard } from "../components/note-card"
+import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps } from "../components/panels"
 import { datesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
-import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
+import {
+  DATE_REGEX,
+  DAY_NAMES,
+  MONTH_NAMES,
+  formatDate,
+  formatDateDistance,
+  toDateString,
+} from "../utils/date"
 import { openNewWindow } from "../utils/open-new-window"
+import { useNoteById } from "../utils/use-note-by-id"
+import { useSearchNotes } from "../utils/use-search"
 
-export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
-
-export function CalendarPanel({ id, onClose }: PanelProps) {
+export function DatePanel({ id, params = {}, onClose }: PanelProps) {
+  const { date = "" } = params
   const location = useLocation()
   const panel = React.useContext(PanelContext)
-  const date = new URLSearchParams(panel ? panel.search : location.search).get("date") || ""
+  const note = useNoteById(date)
+  const searchNotes = useSearchNotes()
+  const backlinks = React.useMemo(
+    () => searchNotes(`date:"${date}" -id:"${date}"`),
+    [date, searchNotes],
+  )
 
-  // Check if the date is valid
   const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
+  // Check if the date is valid
 
   if (!isValidDate) {
     return (
@@ -66,10 +82,19 @@ export function CalendarPanel({ id, onClose }: PanelProps) {
     >
       <div className="flex flex-col">
         <Calendar key={date} activeDate={date} />
-        <div className="p-4">
-          <LinkHighlightProvider href={`/calendar?date=${date}`}>
-            <NoteList key={date} baseQuery={`date:${date}`} />
-          </LinkHighlightProvider>
+        <div className="flex flex-col gap-4 p-4">
+          {note ? <NoteCard id={date} /> : <NoteCardForm key={date} minHeight="10rem" id={date} />}
+          {backlinks.length > 0 ? (
+            <details open className="group space-y-4">
+              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text">
+                <TriangleRightIcon8 className=" group-open:rotate-90" />
+                Backlinks
+              </summary>
+              <LinkHighlightProvider href={`/${date}`}>
+                <NoteList baseQuery={`date:"${date}" -id:"${date}"`} />
+              </LinkHighlightProvider>
+            </details>
+          ) : null}
         </div>
       </div>
     </Panel>
@@ -131,11 +156,12 @@ export function Calendar({ activeDate: dateString }: { activeDate: string }) {
 function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boolean }) {
   const Link = useLink()
 
-  const hasNotesAtom = React.useMemo(
+  const note = useNoteById(toDateString(date))
+  const hasBacklinksAtom = React.useMemo(
     () => selectAtom(datesAtom, (dates) => dates[toDateString(date)]?.length > 0),
     [date],
   )
-  const hasNotes = useAtomValue(hasNotesAtom)
+  const hasNotes = useAtomValue(hasBacklinksAtom) || Boolean(note)
 
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
@@ -147,7 +173,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
     <RovingFocusGroup.Item asChild active={isActive}>
       <Link
         key={date.toISOString()}
-        to={`/calendar?date=${toDateString(date)}`}
+        to={`/${toDateString(date)}`}
         aria-label={label}
         className={cx(
           "focus-ring relative flex w-full cursor-pointer justify-center rounded-sm p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",

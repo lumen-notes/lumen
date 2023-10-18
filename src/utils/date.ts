@@ -2,6 +2,8 @@ import { addDays, formatDistance, isSameDay, subDays } from "date-fns"
 
 // Date utilities
 
+export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
 export const MONTH_NAMES = [
   "January",
   "February",

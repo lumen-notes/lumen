@@ -10,7 +10,6 @@ import {
 } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
-import { CalendarPanel } from "../panels/calendar"
 import { FilePanel } from "../panels/file"
 import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
@@ -252,7 +251,6 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: "*", panel: NotePanel },
   { path: "tags", panel: TagsPanel },
   { path: "tags/*", panel: TagPanel },
-  { path: "calendar", panel: CalendarPanel },
   { path: "file", panel: FilePanel },
 ]
 
