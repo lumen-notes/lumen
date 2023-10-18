@@ -1,4 +1,3 @@
-import { Backlinks } from "../components/backlinks"
 import { NoteIcon16, TriangleRightIcon8 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
