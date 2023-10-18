@@ -85,8 +85,13 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
         <div className="flex flex-col gap-4 p-4">
           {note ? <NoteCard id={date} /> : <NoteCardForm key={date} minHeight="10rem" id={date} />}
           {backlinks.length > 0 ? (
-            <details open className="group space-y-4">
-              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text">
+            <details
+              open
+              className="group space-y-4
+            
+            "
+            >
+              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
                 <TriangleRightIcon8 className=" group-open:rotate-90" />
                 Backlinks
               </summary>

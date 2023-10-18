@@ -22,7 +22,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
         <NoteCard id={noteId} />
         {note?.backlinks?.length ? (
           <details open className="group space-y-4">
-            <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text">
+            <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
               <TriangleRightIcon8 className=" group-open:rotate-90" />
               Backlinks
             </summary>
