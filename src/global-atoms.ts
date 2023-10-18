@@ -44,8 +44,16 @@ export const notesAtom = atom((get) => {
   }
 
   // Derive backlinks
-  for (const { id: sourceId, links } of notes.values()) {
+  for (const { id: sourceId, links, dates } of notes.values()) {
     for (const targetId of links) {
+      const backlinks = notes.get(targetId)?.backlinks
+      // Skip if the source note is already a backlink
+      if (backlinks?.includes(sourceId)) continue
+
+      backlinks?.push(sourceId)
+    }
+
+    for (const targetId of dates) {
       const backlinks = notes.get(targetId)?.backlinks
       // Skip if the source note is already a backlink
       if (backlinks?.includes(sourceId)) continue

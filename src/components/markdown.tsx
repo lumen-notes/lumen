@@ -376,7 +376,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" target="_blank" to={`/calendar?date=${dateString}`}>
+            <Link className="link" target="_blank" to={`/${dateString}`}>
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -386,7 +386,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           )}
           <span className="text-text-secondary">
             {" · "}
-            <Link className="link" target="_blank" to={`/calendar?date=${nextBirthdayString}`}>
+            <Link className="link" target="_blank" to={`/${nextBirthdayString}`}>
               {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"}
             </Link>{" "}
             is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
@@ -734,7 +734,7 @@ function DateLink({ date, className }: DateLinkProps) {
   return (
     <Tooltip>
       <Tooltip.Trigger asChild>
-        <Link className={className} target="_blank" to={`/calendar?date=${date}`}>
+        <Link className={className} target="_blank" to={`/${date}`}>
           {formatDate(date)}
         </Link>
       </Tooltip.Trigger>

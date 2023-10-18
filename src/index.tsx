@@ -13,7 +13,6 @@ import { NewNoteDialog } from "./components/new-note-dialog"
 import { RootLayout } from "./components/root-layout"
 import { ThemeColor } from "./components/theme-color"
 import "./index.css"
-import { CalendarPage } from "./pages/calendar"
 import { FilePage } from "./pages/file"
 import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
@@ -49,7 +48,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                     <Route index element={<NotesPage />} />
                     <Route path="tags" element={<TagsPage />} />
                     <Route path="tags/*" element={<TagPage />} />
-                    <Route path="calendar" element={<CalendarPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="*" element={<NotePage />} />
                   </Route>

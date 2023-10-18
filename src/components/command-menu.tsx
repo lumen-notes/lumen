@@ -135,7 +135,7 @@ export function CommandMenu() {
                 key={dateString}
                 icon={<CalendarIcon16 date={new Date(dateString).getUTCDate()} />}
                 description={formatDateDistance(dateString)}
-                onSelect={() => navigate(`/calendar?date=${dateString}`)}
+                onSelect={() => navigate(`/${dateString}`)}
               >
                 {formatDate(dateString)}
               </CommandItem>
