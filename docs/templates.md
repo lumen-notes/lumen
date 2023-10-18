@@ -33,7 +33,7 @@ template:
 author:
 isbn:
 recommended_by:
-date_saved: '<%= date %>'
+date_saved: <%= date %>
 ---
 
 #
@@ -41,15 +41,15 @@ date_saved: '<%= date %>'
 #book
 ```
 
-When you use this template, the `<%= date %>` placeholder will be replaced with the current date in `[[YYYY-MM-DD]]` format.
+When you use this template, the `<%= date %>` placeholder will be replaced with the current date in `YYYY-MM-DD` format.
 
 ### Global variables
 
 The following global variables are available in all templates:
 
-| Name   | Type     | Description                                                                                                                              |
-| :----- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
-| `date` | `string` | The current date in `[[YYYY-MM-DD]]` format. For more details on the date format, see [Date links](/docs/markdown-syntax.md#date-links). |
+| Name   | Type     | Description                              |
+| :----- | :------- | :--------------------------------------- |
+| `date` | `string` | The current date in `YYYY-MM-DD` format. |
 
 ## Inputs
 

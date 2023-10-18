@@ -21,7 +21,7 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps } from "../components/panels"
-import { datesAtom } from "../global-atoms"
+import { datesAtom, templatesAtom } from "../global-atoms"
 import { cx } from "../utils/cx"
 import {
   DATE_REGEX,
@@ -34,6 +34,8 @@ import {
 import { openNewWindow } from "../utils/open-new-window"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
+import ejs from "ejs"
+import { removeFrontmatterComments } from "../components/insert-template"
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
@@ -45,10 +47,10 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
     () => searchNotes(`date:"${date}" -id:"${date}"`),
     [date, searchNotes],
   )
+  const dailyTemplate = useDailyTemplate(date)
 
-  const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
   // Check if the date is valid
-
+  const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
   if (!isValidDate) {
     return (
       <Panel id={id} title={date} icon={<CalendarIcon16 />} onClose={onClose}>
@@ -83,14 +85,13 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={date} activeDate={date} />
         <div className="flex flex-col gap-4 p-4">
-          {note ? <NoteCard id={date} /> : <NoteCardForm key={date} minHeight="10rem" id={date} />}
+          {note ? (
+            <NoteCard id={date} />
+          ) : (
+            <NoteCardForm key={date} minHeight="10rem" id={date} defaultValue={dailyTemplate} />
+          )}
           {backlinks.length > 0 ? (
-            <details
-              open
-              className="group space-y-4
-            
-            "
-            >
+            <details open className="group space-y-4">
               <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
                 <TriangleRightIcon8 className=" group-open:rotate-90" />
                 Backlinks
@@ -104,6 +105,29 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       </div>
     </Panel>
   )
+}
+
+function useDailyTemplate(date: string) {
+  const dailyTemplateAtom = React.useMemo(
+    () =>
+      selectAtom(templatesAtom, (templates) =>
+        Object.values(templates).find((t) => t.name.match(/^daily$/i)),
+      ),
+    [],
+  )
+
+  const dailyTemplate = useAtomValue(dailyTemplateAtom)
+
+  const renderedDailyTemplate = React.useMemo(() => {
+    if (!dailyTemplate) return ""
+
+    let text = ejs.render(dailyTemplate.body, { date })
+    text = removeFrontmatterComments(text)
+    text = text.replace("{cursor}", "")
+    return text
+  }, [dailyTemplate, date])
+
+  return renderedDailyTemplate
 }
 
 export function Calendar({ activeDate: dateString }: { activeDate: string }) {
@@ -160,20 +184,19 @@ export function Calendar({ activeDate: dateString }: { activeDate: string }) {
 
 function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boolean }) {
   const Link = useLink()
-
   const note = useNoteById(toDateString(date))
   const hasBacklinksAtom = React.useMemo(
     () => selectAtom(datesAtom, (dates) => dates[toDateString(date)]?.length > 0),
     [date],
   )
   const hasNotes = useAtomValue(hasBacklinksAtom) || Boolean(note)
-
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()
   const year = date.getFullYear()
   const label = `${dayName}, ${monthName} ${day}, ${year}`
   const isToday = toDateString(date) === toDateString(new Date())
+
   return (
     <RovingFocusGroup.Item asChild active={isActive}>
       <Link

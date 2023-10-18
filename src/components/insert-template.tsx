@@ -159,7 +159,7 @@ async function renderAndInsert(
 ) {
   let text = await ejs.render(
     template.body,
-    { date: `[[${toDateString(new Date())}]]`, ...args },
+    { date: toDateString(new Date()), ...args },
     { async: true },
   )
 
@@ -187,7 +187,7 @@ async function renderAndInsert(
   })
 }
 
-function removeFrontmatterComments(text: string) {
+export function removeFrontmatterComments(text: string) {
   const lines = text.split("\n")
   const frontmatterStart = lines.findIndex((line) => line.startsWith("---"))
   const frontmatterEnd =
