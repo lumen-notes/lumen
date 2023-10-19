@@ -44,7 +44,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const note = useNoteById(date)
   const searchNotes = useSearchNotes()
   const backlinks = React.useMemo(
-    () => searchNotes(`date:"${date}" -id:"${date}"`),
+    () => searchNotes(`link:"${date}" -id:"${date}"`),
     [date, searchNotes],
   )
   const dailyTemplate = useDailyTemplate(date)
@@ -97,7 +97,7 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
                 Backlinks
               </summary>
               <LinkHighlightProvider href={`/${date}`}>
-                <NoteList baseQuery={`date:"${date}" -id:"${date}"`} />
+                <NoteList baseQuery={`link:"${date}" -id:"${date}"`} />
               </LinkHighlightProvider>
             </details>
           ) : null}

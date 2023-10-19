@@ -66,13 +66,14 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
 
       case "dateLink": {
         dates.add(node.data.date)
+        links.add(node.data.date)
         break
       }
 
       // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
       case "noteEmbed":
       case "noteLink": {
-        links.add(node.data.id.toString())
+        links.add(node.data.id)
         break
       }
 
@@ -142,7 +143,9 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
   // Check for dates in the frontmatter
   for (const value of Object.values(frontmatter)) {
     if (value instanceof Date) {
-      dates.add(toDateStringUtc(value))
+      const date = toDateStringUtc(value)
+      dates.add(date)
+      links.add(date)
     }
   }
 
@@ -155,7 +158,9 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
       frontmatter.birthday instanceof Date
         ? frontmatter.birthday
         : new Date(`0000-${frontmatter.birthday}`)
-    dates.add(toDateStringUtc(getNextBirthday(date)))
+    const nextBirthday = toDateStringUtc(getNextBirthday(date))
+    dates.add(nextBirthday)
+    links.add(nextBirthday)
   }
 
   // Add tags from frontmatter
