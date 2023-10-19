@@ -317,7 +317,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .markdown strong {
-  @apply font-bold;
+  @apply font-semibold;
 }
 
 .markdown h1,
