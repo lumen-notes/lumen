@@ -4,6 +4,7 @@ import {
   CompletionContext,
   CompletionResult,
 } from "@codemirror/autocomplete"
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import { createTheme } from "@uiw/codemirror-themes"
@@ -108,6 +109,18 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           }
         }}
         extensions={[
+          markdown({ base: markdownLanguage }),
+          autocompletion({
+            override: [
+              emojiCompletion,
+              dateCompletion,
+              noteCompletion,
+              tagSyntaxCompletion,
+              tagPropertyCompletion,
+              templateCompletion,
+            ],
+            icons: false,
+          }),
           EditorView.inputHandler.of((view: EditorView, from: number, to: number, text: string) => {
             // If you're inserting a `-` at index 2 and all previous characters are also `-`,
             // insert a matching `---` below the line
@@ -171,17 +184,6 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
 
               onPaste?.(event, view)
             },
-          }),
-          autocompletion({
-            override: [
-              emojiCompletion,
-              dateCompletion,
-              noteCompletion,
-              tagSyntaxCompletion,
-              tagPropertyCompletion,
-              templateCompletion,
-            ],
-            icons: false,
           }),
         ]}
       />
