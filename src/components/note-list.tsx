@@ -114,6 +114,13 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
   }, [deferredQuery])
 
+  const toggleView = () => {
+    if (viewType === "cards")
+      setViewType("list")
+    else
+      setViewType("cards")
+  }
+
   return (
     <div>
       <div className="flex flex-col gap-4">
@@ -135,26 +142,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                   disableTooltip
                   aria-label="Change view"
                   className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                  onClick={() => toggleView()}
                 >
                   <ViewTypeIcon viewType={viewType} />
                 </IconButton>
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" minWidth="8rem">
-                <DropdownMenu.Item
-                  icon={<CardsIcon16 />}
-                  selected={viewType === "cards"}
-                  onClick={() => setViewType("cards")}
-                >
-                  Cards
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<ListIcon16 />}
-                  selected={viewType === "list"}
-                  onClick={() => setViewType("list")}
-                >
-                  List
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
             </DropdownMenu>
           </div>
           {deferredQuery ? (
