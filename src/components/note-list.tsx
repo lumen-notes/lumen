@@ -129,21 +129,14 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 setNumVisibleNotes(10)
               }}
             />
-            <DropdownMenu>
-              <IconButton
-                disableTooltip
-                aria-label="Change view"
-                className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                onClick={() => {
-                  if (viewType === "cards")
-                    setViewType("list")
-                  else
-                    setViewType("cards")
-                }}
-              >
-                <ViewTypeIcon viewType={viewType} />
-              </IconButton>
-            </DropdownMenu>
+            <IconButton
+              disableTooltip
+              aria-label="Change view"
+              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+              onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
+            >
+              {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
+            </IconButton>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
@@ -269,13 +262,4 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
       ) : null}
     </div>
   )
-}
-
-function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
-  switch (viewType) {
-    case "cards":
-      return <ListIcon16 />
-    case "list":
-      return <CardsIcon16 />
-  }
 }
