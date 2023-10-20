@@ -130,31 +130,19 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               }}
             />
             <DropdownMenu>
-              <DropdownMenu.Trigger asChild>
-                <IconButton
-                  disableTooltip
-                  aria-label="Change view"
-                  className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                >
-                  <ViewTypeIcon viewType={viewType} />
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end" minWidth="8rem">
-                <DropdownMenu.Item
-                  icon={<CardsIcon16 />}
-                  selected={viewType === "cards"}
-                  onClick={() => setViewType("cards")}
-                >
-                  Cards
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<ListIcon16 />}
-                  selected={viewType === "list"}
-                  onClick={() => setViewType("list")}
-                >
-                  List
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
+              <IconButton
+                disableTooltip
+                aria-label="Change view"
+                className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                onClick={() => {
+                  if (viewType === "cards")
+                    setViewType("list")
+                  else
+                    setViewType("cards")
+                }}
+              >
+                <ViewTypeIcon viewType={viewType} />
+              </IconButton>
             </DropdownMenu>
           </div>
           {deferredQuery ? (
@@ -286,8 +274,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 function ViewTypeIcon({ viewType }: { viewType: ViewType }) {
   switch (viewType) {
     case "cards":
-      return <CardsIcon16 />
-    case "list":
       return <ListIcon16 />
+    case "list":
+      return <CardsIcon16 />
   }
 }
