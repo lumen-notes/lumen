@@ -229,7 +229,6 @@ body:has([data-resizing="true"]) * {
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  /* caret-color: currentColor; */
 }
 
 .cm-editor .cm-line {
@@ -280,7 +279,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .cm-editor .cm-gutters {
-  @apply hidden;
+  @apply border-none;
+}
+
+.cm-editor .cm-foldGutter {
+  @apply w-4 items-center;
 }
 
 /* Markdown styles */
@@ -524,11 +527,4 @@ body:has([data-resizing="true"]) * {
 
 [cmdk-item][aria-selected] {
   @apply bg-bg-secondary;
-}
-
-/* React Flow styles */
-
-.react-flow__node-note {
-  /* The height of note nodes should match the content height */
-  height: auto !important;
 }

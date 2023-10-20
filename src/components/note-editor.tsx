@@ -36,6 +36,8 @@ const theme = createTheme({
   theme: "light",
   settings: {
     background: "transparent",
+    gutterBackground: "var(--color-bg)",
+    gutterForeground: "var(--color-text-secondary)",
     lineHighlight: "transparent",
     foreground: "var(--color-text)",
     caret: "var(--color-border-focus)",
