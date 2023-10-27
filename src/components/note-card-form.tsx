@@ -166,8 +166,8 @@ export function NoteCardForm({
             <div
               className={clsx(
                 "sticky bottom-0 flex justify-between rounded-lg p-2 backdrop-blur-md",
-                elevation === 0 && "bg-bg-backdrop",
-                elevation === 1 && "bg-bg-overlay-backdrop",
+                elevation === 0 && "bg-bg-backdrop bg-gradient-to-t from-bg",
+                elevation === 1 && "bg-bg-overlay-backdrop bg-gradient-to-t from-bg-overlay",
               )}
             >
               <FileInputButton

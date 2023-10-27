@@ -183,7 +183,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             {note.rawBody}
           </Markdown>
         </div>
-        <div className="sticky bottom-0 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 backdrop-blur-md">
+        <div className="sticky bottom-0 -mt-2 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 pt-4 backdrop-blur-md [mask-image:linear-gradient(to_top,black_75%,transparent)]">
           <span className="px-2 text-text-secondary">
             <Link target="_blank" to={`/${id}`} className="link tracking-wide">
               {id}
