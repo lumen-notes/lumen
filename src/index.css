@@ -388,8 +388,7 @@ body:has([data-resizing="true"]) * {
   @apply my-1 coarse:my-2;
 }
 
-.markdown li:has([type="checkbox"]),
-.markdown li:has([role="checkbox"]) {
+.markdown li.task-list-item {
   @apply relative list-none;
 }
 
