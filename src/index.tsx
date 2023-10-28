@@ -12,7 +12,6 @@ import { NavLayout } from "./components/nav-layout"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { RootLayout } from "./components/root-layout"
 import { ThemeColor } from "./components/theme-color"
-import "./index.css"
 import { FilePage } from "./pages/file"
 import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
@@ -20,6 +19,7 @@ import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
+import "./styles/index.css"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
