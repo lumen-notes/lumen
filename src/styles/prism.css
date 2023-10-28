@@ -1,0 +1,51 @@
+.prism .comment {
+  color: var(--color-text-secondary);
+}
+
+.prism .punctuation {
+  color: var(--color-text-secondary);
+}
+
+.prism .keyword {
+  color: var(--color-syntax-green);
+}
+
+.prism .function {
+  color: var(--color-syntax-yellow);
+}
+
+.prism .property {
+  color: var(--color-syntax-green);
+}
+
+.prism .selector {
+  color: var(--color-syntax-green);
+}
+
+.prism .tag {
+  color: var(--color-syntax-purple);
+}
+
+.prism .attr-name {
+  color: var(--color-syntax-green);
+}
+
+.prism .attr-value {
+  color: var(--color-syntax-yellow);
+}
+
+.prism .key {
+  color: var(--color-syntax-green);
+}
+
+.prism .boolean {
+  color: var(--color-syntax-orange);
+}
+
+.prism .string {
+  color: var(--color-syntax-orange);
+}
+
+.prism .operator {
+  color: var(--color-text-secondary);
+}

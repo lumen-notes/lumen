@@ -1,0 +1,141 @@
+.markdown {
+  @apply leading-6;
+}
+
+.markdown *:first-child {
+  @apply mt-0;
+}
+
+.markdown *:last-child {
+  @apply mb-0;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown p,
+.markdown pre,
+.markdown ul,
+.markdown ol,
+.markdown table,
+.markdown blockquote {
+  @apply my-3;
+}
+
+.markdown hr {
+  @apply my-4;
+}
+
+.markdown strong {
+  @apply font-semibold;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6,
+.markdown th {
+  @apply font-semibold;
+}
+
+.markdown h1 {
+  @apply text-xl coarse:!leading-7;
+}
+
+.markdown h2 {
+  @apply text-lg;
+}
+
+.markdown pre {
+  @apply overflow-auto rounded-sm bg-bg-secondary p-3;
+}
+
+.markdown code {
+  @apply rounded-xs bg-bg-secondary px-1;
+}
+
+.markdown pre > code {
+  @apply rounded-none bg-transparent p-0;
+  font-style: unset;
+}
+
+.markdown pre > code::before,
+.markdown pre > code::after {
+  content: "";
+}
+
+.markdown hr {
+  @apply border-border-secondary;
+}
+
+.markdown ul {
+  @apply list-disc;
+}
+
+.markdown ol {
+  @apply list-decimal;
+}
+
+.markdown ul,
+.markdown ol {
+  @apply pl-9;
+}
+
+.markdown li:has(p) {
+  @apply my-3;
+}
+
+.markdown ul ul,
+.markdown ul ol,
+.markdown ol ul,
+.markdown ol ol {
+  @apply !mt-1 mb-1;
+}
+
+.markdown li {
+  @apply my-1 coarse:my-2;
+}
+
+.markdown li.task-list-item {
+  @apply relative list-none;
+}
+
+.markdown li [type="checkbox"],
+.markdown li [role="checkbox"] {
+  @apply absolute -left-2 mt-1 -translate-x-full coarse:mt-0.5;
+}
+
+.markdown ::marker {
+  @apply text-text-secondary;
+}
+
+.markdown table {
+  @apply block overflow-auto;
+}
+
+.markdown th,
+.markdown td {
+  @apply border border-border px-2 py-1;
+}
+
+.markdown blockquote {
+  @apply relative pl-3 italic;
+}
+
+.markdown blockquote::before {
+  @apply absolute left-0 text-text-secondary;
+  content: "“";
+}
+
+.markdown a {
+  @apply link;
+}
+
+.markdown a[href^="http"] {
+  @apply link-external;
+}

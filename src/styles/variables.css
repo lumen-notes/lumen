@@ -1,0 +1,117 @@
+:root {
+  color-scheme: light dark;
+
+  /* Hue */
+  --h: 30deg;
+  --h-highlight: 50deg;
+
+  /* Saturation */
+  --s: 5%;
+
+  /* Lightness */
+  --l-text: 10%;
+  --l-text-secondary: 45%;
+  --l-text-tertiary: 60%;
+  --l-bg: 100%;
+  --l-bg-inset: 97.5%;
+  --l-bg-overlay: 100%;
+  --l-border: 75%;
+
+  /* Opacity */
+  --a-bg-backdrop: 0.65;
+  --a-bg-secondary: 0.05;
+  --a-bg-tertiary: 0.1;
+  --a-border: 0.25;
+  --a-border-secondary: 0.1;
+
+  /* Colors */
+  --color-text: hsl(var(--h) var(--s) var(--l-text));
+  --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
+  --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
+  --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
+  --color-text-pending: hsl(30 94% 15%);
+  --color-text-danger: hsl(350 86% 27%);
+  --color-bg: hsl(var(--h) var(--s) var(--l-bg));
+  --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
+  --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
+  --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg) / var(--a-bg-backdrop));
+  --color-bg-inset-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
+  --color-bg-overlay-backdrop: hsla(var(--h) var(--s) var(--l-bg-overlay) / var(--a-bg-backdrop));
+  --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
+  --color-bg-tertiary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-tertiary));
+  --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
+  --color-bg-selection: hsl(200 80% 90%);
+  --color-bg-pending: hsl(30 100% 85%);
+  --color-border: hsl(var(--h) var(--s) var(--l-border));
+  --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
+  --color-border-focus: hsl(200 100% 40%);
+
+  /* Priority colors */
+  --hsl-priority-1: 0deg 60% 50%;
+  --hsl-priority-2: 30deg 90% 50%;
+  --hsl-priority-3: 200deg 100% 40%;
+  --a-bg-priority: 0.1;
+  --a-bg-priority-hover: 0.2;
+
+  /* Syntax colors (based on https://rosepinetheme.com/palette) */
+  --color-syntax-yellow: hsl(30 80% 34%);
+  --color-syntax-orange: hsl(6 50% 48%);
+  --color-syntax-purple: hsl(268 21% 38%);
+  --color-syntax-green: hsl(170 50% 32%);
+
+  /* Font sizes */
+  --font-size-sm: 0.75rem; /* 12px */
+  --font-size-base: 0.875rem; /* 14px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.125rem; /* 18px */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Hue */
+    --h: 220deg;
+
+    /* Lightness */
+    --l-text: 90%;
+    --l-text-secondary: 60%;
+    --l-text-tertiary: 50%;
+    --l-bg: 10%;
+    --l-bg-inset: 5%;
+    --l-bg-overlay: 15%;
+    --l-border: 30%;
+
+    /* Opacity */
+    --a-bg-secondary: 0.075;
+
+    /* Colors */
+    --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
+    --color-text-pending: hsl(30 100% 90%);
+    --color-text-danger: hsl(3 100% 83%);
+    --color-bg-highlight: hsl(var(--h-highlight) 30% 18%);
+    --color-bg-selection: hsl(200 30% 25%);
+    --color-bg-pending: hsl(30 90% 15%);
+    --color-border-focus: hsl(200 100% 70%);
+
+    /* Priority colors */
+    --hsl-priority-1: 0deg 100% 70%;
+    --hsl-priority-2: 30deg 100% 60%;
+    --hsl-priority-3: 200deg 100% 70%;
+
+    /* Syntax colors */
+    --color-syntax-yellow: hsl(30 76% 72%);
+    --color-syntax-orange: hsl(6 70% 78%);
+    --color-syntax-purple: hsl(268 57% 78%);
+    --color-syntax-green: hsl(170 50% 73%);
+  }
+}
+
+/* Adjust font sizes for touch devices */
+@media (pointer: coarse) {
+  :root {
+    /* Font sizes */
+    --font-size-sm: 0.8125rem; /* 13px */
+    --font-size-base: 0.9375rem; /* 15px */
+    --font-size-lg: 1.125rem; /* 18px */
+    --font-size-xl: 1.25rem; /* 20px */
+  }
+}

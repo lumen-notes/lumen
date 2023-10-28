@@ -1,6 +1,6 @@
 import React from "react"
 import * as Tooltip from "@radix-ui/react-tooltip"
-import "../src/index.css"
+import "../src/styles/index.css"
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

@@ -1,0 +1,66 @@
+.cm-editor {
+  @apply w-full cursor-text font-mono;
+}
+
+.cm-editor.cm-editor.cm-focused {
+  @apply outline-none;
+}
+
+.cm-editor .cm-content {
+  width: 100%;
+  padding: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* caret-color: currentColor; */
+}
+
+.cm-editor .cm-line {
+  padding: 0;
+}
+
+.cm-editor .cm-scroller {
+  @apply leading-5;
+  font-family: unset;
+}
+
+.cm-editor .cm-cursor {
+  border-left-width: 2px;
+  margin-left: 0px;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete {
+  @apply max-w-sm rounded-md border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
+  @apply font-mono text-[inherit];
+}
+
+.cm-editor .cm-tooltip.cm-completionInfo {
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-md border-0 bg-bg-overlay p-1 px-3 py-2 font-mono text-[inherit] shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  word-break: break-word;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
+  @apply flex rounded-sm px-2 py-1 coarse:px-3 coarse:py-2;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
+  @apply bg-bg-secondary text-text;
+}
+
+.cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li .cm-completionDetail {
+  @apply ml-2 not-italic text-text-secondary;
+}
+
+.cm-editor .cm-completionMatchedText {
+  @apply no-underline;
+}
+
+.cm-editor .cm-placeholder {
+  @apply text-text-tertiary;
+}
+
+.cm-editor .cm-gutters {
+  @apply hidden;
+}

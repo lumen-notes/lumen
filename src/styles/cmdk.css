@@ -1,0 +1,41 @@
+[cmdk-overlay] {
+  @apply fixed inset-0 z-20 bg-bg-inset-backdrop animate-in fade-in;
+}
+
+[cmdk-dialog] {
+  @apply fixed left-1/2 top-2 z-20 w-[calc(100vw_-_1rem)] max-w-xl -translate-x-1/2 sm:top-[10vh];
+}
+
+[cmdk-input] {
+  @apply w-full bg-transparent px-5 py-4 text-lg leading-none outline-none;
+}
+
+[cmdk-input]::placeholder {
+  @apply text-text-tertiary;
+}
+
+[cmdk-list] {
+  @apply max-h-[min(400px,50vh)] overflow-y-auto overflow-x-hidden;
+  scroll-padding-block-start: 8px;
+  scroll-padding-block-end: 8px;
+}
+
+[cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
+  @apply border-t border-border-secondary p-2;
+}
+
+[cmdk-group-heading] {
+  @apply px-3 py-2 leading-4 text-text-secondary;
+}
+
+[cmdk-group]:not(:first-child) {
+  @apply mt-2;
+}
+
+[cmdk-item] {
+  @apply cursor-default rounded-sm px-3 py-3 leading-4;
+}
+
+[cmdk-item][aria-selected] {
+  @apply bg-bg-secondary;
+}
