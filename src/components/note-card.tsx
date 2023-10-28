@@ -178,14 +178,13 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           }
         }}
       >
-        <div className="p-4 pb-1">
-          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
-            {note.rawBody}
-          </Markdown>
-        </div>
-        <div className="sticky bottom-0 -mt-2 flex items-center justify-between rounded-lg bg-bg-backdrop bg-gradient-to-t from-bg p-2 pt-4 backdrop-blur-md [mask-image:linear-gradient(to_top,black_75%,transparent)]">
+        <div className="flex items-center justify-between border-b border-dashed border-border-secondary p-2 ">
           <span className="px-2 text-text-secondary">
-            <Link target="_blank" to={`/${id}`} className="link font-mono tracking-wide">
+            <Link
+              target="_blank"
+              to={`/${id}`}
+              className="link font-mono tracking-wide !no-underline hover:!underline"
+            >
               {id}.md
             </Link>
             {note.backlinks.length ? (
@@ -269,6 +268,11 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
+        </div>
+        <div className="p-4">
+          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+            {note.rawBody}
+          </Markdown>
         </div>
       </Card>
       <div hidden={!isEditing}>

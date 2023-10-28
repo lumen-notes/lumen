@@ -29,7 +29,7 @@ type NoteCardFormProps = {
 }
 
 export function NoteCardForm({
-  id,
+  id: existingId,
   defaultValue = "",
   placeholder = "Write a note…",
   elevation = 0,
@@ -41,6 +41,8 @@ export function NoteCardForm({
   onSubmit,
   onCancel,
 }: NoteCardFormProps) {
+  const id = React.useMemo(() => existingId ?? Date.now().toString(), [existingId])
+
   const githubRepo = useAtomValue(githubRepoAtom)
   const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
@@ -67,18 +69,13 @@ export function NoteCardForm({
     if (!value) return
 
     const note = {
-      id: id ?? Date.now().toString(),
+      id,
       rawBody: value,
     }
 
     upsertNote(note)
 
     onSubmit?.(note)
-
-    // If we're creating a new note, reset the form after submitting
-    if (!id) {
-      setValue(defaultValue)
-    }
   }
 
   function handleCancel() {
@@ -154,22 +151,29 @@ export function NoteCardForm({
               }
             }}
           >
+            <div className="flex items-center justify-between border-b border-dashed border-border-secondary p-2">
+              <span className="px-2 font-mono tracking-wide text-text-secondary">{id}.md</span>
+              <div className="flex gap-2">
+                {onCancel ? (
+                  <Button shortcut={["esc"]} onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                ) : null}
+                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
+                  Save
+                </Button>
+              </div>
+            </div>
             <NoteEditor
               ref={editorRef}
-              className="flex flex-shrink-0 flex-grow p-4 pb-1"
+              className="flex flex-shrink-0 flex-grow p-4 pb-0"
               defaultValue={defaultValue}
               placeholder={placeholder}
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={autoFocus}
               onStateChange={handleStateChange}
             />
-            <div
-              className={clsx(
-                "sticky bottom-0 flex justify-between rounded-lg p-2 backdrop-blur-md",
-                elevation === 0 && "bg-bg-backdrop bg-gradient-to-t from-bg",
-                elevation === 1 && "bg-bg-overlay-backdrop bg-gradient-to-t from-bg-overlay",
-              )}
-            >
+            <div className="flex p-2">
               <FileInputButton
                 asChild
                 onChange={(files) => {
@@ -186,16 +190,6 @@ export function NoteCardForm({
                   <PaperclipIcon16 />
                 </IconButton>
               </FileInputButton>
-              <div className="flex gap-2">
-                {onCancel ? (
-                  <Button shortcut={["esc"]} onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                ) : null}
-                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
-                  {id ? "Save" : "Add"}
-                </Button>
-              </div>
             </div>
           </form>
         </div>
