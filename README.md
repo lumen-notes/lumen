@@ -1,6 +1,6 @@
 # Lumen
 
-Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+Lumen is a free, open-source note-taking app for lifelong learners based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
 
 [**Open Lumen →**](https://app.uselumen.com)
 
