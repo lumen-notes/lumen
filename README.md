@@ -4,8 +4,6 @@ Lumen is a note-taking app for lifelong learners, based on the [Zettelkasten Met
 
 [**Open Lumen →**](https://app.uselumen.com)
 
-![Screenshot of the app](https://github.com/lumen-notes/lumen/assets/4608155/cf39c446-58de-45a4-a7e9-8885f3fb5f1d)
-
 <br>
 
 Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
