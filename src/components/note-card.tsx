@@ -178,7 +178,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           }
         }}
       >
-        <div className="flex items-center justify-between border-b border-dashed border-border-secondary p-2 ">
+        <div className="flex items-center justify-between p-2 pb-0">
           <span className="px-2 text-text-secondary">
             <Link
               target="_blank"
