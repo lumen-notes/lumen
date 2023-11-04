@@ -178,7 +178,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           }
         }}
       >
-        <div className="flex items-center justify-between p-2 pb-0">
+        <div className="flex items-center justify-between p-2">
           <span className="px-2 text-text-secondary">
             <Link
               target="_blank"
@@ -269,7 +269,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             </DropdownMenu.Content>
           </DropdownMenu>
         </div>
-        <div className="p-4">
+        <div className="p-4 pt-0">
           <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
             {note.rawBody}
           </Markdown>

@@ -151,7 +151,7 @@ export function NoteCardForm({
               }
             }}
           >
-            <div className="flex items-center justify-between p-2 pb-0">
+            <div className="flex items-center justify-between p-2">
               <span className="px-2 font-mono tracking-wide text-text-secondary">{id}.md</span>
               <div className="flex gap-2">
                 {onCancel ? (
@@ -166,7 +166,7 @@ export function NoteCardForm({
             </div>
             <NoteEditor
               ref={editorRef}
-              className="flex flex-shrink-0 flex-grow p-4 pb-0"
+              className="flex flex-shrink-0 flex-grow px-4"
               defaultValue={defaultValue}
               placeholder={placeholder}
               // eslint-disable-next-line jsx-a11y/no-autofocus
