@@ -1,9 +1,7 @@
-import { useAtom, useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubUserAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { GitHubRepository } from "../types"
-import { readFile } from "../utils/github-fs"
-import { useFetchNotes } from "../utils/github-sync"
 import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
@@ -16,9 +14,9 @@ type RepoFormProps = {
 }
 
 export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
+  const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
-  const [githubRepo, setGitHubRepo] = useAtom(githubRepoAtom)
-  const { fetchNotes } = useFetchNotes()
+  const githubRepo = useAtomValue(githubRepoAtom)
   const [repoType, setRepoType] = React.useState<"new" | "existing">(
     githubRepo ? "existing" : "new",
   )
@@ -28,87 +26,71 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
   async function createRepo({ owner, name }: GitHubRepository) {
     if (!githubUser) return
 
-    setIsLoading(true)
+    try {
+      setIsLoading(true)
 
-    // Create repo from template
-    const response = await fetch(
-      `https://api.github.com/repos/lumen-notes/notes-template/generate`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `token ${githubUser.token}`,
+      // Create repo from template
+      const response = await fetch(
+        `https://api.github.com/repos/lumen-notes/notes-template/generate`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `token ${githubUser.token}`,
+          },
+          body: JSON.stringify({
+            owner,
+            name,
+            private: true,
+          }),
         },
-        body: JSON.stringify({
-          owner,
-          name,
-          private: true,
-        }),
-      },
-    )
+      )
 
-    if (!response.ok) {
-      setIsLoading(false)
-      console.error(await response.json())
+      if (!response.ok) {
+        console.error(await response.json())
 
-      if (response.status === 422) {
-        setError(new Error("Repository already exists."))
-      } else {
-        setError(new Error("Failed to create repository. Please try again."))
+        if (response.status === 422) {
+          throw new Error("Repository already exists.")
+        }
+
+        throw new Error("Failed to create repository. Please try again.")
       }
 
-      return
+      // 1 second delay to allow GitHub API to catch up
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      send({ type: "SELECT_REPO", githubRepo: { owner, name } })
+      onSubmit?.({ owner, name })
+      setError(null)
+    } catch (error) {
+      setError(error as Error)
+    } finally {
+      setIsLoading(false)
     }
-
-    // 1 second delay to allow GitHub API to catch up
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Reset loading and error state
-    setIsLoading(false)
-    setError(null)
-
-    setGitHubRepo({ owner, name })
-    fetchNotes()
-    onSubmit?.({ owner, name })
   }
 
   async function selectExistingRepo({ owner, name }: GitHubRepository) {
     if (!githubUser) return
 
-    setIsLoading(true)
-
-    // Ensure repo exists
-    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
-      headers: { Authorization: `token ${githubUser.token}` },
-    })
-
-    if (!response.ok) {
-      setIsLoading(false)
-      setError(new Error("Repository does not exist."))
-      return
-    }
-
-    // Ensure repo has .lumen/notes.json and .github/workflows/lumen.yml
     try {
-      const options = { githubToken: githubUser.token, githubRepo: { owner, name } }
-      await readFile({ ...options, path: ".lumen/notes.json" })
-      await readFile({ ...options, path: ".github/workflows/lumen.yml" })
+      setIsLoading(true)
+
+      // Ensure repo exists
+      const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
+        headers: { Authorization: `token ${githubUser.token}` },
+      })
+
+      if (!response.ok) {
+        throw new Error("Repository does not exist.")
+      }
+
+      send({ type: "SELECT_REPO", githubRepo: { owner, name } })
+      onSubmit?.({ owner, name })
+      setError(null)
     } catch (error) {
+      setError(error as Error)
+    } finally {
       setIsLoading(false)
-      setError(
-        new Error(
-          "Missing Lumen workflow file. Please copy [.github/workflow/lumen.yml](https://github.com/lumen-notes/notes-template/blob/main/.github/workflows/lumen.yml) from the template repository into your repository.",
-        ),
-      )
-      return
     }
-
-    // Reset loading and error state
-    setIsLoading(false)
-    setError(null)
-
-    setGitHubRepo({ owner, name })
-    fetchNotes()
-    onSubmit?.({ owner, name })
   }
 
   return (
@@ -209,7 +191,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           </div>
           {error ? (
             <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)] ">
-              <div className="grid h-5 flex-shrink-0 place-items-center">
+              <div className="grid h-6 flex-shrink-0 place-items-center">
                 <ErrorIcon16 />
               </div>
               <Markdown>{`${error.message}`}</Markdown>

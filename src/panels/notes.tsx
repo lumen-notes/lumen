@@ -6,11 +6,15 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { rawNotesAtom } from "../global-state"
+import { globalStateMachineAtom } from "../global-state"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
   const noteCountAtom = React.useMemo(
-    () => selectAtom(rawNotesAtom, (rawNotes) => Object.keys(rawNotes).length),
+    () =>
+      selectAtom(
+        globalStateMachineAtom,
+        (state) => Object.keys(state.context.markdownFiles).length,
+      ),
     [],
   )
   const noteCount = useAtomValue(noteCountAtom)

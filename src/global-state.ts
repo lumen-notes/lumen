@@ -1,6 +1,10 @@
 import { Searcher } from "fast-fuzzy"
+import git, { WORKDIR } from "isomorphic-git"
+import http from "isomorphic-git/http/web"
 import { atom } from "jotai"
+import { atomWithMachine } from "jotai-xstate"
 import { atomWithStorage, selectAtom } from "jotai/utils"
+import { assign, createMachine } from "xstate"
 import {
   GitHubRepository,
   GitHubUser,
@@ -11,11 +15,16 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./types"
+import { fs, fsWipe } from "./utils/fs"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
-import { assign, createMachine } from "xstate"
-import { atomWithMachine } from "jotai-xstate"
 
+// -----------------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------------
+
+const ROOT_DIR = "/root"
+const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 
 // -----------------------------------------------------------------------------
@@ -25,9 +34,14 @@ const GITHUB_USER_KEY = "github_user"
 type Context = {
   githubUser: GitHubUser | null
   githubRepo: GitHubRepository | null
+  markdownFiles: Record<string, string>
+  error: Error | null
 }
 
-type Event = { type: "SIGN_IN"; githubUser: GitHubUser } | { type: "SIGN_OUT" }
+type Event =
+  | { type: "SIGN_IN"; githubUser: GitHubUser }
+  | { type: "SIGN_OUT" }
+  | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
 
 function createGlobalStateMachine() {
   return createMachine(
@@ -38,13 +52,20 @@ function createGlobalStateMachine() {
       schema: {} as {
         context: Context
         events: Event
-        services: { initGitHubUser: { data: { githubUser: GitHubUser } } }
+        services: {
+          initGitHubUser: { data: { githubUser: GitHubUser } }
+          initGitHubRepo: { data: { githubRepo: GitHubRepository } }
+          cloneRepo: { data: { githubRepo: GitHubRepository } }
+          loadFiles: { data: { markdownFiles: Record<string, string> } }
+        }
       },
       predictableActionArguments: true,
       initial: "initializingGitHubUser",
       context: {
         githubUser: null,
         githubRepo: null,
+        markdownFiles: {},
+        error: null,
       },
       states: {
         initializingGitHubUser: {
@@ -52,7 +73,7 @@ function createGlobalStateMachine() {
             src: "initGitHubUser",
             onDone: {
               target: "signedIn",
-              actions: ["setGitHubUser"],
+              actions: "setGitHubUser",
             },
             onError: "signedOut",
           },
@@ -72,6 +93,54 @@ function createGlobalStateMachine() {
               actions: ["clearGitHubUser", "clearGitHubUserLocalStorage"],
             },
           },
+          initial: "initializingGitHubRepo",
+          states: {
+            initializingGitHubRepo: {
+              invoke: {
+                src: "initGitHubRepo",
+                onDone: {
+                  target: "loadingFiles",
+                  actions: "setGitHubRepo",
+                },
+                onError: "empty",
+              },
+            },
+            empty: {
+              on: {
+                SELECT_REPO: "cloningRepo",
+              },
+            },
+            cloningRepo: {
+              entry: "setGitHubRepo",
+              invoke: {
+                src: "cloneRepo",
+                onDone: "loadingFiles",
+                onError: {
+                  target: "error",
+                  actions: "setError",
+                },
+              },
+            },
+            loadingFiles: {
+              invoke: {
+                src: "loadFiles",
+                onDone: {
+                  target: "idle",
+                  actions: "setMarkdownFiles",
+                },
+                onError: {
+                  target: "error",
+                  actions: "setError",
+                },
+              },
+            },
+            idle: {
+              on: {
+                SELECT_REPO: "cloningRepo",
+              },
+            },
+            error: {},
+          },
         },
       },
     },
@@ -81,7 +150,6 @@ function createGlobalStateMachine() {
           // First, check URL for token and username
           const token = new URLSearchParams(window.location.search).get("token")
           const username = new URLSearchParams(window.location.search).get("username")
-          console.log("init", { token, username })
 
           if (token && username) {
             // Save token and username to local storage
@@ -106,6 +174,79 @@ function createGlobalStateMachine() {
           const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_KEY) ?? "null")
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
+        initGitHubRepo: async () => {
+          // Check git config for repo name
+          const remoteOriginUrl = await git.getConfig({
+            fs,
+            dir: ROOT_DIR,
+            path: "remote.origin.url",
+          })
+
+          // Remove https://github.com/ from the beginning of the URL to get the repo name
+          const repo = String(remoteOriginUrl).replace(/^https:\/\/github.com\//, "")
+
+          const [owner, name] = repo.split("/")
+
+          return { githubRepo: { owner, name } }
+        },
+        cloneRepo: async (context, event) => {
+          if (!("githubRepo" in event)) {
+            throw new Error("No repository selected")
+          }
+
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
+          const githubRepo = event.githubRepo
+          const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
+          const { username, token } = context.githubUser
+
+          // Wipe file system
+          // TODO: Only remove the repo directory instead of wiping the entire file system
+          // Blocked by https://github.com/isomorphic-git/lightning-fs/issues/71
+          fsWipe()
+
+          // Clone repo
+          console.log(`$ git clone ${url}.git ${ROOT_DIR}`)
+          await git.clone({
+            fs,
+            http,
+            dir: ROOT_DIR,
+            corsProxy: "https://cors.isomorphic-git.org",
+            url,
+            ref: DEFAULT_BRANCH,
+            singleBranch: true,
+            depth: 1,
+            onMessage: console.log,
+            onAuth: () => ({ username, password: token }),
+          })
+
+          return { githubRepo }
+        },
+        loadFiles: async () => {
+          const markdownFiles = await git.walk({
+            fs,
+            dir: ROOT_DIR,
+            trees: [WORKDIR()],
+            map: async (filepath, [entry]) => {
+              // Ignore .git directory
+              if (filepath.startsWith(".git")) return
+
+              // Ignore non-markdown files
+              if (!filepath.endsWith(".md")) return
+
+              // Get file content
+              const content = await entry?.content()
+
+              if (!content) return null
+
+              return [filepath, new TextDecoder().decode(content)]
+            },
+          })
+
+          return { markdownFiles: Object.fromEntries(markdownFiles) }
+        },
       },
       actions: {
         setGitHubUser: assign({
@@ -128,6 +269,23 @@ function createGlobalStateMachine() {
         clearGitHubUserLocalStorage: () => {
           localStorage.removeItem(GITHUB_USER_KEY)
         },
+        setGitHubRepo: assign({
+          githubRepo: (_, event) => {
+            switch (event.type) {
+              case "SELECT_REPO":
+                return event.githubRepo
+              case "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]":
+                return event.data.githubRepo
+            }
+          },
+        }),
+        setMarkdownFiles: assign({
+          markdownFiles: (_, event) => event.data.markdownFiles,
+        }),
+        setError: assign({
+          // TODO: Remove `as Error`
+          error: (_, event) => event.data as Error,
+        }),
       },
     },
   )
@@ -146,7 +304,11 @@ export const githubUserAtom = selectAtom(
   (state) => state.context.githubUser,
 )
 
-export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
+export const githubRepoAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.context.githubRepo,
+)
+// export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
 // -----------------------------------------------------------------------------
 // Notes
@@ -169,12 +331,15 @@ export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
 })
 
 export const notesAtom = atom((get) => {
-  const rawNotes = get(rawNotesAtom)
+  const state = get(globalStateMachineAtom)
+  const markdownFiles = state.context.markdownFiles
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
-  for (const id in rawNotes) {
-    const rawBody = rawNotes[id]
+  for (const filepath in markdownFiles) {
+    const id = filepath.replace(/\.md$/, "")
+    // TODO: Rename rawBody to content
+    const rawBody = markdownFiles[filepath]
     notes.set(id, { id, rawBody, ...parseNote(id, rawBody), backlinks: [] })
   }
 
