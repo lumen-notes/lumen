@@ -10,10 +10,10 @@ import { PanelsContext } from "../components/panels"
 import { tagSearcherAtom } from "../global-state"
 import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { useUpsertNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
+import { useSaveNote } from "../utils/use-save-note"
 import { useSearchNotes } from "../utils/use-search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
@@ -21,7 +21,7 @@ import { NoteFavicon } from "./note-favicon"
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
-  const upsertNote = useUpsertNote()
+  const saveNote = useSaveNote()
 
   const isFullscreen = useIsFullscreen()
 
@@ -211,7 +211,7 @@ export function CommandMenu() {
                   }
 
                   // Create new note
-                  upsertNote(note)
+                  saveNote(note)
 
                   // Navigate to new note
                   navigate(`/${note.id}`)

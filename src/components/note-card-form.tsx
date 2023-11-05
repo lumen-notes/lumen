@@ -5,8 +5,8 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
-import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"
+import { useSaveNote } from "../utils/use-save-note"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -42,9 +42,8 @@ export function NoteCardForm({
   onCancel,
 }: NoteCardFormProps) {
   const id = React.useMemo(() => existingId ?? Date.now().toString(), [existingId])
-
+  const saveNote = useSaveNote()
   const githubRepo = useAtomValue(githubRepoAtom)
-  const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
 
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -68,13 +67,9 @@ export function NoteCardForm({
     // Don't create empty notes
     if (!value) return
 
-    const note = {
-      id,
-      rawBody: value,
-    }
+    const note = { id, rawBody: value }
 
-    upsertNote(note)
-
+    saveNote(note)
     onSubmit?.(note)
   }
 

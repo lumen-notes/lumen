@@ -8,9 +8,8 @@ import {
   githubUserAtom,
   notesAtom,
   rawNotesAtom,
-  upsertNoteAtom,
 } from "../global-state"
-import { deleteFile, getFileSha, readFile, writeFile, writeFiles } from "./github-fs"
+import { deleteFile, getFileSha, readFile, writeFiles } from "./github-fs"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
 export const shaAtom = atomWithStorage<string | null>("sha", null)
@@ -80,37 +79,6 @@ export const useFetchNotes = () => {
   }, [sha, getGitHubUser, getGitHubRepo, setRawNotes, setSha, setIsFetching, setError])
 
   return { fetchNotes, isFetching, error }
-}
-
-export function useUpsertNote() {
-  const getGitHubUser = useAtomCallback(githubUserCallback)
-  const getGitHubRepo = useAtomCallback(githubRepoCallback)
-  const upsertNote = useSetAtom(upsertNoteAtom)
-
-  return React.useCallback(
-    async ({ id, rawBody }: { id: string; rawBody: string }) => {
-      // Update state
-      upsertNote({ id, rawBody })
-
-      // Push to GitHub
-      try {
-        const githubUser = getGitHubUser()
-        const githubRepo = getGitHubRepo()
-        if (!githubUser || !githubRepo) return
-
-        await writeFile({
-          githubToken: githubUser.token,
-          githubRepo,
-          path: `${id}.md`,
-          content: rawBody,
-        })
-      } catch (error) {
-        // TODO: Display error
-        console.error(error)
-      }
-    },
-    [upsertNote, getGitHubUser, getGitHubRepo],
-  )
 }
 
 export function useDeleteNote() {

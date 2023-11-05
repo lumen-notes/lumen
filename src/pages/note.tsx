@@ -15,9 +15,9 @@ import { Markdown } from "../components/markdown"
 import { Panels } from "../components/panels"
 import { githubRepoAtom } from "../global-state"
 import { NotePanel } from "../panels/note"
-import { useUpsertNote } from "../utils/github-sync"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useNoteById } from "../utils/use-note-by-id"
+import { useSaveNote } from "../utils/use-save-note"
 import { useSearchParam } from "../utils/use-search-param"
 
 export function NotePage() {
@@ -50,7 +50,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const { "*": id = "" } = params
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const upsertNote = useUpsertNote()
+  const saveNote = useSaveNote()
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   // TODO: Save draft in local storage
 
@@ -164,7 +164,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     >
       {!isEditing ? (
         <div className="w-full flex-grow p-4">
-          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+          <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
             {note.rawBody}
           </Markdown>
         </div>

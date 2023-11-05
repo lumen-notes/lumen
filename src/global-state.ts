@@ -43,6 +43,7 @@ type Event =
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
+  | { type: "WRITE_FILE"; filepath: string; content: string }
 
 function createGlobalStateMachine() {
   return createMachine(
@@ -60,6 +61,7 @@ function createGlobalStateMachine() {
           pullFromGitHub: { data: void }
           pushToGitHub: { data: void }
           loadFiles: { data: { markdownFiles: Record<string, string> } }
+          writeFile: { data: void }
         }
       },
       predictableActionArguments: true,
@@ -167,10 +169,32 @@ function createGlobalStateMachine() {
                 },
               },
             },
+            writingFile: {
+              invoke: {
+                src: "writeFile",
+                onDone: [
+                  {
+                    cond: "isOnline",
+                    target: "syncing",
+                  },
+                  {
+                    target: "idle",
+                  },
+                ],
+                onError: {
+                  target: "error",
+                  actions: "setError",
+                },
+              },
+            },
             idle: {
               on: {
                 SELECT_REPO: "cloningRepo",
                 SYNC: "syncing",
+                WRITE_FILE: {
+                  target: "writingFile",
+                  actions: "setMarkdownFile",
+                },
               },
             },
             error: {},
@@ -179,6 +203,9 @@ function createGlobalStateMachine() {
       },
     },
     {
+      guards: {
+        isOnline: () => navigator.onLine,
+      },
       services: {
         initGitHubUser: async () => {
           // First, check URL for token and username
@@ -224,7 +251,6 @@ function createGlobalStateMachine() {
           return { githubRepo: { owner, name } }
         },
         cloneRepo: async (context, event) => {
-          if (!("githubRepo" in event)) throw new Error("No repository selected")
           if (!context.githubUser) throw new Error("Not signed in")
 
           const githubRepo = event.githubRepo
@@ -309,6 +335,34 @@ function createGlobalStateMachine() {
 
           return { markdownFiles: Object.fromEntries(markdownFiles) }
         },
+        writeFile: async (_, event) => {
+          const { filepath, content } = event
+
+          // Write file to file system
+          console.log(`$ echo "${content}" > ${filepath}`)
+          await fs.promises.writeFile(`${ROOT_DIR}/${filepath}`, content, "utf8")
+
+          // Stage file
+          console.log(`$ git add ${filepath}`)
+          await git.add({
+            fs,
+            dir: ROOT_DIR,
+            filepath,
+          })
+
+          // Commit file
+          console.log(`$ git commit -m "Update ${filepath}"`)
+          await git.commit({
+            fs,
+            dir: ROOT_DIR,
+            message: `Update ${filepath}`,
+            author: {
+              // TODO: Don't hardcode these values
+              name: "Cole Bemis",
+              email: "colebemis@github.com",
+            },
+          })
+        },
       },
       actions: {
         setGitHubUser: assign({
@@ -344,6 +398,12 @@ function createGlobalStateMachine() {
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
         }),
+        setMarkdownFile: assign({
+          markdownFiles: (context, event) => {
+            const { filepath, content } = event
+            return { ...context.markdownFiles, [filepath]: content }
+          },
+        }),
         setError: assign({
           // TODO: Remove `as Error`
           error: (_, event) => event.data as Error,
@@ -353,9 +413,7 @@ function createGlobalStateMachine() {
   )
 }
 
-export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine, {
-  devTools: import.meta.env.DEV,
-})
+export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
 // -----------------------------------------------------------------------------
 // GitHub
@@ -370,21 +428,12 @@ export const githubRepoAtom = selectAtom(
   globalStateMachineAtom,
   (state) => state.context.githubRepo,
 )
-// export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------
 
 export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
-
-export const upsertNoteAtom = atom(
-  null,
-  (get, set, { id, rawBody }: { id: NoteId; rawBody: string }) => {
-    const rawNotes = get(rawNotesAtom)
-    set(rawNotesAtom, { ...rawNotes, [id]: rawBody })
-  },
-)
 
 export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
   const rawNotes = get(rawNotesAtom)

@@ -43,7 +43,6 @@
     "@types/uuid": "^9.0.3",
     "@uiw/codemirror-themes": "^4.21.18",
     "@uiw/react-codemirror": "^4.21.18",
-    "@xstate/inspect": "^0.8.0",
     "buffer": "^6.0.3",
     "chrono-node": "^2.7.0",
     "clsx": "^1.2.1",

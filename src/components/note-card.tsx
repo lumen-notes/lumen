@@ -5,10 +5,12 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { NoteId } from "../types"
+import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
-import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
+import { useDeleteNote } from "../utils/github-sync"
 import { pluralize } from "../utils/pluralize"
 import { useNoteById } from "../utils/use-note-by-id"
+import { useSaveNote } from "../utils/use-save-note"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -24,7 +26,6 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
-import { cx } from "../utils/cx"
 
 type NoteCardProps = {
   id: NoteId
@@ -36,8 +37,8 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
-  const upsertNote = useUpsertNote()
   const Link = useLink()
 
   // Refs
@@ -270,7 +271,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </DropdownMenu>
         </div>
         <div className="p-4 pt-0">
-          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
+          <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
             {note.rawBody}
           </Markdown>
         </div>

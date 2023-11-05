@@ -1,6 +1,5 @@
 import * as Tooltip from "@radix-ui/react-tooltip"
 import "@total-typescript/ts-reset"
-import { inspect } from "@xstate/inspect"
 import React from "react"
 import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
@@ -21,11 +20,6 @@ import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
 import "./styles/index.css"
-
-// Enable XState devtools in development
-if (import.meta.env.DEV) {
-  inspect({ iframe: false })
-}
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (

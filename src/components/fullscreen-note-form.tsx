@@ -3,8 +3,8 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
-import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"
+import { useSaveNote } from "../utils/use-save-note"
 import { Button } from "./button"
 import { Card } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -30,7 +30,7 @@ export function FullscreenNoteForm({
   onCancel,
 }: FullscreenNoteFormProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
-  const upsertNote = useUpsertNote()
+  const saveNote = useSaveNote()
   const attachFile = useAttachFile()
   const [isDraggingOver, setIsDraggingOver] = React.useState(false)
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -47,8 +47,7 @@ export function FullscreenNoteForm({
       rawBody: value,
     }
 
-    upsertNote(note)
-
+    saveNote(note)
     onSubmit?.(note)
   }
 
