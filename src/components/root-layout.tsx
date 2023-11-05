@@ -1,28 +1,29 @@
-import { useAtomValue } from "jotai"
+import { useAtom } from "jotai"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { Card } from "./card"
+import { ErrorIcon16, LoadingIcon16 } from "./icons"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
-  const state = useAtomValue(globalStateMachineAtom)
+  const [state, send] = useAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
 
-  // const onLoad = React.useCallback(() => fetchNotes(), [fetchNotes])
+  const onVisibilityChange = React.useCallback(() => {
+    if (document.visibilityState === "visible") {
+      send({ type: "SYNC" })
+    }
+  }, [send])
 
-  // const onVisibilityChange = React.useCallback(() => {
-  //   if (document.visibilityState === "visible") {
-  //     fetchNotes()
-  //   }
-  // }, [fetchNotes])
+  const onOnline = React.useCallback(() => {
+    send({ type: "SYNC" })
+  }, [send])
 
-  // Fetch notes when the app loads, becomes visible, or comes online
-  // useEvent("load", onLoad)
-  // useEvent("visibilitychange", onVisibilityChange)
-  // useEvent("online", onOnline)
+  // Sync when the app becomes visible or comes online
+  useEvent("visibilitychange", onVisibilityChange)
+  useEvent("online", onOnline)
 
   const location = useLocation()
   const navigate = useNavigate()
