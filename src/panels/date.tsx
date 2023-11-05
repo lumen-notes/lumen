@@ -21,7 +21,7 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps } from "../components/panels"
-import { datesAtom, templatesAtom } from "../global-atoms"
+import { datesAtom, templatesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import {
   DATE_REGEX,

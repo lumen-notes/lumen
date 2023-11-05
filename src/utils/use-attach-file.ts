@@ -3,7 +3,7 @@ import { useAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { fileCache } from "../components/file-preview"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { writeFile } from "../utils/github-fs"
 
 export const UPLOADS_DIRECTORY = "uploads"

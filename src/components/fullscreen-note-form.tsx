@@ -1,7 +1,7 @@
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom } from "../global-atoms"
+import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
 import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"

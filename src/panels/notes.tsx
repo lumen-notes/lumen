@@ -6,7 +6,7 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { rawNotesAtom } from "../global-atoms"
+import { rawNotesAtom } from "../global-state"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
   const noteCountAtom = React.useMemo(

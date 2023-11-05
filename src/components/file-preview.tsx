@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { readRawFile } from "../utils/github-fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()

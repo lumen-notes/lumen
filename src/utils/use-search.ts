@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { noteSearcherAtom, sortedNotesAtom, taskSearcherAtom, tasksAtom } from "../global-atoms"
+import { noteSearcherAtom, sortedNotesAtom, taskSearcherAtom, tasksAtom } from "../global-state"
 import { Note, Task } from "../types"
 
 type Qualifier = {

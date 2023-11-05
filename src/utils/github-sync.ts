@@ -9,7 +9,7 @@ import {
   notesAtom,
   rawNotesAtom,
   upsertNoteAtom,
-} from "../global-atoms"
+} from "../global-state"
 import { deleteFile, getFileSha, readFile, writeFile, writeFiles } from "./github-fs"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed

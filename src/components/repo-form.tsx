@@ -1,6 +1,6 @@
 import { useAtom, useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { GitHubRepository } from "../types"
 import { readFile } from "../utils/github-fs"
 import { useFetchNotes } from "../utils/github-sync"
