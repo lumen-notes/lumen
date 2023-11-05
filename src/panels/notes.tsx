@@ -9,6 +9,7 @@ import { PanelProps } from "../components/panels"
 import { globalStateMachineAtom } from "../global-state"
 
 export function NotesPanel({ id, onClose }: PanelProps) {
+  const state = useAtomValue(globalStateMachineAtom)
   const noteCountAtom = React.useMemo(
     () =>
       selectAtom(
@@ -22,7 +23,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon16 />} onClose={onClose}>
       <div className="p-4">
-        {noteCount === 0 ? (
+        {state.matches("signedIn.idle") && noteCount === 0 ? (
           <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
         ) : (
           <NoteList />

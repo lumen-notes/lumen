@@ -17,6 +17,7 @@ export function SettingsPage() {
   return (
     <>
       <CommandMenu />
+      {/* TODO: Replace with 16px icon */}
       <Panel icon={<SettingsIcon24 />} title="Settings">
         <div className="grid gap-4 p-4">
           <h3 className="text-xl font-semibold leading-4">GitHub</h3>

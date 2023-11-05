@@ -42,11 +42,12 @@ type Event =
   | { type: "SIGN_IN"; githubUser: GitHubUser }
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
+  | { type: "SYNC" }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogBMANgAsuAMwBGVwBWI08ADndQgE5IkPcAGhAAT0QfAHZA3x9AyM9c1yM-VIKAX2KEqWw8IjkKakI6RhZ2Lm4uTjROXCsUPQAzDoBbXAqZarJapUa1Lk0RNF19QnNzRxs7RccXBA9vfyCQ8KiYz3iktx8fXFdU9yNA91vPa79PQNLy9ErcOygBCABJQjcADK-1oADkAPoAeVYABUVkgQGt7IRNohspFcEZ3EEgoFAq5PKlCglkghQn5cJ5otFQoEfEYSZTIu8QCM8D8-tCmCQQWCof9wYjrLZUeiEJjsbjCQTCcTSWdtkZLjEZYFUj53H4-D5PKUyiBCGgIHBHBzVmKNkitgBaU7k+3Yowu11u12pNkc2TjBR1BoqJrqS3rfAOG2IJ5klLZXwBQJ+W5BRNRL2fGRcyCAkPiiMUhO4dz3VyhTw+faha7R7ZPXD0yJa9I+UKhRtvQ3ezMQHkkHPW0BbE7ebJpIvhPVPVzV1zlq43O45VxEhOuA3FIA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogCMANlxGAzACYAHACs7q7+ACwA7IH+-gEANCAAnoi+rgCcuGH+If6uYWlGRq7BEQC+pQlS2HhEchTUhHSMLOxc3FycaJy4Vih6AGZdALa4VTK1ZPVKzWpcmiJouvqE5uaONnbLji4IALS+fri+7tHe3mlh+d7uae4JyQjegb64Nye37iFpvr5pZRUgMZ4OxQAQQADyTBI3AAygBJWgAOQA+nDEWskCANvZCNtEPt-Ed3BEIukQoFAmlAkYwvdEJFvLhooV3OEaa5ru5ypV0NVcCCwXDCLCESjwawACoY6y2HF4va+SleNLnCLZXwkv50hAhRmpQIRM7pMIa9LcwG8mQCyBC2STBQNJoqFgAJTANl4-EEWnEkktwPwoJthDt8kUjWUqjdNnmOj0+EMpmlWNlW0xO0+jKe3n8PgivkK1LuSUQJVwF3c1wurgiRhiYXNQP5gcFIYmYcdkdd7rQ7U4nW6vQGw1G-ubQYgtvbUwjM2jaFji3jibMpnWqYTuPTiG8hS8fl8WUNNYp-m1tc8KpVBtcoSMaSCjbH1snIbAQysJESsIAogAZH8AGEJWRF0fwABXBZNsTTUAdkCHMmXcMJiUNSlvCybUYiMTJSXcAJghKe8n2kAMJ1tbR0GIRp509AQhFECRR1I8dW1wSj+BoedFyWTdVjXTEYM3eU0lcF5D1yGIxLCQI8m8c9olwDwIkrSk0hVfw1RIvkXwoqiuJ7PsBx6PoSEGTgRibXSQw46ioG4n1eJXaCNwcbcEFvMIcNzVJvFcIxSRJCIsM03BDRiC4wlCLIc20q0W2DflEkIbQaDowRYBIPQ-RY6ykpSmgXM2YT3P8yJcGuQIGWuM4TmCksPKMAsKpUyLFVCFTfDisi2NgZLUsaHomBQBRGnShjfWYnSEtffKBqgIaRpoHjlxWJMBJlYq3LgxA2SZPzPi8vwCkNbUxLyTIzkuSsAmKDxutYxK+oKwarGG0aoCMroTOHCypvi8iQ2e+bFo+lbln4ixBNcrcdsa84wqMSsTU1GJkLOnNGS8g0YlJW9DwevLgZoIbYAACzSjpvqHMyRysmbbWJ16mHJ5bHNWyH1y22HnDcPwInLWJbhq4lYmLB4OS8o4jGeb4AhJM0AXpwHcHQLAIBoAAxfAUDgcafSY5W2LVjXGm13XYHBvj1qhza5VKw9PBrHMTo5Jr5Ia6JAkyC5axrX4Im+QJCYZkMTa1nW9apwdTPMyzn1D1W0HViOLat5yNpTbn5VvKIlP8DCC0C7wIkibUbkJE08n83MQh8EOVfwCBdd-ADgNAiCoMzoTtt5jynm91ICw5NG-Jpc9ELk0JkNyStYqVhPG+bsBYQATURQCivtuG8mCH35Z+YJjhk8vc3LPy1XOJrDTrcoAUINAIDgRwgS57e+92XcBfvVV1U1eqJZ+UFiEdwRQbihFksHBeLFpwOmmM6WYnA36wQ-oqb2GEsg0nwn4SksRtQ-AyP4dSeRyTFCqghBuYJIQkGQSVOG+w6zlgIdcIKxCYjahkp4Os+FigyyKP5Lk0DpqA1ob3HYioXg+B+EeC+FISQcLVEpfMBRNKhCIaEShiVYHhidFGHsoieY7AwjhPyBoqpXyimqbUhFXjKN3D4P40jNGzXfJ+B4dsUFGKyEcWIioHx+3vMEEKOFIjFFuFSKKPxXDOL0pxGi+jobZ3cuEVwl0pKqQKBhQIWEwiMj+B4JGKE-CfDSDEoG-UaAGPlMEMIiMB5IzOPeFSZ06yElCMY-IgdcnPDKXNEmb0lqNCqe5EILxaz1Lnk08WbgTyvALiaSshRjjBF6UzBab1WZDMSe-HYZVPB+CCMcEkFIULTI8mouZGD-JVV+NEoRANjbJ1NlAc2z9tmeLcFgzIYCS4HGiDEbJnsiG4FzFkUBxIAqBzuTyXKicm662GTvG8SEAo+FyMcbh5cigVWFlVKRIQVK9OjoivuxRWQgqakEN4BZDy0gaipTwGpDS1k0oXW+d8gA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -56,6 +57,8 @@ function createGlobalStateMachine() {
           initGitHubUser: { data: { githubUser: GitHubUser } }
           initGitHubRepo: { data: { githubRepo: GitHubRepository } }
           cloneRepo: { data: { githubRepo: GitHubRepository } }
+          pullFromGitHub: { data: void }
+          pushToGitHub: { data: void }
           loadFiles: { data: { markdownFiles: Record<string, string> } }
         }
       },
@@ -121,6 +124,36 @@ function createGlobalStateMachine() {
                 },
               },
             },
+            syncing: {
+              initial: "pulling",
+              states: {
+                pulling: {
+                  invoke: {
+                    src: "pullFromGitHub",
+                    onDone: "pushing",
+                    onError: {
+                      target: "#global.signedIn.error",
+                      actions: assign({
+                        error: (_, event) => event.data as Error,
+                      }),
+                    },
+                  },
+                },
+                pushing: {
+                  type: "final",
+                  invoke: {
+                    src: "pushToGitHub",
+                    onError: {
+                      target: "#global.signedIn.error",
+                      actions: assign({
+                        error: (_, event) => event.data as Error,
+                      }),
+                    },
+                  },
+                },
+              },
+              onDone: "loadingFiles",
+            },
             loadingFiles: {
               invoke: {
                 src: "loadFiles",
@@ -137,6 +170,7 @@ function createGlobalStateMachine() {
             idle: {
               on: {
                 SELECT_REPO: "cloningRepo",
+                SYNC: "syncing",
               },
             },
             error: {},
@@ -190,13 +224,8 @@ function createGlobalStateMachine() {
           return { githubRepo: { owner, name } }
         },
         cloneRepo: async (context, event) => {
-          if (!("githubRepo" in event)) {
-            throw new Error("No repository selected")
-          }
-
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!("githubRepo" in event)) throw new Error("No repository selected")
+          if (!context.githubUser) throw new Error("Not signed in")
 
           const githubRepo = event.githubRepo
           const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
@@ -223,6 +252,39 @@ function createGlobalStateMachine() {
           })
 
           return { githubRepo }
+        },
+        pullFromGitHub: async (context) => {
+          if (!context.githubUser) throw new Error("Not signed in")
+          const { username, token } = context.githubUser
+
+          console.log(`$ git pull`)
+          await git.pull({
+            fs,
+            http,
+            dir: ROOT_DIR,
+            corsProxy: "https://cors.isomorphic-git.org",
+            singleBranch: true,
+            author: {
+              // TODO: Don't hardcode these values
+              name: "Cole Bemis",
+              email: "colebemis@github.com",
+            },
+            onMessage: console.log,
+            onAuth: () => ({ username, password: token }),
+          })
+        },
+        pushToGitHub: async (context) => {
+          if (!context.githubUser) throw new Error("Not signed in")
+          const { username, token } = context.githubUser
+
+          console.log(`$ git push`)
+          await git.push({
+            fs,
+            http,
+            dir: ROOT_DIR,
+            corsProxy: "https://cors.isomorphic-git.org",
+            onAuth: () => ({ username, password: token }),
+          })
         },
         loadFiles: async () => {
           const markdownFiles = await git.walk({

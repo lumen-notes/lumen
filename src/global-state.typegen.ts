@@ -8,6 +8,7 @@
 "done.invoke.global.signedIn.cloningRepo:invocation[0]": { type: "done.invoke.global.signedIn.cloningRepo:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]": { type: "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.global.signedIn.loadingFiles:invocation[0]": { type: "done.invoke.global.signedIn.loadingFiles:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+"done.invoke.global.signedIn.syncing.pulling:invocation[0]": { type: "done.invoke.global.signedIn.syncing.pulling:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "error.platform.global.signedIn.cloningRepo:invocation[0]": { type: "error.platform.global.signedIn.cloningRepo:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.loadingFiles:invocation[0]": { type: "error.platform.global.signedIn.loadingFiles:invocation[0]"; data: unknown };
 "xstate.init": { type: "xstate.init" };
@@ -17,6 +18,8 @@
 "initGitHubRepo": "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]";
 "initGitHubUser": "done.invoke.global.initializingGitHubUser:invocation[0]";
 "loadFiles": "done.invoke.global.signedIn.loadingFiles:invocation[0]";
+"pullFromGitHub": "done.invoke.global.signedIn.syncing.pulling:invocation[0]";
+"pushToGitHub": "done.invoke.global.signedIn.syncing.pushing:invocation[0]";
         };
         missingImplementations: {
           actions: never;
@@ -43,9 +46,11 @@
           "cloneRepo": "SELECT_REPO";
 "initGitHubRepo": "SIGN_IN" | "done.invoke.global.initializingGitHubUser:invocation[0]";
 "initGitHubUser": "xstate.init";
-"loadFiles": "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]";
+"loadFiles": "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]" | "done.state.global.signedIn.syncing";
+"pullFromGitHub": "SYNC";
+"pushToGitHub": "done.invoke.global.signedIn.syncing.pulling:invocation[0]";
         };
-        matchesStates: "initializingGitHubUser" | "signedIn" | "signedIn.cloningRepo" | "signedIn.empty" | "signedIn.error" | "signedIn.idle" | "signedIn.initializingGitHubRepo" | "signedIn.loadingFiles" | "signedOut" | { "signedIn"?: "cloningRepo" | "empty" | "error" | "idle" | "initializingGitHubRepo" | "loadingFiles"; };
+        matchesStates: "initializingGitHubUser" | "signedIn" | "signedIn.cloningRepo" | "signedIn.empty" | "signedIn.error" | "signedIn.idle" | "signedIn.initializingGitHubRepo" | "signedIn.loadingFiles" | "signedIn.syncing" | "signedIn.syncing.pulling" | "signedIn.syncing.pushing" | "signedOut" | { "signedIn"?: "cloningRepo" | "empty" | "error" | "idle" | "initializingGitHubRepo" | "loadingFiles" | "syncing" | { "syncing"?: "pulling" | "pushing"; }; };
         tags: never;
       }
   

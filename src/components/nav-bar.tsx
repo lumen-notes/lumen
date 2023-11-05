@@ -1,5 +1,6 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import clsx from "clsx"
+import { useSetAtom } from "jotai"
 import React from "react"
 import {
   NavLinkProps,
@@ -10,10 +11,11 @@ import {
   useResolvedPath,
 } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
+import { globalStateMachineAtom } from "../global-state"
 import { toDateString } from "../utils/date"
-import { useFetchNotes } from "../utils/github-sync"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { DropdownMenu } from "./dropdown-menu"
+import { useSignOut } from "./github-auth"
 import { IconButton } from "./icon-button"
 import {
   CalendarFillIcon24,
@@ -26,10 +28,9 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
-import { useSignOut } from "./github-auth"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const { fetchNotes } = useFetchNotes()
+  const send = useSetAtom(globalStateMachineAtom)
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
   const { online } = useNetworkState()
@@ -121,8 +122,8 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={fetchNotes} disabled={!online}>
-                Refresh
+              <DropdownMenu.Item onClick={() => send({ type: "SYNC" })} disabled={!online}>
+                Sync
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings
