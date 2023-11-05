@@ -45,8 +45,8 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-      {state.matches("signedIn.error") && state.context.error ? (
-        <div className="flex items-center gap-3 bg-[crimson] px-4 py-2 text-[white]">
+      {state.context.error ? (
+        <div className="flex items-center gap-3 bg-[firebrick] px-4 py-2 text-[white]">
           <div>
             <ErrorIcon16 />
           </div>
