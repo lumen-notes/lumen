@@ -1,8 +1,7 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
-import { useNavigate } from "react-router-dom"
 import urlcat from "urlcat"
-import { githubRepoAtom, githubUserAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { shaAtom } from "../utils/github-sync"
 import { Button } from "./button"
@@ -12,33 +11,16 @@ import { LumenLogo } from "./lumen-logo"
 import { RepoForm } from "./repo-form"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
-  const navigate = useNavigate()
-  const [githubUser, setGitHubUser] = useAtom(githubUserAtom)
+  const state = useAtomValue(globalStateMachineAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
 
-  React.useEffect(() => {
-    // Get token and username from URL
-    const token = new URLSearchParams(window.location.search).get("token")
-    const username = new URLSearchParams(window.location.search).get("username")
+  if (state.matches("initializingGitHubUser")) return null
 
-    if (token && username) {
-      // Save token and username
-      setGitHubUser({ token, username })
-
-      // Remove access token from URL
-      const searchParams = new URLSearchParams(window.location.search)
-      searchParams.delete("token")
-      searchParams.delete("username")
-
-      navigate({ search: searchParams.toString() }, { replace: true })
-    }
-  }, [navigate, setGitHubUser])
-
-  return !githubUser || !githubRepo ? (
+  return state.matches("signedOut") || !githubRepo ? (
     <div className="flex min-h-screen items-center justify-center pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] coarse:items-end coarse:sm:items-center [@supports(min-height:100svh)]:min-h-[100svh]">
       <div className="flex w-full max-w-sm flex-col items-start px-4 py-8">
         <LumenLogo size={24} className="mb-8" />
-        {!githubUser ? (
+        {state.matches("signedOut") ? (
           <>
             <h1 className="mb-1 text-xl font-semibold">Welcome to Lumen</h1>
             <p className="mb-8 text-text-secondary">
@@ -47,6 +29,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
                 Learn more
               </a>
             </p>
+            <SignInButton />
           </>
         ) : (
           <>
@@ -54,12 +37,12 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
             <p className="mb-8 text-text-secondary">
               Store your notes as markdown files in a GitHub repository of your choice.
             </p>
+            <div className="grid w-full gap-4">
+              <SignedInUser />
+              <RepoForm />
+            </div>
           </>
         )}
-        <div className="grid w-full gap-4">
-          <SignedInUser />
-          {githubUser ? <RepoForm /> : null}
-        </div>
       </div>
     </div>
   ) : (
@@ -68,7 +51,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
 }
 
 function SignInButton({ className }: { className?: string }) {
-  const setGitHubUser = useSetAtom(githubUserAtom)
+  const send = useSetAtom(globalStateMachineAtom)
   return (
     <Button
       variant="primary"
@@ -79,7 +62,7 @@ function SignInButton({ className }: { className?: string }) {
           try {
             const token = import.meta.env.VITE_GITHUB_PAT
             const username = await getUsername(token)
-            setGitHubUser({ username, token })
+            send({ type: "SIGN_IN", githubUser: { token, username } })
           } catch (error) {
             console.error(error)
           }
@@ -102,7 +85,7 @@ export function SignedInUser() {
   const githubUser = useAtomValue(githubUserAtom)
   const signOut = useSignOut()
 
-  if (!githubUser) return <SignInButton />
+  if (!githubUser) return null
 
   return (
     <Card className="flex items-center justify-between px-4 py-4">
@@ -121,11 +104,11 @@ export function SignedInUser() {
 }
 
 export function useSignOut() {
-  const setGitHubUser = useSetAtom(githubUserAtom)
+  const send = useSetAtom(globalStateMachineAtom)
   const setSha = useSetAtom(shaAtom)
 
   return () => {
-    setGitHubUser(null)
+    send({ type: "SIGN_OUT" })
 
     // Always refetch notes when signing back in
     setSha(null)

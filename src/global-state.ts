@@ -1,15 +1,150 @@
 import { Searcher } from "fast-fuzzy"
 import { atom } from "jotai"
-import { atomWithStorage } from "jotai/utils"
-import { GitHubRepository, GitHubUser, Note, NoteId, Task, Template, templateSchema } from "./types"
+import { atomWithStorage, selectAtom } from "jotai/utils"
+import {
+  GitHubRepository,
+  GitHubUser,
+  Note,
+  NoteId,
+  Task,
+  Template,
+  githubUserSchema,
+  templateSchema,
+} from "./types"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
+import { assign, createMachine } from "xstate"
+import { atomWithMachine } from "jotai-xstate"
+
+const GITHUB_USER_KEY = "github_user"
+
+// -----------------------------------------------------------------------------
+// State machine
+// -----------------------------------------------------------------------------
+
+type Context = {
+  githubUser: GitHubUser | null
+  githubRepo: GitHubRepository | null
+}
+
+type Event = { type: "SIGN_IN"; githubUser: GitHubUser } | { type: "SIGN_OUT" }
+
+function createGlobalStateMachine() {
+  return createMachine(
+    {
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogBMANgAsuAMwBGVwBWI08ADndQgE5IkPcAGhAAT0QfAHZA3x9AyM9c1yM-VIKAX2KEqWw8IjkKakI6RhZ2Lm4uTjROXCsUPQAzDoBbXAqZarJapUa1Lk0RNF19QnNzRxs7RccXBA9vfyCQ8KiYz3iktx8fXFdU9yNA91vPa79PQNLy9ErcOygBCABJQjcADK-1oADkAPoAeVYABUVkgQGt7IRNohspFcEZ3EEgoFAq5PKlCglkghQn5cJ5otFQoEfEYSZTIu8QCM8D8-tCmCQQWCof9wYjrLZUeiEJjsbjCQTCcTSWdtkZLjEZYFUj53H4-D5PKUyiBCGgIHBHBzVmKNkitgBaU7k+3Yowu11u12pNkc2TjBR1BoqJrqS3rfAOG2IJ5klLZXwBQJ+W5BRNRL2fGRcyCAkPiiMUhO4dz3VyhTw+faha7R7ZPXD0yJa9I+UKhRtvQ3ezMQHkkHPW0BbE7ebJpIvhPVPVzV1zlq43O45VxEhOuA3FIA */
+      id: "global",
+      tsTypes: {} as import("./global-state.typegen").Typegen0,
+      schema: {} as {
+        context: Context
+        events: Event
+        services: { initGitHubUser: { data: { githubUser: GitHubUser } } }
+      },
+      predictableActionArguments: true,
+      initial: "initializingGitHubUser",
+      context: {
+        githubUser: null,
+        githubRepo: null,
+      },
+      states: {
+        initializingGitHubUser: {
+          invoke: {
+            src: "initGitHubUser",
+            onDone: {
+              target: "signedIn",
+              actions: ["setGitHubUser"],
+            },
+            onError: "signedOut",
+          },
+        },
+        signedOut: {
+          on: {
+            SIGN_IN: {
+              target: "signedIn",
+              actions: ["setGitHubUser", "setGitHubUserLocalStorage"],
+            },
+          },
+        },
+        signedIn: {
+          on: {
+            SIGN_OUT: {
+              target: "signedOut",
+              actions: ["clearGitHubUser", "clearGitHubUserLocalStorage"],
+            },
+          },
+        },
+      },
+    },
+    {
+      services: {
+        initGitHubUser: async () => {
+          // First, check URL for token and username
+          const token = new URLSearchParams(window.location.search).get("token")
+          const username = new URLSearchParams(window.location.search).get("username")
+          console.log("init", { token, username })
+
+          if (token && username) {
+            // Save token and username to local storage
+            localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, username }))
+
+            // Remove token and username from URL
+            const searchParams = new URLSearchParams(window.location.search)
+            searchParams.delete("token")
+            searchParams.delete("username")
+            window.history.replaceState(
+              {},
+              "",
+              `${window.location.pathname}${
+                searchParams.toString() ? `?${searchParams.toString()}` : ""
+              }`,
+            )
+
+            return { githubUser: { token, username } }
+          }
+
+          // Next, check local storage for token and username
+          const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_KEY) ?? "null")
+          return { githubUser: githubUserSchema.parse(githubUser) }
+        },
+      },
+      actions: {
+        setGitHubUser: assign({
+          githubUser: (_, event) => {
+            switch (event.type) {
+              case "SIGN_IN":
+                return event.githubUser
+              case "done.invoke.global.initializingGitHubUser:invocation[0]":
+                return event.data.githubUser
+            }
+          },
+        }),
+        setGitHubUserLocalStorage: (_, event) => {
+          console.log("setGitHubUserLocalStorage", event.githubUser)
+          localStorage.setItem(GITHUB_USER_KEY, JSON.stringify(event.githubUser))
+        },
+        clearGitHubUser: assign({
+          githubUser: null,
+        }),
+        clearGitHubUserLocalStorage: () => {
+          localStorage.removeItem(GITHUB_USER_KEY)
+        },
+      },
+    },
+  )
+}
+
+export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine, {
+  devTools: import.meta.env.DEV,
+})
 
 // -----------------------------------------------------------------------------
 // GitHub
 // -----------------------------------------------------------------------------
 
-export const githubUserAtom = atomWithStorage<GitHubUser | null>("github_user", null)
+export const githubUserAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.context.githubUser,
+)
 
 export const githubRepoAtom = atomWithStorage<GitHubRepository | null>("github_repo", null)
 

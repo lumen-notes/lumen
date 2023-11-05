@@ -41,10 +41,12 @@ export type GitHubRepository = {
   name: string
 }
 
-export type GitHubUser = {
-  token: string
-  username: string
-}
+export const githubUserSchema = z.object({
+  token: z.string(),
+  username: z.string(),
+})
+
+export type GitHubUser = z.infer<typeof githubUserSchema>
 
 export const templateInputSchema = z.object({
   type: z.literal("string"),
@@ -53,13 +55,13 @@ export const templateInputSchema = z.object({
   description: z.string().optional(),
 })
 
+export type TemplateInput = z.infer<typeof templateInputSchema>
+
 export const templateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   inputs: z.record(templateInputSchema).optional(),
   body: z.string(),
 })
-
-export type TemplateInput = z.infer<typeof templateInputSchema>
 
 export type Template = z.infer<typeof templateSchema>
