@@ -6,16 +6,17 @@ import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
+import { Button } from "./button"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [state, send] = useAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
 
   const onVisibilityChange = React.useCallback(() => {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState === "visible" && online) {
       send({ type: "SYNC" })
     }
-  }, [send])
+  }, [send, online])
 
   const onOnline = React.useCallback(() => {
     send({ type: "SYNC" })
@@ -55,6 +56,8 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="truncate">{state.context.error.message}</span>
         </div>
       ) : null}
+      {JSON.stringify(state.value)}
+      <Button onClick={() => send({ type: "SYNC" })}>Sync</Button>
       {children}
       {!online ? (
         <div className="flex justify-center px-4 py-2 sm:justify-start sm:bg-bg-tertiary">

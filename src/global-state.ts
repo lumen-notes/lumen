@@ -48,7 +48,7 @@ type Event =
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogCMANlxGAzACYAHACs7q7+ACwA7IH+-gEANCAAnoi+rgCcuGH+If6uYWlGRq7BEQC+pQlS2HhEchTUhHSMLOxc3FycaJy4Vih6AGZdALa4VTK1ZPVKzWpcmiJouvqE5uaONnbLji4IALS+fri+7tHe3mlh+d7uae4JyQjegb64Nye37iFpvr5pZRUgMZ4OxQAQQADyTBI3AAygBJWgAOQA+nDEWskCANvZCNtEPt-Ed3BEIukQoFAmlAkYwvdEJFvLhooV3OEaa5ru5ypV0NVcCCwXDCLCESjwawACoY6y2HF4va+SleNLnCLZXwkv50hAhRmpQIRM7pMIa9LcwG8mQCyBC2STBQNJoqFgAJTANl4-EEWnEkktwPwoJthDt8kUjWUqjdNnmOj0+EMpmlWNlW0xO0+jKe3n8PgivkK1LuSUQJVwF3c1wurgiRhiYXNQP5gcFIYmYcdkdd7rQ7U4nW6vQGw1G-ubQYgtvbUwjM2jaFji3jibMpnWqYTuPTiG8hS8fl8WUNNYp-m1tc8KpVBtcoSMaSCjbH1snIbAQysJESsIAogAZH8AGEJWRF0fwABXBZNsTTUAdkCHMmXcMJiUNSlvCybUYiMTJSXcAJghKe8n2kAMJ1tbR0GIRp509AQhFECRR1I8dW1wSj+BoedFyWTdVjXTEYM3eU0lcF5D1yGIxLCQI8m8c9olwDwIkrSk0hVfw1RIvkXwoqiuJ7PsBx6PoSEGTgRibXSQw46ioG4n1eJXaCNwcbcEFvMIcNzVJvFcIxSRJCIsM03BDRiC4wlCLIc20q0W2DflEkIbQaDowRYBIPQ-RY6ykpSmgXM2YT3P8yJcGuQIGWuM4TmCksPKMAsKpUyLFVCFTfDisi2NgZLUsaHomBQBRGnShjfWYnSEtffKBqgIaRpoHjlxWJMBJlYq3LgxA2SZPzPi8vwCkNbUxLyTIzkuSsAmKDxutYxK+oKwarGG0aoCMroTOHCypvi8iQ2e+bFo+lbln4ixBNcrcdsa84wqMSsTU1GJkLOnNGS8g0YlJW9DwevLgZoIbYAACzSjpvqHMyRysmbbWJ16mHJ5bHNWyH1y22HnDcPwInLWJbhq4lYmLB4OS8o4jGeb4AhJM0AXpwHcHQLAIBoAAxfAUDgcafSY5W2LVjXGm13XYHBvj1qhza5VKw9PBrHMTo5Jr5Ia6JAkyC5axrX4Im+QJCYZkMTa1nW9apwdTPMyzn1D1W0HViOLat5yNpTbn5VvKIlP8DCC0C7wIkibUbkJE08n83MQh8EOVfwCBdd-ADgNAiCoMzoTtt5jynm91ICw5NG-Jpc9ELk0JkNyStYqVhPG+bsBYQATURQCivtuG8mCH35Z+YJjhk8vc3LPy1XOJrDTrcoAUINAIDgRwgS57e+92XcBfvVV1U1eqJZ+UFiEdwRQbihFksHBeLFpwOmmM6WYnA36wQ-oqb2GEsg0nwn4SksRtQ-AyP4dSeRyTFCqghBuYJIQkGQSVOG+w6zlgIdcIKxCYjahkp4Os+FigyyKP5Lk0DpqA1ob3HYioXg+B+EeC+FISQcLVEpfMBRNKhCIaEShiVYHhidFGHsoieY7AwjhPyBoqpXyimqbUhFXjKN3D4P40jNGzXfJ+B4dsUFGKyEcWIioHx+3vMEEKOFIjFFuFSKKPxXDOL0pxGi+jobZ3cuEVwl0pKqQKBhQIWEwiMj+B4JGKE-CfDSDEoG-UaAGPlMEMIiMB5IzOPeFSZ06yElCMY-IgdcnPDKXNEmb0lqNCqe5EILxaz1Lnk08WbgTyvALiaSshRjjBF6UzBab1WZDMSe-HYZVPB+CCMcEkFIULTI8mouZGD-JVV+NEoRANjbJ1NlAc2z9tmeLcFgzIYCS4HGiDEbJnsiG4FzFkUBxIAqBzuTyXKicm662GTvG8SEAo+FyMcbh5cigVWFlVKRIQVK9OjoivuxRWQgqakEN4BZDy0gaipTwGpDS1k0oXW+d8gA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogBMANgAsuAMwBGVwBWP0DXAA4wvwB2aKiAGhAAT0RI3ECjDKMY93cwo3SATgBfIoSpbDwiOQpqQjpGFnYubi5ONE5cKxQ9ADN2gFtccpkqshqlBrUuTRE0XX1Cc3NHGzsFxxcEUITkhD8fKLDfTwKjT1dXT3c-T3ySsvQK3DsoAQgAeSYSbgBlAElaAA5AD6f0ByyQIFW9kIG0Q0X8uEirh8nhOuUCYU88SSiCi4SRYVcRhRxL87iMYR89xAwzwLzef0IvwBIPerAAKhDrLYYXC9lFEcjUeiwpjsTt4UY-EdpT4CvssmFBTkaXTnvhXpAmbIxgpavUVCwAEpgGy8fiCLTiSSPGQM7WEXXyRR1ZSqU02GY6PT4QymblQ3nrSGbHyuPy4AqBfzy6Xky6SvaXQK+aNhAr4hUy9xqu30zWMp2jF0G90ms1oFqcNodLq9AZDfMarUQHUl8ZuyaetDeua+-1mUwrYN+2GhxDhyPR2OnPwJzxJzFRJFXHxYlEFKdRPPSAutnVgfpWEiJX4AUQAMueAMIc4HG88ABXegehIdAm3cgW8M6M7hiW4-FOAolzCdxjncA5vy3IDilKWlmwdNsnW0dBiDqHsLQEIRRAkJs9xbItcDQ-gaB7Pt5jHJZh0hd8x35Px8lcXAohOSJcgVSkQiTb8jlOdxwlRddMxjXcnmQnVSIwqAsNadpOm6Eg+k4QZ1Uk1D0PIytKIHRYA1onk1gYic9mY1j2PJDMmMiQIl2-KMY32LEsRJO4EPUwtHWeRJCG0GhsKtWZ8M8g8nVgXz-LqXSFhoiw6NHBxTKY0ILIKDjrO4uzcTMwJUwVWCsXXVwCmxcT7S8lCfL8gL5LrJSVLUpDKp1CKaui60qMHN9EvHT8pVStj0qsrjbKTecjB8XBPGAnxQjy-xpXK-diPQLAIBoAAxfAUDgQLcJtAiJJap01o2uptt22AYuogz4qMvlkvMoaMtGnictOKb3AKVw2IOSb-ExZaiO8s6tp2va6sUhtVKOiqwtwMGLoh67Or0uKR2MpL+r2TxUVwCkfoVQIokCaNPDCJMFSmy5ftOfIM1E4GNNwAB3Tg5GR3b9utELmoR9nOagS6wBu7rDKDLG+ucRAAKMAmjFgnIciJUCcpiGnyUV65w2+wJcw8-niMFsgubAata2h5TG1C42OdN4WIbF-Sh3uyXHpxlKWJekabPe3Yon-ab-1+klyRyfZmZOggIG5n4r1ve9HxfHqpf5b9fxjf9AOlEDeJ8CCsSgw4chK37XCjhH8Fj82fgATUBG9U49mWEAzxyfGzm5c8V8b-wKAnvp8TumO-EvK+I6vuYAdWNP4OXPYFNr+a9m4-Vv27-ADu+A3v1YpVjyVm8ComjAISgQwg0AgOBHDpTGW82ABadwkxf4GO31CYjSmTgH-XzY5wqZTUzGPGMeR1xQU8BPSAnwSD-xMp7dKLFbhk3YhkckJM+55SjNvDI0Zfpongg8QiGkEHY1bicJM2IjieCcsVUI-4C4wKqp-V0hoPSVnIdLTYmYlxRBXGTYuXtvyXBYYeY8p5uH8lCN4ZU7FTiYnSmrXYmJC5riiDBVEudxGaTIphLhCU06mSpCxfwlw5T7GHhKHK+sB6aM7icMOAEFS6OqlFKA0iTGBzSIJYexJFb-n2H3Ohg9YLyjJGKA2JDjoIyRo7K6XjPaXCOD+HI5wgkJhUYgbM00h55BmkEZRbiTbg12kk1uG5CQZC8BcAoFISpJkDt4KC4R8iKxuIcNxU8wAVM2DGfKWdBQlwKFuXi6RVxQW-PgkkgQ3F1T6fCCkK4SoAWuIcecP0mnhmmkSU+s0fwXD8BfIoQA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -57,9 +57,9 @@ function createGlobalStateMachine() {
         services: {
           initGitHubUser: { data: { githubUser: GitHubUser } }
           initGitHubRepo: { data: { githubRepo: GitHubRepository } }
-          cloneRepo: { data: { githubRepo: GitHubRepository } }
-          pullFromGitHub: { data: void }
-          pushToGitHub: { data: void }
+          clone: { data: { githubRepo: GitHubRepository } }
+          pull: { data: void }
+          push: { data: void }
           loadFiles: { data: { markdownFiles: Record<string, string> } }
           writeFile: { data: void }
         }
@@ -118,7 +118,7 @@ function createGlobalStateMachine() {
             cloningRepo: {
               entry: "setGitHubRepo",
               invoke: {
-                src: "cloneRepo",
+                src: "clone",
                 onDone: "loadingFiles",
                 onError: {
                   target: "error",
@@ -127,34 +127,16 @@ function createGlobalStateMachine() {
               },
             },
             syncing: {
-              initial: "pulling",
-              states: {
-                pulling: {
-                  invoke: {
-                    src: "pullFromGitHub",
-                    onDone: "pushing",
-                    onError: {
-                      target: "#global.signedIn.error",
-                      actions: assign({
-                        error: (_, event) => event.data as Error,
-                      }),
-                    },
-                  },
-                },
-                pushing: {
-                  type: "final",
-                  invoke: {
-                    src: "pushToGitHub",
-                    onError: {
-                      target: "#global.signedIn.error",
-                      actions: assign({
-                        error: (_, event) => event.data as Error,
-                      }),
-                    },
-                  },
+              invoke: {
+                src: "sync",
+                onDone: "loadingFiles",
+                onError: {
+                  target: "error",
+                  actions: assign({
+                    error: (_, event) => event.data as Error,
+                  }),
                 },
               },
-              onDone: "loadingFiles",
             },
             loadingFiles: {
               invoke: {
@@ -172,15 +154,7 @@ function createGlobalStateMachine() {
             writingFile: {
               invoke: {
                 src: "writeFile",
-                onDone: [
-                  {
-                    cond: "isOnline",
-                    target: "syncing",
-                  },
-                  {
-                    target: "idle",
-                  },
-                ],
+                onDone: "idle",
                 onError: {
                   target: "error",
                   actions: "setError",
@@ -250,7 +224,7 @@ function createGlobalStateMachine() {
 
           return { githubRepo: { owner, name } }
         },
-        cloneRepo: async (context, event) => {
+        clone: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
           const githubRepo = event.githubRepo
@@ -263,6 +237,7 @@ function createGlobalStateMachine() {
           fsWipe()
 
           // Clone repo
+          // This could take a long time if the repo is large
           console.log(`$ git clone ${url}.git ${ROOT_DIR}`)
           await git.clone({
             fs,
@@ -279,7 +254,7 @@ function createGlobalStateMachine() {
 
           return { githubRepo }
         },
-        pullFromGitHub: async (context) => {
+        sync: async (context) => {
           if (!context.githubUser) throw new Error("Not signed in")
           const { username, token } = context.githubUser
 
@@ -288,7 +263,6 @@ function createGlobalStateMachine() {
             fs,
             http,
             dir: ROOT_DIR,
-            corsProxy: "https://cors.isomorphic-git.org",
             singleBranch: true,
             author: {
               // TODO: Don't hardcode these values
@@ -298,21 +272,17 @@ function createGlobalStateMachine() {
             onMessage: console.log,
             onAuth: () => ({ username, password: token }),
           })
-        },
-        pushToGitHub: async (context) => {
-          if (!context.githubUser) throw new Error("Not signed in")
-          const { username, token } = context.githubUser
 
           console.log(`$ git push`)
           await git.push({
             fs,
             http,
             dir: ROOT_DIR,
-            corsProxy: "https://cors.isomorphic-git.org",
             onAuth: () => ({ username, password: token }),
           })
         },
         loadFiles: async () => {
+          console.time("loadFiles")
           const markdownFiles = await git.walk({
             fs,
             dir: ROOT_DIR,
@@ -332,10 +302,12 @@ function createGlobalStateMachine() {
               return [filepath, new TextDecoder().decode(content)]
             },
           })
-
+          console.timeEnd("loadFiles")
           return { markdownFiles: Object.fromEntries(markdownFiles) }
         },
-        writeFile: async (_, event) => {
+        writeFile: async (context, event) => {
+          if (!context.githubUser) throw new Error("Not signed in")
+          const { username, token } = context.githubUser
           const { filepath, content } = event
 
           // Write file to file system
@@ -362,6 +334,17 @@ function createGlobalStateMachine() {
               email: "colebemis@github.com",
             },
           })
+
+          // Push if online
+          if (navigator.onLine) {
+            console.log(`$ git push`)
+            await git.push({
+              fs,
+              http,
+              dir: ROOT_DIR,
+              onAuth: () => ({ username, password: token }),
+            })
+          }
         },
       },
       actions: {
