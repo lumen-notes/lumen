@@ -1,6 +1,5 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
-import clsx from "clsx"
-import { useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import React from "react"
 import {
   NavLinkProps,
@@ -23,14 +22,16 @@ import {
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
+  SyncIcon24,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
+import { cx } from "../utils/cx"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const send = useSetAtom(globalStateMachineAtom)
+  const [state, send] = useAtom(globalStateMachineAtom)
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
   const { online } = useNetworkState()
@@ -48,24 +49,21 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
 
   return (
     <nav
-      className={clsx(
+      className={cx(
         "w-full border-border-secondary",
         // Add a border separating the nav bar from the main content.
         { left: "border-r", bottom: "border-t" }[position],
       )}
     >
       <ul
-        className={clsx(
-          "flex p-2",
-          { left: "h-full flex-col gap-2", bottom: "flex-row" }[position],
-        )}
+        className={cx("flex p-2", { left: "h-full flex-col gap-2", bottom: "flex-row" }[position])}
       >
-        <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink to="/" aria-label="Notes" tooltipSide={tooltipSide} end>
             {({ isActive }) => (isActive ? <NoteFillIcon24 /> : <NoteIcon24 />)}
           </NavLink>
         </li>
-        <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink
             to={`/${toDateString(new Date())}`}
             aria-label="Today"
@@ -81,15 +79,27 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
             }
           </NavLink>
         </li>
-        <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink to="/tags" aria-label="Tags" tooltipSide={tooltipSide} end>
             {({ isActive }) => (isActive ? <TagFillIcon24 /> : <TagIcon24 />)}
           </NavLink>
         </li>
-        <li className={clsx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
         </li>
-        <li className={clsx({ left: "mt-auto flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "mt-auto", bottom: "hidden" }[position])}>
+          <IconButton
+            aria-label={state.matches("signedIn.cloned.sync.syncing") ? "Syncing…" : "Sync"}
+            tooltipSide="right"
+            onClick={() => send({ type: "SYNC" })}
+            disabled={!online}
+          >
+            <SyncIcon24
+              className={cx(state.matches("signedIn.cloned.sync.syncing") && "animate-spin")}
+            />
+          </IconButton>
+        </li>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
               {/* TODO: Focus button when dialog closes. */}
@@ -122,8 +132,12 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => send({ type: "SYNC" })} disabled={!online}>
-                Sync
+              <DropdownMenu.Item
+                className={cx(position === "left" && "hidden")}
+                onClick={() => send({ type: "SYNC" })}
+                disabled={!online}
+              >
+                {state.matches("signedIn.cloned.sync.syncing") ? "Syncing…" : "Sync"}
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings
@@ -153,7 +167,7 @@ function NavLink({
     <Tooltip>
       <Tooltip.Trigger asChild>
         <RouterNavLink
-          className={clsx(
+          className={cx(
             "focus-ring inline-flex w-full justify-center rounded-sm p-2 hover:bg-bg-secondary coarse:p-3",
             isActive ? "text-text" : "text-text-secondary",
           )}

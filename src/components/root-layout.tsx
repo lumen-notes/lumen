@@ -1,15 +1,14 @@
-import { useAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
-  const [state, send] = useAtom(globalStateMachineAtom)
+  const state = useAtomValue(globalStateMachineAtom)
   const location = useLocation()
   const navigate = useNavigate()
   const { online } = useNetworkState()
@@ -55,8 +54,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="truncate">{state.context.error.message}</span>
         </div>
       ) : null}
-      {JSON.stringify(state.value)}
-      <Button onClick={() => send({ type: "SYNC" })}>Sync</Button>
       {children}
       {!online ? (
         <div className="flex justify-center px-4 py-2 sm:justify-start sm:bg-bg-tertiary">
