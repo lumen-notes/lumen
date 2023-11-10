@@ -48,24 +48,39 @@ type Event =
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6AlgHb4Au+O+AXkVAOKkASArhgKqxgBOAxBGoWAKEAbmgDWg1JhxDS5FFRr0SzNh04IiogMZYy-ANoAGALrGTiUAAc0sOf0sgAHogBMANgAsuAMwBGVwBWP0DXAA4wvwB2aKiAGhAAT0RI3ECjDKMY93cwo3SATgBfIoSpbDwiOQpqQjpGFnYubi5ONE5cKxQ9ADN2gFtccpkqshqlBrUuTRE0XX1Cc3NHGzsFxxcEUITkhD8fKLDfTwKjT1dXT3c-T3ySsvQK3DsoAQgAeSYSbgBlAElaAA5AD6f0ByyQIFW9kIG0Q0X8uEirh8nhOuUCYU88SSiCi4SRYVcRhRxL87iMYR89xAwzwLzef0IvwBIPerAAKhDrLYYXC9lFEcjUeiwpjsTt4UY-EdpT4CvssmFBTkaXTnvhXpAmbIxgpavUVCwAEpgGy8fiCLTiSSPGQM7WEXXyRR1ZSqU02GY6PT4QymblQ3nrSGbHyuPy4AqBfzy6Xky6SvaXQK+aNhAr4hUy9xqu30zWMp2jF0G90ms1oFqcNodLq9AZDfMarUQHUl8ZuyaetDeua+-1mUwrYN+2GhxDhyPR2OnPwJzxJzFRJFXHxYlEFKdRPPSAutnVgfpWEiJX4AUQAMueAMIc4HG88ABXegehIdAm3cgW8M6M7hiW4-FOAolzCdxjncA5vy3IDilKWlmwdNsnW0dBiDqHsLQEIRRAkJs9xbItcDQ-gaB7Pt5jHJZh0hd8x35Px8lcXAohOSJcgVSkQiTb8jlOdxwlRddMxjXcnmQnVSIwqAsNadpOm6Eg+k4QZ1Uk1D0PIytKIHRYA1onk1gYic9mY1j2PJDMmMiQIl2-KMY32LEsRJO4EPUwtHWeRJCG0GhsKtWZ8M8g8nVgXz-LqXSFhoiw6NHBxTKY0ILIKDjrO4uzcTMwJUwVWCsXXVwCmxcT7S8lCfL8gL5LrJSVLUpDKp1CKaui60qMHN9EvHT8pVStj0qsrjbKTecjB8XBPGAnxQjy-xpXK-diPQLAIBoAAxfAUDgQLcJtAiJJap01o2uptt22AYuogz4qMvlkvMoaMtGnictOKb3AKVw2IOSb-ExZaiO8s6tp2va6sUhtVKOiqwtwMGLoh67Or0uKR2MpL+r2TxUVwCkfoVQIokCaNPDCJMFSmy5ftOfIM1E4GNNwAB3Tg5GR3b9utELmoR9nOagS6wBu7rDKDLG+ucRAAKMAmjFgnIciJUCcpiGnyUV65w2+wJcw8-niMFsgubAata2h5TG1C42OdN4WIbF-Sh3uyXHpxlKWJekabPe3Yon-ab-1+klyRyfZmZOggIG5n4r1ve9HxfHqpf5b9fxjf9AOlEDeJ8CCsSgw4chK37XCjhH8Fj82fgATUBG9U49mWEAzxyfGzm5c8V8b-wKAnvp8TumO-EvK+I6vuYAdWNP4OXPYFNr+a9m4-Vv27-ADu+A3v1YpVjyVm8ComjAISgQwg0AgOBHDpTGW82ABadwkxf4GO31CYjSmTgH-XzY5wqZTUzGPGMeR1xQU8BPSAnwSD-xMp7dKLFbhk3YhkckJM+55SjNvDI0Zfpongg8QiGkEHY1bicJM2IjieCcsVUI-4C4wKqp-V0hoPSVnIdLTYmYlxRBXGTYuXtvyXBYYeY8p5uH8lCN4ZU7FTiYnSmrXYmJC5riiDBVEudxGaTIphLhCU06mSpCxfwlw5T7GHhKHK+sB6aM7icMOAEFS6OqlFKA0iTGBzSIJYexJFb-n2H3Ohg9YLyjJGKA2JDjoIyRo7K6XjPaXCOD+HI5wgkJhUYgbM00h55BmkEZRbiTbg12kk1uG5CQZC8BcAoFISpJkDt4KC4R8iKxuIcNxU8wAVM2DGfKWdBQlwKFuXi6RVxQW-PgkkgQ3F1T6fCCkK4SoAWuIcecP0mnhmmkSU+s0fwXD8BfIoQA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEO1TI6K9PKJC7ewcA4IQ3ZWjbR3No+3MFmxsvcwys9BzcfShWCAB5AFdZBgBlAEkAcQA5AH0Xj4GkEBDAwKCijRBHZy4Nw2SyxGzhZz2BLLULJSIhVyHZLKBKIuwnEAtPCXa4vCjPd7fG7UAAq-x0emBRgBY2c2yhB1ibmm8WcIRR4xiUK88PM5l85i8ljs0QJRIuZCukDJgnywioACUwLomCw2JIeM0zgIScqKKr2prtWgJBROD0Qf01INGSMWYhfMpcDiMYjLHzedyBfCNtFUtsbMlotF4iE5cbiYrSea2uqoFqdWUKlUarJ6vgmvLTRAVanCunrbb7XJHWp6YDXSCwQhxRE3CEcco7M47HEYW4vALXBt5pYQv6Jm53DD4-xE0qS+awA1tLJAs8AKIAGQ3AGEaV8NRuAAo3etAt2gMaOawyyyxjzRbbuAUxL1baMzAeSyWz87FlUpHQCgRAzNBdVYdg7W4XgEwVBdAOA0DK26GslDrZ0AQvJt3QQA47FwcJxxjZxnC8MInwFJIQkIkVoyncdnB5P8TSTM1cCAlhkMzfBykqao6kaI053g5MOKQq1dCraQ0L6DDNCwxtmSvRBOVwHwFnFVxlHmEJolfLwCPsDTtisLtoRY+cxM465Nx3fdDxPM9MIZYYcJUhBHDcdSdjZNw7G2XyBTWEIvFwJISLxDt4i8SzRPYmzIFwAB3fADH1CAUDABgAHUNReGkNy+AAxF4d3PJTQVw+Ewvo5IpXMcNgtSd8jjWQzGq5ONMkJOCAPNRKIBStLZDYVLgSoYqyCyiD9Wgw0izYxdxL1IbxtG4aJqgKasukh10PUFyGzc5TTFU-zcG7GEbHFZQPAcOxgs8WrGriHEByiDw4v6lbrk2jb1pEHbsqzfjc3zQs+qWxDVv+saRqB6awD22SnQU1ymSqjybDcCIdKlMiZj0yUbGC8wcUiKUQmhcVcaib7oYG4CkvW+GtuB3L8sKkqyo3CqTqxs7Vl8Wr-KlHTXHiCYybiWixysGK4m604RJ+waLkCCgpHYTLsqeABND5d35zHmwObzXBFbZSImPT+SCD1pRsSJfHvf0O2iNY3AZhCmdh2BNe1gOtZEWaoM4Baod936kuDoPA5EFHejRl0BbN8xnfhOYdicPtzGCpIvVSMIM6d3l8R6xbo-VuONZDqhSl47MBLzISq+s5mhtruPE9Q5P5NT03qrHSJLAzjF3HJ7lBwd1YboI2Yp0RZfPe6nqKDQCA4GMIlB8vIWAFoLqlQ5oTHO9QuUZwBQPmjyKSGE7CJnlUnSSu4LLDoxD39yhYCy7qYLHbFEHS0okjBgiDCZQ4oiI9jpscd+qslr3FkD-U6rIZS4HMMke8XZwj+nIlRCIYQZjkRlGGacCCVb-kZmgwWrIIiSg8O4HEnhcbjgFNsby0ppROEcLEamA4fZiU-pJNAdDmwhSwT4VwaxIx3UapYIc8JCKewSFKDw7YArCPYsuVcKwMb72vAsQiNgr7TEYtEJ+j1Z5eCvlMaEIp-JimjFQ3qSDq4SQrLoCRuERTOzDExBI0Z7CwlJrPMxkIzEyjuuOdh4QdHLUGr4jypELZ0yflOHEMwbErE9JCcIV9oGwiOCKRJMM-qsxSULOxBE1hhjsL4TJrjgrchomPK+T8H4igrtQ1injYasx1llapYwvxQnWPMJpPgWmz38r4XAfJoEJGumYnG5S-aVJGmzeQk0kajI9NAgidjIyuGpmKbYuSPQtUIuTMiq8cQ7A2THLugcDkICYhsZIVhMmOCxFc1YHVwoE3wg4Kc3tEE0IGX9WuZBdbvKONYb50ofB-JycFMekIeTkW8FYpZb8+lWQSp3Ou8d65QHee1Z2Ppzk6V7KFe2eSxw0UlHMaB0YFjkQyBkIAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
         context: Context
         events: Event
         services: {
-          initGitHubUser: { data: { githubUser: GitHubUser } }
-          initGitHubRepo: { data: { githubRepo: GitHubRepository } }
-          clone: { data: { githubRepo: GitHubRepository } }
-          pull: { data: void }
-          push: { data: void }
-          loadFiles: { data: { markdownFiles: Record<string, string> } }
+          resolveUser: {
+            data: {
+              githubUser: GitHubUser
+            }
+          }
+          resolveRepo: {
+            data: {
+              githubRepo: GitHubRepository
+              markdownFiles: Record<string, string>
+            }
+          }
+          cloneRepo: {
+            data: {
+              markdownFiles: Record<string, string>
+            }
+          }
+          sync: {
+            data: {
+              markdownFiles: Record<string, string>
+            }
+          }
           writeFile: { data: void }
         }
       },
       predictableActionArguments: true,
-      initial: "initializingGitHubUser",
+      initial: "resolvingUser",
       context: {
         githubUser: null,
         githubRepo: null,
@@ -73,9 +88,9 @@ function createGlobalStateMachine() {
         error: null,
       },
       states: {
-        initializingGitHubUser: {
+        resolvingUser: {
           invoke: {
-            src: "initGitHubUser",
+            src: "resolveUser",
             onDone: {
               target: "signedIn",
               actions: "setGitHubUser",
@@ -84,30 +99,31 @@ function createGlobalStateMachine() {
           },
         },
         signedOut: {
+          entry: "clearGitHubUser",
           on: {
             SIGN_IN: {
               target: "signedIn",
-              actions: ["setGitHubUser", "setGitHubUserLocalStorage"],
+              actions: ["setGitHubUser"],
             },
           },
         },
         signedIn: {
           on: {
-            SIGN_OUT: {
-              target: "signedOut",
-              actions: ["clearGitHubUser", "clearGitHubUserLocalStorage"],
-            },
+            SIGN_OUT: "signedOut",
           },
-          initial: "initializingGitHubRepo",
+          initial: "resolvingRepo",
           states: {
-            initializingGitHubRepo: {
+            resolvingRepo: {
               invoke: {
-                src: "initGitHubRepo",
+                src: "resolveRepo",
                 onDone: {
-                  target: "loadingFiles",
-                  actions: "setGitHubRepo",
+                  target: "cloned",
+                  actions: ["setGitHubRepo", "setMarkdownFiles"],
                 },
-                onError: "empty",
+                onError: {
+                  target: "empty",
+                  actions: "setError",
+                },
               },
             },
             empty: {
@@ -118,76 +134,90 @@ function createGlobalStateMachine() {
             cloningRepo: {
               entry: "setGitHubRepo",
               invoke: {
-                src: "clone",
-                onDone: "loadingFiles",
-                onError: {
-                  target: "error",
-                  actions: "setError",
-                },
-              },
-            },
-            syncing: {
-              invoke: {
-                src: "sync",
-                onDone: "loadingFiles",
-                onError: {
-                  target: "error",
-                  actions: assign({
-                    error: (_, event) => event.data as Error,
-                  }),
-                },
-              },
-            },
-            loadingFiles: {
-              invoke: {
-                src: "loadFiles",
+                src: "cloneRepo",
                 onDone: {
-                  target: "idle",
+                  target: "cloned",
                   actions: "setMarkdownFiles",
                 },
                 onError: {
-                  target: "error",
+                  target: "empty",
                   actions: "setError",
                 },
               },
             },
-            writingFile: {
-              invoke: {
-                src: "writeFile",
-                onDone: "idle",
-                onError: {
-                  target: "error",
-                  actions: "setError",
-                },
-              },
-            },
-            idle: {
+            cloned: {
               on: {
                 SELECT_REPO: "cloningRepo",
-                SYNC: "syncing",
-                WRITE_FILE: {
-                  target: "writingFile",
-                  actions: "setMarkdownFile",
+              },
+              type: "parallel",
+              states: {
+                write: {
+                  initial: "idle",
+                  states: {
+                    idle: {
+                      on: {
+                        WRITE_FILE: {
+                          target: "writingFile",
+                          actions: "setMarkdownFile",
+                        },
+                      },
+                    },
+                    writingFile: {
+                      invoke: {
+                        src: "writeFile",
+                        onDone: "idle",
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
+                      },
+                      on: {
+                        WRITE_FILE: {
+                          target: "writingFile",
+                          actions: "setMarkdownFile",
+                        },
+                      },
+                    },
+                  },
+                },
+                sync: {
+                  initial: "idle",
+                  states: {
+                    idle: {
+                      on: {
+                        SYNC: "syncing",
+                      },
+                    },
+                    syncing: {
+                      invoke: {
+                        src: "sync",
+                        onDone: {
+                          target: "idle",
+                          actions: "setMarkdownFiles",
+                        },
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
-            error: {},
           },
         },
       },
     },
     {
-      guards: {
-        isOnline: () => navigator.onLine,
-      },
       services: {
-        initGitHubUser: async () => {
-          // First, check URL for token and username
+        resolveUser: async () => {
+          // First, check URL params for token and username
           const token = new URLSearchParams(window.location.search).get("token")
           const username = new URLSearchParams(window.location.search).get("username")
 
           if (token && username) {
-            // Save token and username to local storage
+            // Save token and username to localStorage
             localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, username }))
 
             // Remove token and username from URL
@@ -205,11 +235,11 @@ function createGlobalStateMachine() {
             return { githubUser: { token, username } }
           }
 
-          // Next, check local storage for token and username
+          // Next, check localStorage for token and username
           const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_KEY) ?? "null")
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
-        initGitHubRepo: async () => {
+        resolveRepo: async () => {
           // Check git config for repo name
           const remoteOriginUrl = await git.getConfig({
             fs,
@@ -222,10 +252,19 @@ function createGlobalStateMachine() {
 
           const [owner, name] = repo.split("/")
 
-          return { githubRepo: { owner, name } }
+          if (!owner || !name) {
+            throw new Error("Invalid repo")
+          }
+
+          const githubRepo = { owner, name }
+          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
+
+          return { githubRepo, markdownFiles }
         },
-        clone: async (context, event) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+        cloneRepo: async (context, event) => {
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
 
           const githubRepo = event.githubRepo
           const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
@@ -237,7 +276,7 @@ function createGlobalStateMachine() {
           fsWipe()
 
           // Clone repo
-          // This could take a long time if the repo is large
+          // This could take awhile if the repo is large
           console.log(`$ git clone ${url}.git ${ROOT_DIR}`)
           await git.clone({
             fs,
@@ -252,10 +291,15 @@ function createGlobalStateMachine() {
             onAuth: () => ({ username, password: token }),
           })
 
-          return { githubRepo }
+          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
+
+          return { markdownFiles }
         },
         sync: async (context) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
           const { username, token } = context.githubUser
 
           console.log(`$ git pull`)
@@ -280,33 +324,16 @@ function createGlobalStateMachine() {
             dir: ROOT_DIR,
             onAuth: () => ({ username, password: token }),
           })
-        },
-        loadFiles: async () => {
-          console.time("loadFiles")
-          const markdownFiles = await git.walk({
-            fs,
-            dir: ROOT_DIR,
-            trees: [WORKDIR()],
-            map: async (filepath, [entry]) => {
-              // Ignore .git directory
-              if (filepath.startsWith(".git")) return
 
-              // Ignore non-markdown files
-              if (!filepath.endsWith(".md")) return
+          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
 
-              // Get file content
-              const content = await entry?.content()
-
-              if (!content) return null
-
-              return [filepath, new TextDecoder().decode(content)]
-            },
-          })
-          console.timeEnd("loadFiles")
-          return { markdownFiles: Object.fromEntries(markdownFiles) }
+          return { markdownFiles }
         },
         writeFile: async (context, event) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
           const { username, token } = context.githubUser
           const { filepath, content } = event
 
@@ -353,27 +380,20 @@ function createGlobalStateMachine() {
             switch (event.type) {
               case "SIGN_IN":
                 return event.githubUser
-              case "done.invoke.global.initializingGitHubUser:invocation[0]":
+              case "done.invoke.global.resolvingUser:invocation[0]":
                 return event.data.githubUser
             }
           },
         }),
-        setGitHubUserLocalStorage: (_, event) => {
-          console.log("setGitHubUserLocalStorage", event.githubUser)
-          localStorage.setItem(GITHUB_USER_KEY, JSON.stringify(event.githubUser))
-        },
         clearGitHubUser: assign({
           githubUser: null,
         }),
-        clearGitHubUserLocalStorage: () => {
-          localStorage.removeItem(GITHUB_USER_KEY)
-        },
         setGitHubRepo: assign({
           githubRepo: (_, event) => {
             switch (event.type) {
               case "SELECT_REPO":
                 return event.githubRepo
-              case "done.invoke.global.signedIn.initializingGitHubRepo:invocation[0]":
+              case "done.invoke.global.signedIn.resolvingRepo:invocation[0]":
                 return event.data.githubRepo
             }
           },
@@ -394,6 +414,31 @@ function createGlobalStateMachine() {
       },
     },
   )
+}
+
+/** Walk the file system and return the contents of all markdown files */
+async function getMarkdownFilesFromFs(dir: string) {
+  const markdownFiles = await git.walk({
+    fs,
+    dir,
+    trees: [WORKDIR()],
+    map: async (filepath, [entry]) => {
+      // Ignore .git directory
+      if (filepath.startsWith(".git")) return
+
+      // Ignore non-markdown files
+      if (!filepath.endsWith(".md")) return
+
+      // Get file content
+      const content = await entry?.content()
+
+      if (!content) return null
+
+      return [filepath, new TextDecoder().decode(content)]
+    },
+  })
+
+  return Object.fromEntries(markdownFiles)
 }
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)

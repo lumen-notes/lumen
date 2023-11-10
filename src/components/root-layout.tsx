@@ -4,30 +4,29 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
+import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
-import { Button } from "./button"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [state, send] = useAtom(globalStateMachineAtom)
-  const { online } = useNetworkState()
-
-  const onVisibilityChange = React.useCallback(() => {
-    if (document.visibilityState === "visible" && online) {
-      send({ type: "SYNC" })
-    }
-  }, [send, online])
-
-  const onOnline = React.useCallback(() => {
-    send({ type: "SYNC" })
-  }, [send])
-
-  // Sync when the app becomes visible or comes online
-  useEvent("visibilitychange", onVisibilityChange)
-  useEvent("online", onOnline)
-
   const location = useLocation()
   const navigate = useNavigate()
+  const { online } = useNetworkState()
+
+  // const onVisibilityChange = React.useCallback(() => {
+  //   if (document.visibilityState === "visible" && online) {
+  //     send({ type: "SYNC" })
+  //   }
+  // }, [send, online])
+
+  // const onOnline = React.useCallback(() => {
+  //   send({ type: "SYNC" })
+  // }, [send])
+
+  // // Sync when the app becomes visible or comes online
+  // useEvent("visibilitychange", onVisibilityChange)
+  // useEvent("online", onOnline)
 
   // Restore the previous search params for this path when the app loads if the current search params are empty
   useEvent("load", () => {
