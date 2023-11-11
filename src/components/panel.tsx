@@ -115,7 +115,6 @@ export function Panel({ id, title, description, icon, actions, children, onClose
         )
       }}
     >
-      {width}
       <div className="hidden sm:block">
         <ResizeHandle
           value={width}
