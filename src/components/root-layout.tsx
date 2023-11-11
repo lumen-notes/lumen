@@ -50,7 +50,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
       ) : null}
       {children}
       {import.meta.env.DEV ? (
-        <div className="flex bg-bg-overlay px-4 py-2">
+        <div className="flex border-t border-border-secondary px-4 py-2">
           <SyntaxHighlighter language="javascript">{JSON.stringify(state.value)}</SyntaxHighlighter>
         </div>
       ) : null}
