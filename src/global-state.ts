@@ -312,6 +312,23 @@ function createGlobalStateMachine() {
             onAuth: () => ({ username, password: token }),
           })
 
+          // Set user in git config
+          console.log(`$ git config user.name "Cole Bemis"`)
+          await git.setConfig({
+            fs,
+            dir: ROOT_DIR,
+            path: "user.name",
+            value: "Cole Bemis",
+          })
+
+          console.log(`$ git config user.email "colebemis@github.com"`)
+          await git.setConfig({
+            fs,
+            dir: ROOT_DIR,
+            path: "user.email",
+            value: "colebemis@github.com",
+          })
+
           const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
 
           return { markdownFiles }
@@ -329,11 +346,6 @@ function createGlobalStateMachine() {
             http,
             dir: ROOT_DIR,
             singleBranch: true,
-            author: {
-              // TODO: Don't hardcode these values
-              name: "Cole Bemis",
-              email: "colebemis@github.com",
-            },
             onMessage: console.log,
             onAuth: () => ({ username, password: token }),
           })
@@ -376,11 +388,6 @@ function createGlobalStateMachine() {
             fs,
             dir: ROOT_DIR,
             message: `Update ${filepath}`,
-            author: {
-              // TODO: Don't hardcode these values
-              name: "Cole Bemis",
-              email: "colebemis@github.com",
-            },
           })
 
           // Push if online
@@ -420,11 +427,6 @@ function createGlobalStateMachine() {
             fs,
             dir: ROOT_DIR,
             message: `Delete ${filepath}`,
-            author: {
-              // TODO: Don't hardcode these values
-              name: "Cole Bemis",
-              email: "colebemis@github.com",
-            },
           })
 
           // Push if online
