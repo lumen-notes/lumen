@@ -27,7 +27,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
               Backlinks
             </summary>
             <LinkHighlightProvider href={`/${noteId}`}>
-              <NoteList baseQuery={`link:"${noteId}" -id:"${noteId}`} />
+              <NoteList baseQuery={`link:"${noteId}" -id:"${noteId}"`} />
             </LinkHighlightProvider>
           </details>
         ) : null}

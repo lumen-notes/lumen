@@ -151,14 +151,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </span>
           ) : null}
         </div>
-
-        {/* {state.matches("signedIn.resolvingRepo") ? (
-          <span className="flex items-center gap-2 text-text-secondary">
-            <LoadingIcon16 />
-            Loading…
-          </span>
-        ) : null} */}
-
         <div className="flex flex-wrap gap-2 empty:hidden">
           {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
             <>
@@ -227,11 +219,9 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </>
           ) : null}
         </div>
-
         {viewType === "cards"
           ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
           : null}
-
         {viewType === "list" ? (
           <ul>
             {noteResults.slice(0, numVisibleNotes).map((note) => {

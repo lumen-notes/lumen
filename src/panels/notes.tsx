@@ -23,7 +23,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon16 />} onClose={onClose}>
       <div className="p-4">
-        {state.matches("signedIn.idle") && noteCount === 0 ? (
+        {state.matches("signedIn.cloned") && noteCount === 0 ? (
           <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
         ) : (
           <NoteList />
