@@ -13,6 +13,7 @@ import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
+import { flushSync } from "react-dom"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -65,7 +66,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const focusNoteEditor = React.useCallback(() => {
-    setTimeout(() => editorRef.current?.view?.focus(), 1)
+    editorRef.current?.view?.focus()
   }, [])
 
   const focusNoteCard = React.useCallback(
@@ -90,13 +91,17 @@ function Provider({ children }: { children: React.ReactNode }) {
 
   const toggle = React.useCallback(() => {
     if (isOpen) {
-      setIsOpen(false)
+      flushSync(() => {
+        setIsOpen(false)
+      })
       focusPrevActiveElement()
     } else {
       prevActiveElement.current = document.activeElement as HTMLElement
-      setIsOpen(true)
-      setPosition(initialPosition())
-      setTimeout(() => focusNoteEditor())
+      flushSync(() => {
+        setIsOpen(true)
+        setPosition(initialPosition())
+      })
+      focusNoteEditor()
     }
   }, [isOpen, focusPrevActiveElement, focusNoteEditor])
 
@@ -202,8 +207,10 @@ function Dialog() {
                 autoFocus
                 editorRef={editorRef}
                 onSubmit={({ id }) => {
-                  setIsOpen(false)
-                  setTimeout(() => focusNoteCard(id))
+                  flushSync(() => {
+                    setIsOpen(false)
+                  })
+                  focusNoteCard(id)
                 }}
                 onCancel={() => {
                   setIsOpen(false)

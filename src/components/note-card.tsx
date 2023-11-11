@@ -28,6 +28,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
+import { flushSync } from "react-dom"
 
 type NoteCardProps = {
   id: NoteId
@@ -57,25 +58,27 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
   const switchToEditing = React.useCallback(() => {
-    setIsEditing(true)
-    // Wait for the editor to mount
-    setTimeout(() => {
-      const editor = editorRef.current
-
-      if (editor) {
-        // Focus the editor
-        editor.view?.focus()
-        // Move cursor to end of document
-        editor.view?.dispatch({
-          selection: EditorSelection.cursor(editor.view.state.doc.sliceString(0).length),
-        })
-      }
+    flushSync(() => {
+      setIsEditing(true)
     })
+
+    const editor = editorRef.current
+
+    if (editor) {
+      // Focus the editor
+      editor.view?.focus()
+      // Move cursor to end of document
+      editor.view?.dispatch({
+        selection: EditorSelection.cursor(editor.view.state.doc.sliceString(0).length),
+      })
+    }
   }, [])
 
   const switchToViewing = React.useCallback(() => {
-    setIsEditing(false)
-    setTimeout(() => cardRef.current?.focus())
+    flushSync(() => {
+      setIsEditing(false)
+    })
+    cardRef.current?.focus()
   }, [])
 
   const focusNextCard = React.useCallback(() => {

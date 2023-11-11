@@ -19,6 +19,7 @@ import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
 import { useSearchParam } from "../utils/use-search-param"
+import { flushSync } from "react-dom"
 
 export function NotePage() {
   const isFullscreen = useIsFullscreen()
@@ -66,19 +67,18 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   })
 
   const switchToEditing = React.useCallback(() => {
-    setIsEditing(true)
-    // Wait for the editor to mount
-    setTimeout(() => {
-      const view = editorRef.current?.view
-      if (view) {
-        // Focus the editor
-        view.focus()
-        // Move cursor to end of document
-        view.dispatch({
-          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
-        })
-      }
-    }, 1)
+    flushSync(() => {
+      setIsEditing(true)
+    })
+    const view = editorRef.current?.view
+    if (view) {
+      // Focus the editor
+      view.focus()
+      // Move cursor to end of document
+      view.dispatch({
+        selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+      })
+    }
   }, [setIsEditing])
 
   const switchToViewing = React.useCallback(() => {

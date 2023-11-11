@@ -17,6 +17,7 @@ import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
 import { useSearchParam } from "../utils/use-search-param"
 import { LinkContext } from "./link-context"
+import { flushSync } from "react-dom"
 
 type PanelValue = {
   id: string
@@ -98,16 +99,16 @@ function Root({ children }: React.PropsWithChildren) {
       const [pathname, search] = url.split("?")
       const value = stringifyPanelValue({ id, pathname, search })
 
-      setPanels(panels.slice(0, index).concat(value))
-
-      setTimeout(() => {
-        const panelElement = document.getElementById(id)
-
-        if (panelElement) {
-          // Move focus to the new panel
-          focusPanel(panelElement)
-        }
+      flushSync(() => {
+        setPanels(panels.slice(0, index).concat(value))
       })
+
+      const panelElement = document.getElementById(id)
+
+      if (panelElement) {
+        // Move focus to the new panel
+        focusPanel(panelElement)
+      }
     },
     [panels, setPanels],
   )
@@ -125,15 +126,15 @@ function Root({ children }: React.PropsWithChildren) {
 
       const prevPanelElement = panelElements[currentIndex - 1]
 
+      // Update state
+      flushSync(() => {
+        setPanels(panels.slice(0, index))
+      })
+
       // Focus the previous panel
       if (isPanelFocused && prevPanelElement) {
-        setTimeout(() => {
-          focusPanel(prevPanelElement)
-        })
+        focusPanel(prevPanelElement)
       }
-
-      // Update state
-      setPanels(panels.slice(0, index))
     },
     [panels, setPanels],
   )

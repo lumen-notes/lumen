@@ -17,6 +17,7 @@ import { useSaveNote } from "../utils/use-save-note"
 import { useSearchNotes } from "../utils/use-search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { flushSync } from "react-dom"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
@@ -40,10 +41,12 @@ export function CommandMenu() {
   }, [])
 
   const closeMenu = React.useCallback(() => {
-    setIsOpen(false)
+    flushSync(() => {
+      setIsOpen(false)
+    })
 
     // Focus the previously active element
-    setTimeout(() => prevActiveElement.current?.focus())
+    prevActiveElement.current?.focus()
   }, [])
 
   const navigate = React.useCallback(
