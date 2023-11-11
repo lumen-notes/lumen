@@ -460,7 +460,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (ref.current) {
       setIsFirst(checkIsFirst(ref.current))
     }
@@ -639,7 +639,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (ref.current) {
       setIsFirst(checkIsFirst(ref.current))
     }
