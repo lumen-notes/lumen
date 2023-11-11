@@ -7,6 +7,8 @@ import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
+// @ts-ignore
+// import LagRadar from "react-lag-radar"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   const [state, send] = useAtom(globalStateMachineAtom)
@@ -48,6 +50,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="truncate">{state.context.error.message}</span>
         </div>
       ) : null}
+      {/* {import.meta.env.DEV ? (
+        <div className="fixed right-4 top-4 rounded-full bg-[black] p-2">
+          <LagRadar />
+        </div>
+      ) : null} */}
       {children}
       {import.meta.env.DEV ? (
         <div className="flex border-t border-border-secondary px-4 py-2">
