@@ -108,7 +108,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   if (!note) {
     return (
       <FullscreenContainer title="Note" icon={<NoteIcon16 />} elevation={0}>
-        <div className="grid w-full flex-grow place-items-center">Not found</div>
+        <div className="grid w-full flex-grow">Not found</div>
       </FullscreenContainer>
     )
   }

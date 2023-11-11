@@ -1,6 +1,8 @@
+import { useAtomValue } from "jotai"
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
+import { globalStateMachineAtom } from "../global-state"
 import { templateSchema } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -9,7 +11,7 @@ import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, LoadingIcon16, TagIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
@@ -25,6 +27,7 @@ type NoteListProps = {
 }
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
+  const state = useAtomValue(globalStateMachineAtom)
   const searchNotes = useSearchNotes()
   const Link = useLink()
 
@@ -120,7 +123,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
-              placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
+              placeholder={
+                state.matches("signedIn.resolvingRepo")
+                  ? "Search notes…"
+                  : `Search ${pluralize(noteResults.length, "note")}…`
+              }
               value={query}
               onChange={(value) => {
                 setQuery(value)
@@ -144,6 +151,13 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </span>
           ) : null}
         </div>
+
+        {state.matches("signedIn.resolvingRepo") ? (
+          <span className="flex items-center gap-2 text-text-secondary">
+            <LoadingIcon16 />
+            Loading…
+          </span>
+        ) : null}
 
         <div className="flex flex-wrap gap-2 empty:hidden">
           {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (

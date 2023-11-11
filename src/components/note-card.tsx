@@ -3,7 +3,7 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubUserAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
@@ -17,7 +17,9 @@ import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
   EditIcon16,
+  ErrorIcon16,
   ExternalLinkIcon16,
+  LoadingIcon16,
   MoreIcon16,
   ShareIcon16,
   TrashIcon16,
@@ -35,6 +37,7 @@ type NoteCardProps = {
 
 export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const note = useNoteById(id)
+  const state = useAtomValue(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
@@ -127,9 +130,33 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     [focusNextCard, deleteNote, panel, closePanel],
   )
 
-  if (!note) {
-    return <Card className="p-4">Not found</Card>
-  }
+  // if (state.matches("signedIn.resolvingRepo")) {
+  //   return (
+  //     <Card>
+  //       <div className="flex items-center justify-between p-2">
+  //         <span className="px-2 text-text-secondary">
+  //           <Link
+  //             target="_blank"
+  //             to={`/${id}`}
+  //             className="link font-mono tracking-wide !no-underline hover:!underline"
+  //           >
+  //             {id}.md
+  //           </Link>
+  //         </span>
+  //       </div>
+  //       <div className="p-4 pt-0">
+  //         <span className="flex items-center gap-2 text-text-secondary">
+  //           <LoadingIcon16 />
+  //           Loading…
+  //         </span>
+  //       </div>
+  //     </Card>
+  //   )
+  // }
+
+  // if (!note) {
+  //   return <Card className="p-4">Not found</Card>
+  // }
 
   return (
     <>
@@ -150,7 +177,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
           // Copy markdown with `command + c` if no text is selected
           if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-            copy(note.rawBody)
+            copy(note?.rawBody || "")
             event.preventDefault()
           }
 
@@ -188,7 +215,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             >
               {id}.md
             </Link>
-            {note.backlinks.length ? (
+            {note?.backlinks.length ? (
               <span>
                 {" · "}
                 {pluralize(note.backlinks.length, "backlink")}
@@ -198,7 +225,12 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+              <IconButton
+                aria-label="Note actions"
+                shortcut={["⌘", "."]}
+                tooltipSide="top"
+                disabled={!note}
+              >
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>
@@ -209,7 +241,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
-                onSelect={() => copy(note.rawBody)}
+                onSelect={() => copy(note?.rawBody || "")}
                 shortcut={["⌘", "C"]}
               >
                 Copy markdown
@@ -240,6 +272,8 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
                 onSelect={async () => {
+                  if (!note) return
+
                   const url = await exportAsGist({
                     githubToken: githubUser?.token ?? "",
                     noteId: id,
@@ -263,7 +297,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
                 icon={<TrashIcon16 />}
                 onSelect={() => handleDeleteNote(id)}
                 shortcut={["⌘", "⌫"]}
-                disabled={note.backlinks.length > 0}
+                disabled={note && note.backlinks.length > 0}
               >
                 Delete
               </DropdownMenu.Item>
@@ -271,17 +305,29 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </DropdownMenu>
         </div>
         <div className="p-4 pt-0">
-          <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
-            {note.rawBody}
-          </Markdown>
+          {state.matches("signedIn.resolvingRepo") ? (
+            <span className="flex items-center gap-2 text-text-secondary">
+              <LoadingIcon16 />
+              Loading…
+            </span>
+          ) : note ? (
+            <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
+              {note.rawBody}
+            </Markdown>
+          ) : (
+            <span className="flex items-center gap-2 text-text-danger">
+              <ErrorIcon16 />
+              File not found
+            </span>
+          )}
         </div>
       </Card>
       <div hidden={!isEditing}>
         <NoteCardForm
           editorRef={editorRef}
-          key={note.rawBody}
+          key={note?.rawBody || ""}
           id={id}
-          defaultValue={note.rawBody}
+          defaultValue={note?.rawBody}
           elevation={elevation}
           selected={selected}
           // eslint-disable-next-line jsx-a11y/no-autofocus

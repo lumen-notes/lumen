@@ -418,6 +418,7 @@ function createGlobalStateMachine() {
 
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
+  console.time("getMarkdownFilesFromFs()")
   const markdownFiles = await git.walk({
     fs,
     dir,
@@ -437,6 +438,7 @@ async function getMarkdownFilesFromFs(dir: string) {
       return [filepath, new TextDecoder().decode(content)]
     },
   })
+  console.timeEnd("getMarkdownFilesFromFs()")
 
   return Object.fromEntries(markdownFiles)
 }
