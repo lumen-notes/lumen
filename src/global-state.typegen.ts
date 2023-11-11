@@ -46,7 +46,7 @@
           "cloneRepo": "SELECT_REPO";
 "resolveRepo": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "resolveUser": "xstate.init";
-"sync": "SYNC";
+"sync": "SYNC" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
 "writeFile": "WRITE_FILE";
         };
         matchesStates: "resolvingUser" | "signedIn" | "signedIn.cloned" | "signedIn.cloned.sync" | "signedIn.cloned.sync.idle" | "signedIn.cloned.sync.syncing" | "signedIn.cloned.write" | "signedIn.cloned.write.idle" | "signedIn.cloned.write.writingFile" | "signedIn.cloningRepo" | "signedIn.empty" | "signedIn.resolvingRepo" | "signedOut" | { "signedIn"?: "cloned" | "cloningRepo" | "empty" | "resolvingRepo" | { "cloned"?: "sync" | "write" | { "sync"?: "idle" | "syncing";

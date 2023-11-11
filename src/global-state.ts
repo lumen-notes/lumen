@@ -181,7 +181,7 @@ function createGlobalStateMachine() {
                   },
                 },
                 sync: {
-                  initial: "idle",
+                  initial: "syncing",
                   states: {
                     idle: {
                       on: {

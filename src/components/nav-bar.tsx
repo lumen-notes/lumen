@@ -11,6 +11,7 @@ import {
 } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
+import { cx } from "../utils/cx"
 import { toDateString } from "../utils/date"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { DropdownMenu } from "./dropdown-menu"
@@ -22,13 +23,11 @@ import {
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
-  SyncIcon24,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
-import { cx } from "../utils/cx"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const [state, send] = useAtom(globalStateMachineAtom)
@@ -87,19 +86,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
         </li>
-        <li className={cx({ left: "mt-auto", bottom: "hidden" }[position])}>
-          <IconButton
-            aria-label={state.matches("signedIn.cloned.sync.syncing") ? "Syncing…" : "Sync"}
-            tooltipSide="right"
-            onClick={() => send({ type: "SYNC" })}
-            disabled={!online}
-          >
-            <SyncIcon24
-              className={cx(state.matches("signedIn.cloned.sync.syncing") && "animate-spin")}
-            />
-          </IconButton>
-        </li>
-        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className={cx({ left: "mt-auto flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
               {/* TODO: Focus button when dialog closes. */}
@@ -132,11 +119,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                className={cx(position === "left" && "hidden")}
-                onClick={() => send({ type: "SYNC" })}
-                disabled={!online}
-              >
+              <DropdownMenu.Item onClick={() => send({ type: "SYNC" })} disabled={!online}>
                 {state.matches("signedIn.cloned.sync.syncing") ? "Syncing…" : "Sync"}
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
