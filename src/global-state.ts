@@ -46,11 +46,12 @@ type Event =
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
   | { type: "WRITE_FILE"; filepath: string; content: string }
+  | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEO1TI6K9PKJC7ewcA4IQ3ZWjbR3No+3MFmxsvcwys9BzcfShWCAB5AFdZBgBlAEkAcQA5AH0Xj4GkEBDAwKCijRBHZy4Nw2SyxGzhZz2BLLULJSIhVyHZLKBKIuwnEAtPCXa4vCjPd7fG7UAAq-x0emBRgBY2c2yhB1ibmm8WcIRR4xiUK88PM5l85i8ljs0QJRIuZCukDJgnywioACUwLomCw2JIeM0zgIScqKKr2prtWgJBROD0Qf01INGSMWYhfMpcDiMYjLHzedyBfCNtFUtsbMlotF4iE5cbiYrSea2uqoFqdWUKlUarJ6vgmvLTRAVanCunrbb7XJHWp6YDXSCwQhxRE3CEcco7M47HEYW4vALXBt5pYQv6Jm53DD4-xE0qS+awA1tLJAs8AKIAGQ3AGEaV8NRuAAo3etAt2gMaOawyyyxjzRbbuAUxL1baMzAeSyWz87FlUpHQCgRAzNBdVYdg7W4XgEwVBdAOA0DK26GslDrZ0AQvJt3QQA47FwcJxxjZxnC8MInwFJIQkIkVoyncdnB5P8TSTM1cCAlhkMzfBykqao6kaI053g5MOKQq1dCraQ0L6DDNCwxtmSvRBOVwHwFnFVxlHmEJolfLwCPsDTtisLtoRY+cxM465Nx3fdDxPM9MIZYYcJUhBHDcdSdjZNw7G2XyBTWEIvFwJISLxDt4i8SzRPYmzIFwAB3fADH1CAUDABgAHUNReGkNy+AAxF4d3PJTQVw+Ewvo5IpXMcNgtSd8jjWQzGq5ONMkJOCAPNRKIBStLZDYVLgSoYqyCyiD9Wgw0izYxdxL1IbxtG4aJqgKasukh10PUFyGzc5TTFU-zcG7GEbHFZQPAcOxgs8WrGriHEByiDw4v6lbrk2jb1pEHbsqzfjc3zQs+qWxDVv+saRqB6awD22SnQU1ymSqjybDcCIdKlMiZj0yUbGC8wcUiKUQmhcVcaib7oYG4CkvW+GtuB3L8sKkqyo3CqTqxs7Vl8Wr-KlHTXHiCYybiWixysGK4m604RJ+waLkCCgpHYTLsqeABND5d35zHmwObzXBFbZSImPT+SCD1pRsSJfHvf0O2iNY3AZhCmdh2BNe1gOtZEWaoM4Baod936kuDoPA5EFHejRl0BbN8xnfhOYdicPtzGCpIvVSMIM6d3l8R6xbo-VuONZDqhSl47MBLzISq+s5mhtruPE9Q5P5NT03qrHSJLAzjF3HJ7lBwd1YboI2Yp0RZfPe6nqKDQCA4GMIlB8vIWAFoLqlQ5oTHO9QuUZwBQPmjyKSGE7CJnlUnSSu4LLDoxD39yhYCy7qYLHbFEHS0okjBgiDCZQ4oiI9jpscd+qslr3FkD-U6rIZS4HMMke8XZwj+nIlRCIYQZjkRlGGacCCVb-kZmgwWrIIiSg8O4HEnhcbjgFNsby0ppROEcLEamA4fZiU-pJNAdDmwhSwT4VwaxIx3UapYIc8JCKewSFKDw7YArCPYsuVcKwMb72vAsQiNgr7TEYtEJ+j1Z5eCvlMaEIp-JimjFQ3qSDq4SQrLoCRuERTOzDExBI0Z7CwlJrPMxkIzEyjuuOdh4QdHLUGr4jypELZ0yflOHEMwbErE9JCcIV9oGwiOCKRJMM-qsxSULOxBE1hhjsL4TJrjgrchomPK+T8H4igrtQ1injYasx1llapYwvxQnWPMJpPgWmz38r4XAfJoEJGumYnG5S-aVJGmzeQk0kajI9NAgidjIyuGpmKbYuSPQtUIuTMiq8cQ7A2THLugcDkICYhsZIVhMmOCxFc1YHVwoE3wg4Kc3tEE0IGX9WuZBdbvKONYb50ofB-JycFMekIeTkW8FYpZb8+lWQSp3Ou8d65QHee1Z2Ppzk6V7KFe2eSxw0UlHMaB0YFjkQyBkIAA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEO1TI6K9PKJC7ewcA4IQ3ZWjbR3No+3MFmxsvcwys9BzcfShWCAB5AFdZBgBlAEkAcQA5AH0Xj4GkEBDAwKCijRBHZy4Nw2SyxGzhZz2BLLULJSIhVyHZLKBKIuwnEAtPCXa4vCjPd7fG7UAAq-x0emBRgBY2c2yhB1ibmm8WcIRR4xiUK88PM5l85i8ljs0QJRIuZCukDJgnywioACUwLomCw2JIeM0zgIScqKKr2prtWgJBROD0Qf01INGSMWYhfMpcDiMYjLHzedyBfCNtFUtsbMlotF4iE5cbiYrSea2uqoFqdWUKlUarJ6vgmvLTRAVanCunrbb7XJHWp6YDXSCwQhxRE3CEcco7M47HEYW4vALXBt5pYQv6Jm53DD4-xE0qS+awA1tLJAs8AKIAGQ3AGEaV8NRuAAo3etAt2gMaOawyyyxjzRbbuAUxL1baMzAeSyWz87FlUpHQCgRAzNBdVYdg7W4XgEwVBdAOA0DK26GslDrZ0AQvJt3QQA47FwcJxxjZxnC8MInwFJIQkIkVoyncdnB5P8TSTM1cCAlhkMzfBykqao6kaI053g5MOKQq1dCraQ0L6DDNCwxtmSvRBOVwHwFnFVxlHmEJolfLwCPsDTtisLtoRY+cxM465Nx3fdDxPM9MIZYYcJUhBHDcdSdjZNw7G2XyBTWEIvFwJISLxDt4i8SzRPYmzIA4gALLAqH1CAUDABgAHUNReGkNy+AAxF4d3PJTQVw6EvWUSUYXMTllEfYKZRovT7yfJwbCnI44oA81EogFK0pgdhMuygARbcN0Kkqyo3Cq3OU0xEDHdTwmjKI2TsGJkmC8wyPCyxGpsZRPG2cJjkyQk4IG8S9WGqRUvS3AAHd8GBKhirILKIP1aDDSLNjFwe64Rtej6vqgH6sukh10PUFyG2WqqPOhCIXA7DtuS8I4JmC0LrGmaYjinFxXH6kHEMeiGxqh+Rvt+7Ks343N80LO7qcG4Ckue0a2AZkRYbAeHZKdBTXKZNHVvGBxvUWOx-KnALmsJkVjsa6UYTDdtLCphCedp-nIc+xmYeZ3L8rm0ryuR7CVrGUVbAhJJmuhMJnGCnsvQmWIHGifYFlim7gcNsG+Ze+mzeFy3pp3G2FqW6XmyOW9GumTxUm8VJgt5cL2xlNYGsMg3rN5p6o7YCAwCy82Rf+qDOCBrnw6Gunq9rsB6+ZsXegll1UebABaf1cAmHqi-HBJ-CCD0mJovHR2jRqRROsuEorjvcBruvY7+1mc0EgthP-bmI8rgWd67nu4dQ-v5MHlPcOHo74liMdDvMHFoUHOfVkMmFHwOlphThhKkfWodW7l2NlXa+e8mZ-TygVIqttFr20qs2EI3JcCHXsOORqHhDh-xWAOCYCsnxMSiPYeiG9QbtxNmNXe3d95TRmonO2ksUbPw8r6XBOdDoeBOmGeIwUnwRD9udd2St7DODoTTcGsBAgUCkONP6TwACaHxdzJ0vLLGUYVvDtjWGGeYO0vb-2wU+XAVCOwxCxD1EOpwRL3XbkolRFxlFSBEI3A0sEXHnzcV4zxKiRB91rEjLhDsZZjF2gRJW3Joi+BiB2bslgBThG8MKKIsY6qHXXlAgJbct7uNUaUnxh8BJ5iEmHGBijgnlKoOExGuj3L6JhIRJi0JHD2DcGKf0GS9IbDal4c6ExzChVChkG6FA0A13gACIkT89FjGHkTceqR-JJOnkkgUayNpJAOCKXa2wRTkTimWDoYhlltNiRI7BCw9ajPHDKCxKwbARBhHVdsEyex9IKc4s+C57iyBuY7RAPYNiCPvF2cI-pyJUQiGEGY5EZQiIxvImW0SR5WI2ZPbZ79Z4rG2N5aUY4TrYMYnsTFFo0xgTBTEj0OlcE+FcMXTwfTxxDnhIRJJCQpQeELtdQFrFw7LlXCsKWKy1oLEImdJi5F-SB0Mq+c6Uxf6TzFCvGlNluJoAZanA44UMQ7GjDsAONhgxqrOjKZq45OXhB1RXA1L8pzeQnlsvWM9grrBoiTPG3I+R6ydbAgWLqPLD0Lniz1OyiUehqiy0mvZgFJPxIUoFdTI5XzIBNcNstI3WFSe2NkIZeT8n-ls28ek6ozE6tFEN4NGGCxjogsAebWSeE6dCNYZEiETNau4dSCSMTil2rKdNorM2X1esw2+bbFJD1dYW8yI7S2RnLaQ7aGzYiSlcLCetE6rKb1pqU9t8aCJmvWBOS9ewMnrC9JGXsp0yLrAcA2pKpS1Hzqlbcj0PhwrRivZCwDt7LE41sD7DlXSRHvuGp+xpUAz0IERDRMitbIXYOSOYDJYDx4+0CjMc69hplpCAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -79,6 +80,7 @@ function createGlobalStateMachine() {
             }
           }
           writeFile: { data: void }
+          deleteFile: { data: void }
         }
       },
       predictableActionArguments: true,
@@ -153,18 +155,17 @@ function createGlobalStateMachine() {
               },
               type: "parallel",
               states: {
-                write: {
+                change: {
                   initial: "idle",
                   states: {
                     idle: {
                       on: {
-                        WRITE_FILE: {
-                          target: "writingFile",
-                          actions: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
-                        },
+                        WRITE_FILE: "writingFile",
+                        DELETE_FILE: "deletingFile",
                       },
                     },
                     writingFile: {
+                      entry: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
                       invoke: {
                         src: "writeFile",
                         onDone: "idle",
@@ -174,10 +175,23 @@ function createGlobalStateMachine() {
                         },
                       },
                       on: {
-                        WRITE_FILE: {
-                          target: "writingFile",
-                          actions: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
+                        WRITE_FILE: "writingFile",
+                        DELETE_FILE: "deletingFile",
+                      },
+                    },
+                    deletingFile: {
+                      entry: ["deleteMarkdownFile", "deleteMarkdownFileLocalStorage"],
+                      invoke: {
+                        src: "deleteFile",
+                        onDone: "idle",
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
                         },
+                      },
+                      on: {
+                        WRITE_FILE: "writingFile",
+                        DELETE_FILE: "deletingFile",
                       },
                     },
                   },
@@ -380,6 +394,50 @@ function createGlobalStateMachine() {
             })
           }
         },
+        deleteFile: async (context, event) => {
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
+          const { username, token } = context.githubUser
+          const { filepath } = event
+
+          // Delete file from file system
+          console.log(`$ rm ${filepath}`)
+          await fs.promises.unlink(`${ROOT_DIR}/${filepath}`)
+
+          // Stage deletion
+          console.log(`$ git rm ${filepath}`)
+          await git.remove({
+            fs,
+            dir: ROOT_DIR,
+            filepath,
+          })
+
+          // Commit deletion
+          console.log(`$ git commit -m "Delete ${filepath}"`)
+          await git.commit({
+            fs,
+            dir: ROOT_DIR,
+            message: `Delete ${filepath}`,
+            author: {
+              // TODO: Don't hardcode these values
+              name: "Cole Bemis",
+              email: "colebemis@github.com",
+            },
+          })
+
+          // Push if online
+          if (navigator.onLine) {
+            console.log(`$ git push`)
+            await git.push({
+              fs,
+              http,
+              dir: ROOT_DIR,
+              onAuth: () => ({ username, password: token }),
+            })
+          }
+        },
       },
       actions: {
         setGitHubUser: assign({
@@ -408,23 +466,31 @@ function createGlobalStateMachine() {
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
         }),
+        setMarkdownFilesLocalStorage: (_, event) => {
+          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
+        },
         setMarkdownFile: assign({
           markdownFiles: (context, event) => {
             const { filepath, content } = event
             return { ...context.markdownFiles, [filepath]: content }
           },
         }),
-        setMarkdownFilesLocalStorage: (_, event) => {
-          // Cache markdown files in localStorage
-          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
-        },
         setMarkdownFileLocalStorage: (context, event) => {
-          // Update markdown file in localStorage
           const { filepath, content } = event
           localStorage.setItem(
             MARKDOWN_FILES_KEY,
             JSON.stringify({ ...context.markdownFiles, [filepath]: content }),
           )
+        },
+        deleteMarkdownFile: assign({
+          markdownFiles: (context, event) => {
+            const { [event.filepath]: _, ...markdownFiles } = context.markdownFiles
+            return markdownFiles
+          },
+        }),
+        deleteMarkdownFileLocalStorage: (context, event) => {
+          const { [event.filepath]: _, ...markdownFiles } = context.markdownFiles
+          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(markdownFiles))
         },
         setError: assign({
           // TODO: Remove `as Error`
@@ -445,6 +511,7 @@ function getMarkdownFilesFromLocalStorage() {
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
   console.time("getMarkdownFilesFromFs()")
+
   const markdownFiles = await git.walk({
     fs,
     dir,
@@ -464,6 +531,7 @@ async function getMarkdownFilesFromFs(dir: string) {
       return [filepath, new TextDecoder().decode(content)]
     },
   })
+
   console.timeEnd("getMarkdownFilesFromFs()")
 
   return Object.fromEntries(markdownFiles)
@@ -491,11 +559,11 @@ export const githubRepoAtom = selectAtom(
 
 export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
 
-export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
-  const rawNotes = get(rawNotesAtom)
-  const { [id]: _, ...newRawNotes } = rawNotes
-  set(rawNotesAtom, newRawNotes)
-})
+// export const deleteNoteAtom = atom(null, (get, set, id: NoteId) => {
+//   const rawNotes = get(rawNotesAtom)
+//   const { [id]: _, ...newRawNotes } = rawNotes
+//   set(rawNotesAtom, newRawNotes)
+// })
 
 export const notesAtom = atom((get) => {
   const state = get(globalStateMachineAtom)

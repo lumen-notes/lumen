@@ -7,7 +7,7 @@ import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../globa
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
-import { useDeleteNote } from "../utils/github-sync"
+import { useDeleteNote } from "../utils/use-delete-note"
 import { pluralize } from "../utils/pluralize"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
