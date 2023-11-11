@@ -5,6 +5,7 @@ import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import { atomWithStorage, selectAtom } from "jotai/utils"
 import { assign, createMachine } from "xstate"
+import { z } from "zod"
 import {
   GitHubRepository,
   GitHubUser,
@@ -26,6 +27,7 @@ import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 const ROOT_DIR = "/root"
 const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
+const MARKDOWN_FILES_KEY = "markdown_files"
 
 // -----------------------------------------------------------------------------
 // State machine
@@ -118,7 +120,7 @@ function createGlobalStateMachine() {
                 src: "resolveRepo",
                 onDone: {
                   target: "cloned",
-                  actions: ["setGitHubRepo", "setMarkdownFiles"],
+                  actions: ["setGitHubRepo", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
                   target: "empty",
@@ -137,7 +139,7 @@ function createGlobalStateMachine() {
                 src: "cloneRepo",
                 onDone: {
                   target: "cloned",
-                  actions: "setMarkdownFiles",
+                  actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
                   target: "empty",
@@ -158,7 +160,7 @@ function createGlobalStateMachine() {
                       on: {
                         WRITE_FILE: {
                           target: "writingFile",
-                          actions: "setMarkdownFile",
+                          actions: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
                         },
                       },
                     },
@@ -174,7 +176,7 @@ function createGlobalStateMachine() {
                       on: {
                         WRITE_FILE: {
                           target: "writingFile",
-                          actions: "setMarkdownFile",
+                          actions: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
                         },
                       },
                     },
@@ -193,7 +195,7 @@ function createGlobalStateMachine() {
                         src: "sync",
                         onDone: {
                           target: "idle",
-                          actions: "setMarkdownFiles",
+                          actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                         },
                         onError: {
                           target: "idle",
@@ -240,6 +242,8 @@ function createGlobalStateMachine() {
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
         resolveRepo: async () => {
+          console.time("resolveRepo()")
+
           // Check git config for repo name
           const remoteOriginUrl = await git.getConfig({
             fs,
@@ -257,7 +261,10 @@ function createGlobalStateMachine() {
           }
 
           const githubRepo = { owner, name }
-          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
+          const markdownFiles =
+            getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(ROOT_DIR))
+
+          console.timeEnd("resolveRepo()")
 
           return { githubRepo, markdownFiles }
         },
@@ -407,6 +414,18 @@ function createGlobalStateMachine() {
             return { ...context.markdownFiles, [filepath]: content }
           },
         }),
+        setMarkdownFilesLocalStorage: (_, event) => {
+          // Cache markdown files in localStorage
+          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
+        },
+        setMarkdownFileLocalStorage: (context, event) => {
+          // Update markdown file in localStorage
+          const { filepath, content } = event
+          localStorage.setItem(
+            MARKDOWN_FILES_KEY,
+            JSON.stringify({ ...context.markdownFiles, [filepath]: content }),
+          )
+        },
         setError: assign({
           // TODO: Remove `as Error`
           error: (_, event) => event.data as Error,
@@ -414,6 +433,13 @@ function createGlobalStateMachine() {
       },
     },
   )
+}
+
+function getMarkdownFilesFromLocalStorage() {
+  const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_KEY) ?? "null")
+  if (!markdownFiles) return null
+  const parsedMarkdownFiles = z.record(z.string()).safeParse(markdownFiles)
+  return parsedMarkdownFiles.success ? parsedMarkdownFiles.data : null
 }
 
 /** Walk the file system and return the contents of all markdown files */

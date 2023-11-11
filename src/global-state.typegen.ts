@@ -34,7 +34,9 @@
 "setGitHubRepo": "SELECT_REPO" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
 "setGitHubUser": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "setMarkdownFile": "WRITE_FILE";
+"setMarkdownFileLocalStorage": "WRITE_FILE";
 "setMarkdownFiles": "done.invoke.global.signedIn.cloned.sync.syncing:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
+"setMarkdownFilesLocalStorage": "done.invoke.global.signedIn.cloned.sync.syncing:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
         };
         eventsCausingDelays: {
           
