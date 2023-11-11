@@ -11,7 +11,7 @@ import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, LoadingIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
 import { useLink } from "./link-context"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
@@ -124,9 +124,9 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
               placeholder={
-                state.matches("signedIn.resolvingRepo")
-                  ? "Search notes…"
-                  : `Search ${pluralize(noteResults.length, "note")}…`
+                state.matches("signedIn.cloned")
+                  ? `Search ${pluralize(noteResults.length, "note")}…`
+                  : "Search notes…"
               }
               value={query}
               onChange={(value) => {
@@ -152,12 +152,12 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           ) : null}
         </div>
 
-        {state.matches("signedIn.resolvingRepo") ? (
+        {/* {state.matches("signedIn.resolvingRepo") ? (
           <span className="flex items-center gap-2 text-text-secondary">
             <LoadingIcon16 />
             Loading…
           </span>
-        ) : null}
+        ) : null} */}
 
         <div className="flex flex-wrap gap-2 empty:hidden">
           {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
