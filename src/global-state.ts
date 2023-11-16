@@ -79,8 +79,12 @@ function createGlobalStateMachine() {
               markdownFiles: Record<string, string>
             }
           }
-          writeFile: { data: void }
-          deleteFile: { data: void }
+          writeFile: {
+            data: void
+          }
+          deleteFile: {
+            data: void
+          }
         }
       },
       predictableActionArguments: true,
@@ -103,7 +107,7 @@ function createGlobalStateMachine() {
           },
         },
         signedOut: {
-          entry: "clearGitHubUser",
+          entry: ["clearGitHubUser", "clearGitHubUserLocalStorage"],
           on: {
             SIGN_IN: {
               target: "signedIn",
@@ -275,6 +279,7 @@ function createGlobalStateMachine() {
           }
 
           const githubRepo = { owner, name }
+
           const markdownFiles =
             getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(ROOT_DIR))
 
@@ -455,6 +460,9 @@ function createGlobalStateMachine() {
         clearGitHubUser: assign({
           githubUser: null,
         }),
+        clearGitHubUserLocalStorage: () => {
+          localStorage.removeItem(GITHUB_USER_KEY)
+        },
         setGitHubRepo: assign({
           githubRepo: (_, event) => {
             switch (event.type) {
@@ -503,6 +511,7 @@ function createGlobalStateMachine() {
   )
 }
 
+/** Retrieve cached markdown files from local storage */
 function getMarkdownFilesFromLocalStorage() {
   const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_KEY) ?? "null")
   if (!markdownFiles) return null
