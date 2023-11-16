@@ -21,8 +21,6 @@ const emptyNote: Note = {
   dates: [],
   frontmatter: {},
   links: [],
-  queries: [],
-  tasks: [],
   title: "",
   url: null,
   backlinks: [],

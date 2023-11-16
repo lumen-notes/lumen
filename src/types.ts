@@ -1,4 +1,3 @@
-import { Point } from "unist"
 import { z } from "zod"
 
 export type NoteId = string
@@ -18,24 +17,9 @@ export type Note = {
   links: NoteId[]
   dates: string[]
   tags: string[]
-  // TODO: Remove queries and tasks
-  queries: string[]
-  tasks: Task[]
 
   // Derived from links
   backlinks: NoteId[]
-}
-
-export type Task = {
-  noteId: NoteId
-  start: Point
-  content: string
-  completed: boolean
-  title: string
-  priority: 1 | 2 | 3 | 4
-  dates: string[]
-  links: NoteId[]
-  tags: string[]
 }
 
 export type GitHubRepository = {

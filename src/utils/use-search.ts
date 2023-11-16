@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { noteSearcherAtom, sortedNotesAtom, taskSearcherAtom, tasksAtom } from "../global-state"
+import { noteSearcherAtom, sortedNotesAtom } from "../global-state"
 import { Note, Task } from "../types"
 
 type Qualifier = {
@@ -60,25 +60,6 @@ export function useStableSearchNotes() {
   }, [])
 
   return searchNotes
-}
-
-export const useSearchTasks = () => {
-  const tasks = useAtomValue(tasksAtom)
-  const taskSearcher = useAtomValue(taskSearcherAtom)
-
-  const searchTasks = React.useCallback(
-    (query: string) => {
-      // If there's no query, return all notes
-      if (!query) return tasks
-
-      const { fuzzy, qualifiers } = parseQuery(query)
-      const results = fuzzy ? taskSearcher.search(fuzzy) : tasks
-      return filterResults(results, qualifiers)
-    },
-    [tasks, taskSearcher],
-  )
-
-  return searchTasks
 }
 
 // eslint-disable-next-line no-useless-escape

@@ -11,7 +11,6 @@ import {
   GitHubUser,
   Note,
   NoteId,
-  Task,
   Template,
   githubUserSchema,
   templateSchema,
@@ -708,29 +707,4 @@ export const templatesAtom = atom((get) => {
   }
 
   return templates
-})
-
-// -----------------------------------------------------------------------------
-// Tasks
-// -----------------------------------------------------------------------------
-
-export const tasksAtom = atom((get) => {
-  const sortedNotes = get(sortedNotesAtom)
-  const tasks: Task[] = []
-
-  for (const { tasks: notesTasks } of sortedNotes) {
-    for (const task of notesTasks) {
-      tasks.push(task)
-    }
-  }
-
-  return tasks
-})
-
-export const taskSearcherAtom = atom((get) => {
-  const tasks = get(tasksAtom)
-  return new Searcher(tasks, {
-    keySelector: (task) => [task.title, task.content],
-    threshold: 0.8,
-  })
 })

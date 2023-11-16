@@ -12,7 +12,7 @@ import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { Task, templateSchema } from "../types"
+import { templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -23,7 +23,6 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
-import { getTaskBody, parseNote } from "../utils/parse-note"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
@@ -552,28 +551,15 @@ function Code({ className, inline, children }: CodeProps) {
 
 const TaskListItemContext = React.createContext<{
   position?: Position
-  priority: Task["priority"]
 } | null>(null)
 
 function ListItem({ node, ordered, index, ...props }: LiProps) {
-  const { markdown } = React.useContext(MarkdownContext)
   const isTaskListItem = props.className?.includes("task-list-item")
 
   if (isTaskListItem) {
-    const content = getTaskBody(
-      markdown.slice(node.position?.start.offset, node.position?.end.offset),
-    )
-
-    const { tags } = parseNote("", content)
-
-    let priority: Task["priority"] = 4
-    if (tags.includes("p1")) priority = 1
-    else if (tags.includes("p2")) priority = 2
-    else if (tags.includes("p3")) priority = 3
-
     return (
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      <TaskListItemContext.Provider value={{ position: node.position, priority }}>
+      <TaskListItemContext.Provider value={{ position: node.position }}>
         <li {...props} />
       </TaskListItemContext.Provider>
     )
@@ -592,7 +578,6 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
       ref={checkedRef}
       checked={checked}
       disabled={!onChange}
-      // priority={priority}
       onCheckedChange={(checked) => {
         if (!position) return
 

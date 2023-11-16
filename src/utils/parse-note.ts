@@ -9,7 +9,7 @@ import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
-import { NoteId, Task } from "../types"
+import { NoteId } from "../types"
 import { getNextBirthday, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
 
@@ -25,8 +25,6 @@ export const parseNote = memoize((id: NoteId, content: string) => {
   const tags = new Set<string>()
   const dates = new Set<string>()
   const links = new Set<NoteId>()
-  const queries = new Set<string>()
-  const tasks: Task[] = []
 
   const { frontmatter } = parseFrontmatter(content)
 
@@ -89,54 +87,6 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         })
         break
       }
-
-      case "code": {
-        if (node.lang === "query") {
-          queries.add(node.value)
-        }
-        break
-      }
-
-      case "listItem": {
-        // Task list item
-        if (node.checked !== null && node.checked !== undefined) {
-          if (!node.position?.start) break
-
-          const text = getTaskBody(
-            content.slice(node.position.start.offset, node.position?.end.offset),
-          )
-
-          const title =
-            text
-              // Remove dates
-              .replace(/\[\[\d{4}-\d{2}-\d{2}\]\]/g, "")
-              // Remove tags
-              .replace(/#[a-zA-Z][\w-/]*/g, "")
-              // Remove extra spaces
-              .replace(/ +/g, " ")
-              .trim() || ""
-
-          const { dates, links, tags } = parseNote(id, text)
-
-          let priority: Task["priority"] = 4
-          if (tags.includes("p1")) priority = 1
-          else if (tags.includes("p2")) priority = 2
-          else if (tags.includes("p3")) priority = 3
-
-          tasks.push({
-            noteId: id,
-            start: node.position.start,
-            content: text,
-            completed: node.checked,
-            title,
-            priority,
-            dates,
-            links,
-            tags,
-          })
-        }
-        break
-      }
     }
   })
 
@@ -168,6 +118,7 @@ export const parseNote = memoize((id: NoteId, content: string) => {
   const parsedTags = tagsSchema.safeParse(frontmatter.tags)
 
   if (parsedTags.success) {
+    // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
     parsedTags.data.forEach((tag) =>
       tag.split("/").forEach((_, index) => {
         tags.add(
@@ -187,16 +138,5 @@ export const parseNote = memoize((id: NoteId, content: string) => {
     dates: Array.from(dates),
     links: Array.from(links),
     tags: Array.from(tags),
-    queries: Array.from(queries),
-    tasks,
   }
 })
-
-export function getTaskBody(text: string) {
-  return (
-    text
-      .split("\n")[0]
-      // "- [ ] Example" -> "Example"
-      .match(/^- \[( |x)\] (?<content>.+)/)?.groups?.content || ""
-  )
-}
