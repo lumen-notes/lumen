@@ -580,9 +580,8 @@ export const notesAtom = atom((get) => {
   // Parse notes
   for (const filepath in markdownFiles) {
     const id = filepath.replace(/\.md$/, "")
-    // TODO: Rename rawBody to content
-    const rawBody = markdownFiles[filepath]
-    notes.set(id, { id, rawBody, ...parseNote(id, rawBody), backlinks: [] })
+    const content = markdownFiles[filepath]
+    notes.set(id, { id, content, ...parseNote(id, content), backlinks: [] })
   }
 
   // Derive backlinks
@@ -621,7 +620,7 @@ export const sortedNotesAtom = atom((get) => {
 export const noteSearcherAtom = atom((get) => {
   const sortedNotes = get(sortedNotesAtom)
   return new Searcher(sortedNotes, {
-    keySelector: (note) => [note.title, note.rawBody, note.id],
+    keySelector: (note) => [note.title, note.content, note.id],
     threshold: 0.8,
   })
 })
@@ -690,7 +689,7 @@ export const templatesAtom = atom((get) => {
   const notes = get(notesAtom)
   const templates: Record<string, Template> = {}
 
-  for (const { id, rawBody, frontmatter } of notes.values()) {
+  for (const { id, content, frontmatter } of notes.values()) {
     const template = frontmatter["template"]
 
     // Skip if note isn't a template
@@ -699,7 +698,7 @@ export const templatesAtom = atom((get) => {
     try {
       const parsedTemplate = templateSchema.omit({ body: true }).parse(template)
 
-      const body = removeTemplateFrontmatter(rawBody)
+      const body = removeTemplateFrontmatter(content)
 
       templates[id] = { ...parsedTemplate, body }
     } catch (error) {
@@ -731,7 +730,7 @@ export const tasksAtom = atom((get) => {
 export const taskSearcherAtom = atom((get) => {
   const tasks = get(tasksAtom)
   return new Searcher(tasks, {
-    keySelector: (task) => [task.title, task.rawBody],
+    keySelector: (task) => [task.title, task.content],
     threshold: 0.8,
   })
 })

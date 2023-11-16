@@ -330,7 +330,7 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            rawBody: `# ${query}`,
+            content: `# ${query}`,
           }
 
           saveNote(note)
@@ -347,7 +347,8 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map((note): Completion => {
-        const { content } = parseFrontmatter(note?.rawBody || "")
+        const { content } = parseFrontmatter(note?.content || "")
+
         return {
           label: note?.title || note.id,
           detail: removeParentTags(note.tags)

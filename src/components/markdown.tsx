@@ -33,6 +33,7 @@ import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
   MailIcon16,
@@ -559,11 +560,11 @@ function ListItem({ node, ordered, index, ...props }: LiProps) {
   const isTaskListItem = props.className?.includes("task-list-item")
 
   if (isTaskListItem) {
-    const rawBody = getTaskBody(
+    const content = getTaskBody(
       markdown.slice(node.position?.start.offset, node.position?.end.offset),
     )
 
-    const { tags } = parseNote("", rawBody)
+    const { tags } = parseNote("", content)
 
     let priority: Task["priority"] = 4
     if (tags.includes("p1")) priority = 1
@@ -665,7 +666,14 @@ function NoteLink({ id, text }: NoteLinkProps) {
             className="z-20 w-96 p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             elevation={1}
           >
-            <Markdown>{note?.rawBody ?? "Not found"}</Markdown>
+            {note ? (
+              <Markdown>{note.content}</Markdown>
+            ) : (
+              <span className="flex items-center gap-2 text-text-danger">
+                <ErrorIcon16 />
+                File not found
+              </span>
+            )}
           </Card>
         </HoverCard.Content>
       </HoverCard.Portal>
@@ -683,7 +691,14 @@ function NoteEmbed({ id, text }: NoteEmbedProps) {
   const Link = useLink()
   return (
     <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
-      <Markdown hideFrontmatter>{note?.rawBody ?? "Not found"}</Markdown>
+      {note ? (
+        <Markdown hideFrontmatter>{note.content}</Markdown>
+      ) : (
+        <span className="flex items-center gap-2 text-text-danger">
+          <ErrorIcon16 />
+          File not found
+        </span>
+      )}
       <div className="mt-2 text-sm text-text-secondary">
         <Link target="_blank" to={`/${id}`}>
           Source

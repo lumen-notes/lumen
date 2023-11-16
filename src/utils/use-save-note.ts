@@ -7,8 +7,8 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
 
   const saveNote = React.useCallback(
-    ({ id, rawBody }: Pick<Note, "id" | "rawBody">) => {
-      send({ type: "WRITE_FILE", filepath: `${id}.md`, content: rawBody })
+    ({ id, content }: Pick<Note, "id" | "content">) => {
+      send({ type: "WRITE_FILE", filepath: `${id}.md`, content })
     },
     [send],
   )

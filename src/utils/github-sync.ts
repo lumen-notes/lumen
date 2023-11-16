@@ -27,7 +27,7 @@ export function useRenameTag() {
         .filter((note) => note.tags.includes(oldName))
         .reduce<Record<string, string>>((updatedRawNotes, note) => {
           // Find and replace the old tag with the new tag
-          updatedRawNotes[note.id] = note.rawBody.replace(`#${oldName}`, `#${newName}`)
+          updatedRawNotes[note.id] = note.content.replace(`#${oldName}`, `#${newName}`)
           return updatedRawNotes
         }, {})
 
@@ -40,8 +40,8 @@ export function useRenameTag() {
         const githubRepo = getGitHubRepo()
         if (!githubUser || !githubRepo) return
 
-        const files = mapObject(updatedRawNotes, (rawBody, id) => {
-          return [`${id}.md`, rawBody]
+        const files = mapObject(updatedRawNotes, (content, id) => {
+          return [`${id}.md`, content]
         })
 
         await writeFiles({
@@ -77,7 +77,7 @@ export function useDeleteTag() {
         .filter((note) => note.tags.includes(tagName))
         .reduce<Record<string, string>>((updatedRawNotes, note) => {
           // Find and replace the tag with an empty string
-          updatedRawNotes[note.id] = note.rawBody.replace(tagRegex, ``)
+          updatedRawNotes[note.id] = note.content.replace(tagRegex, ``)
           return updatedRawNotes
         }, {})
 
@@ -90,8 +90,8 @@ export function useDeleteTag() {
         const githubRepo = getGitHubRepo()
         if (!githubUser || !githubRepo) return
 
-        const files = mapObject(updatedRawNotes, (rawBody, id) => {
-          return [`${id}.md`, rawBody]
+        const files = mapObject(updatedRawNotes, (content, id) => {
+          return [`${id}.md`, content]
         })
 
         await writeFiles({

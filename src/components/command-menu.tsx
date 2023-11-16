@@ -210,7 +210,7 @@ export function CommandMenu() {
                 onSelect={() => {
                   const note = {
                     id: Date.now().toString(),
-                    rawBody: deferredQuery,
+                    content: deferredQuery,
                   }
 
                   // Create new note

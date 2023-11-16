@@ -88,7 +88,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   useEvent("keydown", (event) => {
     // Copy markdown with `command + c` if no text is selected
     if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-      copy(note?.rawBody || "")
+      copy(note?.content || "")
       event.preventDefault()
     }
 
@@ -134,7 +134,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
             key="copy-markdown"
             icon={<CopyIcon16 />}
             shortcut={["⌘", "C"]}
-            onSelect={() => copy(note.rawBody)}
+            onSelect={() => copy(note.content)}
           >
             Copy markdown
           </DropdownMenu.Item>
@@ -164,14 +164,12 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     >
       {!isEditing ? (
         <div className="w-full flex-grow p-4">
-          <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
-            {note.rawBody}
-          </Markdown>
+          <Markdown onChange={(content) => saveNote({ id, content })}>{note.content}</Markdown>
         </div>
       ) : (
         <FullscreenNoteForm
           id={id}
-          defaultValue={note.rawBody}
+          defaultValue={note.content}
           editorRef={editorRef}
           onSubmit={switchToViewing}
           onCancel={switchToViewing}

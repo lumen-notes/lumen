@@ -133,34 +133,6 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     [focusNextCard, deleteNote, panel, closePanel],
   )
 
-  // if (state.matches("signedIn.resolvingRepo")) {
-  //   return (
-  //     <Card>
-  //       <div className="flex items-center justify-between p-2">
-  //         <span className="px-2 text-text-secondary">
-  //           <Link
-  //             target="_blank"
-  //             to={`/${id}`}
-  //             className="link font-mono tracking-wide !no-underline hover:!underline"
-  //           >
-  //             {id}.md
-  //           </Link>
-  //         </span>
-  //       </div>
-  //       <div className="p-4 pt-0">
-  //         <span className="flex items-center gap-2 text-text-secondary">
-  //           <LoadingIcon16 />
-  //           Loading…
-  //         </span>
-  //       </div>
-  //     </Card>
-  //   )
-  // }
-
-  // if (!note) {
-  //   return <Card className="p-4">Not found</Card>
-  // }
-
   return (
     <>
       <Card
@@ -180,7 +152,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
           // Copy markdown with `command + c` if no text is selected
           if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-            copy(note?.rawBody || "")
+            copy(note?.content || "")
             event.preventDefault()
           }
 
@@ -244,7 +216,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
-                onSelect={() => copy(note?.rawBody || "")}
+                onSelect={() => copy(note?.content || "")}
                 shortcut={["⌘", "C"]}
               >
                 Copy markdown
@@ -314,9 +286,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               Loading…
             </span>
           ) : note ? (
-            <Markdown onChange={(markdown) => saveNote({ id, rawBody: markdown })}>
-              {note.rawBody}
-            </Markdown>
+            <Markdown onChange={(content) => saveNote({ id, content })}>{note.content}</Markdown>
           ) : (
             <span className="flex items-center gap-2 text-text-danger">
               <ErrorIcon16 />
@@ -328,9 +298,9 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
       <div hidden={!isEditing}>
         <NoteCardForm
           editorRef={editorRef}
-          key={note?.rawBody || ""}
+          key={note?.content || ""}
           id={id}
-          defaultValue={note?.rawBody}
+          defaultValue={note?.content}
           elevation={elevation}
           selected={selected}
           // eslint-disable-next-line jsx-a11y/no-autofocus

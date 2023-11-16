@@ -4,19 +4,21 @@ import { z } from "zod"
 export type NoteId = string
 
 export type Note = {
-  // Markdown file name
+  /**  Markdown file name without the extension */
   id: NoteId
 
-  // Raw body of the markdown file
-  rawBody: string
+  /**  Content of the markdown file */
+  content: string
 
-  // Parsed from the raw body
+  // Parsed from the content
   frontmatter: Record<string, unknown>
   title: string
-  url: string | null // If the title contains a link (e.g. `# [title](url)`), this will be the url
-  dates: string[]
+  /** If the title contains a link (e.g. `# [title](url)`), this will be the url */
+  url: string | null
   links: NoteId[]
+  dates: string[]
   tags: string[]
+  // TODO: Remove queries and tasks
   queries: string[]
   tasks: Task[]
 
@@ -27,7 +29,7 @@ export type Note = {
 export type Task = {
   noteId: NoteId
   start: Point
-  rawBody: string
+  content: string
   completed: boolean
   title: string
   priority: 1 | 2 | 3 | 4

@@ -17,7 +17,7 @@ type FullscreenNoteFormProps = {
   defaultValue?: string
   placeholder?: string
   editorRef?: React.MutableRefObject<ReactCodeMirrorRef | null>
-  onSubmit?: (note: { id: NoteId; rawBody: string }) => void
+  onSubmit?: (note: { id: NoteId; content: string }) => void
   onCancel?: () => void
 }
 
@@ -44,7 +44,7 @@ export function FullscreenNoteForm({
 
     const note = {
       id: id ?? Date.now().toString(),
-      rawBody: value,
+      content: value,
     }
 
     saveNote(note)

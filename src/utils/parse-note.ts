@@ -19,7 +19,7 @@ import { parseFrontmatter } from "./parse-frontmatter"
  * We memoize this function because it's called a lot and it's expensive.
  * We're intentionally sacrificing memory usage for runtime performance.
  */
-export const parseNote = memoize((id: NoteId, rawBody: string) => {
+export const parseNote = memoize((id: NoteId, content: string) => {
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
@@ -28,15 +28,15 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
   const queries = new Set<string>()
   const tasks: Task[] = []
 
-  const { frontmatter } = parseFrontmatter(rawBody)
+  const { frontmatter } = parseFrontmatter(content)
 
-  // Note: It's important that dateLink is included after noteLink.
-  // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
-  // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
   const mdast = fromMarkdown(
-    rawBody,
+    content,
     // @ts-ignore TODO: Fix types
     {
+      // It's important that dateLink is included after noteLink.
+      // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
+      // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
       extensions: [gfmTaskListItem(), noteLink(), noteEmbed(), tagLink(), dateLink()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
@@ -103,7 +103,7 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
           if (!node.position?.start) break
 
           const text = getTaskBody(
-            rawBody.slice(node.position.start.offset, node.position?.end.offset),
+            content.slice(node.position.start.offset, node.position?.end.offset),
           )
 
           const title =
@@ -126,7 +126,7 @@ export const parseNote = memoize((id: NoteId, rawBody: string) => {
           tasks.push({
             noteId: id,
             start: node.position.start,
-            rawBody: text,
+            content: text,
             completed: node.checked,
             title,
             priority,
@@ -197,6 +197,6 @@ export function getTaskBody(text: string) {
     text
       .split("\n")[0]
       // "- [ ] Example" -> "Example"
-      .match(/^- \[( |x)\] (?<rawBody>.+)/)?.groups?.rawBody || ""
+      .match(/^- \[( |x)\] (?<content>.+)/)?.groups?.content || ""
   )
 }

@@ -24,7 +24,7 @@ type NoteCardFormProps = {
   selected?: boolean
   autoFocus?: boolean
   editorRef?: React.MutableRefObject<ReactCodeMirrorRef | null>
-  onSubmit?: (note: { id: NoteId; rawBody: string }) => void
+  onSubmit?: (note: { id: NoteId; content: string }) => void
   onCancel?: () => void
 }
 
@@ -67,7 +67,7 @@ export function NoteCardForm({
     // Don't create empty notes
     if (!value) return
 
-    const note = { id, rawBody: value }
+    const note = { id, content: value }
 
     saveNote(note)
     onSubmit?.(note)
