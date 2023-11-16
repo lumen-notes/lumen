@@ -303,7 +303,7 @@ function createGlobalStateMachine() {
 
           // Clone repo
           // This could take awhile if the repo is large
-          console.log(`$ git clone ${url}.git ${ROOT_DIR}`)
+          console.time(`$ git clone ${url}.git ${ROOT_DIR}`)
           await git.clone({
             fs,
             http,
@@ -316,6 +316,7 @@ function createGlobalStateMachine() {
             onMessage: console.log,
             onAuth: () => ({ username, password: token }),
           })
+          console.timeEnd(`$ git clone ${url}.git ${ROOT_DIR}`)
 
           // Set user in git config
           console.log(`$ git config user.name "Cole Bemis"`)
@@ -345,23 +346,24 @@ function createGlobalStateMachine() {
 
           const { username, token } = context.githubUser
 
-          console.log(`$ git pull`)
+          console.time(`$ git pull`)
           await git.pull({
             fs,
             http,
             dir: ROOT_DIR,
             singleBranch: true,
-            onMessage: console.log,
             onAuth: () => ({ username, password: token }),
           })
+          console.timeEnd(`$ git pull`)
 
-          console.log(`$ git push`)
+          console.time(`$ git push`)
           await git.push({
             fs,
             http,
             dir: ROOT_DIR,
             onAuth: () => ({ username, password: token }),
           })
+          console.timeEnd(`$ git push`)
 
           const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
 
@@ -397,13 +399,14 @@ function createGlobalStateMachine() {
 
           // Push if online
           if (navigator.onLine) {
-            console.log(`$ git push`)
+            console.time(`$ git push`)
             await git.push({
               fs,
               http,
               dir: ROOT_DIR,
               onAuth: () => ({ username, password: token }),
             })
+            console.timeEnd(`$ git push`)
           }
         },
         deleteFile: async (context, event) => {
@@ -436,13 +439,14 @@ function createGlobalStateMachine() {
 
           // Push if online
           if (navigator.onLine) {
-            console.log(`$ git push`)
+            console.time(`$ git push`)
             await git.push({
               fs,
               http,
               dir: ROOT_DIR,
               onAuth: () => ({ username, password: token }),
             })
+            console.timeEnd(`$ git push`)
           }
         },
       },
@@ -522,7 +526,6 @@ function getMarkdownFilesFromLocalStorage() {
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
   console.time("getMarkdownFilesFromFs()")
-
   const markdownFiles = await git.walk({
     fs,
     dir,
@@ -542,7 +545,6 @@ async function getMarkdownFilesFromFs(dir: string) {
       return [filepath, new TextDecoder().decode(content)]
     },
   })
-
   console.timeEnd("getMarkdownFilesFromFs()")
 
   return Object.fromEntries(markdownFiles)
