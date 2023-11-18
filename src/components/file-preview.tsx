@@ -1,6 +1,6 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { LoadingIcon16 } from "../components/icons"
+import { ErrorIcon16, LoadingIcon16 } from "../components/icons"
 import { ROOT_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
 import { readFile } from "../utils/fs"
 import { isTrackedWithGitLfs, resolveGitLfsPointer } from "../utils/git-lfs"
@@ -73,7 +73,10 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         Loading…
       </div>
     ) : (
-      <div>File not found</div>
+      <div className="flex items-center gap-2 leading-4 text-text-danger">
+        <ErrorIcon16 />
+        File not found
+      </div>
     )
   }
 
