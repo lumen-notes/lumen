@@ -16,6 +16,8 @@ export function savePathParams(location: Location) {
     return
   }
 
+  // TODO: Don't cache `token` and `username` params
+  // TODO: Create allowlist of params to cache
   window.localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({ ...prevPathParams, [location.pathname]: location.search }),
