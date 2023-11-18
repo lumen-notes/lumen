@@ -4,7 +4,8 @@
   export interface Typegen0 {
         '@@xstate/typegen': true;
         internalEvents: {
-          "done.invoke.global.resolvingUser:invocation[0]": { type: "done.invoke.global.resolvingUser:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+          "": { type: "" };
+"done.invoke.global.resolvingUser:invocation[0]": { type: "done.invoke.global.resolvingUser:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.global.signedIn.cloned.sync.syncing:invocation[0]": { type: "done.invoke.global.signedIn.cloned.sync.syncing:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.global.signedIn.cloningRepo:invocation[0]": { type: "done.invoke.global.signedIn.cloningRepo:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.global.signedIn.resolvingRepo:invocation[0]": { type: "done.invoke.global.signedIn.resolvingRepo:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
@@ -47,7 +48,7 @@
           
         };
         eventsCausingGuards: {
-          
+          "isOffline": "";
         };
         eventsCausingServices: {
           "cloneRepo": "SELECT_REPO";
