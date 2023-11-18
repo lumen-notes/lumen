@@ -23,7 +23,7 @@ import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 // Constants
 // -----------------------------------------------------------------------------
 
-const ROOT_DIR = "/root"
+export const ROOT_DIR = "/root"
 const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"

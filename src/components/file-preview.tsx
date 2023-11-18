@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { LoadingIcon16 } from "../components/icons"
-import { githubRepoAtom, githubUserAtom } from "../global-state"
-import { readRawFile } from "../utils/github-fs"
+import { ROOT_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
+import { readFile } from "../utils/fs"
+import { isTrackedWithGitLfs, resolveGitLfsPointer } from "../utils/git-lfs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -20,28 +21,48 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
-    if (!file) {
-      loadFile()
-    }
+    // If file is already cached, don't fetch it again
+    if (file) return
+
+    // Use ignore flag to avoid race conditions
+    // Reference: https://react.dev/reference/react/useEffect#fetching-data-with-effects
+    let ignore = false
 
     async function loadFile() {
       if (!githubUser || !githubRepo) return
+      console.log(githubUser, githubRepo)
+
       try {
         setIsLoading(true)
 
-        const file = await readRawFile({ githubToken: githubUser.token, githubRepo, path })
-        const url = URL.createObjectURL(file)
+        const file = await readFile(`${ROOT_DIR}${path}`)
 
-        setFile(file)
-        setUrl(url)
+        let url = ""
 
-        // Cache the file and base64 data
-        fileCache.set(path, { file, url })
+        // If file is tracked with Git LFS, resolve the pointer
+        if (await isTrackedWithGitLfs(file)) {
+          url = await resolveGitLfsPointer({ file, githubUser, githubRepo })
+        } else {
+          url = URL.createObjectURL(file)
+        }
+
+        if (!ignore) {
+          setFile(file)
+          setUrl(url)
+          // Cache the file and its URL
+          fileCache.set(path, { file, url })
+        }
       } catch (error) {
         console.error(error)
       } finally {
         setIsLoading(false)
       }
+    }
+
+    loadFile()
+
+    return () => {
+      ignore = true
     }
   }, [file, githubUser, githubRepo, path])
 
