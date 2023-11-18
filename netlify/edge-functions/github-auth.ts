@@ -5,8 +5,9 @@ import type { Config } from "https://edge.netlify.com"
 // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
 export default async (request: Request) => {
   try {
-    const code = new URL(request.url).searchParams.get("code")
-    const state = new URL(request.url).searchParams.get("state")
+    const url = new URL(request.url)
+    const code = url.searchParams.get("code")
+    const state = url.searchParams.get("state")
 
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",

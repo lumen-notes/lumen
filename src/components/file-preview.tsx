@@ -24,10 +24,6 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     // If file is already cached, don't fetch it again
     if (file) return
 
-    // Use ignore flag to avoid race conditions
-    // Reference: https://react.dev/reference/react/useEffect#fetching-data-with-effects
-    let ignore = false
-
     async function loadFile() {
       if (!githubUser || !githubRepo) return
       console.log(githubUser, githubRepo)
@@ -46,12 +42,11 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
           url = URL.createObjectURL(file)
         }
 
-        if (!ignore) {
-          setFile(file)
-          setUrl(url)
-          // Cache the file and its URL
-          fileCache.set(path, { file, url })
-        }
+        setFile(file)
+        setUrl(url)
+
+        // Cache the file and its URL
+        fileCache.set(path, { file, url })
       } catch (error) {
         console.error(error)
       } finally {
@@ -60,10 +55,6 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
     }
 
     loadFile()
-
-    return () => {
-      ignore = true
-    }
   }, [file, githubUser, githubRepo, path])
 
   if (!file) {

@@ -22,36 +22,24 @@ export async function resolveGitLfsPointer({
 }) {
   const text = await file.text()
 
-  // Parse the Git LFS pointer
-  const oid = text.match(/oid sha256:(?<oid>[a-f0-9]{64})/)?.groups?.oid
-  const size = text.match(/size (?<size>\d+)/)?.groups?.size
-
-  if (!oid || !size) {
-    throw new Error("Invalid Git LFS pointer")
-  }
-
-  // Fetch the file URL from GitHub
-  // TODO: Use proxy to avoid CORS issues
   const response = await fetch(
-    `https://github.com/${githubRepo.owner}/${githubRepo.name}.git/info/lfs/objects/batch`,
+    `/git-lfs-file?repo=${githubRepo.owner}/${githubRepo.name}&pointer=${text}`,
     {
-      method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/vnd.git-lfs+json",
         Authorization: `Bearer ${githubUser.token}`,
       },
-      body: JSON.stringify({
-        operation: "download",
-        transfers: ["basic"],
-        objects: [{ oid, size }],
-      }),
     },
   )
 
-  const json = await response.json()
+  if (!response.ok) {
+    throw new Error("Unable to resolve Git LFS pointer")
+  }
 
-  console.log(json)
+  const url = await response.text()
 
-  return ""
+  if (!url) {
+    throw new Error("Unable to resolve Git LFS pointer")
+  }
+
+  return url
 }
