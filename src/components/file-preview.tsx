@@ -2,8 +2,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { ErrorIcon16, LoadingIcon16 } from "../components/icons"
 import { ROOT_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
-import { readFile } from "../utils/fs"
-import { isTrackedWithGitLfs, resolveGitLfsPointer } from "../utils/git-lfs"
+import { getFileUrl, readFile } from "../utils/fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -32,15 +31,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         setIsLoading(true)
 
         const file = await readFile(`${ROOT_DIR}${path}`)
-
-        let url = ""
-
-        // If file is tracked with Git LFS, resolve the pointer
-        if (await isTrackedWithGitLfs(file)) {
-          url = await resolveGitLfsPointer({ file, githubUser, githubRepo })
-        } else {
-          url = URL.createObjectURL(file)
-        }
+        const url = await getFileUrl({ file, githubUser, githubRepo })
 
         setFile(file)
         setUrl(url)
