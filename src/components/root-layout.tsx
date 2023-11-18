@@ -23,6 +23,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
     }
   })
 
+  // Sync when the app comes back online
+  useEvent("online", () => {
+    send({ type: "SYNC" })
+  })
+
   // Restore the previous search params for this path when the app loads if the current search params are empty
   useEvent("load", () => {
     const prevPathParams = getPrevPathParams(location.pathname)
