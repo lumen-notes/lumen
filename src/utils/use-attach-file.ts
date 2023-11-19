@@ -15,6 +15,9 @@ export function useAttachFile() {
 
   const attachFile = React.useCallback(
     async (file: File, view?: EditorView) => {
+      // Skip if offline
+      if (!navigator.onLine) return
+
       const githubUser = getGitHubUser()
       const githubRepo = getGitHubRepo()
 
