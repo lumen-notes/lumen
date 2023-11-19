@@ -1,5 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
+import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
 import { githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
@@ -8,42 +9,24 @@ import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
 import { LumenLogo } from "./lumen-logo"
-import { RepoForm } from "./repo-form"
-import { useNetworkState } from "react-use"
 
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   const state = useAtomValue(globalStateMachineAtom)
 
   if (state.matches("resolvingUser")) return null
 
-  return state.matches("signedOut") || state.matches("signedIn.empty") ? (
+  return state.matches("signedOut") ? (
     <div className="flex min-h-screen items-center justify-center pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] coarse:items-end coarse:sm:items-center [@supports(min-height:100svh)]:min-h-[100svh]">
       <div className="flex w-full max-w-sm flex-col items-start px-4 py-8">
         <LumenLogo size={24} className="mb-8" />
-        {state.matches("signedOut") ? (
-          <>
-            <h1 className="mb-1 text-xl font-semibold">Welcome to Lumen</h1>
-            <p className="mb-8 text-text-secondary">
-              Lumen is a note-taking app for lifelong learners.{" "}
-              <a className="link link-external" href="https://uselumen.com">
-                Learn more
-              </a>
-            </p>
-            <SignInButton />
-          </>
-        ) : null}
-        {state.matches("signedIn.empty") ? (
-          <>
-            <h1 className="mb-1 text-xl font-semibold">Choose a repository</h1>
-            <p className="mb-8 text-text-secondary">
-              Store your notes as markdown files in a GitHub repository of your choice.
-            </p>
-            <div className="grid w-full gap-4">
-              <SignedInUser />
-              <RepoForm />
-            </div>
-          </>
-        ) : null}
+        <h1 className="mb-1 text-xl font-semibold">Welcome to Lumen</h1>
+        <p className="mb-8 text-text-secondary">
+          Lumen is a note-taking app for lifelong learners.{" "}
+          <a className="link link-external" href="https://uselumen.com">
+            Learn more
+          </a>
+        </p>
+        <SignInButton />
       </div>
     </div>
   ) : (

@@ -4,8 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import { Card } from "./card"
-import { ErrorIcon16, LoadingIcon16 } from "./icons"
+import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 // @ts-ignore
 // import LagRadar from "react-lag-radar"
@@ -64,19 +63,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
       {import.meta.env.DEV ? (
         <div className="flex border-t border-border-secondary px-4 py-2">
           <SyntaxHighlighter language="javascript">{JSON.stringify(state.value)}</SyntaxHighlighter>
-        </div>
-      ) : null}
-      {state.matches("signedIn.cloningRepo") ? (
-        <div className="fixed right-2 top-2 z-10 sm:bottom-2 sm:top-[unset]">
-          <Card
-            elevation={1}
-            className=" flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"
-            role="status"
-            aria-label="Cloning repository"
-          >
-            <LoadingIcon16 />
-            <span className="leading-4">Cloning…</span>
-          </Card>
         </div>
       ) : null}
     </div>

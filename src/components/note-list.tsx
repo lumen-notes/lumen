@@ -1,8 +1,6 @@
-import { useAtomValue } from "jotai"
 import React from "react"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
-import { globalStateMachineAtom } from "../global-state"
 import { templateSchema } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -27,7 +25,6 @@ type NoteListProps = {
 }
 
 export function NoteList({ baseQuery = "" }: NoteListProps) {
-  const state = useAtomValue(globalStateMachineAtom)
   const searchNotes = useSearchNotes()
   const Link = useLink()
 
@@ -123,11 +120,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto] gap-2">
             <SearchInput
-              placeholder={
-                state.matches("signedIn.cloned")
-                  ? `Search ${pluralize(noteResults.length, "note")}…`
-                  : "Search notes…"
-              }
+              placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
               value={query}
               onChange={(value) => {
                 setQuery(value)
