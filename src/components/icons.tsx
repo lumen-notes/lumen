@@ -527,6 +527,14 @@ export function SidebarIcon16({ className }: { className?: string }) {
   )
 }
 
+// export function SyncIcon24({ className }: { className?: string }) {
+//   return (
+//     <svg className={cx("h-6 w-6", className)} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+//       <path d="M10 3H4v1.5h3.023A9.001 9.001 0 0 0 11 20.945v-1.511A7.501 7.501 0 0 1 8.5 5.365V9H10V3ZM13 4.566a7.501 7.501 0 0 1 2.5 14.069V15H14v6h6v-1.5h-3.023A9.001 9.001 0 0 0 13 3.055v1.511Z" />
+//     </svg>
+//   )
+// }
+
 // Brand icons
 
 export function GitHubIcon16() {

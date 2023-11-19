@@ -13,12 +13,12 @@ import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
 import * as emoji from "node-emoji"
 import React from "react"
-import { tagsAtom, templatesAtom } from "../global-atoms"
+import { tagsAtom, templatesAtom } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { useUpsertNote } from "../utils/github-sync"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
+import { useSaveNote } from "../utils/use-save-note"
 import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
 
@@ -309,7 +309,7 @@ function useTagPropertyCompletion() {
 }
 
 function useNoteCompletion() {
-  const upsertNote = useUpsertNote()
+  const saveNote = useSaveNote()
   const searchNotes = useStableSearchNotes()
 
   const noteCompletion = React.useCallback(
@@ -330,10 +330,10 @@ function useNoteCompletion() {
         apply: (view, completion, from, to) => {
           const note = {
             id: Date.now().toString(),
-            rawBody: `# ${query}`,
+            content: `# ${query}`,
           }
 
-          upsertNote(note)
+          saveNote(note)
 
           // Insert link to new note
           const text = `[[${note.id}|${query}]]`
@@ -347,7 +347,8 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map((note): Completion => {
-        const { content } = parseFrontmatter(note?.rawBody || "")
+        const { content } = parseFrontmatter(note?.content || "")
+
         return {
           label: note?.title || note.id,
           detail: removeParentTags(note.tags)
@@ -377,7 +378,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, upsertNote],
+    [searchNotes, saveNote],
   )
 
   return noteCompletion

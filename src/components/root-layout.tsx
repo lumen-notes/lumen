@@ -1,35 +1,31 @@
-import { useAtomValue } from "jotai"
+import { useAtom } from "jotai"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
-import { useFetchNotes } from "../utils/github-sync"
+import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import { Card } from "./card"
-import { ErrorIcon16, LoadingIcon16 } from "./icons"
+import { ErrorIcon16 } from "./icons"
+import { SyntaxHighlighter } from "./syntax-highlighter"
+// @ts-ignore
+// import LagRadar from "react-lag-radar"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
-  const githubUser = useAtomValue(githubUserAtom)
-  const githubRepo = useAtomValue(githubRepoAtom)
-  const { fetchNotes, isFetching, error: fetchError } = useFetchNotes()
-
-  const { online } = useNetworkState()
-
-  const onLoad = React.useCallback(() => fetchNotes(), [fetchNotes])
-
-  const onVisibilityChange = React.useCallback(() => {
-    if (document.visibilityState === "visible") {
-      fetchNotes()
-    }
-  }, [fetchNotes])
-
-  // Fetch notes when the app loads, becomes visible, or comes online
-  useEvent("load", onLoad)
-  useEvent("visibilitychange", onVisibilityChange)
-  // useEvent("online", onOnline)
-
+  const [state, send] = useAtom(globalStateMachineAtom)
   const location = useLocation()
   const navigate = useNavigate()
+  const { online } = useNetworkState()
+
+  // Sync when the app becomes visible again
+  useEvent("visibilitychange", () => {
+    if (document.visibilityState === "visible" && online) {
+      send({ type: "SYNC" })
+    }
+  })
+
+  // Sync when the app comes back online
+  useEvent("online", () => {
+    send({ type: "SYNC" })
+  })
 
   // Restore the previous search params for this path when the app loads if the current search params are empty
   useEvent("load", () => {
@@ -50,32 +46,23 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-      {/* Show error message if a GitHub repository has been configured but fetching notes fails */}
-      {fetchError && !isFetching && githubUser && githubRepo?.owner && githubRepo?.name ? (
-        <div className="flex items-center gap-3 bg-[crimson] px-4 py-2 text-[white]">
+      {state.context.error ? (
+        <div className="flex items-center gap-3 bg-[firebrick] px-4 py-2 text-[white]">
           <div>
             <ErrorIcon16 />
           </div>
-          <span className="truncate">{fetchError.message}</span>
+          <span className="truncate">{state.context.error.message}</span>
         </div>
       ) : null}
+      {/* {import.meta.env.DEV ? (
+        <div className="fixed right-4 top-4 rounded-full bg-[black] p-2">
+          <LagRadar />
+        </div>
+      ) : null} */}
       {children}
-      {!online ? (
-        <div className="flex justify-center px-4 py-2 sm:justify-start sm:bg-bg-tertiary">
-          <span>Offline</span>
-        </div>
-      ) : null}
-      {isFetching ? (
-        <div className="fixed right-2 top-2 z-10 sm:bottom-2 sm:top-[unset]">
-          <Card
-            elevation={1}
-            className=" flex items-center gap-2 rounded-md p-2 text-text-secondary after:rounded-md"
-            role="status"
-            aria-label="Fetching notes"
-          >
-            <LoadingIcon16 />
-            <span className="leading-4">Fetching…</span>
-          </Card>
+      {import.meta.env.DEV ? (
+        <div className="flex border-t border-border-secondary px-4 py-2">
+          <SyntaxHighlighter language="javascript">{JSON.stringify(state.value)}</SyntaxHighlighter>
         </div>
       ) : null}
     </div>

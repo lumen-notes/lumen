@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { LoadingIcon16 } from "../components/icons"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
-import { readRawFile } from "../utils/github-fs"
+import { ErrorIcon16, LoadingIcon16 } from "../components/icons"
+import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
+import { getFileUrl, readFile } from "../utils/fs"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 
@@ -20,22 +20,22 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
 
   React.useEffect(() => {
-    if (!file) {
-      loadFile()
-    }
+    // If file is already cached, don't fetch it again
+    if (file) return
 
     async function loadFile() {
       if (!githubUser || !githubRepo) return
+
       try {
         setIsLoading(true)
 
-        const file = await readRawFile({ githubToken: githubUser.token, githubRepo, path })
-        const url = URL.createObjectURL(file)
+        const file = await readFile(`${REPO_DIR}${path}`)
+        const url = await getFileUrl({ file, path, githubUser, githubRepo })
 
         setFile(file)
         setUrl(url)
 
-        // Cache the file and base64 data
+        // Cache the file and its URL
         fileCache.set(path, { file, url })
       } catch (error) {
         console.error(error)
@@ -43,6 +43,8 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         setIsLoading(false)
       }
     }
+
+    loadFile()
   }, [file, githubUser, githubRepo, path])
 
   if (!file) {
@@ -52,7 +54,10 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
         Loading…
       </div>
     ) : (
-      <div>File not found</div>
+      <div className="flex items-center gap-2 leading-4 text-text-danger">
+        <ErrorIcon16 />
+        File not found
+      </div>
     )
   }
 

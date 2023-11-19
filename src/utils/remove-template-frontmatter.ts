@@ -1,6 +1,6 @@
 /** Removes the template definition from the frontmatter of a note */
-export function removeTemplateFrontmatter(rawBody: string) {
-  const lines = rawBody.split("\n")
+export function removeTemplateFrontmatter(content: string) {
+  const lines = content.split("\n")
 
   // Start is the line that starts with "template:"
   const templateStart = lines.findIndex((line) => line.startsWith("template:"))

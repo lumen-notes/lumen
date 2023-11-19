@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { notesAtom } from "../global-atoms"
+import { notesAtom } from "../global-state"
 import { NoteId } from "../types"
 
 export function useNoteById(id: NoteId) {

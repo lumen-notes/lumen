@@ -144,7 +144,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </span>
           ) : null}
         </div>
-
         <div className="flex flex-wrap gap-2 empty:hidden">
           {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
             <>
@@ -213,11 +212,9 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             </>
           ) : null}
         </div>
-
         {viewType === "cards"
           ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
           : null}
-
         {viewType === "list" ? (
           <ul>
             {noteResults.slice(0, numVisibleNotes).map((note) => {

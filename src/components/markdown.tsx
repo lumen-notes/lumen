@@ -12,7 +12,7 @@ import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { Task, templateSchema } from "../types"
+import { templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -23,9 +23,8 @@ import {
   toDateStringUtc,
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
-import { getTaskBody, parseNote } from "../utils/parse-note"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
+import { UPLOADS_DIR } from "../utils/use-attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
@@ -33,6 +32,7 @@ import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
   MailIcon16,
@@ -109,7 +109,7 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar username={frontmatter.github} />
+                  <GitHubAvatar login={frontmatter.github} />
                 </div>
               ) : null}
               <MarkdownBody>{content}</MarkdownBody>
@@ -460,14 +460,14 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (ref.current) {
       setIsFirst(checkIsFirst(ref.current))
     }
   }, [])
 
   // Open uploads in a panel
-  if (props.href?.startsWith(`/${UPLOADS_DIRECTORY}`)) {
+  if (props.href?.startsWith(UPLOADS_DIR)) {
     return (
       <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
         {props.children}
@@ -551,28 +551,15 @@ function Code({ className, inline, children }: CodeProps) {
 
 const TaskListItemContext = React.createContext<{
   position?: Position
-  priority: Task["priority"]
 } | null>(null)
 
 function ListItem({ node, ordered, index, ...props }: LiProps) {
-  const { markdown } = React.useContext(MarkdownContext)
   const isTaskListItem = props.className?.includes("task-list-item")
 
   if (isTaskListItem) {
-    const rawBody = getTaskBody(
-      markdown.slice(node.position?.start.offset, node.position?.end.offset),
-    )
-
-    const { tags } = parseNote("", rawBody)
-
-    let priority: Task["priority"] = 4
-    if (tags.includes("p1")) priority = 1
-    else if (tags.includes("p2")) priority = 2
-    else if (tags.includes("p3")) priority = 3
-
     return (
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      <TaskListItemContext.Provider value={{ position: node.position, priority }}>
+      <TaskListItemContext.Provider value={{ position: node.position }}>
         <li {...props} />
       </TaskListItemContext.Provider>
     )
@@ -591,7 +578,6 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
       ref={checkedRef}
       checked={checked}
       disabled={!onChange}
-      // priority={priority}
       onCheckedChange={(checked) => {
         if (!position) return
 
@@ -639,7 +625,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (ref.current) {
       setIsFirst(checkIsFirst(ref.current))
     }
@@ -665,7 +651,14 @@ function NoteLink({ id, text }: NoteLinkProps) {
             className="z-20 w-96 p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             elevation={1}
           >
-            <Markdown>{note?.rawBody ?? "Not found"}</Markdown>
+            {note ? (
+              <Markdown>{note.content}</Markdown>
+            ) : (
+              <span className="flex items-center gap-2 text-text-danger">
+                <ErrorIcon16 />
+                File not found
+              </span>
+            )}
           </Card>
         </HoverCard.Content>
       </HoverCard.Portal>
@@ -683,7 +676,14 @@ function NoteEmbed({ id, text }: NoteEmbedProps) {
   const Link = useLink()
   return (
     <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
-      <Markdown hideFrontmatter>{note?.rawBody ?? "Not found"}</Markdown>
+      {note ? (
+        <Markdown hideFrontmatter>{note.content}</Markdown>
+      ) : (
+        <span className="flex items-center gap-2 text-text-danger">
+          <ErrorIcon16 />
+          File not found
+        </span>
+      )}
       <div className="mt-2 text-sm text-text-secondary">
         <Link target="_blank" to={`/${id}`}>
           Source

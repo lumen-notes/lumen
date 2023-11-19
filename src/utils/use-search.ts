@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { noteSearcherAtom, sortedNotesAtom, taskSearcherAtom, tasksAtom } from "../global-atoms"
-import { Note, Task } from "../types"
+import { noteSearcherAtom, sortedNotesAtom } from "../global-state"
+import { Note } from "../types"
 
 type Qualifier = {
   key: string
@@ -62,25 +62,6 @@ export function useStableSearchNotes() {
   return searchNotes
 }
 
-export const useSearchTasks = () => {
-  const tasks = useAtomValue(tasksAtom)
-  const taskSearcher = useAtomValue(taskSearcherAtom)
-
-  const searchTasks = React.useCallback(
-    (query: string) => {
-      // If there's no query, return all notes
-      if (!query) return tasks
-
-      const { fuzzy, qualifiers } = parseQuery(query)
-      const results = fuzzy ? taskSearcher.search(fuzzy) : tasks
-      return filterResults(results, qualifiers)
-    },
-    [tasks, taskSearcher],
-  )
-
-  return searchTasks
-}
-
 // eslint-disable-next-line no-useless-escape
 const QUALIFIER_REGEX = /(?<exclude>-?)(?<key>\w+):(?<value>[^"\[\]| ]+|"[^"\[\]|]+")/g
 // Valid qualifiers:
@@ -118,20 +99,16 @@ export function parseQuery(query: string): Query {
   return { fuzzy, qualifiers }
 }
 
-export function filterResults<T extends Note | Task>(results: Array<T>, qualifiers: Qualifier[]) {
+export function filterResults<T extends Note>(results: Array<T>, qualifiers: Qualifier[]) {
   return results.filter((item) => {
     if (!item) return false
     return testQualifiers(qualifiers, item)
   })
 }
 
-export function testQualifiers(qualifiers: Qualifier[], item: Note | Task) {
+export function testQualifiers(qualifiers: Qualifier[], item: Note) {
   return qualifiers.every((qualifier) => {
-    const frontmatter =
-      "frontmatter" in item
-        ? item.frontmatter
-        : // Add `completed` state to task frontmatter
-          { completed: item.completed }
+    const frontmatter = item.frontmatter
 
     let value = false
 
@@ -139,7 +116,7 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note | Task) {
       case "id":
         // TODO: Add support for spaces in IDs
         // Match if the item's ID is in the qualifier's values
-        value = qualifier.values.includes("id" in item ? item.id : item.noteId)
+        value = qualifier.values.includes(item.id)
         break
 
       case "tag":

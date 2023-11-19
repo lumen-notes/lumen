@@ -1,39 +1,25 @@
-import { Point } from "unist"
 import { z } from "zod"
 
 export type NoteId = string
 
 export type Note = {
-  // Markdown file name
+  /**  Markdown file name without the extension */
   id: NoteId
 
-  // Raw body of the markdown file
-  rawBody: string
+  /**  Content of the markdown file */
+  content: string
 
-  // Parsed from the raw body
+  // Parsed from the content
   frontmatter: Record<string, unknown>
   title: string
-  url: string | null // If the title contains a link (e.g. `# [title](url)`), this will be the url
-  dates: string[]
+  /** If the title contains a link (e.g. `# [title](url)`), this will be the url */
+  url: string | null
   links: NoteId[]
+  dates: string[]
   tags: string[]
-  queries: string[]
-  tasks: Task[]
 
   // Derived from links
   backlinks: NoteId[]
-}
-
-export type Task = {
-  noteId: NoteId
-  start: Point
-  rawBody: string
-  completed: boolean
-  title: string
-  priority: 1 | 2 | 3 | 4
-  dates: string[]
-  links: NoteId[]
-  tags: string[]
 }
 
 export type GitHubRepository = {
@@ -41,10 +27,14 @@ export type GitHubRepository = {
   name: string
 }
 
-export type GitHubUser = {
-  token: string
-  username: string
-}
+export const githubUserSchema = z.object({
+  token: z.string(),
+  login: z.string(),
+  name: z.string(),
+  email: z.string(),
+})
+
+export type GitHubUser = z.infer<typeof githubUserSchema>
 
 export const templateInputSchema = z.object({
   type: z.literal("string"),
@@ -53,13 +43,13 @@ export const templateInputSchema = z.object({
   description: z.string().optional(),
 })
 
+export type TemplateInput = z.infer<typeof templateInputSchema>
+
 export const templateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   inputs: z.record(templateInputSchema).optional(),
   body: z.string(),
 })
-
-export type TemplateInput = z.infer<typeof templateInputSchema>
 
 export type Template = z.infer<typeof templateSchema>

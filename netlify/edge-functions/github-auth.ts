@@ -5,8 +5,9 @@ import type { Config } from "https://edge.netlify.com"
 // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
 export default async (request: Request) => {
   try {
-    const code = new URL(request.url).searchParams.get("code")
-    const state = new URL(request.url).searchParams.get("state")
+    const url = new URL(request.url)
+    const code = url.searchParams.get("code")
+    const state = url.searchParams.get("state")
 
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
@@ -27,11 +28,13 @@ export default async (request: Request) => {
       throw new Error(error)
     }
 
-    const username = await getUsername(token)
+    const { login, name, email } = await getUser(token)
 
     const redirectUrl = new URL(state || "https://uselumen.com")
-    redirectUrl.searchParams.set("token", token)
-    redirectUrl.searchParams.set("username", username)
+    redirectUrl.searchParams.set("user_token", token)
+    redirectUrl.searchParams.set("user_login", login)
+    redirectUrl.searchParams.set("user_name", name)
+    redirectUrl.searchParams.set("user_email", email)
 
     return Response.redirect(`${redirectUrl}`)
   } catch (error) {
@@ -39,20 +42,33 @@ export default async (request: Request) => {
   }
 }
 
-async function getUsername(token: string) {
-  const response = await fetch("https://api.github.com/user", {
+async function getUser(token: string) {
+  const userResponse = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
 
-  const { error, login: username } = await response.json()
+  const { error, login, name } = await userResponse.json()
 
   if (error) {
     throw new Error(error)
   }
 
-  return username
+  const emailResponse = await fetch("https://api.github.com/user/emails", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean }>
+  const primaryEmail = emails.find((email) => email.primary)
+
+  if (!primaryEmail) {
+    throw new Error("No primary email found")
+  }
+
+  return { login, name, email: primaryEmail.email }
 }
 
 export const config: Config = {

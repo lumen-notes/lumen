@@ -28,14 +28,17 @@ export function Panel({ id, title, description, icon, actions, children, onClose
     return MIN_WIDTH
   }, [])
 
-  const [width, setWidth] = useSearchParam("w", {
+  const [widthParam, setWidthParam] = useSearchParam("w", {
     defaultValue: MIN_WIDTH,
     schema: z.number(),
     parse: parseWidth,
   })
+
+  const [width, setWidth] = React.useState(widthParam)
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = React.useContext(PanelContext)
   const [activeNoteId, setActiveNoteId] = React.useState("")
+
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
@@ -48,7 +51,7 @@ export function Panel({ id, title, description, icon, actions, children, onClose
       className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
       style={{
         // @ts-ignore TypeScript doesn't know about custom properties
-        "--width": `${width}px`,
+        "--width": `max(${MIN_WIDTH}px, ${width}px)`,
         // Stagger sticky offset of panels
         "--left": panel ? `${(panel.index + 1) * 8}px` : 0,
       }}
@@ -118,21 +121,12 @@ export function Panel({ id, title, description, icon, actions, children, onClose
           min={MIN_WIDTH}
           max={MAX_WIDTH}
           onChange={setWidth}
-          onSnap={(direction) => {
-            switch (direction) {
-              case "left": {
-                setWidth(MIN_WIDTH)
-                break
-              }
+          onStop={() => {
+            const panelRect = panelRef.current?.getBoundingClientRect()
 
-              // Fill the remaining space to the right
-              case "right": {
-                if (!panelRef.current) break
-
-                const panelRect = panelRef.current.getBoundingClientRect()
-                setWidth(Math.max(window.innerWidth - panelRect.x, MIN_WIDTH))
-                break
-              }
+            if (panelRect) {
+              setWidth(panelRect.width)
+              setWidthParam(panelRect.width)
             }
           }}
         />
@@ -179,90 +173,38 @@ export function Panel({ id, title, description, icon, actions, children, onClose
 
 function ResizeHandle({
   value,
-  min,
-  max,
-  step = 16,
   onChange,
-  onSnap,
+  onStop,
 }: {
   value: number
   min: number
   max: number
   step?: number
   onChange: (value: number) => void
-  onSnap?: (direction: "left" | "right") => void
+  onStop?: () => void
 }) {
   const [isDragging, setIsDragging] = React.useState(false)
-  const [isFocused, setIsFocused] = React.useState(false)
-  const isResizing = isDragging || isFocused
-  const handleRef = React.useRef<HTMLDivElement>(null)
-  const sliderRef = React.useRef<HTMLInputElement>(null)
+  const isResizing = isDragging
   return (
-    <>
-      <DraggableCore
-        onStart={() => setIsDragging(true)}
-        onStop={() => {
-          setIsDragging(false)
-          sliderRef.current?.focus()
-        }}
-        onDrag={(event, { deltaX }) => {
-          onChange(clamp(value + deltaX, min, max))
-          event.preventDefault()
-        }}
-      >
-        <div
-          ref={handleRef}
-          data-resizing={isDragging}
-          className={clsx(
-            "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",
-            !isResizing && "hover:bg-border-secondary",
-            isResizing && "bg-border-focus",
-          )}
-        />
-      </DraggableCore>
-      <input
-        ref={sliderRef}
-        className="sr-only"
-        aria-label="Resize panel"
-        type="range"
-        onFocus={() => {
-          setIsFocused(true)
-          handleRef.current?.scrollIntoView()
-        }}
-        onBlur={() => setIsFocused(false)}
-        value={value}
-        min={min}
-        max={max}
-        onChange={(event) => onChange(Number(event.target.value))}
-        onKeyDown={(event) => {
-          // Ignore all modifier keys except shift
-          if (event.metaKey || event.ctrlKey || event.altKey) {
-            event.preventDefault()
-            return
-          }
-
-          if (event.shiftKey) {
-            switch (event.key) {
-              case "ArrowLeft":
-              case "ArrowDown":
-                onSnap?.("left")
-                event.preventDefault()
-                break
-
-              case "ArrowRight":
-              case "ArrowUp":
-                onSnap?.("right")
-                event.preventDefault()
-                break
-            }
-          }
-        }}
-        step={step}
+    <DraggableCore
+      onStart={() => setIsDragging(true)}
+      onStop={() => {
+        setIsDragging(false)
+        onStop?.()
+      }}
+      onDrag={(event, { deltaX }) => {
+        onChange(value + deltaX)
+        event.preventDefault()
+      }}
+    >
+      <div
+        data-resizing={isDragging}
+        className={clsx(
+          "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",
+          !isResizing && "hover:bg-border-secondary",
+          isResizing && "bg-border-focus",
+        )}
       />
-    </>
+    </DraggableCore>
   )
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
 }

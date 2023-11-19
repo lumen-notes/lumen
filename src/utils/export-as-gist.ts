@@ -35,7 +35,7 @@ export async function exportAsGist({
       public: false,
       files: {
         [filename]: {
-          content: note.rawBody,
+          content: note.content,
         },
       },
     }),

@@ -3,19 +3,23 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom, githubUserAtom } from "../global-atoms"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { NoteId } from "../types"
+import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
-import { useDeleteNote, useUpsertNote } from "../utils/github-sync"
+import { useDeleteNote } from "../utils/use-delete-note"
 import { pluralize } from "../utils/pluralize"
 import { useNoteById } from "../utils/use-note-by-id"
+import { useSaveNote } from "../utils/use-save-note"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
   EditIcon16,
+  ErrorIcon16,
   ExternalLinkIcon16,
+  LoadingIcon16,
   MoreIcon16,
   ShareIcon16,
   TrashIcon16,
@@ -24,7 +28,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
-import { cx } from "../utils/cx"
+import { flushSync } from "react-dom"
 
 type NoteCardProps = {
   id: NoteId
@@ -34,10 +38,11 @@ type NoteCardProps = {
 
 export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const note = useNoteById(id)
+  const state = useAtomValue(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
-  const upsertNote = useUpsertNote()
   const Link = useLink()
 
   // Refs
@@ -53,25 +58,27 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
   const switchToEditing = React.useCallback(() => {
-    setIsEditing(true)
-    // Wait for the editor to mount
-    setTimeout(() => {
-      const editor = editorRef.current
-
-      if (editor) {
-        // Focus the editor
-        editor.view?.focus()
-        // Move cursor to end of document
-        editor.view?.dispatch({
-          selection: EditorSelection.cursor(editor.view.state.doc.sliceString(0).length),
-        })
-      }
+    flushSync(() => {
+      setIsEditing(true)
     })
+
+    const editor = editorRef.current
+
+    if (editor) {
+      // Focus the editor
+      editor.view?.focus()
+      // Move cursor to end of document
+      editor.view?.dispatch({
+        selection: EditorSelection.cursor(editor.view.state.doc.sliceString(0).length),
+      })
+    }
   }, [])
 
   const switchToViewing = React.useCallback(() => {
-    setIsEditing(false)
-    setTimeout(() => cardRef.current?.focus())
+    flushSync(() => {
+      setIsEditing(false)
+    })
+    cardRef.current?.focus()
   }, [])
 
   const focusNextCard = React.useCallback(() => {
@@ -126,10 +133,6 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     [focusNextCard, deleteNote, panel, closePanel],
   )
 
-  if (!note) {
-    return <Card className="p-4">Not found</Card>
-  }
-
   return (
     <>
       <Card
@@ -149,7 +152,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
           // Copy markdown with `command + c` if no text is selected
           if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-            copy(note.rawBody)
+            copy(note?.content || "")
             event.preventDefault()
           }
 
@@ -187,7 +190,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             >
               {id}.md
             </Link>
-            {note.backlinks.length ? (
+            {note?.backlinks.length ? (
               <span>
                 {" · "}
                 {pluralize(note.backlinks.length, "backlink")}
@@ -197,7 +200,12 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
 
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} tooltipSide="top">
+              <IconButton
+                aria-label="Note actions"
+                shortcut={["⌘", "."]}
+                tooltipSide="top"
+                disabled={!note}
+              >
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>
@@ -208,7 +216,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
-                onSelect={() => copy(note.rawBody)}
+                onSelect={() => copy(note?.content || "")}
                 shortcut={["⌘", "C"]}
               >
                 Copy markdown
@@ -239,6 +247,8 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
                 onSelect={async () => {
+                  if (!note) return
+
                   const url = await exportAsGist({
                     githubToken: githubUser?.token ?? "",
                     noteId: id,
@@ -262,7 +272,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
                 icon={<TrashIcon16 />}
                 onSelect={() => handleDeleteNote(id)}
                 shortcut={["⌘", "⌫"]}
-                disabled={note.backlinks.length > 0}
+                disabled={note && note.backlinks.length > 0}
               >
                 Delete
               </DropdownMenu.Item>
@@ -270,17 +280,27 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </DropdownMenu>
         </div>
         <div className="p-4 pt-0">
-          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
-            {note.rawBody}
-          </Markdown>
+          {state.matches("signedIn.resolvingRepo") ? (
+            <span className="flex items-center gap-2 text-text-secondary">
+              <LoadingIcon16 />
+              Loading…
+            </span>
+          ) : note ? (
+            <Markdown onChange={(content) => saveNote({ id, content })}>{note.content}</Markdown>
+          ) : (
+            <span className="flex items-center gap-2 text-text-danger">
+              <ErrorIcon16 />
+              File not found
+            </span>
+          )}
         </div>
       </Card>
       <div hidden={!isEditing}>
         <NoteCardForm
           editorRef={editorRef}
-          key={note.rawBody}
+          key={note?.content || ""}
           id={id}
-          defaultValue={note.rawBody}
+          defaultValue={note?.content}
           elevation={elevation}
           selected={selected}
           // eslint-disable-next-line jsx-a11y/no-autofocus

@@ -15,17 +15,15 @@ export default {
 type Story = StoryObj<typeof NoteFavicon>
 
 const emptyNote: Note = {
-  backlinks: [],
+  id: "1",
+  content: "",
+  tags: [],
   dates: [],
   frontmatter: {},
-  id: "1",
   links: [],
-  queries: [],
-  tags: [],
-  rawBody: "",
-  tasks: [],
   title: "",
   url: null,
+  backlinks: [],
 }
 
 export const Default: Story = {

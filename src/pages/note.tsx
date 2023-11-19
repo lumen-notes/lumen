@@ -13,12 +13,13 @@ import { FullscreenNoteForm } from "../components/fullscreen-note-form"
 import { CopyIcon16, EditIcon16, ExternalLinkIcon16, NoteIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { Panels } from "../components/panels"
-import { githubRepoAtom } from "../global-atoms"
+import { githubRepoAtom } from "../global-state"
 import { NotePanel } from "../panels/note"
-import { useUpsertNote } from "../utils/github-sync"
 import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useNoteById } from "../utils/use-note-by-id"
+import { useSaveNote } from "../utils/use-save-note"
 import { useSearchParam } from "../utils/use-search-param"
+import { flushSync } from "react-dom"
 
 export function NotePage() {
   const isFullscreen = useIsFullscreen()
@@ -50,7 +51,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   const { "*": id = "" } = params
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const upsertNote = useUpsertNote()
+  const saveNote = useSaveNote()
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   // TODO: Save draft in local storage
 
@@ -66,19 +67,18 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   })
 
   const switchToEditing = React.useCallback(() => {
-    setIsEditing(true)
-    // Wait for the editor to mount
-    setTimeout(() => {
-      const view = editorRef.current?.view
-      if (view) {
-        // Focus the editor
-        view.focus()
-        // Move cursor to end of document
-        view.dispatch({
-          selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
-        })
-      }
-    }, 1)
+    flushSync(() => {
+      setIsEditing(true)
+    })
+    const view = editorRef.current?.view
+    if (view) {
+      // Focus the editor
+      view.focus()
+      // Move cursor to end of document
+      view.dispatch({
+        selection: EditorSelection.cursor(view.state.doc.sliceString(0).length),
+      })
+    }
   }, [setIsEditing])
 
   const switchToViewing = React.useCallback(() => {
@@ -88,7 +88,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   useEvent("keydown", (event) => {
     // Copy markdown with `command + c` if no text is selected
     if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
-      copy(note?.rawBody || "")
+      copy(note?.content || "")
       event.preventDefault()
     }
 
@@ -108,7 +108,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
   if (!note) {
     return (
       <FullscreenContainer title="Note" icon={<NoteIcon16 />} elevation={0}>
-        <div className="grid w-full flex-grow place-items-center">Not found</div>
+        <div className="grid w-full flex-grow">Not found</div>
       </FullscreenContainer>
     )
   }
@@ -134,7 +134,7 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
             key="copy-markdown"
             icon={<CopyIcon16 />}
             shortcut={["⌘", "C"]}
-            onSelect={() => copy(note.rawBody)}
+            onSelect={() => copy(note.content)}
           >
             Copy markdown
           </DropdownMenu.Item>
@@ -164,14 +164,12 @@ function FullscreenNotePage({ params }: FullscreenNotePageProps) {
     >
       {!isEditing ? (
         <div className="w-full flex-grow p-4">
-          <Markdown onChange={(markdown) => upsertNote({ id, rawBody: markdown })}>
-            {note.rawBody}
-          </Markdown>
+          <Markdown onChange={(content) => saveNote({ id, content })}>{note.content}</Markdown>
         </div>
       ) : (
         <FullscreenNoteForm
           id={id}
-          defaultValue={note.rawBody}
+          defaultValue={note.content}
           editorRef={editorRef}
           onSubmit={switchToViewing}
           onCancel={switchToViewing}

@@ -23,7 +23,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
           className="z-20 overflow-hidden rounded-md animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
           style={{ minWidth }}
         >
-          <div className="max-h-[50vh] overflow-auto p-1">{children}</div>
+          <div className="max-h-[90vh] overflow-auto p-1">{children}</div>
         </Card>
       </RadixDropdownMenu.Content>
     </Portal.Root>
@@ -81,7 +81,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-default items-center gap-5 rounded-sm px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 coarse:h-10 coarse:px-4",
+          "flex h-8 cursor-pointer items-center gap-5 rounded-sm px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none data-[disabled]:cursor-default data-[disabled]:opacity-50 coarse:h-10 coarse:px-4",
           className,
         )}
         asChild={Boolean(href)}

@@ -3,10 +3,10 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
-import { githubRepoAtom } from "../global-atoms"
+import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
-import { useUpsertNote } from "../utils/github-sync"
 import { useAttachFile } from "../utils/use-attach-file"
+import { useSaveNote } from "../utils/use-save-note"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -24,7 +24,7 @@ type NoteCardFormProps = {
   selected?: boolean
   autoFocus?: boolean
   editorRef?: React.MutableRefObject<ReactCodeMirrorRef | null>
-  onSubmit?: (note: { id: NoteId; rawBody: string }) => void
+  onSubmit?: (note: { id: NoteId; content: string }) => void
   onCancel?: () => void
 }
 
@@ -42,9 +42,8 @@ export function NoteCardForm({
   onCancel,
 }: NoteCardFormProps) {
   const id = React.useMemo(() => existingId ?? Date.now().toString(), [existingId])
-
+  const saveNote = useSaveNote()
   const githubRepo = useAtomValue(githubRepoAtom)
-  const upsertNote = useUpsertNote()
   const attachFile = useAttachFile()
 
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -68,13 +67,9 @@ export function NoteCardForm({
     // Don't create empty notes
     if (!value) return
 
-    const note = {
-      id,
-      rawBody: value,
-    }
+    const note = { id, content: value }
 
-    upsertNote(note)
-
+    saveNote(note)
     onSubmit?.(note)
   }
 
