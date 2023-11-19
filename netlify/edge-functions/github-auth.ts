@@ -61,10 +61,14 @@ async function getUser(token: string) {
     },
   })
 
-  const emails = await emailResponse.json()
-  const { email } = emails.find((email: any) => email.primary)
+  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean }>
+  const primaryEmail = emails.find((email) => email.primary)
 
-  return { login, name, email }
+  if (!primaryEmail) {
+    throw new Error("No primary email found")
+  }
+
+  return { login, name, email: primaryEmail.email }
 }
 
 export const config: Config = {

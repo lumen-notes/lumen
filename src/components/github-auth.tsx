@@ -143,9 +143,12 @@ async function getUser(token: string) {
     },
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const emails = (await emailResponse.json()) as any[]
-  const { email } = emails.find((email: any) => email.primary)
+  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean }>
+  const primaryEmail = emails.find((email) => email.primary)
 
-  return { login, name, email }
+  if (!primaryEmail) {
+    throw new Error("No primary email found")
+  }
+
+  return { login, name, email: primaryEmail.email }
 }
