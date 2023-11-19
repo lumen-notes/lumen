@@ -168,7 +168,7 @@ function createGlobalStateMachine() {
                         src: "writeFile",
                         onDone: {
                           target: "idle",
-                          actions: raise("PUSH"),
+                          actions: raise("SYNC"),
                         },
                         onError: {
                           target: "idle",
@@ -182,7 +182,7 @@ function createGlobalStateMachine() {
                         src: "deleteFile",
                         onDone: {
                           target: "idle",
-                          actions: raise("PUSH"),
+                          actions: raise("SYNC"),
                         },
                         onError: {
                           target: "idle",
