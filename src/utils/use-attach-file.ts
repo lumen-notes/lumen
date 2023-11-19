@@ -6,7 +6,7 @@ import { fileCache } from "../components/file-preview"
 import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
 import { fs, writeFile } from "../utils/fs"
 
-export const UPLOADS_DIR = "uploads"
+export const UPLOADS_DIR = "/uploads"
 
 export function useAttachFile() {
   const getGitHubUser = useAtomCallback(React.useCallback((get) => get(githubUserAtom), []))
@@ -28,8 +28,15 @@ export function useAttachFile() {
         const id = Date.now().toString()
         const extension = file.name.split(".").pop()
         const name = file.name.replace(`.${extension}`, "")
-        const path = `/${UPLOADS_DIR}/${id}.${extension}`
+        const path = `${UPLOADS_DIR}/${id}.${extension}`
         const arrayBuffer = await file.arrayBuffer()
+
+        // Make sure the uploads directory exists
+        try {
+          await fs.promises.mkdir(`${REPO_DIR}${UPLOADS_DIR}`)
+        } catch (error) {
+          // Directory already exists, ignore error
+        }
 
         // Write file to file system
         writeFile({ path: `${REPO_DIR}${path}`, content: arrayBuffer, githubUser, githubRepo })
@@ -53,6 +60,9 @@ export function useAttachFile() {
               dir: REPO_DIR,
               message: `Update ${relativePath}`,
             })
+          })
+          .catch((error) => {
+            console.error(error)
           })
 
         // Cache file

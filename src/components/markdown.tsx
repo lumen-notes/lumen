@@ -467,7 +467,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   }, [])
 
   // Open uploads in a panel
-  if (props.href?.startsWith(`/${UPLOADS_DIR}`)) {
+  if (props.href?.startsWith(UPLOADS_DIR)) {
     return (
       <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
         {props.children}

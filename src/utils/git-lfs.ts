@@ -5,47 +5,46 @@ import micromatch from "micromatch"
 
 /** Check if a file is tracked with Git LFS by checking the .gitattributes file */
 export async function isTrackedWithGitLfs(path: string) {
-  // Get .gitattributes file
-  const gitAttributes = await fs.promises.readFile(`${REPO_DIR}/.gitattributes`)
+  try {
+    // Get .gitattributes file
+    const gitAttributes = await fs.promises.readFile(`${REPO_DIR}/.gitattributes`)
 
-  // If .gitattributes file doesn't exist, then no files are tracked with Git LFS
-  if (!gitAttributes) {
+    // Parse .gitattributes file
+    const parsedGitAttributes = gitAttributes
+      .toString()
+      .split("\n")
+      .reduce((acc, line) => {
+        // Ignore comments
+        if (line.startsWith("#")) {
+          return acc
+        }
+
+        // Ignore empty lines
+        if (!line.trim()) {
+          return acc
+        }
+
+        // Split line into parts
+        const [pattern, ...attrs] = line.split(" ")
+
+        // Add pattern and filter to accumulator
+        return [...acc, { pattern, attrs }]
+      }, [] as Array<{ pattern: string; attrs: string[] }>)
+
+    // Return true if any patterns matching the file path have filter=lfs set
+    return parsedGitAttributes.some(({ pattern, attrs }) => {
+      // Check if file path matches pattern and if filter=lfs is set
+      return (
+        micromatch.isMatch(
+          // Remove leading slash from path and pattern
+          path.replace(/^\//, ""),
+          pattern.replace(/^\//, ""),
+        ) && attrs.includes("filter=lfs")
+      )
+    })
+  } catch (error) {
     return false
   }
-
-  // Parse .gitattributes file
-  const parsedGitAttributes = gitAttributes
-    .toString()
-    .split("\n")
-    .reduce((acc, line) => {
-      // Ignore comments
-      if (line.startsWith("#")) {
-        return acc
-      }
-
-      // Ignore empty lines
-      if (!line.trim()) {
-        return acc
-      }
-
-      // Split line into parts
-      const [pattern, ...attrs] = line.split(" ")
-
-      // Add pattern and filter to accumulator
-      return [...acc, { pattern, attrs }]
-    }, [] as Array<{ pattern: string; attrs: string[] }>)
-
-  // Return true if any patterns matching the file path have filter=lfs set
-  return parsedGitAttributes.some(({ pattern, attrs }) => {
-    // Check if file path matches pattern and if filter=lfs is set
-    return (
-      micromatch.isMatch(
-        // Remove leading slash from path and pattern
-        path.replace(/^\//, ""),
-        pattern.replace(/^\//, ""),
-      ) && attrs.includes("filter=lfs")
-    )
-  })
 }
 
 /** Resolve a Git LFS pointer to a file URL */
