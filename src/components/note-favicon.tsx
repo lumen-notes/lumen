@@ -19,9 +19,7 @@ export function NoteFavicon({
 
   // GitHub
   if (typeof note.frontmatter.github === "string") {
-    icon = (
-      <GitHubAvatar data-testid="favicon-github" username={note.frontmatter.github} size={16} />
-    )
+    icon = <GitHubAvatar data-testid="favicon-github" login={note.frontmatter.github} size={16} />
   }
 
   // URL

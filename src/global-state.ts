@@ -241,18 +241,22 @@ function createGlobalStateMachine() {
       },
       services: {
         resolveUser: async () => {
-          // First, check URL params for token and username
-          const token = new URLSearchParams(window.location.search).get("token")
-          const username = new URLSearchParams(window.location.search).get("username")
+          // First, check URL params for user metadata
+          const token = new URLSearchParams(window.location.search).get("user_token")
+          const login = new URLSearchParams(window.location.search).get("user_login")
+          const name = new URLSearchParams(window.location.search).get("user_name")
+          const email = new URLSearchParams(window.location.search).get("user_email")
 
-          if (token && username) {
-            // Save token and username to localStorage
-            localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, username }))
+          if (token && login && name && email) {
+            // Save user metadata to localStorage
+            localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, login, name, email }))
 
-            // Remove token and username from URL
+            // Remove user metadata from URL
             const searchParams = new URLSearchParams(window.location.search)
-            searchParams.delete("token")
-            searchParams.delete("username")
+            searchParams.delete("user_token")
+            searchParams.delete("user_login")
+            searchParams.delete("user_name")
+            searchParams.delete("user_email")
             window.history.replaceState(
               {},
               "",
@@ -261,10 +265,10 @@ function createGlobalStateMachine() {
               }`,
             )
 
-            return { githubUser: { token, username } }
+            return { githubUser: { token, login, name, email } }
           }
 
-          // Next, check localStorage for token and username
+          // Next, check localStorage for user metadata
           const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_KEY) ?? "null")
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
@@ -303,7 +307,7 @@ function createGlobalStateMachine() {
 
           const githubRepo = event.githubRepo
           const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
-          const { username, token } = context.githubUser
+          const { login, token, name, email } = context.githubUser
 
           // Wipe file system
           // TODO: Only remove the repo directory instead of wiping the entire file system
@@ -323,7 +327,7 @@ function createGlobalStateMachine() {
             singleBranch: true,
             depth: 1,
             onMessage: console.log,
-            onAuth: () => ({ username, password: token }),
+            onAuth: () => ({ username: login, password: token }),
           })
           console.timeEnd(`$ git clone ${url}.git ${REPO_DIR}`)
 
@@ -333,7 +337,7 @@ function createGlobalStateMachine() {
             fs,
             dir: REPO_DIR,
             path: "user.name",
-            value: "Cole Bemis",
+            value: name,
           })
 
           console.log(`$ git config user.email "colebemis@github.com"`)
@@ -341,7 +345,7 @@ function createGlobalStateMachine() {
             fs,
             dir: REPO_DIR,
             path: "user.email",
-            value: "colebemis@github.com",
+            value: email,
           })
 
           const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
@@ -353,7 +357,7 @@ function createGlobalStateMachine() {
             throw new Error("Not signed in")
           }
 
-          const { username, token } = context.githubUser
+          const { login, token } = context.githubUser
 
           console.time(`$ git pull`)
           await git.pull({
@@ -361,7 +365,7 @@ function createGlobalStateMachine() {
             http,
             dir: REPO_DIR,
             singleBranch: true,
-            onAuth: () => ({ username, password: token }),
+            onAuth: () => ({ username: login, password: token }),
           })
           console.timeEnd(`$ git pull`)
 
@@ -370,7 +374,7 @@ function createGlobalStateMachine() {
             fs,
             http,
             dir: REPO_DIR,
-            onAuth: () => ({ username, password: token }),
+            onAuth: () => ({ username: login, password: token }),
           })
           console.timeEnd(`$ git push`)
 
@@ -383,7 +387,7 @@ function createGlobalStateMachine() {
             throw new Error("Not signed in")
           }
 
-          const { username, token } = context.githubUser
+          const { login, token } = context.githubUser
           const { filepath, content } = event
 
           // Write file to file system
@@ -413,7 +417,7 @@ function createGlobalStateMachine() {
               fs,
               http,
               dir: REPO_DIR,
-              onAuth: () => ({ username, password: token }),
+              onAuth: () => ({ username: login, password: token }),
             })
             console.timeEnd(`$ git push`)
           }
@@ -423,7 +427,7 @@ function createGlobalStateMachine() {
             throw new Error("Not signed in")
           }
 
-          const { username, token } = context.githubUser
+          const { login, token } = context.githubUser
           const { filepath } = event
 
           // Delete file from file system
@@ -453,7 +457,7 @@ function createGlobalStateMachine() {
               fs,
               http,
               dir: REPO_DIR,
-              onAuth: () => ({ username, password: token }),
+              onAuth: () => ({ username: login, password: token }),
             })
             console.timeEnd(`$ git push`)
           }

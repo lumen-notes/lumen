@@ -63,7 +63,7 @@ export function useAttachFile() {
                 http,
                 dir: REPO_DIR,
                 onAuth: () => ({
-                  username: githubUser.username,
+                  username: githubUser.login,
                   password: githubUser.token,
                 }),
               })

@@ -1,17 +1,11 @@
 import { cx } from "../utils/cx"
 
 type GitHubAvatarProps = React.ComponentPropsWithoutRef<"div"> & {
-  username: string
+  login: string
   size?: number
 }
 
-export function GitHubAvatar({
-  username,
-  size = 32,
-  className,
-  style,
-  ...props
-}: GitHubAvatarProps) {
+export function GitHubAvatar({ login, size = 32, className, style, ...props }: GitHubAvatarProps) {
   return (
     <div
       aria-hidden
@@ -22,7 +16,7 @@ export function GitHubAvatar({
       style={{
         width: size,
         height: size,
-        backgroundImage: `url(https://github.com/${username}.png?size=${size * 2})`,
+        backgroundImage: `url(https://github.com/${login}.png?size=${size * 2})`,
         ...style,
       }}
       {...props}

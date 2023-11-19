@@ -29,7 +29,9 @@ export type GitHubRepository = {
 
 export const githubUserSchema = z.object({
   token: z.string(),
-  username: z.string(),
+  login: z.string(),
+  name: z.string(),
+  email: z.string(),
 })
 
 export type GitHubUser = z.infer<typeof githubUserSchema>

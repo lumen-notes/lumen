@@ -28,11 +28,13 @@ export default async (request: Request) => {
       throw new Error(error)
     }
 
-    const username = await getUsername(token)
+    const { login, name, email } = await getUser(token)
 
     const redirectUrl = new URL(state || "https://uselumen.com")
-    redirectUrl.searchParams.set("token", token)
-    redirectUrl.searchParams.set("username", username)
+    redirectUrl.searchParams.set("user_token", token)
+    redirectUrl.searchParams.set("user_login", login)
+    redirectUrl.searchParams.set("user_name", name)
+    redirectUrl.searchParams.set("user_email", email)
 
     return Response.redirect(`${redirectUrl}`)
   } catch (error) {
@@ -40,20 +42,29 @@ export default async (request: Request) => {
   }
 }
 
-async function getUsername(token: string) {
-  const response = await fetch("https://api.github.com/user", {
+async function getUser(token: string) {
+  const userResponse = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
 
-  const { error, login: username } = await response.json()
+  const { error, login, name } = await userResponse.json()
 
   if (error) {
     throw new Error(error)
   }
 
-  return username
+  const emailResponse = await fetch("https://api.github.com/user/emails", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const emails = await emailResponse.json()
+  const { email } = emails.find((email: any) => email.primary)
+
+  return { login, name, email }
 }
 
 export const config: Config = {

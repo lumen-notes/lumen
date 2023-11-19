@@ -155,7 +155,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
               id="repo-owner"
               name="repo-owner"
               spellCheck={false}
-              defaultValue={githubRepo?.owner ?? githubUser?.username}
+              defaultValue={githubRepo?.owner ?? githubUser?.login}
               required
             />
           </div>

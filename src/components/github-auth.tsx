@@ -62,8 +62,8 @@ function SignInButton({ className }: { className?: string }) {
         if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
           try {
             const token = import.meta.env.VITE_GITHUB_PAT
-            const username = await getUsername(token)
-            send({ type: "SIGN_IN", githubUser: { token, username } })
+            const { login, name, email } = await getUser(token)
+            send({ type: "SIGN_IN", githubUser: { token, login, name, email } })
           } catch (error) {
             console.error(error)
           }
@@ -73,7 +73,7 @@ function SignInButton({ className }: { className?: string }) {
         window.location.href = urlcat("https://github.com/login/oauth/authorize", {
           client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
           state: window.location.href,
-          scope: "repo,gist",
+          scope: "repo,gist,user:email",
         })
       }}
     >
@@ -95,9 +95,9 @@ export function SignedInUser() {
         <span className="text-sm leading-3 text-text-secondary">Account</span>
         <span className="leading-5">
           {online ? (
-            <GitHubAvatar username={githubUser.username} size={16} className="mr-1 align-middle" />
+            <GitHubAvatar login={githubUser.login} size={16} className="mr-1 align-middle" />
           ) : null}
-          {githubUser.username}
+          {githubUser.login}
         </span>
       </div>
       <Button className="flex-shrink-0" onClick={signOut}>
@@ -119,21 +119,33 @@ export function useSignOut() {
   }
 }
 
-async function getUsername(token: string) {
-  const response = await fetch("https://api.github.com/user", {
+async function getUser(token: string) {
+  const userResponse = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
-  if (response.status === 401) {
+
+  if (userResponse.status === 401) {
     throw new Error("Invalid token")
   }
-  if (!response.ok) {
+
+  if (!userResponse.ok) {
     throw new Error("Unknown error")
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { login: username } = (await response.json()) as any
+  const { login, name } = (await userResponse.json()) as any
 
-  return username
+  const emailResponse = await fetch("https://api.github.com/user/emails", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const emails = (await emailResponse.json()) as any[]
+  const { email } = emails.find((email: any) => email.primary)
+
+  return { login, name, email }
 }
