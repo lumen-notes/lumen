@@ -120,7 +120,10 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item onClick={() => send({ type: "SYNC" })} disabled={!online}>
-                {state.matches("signedIn.cloned.sync.syncing") ? "Syncing…" : "Sync"}
+                {state.matches("signedIn.cloned.sync") &&
+                !state.matches("signedIn.cloned.sync.idle")
+                  ? "Syncing…"
+                  : "Sync"}
               </DropdownMenu.Item>
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings

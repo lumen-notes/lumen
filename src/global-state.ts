@@ -4,7 +4,7 @@ import http from "isomorphic-git/http/web"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import { atomWithStorage, selectAtom } from "jotai/utils"
-import { assign, createMachine } from "xstate"
+import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
   GitHubRepository,
@@ -44,13 +44,14 @@ type Event =
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
+  | { type: "PUSH" }
   | { type: "WRITE_FILE"; filepath: string; content: string }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEO1TI6K9PKJC7ewcA4IQ3ZWjbR3No+3MFmxsvcwys9BzcfShWCAB5AFdZBgBlAEkAcQA5AH0Xj4GkEBDAwKCijRBHZy4Nw2SyxGzhZz2BLLULJSIhVyHZLKBKIuwnEAtPCXa4vCjPd7fG7UAAq-x0emBRgBY2c2yhB1ibmm8WcIRR4xiUK88PM5l85i8ljs0QJRIuZCukDJgnywioACUwLomCw2JIeM0zgIScqKKr2prtWgJBROD0Qf01INGSMWYgALRuOy4bbOZxeLzhSwhNzmGz+IKIRbC1LS5LRaLxEJy43ExWk81tdVQLU6soVKo1WT1fBNeWmiAq7OFXPW232uSOtT0wGukFghAhWK4NkhKU2Zx2OIwtxeAWIkK+9wzZQTNzuGGp-jppVV81gBraWSBZ4AUQAMnuAMI0r4avcABRuraBbtArPstm5M3czmi23cApiPuiMocHhjpKkrLuclYqlI6AUCIeZoLqrDsHa3C8GmCprhBUEwfW3RNkoLbOgCd4du6CCWO+uCBpKIb+kG3bmAKSSQp4dh2IGIZkTyoEmhmZq4JBLBYfm+DlJU1R1I0RormhmZ8ZhVq6A20i4X0+GaIR7bMg+iBRF4uBzq4Y6uMo8zdt+Up6Y4niJlYc7Qlxq4yfx1z7kep7nleN4EQywzEVpCCYlCITKOKXh2NsOzOAKazDlCH7ejiEwjl49nSbxTmQHxAAWWBUPqEAoGADAAOoai8NJ7l8ABiLxHreGmgiR3I2FCAbhDsCTKB40RRckU7QjY4qxDiC5HCl4HmulEBZTlMDsPlhUACKHnu5VVTVe51T5mmmIgPbSnsZGdUFOJflGqyIs14T2NCTjbOExyZISqHjbJepTVI2W5bgADu+DAlQlVkAV8H6khhoVjx66vdc01fb9-1QIDBWKQ6eHqF5bZbQ1fl2GyvZBTCexitCH6RWd3rmMovaHIOY6OMo-qWGNkMYW9sOzfD8gA0DhUFqJxaluWz0sxNUEZR9M1sJzIhI2AKPKU6aneUy2M7eM-qxSEjihQuYWdVF+y2DM2wHLCoZa8z6Gi2zEtw39XOIzzxWlat1W1RjRHbWMA1TkmMr0748IYlFs64KG0xBn+BwLMlj0Q1b0Pi59HP2zLTtLUervrZtKudkczU0a4w4jgu9HkzMzVhUFvKE6FluOWL73J2wEBgAVDuyyDiGcODwsJ5N7Mt23YAdzz8u9IrLpY52HrmJCDM2WOWsJGs3hRe4VPREF3L3TTlgPacUkvQPtuza37dp8DfNFuJZaSWBIuJ03ku4OfI+X3LOET6pU+5yRHrzDDh1EMc9KYRkOOvLwVM2SWFhD4eIIYlxxz7g3G2zdX7D1HsDEqZUKpuw2h7eqnZ5jWETNKBIOwPCHHHOTWE1gYhrDCP2ewiY3D1zSo3QeGCL7c2BhnFaeDs6EOniRLWPpkitU6q4O6NgBRBSOGHF8ZFfB2GhCxdhUMB6wECBQKQc1gZPAAJofGPDne8atxQRAXAzQcW95hslxnI1RERwzxFUTsCuY4NGsxhto3RFwdFSBEF3A0KEj6Py0YEgJuiRDj2bOjJWmM-44wjL6UMrEfAxCCrjSwci+S6RscORKYppHeOtr4qJfiglUFKMJQsYkSwSXjqgip-iqmxK-vEsxvkLEM1wKxQcQYEphisGTFY4RuRAImEU8I-Z+xlKftEvR7SandK9ogf8sUOLmG7PEewNDxkOCYp1HYw4YQLDIhkR6FA0Ct3gACIkv9zFjAAQ4PSMDOpBniNESMKwAEUW7GyKB0oHCIIPk9KSNYOhiCeT0sYYV+npIjFrKBYikgCgGpsYKbhZlDjDPvDR9xZCwvWf5GUvpkiwLnMGVqDEIhhBmEGGUW9FzguaWaElqsXkk3eYvL5K8BTbAiEmMc3o+QTEDGw5B4SE5QvkmgTlM9QxQkMkOH5Jsi4TkHPjL5C5ALzDZSg3im5twrGVs88EYZIjGSsDijirE7DfnWHpOZewKbhUNTKlpgkFXqREX5AMkIwrxCOImewsJZFnRsM6uc8I5juB2eEBZk1FX-zDG4Xljgl7fN+YgXwMxqYigDA4bsEpk2cNPmAVNfkPR-kzZ85ePyooYh9DiEUYZRxQPUdKh+-cK3oLIPNatatN7eDapS4y+KDg9QXIonkHhYFbziOWtBL9pa8KrX65JasAyVx8NCGiVCdlRW2BmvkC5PDilYrKHt3E+2rq+m-LBm7zVwsQKOoMfprGhisNO8mBxIThylAus2y7b0OQ4WzKpw6xjej6jiKwLbEyxD2HI0MVN94OojIGKBrgV2tL0YOgqMG83RqhAh6izKUOOrOiZDNmGpQSJ+Sy-DGUqlLJECRhAUCqaMaSHOLegEy7jO7JdPYUptizjxFctIQA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz58q4HgftEX5BIgezeOK9ipoBcyjl4vGqs566uUaEDyQAFlgVDGhAKBgAwADqOpvHSe4-AAYm8R63tp4LkW4SyYgk3iLF1EXCh4yh-iECYJq+ljRMNPGOZhmXYTl+WFTA7AlWVAAih57jV9WNXuzUBTppixYBUw2OYDi-r175CjF6zQm4kThDYNhDgmE0SulUFyQpkALUVuAAO74KCVB1WQpXIcaaGmk50ECW5uVSAVf2A8DUCg6VKmuoR6h+V2+2tUFV2RKdnjMfy0LRjdModdyoELi4rgfbJLnfQjSNLSj8gg2DZUluJ5aVtWM2w9lty-RzQNc2jPOY2p7qaf5LIE4dFH9pRg6zAucb9T+WxRb+sZjhNexTecMn8aLP2I4tbAQGApVS+jZXMChJoYebs1w-N1t-XbDsiE7su9PLnr472yLKEGlEbEsnIRpy-VvbgDiAQuEpWWO5hMxbrPi7b9tgI7POlKJpYSRWUkw198N57gfuFwHMv4cHGmh0rvaWGd1EJFiaY+NEicSrCg2xji8SWKkpvKh7Iu57AgQUFIy3gy8ACaXzHnt7dtQ4yfJFEwZhNEqZysKnEwmGVlRCmqbZ57lu5fPi-L2Vl7UC8AASW-3irqR2P+HgFjODPq4SOP5urODvrPGuT8l7aAeCgFAIgIaoU4NDYW1d5qwKqAgpBVAg7thxgrPG29CY4nFDiU6cp3yfn8DdcI-IDILnspRKBmCxbYPgYg5BfMyySSrNJPi9854LzgbgkQBDsbf0CiraEERnq-mPvRY+SQz5zGnCZOMDhIHTRnuwn6nDxFUAYNIg67JZiRAAnMY+R9UzAPoQcf+ms9gcnajENhLMYGiJwbAPKyCXaQzQe7IR0CsHePgb4iRzdCGmOVuySw1hPAmQTHseEdiz5QmnO+bRHisoiOfhEvxxjeHl0FoIjKoSOHhIeJE-B0SpG41ImYvSPhYSLB-DKWxqj6FRGnL+M6rDdEhP0Y-aptSoAmMaS1XsUItiChxJKLp9i1gTA2MTFxuS5pVOfojMAUguAiBeLIOQNSUFu3KZ9TxYSdl5T2QcqgRyTmwEkepIhbcf5jF9FKWwo0xzLNCK4acxwIGbK9tspeuz9mHOObIU5ATUHoQuczPJXibl3OhU8l5-Q3DEKaXE9E1g7FAX+eMJ6-9+k5KGRUkZVxvGQvuVAR5sLYAlzEnwiuAiq5XPBfldFDyYU1Kxa3LSYdyK+gSf+OwKZpRhAVBPCc9CoQRGYX8jIRIKBoDtvAIEJJ3kyM+fMLYAFpWpLlfMYUvppwLCSH8zuUpBRpSpbkIQjZOh6uaQgOMydgJLBNsmCYCoSWnW2Ck-Yhxjid1yY8WQ7r8XBQVOKfe2JwiUQWExCIYQoQLAVBNRcWcnXIopLG3slrgKSpNbKqK5qbqcnJbOACwFFxTy5VlBswk0DFrFWW3wUJDjH05JGWMk5IxtIWO4N8ew4ygtwJubcaxFYfMhMcSxDCwqRWimsCOUx63zibdOhS7bO2EyhMnKwVk472HGjYYUz0jVLAmGO44YR81m2GdyyAR6Va+i1uW+ypqq0KrWHsPkz4rIHF2DiRUBac41x9jAT9BrAx8k2A4CM8IBTXSA7HZO9kgEQfcdB4RsH2bFVKgh0IGiFTdRTI4YCv5+qeCGiNahCSJpxH3cRm2ANJaNzIyK0hsjYiRGDFYpEKIB5UysPdaUYHXGQY497EjdcC5Fz4wu-ViBkT3XauouIAZxP9XVv+EMwFXDjUmgp8F5GEDfoOL+mViwANn06bCcaY9ky+Cg6+6l77RnPzICtaz5hI7AV8Lsdq0xgvMRJZm+64QXopPk4RypBjqncKoNZiegY7HJEPmk7pKyDiRziGTa+nnLOpYKTUopUBMtloTI4caqSVExeTJHX1Lj8Neenm+lF1yIW3Khfyp51nlBn0jH+ClgyMhAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -58,25 +59,22 @@ function createGlobalStateMachine() {
         events: Event
         services: {
           resolveUser: {
-            data: {
-              githubUser: GitHubUser
-            }
+            data: { githubUser: GitHubUser }
           }
           resolveRepo: {
-            data: {
-              githubRepo: GitHubRepository
-              markdownFiles: Record<string, string>
-            }
+            data: { githubRepo: GitHubRepository; markdownFiles: Record<string, string> }
           }
           cloneRepo: {
-            data: {
-              markdownFiles: Record<string, string>
-            }
+            data: { markdownFiles: Record<string, string> }
           }
-          sync: {
-            data: {
-              markdownFiles: Record<string, string>
-            }
+          pull: {
+            data: { markdownFiles: Record<string, string> }
+          }
+          push: {
+            data: void
+          }
+          checkStatus: {
+            data: { isSynced: boolean }
           }
           writeFile: {
             data: void
@@ -168,56 +166,84 @@ function createGlobalStateMachine() {
                       entry: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
                       invoke: {
                         src: "writeFile",
-                        onDone: "idle",
+                        onDone: {
+                          target: "idle",
+                          actions: raise("PUSH"),
+                        },
                         onError: {
                           target: "idle",
                           actions: "setError",
                         },
-                      },
-                      on: {
-                        WRITE_FILE: "writingFile",
-                        DELETE_FILE: "deletingFile",
                       },
                     },
                     deletingFile: {
                       entry: ["deleteMarkdownFile", "deleteMarkdownFileLocalStorage"],
                       invoke: {
                         src: "deleteFile",
-                        onDone: "idle",
+                        onDone: {
+                          target: "idle",
+                          actions: raise("PUSH"),
+                        },
                         onError: {
                           target: "idle",
                           actions: "setError",
                         },
                       },
-                      on: {
-                        WRITE_FILE: "writingFile",
-                        DELETE_FILE: "deletingFile",
-                      },
                     },
                   },
                 },
                 sync: {
-                  initial: "syncing",
+                  initial: "pulling",
                   states: {
                     idle: {
                       on: {
-                        SYNC: "syncing",
+                        SYNC: "pulling",
+                        PUSH: "pushing",
                       },
                     },
-                    syncing: {
-                      // Skip if offline
+                    pulling: {
                       always: [
-                        {
-                          target: "idle",
-                          cond: "isOffline",
-                        },
+                        // Don't pull if offline
+                        { target: "idle", cond: "isOffline" },
                       ],
                       invoke: {
-                        src: "sync",
+                        src: "pull",
                         onDone: {
-                          target: "idle",
+                          target: "checkingStatus",
                           actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                         },
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
+                      },
+                    },
+                    pushing: {
+                      always: [
+                        // Don't push if offline
+                        { target: "idle", cond: "isOffline" },
+                      ],
+                      invoke: {
+                        src: "push",
+                        onDone: "checkingStatus",
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
+                      },
+                    },
+                    checkingStatus: {
+                      invoke: {
+                        src: "checkStatus",
+                        onDone: [
+                          {
+                            target: "idle",
+                            cond: "isSynced",
+                          },
+                          {
+                            target: "pushing",
+                          },
+                        ],
                         onError: {
                           target: "idle",
                           actions: "setError",
@@ -235,6 +261,7 @@ function createGlobalStateMachine() {
     {
       guards: {
         isOffline: () => !navigator.onLine,
+        isSynced: (_, event) => event.data.isSynced,
       },
       services: {
         resolveUser: async () => {
@@ -349,7 +376,7 @@ function createGlobalStateMachine() {
 
           return { markdownFiles }
         },
-        sync: async (context) => {
+        pull: async (context) => {
           if (!context.githubUser) {
             throw new Error("Not signed in")
           }
@@ -366,6 +393,17 @@ function createGlobalStateMachine() {
           })
           console.timeEnd(`$ git pull`)
 
+          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
+
+          return { markdownFiles }
+        },
+        push: async (context) => {
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
+          const { login, token } = context.githubUser
+
           console.time(`$ git push`)
           await git.push({
             fs,
@@ -374,21 +412,32 @@ function createGlobalStateMachine() {
             onAuth: () => ({ username: login, password: token }),
           })
           console.timeEnd(`$ git push`)
+        },
+        checkStatus: async () => {
+          const latestLocalCommit = await git.resolveRef({
+            fs,
+            dir: REPO_DIR,
+            ref: `refs/heads/${DEFAULT_BRANCH}`,
+          })
 
-          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
+          const latestRemoteCommit = await git.resolveRef({
+            fs,
+            dir: REPO_DIR,
+            ref: `refs/remotes/origin/${DEFAULT_BRANCH}`,
+          })
 
-          return { markdownFiles }
+          const isSynced = latestLocalCommit === latestRemoteCommit
+
+          return { isSynced }
         },
         writeFile: async (context, event) => {
           if (!context.githubUser) {
             throw new Error("Not signed in")
           }
 
-          const { login, token } = context.githubUser
           const { filepath, content } = event
 
           // Write file to file system
-          console.log(`$ echo "${content}" > ${filepath}`)
           await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
 
           // Stage file
@@ -406,29 +455,15 @@ function createGlobalStateMachine() {
             dir: REPO_DIR,
             message: `Update ${filepath}`,
           })
-
-          // Push if online
-          if (navigator.onLine) {
-            console.time(`$ git push`)
-            await git.push({
-              fs,
-              http,
-              dir: REPO_DIR,
-              onAuth: () => ({ username: login, password: token }),
-            })
-            console.timeEnd(`$ git push`)
-          }
         },
         deleteFile: async (context, event) => {
           if (!context.githubUser) {
             throw new Error("Not signed in")
           }
 
-          const { login, token } = context.githubUser
           const { filepath } = event
 
           // Delete file from file system
-          console.log(`$ rm ${filepath}`)
           await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
 
           // Stage deletion
@@ -446,18 +481,6 @@ function createGlobalStateMachine() {
             dir: REPO_DIR,
             message: `Delete ${filepath}`,
           })
-
-          // Push if online
-          if (navigator.onLine) {
-            console.time(`$ git push`)
-            await git.push({
-              fs,
-              http,
-              dir: REPO_DIR,
-              onAuth: () => ({ username: login, password: token }),
-            })
-            console.timeEnd(`$ git push`)
-          }
         },
       },
       actions: {

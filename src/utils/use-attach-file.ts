@@ -1,6 +1,5 @@
 import { EditorView } from "@codemirror/view"
 import git from "isomorphic-git"
-import http from "isomorphic-git/http/web"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { fileCache } from "../components/file-preview"
@@ -54,21 +53,6 @@ export function useAttachFile() {
               dir: REPO_DIR,
               message: `Update ${relativePath}`,
             })
-
-            // Push if online
-            if (navigator.onLine) {
-              console.time(`$ git push`)
-              await git.push({
-                fs,
-                http,
-                dir: REPO_DIR,
-                onAuth: () => ({
-                  username: githubUser.login,
-                  password: githubUser.token,
-                }),
-              })
-              console.timeEnd(`$ git push`)
-            }
           })
 
         // Cache file
