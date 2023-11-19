@@ -14,7 +14,6 @@
 "error.platform.global.signedIn.cloned.change.writingFile:invocation[0]": { type: "error.platform.global.signedIn.cloned.change.writingFile:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.cloned.sync.syncing:invocation[0]": { type: "error.platform.global.signedIn.cloned.sync.syncing:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.cloningRepo:invocation[0]": { type: "error.platform.global.signedIn.cloningRepo:invocation[0]"; data: unknown };
-"error.platform.global.signedIn.resolvingRepo:invocation[0]": { type: "error.platform.global.signedIn.resolvingRepo:invocation[0]"; data: unknown };
 "xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
@@ -36,7 +35,7 @@
 "clearGitHubUserLocalStorage": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
 "deleteMarkdownFile": "DELETE_FILE";
 "deleteMarkdownFileLocalStorage": "DELETE_FILE";
-"setError": "error.platform.global.signedIn.cloned.change.deletingFile:invocation[0]" | "error.platform.global.signedIn.cloned.change.writingFile:invocation[0]" | "error.platform.global.signedIn.cloned.sync.syncing:invocation[0]" | "error.platform.global.signedIn.cloningRepo:invocation[0]" | "error.platform.global.signedIn.resolvingRepo:invocation[0]";
+"setError": "error.platform.global.signedIn.cloned.change.deletingFile:invocation[0]" | "error.platform.global.signedIn.cloned.change.writingFile:invocation[0]" | "error.platform.global.signedIn.cloned.sync.syncing:invocation[0]" | "error.platform.global.signedIn.cloningRepo:invocation[0]";
 "setGitHubRepo": "SELECT_REPO" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
 "setGitHubUser": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "setMarkdownFile": "WRITE_FILE";

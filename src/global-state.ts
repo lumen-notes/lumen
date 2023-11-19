@@ -127,10 +127,7 @@ function createGlobalStateMachine() {
                   target: "cloned",
                   actions: ["setGitHubRepo", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
-                onError: {
-                  target: "empty",
-                  actions: "setError",
-                },
+                onError: "empty",
               },
             },
             empty: {
@@ -251,15 +248,15 @@ function createGlobalStateMachine() {
             // Save user metadata to localStorage
             localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, login, name, email }))
 
-            // Remove user metadata from URL
             const searchParams = new URLSearchParams(window.location.search)
+
+            // Remove user metadata from URL
             searchParams.delete("user_token")
             searchParams.delete("user_login")
             searchParams.delete("user_name")
             searchParams.delete("user_email")
-            window.history.replaceState(
-              {},
-              "",
+
+            window.location.replace(
               `${window.location.pathname}${
                 searchParams.toString() ? `?${searchParams.toString()}` : ""
               }`,

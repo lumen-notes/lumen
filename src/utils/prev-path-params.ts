@@ -16,17 +16,9 @@ export function savePathParams(location: Location) {
     return
   }
 
-  const search = new URLSearchParams(location.search)
-
-  // Don't cache user metadata params
-  search.delete("user_token")
-  search.delete("user_login")
-  search.delete("user_name")
-  search.delete("user_email")
-
   window.localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify({ ...prevPathParams, [location.pathname]: search.toString() }),
+    JSON.stringify({ ...prevPathParams, [location.pathname]: location.search }),
   )
 }
 
