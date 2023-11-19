@@ -1,8 +1,14 @@
 import LightningFS from "@isomorphic-git/lightning-fs"
 import mime from "mime"
 import { GitHubRepository, GitHubUser } from "../types"
-import { isTrackedWithGitLfs, resolveGitLfsPointer } from "./git-lfs"
+import {
+  createGitLfsPointer,
+  isTrackedWithGitLfs,
+  resolveGitLfsPointer,
+  uploadToGitLfsServer,
+} from "./git-lfs"
 
+export const ROOT_DIR = "/root"
 const DB_NAME = "fs"
 
 // TODO: Investigate memfs + OPFS as a more performant alternative to lightning-fs + IndexedDB
@@ -16,10 +22,11 @@ export function fsWipe() {
 
 /**
  * The same as fs.promises.readFile(),
- * but it returns a File object instead of string or Uint8Array
+ * except it prepends the root directory to the path
+ * and it returns a File object instead of string or Uint8Array
  */
 export async function readFile(path: string) {
-  let content = await fs.promises.readFile(path)
+  let content = await fs.promises.readFile(`${ROOT_DIR}${path}`)
 
   // If content is a string, convert it to a Uint8Array
   if (typeof content === "string") {
@@ -34,15 +41,17 @@ export async function readFile(path: string) {
 /** Returns a URL to the given file */
 export async function getFileUrl({
   file,
+  path,
   githubUser,
   githubRepo,
 }: {
   file: File
+  path: string
   githubUser: GitHubUser
   githubRepo: GitHubRepository
 }) {
   // If file is tracked with Git LFS, resolve the pointer
-  if (await isTrackedWithGitLfs(file)) {
+  if (await isTrackedWithGitLfs(path)) {
     return await resolveGitLfsPointer({ file, githubUser, githubRepo })
   } else {
     return URL.createObjectURL(file)
@@ -61,11 +70,14 @@ export async function writeFile({
   githubUser: GitHubUser
   githubRepo: GitHubRepository
 }) {
-  // TODO:
-  // Use .gitattributes file to determine if file is tracked with Git LFS
-  // If file is tracked with Git LFS:
-  // - Upload the file to GitHub's LFS server
-  // - Write a Git LFS pointer to the file system
-  // Otherwise:
-  // - Write the file to the file system
+  if (await isTrackedWithGitLfs(path)) {
+    await uploadToGitLfsServer({ content, githubUser, githubRepo })
+
+    // Write a Git LFS pointer to the file system
+    const pointer = await createGitLfsPointer(content)
+    await fs.promises.writeFile(`${ROOT_DIR}${path}`, pointer)
+  } else {
+    // TODO: Test this
+    await fs.promises.writeFile(`${ROOT_DIR}${path}`, Buffer.from(content))
+  }
 }

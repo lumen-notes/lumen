@@ -1,13 +1,50 @@
 import { GitHubRepository, GitHubUser } from "../types"
+import { fs, ROOT_DIR } from "./fs"
+import micromatch from "micromatch"
 
-/**
- * Check if a file is tracked with Git LFS by checking
- * if the file is actually a Git LFS pointer
- */
-// TODO: Use .gitattributes file to determine if file is tracked with Git LFS
-export async function isTrackedWithGitLfs(file: File) {
-  const text = await file.text()
-  return text.startsWith("version https://git-lfs.github.com/spec/")
+/** Check if a file is tracked with Git LFS by checking the .gitattributes file */
+export async function isTrackedWithGitLfs(path: string) {
+  // Get .gitattributes file
+  const gitAttributes = await fs.promises.readFile(`${ROOT_DIR}/.gitattributes`)
+
+  // If .gitattributes file doesn't exist, then no files are tracked with Git LFS
+  if (!gitAttributes) {
+    return false
+  }
+
+  // Parse .gitattributes file
+  const parsedGitAttributes = gitAttributes
+    .toString()
+    .split("\n")
+    .reduce((acc, line) => {
+      // Ignore comments
+      if (line.startsWith("#")) {
+        return acc
+      }
+
+      // Ignore empty lines
+      if (!line.trim()) {
+        return acc
+      }
+
+      // Split line into parts
+      const [pattern, ...attrs] = line.split(" ")
+
+      // Add pattern and filter to accumulator
+      return [...acc, { pattern, attrs }]
+    }, [] as Array<{ pattern: string; attrs: string[] }>)
+
+  // Return true if any patterns matching the file path have filter=lfs set
+  return parsedGitAttributes.some(({ pattern, attrs }) => {
+    // Check if file path matches pattern and if filter=lfs is set
+    return (
+      micromatch.isMatch(
+        // Remove leading slash from path and pattern
+        path.replace(/^\//, ""),
+        pattern.replace(/^\//, ""),
+      ) && attrs.includes("filter=lfs")
+    )
+  })
 }
 
 /** Resolve a Git LFS pointer to a file URL */
@@ -42,4 +79,56 @@ export async function resolveGitLfsPointer({
   }
 
   return url
+}
+
+/** Create a Git LFS pointer for a given file */
+export async function createGitLfsPointer(content: ArrayBuffer) {
+  const oid = await getOid(content)
+  const size = content.byteLength
+
+  return `version https://git-lfs.github.com/spec/v1
+oid sha256:${oid}
+size ${size}
+`
+}
+
+/** Upload file to GitHub's Git LFS server */
+export async function uploadToGitLfsServer({
+  content,
+  githubUser,
+  githubRepo,
+}: {
+  content: ArrayBuffer
+  githubUser: GitHubUser
+  githubRepo: GitHubRepository
+}) {
+  const base64Content = Buffer.from(content).toString("base64")
+  const oid = await getOid(content)
+  const size = content.byteLength
+
+  const response = await fetch(`/git-lfs-file`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${githubUser.token}`,
+    },
+    body: JSON.stringify({
+      repo: `${githubRepo.owner}/${githubRepo.name}`,
+      content: base64Content,
+      oid,
+      size,
+    }),
+  })
+
+  if (!response.ok) {
+    throw new Error("Unable to upload file to Git LFS server")
+  }
+}
+
+/** Get the OID of a file by hashing its contents with SHA-256 */
+export async function getOid(content: ArrayBuffer) {
+  // Reference: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+  const hashBuffer = await crypto.subtle.digest("SHA-256", content)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return hashHex
 }

@@ -24,7 +24,7 @@ import {
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { UPLOADS_DIRECTORY } from "../utils/use-attach-file"
+import { UPLOADS_DIR } from "../utils/use-attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
@@ -467,7 +467,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   }, [])
 
   // Open uploads in a panel
-  if (props.href?.startsWith(`/${UPLOADS_DIRECTORY}`)) {
+  if (props.href?.startsWith(`/${UPLOADS_DIR}`)) {
     return (
       <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
         {props.children}

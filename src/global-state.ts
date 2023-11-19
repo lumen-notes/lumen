@@ -15,7 +15,7 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./types"
-import { fs, fsWipe } from "./utils/fs"
+import { ROOT_DIR, fs, fsWipe } from "./utils/fs"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
@@ -23,7 +23,6 @@ import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 // Constants
 // -----------------------------------------------------------------------------
 
-export const ROOT_DIR = "/root"
 const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"
