@@ -57,11 +57,11 @@
 "isSynced": "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]";
         };
         eventsCausingServices: {
-          "checkStatus": "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]" | "done.invoke.global.signedIn.cloned.sync.pushing:invocation[0]";
+          "checkStatus": "done.invoke.global.signedIn.cloned.sync.pushing:invocation[0]";
 "cloneRepo": "SELECT_REPO";
 "deleteFile": "DELETE_FILE";
-"pull": "SYNC" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
-"push": "PUSH" | "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]";
+"pull": "SYNC" | "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
+"push": "PUSH" | "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]";
 "resolveRepo": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "resolveUser": "xstate.init";
 "writeFile": "WRITE_FILE";

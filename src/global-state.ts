@@ -209,7 +209,7 @@ function createGlobalStateMachine() {
                       invoke: {
                         src: "pull",
                         onDone: {
-                          target: "checkingStatus",
+                          target: "pushing",
                           actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                         },
                         onError: {
@@ -241,7 +241,7 @@ function createGlobalStateMachine() {
                             cond: "isSynced",
                           },
                           {
-                            target: "pushing",
+                            target: "pulling",
                           },
                         ],
                         onError: {
