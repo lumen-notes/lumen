@@ -1,11 +1,12 @@
+import { REPO_DIR } from "../global-state"
 import { GitHubRepository, GitHubUser } from "../types"
-import { fs, ROOT_DIR } from "./fs"
+import { fs } from "./fs"
 import micromatch from "micromatch"
 
 /** Check if a file is tracked with Git LFS by checking the .gitattributes file */
 export async function isTrackedWithGitLfs(path: string) {
   // Get .gitattributes file
-  const gitAttributes = await fs.promises.readFile(`${ROOT_DIR}/.gitattributes`)
+  const gitAttributes = await fs.promises.readFile(`${REPO_DIR}/.gitattributes`)
 
   // If .gitattributes file doesn't exist, then no files are tracked with Git LFS
   if (!gitAttributes) {

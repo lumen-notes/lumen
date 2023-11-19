@@ -15,7 +15,7 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./types"
-import { ROOT_DIR, fs, fsWipe } from "./utils/fs"
+import { fs, fsWipe } from "./utils/fs"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
@@ -23,6 +23,7 @@ import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 // Constants
 // -----------------------------------------------------------------------------
 
+export const REPO_DIR = `/repo`
 const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"
@@ -273,7 +274,7 @@ function createGlobalStateMachine() {
           // Check git config for repo name
           const remoteOriginUrl = await git.getConfig({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             path: "remote.origin.url",
           })
 
@@ -289,7 +290,7 @@ function createGlobalStateMachine() {
           const githubRepo = { owner, name }
 
           const markdownFiles =
-            getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(ROOT_DIR))
+            getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(REPO_DIR))
 
           console.timeEnd("resolveRepo()")
 
@@ -311,11 +312,11 @@ function createGlobalStateMachine() {
 
           // Clone repo
           // This could take awhile if the repo is large
-          console.time(`$ git clone ${url}.git ${ROOT_DIR}`)
+          console.time(`$ git clone ${url}.git ${REPO_DIR}`)
           await git.clone({
             fs,
             http,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             corsProxy: "https://cors.isomorphic-git.org",
             url,
             ref: DEFAULT_BRANCH,
@@ -324,13 +325,13 @@ function createGlobalStateMachine() {
             onMessage: console.log,
             onAuth: () => ({ username, password: token }),
           })
-          console.timeEnd(`$ git clone ${url}.git ${ROOT_DIR}`)
+          console.timeEnd(`$ git clone ${url}.git ${REPO_DIR}`)
 
           // Set user in git config
           console.log(`$ git config user.name "Cole Bemis"`)
           await git.setConfig({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             path: "user.name",
             value: "Cole Bemis",
           })
@@ -338,12 +339,12 @@ function createGlobalStateMachine() {
           console.log(`$ git config user.email "colebemis@github.com"`)
           await git.setConfig({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             path: "user.email",
             value: "colebemis@github.com",
           })
 
-          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
+          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
 
           return { markdownFiles }
         },
@@ -358,7 +359,7 @@ function createGlobalStateMachine() {
           await git.pull({
             fs,
             http,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             singleBranch: true,
             onAuth: () => ({ username, password: token }),
           })
@@ -368,12 +369,12 @@ function createGlobalStateMachine() {
           await git.push({
             fs,
             http,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             onAuth: () => ({ username, password: token }),
           })
           console.timeEnd(`$ git push`)
 
-          const markdownFiles = await getMarkdownFilesFromFs(ROOT_DIR)
+          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
 
           return { markdownFiles }
         },
@@ -387,13 +388,13 @@ function createGlobalStateMachine() {
 
           // Write file to file system
           console.log(`$ echo "${content}" > ${filepath}`)
-          await fs.promises.writeFile(`${ROOT_DIR}/${filepath}`, content, "utf8")
+          await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
 
           // Stage file
           console.log(`$ git add ${filepath}`)
           await git.add({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             filepath,
           })
 
@@ -401,7 +402,7 @@ function createGlobalStateMachine() {
           console.log(`$ git commit -m "Update ${filepath}"`)
           await git.commit({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             message: `Update ${filepath}`,
           })
 
@@ -411,7 +412,7 @@ function createGlobalStateMachine() {
             await git.push({
               fs,
               http,
-              dir: ROOT_DIR,
+              dir: REPO_DIR,
               onAuth: () => ({ username, password: token }),
             })
             console.timeEnd(`$ git push`)
@@ -427,13 +428,13 @@ function createGlobalStateMachine() {
 
           // Delete file from file system
           console.log(`$ rm ${filepath}`)
-          await fs.promises.unlink(`${ROOT_DIR}/${filepath}`)
+          await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
 
           // Stage deletion
           console.log(`$ git rm ${filepath}`)
           await git.remove({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             filepath,
           })
 
@@ -441,7 +442,7 @@ function createGlobalStateMachine() {
           console.log(`$ git commit -m "Delete ${filepath}"`)
           await git.commit({
             fs,
-            dir: ROOT_DIR,
+            dir: REPO_DIR,
             message: `Delete ${filepath}`,
           })
 
@@ -451,7 +452,7 @@ function createGlobalStateMachine() {
             await git.push({
               fs,
               http,
-              dir: ROOT_DIR,
+              dir: REPO_DIR,
               onAuth: () => ({ username, password: token }),
             })
             console.timeEnd(`$ git push`)

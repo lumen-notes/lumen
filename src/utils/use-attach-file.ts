@@ -4,8 +4,8 @@ import http from "isomorphic-git/http/web"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { fileCache } from "../components/file-preview"
-import { githubRepoAtom, githubUserAtom } from "../global-state"
-import { ROOT_DIR, fs, writeFile } from "../utils/fs"
+import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
+import { fs, writeFile } from "../utils/fs"
 
 export const UPLOADS_DIR = "uploads"
 
@@ -30,7 +30,7 @@ export function useAttachFile() {
         const arrayBuffer = await file.arrayBuffer()
 
         // Write file to file system
-        writeFile({ path, content: arrayBuffer, githubUser, githubRepo })
+        writeFile({ path: `${REPO_DIR}${path}`, content: arrayBuffer, githubUser, githubRepo })
           // Use `.then()` to avoid blocking the rest of the function
           .then(async () => {
             // Remove the leading slash from the path
@@ -40,7 +40,7 @@ export function useAttachFile() {
             console.log(`$ git add ${relativePath}`)
             await git.add({
               fs,
-              dir: ROOT_DIR,
+              dir: REPO_DIR,
               filepath: relativePath,
             })
 
@@ -48,7 +48,7 @@ export function useAttachFile() {
             console.log(`$ git commit -m "Update ${relativePath}"`)
             await git.commit({
               fs,
-              dir: ROOT_DIR,
+              dir: REPO_DIR,
               message: `Update ${relativePath}`,
             })
 
@@ -58,7 +58,7 @@ export function useAttachFile() {
               await git.push({
                 fs,
                 http,
-                dir: ROOT_DIR,
+                dir: REPO_DIR,
                 onAuth: () => ({
                   username: githubUser.username,
                   password: githubUser.token,

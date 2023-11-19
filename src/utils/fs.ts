@@ -8,7 +8,6 @@ import {
   uploadToGitLfsServer,
 } from "./git-lfs"
 
-export const ROOT_DIR = "/root"
 const DB_NAME = "fs"
 
 // TODO: Investigate memfs + OPFS as a more performant alternative to lightning-fs + IndexedDB
@@ -22,11 +21,10 @@ export function fsWipe() {
 
 /**
  * The same as fs.promises.readFile(),
- * except it prepends the root directory to the path
- * and it returns a File object instead of string or Uint8Array
+ * but it returns a File object instead of string or Uint8Array
  */
 export async function readFile(path: string) {
-  let content = await fs.promises.readFile(`${ROOT_DIR}${path}`)
+  let content = await fs.promises.readFile(path)
 
   // If content is a string, convert it to a Uint8Array
   if (typeof content === "string") {
@@ -75,9 +73,9 @@ export async function writeFile({
 
     // Write a Git LFS pointer to the file system
     const pointer = await createGitLfsPointer(content)
-    await fs.promises.writeFile(`${ROOT_DIR}${path}`, pointer)
+    await fs.promises.writeFile(path, pointer)
   } else {
     // TODO: Test this
-    await fs.promises.writeFile(`${ROOT_DIR}${path}`, Buffer.from(content))
+    await fs.promises.writeFile(path, Buffer.from(content))
   }
 }
