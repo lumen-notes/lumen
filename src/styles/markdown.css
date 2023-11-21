@@ -124,7 +124,7 @@
 }
 
 .markdown blockquote {
-  @apply relative pl-3 italic;
+  @apply relative pl-3 italic text-text-secondary;
 }
 
 .markdown blockquote::before {
