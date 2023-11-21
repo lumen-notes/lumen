@@ -28,6 +28,7 @@ import {
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
 import { Tooltip } from "./tooltip"
+import { SyncStatus } from "./sync-status"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const [state, send] = useAtom(globalStateMachineAtom)
@@ -86,7 +87,14 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
         </li>
-        <li className={cx({ left: "mt-auto flex-grow-0", bottom: "flex-grow" }[position])}>
+        <li className="mt-auto">
+          <IconButton disableTooltip>
+            <div style={{ width: 24, height: 24, display: "grid", placeItems: "center" }}>
+              <SyncStatus />
+            </div>
+          </IconButton>
+        </li>
+        <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
               {/* TODO: Focus button when dialog closes. */}
