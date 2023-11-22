@@ -1,5 +1,5 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
-import { useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import React from "react"
 import {
   NavLinkProps,
@@ -31,7 +31,7 @@ import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const send = useSetAtom(globalStateMachineAtom)
+  const [state, send] = useAtom(globalStateMachineAtom)
   const syncStatusText = useSyncStatusText()
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
@@ -88,8 +88,10 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
         </li>
-        {position === "left" ? (
-          <li className="mt-auto flex-grow-0">
+        {/* Spacer */}
+        {position === "left" ? <div className="flex-grow" /> : null}
+        {state.matches("signedIn.cloned") && position === "left" ? (
+          <li className="flex-grow-0">
             <IconButton
               aria-label={syncStatusText}
               tooltipSide={tooltipSide}
@@ -133,7 +135,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              {position === "bottom" ? (
+              {state.matches("signedIn.cloned") && position === "bottom" ? (
                 <DropdownMenu.Item
                   icon={<SyncStatusIcon size={16} />}
                   onClick={() => send({ type: "SYNC" })}

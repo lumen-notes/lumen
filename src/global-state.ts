@@ -51,7 +51,7 @@ type Event =
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz58q4HgftEX5BIgezeOK9ipoBcyjl4vGqs566uUaEDyQAFlgVDGhAKBgAwADqOpvHSe4-AAYm8R63tp4LkW4SyYgk3iLF1EXCh4yh-iECYJq+ljRMNPGOZhmXYTl+WFTA7AlWVAAih57jV9WNXuzUBTppixYBUw2OYDi-r175CjF6zQm4kThDYNhDgmE0SulUFyQpkALUVuAAO74KCVB1WQpXIcaaGmk50ECW5uVSAVf2A8DUCg6VKmuoR6h+V2+2tUFV2RKdnjMfy0LRjdModdyoELi4rgfbJLnfQjSNLSj8gg2DZUluJ5aVtWM2w9lty-RzQNc2jPOY2p7qaf5LIE4dFH9pRg6zAucb9T+WxRb+sZjhNexTecMn8aLP2I4tbAQGApVS+jZXMChJoYebs1w-N1t-XbDsiE7su9PLnr472yLKEGlEbEsnIRpy-VvbgDiAQuEpWWO5hMxbrPi7b9tgI7POlKJpYSRWUkw198N57gfuFwHMv4cHGmh0rvaWGd1EJFiaY+NEicSrCg2xji8SWKkpvKh7Iu57AgQUFIy3gy8ACaXzHnt7dtQ4yfJFEwZhNEqZysKnEwmGVlRCmqbZ57lu5fPi-L2Vl7UC8AASW-3irqR2P+HgFjODPq4SOP5urODvrPGuT8l7aAeCgFAIgIaoU4NDYW1d5qwKqAgpBVAg7thxgrPG29CY4nFDiU6cp3yfn8DdcI-IDILnspRKBmCxbYPgYg5BfMyySSrNJPi9854LzgbgkQBDsbf0CiraEERnq-mPvRY+SQz5zGnCZOMDhIHTRnuwn6nDxFUAYNIg67JZiRAAnMY+R9UzAPoQcf+ms9gcnajENhLMYGiJwbAPKyCXaQzQe7IR0CsHePgb4iRzdCGmOVuySw1hPAmQTHseEdiz5QmnO+bRHisoiOfhEvxxjeHl0FoIjKoSOHhIeJE-B0SpG41ImYvSPhYSLB-DKWxqj6FRGnL+M6rDdEhP0Y-aptSoAmMaS1XsUItiChxJKLp9i1gTA2MTFxuS5pVOfojMAUguAiBeLIOQNSUFu3KZ9TxYSdl5T2QcqgRyTmwEkepIhbcf5jF9FKWwo0xzLNCK4acxwIGbK9tspeuz9mHOObIU5ATUHoQuczPJXibl3OhU8l5-Q3DEKaXE9E1g7FAX+eMJ6-9+k5KGRUkZVxvGQvuVAR5sLYAlzEnwiuAiq5XPBfldFDyYU1Kxa3LSYdyK+gSf+OwKZpRhAVBPCc9CoQRGYX8jIRIKBoDtvAIEJJ3kyM+fMLYAFpWpLlfMYUvppwLCSH8zuUpBRpSpbkIQjZOh6uaQgOMydgJLBNsmCYCoSWnW2Ck-Yhxjid1yY8WQ7r8XBQVOKfe2JwiUQWExCIYQoQLAVBNRcWcnXIopLG3slrgKSpNbKqK5qbqcnJbOACwFFxTy5VlBswk0DFrFWW3wUJDjH05JGWMk5IxtIWO4N8ew4ygtwJubcaxFYfMhMcSxDCwqRWimsCOUx63zibdOhS7bO2EyhMnKwVk472HGjYYUz0jVLAmGO44YR81m2GdyyAR6Va+i1uW+ypqq0KrWHsPkz4rIHF2DiRUBac41x9jAT9BrAx8k2A4CM8IBTXSA7HZO9kgEQfcdB4RsH2bFVKgh0IGiFTdRTI4YCv5+qeCGiNahCSJpxH3cRm2ANJaNzIyK0hsjYiRGDFYpEKIB5UysPdaUYHXGQY497EjdcC5Fz4wu-ViBkT3XauouIAZxP9XVv+EMwFXDjUmgp8F5GEDfoOL+mViwANn06bCcaY9ky+Cg6+6l77RnPzICtaz5hI7AV8Lsdq0xgvMRJZm+64QXopPk4RypBjqncKoNZiegY7HJEPmk7pKyDiRziGTa+nnLOpYKTUopUBMtloTI4caqSVExeTJHX1Lj8Neenm+lF1yIW3Khfyp51nlBn0jH+ClgyMhAA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz58q4HgftEX5BIgezeOK9ipoBcyjl4vGqs566uUaEDyQAFlgVDGhAKBgAwADqOpvHSe4-AAYm8R63tp4LkW4SyYgk3iLF1EXCh4yh-iECYJq+ljRMNPGOZhmXYTl+WFTA7AlWVAAih57jV9WNXuzUBTppixYBUw2OYDi-r175CjF6zQm4kThDYNhDgmE0SulUFyQpkALUVuAAO74KCVB1WQpXIcaaGmk50ECW5uVSAVf2A8DUCg6VKmuoR6h+V2+2tUFV2RKdnjMfy0LRjdModdyoELi4rgfbJLnfQjSNLSj8gg2DZUluJ5aVtWM2w9lty-RzQNc2jPOY2p7qaf5LIE4dFH9pRg6zAucb9T+WxRb+sZjhNexTecMn8aLP2I4tbAQGApVS+jZXMChJoYebs1w-N1t-XbDsiE7su9PLnr472yLKEGlEbEsnIRpy-VvbgDiAQuEpWWO5hMxbrPi7b9tgI7POlKJpYSRWUkw198N57gfuFwHMv4cHGmh0rvaWGd1EJFiaY+NEicSrCg2xji8SWKkpvKh7Iu57AgQUFIVwPFIUhwLArwAJpfMee3t+RziBgBiz2ZYUQmZ3-g3WEyTJ9KKaLj48LZ57lu5fPi+4HzW873v94qxMbuE9PDzAvrsYUWJAxQgWM4F+s8a4fyXtoB4KAUAiAhqhTg0NhbV3mogqoKC0FUCDu2HGCs8b7yCjELY9hrKTWDKPCBcY-yH0jMxSicDcFi3wcg1B6C+ZlkklWaSfFX5zwXkgwhIgSHYz-oFFWgprDJCnNEPY8JUzOAgdCCI7hNgOFgdNGeXCfo8KkVQBgciDrshiP+TuopJ7qKSBA1MkdBrSmhMGHEipDGiPgXgiRBDYB5XQS7SGWD3a+OMe-AJyCgnSObqQyxysxjuGsBGbwE8xyOM0dfDkMIgIGLNpElmCCYkPDieYgR5dBYiIyn47hZSKlQBkepMhbd-4pJ8LCRYP4ZRhFUU46+URpy-jOhwnxdSolXEacE8xSTezJhhMBfETgpQTWRFoky-5Rx7EKdPYpWVxGf0RmAKQXARAvFkHIcpGC3a1M+iU-xxy8qnPOVQS51zYAtJDlpMO5FfRij5HoyiEDdhcmGtMY4xwTLtU4Y8hpzzXkXKubIG5oTMHoXuczQ5pTEVnORZ875HY3DkNIlY2KAFxTJnYTktYixfy2BYjSuFOKnlLxOfi95KKblVIFpXHB8KTEBI5W8qAHzUVfISbI3GZLkmhHfDOBwBwTLJgmIxXJ8wgw-m6gYokFA0B23gECEk7T5FjABcGLV8J2GLCivMYUAKgzwmRJRTuUpBRpQmbkIQjZOimvJQgOMydgJLBNqq2Mgy1inW2AmPYopDjHE7iyx4sh-VyuCgqcUyQz7HysHCJiEQwjQNtRNRcWcvXYopGm3sAL7JWumEqhUE8Jw3U5HYGcMo5zAUXFPKuLkGzCTQNW-5wEDKdsOKozkkZYyTkjN0hYqSQL0pZRqTc241iKw6ZCY4kQTJyjCpFaKawI5TFnMfBcp8V1e0Uk2XQw7CZQmTlYKycd7DjRsMKZ6WwAKImGe4ex5aimTMFRAe9KtfT03rTapt9qqbwhhNKSMgowgJCWBmCtOca4+xgGB81BwpjUocBGeEAprprHatGo4SGwipGYoiK9b9a5kBWrh0I04AKxAWA-GFv5+qeCGiNOUrhxqTQY7nbDbBOaN1Kqx4KsRIjBgAnMAMKIB5UysPdRDMDdheLE1h9m+d-bcxk78yhCjpQGUAmEOIKmlhqfI+rf8IZgLCYmnEPTbLZMQbCFBxtdqW10o2NOZE7jgyzBiB5hFS9YArzXrAI1m6zV+k7r5ieMGAtsdvqGh+9kn7eKAw81lUWv6l3wF5x9DgnBLGssAjZ18fzWCcPEXZkWhWf14UQqAsngEGSSMkYM-SNEQOVbYsm59fD5f2cBorbXJFNO66OhMjhxpqIGbS0IyZI6ht2TpiLGGxG4vZS8zlYruUJYoVu8YT1k7vn0Uwj8BlgLAt1WkIAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -195,16 +195,21 @@ function createGlobalStateMachine() {
                 sync: {
                   initial: "pulling",
                   states: {
-                    idle: {
+                    success: {
                       on: {
                         SYNC: "pulling",
-                        PUSH: "pushing",
+                      },
+                    },
+                    error: {
+                      entry: "logError",
+                      on: {
+                        SYNC: "pulling",
                       },
                     },
                     pulling: {
                       always: [
                         // Don't pull if offline
-                        { target: "idle", cond: "isOffline" },
+                        { target: "success", cond: "isOffline" },
                       ],
                       invoke: {
                         src: "pull",
@@ -212,24 +217,18 @@ function createGlobalStateMachine() {
                           target: "pushing",
                           actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                         },
-                        onError: {
-                          target: "idle",
-                          actions: "setError",
-                        },
+                        onError: "error",
                       },
                     },
                     pushing: {
                       always: [
                         // Don't push if offline
-                        { target: "idle", cond: "isOffline" },
+                        { target: "success", cond: "isOffline" },
                       ],
                       invoke: {
                         src: "push",
                         onDone: "checkingStatus",
-                        onError: {
-                          target: "idle",
-                          actions: "setError",
-                        },
+                        onError: "error",
                       },
                     },
                     checkingStatus: {
@@ -237,17 +236,15 @@ function createGlobalStateMachine() {
                         src: "checkStatus",
                         onDone: [
                           {
-                            target: "idle",
+                            target: "success",
                             cond: "isSynced",
                           },
+                          // If not synced, pull again
                           {
                             target: "pulling",
                           },
                         ],
-                        onError: {
-                          target: "idle",
-                          actions: "setError",
-                        },
+                        onError: "error",
                       },
                     },
                   },
@@ -543,6 +540,9 @@ function createGlobalStateMachine() {
           // TODO: Remove `as Error`
           error: (_, event) => event.data as Error,
         }),
+        logError: (_, event) => {
+          console.error(event.data)
+        },
       },
     },
   )

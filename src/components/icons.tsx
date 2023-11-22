@@ -527,6 +527,15 @@ export function SidebarIcon16({ className }: { className?: string }) {
   )
 }
 
+export function OfflineIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M3.845 4.104 1.449 1.51 2.55.49l12 13-1.102 1.018-4.812-5.213a4.5 4.5 0 0 0-3.819 1.272l-1.06-1.06a6 6 0 0 1 3.496-1.71L4.935 5.285a8.964 8.964 0 0 0-3.299 2.1l-1.06-1.06a10.47 10.47 0 0 1 3.269-2.222Z" />
+      <path d="M7 13a1 1 0 1 1 2 0 1 1 0 0 1-2 0ZM7.17 3.283l1.368 1.483c2.12.126 4.205 1 5.826 2.62l1.06-1.06A10.477 10.477 0 0 0 7.17 3.283Z" />
+    </svg>
+  )
+}
+
 export function OfflineIcon24({ className }: { className?: string }) {
   return (
     <svg className={cx("h-6 w-6", className)} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
