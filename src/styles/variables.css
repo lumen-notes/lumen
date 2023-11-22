@@ -1,28 +1,4 @@
-/* Light theme */
-@import "@radix-ui/colors/sand.css";
-@import "@radix-ui/colors/sand-alpha.css";
-@import "@radix-ui/colors/cyan.css";
-@import "@radix-ui/colors/cyan-alpha.css";
-@import "@radix-ui/colors/yellow.css";
-@import "@radix-ui/colors/yellow-alpha.css";
-@import "@radix-ui/colors/green.css";
-@import "@radix-ui/colors/green-alpha.css";
-@import "@radix-ui/colors/red.css";
-@import "@radix-ui/colors/red-alpha.css";
-@import "@radix-ui/colors/purple.css";
-
-/* Dark theme */
-@import "@radix-ui/colors/sand-dark.css";
-@import "@radix-ui/colors/sand-dark-alpha.css";
-@import "@radix-ui/colors/cyan-dark.css";
-@import "@radix-ui/colors/cyan-dark-alpha.css";
-@import "@radix-ui/colors/yellow-dark.css";
-@import "@radix-ui/colors/yellow-dark-alpha.css";
-@import "@radix-ui/colors/green-dark.css";
-@import "@radix-ui/colors/green-dark-alpha.css";
-@import "@radix-ui/colors/red-dark.css";
-@import "@radix-ui/colors/red-dark-alpha.css";
-@import "@radix-ui/colors/purple-dark.css";
+@import "./radix-colors.css";
 
 :root {
   color-scheme: light dark;
@@ -71,28 +47,30 @@
   --font-size-xl: 1.125rem; /* 18px */
 }
 
-.dark {
-  /* Border colors */
-  --color-border-focus: var(--cyan-10);
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Border colors */
+    --color-border-focus: var(--cyan-10);
 
-  /* Backround colors */
-  --color-bg: var(--sand-2);
-  --color-bg-inset: var(--sand-1);
-  --color-bg-overlay: var(--sand-3);
-  --color-bg-backdrop: hsla(60 3% 6% / 0.65); /* var(--color-bg-inset) at 65% opacity */
-  --color-bg-highlight: var(--yellow-a4);
+    /* Backround colors */
+    --color-bg: var(--sand-2);
+    --color-bg-inset: var(--sand-1);
+    --color-bg-overlay: var(--sand-3);
+    --color-bg-backdrop: hsla(60 3% 6% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+    --color-bg-highlight: var(--yellow-a4);
 
-  /* Syntax colors */
-  --color-syntax-yellow: var(--yellow-12);
-  --color-syntax-red: var(--red-12);
-  --color-syntax-purple: var(--purple-12);
-  --color-syntax-green: var(--green-12);
+    /* Syntax colors */
+    --color-syntax-yellow: var(--yellow-12);
+    --color-syntax-red: var(--red-12);
+    --color-syntax-purple: var(--purple-12);
+    --color-syntax-green: var(--green-12);
 
-  /* Priority colors */
-  /* TODO: Remove these */
-  --hsl-priority-1: 0deg 100% 70%;
-  --hsl-priority-2: 30deg 100% 60%;
-  --hsl-priority-3: 200deg 100% 70%;
+    /* Priority colors */
+    /* TODO: Remove these */
+    --hsl-priority-1: 0deg 100% 70%;
+    --hsl-priority-2: 30deg 100% 60%;
+    --hsl-priority-3: 200deg 100% 70%;
+  }
 }
 
 /* Adjust font sizes for touch devices */

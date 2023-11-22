@@ -4,15 +4,12 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
-import { useAutoTheme } from "../utils/use-auto-theme"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 // @ts-ignore
 // import LagRadar from "react-lag-radar"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
-  useAutoTheme()
-
   const [state, send] = useAtom(globalStateMachineAtom)
   const location = useLocation()
   const navigate = useNavigate()
