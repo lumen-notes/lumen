@@ -47,8 +47,8 @@ export function FullscreenContainer({
       {/* Header */}
       <div
         className={cx(
-          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-gradient-to-b p-1 backdrop-blur-md",
-          elevation === 0 ? "from-bg-inset to-bg-inset-backdrop" : "from-bg to-bg-backdrop",
+          "sticky top-0 z-10 flex shrink-0 items-center justify-between gap-2 border-b border-border-secondary p-1",
+          elevation === 0 ? "bg-bg-inset" : "bg-bg",
         )}
       >
         <div className="flex flex-shrink items-center gap-4">

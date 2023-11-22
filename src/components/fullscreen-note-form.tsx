@@ -113,7 +113,7 @@ export function FullscreenNoteForm({
       <div className="sticky bottom-0 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         <Card
           elevation={1}
-          className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg bg-bg-overlay-backdrop p-2 backdrop-blur-md"
+          className="flex flex-shrink-0 justify-between gap-2 overflow-auto rounded-lg p-2"
         >
           <FileInputButton
             asChild

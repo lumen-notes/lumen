@@ -4,6 +4,7 @@ module.exports = {
   future: {
     hoverOnlyWhenSupported: true,
   },
+  darkMode: "class",
   theme: {
     extend: {
       screens: {
@@ -32,19 +33,16 @@ module.exports = {
       "text-secondary": "var(--color-text-secondary)",
       "text-tertiary": "var(--color-text-tertiary)",
       "text-highlight": "var(--color-text-highlight)",
-      "text-pending": "var(--color-text-pending)",
       "text-danger": "var(--color-text-danger)",
       bg: "var(--color-bg)",
       "bg-inset": "var(--color-bg-inset)",
       "bg-overlay": "var(--color-bg-overlay)",
       "bg-backdrop": "var(--color-bg-backdrop)",
-      "bg-inset-backdrop": "var(--color-bg-inset-backdrop)",
-      "bg-overlay-backdrop": "var(--color-bg-overlay-backdrop)",
       "bg-secondary": "var(--color-bg-secondary)",
       "bg-tertiary": "var(--color-bg-tertiary)",
+      "bg-code-block": "var(--color-bg-code-block)",
       "bg-highlight": "var(--color-bg-highlight)",
       "bg-selection": "var(--color-bg-selection)",
-      "bg-pending": "var(--color-bg-pending)",
       border: "var(--color-border)",
       "border-secondary": "var(--color-border-secondary)",
       "border-focus": "var(--color-border-focus)",
