@@ -1,5 +1,5 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
-import { useAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import React from "react"
 import {
   NavLinkProps,
@@ -27,11 +27,12 @@ import {
   TagIcon24,
 } from "./icons"
 import { NewNoteDialog } from "./new-note-dialog"
+import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
-import { SyncStatus } from "./sync-status"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const [state, send] = useAtom(globalStateMachineAtom)
+  const send = useSetAtom(globalStateMachineAtom)
+  const syncStatusText = useSyncStatusText()
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
   const { online } = useNetworkState()
@@ -87,13 +88,18 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
         </li>
-        <li className="mt-auto">
-          <IconButton disableTooltip>
-            <div style={{ width: 24, height: 24, display: "grid", placeItems: "center" }}>
-              <SyncStatus />
-            </div>
-          </IconButton>
-        </li>
+        {position === "left" ? (
+          <li className="mt-auto flex-grow-0">
+            <IconButton
+              aria-label={syncStatusText}
+              tooltipSide={tooltipSide}
+              onClick={() => send({ type: "SYNC" })}
+              disabled={!online}
+            >
+              <SyncStatusIcon size={24} />
+            </IconButton>
+          </li>
+        ) : null}
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <DropdownMenu modal={false}>
             <DropdownMenu.Trigger asChild>
@@ -127,12 +133,15 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item onClick={() => send({ type: "SYNC" })} disabled={!online}>
-                {state.matches("signedIn.cloned.sync") &&
-                !state.matches("signedIn.cloned.sync.idle")
-                  ? "Syncing…"
-                  : "Sync"}
-              </DropdownMenu.Item>
+              {position === "bottom" ? (
+                <DropdownMenu.Item
+                  icon={<SyncStatusIcon size={16} />}
+                  onClick={() => send({ type: "SYNC" })}
+                  disabled={!online}
+                >
+                  {syncStatusText}
+                </DropdownMenu.Item>
+              ) : null}
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings
               </DropdownMenu.Item>
