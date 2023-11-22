@@ -52,7 +52,7 @@
 }
 
 .markdown pre {
-  @apply overflow-auto rounded-sm bg-bg-secondary p-3;
+  @apply overflow-auto rounded-sm bg-bg-code-block p-3;
 }
 
 .markdown code {
@@ -124,7 +124,7 @@
 }
 
 .markdown blockquote {
-  @apply relative pl-3 italic;
+  @apply relative pl-3 italic text-text-secondary;
 }
 
 .markdown blockquote::before {

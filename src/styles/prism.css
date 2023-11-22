@@ -39,11 +39,11 @@
 }
 
 .prism .boolean {
-  color: var(--color-syntax-orange);
+  color: var(--color-syntax-red);
 }
 
 .prism .string {
-  color: var(--color-syntax-orange);
+  color: var(--color-syntax-red);
 }
 
 .prism .operator {

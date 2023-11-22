@@ -81,7 +81,7 @@ export function InsertTemplateDialog() {
   return (
     <Dialog.Root open onOpenChange={handleClose}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-inset-backdrop" />
+        <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-backdrop" />
         <Dialog.Content asChild>
           <Card
             elevation={2}

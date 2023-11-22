@@ -1,63 +1,64 @@
+/* Light theme */
+@import "@radix-ui/colors/sand.css";
+@import "@radix-ui/colors/sand-alpha.css";
+@import "@radix-ui/colors/cyan.css";
+@import "@radix-ui/colors/cyan-alpha.css";
+@import "@radix-ui/colors/amber.css";
+@import "@radix-ui/colors/amber-alpha.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/purple.css";
+
+/* Dark theme */
+@import "@radix-ui/colors/sand-dark.css";
+@import "@radix-ui/colors/sand-dark-alpha.css";
+@import "@radix-ui/colors/cyan-dark.css";
+@import "@radix-ui/colors/cyan-dark-alpha.css";
+@import "@radix-ui/colors/amber-dark.css";
+@import "@radix-ui/colors/amber-dark-alpha.css";
+@import "@radix-ui/colors/green-dark.css";
+@import "@radix-ui/colors/red-dark.css";
+@import "@radix-ui/colors/purple-dark.css";
+
 :root {
   color-scheme: light dark;
 
-  /* Hue */
-  --h: 30deg;
-  --h-highlight: 50deg;
+  /* Text colors */
+  --color-text: var(--sand-12);
+  --color-text-secondary: var(--sand-11);
+  --color-text-tertiary: var(--sand-10);
+  --color-text-highlight: var(--amber-a12);
+  --color-text-danger: var(--red-11);
 
-  /* Saturation */
-  --s: 5%;
+  /* Background colors */
+  --color-bg: white;
+  --color-bg-inset: var(--sand-2);
+  --color-bg-overlay: white;
+  --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+  --color-bg-secondary: var(--sand-a3);
+  --color-bg-tertiary: var(--sand-a4);
+  --color-bg-code-block: var(--sand-a2);
+  --color-bg-highlight: var(--amber-a3);
+  --color-bg-selection: var(--cyan-a3);
 
-  /* Lightness */
-  --l-text: 10%;
-  --l-text-secondary: 40%;
-  --l-text-tertiary: 60%;
-  --l-bg: 100%;
-  --l-bg-inset: 97.5%;
-  --l-bg-overlay: 100%;
-  --l-border: 75%;
+  /* Border colors */
+  --color-border: var(--sand-a8);
+  --color-border-secondary: var(--sand-a4);
+  --color-border-focus: var(--cyan-9);
 
-  /* Opacity */
-  --a-bg-backdrop: 0.65;
-  --a-bg-secondary: 0.05;
-  --a-bg-tertiary: 0.1;
-  --a-border: 0.25;
-  --a-border-secondary: 0.1;
-
-  /* Colors */
-  --color-text: hsl(var(--h) var(--s) var(--l-text));
-  --color-text-secondary: hsl(var(--h) var(--s) var(--l-text-secondary));
-  --color-text-tertiary: hsl(var(--h) var(--s) var(--l-text-tertiary));
-  --color-text-highlight: hsl(var(--h-highlight) 100% var(--l-text));
-  --color-text-pending: hsl(30 94% 15%);
-  --color-text-danger: hsl(350 86% 27%);
-  --color-bg: hsl(var(--h) var(--s) var(--l-bg));
-  --color-bg-inset: hsl(var(--h) var(--s) var(--l-bg-inset));
-  --color-bg-overlay: hsl(var(--h) var(--s) var(--l-bg-overlay));
-  --color-bg-backdrop: hsla(var(--h) var(--s) var(--l-bg) / var(--a-bg-backdrop));
-  --color-bg-inset-backdrop: hsla(var(--h) var(--s) var(--l-bg-inset) / var(--a-bg-backdrop));
-  --color-bg-overlay-backdrop: hsla(var(--h) var(--s) var(--l-bg-overlay) / var(--a-bg-backdrop));
-  --color-bg-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-secondary));
-  --color-bg-tertiary: hsla(var(--h) var(--s) var(--l-text) / var(--a-bg-tertiary));
-  --color-bg-highlight: hsl(var(--h-highlight) 80% 90%);
-  --color-bg-selection: hsl(200 80% 90%);
-  --color-bg-pending: hsl(30 100% 85%);
-  --color-border: hsl(var(--h) var(--s) var(--l-border));
-  --color-border-secondary: hsla(var(--h) var(--s) var(--l-text) / var(--a-border-secondary));
-  --color-border-focus: hsl(200 100% 40%);
+  /* Syntax colors */
+  --color-syntax-yellow: var(--amber-11);
+  --color-syntax-red: var(--red-11);
+  --color-syntax-purple: var(--purple-11);
+  --color-syntax-green: var(--green-11);
 
   /* Priority colors */
+  /* TODO: Remove these */
   --hsl-priority-1: 0deg 60% 50%;
   --hsl-priority-2: 30deg 90% 50%;
   --hsl-priority-3: 200deg 100% 40%;
   --a-bg-priority: 0.1;
   --a-bg-priority-hover: 0.2;
-
-  /* Syntax colors (based on https://rosepinetheme.com/palette) */
-  --color-syntax-yellow: hsl(30 80% 34%);
-  --color-syntax-orange: hsl(6 50% 48%);
-  --color-syntax-purple: hsl(268 21% 38%);
-  --color-syntax-green: hsl(170 50% 32%);
 
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
@@ -66,43 +67,28 @@
   --font-size-xl: 1.125rem; /* 18px */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Hue */
-    --h: 220deg;
+.dark {
+  /* Border colors */
+  --color-border-secondary: var(--sand-a3);
+  --color-border-focus: var(--cyan-10);
 
-    /* Lightness */
-    --l-text: 90%;
-    --l-text-secondary: 60%;
-    --l-text-tertiary: 50%;
-    --l-bg: 10%;
-    --l-bg-inset: 5%;
-    --l-bg-overlay: 15%;
-    --l-border: 30%;
+  /* Backround colors */
+  --color-bg: var(--sand-2);
+  --color-bg-inset: var(--sand-1);
+  --color-bg-overlay: var(--sand-3);
+  --color-bg-backdrop: hsla(60 3% 6% / 0.65); /* var(--color-bg-inset) at 65% opacity */
 
-    /* Opacity */
-    --a-bg-secondary: 0.075;
+  /* Syntax colors */
+  --color-syntax-yellow: var(--amber-12);
+  --color-syntax-red: var(--red-12);
+  --color-syntax-purple: var(--purple-12);
+  --color-syntax-green: var(--green-12);
 
-    /* Colors */
-    --color-text-highlight: hsl(var(--h-highlight) 40% var(--l-text));
-    --color-text-pending: hsl(30 100% 90%);
-    --color-text-danger: hsl(3 100% 83%);
-    --color-bg-highlight: hsl(var(--h-highlight) 30% 18%);
-    --color-bg-selection: hsl(200 30% 25%);
-    --color-bg-pending: hsl(30 90% 15%);
-    --color-border-focus: hsl(200 100% 70%);
-
-    /* Priority colors */
-    --hsl-priority-1: 0deg 100% 70%;
-    --hsl-priority-2: 30deg 100% 60%;
-    --hsl-priority-3: 200deg 100% 70%;
-
-    /* Syntax colors */
-    --color-syntax-yellow: hsl(30 76% 72%);
-    --color-syntax-orange: hsl(6 70% 78%);
-    --color-syntax-purple: hsl(268 57% 78%);
-    --color-syntax-green: hsl(170 50% 73%);
-  }
+  /* Priority colors */
+  /* TODO: Remove these */
+  --hsl-priority-1: 0deg 100% 70%;
+  --hsl-priority-2: 30deg 100% 60%;
+  --hsl-priority-3: 200deg 100% 70%;
 }
 
 /* Adjust font sizes for touch devices */
