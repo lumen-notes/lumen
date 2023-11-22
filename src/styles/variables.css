@@ -73,7 +73,6 @@
 
 .dark {
   /* Border colors */
-  --color-border-secondary: var(--sand-a3);
   --color-border-focus: var(--cyan-10);
 
   /* Backround colors */
