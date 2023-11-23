@@ -149,7 +149,7 @@
     "vite-plugin-node-polyfills": "^0.16.0",
     "vitest": "^0.21.1",
     "wait-on": "^7.0.1",
-    "workbox-cli": "^6.5.4"
+    "workbox-cli": "^7.0.0"
   },
   "prettier": {
     "semi": false,
