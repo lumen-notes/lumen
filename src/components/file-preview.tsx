@@ -1,6 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
-import { ErrorIcon16, LoadingIcon16 } from "../components/icons"
+import { useNetworkState } from "react-use"
+import { ErrorIcon16, LoadingIcon16, OfflineIcon16 } from "../components/icons"
 import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
 import { getFileUrl, readFile } from "../utils/fs"
 
@@ -18,6 +19,7 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
   const [file, setFile] = React.useState<File | null>(cachedFile?.file ?? null)
   const [url, setUrl] = React.useState(cachedFile?.url ?? "")
   const [isLoading, setIsLoading] = React.useState(!cachedFile)
+  const { online } = useNetworkState()
 
   React.useEffect(() => {
     // If file is already cached, don't fetch it again
@@ -52,6 +54,11 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
       <div className="flex items-center gap-2 leading-4 text-text-secondary">
         <LoadingIcon16 />
         Loading…
+      </div>
+    ) : !online ? (
+      <div className="flex items-center gap-2 leading-4 text-text-secondary">
+        <OfflineIcon16 />
+        File not available
       </div>
     ) : (
       <div className="flex items-center gap-2 leading-4 text-text-danger">

@@ -5,6 +5,7 @@ import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 // import remarkEmoji from "remark-emoji"
+import { useNetworkState } from "react-use"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
 import { z } from "zod"
@@ -61,6 +62,7 @@ const MarkdownContext = React.createContext<{
 
 export const Markdown = React.memo(
   ({ children, hideFrontmatter = false, onChange }: MarkdownProps) => {
+    const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
@@ -92,7 +94,7 @@ export const Markdown = React.memo(
                 </div>
               ) : null}
               {/* Render template as a code block */}
-              <pre className="overflow-auto rounded-sm bg-bg-secondary p-3">
+              <pre className="overflow-auto rounded-sm bg-bg-code-block p-3">
                 <TemplateSyntaxHighlighter>
                   {removeTemplateFrontmatter(children)}
                 </TemplateSyntaxHighlighter>
@@ -100,13 +102,13 @@ export const Markdown = React.memo(
             </div>
           ) : (
             <>
-              {frontmatter?.isbn ? (
+              {frontmatter?.isbn && online ? (
                 // If the note has an ISBN, show the book cover
                 <div className="mb-3 inline-flex">
                   <BookCover isbn={`${frontmatter.isbn}`} />
                 </div>
               ) : null}
-              {typeof frontmatter?.github === "string" ? (
+              {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
                   <GitHubAvatar login={frontmatter.github} />
@@ -459,6 +461,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   const Link = useLink()
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
+  const { online } = useNetworkState()
 
   React.useLayoutEffect(() => {
     if (ref.current) {
@@ -502,7 +505,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
         props.className,
       )}
     >
-      {isFirst ? (
+      {isFirst && online ? (
         <WebsiteFavicon url={props.href ?? ""} className="mr-2 align-sub [h1>a>&]:align-baseline" />
       ) : null}
       {children}
@@ -624,6 +627,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const Link = useLink()
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
+  const { online } = useNetworkState()
 
   React.useLayoutEffect(() => {
     if (ref.current) {
@@ -635,7 +639,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link ref={ref} target="_blank" to={`/${id}`}>
-          {isFirst && note ? (
+          {isFirst && note && online ? (
             <NoteFavicon
               note={note}
               className="mr-2 align-sub [h1>a>&]:align-baseline"

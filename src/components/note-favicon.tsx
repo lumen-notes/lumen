@@ -1,3 +1,4 @@
+import { useNetworkState } from "react-use"
 import { Note, templateSchema } from "../types"
 import { cx } from "../utils/cx"
 import { GitHubAvatar } from "./github-avatar"
@@ -15,20 +16,22 @@ export function NoteFavicon({
   defaultFavicon = <NoteIcon16 data-testid="favicon-default" />,
   ...props
 }: NoteFaviconProps) {
+  const { online } = useNetworkState()
+
   let icon = defaultFavicon
 
   // GitHub
-  if (typeof note.frontmatter.github === "string") {
+  if (typeof note.frontmatter.github === "string" && online) {
     icon = <GitHubAvatar data-testid="favicon-github" login={note.frontmatter.github} size={16} />
   }
 
   // URL
-  if (note.url) {
+  if (note.url && online) {
     icon = <WebsiteFavicon data-testid="favicon-url" url={note.url} />
   }
 
   // Book
-  if (note.frontmatter.isbn) {
+  if (note.frontmatter.isbn && online) {
     icon = (
       <div
         data-testid="favicon-isbn"
