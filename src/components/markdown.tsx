@@ -4,7 +4,7 @@ import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
-import remarkEmoji from "remark-emoji"
+// import remarkEmoji from "remark-emoji"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
 import { z } from "zod"
@@ -128,7 +128,7 @@ function MarkdownBody({ children }: { children: string }) {
       className="markdown"
       remarkPlugins={[
         remarkGfm,
-        remarkEmoji,
+        // remarkEmoji,
         remarkNoteLink,
         remarkNoteEmbed,
         remarkTagLink,

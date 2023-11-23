@@ -11,7 +11,7 @@ import { createTheme } from "@uiw/codemirror-themes"
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
-import * as emoji from "node-emoji"
+// import * as emoji from "node-emoji"
 import React from "react"
 import { tagsAtom, templatesAtom } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
@@ -112,7 +112,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           markdown({ base: markdownLanguage }),
           autocompletion({
             override: [
-              emojiCompletion,
+              // emojiCompletion,
               dateCompletion,
               noteCompletion,
               tagSyntaxCompletion,
@@ -419,26 +419,26 @@ function useTemplateCompletion() {
   return tagCompletion
 }
 
-function emojiCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/(^:\w*|\s:\w*)/)
+// function emojiCompletion(context: CompletionContext): CompletionResult | null {
+//   const word = context.matchBefore(/(^:\w*|\s:\w*)/)
 
-  if (!word) {
-    return null
-  }
+//   if (!word) {
+//     return null
+//   }
 
-  // ":<query>" -> "<query>"
-  const query = word.text.replace(/^(\s*)?:/, "")
+//   // ":<query>" -> "<query>"
+//   const query = word.text.replace(/^(\s*)?:/, "")
 
-  const results = emoji.search(query)
+//   const results = emoji.search(query)
 
-  const start = word.from + word.text.indexOf(":")
+//   const start = word.from + word.text.indexOf(":")
 
-  return {
-    from: start,
-    options: results.slice(0, 10).map((result) => ({
-      label: `${result.emoji} ${result.name}`,
-      apply: result.emoji,
-    })),
-    filter: false,
-  }
-}
+//   return {
+//     from: start,
+//     options: results.slice(0, 10).map((result) => ({
+//       label: `${result.emoji} ${result.name}`,
+//       apply: result.emoji,
+//     })),
+//     filter: false,
+//   }
+// }
