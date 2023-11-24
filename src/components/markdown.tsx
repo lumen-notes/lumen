@@ -65,6 +65,17 @@ export const Markdown = React.memo(
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
+    // Split the content into title and body so we can display
+    // the frontmatter below the title but above the body.
+    const [title, body] = React.useMemo(
+      () =>
+        content.startsWith("# ")
+          ? // Grab the first line as the title and remove it from the body
+            [content.split("\n")[0], content.replace(content.split("\n")[0], "").trim()]
+          : ["", content],
+      [content],
+    )
+
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
 
     const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
@@ -114,8 +125,15 @@ export const Markdown = React.memo(
                   <GitHubAvatar login={frontmatter.github} />
                 </div>
               ) : null}
-              <MarkdownBody>{content}</MarkdownBody>
-              {!hideFrontmatter ? <Frontmatter frontmatter={frontmatter} /> : null}
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2 empty:hidden">
+                  {title ? <MarkdownContent>{title}</MarkdownContent> : null}
+                  {!hideFrontmatter && !isObjectEmpty(frontmatter) ? (
+                    <Frontmatter frontmatter={frontmatter} />
+                  ) : null}
+                </div>
+                {body ? <MarkdownContent>{body}</MarkdownContent> : null}
+              </div>
             </>
           )}
         </div>
@@ -124,10 +142,14 @@ export const Markdown = React.memo(
   },
 )
 
-function MarkdownBody({ children }: { children: string }) {
+function isObjectEmpty(obj: Record<string, unknown>) {
+  return Object.keys(obj).length === 0
+}
+
+function MarkdownContent({ children, className }: { children: string; className?: string }) {
   return (
     <ReactMarkdown
-      className="markdown"
+      className={cx("markdown", className)}
       remarkPlugins={[
         remarkGfm,
         // remarkEmoji,
@@ -202,11 +224,17 @@ function BookCover({ isbn }: { isbn: string }) {
   )
 }
 
-function Frontmatter({ frontmatter }: { frontmatter: Record<string, unknown> }) {
+function Frontmatter({
+  frontmatter,
+  className,
+}: {
+  frontmatter: Record<string, unknown>
+  className?: string
+}) {
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className="mt-4 @container">
+    <div className={cx("@container", className)}>
       {Object.entries(frontmatter)
         // Filter out empty values
         .filter(([, value]) => Boolean(value))
