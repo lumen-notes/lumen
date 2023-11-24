@@ -1,14 +1,14 @@
 import { useAtomValue } from "jotai"
-import { CommandMenu } from "../components/command-menu"
-import { SignedInUser } from "../components/github-auth"
-import { LoadingIcon16, SettingsIcon24 } from "../components/icons"
-import { Panel } from "../components/panel"
-import { RepoForm } from "../components/repo-form"
-import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
-import { selectAtom } from "jotai/utils"
+import { CommandMenu } from "../components/command-menu"
+import { SignedInUser } from "../components/github-auth"
+import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
+import { Panel } from "../components/panel"
+import { RepoForm } from "../components/repo-form"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 
 const isCloningAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloningRepo"),
@@ -23,8 +23,7 @@ export function SettingsPage() {
   return (
     <>
       <CommandMenu />
-      {/* TODO: Replace with 16px icon */}
-      <Panel icon={<SettingsIcon24 />} title="Settings">
+      <Panel icon={<SettingsIcon16 />} title="Settings">
         <div className="grid gap-4 p-4">
           <h3 className="text-xl font-semibold leading-4">GitHub</h3>
           <SignedInUser />

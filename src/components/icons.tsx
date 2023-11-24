@@ -358,6 +358,14 @@ export function ClearIcon16() {
   )
 }
 
+export function SettingsIcon16() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M8.095 12.5a3.001 3.001 0 0 0 5.81 0H16V11h-2.095a3.001 3.001 0 0 0-5.81 0H0v1.5h8.095Zm4.405-.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM2.095 4H0v1.5h2.095a3.001 3.001 0 0 0 5.81 0H16V4H7.905a3.001 3.001 0 0 0-5.81 0Zm4.405.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+    </svg>
+  )
+}
+
 export function SettingsIcon24() {
   return (
     <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
