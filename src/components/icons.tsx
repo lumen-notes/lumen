@@ -552,6 +552,22 @@ export function OfflineIcon24({ className }: { className?: string }) {
   )
 }
 
+export function MaximizeIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M7 15H1V9h1.5v3.44l4-4L7.56 9.5l-4 4H7V15ZM9 1h6v6h-1.5V3.56l-4 4L8.44 6.5l4-4H9V1Z" />
+    </svg>
+  )
+}
+
+export function MinimizeIcon16({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+      <path d="M9 7h6V5.5h-3.44l4-4L14.5.44l-4 4V1H9v6ZM7 9H1v1.5h3.44l-4 4 1.06 1.06 4-4V15H7V9Z" />
+    </svg>
+  )
+}
+
 // export function SyncIcon24({ className }: { className?: string }) {
 //   return (
 //     <svg className={cx("h-6 w-6", className)} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
