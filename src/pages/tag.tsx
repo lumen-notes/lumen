@@ -6,20 +6,20 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panels } from "../components/panels"
 import { TagPanel } from "../panels/tag"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
+// import { useIsFullscreen } from "../utils/use-is-fullscreen"
 
 export function TagPage() {
-  const isFullscreen = useIsFullscreen()
+  // const isFullscreen = useIsFullscreen()
   const params = useParams()
 
-  if (isFullscreen) {
-    return (
-      <>
-        <CommandMenu />
-        <FullscreenTagPage params={params} />
-      </>
-    )
-  }
+  // if (isFullscreen) {
+  //   return (
+  //     <>
+  //       <CommandMenu />
+  //       <FullscreenTagPage params={params} />
+  //     </>
+  //   )
+  // }
 
   return (
     <Panels>

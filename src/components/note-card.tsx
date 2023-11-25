@@ -30,6 +30,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
+import { useFullscreen } from "./fullscreen"
 
 type NoteCardProps = {
   id: NoteId
@@ -44,6 +45,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
+  const { openFullscreen } = useFullscreen()
   const Link = useLink()
 
   // Refs
@@ -214,7 +216,11 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
                 Edit
               </DropdownMenu.Item>
-              <DropdownMenu.Item icon={<MaximizeIcon16 />} shortcut={["⌘", "O"]}>
+              <DropdownMenu.Item
+                icon={<MaximizeIcon16 />}
+                onSelect={() => openFullscreen(`/${id}`)}
+                shortcut={["⌘", "O"]}
+              >
                 Open in fullscreen
               </DropdownMenu.Item>
               <DropdownMenu.Separator />

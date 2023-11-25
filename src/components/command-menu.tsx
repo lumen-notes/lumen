@@ -12,7 +12,7 @@ import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
+// import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { useSaveNote } from "../utils/use-save-note"
 import { useSearchNotes } from "../utils/use-search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
@@ -24,7 +24,7 @@ export function CommandMenu() {
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
 
-  const isFullscreen = useIsFullscreen()
+  // const isFullscreen = useIsFullscreen()
 
   const { panels, openPanel } = React.useContext(PanelsContext)
   const routerNavigate = useNavigate()
@@ -54,9 +54,9 @@ export function CommandMenu() {
       if (openPanel) {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
-      } else if (isFullscreen) {
-        // If we're in fullscreen mode, add `fullscreen=true` to the query string
-        routerNavigate(url.includes("?") ? `${url}&fullscreen=true` : `${url}?fullscreen=true`)
+        // } else if (isFullscreen) {
+        //   // If we're in fullscreen mode, add `fullscreen=true` to the query string
+        //   routerNavigate(url.includes("?") ? `${url}&fullscreen=true` : `${url}?fullscreen=true`)
       } else {
         // Otherwise, navigate using the router
         routerNavigate(url)
@@ -65,7 +65,7 @@ export function CommandMenu() {
       setIsOpen(false)
       setQuery("")
     },
-    [isFullscreen, openPanel, panels, routerNavigate],
+    [openPanel, panels, routerNavigate],
   )
 
   // Toggle the menu with `command + k`

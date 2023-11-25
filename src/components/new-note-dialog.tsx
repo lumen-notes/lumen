@@ -9,7 +9,7 @@ import { DraggableCore } from "react-draggable"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useMedia } from "react-use"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
+// import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
@@ -52,7 +52,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [position, setPosition] = React.useState(() => initialPosition())
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
-  const isFullscreen = useIsFullscreen()
+  // const isFullscreen = useIsFullscreen()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -71,10 +71,10 @@ function Provider({ children }: { children: React.ReactNode }) {
   const focusNoteCard = React.useCallback(
     (id: string) => {
       // If we're in fullscreen mode, navigate to the new note
-      if (isFullscreen) {
-        navigate(`/${id}?fullscreen=true`)
-        return
-      }
+      // if (isFullscreen) {
+      //   navigate(`/${id}?fullscreen=true`)
+      //   return
+      // }
 
       const noteElement = document.querySelector(`[data-note-id="${id}"]`)
 
@@ -85,7 +85,7 @@ function Provider({ children }: { children: React.ReactNode }) {
         focusPrevActiveElement()
       }
     },
-    [isFullscreen, navigate, focusPrevActiveElement],
+    [navigate, focusPrevActiveElement],
   )
 
   const toggle = React.useCallback(() => {
