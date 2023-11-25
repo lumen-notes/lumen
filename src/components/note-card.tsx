@@ -21,6 +21,7 @@ import {
   ErrorIcon16,
   ExternalLinkIcon16,
   LoadingIcon16,
+  MaximizeIcon16,
   MoreIcon16,
   ShareIcon16,
   TrashIcon16,
@@ -212,6 +213,9 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             <DropdownMenu.Content align="end">
               <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
                 Edit
+              </DropdownMenu.Item>
+              <DropdownMenu.Item icon={<MaximizeIcon16 />} shortcut={["⌘", "O"]}>
+                Open in fullscreen
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
