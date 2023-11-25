@@ -6,7 +6,7 @@ Lumen is a free, open-source note-taking app based on the [Zettelkasten Method](
 
 <br>
 
-Think of Lumen as your private [digital garden](https://maggieappleton.com/garden-history). It's where you plant, grow, and harvest ideas.
+Think of Lumen as your private knowledge garden. It's where you plant, grow, and harvest ideas.
 
 ### 🌱 Plant
 
