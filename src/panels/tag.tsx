@@ -1,23 +1,15 @@
 import React from "react"
-import { useLocation } from "react-router-dom"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import {
-  CloseIcon16,
-  EditIcon16,
-  ExternalLinkIcon16,
-  TagIcon16,
-  TrashIcon16,
-} from "../components/icons"
+import { CloseIcon16, EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
 import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
 import { useDeleteTag, useRenameTag } from "../utils/github-sync"
-import { openNewWindow } from "../utils/open-new-window"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -25,7 +17,6 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const deleteTag = useDeleteTag()
   const { updatePanel } = React.useContext(PanelsContext)
   const panel = React.useContext(PanelContext)
-  const location = useLocation()
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -53,7 +44,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon16 />}
       actions={
         <>
-          <DropdownMenu.Item
+          {/* <DropdownMenu.Item
             icon={<ExternalLinkIcon16 />}
             onSelect={() => {
               const url = panel
@@ -64,7 +55,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
           >
             Open in new window
           </DropdownMenu.Item>
-          <DropdownMenu.Separator />
+          <DropdownMenu.Separator /> */}
           {/* TODO: Re-implement rename and delete tag */}
           <DropdownMenu.Item disabled icon={<EditIcon16 />} onSelect={openRenameForm}>
             Rename tag

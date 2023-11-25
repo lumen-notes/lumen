@@ -1,26 +1,25 @@
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import { eachDayOfInterval, isMonday, nextMonday, nextSunday, previousMonday } from "date-fns"
 import { toDate } from "date-fns-tz"
+import ejs from "ejs"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { useLocation } from "react-router-dom"
-import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
   CalendarIcon16,
   ChevronLeftIcon16,
   ChevronRightIcon16,
-  ExternalLinkIcon16,
   TriangleRightIcon8,
 } from "../components/icons"
+import { removeFrontmatterComments } from "../components/insert-template"
 import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
-import { PanelContext, PanelProps } from "../components/panels"
+import { PanelProps } from "../components/panels"
 import { datesAtom, templatesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import {
@@ -31,16 +30,11 @@ import {
   formatDateDistance,
   toDateString,
 } from "../utils/date"
-import { openNewWindow } from "../utils/open-new-window"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
-import ejs from "ejs"
-import { removeFrontmatterComments } from "../components/insert-template"
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
-  const location = useLocation()
-  const panel = React.useContext(PanelContext)
   const note = useNoteById(date)
   const searchNotes = useSearchNotes()
   const backlinks = React.useMemo(
@@ -66,21 +60,21 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       description={formatDateDistance(date)}
       icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
-      actions={
-        <>
-          <DropdownMenu.Item
-            icon={<ExternalLinkIcon16 />}
-            onSelect={() => {
-              const url = panel
-                ? `${panel.pathname}?${panel.search}`
-                : `${location.pathname}${location.search}`
-              openNewWindow(url)
-            }}
-          >
-            Open in new window
-          </DropdownMenu.Item>
-        </>
-      }
+      // actions={
+      //   <>
+      //     <DropdownMenu.Item
+      //       icon={<ExternalLinkIcon16 />}
+      //       onSelect={() => {
+      //         const url = panel
+      //           ? `${panel.pathname}?${panel.search}`
+      //           : `${location.pathname}${location.search}`
+      //         openNewWindow(url)
+      //       }}
+      //     >
+      //       Open in new window
+      //     </DropdownMenu.Item>
+      //   </>
+      // }
     >
       <div className="flex flex-col">
         <Calendar key={date} activeDate={date} />
