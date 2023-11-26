@@ -7,8 +7,8 @@ module.exports = {
   navigateFallback: "index.html",
   runtimeCaching: [
     {
-      urlPattern: /github-auth/,
-      handler: "NetworkOnly",
+      urlPattern: /.*/,
+      handler: "NetworkFirst",
     },
   ],
 }
