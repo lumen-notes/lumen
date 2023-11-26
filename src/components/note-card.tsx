@@ -221,7 +221,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
                 onSelect={() => openFullscreen(`/${id}`)}
                 shortcut={["⌘", "O"]}
               >
-                Open in fullscreen
+                Open fullscreen
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
