@@ -177,11 +177,11 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             event.preventDefault()
           }
 
-          // Open note in new window with `command + o`
-          // if (event.metaKey && event.key === "o") {
-          //   openNoteWindow(id)
-          //   event.preventDefault()
-          // }
+          // Open note in fullscreen with `command + o`
+          if (event.metaKey && event.key === "o") {
+            openFullscreen(`/${id}`)
+            event.preventDefault()
+          }
         }}
       >
         <div className="flex items-center justify-between p-2">
