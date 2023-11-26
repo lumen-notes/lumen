@@ -5,5 +5,5 @@ module.exports = {
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
   skipWaiting: true,
   navigateFallback: "index.html",
-  navigageFallbackDenylist: [/github-auth/, /git-lfs-file/],
+  navigateFallbackDenylist: [/github-auth/, /git-lfs-file/],
 }
