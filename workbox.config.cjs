@@ -5,5 +5,6 @@ module.exports = {
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
   skipWaiting: true,
   navigateFallback: "index.html",
+  // Do not cache edge function routes
   navigateFallbackDenylist: [/github-auth/, /git-lfs-file/],
 }
