@@ -5,4 +5,10 @@ module.exports = {
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
   skipWaiting: true,
   navigateFallback: "index.html",
+  runtimeCaching: [
+    {
+      urlPattern: /github-auth/,
+      handler: "NetworkOnly",
+    },
+  ],
 }
