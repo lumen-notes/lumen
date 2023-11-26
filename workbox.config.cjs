@@ -5,10 +5,5 @@ module.exports = {
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
   skipWaiting: true,
   navigateFallback: "index.html",
-  runtimeCaching: [
-    {
-      urlPattern: /.*/,
-      handler: "NetworkFirst",
-    },
-  ],
+  navigageFallbackDenylist: [/github-auth/, /git-lfs-file/],
 }
