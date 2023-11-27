@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import React from "react"
+import { flushSync } from "react-dom"
 import { z } from "zod"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchParam } from "../utils/use-search-param"
@@ -25,8 +26,24 @@ export function FullscreenProvider({ children }: { children: React.ReactNode }) 
     schema: z.string().nullable(),
   })
 
-  const openFullscreen = React.useCallback((path: string) => setPath(path), [setPath])
-  const closeFullscreen = React.useCallback(() => setPath(null), [setPath])
+  const prevActiveElement = React.useRef<HTMLElement>()
+
+  const openFullscreen = React.useCallback(
+    (path: string) => {
+      prevActiveElement.current = document.activeElement as HTMLElement
+      setPath(path)
+    },
+    [setPath],
+  )
+
+  const closeFullscreen = React.useCallback(() => {
+    flushSync(() => {
+      setPath(null)
+    })
+
+    // Focus the previously active element
+    prevActiveElement.current?.focus()
+  }, [setPath])
 
   const contextValue = React.useMemo(
     () => ({ openFullscreen, closeFullscreen }),
@@ -73,8 +90,10 @@ function FullscreenDialog({ path }: { path: string }) {
               </IconButton>
             </div> */}
           </header>
-          <div className="mx-auto max-w-3xl">
-            <Markdown>{note.content}</Markdown>
+          <div className="p-4 md:p-10 lg:p-12">
+            <div className="mx-auto max-w-3xl">
+              <Markdown>{note.content}</Markdown>
+            </div>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
