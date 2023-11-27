@@ -120,7 +120,7 @@
 
 .markdown th,
 .markdown td {
-  @apply border border-border px-2 py-1;
+  @apply border border-border-table px-2 py-1;
 }
 
 .markdown blockquote {

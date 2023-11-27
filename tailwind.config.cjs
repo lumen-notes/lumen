@@ -44,6 +44,7 @@ module.exports = {
       "bg-selection": "var(--color-bg-selection)",
       border: "var(--color-border)",
       "border-secondary": "var(--color-border-secondary)",
+      "border-table": "var(--color-border-table)",
       "border-focus": "var(--color-border-focus)",
     },
     borderRadius: {
