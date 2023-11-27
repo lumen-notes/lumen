@@ -9,7 +9,6 @@ import { globalStateMachineAtom } from "../global-state"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
 import { useSearchParam } from "../utils/use-search-param"
-import { useThemeColor } from "../utils/use-theme-color"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -68,7 +67,7 @@ export function FullscreenProvider({ children }: { children: React.ReactNode }) 
 }
 
 function FullscreenDialog({ path }: { path: string }) {
-  useThemeColor("--color-bg")
+  // useThemeColor("--color-bg")
   const { closeFullscreen } = useFullscreen()
 
   // TODO: Add routing
@@ -79,7 +78,8 @@ function FullscreenDialog({ path }: { path: string }) {
   return (
     <Dialog.Root open onOpenChange={closeFullscreen}>
       <Dialog.Portal>
-        <Dialog.Content className="fixed inset-0 overflow-auto bg-bg outline-none">
+        <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
+        <Dialog.Content className="fixed inset-x-0 bottom-0 top-2 z-10 overflow-auto rounded-t-lg bg-bg outline-none ring-1 ring-border-secondary">
           <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
         </Dialog.Content>
       </Dialog.Portal>
