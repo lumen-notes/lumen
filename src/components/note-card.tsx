@@ -177,8 +177,8 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             event.preventDefault()
           }
 
-          // Open note in fullscreen mode with `command + o`
-          if (event.metaKey && event.key === "o") {
+          // Open note in fullscreen mode with `option + enter`
+          if (event.altKey && event.key === "Enter") {
             openFullscreen(`/${id}`)
             event.preventDefault()
           }
@@ -219,7 +219,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Item
                 icon={<MaximizeIcon16 />}
                 onSelect={() => openFullscreen(`/${id}`)}
-                shortcut={["⌘", "O"]}
+                shortcut={["⌥", "⏎"]}
               >
                 Open fullscreen
               </DropdownMenu.Item>
