@@ -177,7 +177,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             event.preventDefault()
           }
 
-          // Open note in fullscreen with `command + o`
+          // Open note in fullscreen mode with `command + o`
           if (event.metaKey && event.key === "o") {
             openFullscreen(`/${id}`)
             event.preventDefault()

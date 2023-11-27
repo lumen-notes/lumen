@@ -61,6 +61,8 @@ export function FullscreenProvider({ children }: { children: React.ReactNode }) 
 function FullscreenDialog({ path }: { path: string }) {
   const { closeFullscreen } = useFullscreen()
 
+  // TODO: Add routing
+
   // Remove leading slash
   const noteId = path.replace(/^\//, "")
   const note = useNoteById(noteId)
