@@ -53,10 +53,10 @@
     --color-border-focus: var(--cyan-10);
 
     /* Backround colors */
-    --color-bg: var(--sand-2);
-    --color-bg-inset: var(--sand-1);
-    --color-bg-overlay: var(--sand-3);
-    --color-bg-backdrop: hsla(60 3% 6% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+    --color-bg: var(--sand-1);
+    --color-bg-inset: black;
+    --color-bg-overlay: var(--sand-2);
+    --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
     --color-bg-highlight: var(--yellow-a4);
 
     /* Syntax colors */
