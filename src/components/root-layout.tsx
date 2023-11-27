@@ -6,12 +6,12 @@ import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
-import { useThemeColor } from "../utils/use-theme-color"
+import { useThemeColorProvider } from "../utils/use-theme-color"
 // @ts-ignore
 // import LagRadar from "react-lag-radar"
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
-  useThemeColor()
+  useThemeColorProvider()
   const [state, send] = useAtom(globalStateMachineAtom)
   const location = useLocation()
   const navigate = useNavigate()
