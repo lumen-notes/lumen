@@ -1,9 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog"
+import { useSetAtom } from "jotai"
 import React from "react"
 import { flushSync } from "react-dom"
 import { z } from "zod"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchParam } from "../utils/use-search-param"
+import { themeColorAtom } from "../utils/use-theme-color"
 import { IconButton } from "./icon-button"
 import { MinimizeIcon16 } from "./icons"
 import { Markdown } from "./markdown"
@@ -21,6 +23,7 @@ export function useFullscreen() {
 }
 
 export function FullscreenProvider({ children }: { children: React.ReactNode }) {
+  const setThemeColor = useSetAtom(themeColorAtom)
   const [path, setPath] = useSearchParam("fullscreen", {
     defaultValue: null,
     schema: z.string().nullable(),
@@ -31,19 +34,22 @@ export function FullscreenProvider({ children }: { children: React.ReactNode }) 
   const openFullscreen = React.useCallback(
     (path: string) => {
       prevActiveElement.current = document.activeElement as HTMLElement
+      setThemeColor("--color-bg")
       setPath(path)
     },
-    [setPath],
+    [setPath, setThemeColor],
   )
 
   const closeFullscreen = React.useCallback(() => {
+    setThemeColor("--color-bg-inset")
+
     flushSync(() => {
       setPath(null)
     })
 
     // Focus the previously active element
     prevActiveElement.current?.focus()
-  }, [setPath])
+  }, [setPath, setThemeColor])
 
   const contextValue = React.useMemo(
     () => ({ openFullscreen, closeFullscreen }),

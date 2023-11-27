@@ -1,6 +1,5 @@
 import { useLocation } from "react-router-dom"
 import { FilePreview } from "../components/file-preview"
-import { ThemeColor } from "../components/theme-color"
 
 export function FilePage() {
   const location = useLocation()
@@ -9,7 +8,6 @@ export function FilePage() {
 
   return (
     <div className="grid h-full place-items-center">
-      <ThemeColor />
       <FilePreview path={path} />
     </div>
   )

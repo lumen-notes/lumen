@@ -12,7 +12,6 @@ import { Markdown } from "./components/markdown"
 import { NavLayout } from "./components/nav-layout"
 import { NewNoteDialog } from "./components/new-note-dialog"
 import { RootLayout } from "./components/root-layout"
-import { ThemeColor } from "./components/theme-color"
 import { FilePage } from "./pages/file"
 import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
@@ -40,7 +39,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <NewNoteDialog.Provider>
               <NewNoteDialog />
               <InsertTemplateDialog />
-              <ThemeColor />
               <GitHubAuth>
                 <RootLayout>
                   <Routes>

@@ -6,7 +6,6 @@ import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16, MoreIcon16 } from "./icons"
 import { LinkContext } from "./link-context"
-import { ThemeColor } from "./theme-color"
 
 // Used to check if a component is inside a FullscreenContainer
 export const FullscreenContainerContext = React.createContext<boolean>(false)
@@ -34,9 +33,6 @@ export function FullscreenContainer({
   const navigate = useNavigate()
   return (
     <div className={cx("flex min-h-full flex-col", className)}>
-      {/* Make browser toolbar color match the header color */}
-      <ThemeColor propertyName={elevation === 0 ? "--color-bg-inset" : "--color-bg"} />
-
       {/* Make the body background color match the header color */}
       <style>
         {`body {

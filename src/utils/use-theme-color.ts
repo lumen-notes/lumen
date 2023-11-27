@@ -1,7 +1,13 @@
+import { atom, useAtomValue } from "jotai"
 import React from "react"
 
-/** Dyanmically change the theme color to match the background color */
-export function ThemeColor({ propertyName = "background-color" }: { propertyName?: string }) {
+// The name of the CSS variable that will be used to set the theme color
+export const themeColorAtom = atom<string>("--color-bg-inset")
+
+/** Dyanmically change the theme color */
+export function useThemeColor() {
+  const variableName = useAtomValue(themeColorAtom)
+
   const setThemeColor = React.useCallback(() => {
     if (typeof window === "undefined") {
       return
@@ -9,10 +15,10 @@ export function ThemeColor({ propertyName = "background-color" }: { propertyName
 
     const themeColorMeta = document.querySelector('meta[name="theme-color"]')
 
-    const backgroundColor = window.getComputedStyle(document.body).getPropertyValue(propertyName)
+    const themeColor = window.getComputedStyle(document.body).getPropertyValue(variableName)
 
-    themeColorMeta?.setAttribute("content", backgroundColor)
-  }, [propertyName])
+    themeColorMeta?.setAttribute("content", themeColor)
+  }, [variableName])
 
   React.useEffect(() => {
     // Set initial theme color
@@ -26,6 +32,4 @@ export function ThemeColor({ propertyName = "background-color" }: { propertyName
       prefersDark.removeEventListener("change", setThemeColor)
     }
   }, [setThemeColor])
-
-  return null
 }
