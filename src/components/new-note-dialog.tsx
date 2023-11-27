@@ -6,7 +6,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { flushSync } from "react-dom"
 import { DraggableCore } from "react-draggable"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useEvent, useMedia } from "react-use"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
 // import { useIsFullscreen } from "../utils/use-is-fullscreen"
@@ -54,7 +54,6 @@ function Provider({ children }: { children: React.ReactNode }) {
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   // const isFullscreen = useIsFullscreen()
   const location = useLocation()
-  const navigate = useNavigate()
 
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
