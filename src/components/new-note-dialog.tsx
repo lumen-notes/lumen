@@ -85,7 +85,7 @@ function Provider({ children }: { children: React.ReactNode }) {
         focusPrevActiveElement()
       }
     },
-    [navigate, focusPrevActiveElement],
+    [focusPrevActiveElement],
   )
 
   const toggle = React.useCallback(() => {
