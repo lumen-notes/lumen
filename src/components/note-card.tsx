@@ -3,12 +3,13 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { flushSync } from "react-dom"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { NoteId } from "../types"
 import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
-import { useDeleteNote } from "../utils/use-delete-note"
 import { pluralize } from "../utils/pluralize"
+import { useDeleteNote } from "../utils/use-delete-note"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
 import { Card, CardProps } from "./card"
@@ -20,6 +21,7 @@ import {
   ErrorIcon16,
   ExternalLinkIcon16,
   LoadingIcon16,
+  MaximizeIcon16,
   MoreIcon16,
   ShareIcon16,
   TrashIcon16,
@@ -28,7 +30,7 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
-import { flushSync } from "react-dom"
+import { useFullscreen } from "./fullscreen"
 
 type NoteCardProps = {
   id: NoteId
@@ -43,6 +45,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
+  const { openFullscreen } = useFullscreen()
   const Link = useLink()
 
   // Refs
@@ -104,17 +107,17 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
     }
   }, [])
 
-  const openNoteWindow = React.useCallback((id: string) => {
-    const newWindowWidth = 600
-    const newWindowHeight = 600
-    window.open(
-      `/${id}?fullscreen=true`,
-      `${id}`,
-      `width=${newWindowWidth}, height=${newWindowHeight}, top=${
-        window.screen.height / 2 - newWindowHeight / 2
-      }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
-    )
-  }, [])
+  // const openNoteWindow = React.useCallback((id: string) => {
+  //   const newWindowWidth = 600
+  //   const newWindowHeight = 600
+  //   window.open(
+  //     `/${id}?fullscreen=true`,
+  //     `${id}`,
+  //     `width=${newWindowWidth}, height=${newWindowHeight}, top=${
+  //       window.screen.height / 2 - newWindowHeight / 2
+  //     }, left=${window.screen.width / 2 - newWindowWidth / 2}`,
+  //   )
+  // }, [])
 
   const handleDeleteNote = React.useCallback(
     (id: string) => {
@@ -174,9 +177,9 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
             event.preventDefault()
           }
 
-          // Open note in new window with `command + o`
+          // Open note in fullscreen mode with `command + o`
           if (event.metaKey && event.key === "o") {
-            openNoteWindow(id)
+            openFullscreen(`/${id}`)
             event.preventDefault()
           }
         }}
@@ -213,6 +216,13 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
               <DropdownMenu.Item icon={<EditIcon16 />} onSelect={switchToEditing} shortcut={["E"]}>
                 Edit
               </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<MaximizeIcon16 />}
+                onSelect={() => openFullscreen(`/${id}`)}
+                shortcut={["⌘", "O"]}
+              >
+                Open fullscreen
+              </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
@@ -229,13 +239,13 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
                 Copy ID
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              <DropdownMenu.Item
+              {/* <DropdownMenu.Item
                 icon={<ExternalLinkIcon16 />}
                 onSelect={() => openNoteWindow(id)}
                 shortcut={["⌘", "O"]}
               >
                 Open in new window
-              </DropdownMenu.Item>
+              </DropdownMenu.Item> */}
               <DropdownMenu.Item
                 icon={<ExternalLinkIcon16 />}
                 href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}

@@ -4,16 +4,15 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { flushSync } from "react-dom"
 import { DraggableCore } from "react-draggable"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useMedia } from "react-use"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
-import { openNewWindow } from "../utils/open-new-window"
-import { useIsFullscreen } from "../utils/use-is-fullscreen"
+// import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { IconButton } from "./icon-button"
 import { ComposeFillIcon24, ComposeIcon24 } from "./icons"
 import { NoteCardForm } from "./note-card-form"
-import { flushSync } from "react-dom"
 
 const NewNoteDialogContext = React.createContext<{
   isOpen: boolean
@@ -53,7 +52,7 @@ function Provider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [position, setPosition] = React.useState(() => initialPosition())
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
-  const isFullscreen = useIsFullscreen()
+  // const isFullscreen = useIsFullscreen()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -72,10 +71,10 @@ function Provider({ children }: { children: React.ReactNode }) {
   const focusNoteCard = React.useCallback(
     (id: string) => {
       // If we're in fullscreen mode, navigate to the new note
-      if (isFullscreen) {
-        navigate(`/${id}?fullscreen=true`)
-        return
-      }
+      // if (isFullscreen) {
+      //   navigate(`/${id}?fullscreen=true`)
+      //   return
+      // }
 
       const noteElement = document.querySelector(`[data-note-id="${id}"]`)
 
@@ -86,7 +85,7 @@ function Provider({ children }: { children: React.ReactNode }) {
         focusPrevActiveElement()
       }
     },
-    [isFullscreen, navigate, focusPrevActiveElement],
+    [navigate, focusPrevActiveElement],
   )
 
   const toggle = React.useCallback(() => {
@@ -113,10 +112,10 @@ function Provider({ children }: { children: React.ReactNode }) {
     }
 
     // Open /new in new window with `command + shift + i`
-    if (event.key === "i" && event.metaKey && event.shiftKey && !disabled) {
-      openNewWindow("/new")
-      event.preventDefault()
-    }
+    // if (event.key === "i" && event.metaKey && event.shiftKey && !disabled) {
+    //   openNewWindow("/new")
+    //   event.preventDefault()
+    // }
   })
 
   const contextValue = React.useMemo(
