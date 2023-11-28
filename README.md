@@ -10,7 +10,7 @@ Think of Lumen as your private knowledge garden. It's where you plant, grow, and
 
 ### 🌱 Plant
 
-Write notes with [markdown](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data, forever.
+Write notes with [markdown](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data. Forever.
 
 ### 🌿 Grow
 
@@ -38,7 +38,7 @@ Notes in Lumen are...
 
 ## Docs
 
-> ⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for status updates.
+> ⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for updates.
 
 - [Markdown syntax](/docs/markdown-syntax.md)
 - [Metadata](/docs/metadata.md)
