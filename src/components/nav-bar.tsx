@@ -214,7 +214,7 @@ function SyncButton() {
   return (
     <IconButton
       aria-label={syncStatusText}
-      tooltipSide="top"
+      tooltipSide="right"
       onClick={() => send({ type: "SYNC" })}
       disabled={!online}
     >
