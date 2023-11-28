@@ -1,21 +1,31 @@
 import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { OfflineIcon16, OfflineIcon24 } from "./icons"
 
+const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned.sync.success"),
+)
+
+const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned.sync.error"),
+)
+
 export function useSyncStatusText() {
-  const state = useAtomValue(globalStateMachineAtom)
+  const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
+  const isSyncError = useAtomValue(isSyncErrorAtom)
   const { online } = useNetworkState()
 
   if (!online) {
     return "Offline"
   }
 
-  if (state.matches("signedIn.cloned.sync.success")) {
+  if (isSyncSuccess) {
     return "Synced"
   }
 
-  if (state.matches("signedIn.cloned.sync.error")) {
+  if (isSyncError) {
     return "Sync error"
   }
 
@@ -23,18 +33,19 @@ export function useSyncStatusText() {
 }
 
 export function SyncStatusIcon({ size }: { size: 16 | 24 }) {
-  const state = useAtomValue(globalStateMachineAtom)
+  const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
+  const isSyncError = useAtomValue(isSyncErrorAtom)
   const { online } = useNetworkState()
 
   if (!online) {
     return size === 16 ? <OfflineIcon16 /> : <OfflineIcon24 />
   }
 
-  if (state.matches("signedIn.cloned.sync.success")) {
+  if (isSyncSuccess) {
     return size === 16 ? <SuccessIcon16 /> : <SuccessIcon24 />
   }
 
-  if (state.matches("signedIn.cloned.sync.error")) {
+  if (isSyncError) {
     return size === 16 ? <ErrorIcon16 /> : <ErrorIcon24 />
   }
 

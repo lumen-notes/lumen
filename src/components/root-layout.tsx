@@ -1,18 +1,22 @@
-import { useAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
+import { useThemeColorProvider } from "../utils/use-theme-color"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
-import { useThemeColorProvider } from "../utils/use-theme-color"
 // @ts-ignore
 // import LagRadar from "react-lag-radar"
 
+const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
+
 export function RootLayout({ children }: { children: React.ReactNode }) {
   useThemeColorProvider()
-  const [state, send] = useAtom(globalStateMachineAtom)
+  const error = useAtomValue(errorAtom)
+  const send = useSetAtom(globalStateMachineAtom)
   const location = useLocation()
   const navigate = useNavigate()
   const { online } = useNetworkState()
@@ -48,12 +52,12 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-      {state.context.error ? (
+      {error ? (
         <div className="flex items-center gap-3 bg-[firebrick] px-4 py-2 text-[white]">
           <div>
             <ErrorIcon16 />
           </div>
-          <span className="truncate">{state.context.error.message}</span>
+          <span className="truncate">{error.message}</span>
         </div>
       ) : null}
       {/* {import.meta.env.DEV ? (
@@ -62,11 +66,20 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         </div>
       ) : null} */}
       {children}
-      {import.meta.env.DEV ? (
-        <div className="flex border-t border-border-secondary px-4 py-2">
-          <SyntaxHighlighter language="javascript">{JSON.stringify(state.value)}</SyntaxHighlighter>
-        </div>
-      ) : null}
+      <DevBar />
+    </div>
+  )
+}
+
+// Shows the current state of the global state machine for debugging purposes
+function DevBar() {
+  const state = useAtomValue(globalStateMachineAtom)
+
+  if (!import.meta.env.DEV) return null
+
+  return (
+    <div className="flex border-t border-border-secondary px-4 py-2">
+      <SyntaxHighlighter language="javascript">{JSON.stringify(state.value)}</SyntaxHighlighter>
     </div>
   )
 }

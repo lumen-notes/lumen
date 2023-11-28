@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { flushSync } from "react-dom"
 import { Params } from "react-router-dom"
@@ -87,11 +88,15 @@ function FullscreenDialog({ path }: { path: string }) {
   )
 }
 
+const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.resolvingRepo"),
+)
+
 function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClose?: () => void }) {
   const { "*": noteId = "" } = params
   const note = useNoteById(noteId)
   const saveNote = useSaveNote()
-  const state = useAtomValue(globalStateMachineAtom)
+  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const [isEditing, setIsEditing] = React.useState(false)
 
@@ -168,7 +173,7 @@ function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClo
       </header>
       <div className="p-4 md:p-10 lg:p-12">
         <div className="mx-auto max-w-3xl">
-          {state.matches("signedIn.resolvingRepo") ? (
+          {isResolvingRepo ? (
             <span className="flex items-center gap-2 text-text-secondary">
               <LoadingIcon16 />
               Loading…

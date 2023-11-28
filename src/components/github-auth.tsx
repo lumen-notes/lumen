@@ -1,4 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
@@ -10,12 +11,19 @@ import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
 import { LumenLogo } from "./lumen-logo"
 
+const isResolvingUserAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("resolvingUser"),
+)
+
+const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedOut"))
+
 export function GitHubAuth({ children }: { children?: React.ReactNode }) {
-  const state = useAtomValue(globalStateMachineAtom)
+  const isResolvingUser = useAtomValue(isResolvingUserAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
 
-  if (state.matches("resolvingUser")) return null
+  if (isResolvingUser) return null
 
-  return state.matches("signedOut") ? (
+  return isSignedOut ? (
     <div className="flex min-h-screen items-center justify-center pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] coarse:items-end coarse:sm:items-center [@supports(min-height:100svh)]:min-h-[100svh]">
       <div className="flex w-full max-w-sm flex-col items-start px-4 py-8">
         <LumenLogo size={24} className="mb-8" />

@@ -2,6 +2,7 @@ import { EditorSelection } from "@codemirror/state"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { flushSync } from "react-dom"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
@@ -14,6 +15,7 @@ import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
 import { Card, CardProps } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
+import { useFullscreen } from "./fullscreen"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
@@ -30,7 +32,10 @@ import { useLink } from "./link-context"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { PanelContext, PanelsContext } from "./panels"
-import { useFullscreen } from "./fullscreen"
+
+const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.resolvingRepo"),
+)
 
 type NoteCardProps = {
   id: NoteId
@@ -38,9 +43,13 @@ type NoteCardProps = {
   selected?: boolean
 }
 
-export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
+export const NoteCard = React.memo(function NoteCard({
+  id,
+  elevation,
+  selected = false,
+}: NoteCardProps) {
   const note = useNoteById(id)
-  const state = useAtomValue(globalStateMachineAtom)
+  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
@@ -290,7 +299,7 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
           </DropdownMenu>
         </div>
         <div className="p-4 pt-0">
-          {state.matches("signedIn.resolvingRepo") ? (
+          {isResolvingRepo ? (
             <span className="flex items-center gap-2 text-text-secondary">
               <LoadingIcon16 />
               Loading…
@@ -321,4 +330,4 @@ export function NoteCard({ id, elevation, selected = false }: NoteCardProps) {
       </div>
     </>
   )
-}
+})

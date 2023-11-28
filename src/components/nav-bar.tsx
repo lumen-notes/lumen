@@ -1,5 +1,6 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
-import { useAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import {
   NavLinkProps,
@@ -31,11 +32,8 @@ import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const [state, send] = useAtom(globalStateMachineAtom)
-  const syncStatusText = useSyncStatusText()
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
-  const { online } = useNetworkState()
 
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
@@ -90,16 +88,9 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         </li>
         {/* Spacer */}
         {position === "left" ? <div className="flex-grow" /> : null}
-        {state.matches("signedIn.cloned") && position === "left" ? (
-          <li className="flex-grow-0">
-            <IconButton
-              aria-label={syncStatusText}
-              tooltipSide={tooltipSide}
-              onClick={() => send({ type: "SYNC" })}
-              disabled={!online}
-            >
-              <SyncStatusIcon size={24} />
-            </IconButton>
+        {position === "left" ? (
+          <li className="flex-grow-0 empty:hidden">
+            <SyncButton />
           </li>
         ) : null}
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
@@ -135,15 +126,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 Keyboard shortcuts
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
-              {state.matches("signedIn.cloned") && position === "bottom" ? (
-                <DropdownMenu.Item
-                  icon={<SyncStatusIcon size={16} />}
-                  onClick={() => send({ type: "SYNC" })}
-                  disabled={!online}
-                >
-                  {syncStatusText}
-                </DropdownMenu.Item>
-              ) : null}
+              {position === "bottom" ? <SyncDropdownMenuItem /> : null}
               <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
                 Settings
               </DropdownMenu.Item>
@@ -215,5 +198,46 @@ function useNavigateWithCache() {
       }
     },
     [navigate, location],
+  )
+}
+
+const isClonedAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn.cloned"))
+
+function SyncButton() {
+  const isCloned = useAtomValue(isClonedAtom)
+  const send = useSetAtom(globalStateMachineAtom)
+  const syncStatusText = useSyncStatusText()
+  const { online } = useNetworkState()
+
+  if (!isCloned) return null
+
+  return (
+    <IconButton
+      aria-label={syncStatusText}
+      tooltipSide="top"
+      onClick={() => send({ type: "SYNC" })}
+      disabled={!online}
+    >
+      <SyncStatusIcon size={24} />
+    </IconButton>
+  )
+}
+
+function SyncDropdownMenuItem() {
+  const isCloned = useAtomValue(isClonedAtom)
+  const send = useSetAtom(globalStateMachineAtom)
+  const syncStatusText = useSyncStatusText()
+  const { online } = useNetworkState()
+
+  if (!isCloned) return null
+
+  return (
+    <DropdownMenu.Item
+      icon={<SyncStatusIcon size={16} />}
+      onClick={() => send({ type: "SYNC" })}
+      disabled={!online}
+    >
+      {syncStatusText}
+    </DropdownMenu.Item>
   )
 }
