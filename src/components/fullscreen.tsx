@@ -80,7 +80,7 @@ function FullscreenDialog({ path }: { path: string }) {
     <Dialog.Root open onOpenChange={closeFullscreen}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
-        <Dialog.Content className="fixed inset-2 z-10 overflow-auto rounded-lg bg-bg shadow-sm outline-none ring-1 ring-border-secondary dark:ring-0">
+        <Dialog.Content className="fixed inset-x-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] top-2 z-10 overflow-auto rounded-lg bg-bg shadow-sm outline-none ring-1 ring-border-secondary dark:ring-0">
           <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
         </Dialog.Content>
       </Dialog.Portal>
