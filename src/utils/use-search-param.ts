@@ -1,6 +1,5 @@
 import qs from "qs"
 import React from "react"
-import { useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Schema } from "zod"
 import { PanelContext, PanelsContext } from "../components/panels"
@@ -21,54 +20,56 @@ export function useSearchParam<T = string>(
   key: string,
   { defaultValue, schema, parse = defaultParse, replace = false }: SearchParamOptions<T>,
 ): [T, (value: T) => void] {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { updatePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
-  const searchParams = qs.parse(panel ? panel.search : location.search, { ignoreQueryPrefix: true })
+  // const location = useLocation()
+  // const navigate = useNavigate()
+  // const { updatePanel } = React.useContext(PanelsContext)
+  // const panel = React.useContext(PanelContext)
+  // const searchParams = qs.parse(panel ? panel.search : location.search, { ignoreQueryPrefix: true })
 
-  const [value, setValue] = useState(() => {
-    try {
-      return schema.parse(parse(searchParams[key]))
-    } catch (error) {
-      console.error(error)
-      return defaultValue
-    }
-  })
+  // const [value, setValue] = React.useState(() => {
+  //   try {
+  //     return schema.parse(parse(searchParams[key]))
+  //   } catch (error) {
+  //     console.error(error)
+  //     return defaultValue
+  //   }
+  // })
 
-  const valueRef = React.useRef(value)
+  // const valueRef = React.useRef(value)
 
-  const setValueAndParam = React.useCallback(
-    (value: T) => {
-      setValue(value)
-      valueRef.current = value
+  // const setValueAndParam = React.useCallback(
+  //   (value: T) => {
+  //     setValue(value)
+  //     valueRef.current = value
 
-      React.startTransition(() => {
-        const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
+  //     React.startTransition(() => {
+  //       const searchString = qs.stringify({ ...searchParams, [key]: value }, { skipNulls: true })
 
-        if (panel) {
-          updatePanel?.(panel.index, { search: searchString })
-        } else {
-          navigate(`${location.pathname}?${searchString}`, { replace })
-        }
-      })
-    },
-    [searchParams, key, navigate, location.pathname, replace, panel, updatePanel],
-  )
+  //       if (panel) {
+  //         updatePanel?.(panel.index, { search: searchString })
+  //       } else {
+  //         navigate(`${location.pathname}?${searchString}`, { replace })
+  //       }
+  //     })
+  //   },
+  //   [searchParams, key, navigate, location.pathname, replace, panel, updatePanel],
+  // )
 
-  // If location changes, update the value
-  React.useEffect(() => {
-    const searchParams = qs.parse(panel ? panel.search : location.search, {
-      ignoreQueryPrefix: true,
-    })
+  // // If location changes, update the value
+  // React.useEffect(() => {
+  //   const searchParams = qs.parse(panel ? panel.search : location.search, {
+  //     ignoreQueryPrefix: true,
+  //   })
 
-    // If the value is already up to date, don't update it
-    if (valueRef.current !== parse(searchParams[key])) {
-      const newValue = parse(searchParams[key])
-      setValue(newValue)
-      valueRef.current = newValue
-    }
-  }, [location, panel, valueRef, parse, key])
+  //   // If the value is already up to date, don't update it
+  //   if (valueRef.current !== parse(searchParams[key])) {
+  //     const newValue = parse(searchParams[key])
+  //     setValue(newValue)
+  //     valueRef.current = newValue
+  //   }
+  // }, [location, panel, valueRef, parse, key])
 
-  return [value, setValueAndParam]
+  // return [value, setValueAndParam]
+  const [value, setValue] = React.useState(defaultValue)
+  return [value, setValue]
 }

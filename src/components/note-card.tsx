@@ -53,7 +53,7 @@ export const NoteCard = React.memo(function NoteCard({
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
-  const deleteNote = useDeleteNote()
+  // const deleteNote = useDeleteNote()
   const { openFullscreen } = useFullscreen()
   const Link = useLink()
 
@@ -62,8 +62,8 @@ export const NoteCard = React.memo(function NoteCard({
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
 
   // Panel context
-  const { closePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
+  // const { closePanel } = React.useContext(PanelsContext)
+  // const panel = React.useContext(PanelContext)
 
   // Local state
   const [isEditing, setIsEditing] = React.useState(false)
@@ -128,22 +128,23 @@ export const NoteCard = React.memo(function NoteCard({
   //   )
   // }, [])
 
-  const handleDeleteNote = React.useCallback(
-    (id: string) => {
-      // Move focus
-      focusNextCard()
+  // const handleDeleteNote = React.useCallback(
+  //   (id: string) => {
+  //     // Move focus
+  //     focusNextCard()
 
-      // Update state
-      deleteNote(id)
+  //     // Update state
+  //     deleteNote(id)
 
-      // If the note is open in a panel, close it
-      if (panel && panel.pathname.replace("/", "") === id && panel.index !== -1) {
-        closePanel?.(panel.index)
-      }
-    },
-    // [focusNextCard, panel, closePanel, send],
-    [focusNextCard, deleteNote, panel, closePanel],
-  )
+  //     // If the note is open in a panel, close it
+  //     if (panel && panel.pathname.replace("/", "") === id && panel.index !== -1) {
+  //       closePanel?.(panel.index)
+  //     }
+  //   },
+  //   // [focusNextCard, panel, closePanel, send],
+  //   [focusNextCard, deleteNote, panel, closePanel],
+  // )
+  const handleDeleteNote = React.useCallback(() => {}, [])
 
   return (
     <>

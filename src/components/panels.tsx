@@ -103,28 +103,28 @@ function Root({ children }: React.PropsWithChildren) {
         setPanels(panels.slice(0, index).concat(value))
       })
 
-      const panelElement = document.getElementById(id)
+      // const panelElement = document.getElementById(id)
 
-      if (panelElement) {
-        // Move focus to the new panel
-        focusPanel(panelElement)
-      }
+      // if (panelElement) {
+      //   // Move focus to the new panel
+      //   focusPanel(panelElement)
+      // }
     },
     [panels, setPanels],
   )
 
   const closePanel = React.useCallback(
     (index: number) => {
-      const panel = parsePanelValue(panels[index])
+      // const panel = parsePanelValue(panels[index])
 
-      const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
+      // const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
 
-      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
+      // const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
 
-      const isPanelFocused =
-        document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
+      // const isPanelFocused =
+      //   document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
 
-      const prevPanelElement = panelElements[currentIndex - 1]
+      // const prevPanelElement = panelElements[currentIndex - 1]
 
       // Update state
       flushSync(() => {
@@ -132,9 +132,9 @@ function Root({ children }: React.PropsWithChildren) {
       })
 
       // Focus the previous panel
-      if (isPanelFocused && prevPanelElement) {
-        focusPanel(prevPanelElement)
-      }
+      // if (isPanelFocused && prevPanelElement) {
+      //   focusPanel(prevPanelElement)
+      // }
     },
     [panels, setPanels],
   )
