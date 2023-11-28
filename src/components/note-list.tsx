@@ -16,6 +16,7 @@ import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
+import { flushSync } from "react-dom"
 
 const viewTypeSchema = z.enum(["list", "cards"])
 
@@ -150,6 +151,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               {tagQualifiers.map((qualifier) => (
                 <PillButton
                   key={qualifier.values.join(",")}
+                  data-tag={qualifier.values.join(",")}
                   variant="primary"
                   onClick={() => {
                     const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(",")}`
@@ -163,6 +165,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
                     // Remove the tag qualifier from the query
                     setQuery(newQuery.trim())
+
+                    // TODO: Move focus
                   }}
                 >
                   {qualifier.exclude ? <span>not</span> : null}
@@ -178,9 +182,16 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
                 <PillButton
                   key={tag}
+                  data-tag={tag}
                   onClick={(event) => {
                     const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                    setQuery(query ? `${query} ${qualifier}` : qualifier)
+
+                    flushSync(() => {
+                      setQuery(query ? `${query} ${qualifier}` : qualifier)
+                    })
+
+                    // Move focus
+                    document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
                   }}
                 >
                   {tag}
