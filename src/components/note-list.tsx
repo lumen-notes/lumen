@@ -4,6 +4,7 @@ import { z } from "zod"
 import { templateSchema } from "../types"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
+import { useDebouncedValue } from "../utils/use-debounced-value"
 import { parseQuery, useSearchNotes } from "../utils/use-search"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
@@ -23,7 +24,6 @@ type ViewType = z.infer<typeof viewTypeSchema>
 type NoteListProps = {
   baseQuery?: string
 }
-
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
   const Link = useLink()
@@ -39,11 +39,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     replace: true,
   })
 
-  const deferredQuery = React.useDeferredValue(query)
+  const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
 
   const noteResults = React.useMemo(() => {
-    return searchNotes(`${baseQuery} ${deferredQuery}`)
-  }, [searchNotes, baseQuery, deferredQuery])
+    return searchNotes(`${baseQuery} ${debouncedQuery}`)
+  }, [searchNotes, baseQuery, debouncedQuery])
 
   const parseViewType = React.useCallback((value: unknown): ViewType => {
     switch (value) {
@@ -111,8 +111,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   }, [noteResults])
 
   const tagQualifiers = React.useMemo(() => {
-    return parseQuery(deferredQuery).qualifiers.filter((qualifier) => qualifier.key === "tag")
-  }, [deferredQuery])
+    return parseQuery(query).qualifiers.filter((qualifier) => qualifier.key === "tag")
+  }, [query])
 
   return (
     <div>
@@ -138,7 +138,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
             </IconButton>
           </div>
-          {deferredQuery ? (
+          {query ? (
             <span className="text-sm text-text-secondary">
               {pluralize(noteResults.length, "result")}
             </span>
