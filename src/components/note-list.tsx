@@ -132,7 +132,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             <IconButton
               disableTooltip
               aria-label="Change view"
-              className="h-11 w-11 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+              className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
               onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
             >
               {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
