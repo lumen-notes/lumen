@@ -28,7 +28,7 @@ import {
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
-import { useLink } from "./link-context"
+import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteCardForm } from "./note-card-form"
 import { usePanel, usePanelActions } from "./panels"
@@ -55,7 +55,6 @@ export const NoteCard = React.memo(function NoteCard({
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const { openFullscreen } = useFullscreen()
-  const Link = useLink()
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
