@@ -260,25 +260,22 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Open link in the current panel
-      if (target === "_self") {
-        if (panel) {
-          updatePanel(panel?.index, { pathname, search })
-        } else {
-          // Preserve the current search params
-          const combinedSearch = {
-            ...qs.parse(location.search, { ignoreQueryPrefix: true }),
-            ...qs.parse(search),
-          }
-
-          navigate({
-            pathname,
-            search: qs.stringify(combinedSearch),
-          })
+      if (panel) {
+        updatePanel(panel?.index, { pathname, search })
+      } else {
+        // Preserve the current search params
+        const combinedSearch = {
+          ...qs.parse(location.search, { ignoreQueryPrefix: true }),
+          ...qs.parse(search),
         }
 
-        event?.preventDefault()
-        return
+        navigate({
+          pathname,
+          search: qs.stringify(combinedSearch),
+        })
       }
+
+      event?.preventDefault()
     },
     [panel, openPanel, updatePanel, navigate],
   )
