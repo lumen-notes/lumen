@@ -22,16 +22,9 @@ const MIN_WIDTH = 560
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
-  const parseWidth = React.useCallback((value: unknown) => {
-    if (typeof value === "number") return value
-    if (typeof value === "string") return parseInt(value, 10)
-    return MIN_WIDTH
-  }, [])
-
   const [widthParam, setWidthParam] = useSearchParam("w", {
     defaultValue: MIN_WIDTH,
-    schema: z.number(),
-    parse: parseWidth,
+    validate: z.number().catch(MIN_WIDTH).parse,
   })
 
   const [width, setWidth] = React.useState(widthParam)

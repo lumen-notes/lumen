@@ -1,10 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
-import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { useThemeColorProvider } from "../utils/use-theme-color"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
@@ -17,8 +15,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   useThemeColorProvider()
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
-  const location = useLocation()
-  const navigate = useNavigate()
   const { online } = useNetworkState()
 
   // Sync when the app becomes visible again
@@ -31,23 +27,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   // Sync when the app comes back online
   useEvent("online", () => {
     send({ type: "SYNC" })
-  })
-
-  // Restore the previous search params for this path when the app loads if the current search params are empty
-  useEvent("load", () => {
-    const prevPathParams = getPrevPathParams(location.pathname)
-
-    if (location.search === "" && prevPathParams) {
-      navigate({
-        pathname: location.pathname,
-        search: prevPathParams,
-      })
-    }
-  })
-
-  // Save the search params in localStorage before closing the app
-  useEvent("beforeunload", () => {
-    savePathParams(location)
   })
 
   return (

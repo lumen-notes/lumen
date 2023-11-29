@@ -32,18 +32,9 @@ const PanelActionsContext = React.createContext<{
 export const usePanelActions = () => React.useContext(PanelActionsContext)
 
 function Root({ children }: React.PropsWithChildren) {
-  const parsePanels = React.useCallback((value: unknown) => {
-    if (Array.isArray(value)) {
-      return value as string[]
-    }
-
-    return []
-  }, [])
-
   const [panels, setPanels] = useSearchParam("p", {
     defaultValue: [],
-    schema: z.array(z.string()),
-    parse: parsePanels,
+    validate: z.array(z.string().catch("")).catch([]).parse,
   })
 
   useEvent("keydown", (event) => {
@@ -361,11 +352,13 @@ function isScrollable(element: Element) {
   )
 }
 
-function stringifyPanelValue(panel: PanelValue) {
-  return JSON.stringify(panel)
+const SEPARATOR = ":"
+
+function stringifyPanelValue({ id, pathname, search }: PanelValue) {
+  return [id, pathname, search].join(SEPARATOR)
 }
 
 function parsePanelValue(value: string): PanelValue {
-  // TODO: Use Zod to validate the value
-  return JSON.parse(value) as PanelValue
+  const [id, pathname, search] = value.split(SEPARATOR)
+  return { id, pathname, search }
 }

@@ -19,7 +19,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
 
   const [query, setQuery] = useSearchParam("q", {
     defaultValue: "",
-    schema: z.string(),
+    validate: z.string().catch("").parse,
     replace: true,
   })
 
