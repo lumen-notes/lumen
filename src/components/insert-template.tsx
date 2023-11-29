@@ -1,16 +1,16 @@
 import { EditorView } from "@codemirror/view"
+import * as Dialog from "@radix-ui/react-dialog"
 import ejs from "ejs"
+import { atom, useAtom, useSetAtom } from "jotai"
 import React from "react"
+import { sentenceCase } from "sentence-case"
 import { Template } from "../types"
 import { toDateString } from "../utils/date"
-import * as Dialog from "@radix-ui/react-dialog"
-import { Card } from "./card"
 import { Button } from "./button"
-import { Input } from "./input"
-import { sentenceCase } from "sentence-case"
-import { atom, useAtom, useSetAtom } from "jotai"
+import { Card } from "./card"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
+import { Input } from "./input"
 import { Markdown } from "./markdown"
 
 // Template pending insertion into editor because it requires user input
@@ -84,7 +84,7 @@ export function InsertTemplateDialog() {
         <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-backdrop" />
         <Dialog.Content asChild>
           <Card
-            elevation={2}
+            elevation={3}
             className="fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]"
           >
             <div className="grid gap-5 p-4">

@@ -30,9 +30,9 @@ const Content: React.FC<ContentProps> = ({
         asChild
       >
         <Card
-          elevation={1}
+          elevation={2}
           className={cx(
-            "z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=top]:slide-in-from-bottom-2 data-[side=right]:slide-in-from-left-2 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+            "z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className,
           )}
         >
