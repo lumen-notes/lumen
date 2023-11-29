@@ -33,7 +33,6 @@ export const usePanelActions = () => React.useContext(PanelActionsContext)
 
 function Root({ children }: React.PropsWithChildren) {
   const [panels, setPanels] = useSearchParam("p", {
-    defaultValue: [],
     validate: z.array(z.string().catch("")).catch([]).parse,
   })
 

@@ -6,7 +6,6 @@ import { usePanel, usePanelActions } from "../components/panels"
 import { savePathParams } from "./prev-path-params"
 
 type SearchParamOptions<T = string> = {
-  defaultValue: T
   validate?: (value: unknown) => T
   replace?: boolean
 }
@@ -18,22 +17,14 @@ function defaultValidate<T>(value: unknown): T {
 // Reference: https://www.inkoop.io/blog/syncing-query-parameters-with-react-state/
 export function useSearchParam<T = string>(
   key: string,
-  { defaultValue, validate = defaultValidate, replace = false }: SearchParamOptions<T>,
+  { validate = defaultValidate, replace = false }: SearchParamOptions<T>,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const location = useLocation()
   const navigate = useNavigate()
   const { updatePanel } = usePanelActions()
   const panel = usePanel()
   const searchParams = qs.parse(panel ? panel.search : location.search, { ignoreQueryPrefix: true })
-
-  const [value, setValue] = React.useState(() => {
-    try {
-      return validate(searchParams[key])
-    } catch (error) {
-      console.error(error)
-      return defaultValue
-    }
-  })
+  const [value, setValue] = React.useState(() => validate(searchParams[key]))
 
   // Create stable references to the latest values
   const valueRef = React.useRef(value)

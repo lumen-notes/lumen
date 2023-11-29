@@ -29,7 +29,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
 
   const [query, setQuery] = useSearchParam("q", {
-    defaultValue: "",
     validate: z.string().catch("").parse,
     replace: true,
   })
@@ -41,7 +40,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   }, [searchNotes, baseQuery, debouncedQuery])
 
   const [viewType, setViewType] = useSearchParam<ViewType>("v", {
-    defaultValue: "cards",
     validate: viewTypeSchema.catch("cards").parse,
     replace: true,
   })

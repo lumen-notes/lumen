@@ -18,7 +18,6 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
   const [query, setQuery] = useSearchParam("q", {
-    defaultValue: "",
     validate: z.string().catch("").parse,
     replace: true,
   })

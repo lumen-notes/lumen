@@ -23,7 +23,6 @@ const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
   const [widthParam, setWidthParam] = useSearchParam("w", {
-    defaultValue: String(MIN_WIDTH),
     validate: z.string().catch(String(MIN_WIDTH)).parse,
   })
 
