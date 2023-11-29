@@ -41,6 +41,7 @@
     "@radix-ui/react-slot": "^1.0.0",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.0",
+    "@replit/codemirror-vim": "^6.1.0",
     "@types/uuid": "^9.0.3",
     "@uiw/codemirror-themes": "^4.21.18",
     "@uiw/react-codemirror": "^4.21.18",

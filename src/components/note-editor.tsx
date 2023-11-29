@@ -13,7 +13,7 @@ import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
 import React from "react"
-import { tagsAtom, templatesAtom } from "../global-state"
+import { getVimKeybindingsFromLocalStorage, tagsAtom, templatesAtom } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -21,6 +21,8 @@ import { useAttachFile } from "../utils/use-attach-file"
 import { useSaveNote } from "../utils/use-save-note"
 import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
+import { vim } from "@replit/codemirror-vim"
+import { useAtomValue } from "jotai"
 
 type NoteEditorProps = {
   className?: string
@@ -65,6 +67,92 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const templateCompletion = useTemplateCompletion()
 
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
+    const [vimKeybindings, setVimKeybindings] = React.useState(false)
+
+    React.useEffect(() => {
+      const isVimActive = getVimKeybindingsFromLocalStorage()
+      setVimKeybindings(isVimActive)
+    }, [vimKeybindings])
+
+
+    const extenstions = [
+      markdown({ base: markdownLanguage }),
+      autocompletion({
+        override: [
+          // emojiCompletion,
+          dateCompletion,
+          noteCompletion,
+          tagSyntaxCompletion,
+          tagPropertyCompletion,
+          templateCompletion,
+        ],
+        icons: false,
+      }),
+      EditorView.inputHandler.of((view: EditorView, from: number, to: number, text: string) => {
+        // If you're inserting a `-` at index 2 and all previous characters are also `-`,
+        // insert a matching `---` below the line
+        if (
+          (text === "-" && from === 2 && view.state.sliceDoc(0, 2) === "--") ||
+          // Sometimes the mobile Safari replaces `--` with `—` so we need to handle that case too
+          (text === "-" && from === 1 && view.state.sliceDoc(0, 1) === "—")
+        ) {
+          view.dispatch({
+            changes: {
+              from: 0,
+              to,
+              insert: "---\n\n---",
+            },
+            selection: {
+              anchor: 4,
+            },
+          })
+
+          return true
+        }
+
+        return false
+      }),
+      EditorView.contentAttributes.of({ spellcheck: "true" }),
+      EditorView.domEventHandlers({
+        paste: (event, view) => {
+          const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
+          const isUrl = /^https?:\/\//.test(clipboardText)
+
+          // If the clipboard text is a URL, convert selected text into a markdown link
+          if (isUrl) {
+            const { selection } = view.state
+            const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
+            const selectedText = view?.state.doc.sliceString(from, to) ?? ""
+            const markdown = selectedText
+              ? `[${selectedText}](${clipboardText})`
+              : clipboardText
+
+            view.dispatch({
+              changes: {
+                from,
+                to,
+                insert: markdown,
+              },
+              selection: {
+                anchor: from + markdown.length,
+              },
+            })
+
+            event.preventDefault()
+          }
+
+          // If the clipboard contains a file, upload it
+          const [file] = Array.from(event.clipboardData?.files ?? [])
+
+          if (file) {
+            attachFile(file, view)
+            event.preventDefault()
+          }
+
+          onPaste?.(event, view)
+        },
+      }),
+    ]
 
     return (
       <CodeMirror
@@ -108,84 +196,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
             event.stopPropagation()
           }
         }}
-        extensions={[
-          markdown({ base: markdownLanguage }),
-          autocompletion({
-            override: [
-              // emojiCompletion,
-              dateCompletion,
-              noteCompletion,
-              tagSyntaxCompletion,
-              tagPropertyCompletion,
-              templateCompletion,
-            ],
-            icons: false,
-          }),
-          EditorView.inputHandler.of((view: EditorView, from: number, to: number, text: string) => {
-            // If you're inserting a `-` at index 2 and all previous characters are also `-`,
-            // insert a matching `---` below the line
-            if (
-              (text === "-" && from === 2 && view.state.sliceDoc(0, 2) === "--") ||
-              // Sometimes the mobile Safari replaces `--` with `—` so we need to handle that case too
-              (text === "-" && from === 1 && view.state.sliceDoc(0, 1) === "—")
-            ) {
-              view.dispatch({
-                changes: {
-                  from: 0,
-                  to,
-                  insert: "---\n\n---",
-                },
-                selection: {
-                  anchor: 4,
-                },
-              })
-
-              return true
-            }
-
-            return false
-          }),
-          EditorView.contentAttributes.of({ spellcheck: "true" }),
-          EditorView.domEventHandlers({
-            paste: (event, view) => {
-              const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-              const isUrl = /^https?:\/\//.test(clipboardText)
-
-              // If the clipboard text is a URL, convert selected text into a markdown link
-              if (isUrl) {
-                const { selection } = view.state
-                const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
-                const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-                const markdown = selectedText
-                  ? `[${selectedText}](${clipboardText})`
-                  : clipboardText
-
-                view.dispatch({
-                  changes: {
-                    from,
-                    to,
-                    insert: markdown,
-                  },
-                  selection: {
-                    anchor: from + markdown.length,
-                  },
-                })
-
-                event.preventDefault()
-              }
-
-              // If the clipboard contains a file, upload it
-              const [file] = Array.from(event.clipboardData?.files ?? [])
-
-              if (file) {
-                attachFile(file, view)
-                event.preventDefault()
-              }
-
-              onPaste?.(event, view)
-            },
-          }),
-        ]}
+        extensions={vimKeybindings ? [...extenstions, vim()] : extenstions}
       />
     )
   },
