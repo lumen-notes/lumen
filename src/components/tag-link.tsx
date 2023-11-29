@@ -1,5 +1,5 @@
 import React from "react"
-import { useLink } from "./link-context"
+import { Link } from "./link"
 import { cx } from "../utils/cx"
 
 type TagLinkProps = {
@@ -8,7 +8,6 @@ type TagLinkProps = {
 }
 
 export function TagLink({ name, className }: TagLinkProps) {
-  const Link = useLink()
   return (
     <span className={cx("text-text-secondary", className)}>
       #

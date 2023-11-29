@@ -198,7 +198,7 @@ function Dialog() {
               }}
             >
               <NoteCardForm
-                elevation={2}
+                elevation={3}
                 minHeight={isDesktop ? "16rem" : "45vh"}
                 maxHeight="45vh"
                 // eslint-disable-next-line jsx-a11y/no-autofocus

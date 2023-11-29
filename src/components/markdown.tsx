@@ -41,10 +41,10 @@ import {
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
-import { useLink } from "./link-context"
+import { Link } from "./link"
 import { NoteFavicon } from "./note-favicon"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
-import { Tooltip } from "./tooltip"
+import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
 
 export type MarkdownProps = {
@@ -186,7 +186,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         },
       }}
       components={{
-        a: Link,
+        a: Anchor,
         img: Image,
         input: CheckboxInput,
         li: ListItem,
@@ -264,8 +264,6 @@ function formatFrontmatterKey(key: string) {
 }
 
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
-  const Link = useLink()
-
   // Recognized frontmatter keys
   switch (key) {
     case "phone":
@@ -485,8 +483,7 @@ function withSuffix(num: number): string {
   }
 }
 
-function Link(props: React.ComponentPropsWithoutRef<"a">) {
-  const Link = useLink()
+function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
   const { online } = useNetworkState()
@@ -500,7 +497,7 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
   // Open uploads in a panel
   if (props.href?.startsWith(UPLOADS_DIR)) {
     return (
-      <Link target="_blank" to={`/file?${qs.stringify({ path: props.href })}`}>
+      <Link to={`/file?${qs.stringify({ path: props.href })}`} target="_blank">
         {props.children}
       </Link>
     )
@@ -542,14 +539,12 @@ function Link(props: React.ComponentPropsWithoutRef<"a">) {
 }
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
-  const Link = useLink()
-
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
       <Link
-        target="_blank"
         to={`/file?${qs.stringify({ path: props.src })}`}
+        target="_blank"
         className="block w-fit !no-underline"
       >
         <FilePreview path={props.src} alt={props.alt} />
@@ -652,7 +647,6 @@ type NoteLinkProps = {
 
 function NoteLink({ id, text }: NoteLinkProps) {
   const note = useNoteById(id)
-  const Link = useLink()
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
   const { online } = useNetworkState()
@@ -666,7 +660,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} target="_blank" to={`/${id}`}>
+        <Link ref={ref} to={`/${id}`} target="_blank">
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
@@ -681,7 +675,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
         <HoverCard.Content side="top" sideOffset={4} asChild>
           <Card
             className="z-20 w-96 p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={1}
+            elevation={2}
           >
             {note ? (
               <Markdown>{note.content}</Markdown>
@@ -700,12 +694,11 @@ function NoteLink({ id, text }: NoteLinkProps) {
 
 type NoteEmbedProps = {
   id: string
-  text: string
 }
 
-function NoteEmbed({ id, text }: NoteEmbedProps) {
+function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
-  const Link = useLink()
+
   return (
     <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
       {note ? (
@@ -725,53 +718,30 @@ function NoteEmbed({ id, text }: NoteEmbedProps) {
   )
 }
 
-type TagLinkProps = {
-  name: string
-  className?: string
-}
-
-function TagLink({ name, className }: TagLinkProps) {
-  const Link = useLink()
-  return (
-    <span className={cx("text-text-secondary", className)}>
-      #
-      {name.split("/").map((part, i) => {
-        return (
-          <React.Fragment key={i}>
-            {i > 0 && <span>/</span>}
-            <Link
-              target="_blank"
-              className="link text-text-secondary"
-              to={`/tags/${name
-                .split("/")
-                .slice(0, i + 1)
-                .join("/")}`}
-            >
-              {part}
-            </Link>
-          </React.Fragment>
-        )
-      })}
-    </span>
-  )
-}
-
 type DateLinkProps = {
   date: string
   className?: string
 }
 
 function DateLink({ date, className }: DateLinkProps) {
-  const Link = useLink()
   return (
-    <Tooltip>
-      <Tooltip.Trigger asChild>
-        <Link className={className} target="_blank" to={`/${date}`}>
+    <HoverCard.Root>
+      <HoverCard.Trigger asChild>
+        <Link className={className} to={`/${date}`} target="_blank">
           {formatDate(date)}
         </Link>
-      </Tooltip.Trigger>
-      <Tooltip.Content>{formatDateDistance(date)}</Tooltip.Content>
-    </Tooltip>
+      </HoverCard.Trigger>
+      <HoverCard.Portal>
+        <HoverCard.Content side="top" sideOffset={4} asChild>
+          <Card
+            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            elevation={2}
+          >
+            {formatDateDistance(date)}
+          </Card>
+        </HoverCard.Content>
+      </HoverCard.Portal>
+    </HoverCard.Root>
   )
 }
 

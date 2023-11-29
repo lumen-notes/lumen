@@ -11,6 +11,7 @@ import { useNoteById } from "../utils/use-note-by-id"
 import { useSaveNote } from "../utils/use-save-note"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
+import { Card } from "./card"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { EditIcon16, ErrorIcon16, LoadingIcon16, MinimizeIcon16, MoreIcon16 } from "./icons"
@@ -31,8 +32,7 @@ export function useFullscreen() {
 
 export function FullscreenProvider({ children }: { children: React.ReactNode }) {
   const [path, setPath] = useSearchParam("fullscreen", {
-    defaultValue: null,
-    schema: z.string().nullable(),
+    validate: z.string().nullable().catch(null).parse,
   })
 
   const prevActiveElement = React.useRef<HTMLElement>()
@@ -80,8 +80,10 @@ function FullscreenDialog({ path }: { path: string }) {
     <Dialog.Root open onOpenChange={closeFullscreen}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
-        <Dialog.Content className="fixed inset-x-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] top-2 z-10 overflow-auto rounded-lg bg-bg shadow-sm outline-none ring-1 ring-border-secondary dark:ring-0">
-          <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
+        <Dialog.Content asChild>
+          <Card className="fixed inset-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-[max(0.5rem,env(safe-area-inset-left))] right-[max(0.5rem,env(safe-area-inset-right))] top-[max(0.5rem,env(safe-area-inset-top))] z-10 overflow-auto focus:outline-none">
+            <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
+          </Card>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -1,4 +1,4 @@
-import { Card, CardProps } from "./card"
+import { Card } from "./card"
 
 export default {
   title: "Card",
@@ -6,23 +6,14 @@ export default {
   parameters: {
     layout: "centered",
   },
-  render: (args: CardProps) => <Card className="h-24 w-48" {...args} />,
 }
 
-export const Elevation0 = {
-  args: {
-    elevation: 0,
-  },
-}
-
-export const Elevation1 = {
-  args: {
-    elevation: 1,
-  },
-}
-
-export const Elevation2 = {
-  args: {
-    elevation: 2,
-  },
+export const Default = {
+  render: () => (
+    <Card elevation={1} className="p-8">
+      <Card elevation={2} className="p-8">
+        <Card elevation={3} className="h-24 w-48" />
+      </Card>
+    </Card>
+  ),
 }

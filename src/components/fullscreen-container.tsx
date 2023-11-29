@@ -1,11 +1,9 @@
-import qs from "qs"
 import React from "react"
-import { LinkProps, Link as RouterLink, useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { cx } from "../utils/cx"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16, MoreIcon16 } from "./icons"
-import { LinkContext } from "./link-context"
 
 // Used to check if a component is inside a FullscreenContainer
 export const FullscreenContainerContext = React.createContext<boolean>(false)
@@ -89,39 +87,9 @@ export function FullscreenContainer({
         ) : null}
       </div>
 
-      <LinkContext.Provider value={Link}>
-        <FullscreenContainerContext.Provider value={true}>
-          {children}
-        </FullscreenContainerContext.Provider>
-      </LinkContext.Provider>
+      <FullscreenContainerContext.Provider value={true}>
+        {children}
+      </FullscreenContainerContext.Provider>
     </div>
   )
 }
-
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(({ to, ...props }, ref) => {
-  const location = useLocation()
-
-  const viewType = new URLSearchParams(location.search).get("v")
-
-  const [pathname, search] = to.toString().split("?")
-
-  // Preserve the view type and add `fullscreen=true` to the query string
-  const combinedSearch = {
-    v: viewType,
-    fullscreen: true,
-    ...qs.parse(search),
-  }
-
-  return (
-    <RouterLink
-      {...props}
-      ref={ref}
-      to={{
-        pathname,
-        search: qs.stringify(combinedSearch),
-      }}
-      // Always open links in the same tab in fullscreen mode
-      target="_self"
-    />
-  )
-})

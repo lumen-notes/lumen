@@ -13,8 +13,8 @@ import {
   TriangleRightIcon8,
 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
-import { useLink } from "../components/link-context"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
+import { Link } from "../components/link"
 import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
@@ -177,7 +177,6 @@ export function Calendar({ activeDate: dateString }: { activeDate: string }) {
 }
 
 function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boolean }) {
-  const Link = useLink()
   const note = useNoteById(toDateString(date))
   const hasBacklinksAtom = React.useMemo(
     () => selectAtom(datesAtom, (dates) => dates[toDateString(date)]?.length > 0),

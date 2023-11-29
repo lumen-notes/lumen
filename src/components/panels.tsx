@@ -1,13 +1,7 @@
 import qs from "qs"
 import React from "react"
-import {
-  LinkProps,
-  Params,
-  Link as RouterLink,
-  matchRoutes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom"
+import { flushSync } from "react-dom"
+import { Params, To, matchRoutes, resolvePath, useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
 import { FilePanel } from "../panels/file"
@@ -16,8 +10,7 @@ import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
 import { useSearchParam } from "../utils/use-search-param"
-import { LinkContext } from "./link-context"
-import { flushSync } from "react-dom"
+import { LinkClickHandler, LinkContext } from "./link"
 
 type PanelValue = {
   id: string
@@ -25,30 +18,22 @@ type PanelValue = {
   search: string
 }
 
-export const PanelsContext = React.createContext<{
-  panels: string[]
-  openPanel?: (url: string, afterIndex?: number) => void
-  closePanel?: (index: number) => void
-  updatePanel?: (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => void
-}>({
-  panels: [],
-})
+const PanelsContext = React.createContext<string[]>([])
+export const usePanels = () => React.useContext(PanelsContext)
 
-export const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
+const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
+export const usePanel = () => React.useContext(PanelContext)
+
+const PanelActionsContext = React.createContext<{
+  openPanel?: (to: To, afterIndex?: number) => void
+  closePanel?: (index: number, id: PanelValue["id"]) => void
+  updatePanel?: (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => void
+}>({})
+export const usePanelActions = () => React.useContext(PanelActionsContext)
 
 function Root({ children }: React.PropsWithChildren) {
-  const parsePanels = React.useCallback((value: unknown) => {
-    if (Array.isArray(value)) {
-      return value as string[]
-    }
-
-    return []
-  }, [])
-
   const [panels, setPanels] = useSearchParam("p", {
-    defaultValue: [],
-    schema: z.array(z.string()),
-    parse: parsePanels,
+    validate: z.array(z.string().catch("")).catch([]).parse,
   })
 
   useEvent("keydown", (event) => {
@@ -91,16 +76,16 @@ function Root({ children }: React.PropsWithChildren) {
   })
 
   const openPanel = React.useCallback(
-    (url: string, afterIndex?: number) => {
+    (to: To, afterIndex?: number) => {
       // Add to the beginning of the list by default
       const index = afterIndex !== undefined ? afterIndex + 1 : 0
 
       const id = generateId()
-      const [pathname, search] = url.split("?")
+      const { pathname, search } = resolvePath(to)
       const value = stringifyPanelValue({ id, pathname, search })
 
       flushSync(() => {
-        setPanels(panels.slice(0, index).concat(value))
+        setPanels((panels) => panels.slice(0, index).concat(value))
       })
 
       const panelElement = document.getElementById(id)
@@ -110,16 +95,14 @@ function Root({ children }: React.PropsWithChildren) {
         focusPanel(panelElement)
       }
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
   const closePanel = React.useCallback(
-    (index: number) => {
-      const panel = parsePanelValue(panels[index])
-
+    (index: number, id: string) => {
       const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
 
-      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
+      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === id)
 
       const isPanelFocused =
         document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
@@ -128,7 +111,7 @@ function Root({ children }: React.PropsWithChildren) {
 
       // Update state
       flushSync(() => {
-        setPanels(panels.slice(0, index))
+        setPanels((panels) => panels.slice(0, index))
       })
 
       // Focus the previous panel
@@ -136,106 +119,48 @@ function Root({ children }: React.PropsWithChildren) {
         focusPanel(prevPanelElement)
       }
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
   const updatePanel = React.useCallback(
     (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => {
-      const oldValue = parsePanelValue(panels[index])
-      const newValue = stringifyPanelValue({ ...oldValue, ...partialValue })
-      setPanels(panels.map((value, i) => (i === index ? newValue : value)))
+      setPanels((panels) => {
+        const oldValue = parsePanelValue(panels[index])
+        const newValue = stringifyPanelValue({ ...oldValue, ...partialValue })
+        return panels.map((value, i) => (i === index ? newValue : value))
+      })
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
-  const contextValue = React.useMemo(
+  const panelActions = React.useMemo(
     () => ({
-      panels,
       openPanel,
       closePanel,
       updatePanel,
     }),
-    [panels, openPanel, closePanel, updatePanel],
+    [openPanel, closePanel, updatePanel],
   )
 
   return (
-    <PanelsContext.Provider value={contextValue}>
-      <LinkContext.Provider value={Link}>
+    <PanelsContext.Provider value={panels}>
+      <PanelActionsContext.Provider value={panelActions}>
         <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
           {children}
         </div>
-      </LinkContext.Provider>
+      </PanelActionsContext.Provider>
     </PanelsContext.Provider>
   )
 }
 
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const { target = "_self" } = props
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { openPanel, updatePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
-
-  // Preserve the view type when navigating between panels
-  const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
-  const [pathname, search] = props.to.toString().split("?")
-  const url = `${pathname}?${qs.stringify({ v: viewType, ...qs.parse(search) })}`
-
-  return (
-    <RouterLink
-      {...props}
-      ref={ref}
-      onClick={(event) => {
-        if (event.metaKey || event.ctrlKey || event.shiftKey) {
-          return
-        }
-
-        // If we're not in a panels context, use the router's navigate function
-        if (!openPanel || !updatePanel) {
-          navigate(url, { replace: props.replace })
-          event.preventDefault()
-          return
-        }
-
-        // Open link in a new panel
-        if (target === "_blank") {
-          openPanel?.(url, panel?.index)
-          event.preventDefault()
-        }
-
-        // Open link in the current panel
-        if (target === "_self") {
-          const [pathname, search] = url.split("?")
-
-          if (panel) {
-            updatePanel?.(panel?.index, { pathname, search })
-          } else {
-            // Preserve the current search params
-            const combinedSearch = {
-              ...qs.parse(location.search, { ignoreQueryPrefix: true }),
-              ...qs.parse(search),
-            }
-
-            navigate({
-              pathname,
-              search: qs.stringify(combinedSearch),
-            })
-          }
-
-          event.preventDefault()
-        }
-      }}
-    />
-  )
-})
+Root.displayName = "Panels"
 
 function Outlet() {
-  const { panels } = React.useContext(PanelsContext)
+  const panels = usePanels()
   return (
     <>
       {panels.map((value, index) => {
-        const panel = parsePanelValue(value)
-        return <PanelRoutes key={panel.id} panel={panel} index={index} />
+        return <PanelRouter key={value} value={value} index={index} />
       })}
     </>
   )
@@ -255,10 +180,11 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
   { path: "file", panel: FilePanel },
 ]
 
-type PanelRoutesProps = { panel: PanelValue; index: number }
+type PanelRouterProps = { value: string; index: number }
 
-function PanelRoutes({ panel, index }: PanelRoutesProps) {
-  const { closePanel } = React.useContext(PanelsContext)
+const PanelRouter = React.memo(function PanelRouter({ value, index }: PanelRouterProps) {
+  const panel = parsePanelValue(value)
+  const { closePanel } = usePanelActions()
 
   const contextValue = React.useMemo(
     () => ({
@@ -284,14 +210,68 @@ function PanelRoutes({ panel, index }: PanelRoutesProps) {
         id={panel.id}
         params={match.params}
         onClose={() => {
-          closePanel?.(index)
+          closePanel?.(index, panel.id)
         }}
       />
     </PanelContext.Provider>
   )
+})
+
+function LinkProvider({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate()
+  const { openPanel, updatePanel } = usePanelActions()
+  const panel = usePanel()
+
+  const handleClick: LinkClickHandler = React.useCallback(
+    ({ to, target }, event) => {
+      // Preserve the view type when navigating between panels
+      const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
+      const { pathname, search } = resolvePath(to)
+      const href = `${pathname}?${qs.stringify({ v: viewType, ...qs.parse(search) })}`
+
+      // Fall back to default browser behavior when any modifier keys are pressed
+      if (event?.metaKey || event?.ctrlKey || event?.shiftKey) {
+        //
+        return
+      }
+
+      // Fall back to default browser behavior if we're not in a panels context
+      if (!openPanel || !updatePanel) {
+        return
+      }
+
+      // Open link in a new panel
+      if (target === "_blank") {
+        openPanel(href, panel?.index)
+        event?.preventDefault()
+        return
+      }
+
+      // Open link in the current panel
+      if (panel) {
+        updatePanel(panel?.index, { pathname, search })
+      } else {
+        // Preserve the current search params
+        const combinedSearch = {
+          ...qs.parse(location.search, { ignoreQueryPrefix: true }),
+          ...qs.parse(search),
+        }
+
+        navigate({
+          pathname,
+          search: qs.stringify(combinedSearch),
+        })
+      }
+
+      event?.preventDefault()
+    },
+    [panel, openPanel, updatePanel, navigate],
+  )
+
+  return <LinkContext.Provider value={handleClick}>{children}</LinkContext.Provider>
 }
 
-export const Panels = Object.assign(Root, { Link, Outlet })
+export const Panels = Object.assign(Root, { Outlet, LinkProvider })
 
 // Utilities
 
@@ -371,11 +351,11 @@ function isScrollable(element: Element) {
 
 const SEPARATOR = ":"
 
-export function stringifyPanelValue({ id, pathname, search }: PanelValue) {
+function stringifyPanelValue({ id, pathname, search }: PanelValue) {
   return [id, pathname, search].join(SEPARATOR)
 }
 
-export function parsePanelValue(value: string): PanelValue {
+function parsePanelValue(value: string): PanelValue {
   const [id, pathname, search] = value.split(SEPARATOR)
   return { id, pathname, search }
 }
