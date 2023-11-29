@@ -78,7 +78,6 @@ export function SettingsPage() {
                 localStorage.setItem(VIM_KEYBINDINGS_KEY, checked.toString())
               }}
             />
-
           </Card>
         </div>
       </Panel>

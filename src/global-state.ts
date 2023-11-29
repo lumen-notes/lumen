@@ -589,7 +589,6 @@ export const getVimKeybindingsFromLocalStorage = () => {
   return vim === "true"
 }
 
-
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
 // -----------------------------------------------------------------------------
