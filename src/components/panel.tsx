@@ -23,11 +23,11 @@ const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
 export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
   const [widthParam, setWidthParam] = useSearchParam("w", {
-    defaultValue: MIN_WIDTH,
-    validate: z.number().catch(MIN_WIDTH).parse,
+    defaultValue: String(MIN_WIDTH),
+    validate: z.string().catch(String(MIN_WIDTH)).parse,
   })
 
-  const [width, setWidth] = React.useState(widthParam)
+  const [width, setWidth] = React.useState(parseInt(widthParam))
   const panelRef = React.useRef<HTMLDivElement>(null)
   const panel = usePanel()
   const [activeNoteId, setActiveNoteId] = React.useState("")
@@ -120,7 +120,7 @@ export function Panel({ id, title, description, icon, actions, children, onClose
 
               if (panelRect) {
                 setWidth(panelRect.width)
-                setWidthParam(panelRect.width)
+                setWidthParam(String(panelRect.width))
               }
             }}
           />
