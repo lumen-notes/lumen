@@ -13,7 +13,7 @@ import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
 import React from "react"
-import { getVimKeybindingsFromLocalStorage, tagsAtom, templatesAtom } from "../global-state"
+import { getVimModeFromLocalStorage, tagsAtom, templatesAtom } from "../global-state"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -22,7 +22,6 @@ import { useSaveNote } from "../utils/use-save-note"
 import { useStableSearchNotes } from "../utils/use-search"
 import { useInsertTemplate } from "./insert-template"
 import { vim } from "@replit/codemirror-vim"
-import { useAtomValue } from "jotai"
 
 type NoteEditorProps = {
   className?: string
@@ -67,12 +66,12 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const templateCompletion = useTemplateCompletion()
 
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
-    const [vimKeybindings, setVimKeybindings] = React.useState(false)
+    const [vimMode, setVimMode] = React.useState(false)
 
     React.useEffect(() => {
-      const isVimActive = getVimKeybindingsFromLocalStorage()
-      setVimKeybindings(isVimActive)
-    }, [vimKeybindings])
+      const isVimModeEnabled = getVimModeFromLocalStorage()
+      setVimMode(isVimModeEnabled)
+    }, [vimMode])
 
 
     const extenstions = [
@@ -196,7 +195,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
             event.stopPropagation()
           }
         }}
-        extensions={vimKeybindings ? [...extenstions, vim()] : extenstions}
+        extensions={vimMode ? [...extenstions, vim()] : extenstions}
       />
     )
   },

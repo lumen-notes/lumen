@@ -27,7 +27,7 @@ export const REPO_DIR = `/repo`
 const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"
-export const VIM_KEYBINDINGS_KEY = "vim_keybindings"
+export const VIM_MODE_KEY = "vim_mode"
 
 // -----------------------------------------------------------------------------
 // State machine
@@ -584,9 +584,9 @@ async function getMarkdownFilesFromFs(dir: string) {
 }
 
 /** Retrieve vim keybindings setting from local storage */
-export const getVimKeybindingsFromLocalStorage = () => {
-  const vim = localStorage.getItem(VIM_KEYBINDINGS_KEY) ?? "false"
-  return vim === "true"
+export const getVimModeFromLocalStorage = () => {
+  const enabled = localStorage.getItem(VIM_MODE_KEY) ?? "false"
+  return enabled === "true"
 }
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)

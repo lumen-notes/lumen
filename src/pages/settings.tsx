@@ -8,7 +8,13 @@ import { SignedInUser } from "../components/github-auth"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { RepoForm } from "../components/repo-form"
-import { VIM_KEYBINDINGS_KEY, getVimKeybindingsFromLocalStorage, githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
+import {
+  VIM_MODE_KEY,
+  getVimModeFromLocalStorage,
+  githubRepoAtom,
+  githubUserAtom,
+  globalStateMachineAtom,
+} from "../global-state"
 import { Checkbox } from "../components/checkbox"
 
 const isCloningAtom = selectAtom(globalStateMachineAtom, (state) =>
@@ -20,12 +26,12 @@ export function SettingsPage() {
   const githubRepo = useAtomValue(githubRepoAtom)
   const isCloning = useAtomValue(isCloningAtom)
   const [isEditingRepo, setIsEditingRepo] = React.useState(false)
-  const [vimKeybindings, setVimKeybindings] = React.useState(false)
+  const [vimMode, setMode] = React.useState(false)
 
   React.useEffect(() => {
-    const isVimActive = getVimKeybindingsFromLocalStorage()
-    setVimKeybindings(isVimActive)
-  }, [vimKeybindings])
+    const isVimModeEnabled = getVimModeFromLocalStorage()
+    setMode(isVimModeEnabled)
+  }, [vimMode])
 
   return (
     <>
@@ -72,10 +78,10 @@ export function SettingsPage() {
           <Card className="flex items-center justify-between p-4">
             <p>Vim Keybindings</p>
             <Checkbox
-              checked={vimKeybindings}
+              checked={vimMode}
               onCheckedChange={(checked: boolean) => {
-                setVimKeybindings(checked)
-                localStorage.setItem(VIM_KEYBINDINGS_KEY, checked.toString())
+                setMode(checked)
+                localStorage.setItem(VIM_MODE_KEY, checked.toString())
               }}
             />
           </Card>
