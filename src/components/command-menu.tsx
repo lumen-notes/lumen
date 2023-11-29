@@ -130,7 +130,7 @@ export function CommandMenu() {
         }
       }}
     >
-      <Card elevation={2}>
+      <Card elevation={3}>
         <Command.Input placeholder="Search or jump to…" value={query} onValueChange={setQuery} />
         <Command.List>
           {dateString ? (

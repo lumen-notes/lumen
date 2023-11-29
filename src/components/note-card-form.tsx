@@ -32,7 +32,7 @@ export function NoteCardForm({
   id: existingId,
   defaultValue = "",
   placeholder = "Write a note…",
-  elevation = 0,
+  elevation = 1,
   minHeight,
   maxHeight,
   selected = false,
