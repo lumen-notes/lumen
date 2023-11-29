@@ -6,7 +6,7 @@ import { useSearchParam } from "../utils/use-search-param"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, MoreIcon16 } from "./icons"
-import { PanelContext } from "./panels"
+import { usePanel } from "./panels"
 
 type PanelProps = {
   id?: string
@@ -36,7 +36,7 @@ export function Panel({ id, title, description, icon, actions, children, onClose
 
   const [width, setWidth] = React.useState(widthParam)
   const panelRef = React.useRef<HTMLDivElement>(null)
-  const panel = React.useContext(PanelContext)
+  const panel = usePanel()
   const [activeNoteId, setActiveNoteId] = React.useState("")
 
   return (

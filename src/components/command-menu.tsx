@@ -6,13 +6,12 @@ import React from "react"
 import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
-import { PanelsContext } from "../components/panels"
+import { usePanelActions, usePanels } from "../components/panels"
 import { tagSearcherAtom } from "../global-state"
 import { templateSchema } from "../types"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
-// import { useIsFullscreen } from "../utils/use-is-fullscreen"
 import { flushSync } from "react-dom"
 import { useDebouncedValue } from "../utils/use-debounced-value"
 import { useSaveNote } from "../utils/use-save-note"
@@ -24,14 +23,14 @@ export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
-
-  // const isFullscreen = useIsFullscreen()
-
-  const { panels, openPanel } = React.useContext(PanelsContext)
+  const panels = usePanels()
+  const { openPanel } = usePanelActions()
   const routerNavigate = useNavigate()
 
+  // Refs
   const prevActiveElement = React.useRef<HTMLElement>()
 
+  // Local state
   const [isOpen, setIsOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })

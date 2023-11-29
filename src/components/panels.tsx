@@ -25,16 +25,18 @@ type PanelValue = {
   search: string
 }
 
-export const PanelsContext = React.createContext<{
-  panels: string[]
+const PanelsContext = React.createContext<string[]>([])
+export const usePanels = () => React.useContext(PanelsContext)
+
+const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
+export const usePanel = () => React.useContext(PanelContext)
+
+const PanelActionsContext = React.createContext<{
   openPanel?: (url: string, afterIndex?: number) => void
   closePanel?: (index: number) => void
   updatePanel?: (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => void
-}>({
-  panels: [],
-})
-
-export const PanelContext = React.createContext<(PanelValue & { index: number }) | null>(null)
+}>({})
+export const usePanelActions = () => React.useContext(PanelActionsContext)
 
 function Root({ children }: React.PropsWithChildren) {
   const parsePanels = React.useCallback((value: unknown) => {
@@ -100,7 +102,7 @@ function Root({ children }: React.PropsWithChildren) {
       const value = stringifyPanelValue({ id, pathname, search })
 
       flushSync(() => {
-        setPanels(panels.slice(0, index).concat(value))
+        setPanels((panels) => panels.slice(0, index).concat(value))
       })
 
       // const panelElement = document.getElementById(id)
@@ -110,7 +112,7 @@ function Root({ children }: React.PropsWithChildren) {
       //   focusPanel(panelElement)
       // }
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
   const closePanel = React.useCallback(
@@ -128,7 +130,7 @@ function Root({ children }: React.PropsWithChildren) {
 
       // Update state
       flushSync(() => {
-        setPanels(panels.slice(0, index))
+        setPanels((panels) => panels.slice(0, index))
       })
 
       // Focus the previous panel
@@ -136,45 +138,50 @@ function Root({ children }: React.PropsWithChildren) {
       //   focusPanel(prevPanelElement)
       // }
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
   const updatePanel = React.useCallback(
     (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => {
-      const oldValue = parsePanelValue(panels[index])
-      const newValue = stringifyPanelValue({ ...oldValue, ...partialValue })
-      setPanels(panels.map((value, i) => (i === index ? newValue : value)))
+      setPanels((panels) => {
+        const oldValue = parsePanelValue(panels[index])
+        const newValue = stringifyPanelValue({ ...oldValue, ...partialValue })
+        return panels.map((value, i) => (i === index ? newValue : value))
+      })
     },
-    [panels, setPanels],
+    [setPanels],
   )
 
   const contextValue = React.useMemo(
     () => ({
-      panels,
       openPanel,
       closePanel,
       updatePanel,
     }),
-    [panels, openPanel, closePanel, updatePanel],
+    [openPanel, closePanel, updatePanel],
   )
 
   return (
-    <PanelsContext.Provider value={contextValue}>
-      <LinkContext.Provider value={Link}>
-        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
-          {children}
-        </div>
-      </LinkContext.Provider>
+    <PanelsContext.Provider value={panels}>
+      <PanelActionsContext.Provider value={contextValue}>
+        <LinkContext.Provider value={Link}>
+          <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
+            {children}
+          </div>
+        </LinkContext.Provider>
+      </PanelActionsContext.Provider>
     </PanelsContext.Provider>
   )
 }
+
+Root.displayName = "Panels"
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const { target = "_self" } = props
   const location = useLocation()
   const navigate = useNavigate()
-  const { openPanel, updatePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
+  const { openPanel, updatePanel } = usePanelActions()
+  const panel = usePanel()
 
   // Preserve the view type when navigating between panels
   const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
@@ -230,7 +237,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
 })
 
 function Outlet() {
-  const { panels } = React.useContext(PanelsContext)
+  const panels = usePanels()
   return (
     <>
       {panels.map((value, index) => {
@@ -258,7 +265,7 @@ const ROUTES: Array<{ path?: string; index?: boolean; panel: React.ComponentType
 type PanelRoutesProps = { panel: PanelValue; index: number }
 
 function PanelRoutes({ panel, index }: PanelRoutesProps) {
-  const { closePanel } = React.useContext(PanelsContext)
+  const { closePanel } = usePanelActions()
 
   const contextValue = React.useMemo(
     () => ({
@@ -369,13 +376,11 @@ function isScrollable(element: Element) {
   )
 }
 
-const SEPARATOR = ":"
-
-export function stringifyPanelValue({ id, pathname, search }: PanelValue) {
-  return [id, pathname, search].join(SEPARATOR)
+function stringifyPanelValue(panel: PanelValue) {
+  return JSON.stringify(panel)
 }
 
-export function parsePanelValue(value: string): PanelValue {
-  const [id, pathname, search] = value.split(SEPARATOR)
-  return { id, pathname, search }
+function parsePanelValue(value: string): PanelValue {
+  // TODO: Use Zod to validate the value
+  return JSON.parse(value) as PanelValue
 }

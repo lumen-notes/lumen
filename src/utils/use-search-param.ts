@@ -1,8 +1,8 @@
-import qs from "qs"
+// import qs from "qs"
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+// import { useLocation, useNavigate } from "react-router-dom"
 import { Schema } from "zod"
-import { PanelContext, PanelsContext } from "../components/panels"
+// import { PanelContext, PanelActionsContext } from "../components/panels"
 
 type SearchParamOptions<T = string> = {
   defaultValue: T
@@ -19,7 +19,7 @@ function defaultParse<T>(value: unknown): T {
 export function useSearchParam<T = string>(
   key: string,
   { defaultValue, schema, parse = defaultParse, replace = false }: SearchParamOptions<T>,
-): [T, (value: T) => void] {
+): [T, React.Dispatch<React.SetStateAction<T>>] {
   // const location = useLocation()
   // const navigate = useNavigate()
   // const { updatePanel } = React.useContext(PanelsContext)
