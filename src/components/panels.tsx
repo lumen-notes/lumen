@@ -26,7 +26,7 @@ export const usePanel = () => React.useContext(PanelContext)
 
 const PanelActionsContext = React.createContext<{
   openPanel?: (to: To, afterIndex?: number) => void
-  closePanel?: (index: number) => void
+  closePanel?: (index: number, id: PanelValue["id"]) => void
   updatePanel?: (index: number, partialValue: Partial<Exclude<PanelValue, "id">>) => void
 }>({})
 export const usePanelActions = () => React.useContext(PanelActionsContext)
@@ -89,28 +89,26 @@ function Root({ children }: React.PropsWithChildren) {
         setPanels((panels) => panels.slice(0, index).concat(value))
       })
 
-      // const panelElement = document.getElementById(id)
+      const panelElement = document.getElementById(id)
 
-      // if (panelElement) {
-      //   // Move focus to the new panel
-      //   focusPanel(panelElement)
-      // }
+      if (panelElement) {
+        // Move focus to the new panel
+        focusPanel(panelElement)
+      }
     },
     [setPanels],
   )
 
   const closePanel = React.useCallback(
-    (index: number) => {
-      // const panel = parsePanelValue(panels[index])
+    (index: number, id: string) => {
+      const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
 
-      // const panelElements = Array.from(document.querySelectorAll("[data-panel]")) as HTMLElement[]
+      const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === id)
 
-      // const currentIndex = panelElements.findIndex((panelElement) => panelElement.id === panel.id)
+      const isPanelFocused =
+        document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
 
-      // const isPanelFocused =
-      //   document.activeElement?.closest("[data-panel]") === panelElements[currentIndex]
-
-      // const prevPanelElement = panelElements[currentIndex - 1]
+      const prevPanelElement = panelElements[currentIndex - 1]
 
       // Update state
       flushSync(() => {
@@ -118,9 +116,9 @@ function Root({ children }: React.PropsWithChildren) {
       })
 
       // Focus the previous panel
-      // if (isPanelFocused && prevPanelElement) {
-      //   focusPanel(prevPanelElement)
-      // }
+      if (isPanelFocused && prevPanelElement) {
+        focusPanel(prevPanelElement)
+      }
     },
     [setPanels],
   )
@@ -213,7 +211,7 @@ const PanelRouter = React.memo(function PanelRouter({ value, index }: PanelRoute
         id={panel.id}
         params={match.params}
         onClose={() => {
-          closePanel?.(index)
+          closePanel?.(index, panel.id)
         }}
       />
     </PanelContext.Provider>
