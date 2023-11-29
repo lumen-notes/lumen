@@ -125,7 +125,7 @@ export const NoteCard = React.memo(function NoteCard({
 
       // If the note is open in a panel, close it
       if (panel && panel.pathname.replace("/", "") === id && panel.index !== -1) {
-        closePanel?.(panel.index)
+        closePanel?.(panel.index, panel.id)
       }
     },
     [focusNextCard, deleteNote, panel, closePanel],
