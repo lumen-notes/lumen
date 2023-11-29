@@ -1,15 +1,13 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
-import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
 import { useThemeColorProvider } from "../utils/use-theme-color"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 // @ts-ignore
-// import LagRadar from "react-lag-radar"
+import LagRadar from "react-lag-radar"
 
 const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
 
@@ -17,8 +15,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   useThemeColorProvider()
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
-  const location = useLocation()
-  const navigate = useNavigate()
   const { online } = useNetworkState()
 
   // Sync when the app becomes visible again
@@ -33,23 +29,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
     send({ type: "SYNC" })
   })
 
-  // Restore the previous search params for this path when the app loads if the current search params are empty
-  useEvent("load", () => {
-    const prevPathParams = getPrevPathParams(location.pathname)
-
-    if (location.search === "" && prevPathParams) {
-      navigate({
-        pathname: location.pathname,
-        search: prevPathParams,
-      })
-    }
-  })
-
-  // Save the search params in localStorage before closing the app
-  useEvent("beforeunload", () => {
-    savePathParams(location)
-  })
-
   return (
     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
       {error ? (
@@ -60,11 +39,11 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="truncate">{error.message}</span>
         </div>
       ) : null}
-      {/* {import.meta.env.DEV ? (
-        <div className="fixed right-4 top-4 rounded-full bg-[black] p-2">
+      {import.meta.env.DEV ? (
+        <div className="fixed bottom-4 right-4 z-20 rounded-full bg-[black] p-2 shadow-lg">
           <LagRadar />
         </div>
-      ) : null} */}
+      ) : null}
       {children}
       <DevBar />
     </div>

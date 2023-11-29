@@ -3,7 +3,7 @@ import React from "react"
 import { z } from "zod"
 import { IconButton } from "../components/icon-button"
 import { DotIcon8, TagIcon16, TriangleRightIcon8 } from "../components/icons"
-import { useLink } from "../components/link-context"
+import { Link } from "../components/link"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { PillButton } from "../components/pill-button"
@@ -18,8 +18,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
   const [query, setQuery] = useSearchParam("q", {
-    defaultValue: "",
-    schema: z.string(),
+    validate: z.string().catch("").parse,
     replace: true,
   })
 
@@ -111,7 +110,6 @@ type TagTreeItemProps = {
 }
 
 function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
-  const Link = useLink()
   // TODO: Persist expanded state
   const [isExpanded, setIsExpanded] = React.useState(true)
 

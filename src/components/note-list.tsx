@@ -11,7 +11,7 @@ import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
-import { useLink } from "./link-context"
+import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
@@ -27,16 +27,9 @@ type NoteListProps = {
 }
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const Link = useLink()
-
-  const parseQueryParam = React.useCallback((value: unknown): string => {
-    return typeof value === "string" ? value : ""
-  }, [])
 
   const [query, setQuery] = useSearchParam("q", {
-    defaultValue: "",
-    schema: z.string(),
-    parse: parseQueryParam,
+    validate: z.string().catch("").parse,
     replace: true,
   })
 
@@ -46,19 +39,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return searchNotes(`${baseQuery} ${debouncedQuery}`)
   }, [searchNotes, baseQuery, debouncedQuery])
 
-  const parseViewType = React.useCallback((value: unknown): ViewType => {
-    switch (value) {
-      case "list":
-        return "list"
-      default:
-        return "cards"
-    }
-  }, [])
-
   const [viewType, setViewType] = useSearchParam<ViewType>("v", {
-    defaultValue: "cards",
-    schema: viewTypeSchema,
-    parse: parseViewType,
+    validate: viewTypeSchema.catch("cards").parse,
     replace: true,
   })
 

@@ -5,6 +5,7 @@ import React from "react"
 import {
   NavLinkProps,
   NavLink as RouterNavLink,
+  resolvePath,
   useLocation,
   useMatch,
   useNavigate,
@@ -14,7 +15,7 @@ import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString } from "../utils/date"
-import { getPrevPathParams, savePathParams } from "../utils/prev-path-params"
+import { getPrevPathParams } from "../utils/prev-path-params"
 import { DropdownMenu } from "./dropdown-menu"
 import { useSignOut } from "./github-auth"
 import { IconButton } from "./icon-button"
@@ -177,10 +178,7 @@ function useNavigateWithCache() {
 
   return React.useCallback(
     (to: string) => {
-      const pathname = to.split("?")[0]
-
-      // Save the params for the current path before navigating
-      savePathParams(location)
+      const { pathname } = resolvePath(to)
 
       const prevPathParams = getPrevPathParams(pathname)
 

@@ -32,8 +32,7 @@ export function useFullscreen() {
 
 export function FullscreenProvider({ children }: { children: React.ReactNode }) {
   const [path, setPath] = useSearchParam("fullscreen", {
-    defaultValue: null,
-    schema: z.string().nullable(),
+    validate: z.string().nullable().catch(null).parse,
   })
 
   const prevActiveElement = React.useRef<HTMLElement>()

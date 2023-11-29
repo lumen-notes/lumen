@@ -8,15 +8,15 @@ import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
-import { PanelContext, PanelProps, PanelsContext } from "../components/panels"
+import { PanelProps, usePanel, usePanelActions } from "../components/panels"
 import { useDeleteTag, useRenameTag } from "../utils/github-sync"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
   const renameTag = useRenameTag()
   const deleteTag = useDeleteTag()
-  const { updatePanel } = React.useContext(PanelsContext)
-  const panel = React.useContext(PanelContext)
+  const { updatePanel } = usePanelActions()
+  const panel = usePanel()
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
