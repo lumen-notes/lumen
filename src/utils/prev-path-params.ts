@@ -17,8 +17,6 @@ export function savePathParams(pathname: string, search: string) {
     Object.entries(searchParams).filter(([key]) => ALLOWED_PARAMS.includes(key)),
   )
 
-  console.log(qs.stringify(filteredSearchParams, { addQueryPrefix: true }))
-
   window.localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({
