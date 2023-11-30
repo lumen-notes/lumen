@@ -148,7 +148,7 @@ export function NoteCardForm({
                 Vim.defineEx("x", "x", () => handleSubmit());
 
                 // cancel changes on :q
-                Vim.defineEx("q", "q", handleCancel());
+                Vim.defineEx("q", "q", () => handleCancel());
 
                 // cancel changes on :q!
                 Vim.defineEx("q!", "q!", () => handleCancel());
