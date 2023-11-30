@@ -8,7 +8,7 @@ const prevPathParamsSchema = z.record(z.string()).catch({})
 
 export function savePathParams(pathname: string, search: string) {
   const prevPathParams = prevPathParamsSchema.parse(
-    JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? ""),
+    JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}"),
   )
 
   const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
@@ -30,7 +30,7 @@ export function savePathParams(pathname: string, search: string) {
 
 export function getPrevPathParams(pathname: string) {
   const prevPathParams = prevPathParamsSchema.parse(
-    JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? ""),
+    JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}"),
   )
 
   return prevPathParams[pathname]
