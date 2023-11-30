@@ -3,6 +3,7 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { Vim } from "@replit/codemirror-vim"
 import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
 import { useAttachFile } from "../utils/use-attach-file"
@@ -13,6 +14,7 @@ import { FileInputButton } from "./file-input-button"
 import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
 import { NoteEditor } from "./note-editor"
+import { getVimMode } from "../utils/vim-mode"
 
 type NoteCardFormProps = {
   id?: NoteId
@@ -133,10 +135,24 @@ export function NoteCardForm({
               event.preventDefault()
             }}
             onKeyDown={(event) => {
-              // TODO: When Vim mode is enabled:
-              // - :w, :wq, :x should save the note
-              // - :q! should cancel changes (maybe :q should cancel too?)
-              // - Escape should always take you into command mode (not cancel changes)
+              const vimMode = getVimMode()
+
+              if (vimMode) {
+                // save changes on :w
+                Vim.defineEx("write", "w", () => handleSubmit());
+
+                // save changes on :wq
+                Vim.defineEx("wq", "wq", () => handleSubmit());
+
+                // save changes on :x
+                Vim.defineEx("x", "x", () => handleSubmit());
+
+                // cancel changes on :q
+                Vim.defineEx("q", "q", handleCancel());
+
+                // cancel changes on :q!
+                Vim.defineEx("q!", "q!", () => handleCancel());
+              }
 
               // Submit on `command + enter`
               if (event.key === "Enter" && event.metaKey) {
@@ -145,7 +161,7 @@ export function NoteCardForm({
               }
 
               // Clear and cancel on `escape`
-              if (event.key === "Escape") {
+              if (event.key === "Escape" && !vimMode) {
                 handleCancel()
                 event.stopPropagation()
               }
