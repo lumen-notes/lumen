@@ -74,7 +74,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     }, [vimMode])
 
 
-    const extenstions = [
+    const extensions = [
       markdown({ base: markdownLanguage }),
       autocompletion({
         override: [
@@ -195,7 +195,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
             event.stopPropagation()
           }
         }}
-        extensions={vimMode ? [...extenstions, vim()] : extenstions}
+        extensions={vimMode ? [...extensions, vim()] : extensions}
       />
     )
   },
