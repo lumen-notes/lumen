@@ -11,6 +11,8 @@
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  /* Hide the native cursor */
+  caret-color: transparent;
 }
 
 .cm-editor .cm-line {
@@ -25,8 +27,6 @@
 .cm-editor .cm-cursor {
   border-left-width: 2px;
   margin-left: 0px;
-  /* Hide the native cursor */
-  caret-color: transparent;
 }
 
 .cm-editor .cm-fat-cursor {
