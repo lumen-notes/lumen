@@ -10,13 +10,16 @@ import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, SyncIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 import { flushSync } from "react-dom"
+import { usePanelActions } from "./panels"
+import { useAtomValue } from "jotai"
+import { sortedNotesAtom } from "../global-state"
 
 const viewTypeSchema = z.enum(["list", "cards"])
 
@@ -26,7 +29,9 @@ type NoteListProps = {
   baseQuery?: string
 }
 export function NoteList({ baseQuery = "" }: NoteListProps) {
+  const sortedNotes = useAtomValue(sortedNotesAtom)
   const searchNotes = useSearchNotes()
+  const { openPanel } = usePanelActions()
 
   const [query, setQuery] = useSearchParam("q", {
     validate: z.string().catch("").parse,
@@ -101,7 +106,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     <div>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
             <SearchInput
               placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
               value={query}
@@ -119,6 +124,18 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
             >
               {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
+            </IconButton>
+            <IconButton
+              aria-label="Random notes"
+              className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+              onClick={() => {
+                const randomIndex = Math.floor(Math.random() * sortedNotes.length)
+                if (openPanel) {
+                  return openPanel(sortedNotes[randomIndex].id, -1)
+                }
+              }}
+            >
+              <SyncIcon16 />
             </IconButton>
           </div>
           {query ? (
