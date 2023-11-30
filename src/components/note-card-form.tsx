@@ -133,6 +133,11 @@ export function NoteCardForm({
               event.preventDefault()
             }}
             onKeyDown={(event) => {
+              // TODO: When Vim mode is enabled:
+              // - :w, :wq, :x should save the note
+              // - :q! should cancel changes (maybe :q should cancel too?)
+              // - Escape should always take you into command mode (not cancel changes)
+
               // Submit on `command + enter`
               if (event.key === "Enter" && event.metaKey) {
                 handleSubmit()

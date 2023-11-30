@@ -3,19 +3,14 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
+import { Checkbox } from "../components/checkbox"
 import { CommandMenu } from "../components/command-menu"
 import { SignedInUser } from "../components/github-auth"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { RepoForm } from "../components/repo-form"
-import {
-  VIM_MODE_KEY,
-  getVimModeFromLocalStorage,
-  githubRepoAtom,
-  githubUserAtom,
-  globalStateMachineAtom,
-} from "../global-state"
-import { Checkbox } from "../components/checkbox"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
+import { getVimMode, setVimMode } from "../utils/vim-mode"
 
 const isCloningAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloningRepo"),
@@ -26,12 +21,6 @@ export function SettingsPage() {
   const githubRepo = useAtomValue(githubRepoAtom)
   const isCloning = useAtomValue(isCloningAtom)
   const [isEditingRepo, setIsEditingRepo] = React.useState(false)
-  const [vimMode, setMode] = React.useState(false)
-
-  React.useEffect(() => {
-    const isVimModeEnabled = getVimModeFromLocalStorage()
-    setMode(isVimModeEnabled)
-  }, [vimMode])
 
   return (
     <>
@@ -75,15 +64,19 @@ export function SettingsPage() {
         </div>
         <div className="grid gap-4 p-4">
           <h3 className="text-xl font-semibold leading-4">Editor</h3>
-          <Card className="flex items-center justify-between p-4">
-            <p>Vim Keybindings</p>
-            <Checkbox
-              checked={vimMode}
-              onCheckedChange={(checked: boolean) => {
-                setMode(checked)
-                localStorage.setItem(VIM_MODE_KEY, checked.toString())
-              }}
-            />
+          <Card className="p-4">
+            <div className="flex items-center gap-2">
+              {/* TODO: Create a Switch component and use it instead of Checkbox */}
+              {/* https://www.radix-ui.com/primitives/docs/components/switch */}
+              <Checkbox
+                id="vim-mode"
+                defaultChecked={getVimMode()}
+                onCheckedChange={(checked) => {
+                  setVimMode(Boolean(checked))
+                }}
+              />
+              <label htmlFor="vim-mode">Vim mode (experimental)</label>
+            </div>
           </Card>
         </div>
       </Panel>
