@@ -15,7 +15,7 @@ import { useAtomCallback } from "jotai/utils"
 import { vim } from "@replit/codemirror-vim"
 import React from "react"
 import { tagsAtom, templatesAtom } from "../global-state"
-import { formatDate, formatDateDistance } from "../utils/date"
+import { formatDate, formatDateDistance, isValidUnixTimestamp } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../utils/use-attach-file"
@@ -178,7 +178,8 @@ function attachFileExtension({
   return EditorView.domEventHandlers({
     paste: (event, view) => {
       const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-      const isUrl = /^https?:\/\//.test(clipboardText)
+      const isUrl = /^https?:\/\//.test(clipboardText);
+      const isUnixTimestamp = isValidUnixTimestamp(clipboardText)
 
       // If the clipboard text is a URL, convert selected text into a markdown link
       if (isUrl) {
@@ -186,6 +187,26 @@ function attachFileExtension({
         const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
         const selectedText = view?.state.doc.sliceString(from, to) ?? ""
         const markdown = selectedText ? `[${selectedText}](${clipboardText})` : clipboardText
+
+        view.dispatch({
+          changes: {
+            from,
+            to,
+            insert: markdown,
+          },
+          selection: {
+            anchor: from + markdown.length,
+          },
+        })
+
+        event.preventDefault()
+      }
+
+      if (isUnixTimestamp) {
+        const { selection } = view.state
+        const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
+        const selectedText = view?.state.doc.sliceString(from, to) ?? ""
+        const markdown = selectedText ? `[[${clipboardText}|${selectedText}]]` : clipboardText
 
         view.dispatch({
           changes: {
