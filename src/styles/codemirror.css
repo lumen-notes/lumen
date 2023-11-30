@@ -11,7 +11,6 @@
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  /* caret-color: currentColor; */
 }
 
 .cm-editor .cm-line {
@@ -26,6 +25,27 @@
 .cm-editor .cm-cursor {
   border-left-width: 2px;
   margin-left: 0px;
+}
+
+.cm-editor .cm-fat-cursor {
+  @apply bg-border-focus !text-bg;
+}
+
+.cm-editor:not(.cm-focused) .cm-fat-cursor {
+  @apply outline-border-focus;
+}
+
+.cm-editor .cm-panels {
+  @apply bg-bg-secondary text-text;
+}
+
+.cm-editor .cm-panels-bottom {
+  @apply border-0;
+}
+
+.cm-editor .cm-vim-panel,
+.cm-editor .cm-vim-panel span {
+  @apply !font-mono;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
