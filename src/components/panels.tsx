@@ -160,7 +160,8 @@ function Outlet() {
   return (
     <>
       {panels.map((value, index) => {
-        return <PanelRouter key={value} value={value} index={index} />
+        const { id } = parsePanelValue(value)
+        return <PanelRouter key={id} value={value} index={index} />
       })}
     </>
   )
