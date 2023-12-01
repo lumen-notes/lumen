@@ -82,7 +82,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       }),
       frontmatterExtension(),
       spellcheckExtension(),
-      attachFileExtension({ attachFile, onPaste }),
+      pasteExtension({ attachFile, onPaste }),
     ]
 
     if (getVimMode()) {
@@ -168,7 +168,7 @@ function spellcheckExtension() {
   return EditorView.contentAttributes.of({ spellcheck: "true" })
 }
 
-function attachFileExtension({
+function pasteExtension({
   attachFile,
   onPaste,
 }: {
@@ -178,48 +178,36 @@ function attachFileExtension({
   return EditorView.domEventHandlers({
     paste: (event, view) => {
       const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-      const isUrl = /^https?:\/\//.test(clipboardText);
+
+      // If the clipboard text is a URL or a Unix timestamp (likely a note ID),
+      // make the selected text a link to that URL or note
+      const isUrl = /^https?:\/\//.test(clipboardText)
       const isUnixTimestamp = isValidUnixTimestamp(clipboardText)
 
-      // If the clipboard text is a URL, convert selected text into a markdown link
-      if (isUrl) {
+      if (isUrl || isUnixTimestamp) {
+        // Get the selected text
         const { selection } = view.state
         const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
         const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-        const markdown = selectedText ? `[${selectedText}](${clipboardText})` : clipboardText
 
-        view.dispatch({
-          changes: {
-            from,
-            to,
-            insert: markdown,
-          },
-          selection: {
-            anchor: from + markdown.length,
-          },
-        })
+        if (selectedText) {
+          const markdown = isUnixTimestamp
+            ? `[[${clipboardText}|${selectedText}]]`
+            : `[${selectedText}](${clipboardText})`
 
-        event.preventDefault()
-      }
+          view.dispatch({
+            changes: {
+              from,
+              to,
+              insert: markdown,
+            },
+            selection: {
+              anchor: from + markdown.length,
+            },
+          })
 
-      if (isUnixTimestamp) {
-        const { selection } = view.state
-        const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
-        const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-        const markdown = selectedText ? `[[${clipboardText}|${selectedText}]]` : clipboardText
-
-        view.dispatch({
-          changes: {
-            from,
-            to,
-            insert: markdown,
-          },
-          selection: {
-            anchor: from + markdown.length,
-          },
-        })
-
-        event.preventDefault()
+          event.preventDefault()
+        }
       }
 
       // If the clipboard contains a file, upload it
