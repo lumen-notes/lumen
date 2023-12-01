@@ -3,6 +3,7 @@ import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { Vim } from "@replit/codemirror-vim"
 import { githubRepoAtom } from "../global-state"
 import { NoteId } from "../types"
 import { useAttachFile } from "../utils/use-attach-file"
@@ -13,6 +14,7 @@ import { FileInputButton } from "./file-input-button"
 import { IconButton } from "./icon-button"
 import { PaperclipIcon16 } from "./icons"
 import { NoteEditor } from "./note-editor"
+import { getVimMode } from "../utils/vim-mode"
 
 type NoteCardFormProps = {
   id?: NoteId
@@ -45,7 +47,7 @@ export function NoteCardForm({
   const saveNote = useSaveNote()
   const githubRepo = useAtomValue(githubRepoAtom)
   const attachFile = useAttachFile()
-
+  const vimMode = getVimMode()
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
   const editorRef = providedEditorRef ?? newEditorRef
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
@@ -133,19 +135,25 @@ export function NoteCardForm({
               event.preventDefault()
             }}
             onKeyDown={(event) => {
-              // TODO: When Vim mode is enabled:
-              // - :w, :wq, :x should save the note
-              // - :q! should cancel changes (maybe :q should cancel too?)
-              // - Escape should always take you into command mode (not cancel changes)
+              if (vimMode) {
+                // Submit on :w, :wq, :x
+                Vim.defineEx("w", "w", handleSubmit)
+                Vim.defineEx("wq", "wq", handleSubmit)
+                Vim.defineEx("x", "x", handleSubmit)
 
-              // Submit on `command + enter`
+                // Cancel on :q, :q!
+                Vim.defineEx("q", "q", handleCancel)
+                Vim.defineEx("q!", "q!", handleCancel)
+              }
+
+              // Submit on Command + Enter
               if (event.key === "Enter" && event.metaKey) {
                 handleSubmit()
                 event.preventDefault()
               }
 
-              // Clear and cancel on `escape`
-              if (event.key === "Escape") {
+              // Cancel on Escape (unless in Vim mode is enabled)
+              if (event.key === "Escape" && !vimMode) {
                 handleCancel()
                 event.stopPropagation()
               }
@@ -155,11 +163,15 @@ export function NoteCardForm({
               <span className="px-2 font-mono tracking-wide text-text-secondary">{id}.md</span>
               <div className="flex gap-2">
                 {onCancel ? (
-                  <Button shortcut={["esc"]} onClick={handleCancel}>
+                  <Button shortcut={vimMode ? [":", "q"] : ["esc"]} onClick={handleCancel}>
                     Cancel
                   </Button>
                 ) : null}
-                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  shortcut={vimMode ? [":", "x"] : ["⌘", "⏎"]}
+                >
                   Save
                 </Button>
               </div>
