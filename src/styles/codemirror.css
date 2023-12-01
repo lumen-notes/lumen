@@ -42,7 +42,7 @@
 }
 
 .cm-editor .cm-panels-bottom {
-  @apply border-0;
+  @apply border-0 mt-4;
 }
 
 .cm-editor .cm-vim-panel,
