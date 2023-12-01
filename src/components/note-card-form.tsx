@@ -47,7 +47,7 @@ export function NoteCardForm({
   const saveNote = useSaveNote()
   const githubRepo = useAtomValue(githubRepoAtom)
   const attachFile = useAttachFile()
-
+  const vimMode = getVimMode()
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
   const editorRef = providedEditorRef ?? newEditorRef
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
@@ -135,8 +135,6 @@ export function NoteCardForm({
               event.preventDefault()
             }}
             onKeyDown={(event) => {
-              const vimMode = getVimMode()
-
               if (vimMode) {
                 // save changes on :w
                 Vim.defineEx("write", "w", () => handleSubmit());
@@ -171,11 +169,15 @@ export function NoteCardForm({
               <span className="px-2 font-mono tracking-wide text-text-secondary">{id}.md</span>
               <div className="flex gap-2">
                 {onCancel ? (
-                  <Button shortcut={["esc"]} onClick={handleCancel}>
+                  <Button shortcut={vimMode ? [":", "q"] : ["esc"]} onClick={handleCancel}>
                     Cancel
                   </Button>
                 ) : null}
-                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  shortcut={vimMode ? [":", "x"] : ["⌘", "⏎"]}
+                >
                   Save
                 </Button>
               </div>
