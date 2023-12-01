@@ -137,13 +137,13 @@ export function NoteCardForm({
             onKeyDown={(event) => {
               if (vimMode) {
                 // Submit on :w, :wq, :x
-                Vim.defineEx("w", "w", () => handleSubmit())
-                Vim.defineEx("wq", "wq", () => handleSubmit())
-                Vim.defineEx("x", "x", () => handleSubmit())
+                Vim.defineEx("w", "w", handleSubmit)
+                Vim.defineEx("wq", "wq", handleSubmit)
+                Vim.defineEx("x", "x", handleSubmit)
 
                 // Cancel on :q, :q!
-                Vim.defineEx("q", "q", () => handleCancel())
-                Vim.defineEx("q!", "q!", () => handleCancel())
+                Vim.defineEx("q", "q", handleCancel)
+                Vim.defineEx("q!", "q!", handleCancel)
               }
 
               // Submit on Command + Enter
