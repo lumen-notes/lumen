@@ -7,12 +7,12 @@
 }
 
 .cm-editor .cm-content {
+  /* Hide the native cursor */
+  @apply fine:[caret-color:transparent];
   width: 100%;
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
-  /* Hide the native cursor */
-  caret-color: transparent;
 }
 
 .cm-editor .cm-line {
