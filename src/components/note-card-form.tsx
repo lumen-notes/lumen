@@ -136,29 +136,23 @@ export function NoteCardForm({
             }}
             onKeyDown={(event) => {
               if (vimMode) {
-                // save changes on :w
-                Vim.defineEx("write", "w", () => handleSubmit());
+                // Submit on :w, :wq, :x
+                Vim.defineEx("w", "w", () => handleSubmit())
+                Vim.defineEx("wq", "wq", () => handleSubmit())
+                Vim.defineEx("x", "x", () => handleSubmit())
 
-                // save changes on :wq
-                Vim.defineEx("wq", "wq", () => handleSubmit());
-
-                // save changes on :x
-                Vim.defineEx("x", "x", () => handleSubmit());
-
-                // cancel changes on :q
-                Vim.defineEx("q", "q", () => handleCancel());
-
-                // cancel changes on :q!
-                Vim.defineEx("q!", "q!", () => handleCancel());
+                // Cancel on :q, :q!
+                Vim.defineEx("q", "q", () => handleCancel())
+                Vim.defineEx("q!", "q!", () => handleCancel())
               }
 
-              // Submit on `command + enter`
+              // Submit on Command + Enter
               if (event.key === "Enter" && event.metaKey) {
                 handleSubmit()
                 event.preventDefault()
               }
 
-              // Clear and cancel on `escape`
+              // Cancel on Escape (unless in Vim mode is enabled)
               if (event.key === "Escape" && !vimMode) {
                 handleCancel()
                 event.stopPropagation()
