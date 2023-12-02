@@ -1,4 +1,5 @@
 import React from "react"
+import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { templateSchema } from "../types"
@@ -10,16 +11,13 @@ import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, SyncIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, DiceIcon16, ListIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
+import { usePanel, usePanelActions } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { flushSync } from "react-dom"
-import { usePanelActions } from "./panels"
-import { useAtomValue } from "jotai"
-import { sortedNotesAtom } from "../global-state"
 
 const viewTypeSchema = z.enum(["list", "cards"])
 
@@ -29,9 +27,9 @@ type NoteListProps = {
   baseQuery?: string
 }
 export function NoteList({ baseQuery = "" }: NoteListProps) {
-  const sortedNotes = useAtomValue(sortedNotesAtom)
   const searchNotes = useSearchNotes()
   const { openPanel } = usePanelActions()
+  const panel = usePanel()
 
   const [query, setQuery] = useSearchParam("q", {
     validate: z.string().catch("").parse,
@@ -118,25 +116,19 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               }}
             />
             <IconButton
-              disableTooltip
-              aria-label="Change view"
+              aria-label={viewType === "cards" ? "List view" : "Card view"}
               className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
               onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
             >
               {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
             </IconButton>
-            <IconButton
-              aria-label="Random notes"
-              className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+            <DiceButton
               onClick={() => {
-                const randomIndex = Math.floor(Math.random() * sortedNotes.length)
-                if (openPanel) {
-                  return openPanel(sortedNotes[randomIndex].id, -1)
-                }
+                const resultsCount = noteResults.length
+                const randomIndex = Math.floor(Math.random() * resultsCount)
+                openPanel?.(noteResults[randomIndex].id, panel?.index)
               }}
-            >
-              <SyncIcon16 />
-            </IconButton>
+            />
           </div>
           {query ? (
             <span className="text-sm text-text-secondary">
@@ -268,5 +260,32 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         </Button>
       ) : null}
     </div>
+  )
+}
+
+function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
+  const [angle, setAngle] = React.useState(0)
+  const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 5) + 1)
+  return (
+    <IconButton
+      disabled={disabled}
+      aria-label="Roll the dice"
+      className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+      onMouseEnter={() => setAngle((angle) => angle + 15)}
+      onMouseLeave={() => setAngle((angle) => angle - 15)}
+      onClick={() => {
+        setAngle((angle) => angle + 90)
+        setNumber(Math.floor(Math.random() * 5) + 1)
+        onClick?.()
+      }}
+    >
+      <DiceIcon16
+        number={number}
+        className="transition-transform will-change-transform duration-300"
+        style={{
+          transform: `rotate(${angle}deg)`,
+        }}
+      />
+    </IconButton>
   )
 }
