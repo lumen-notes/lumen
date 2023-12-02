@@ -7,6 +7,8 @@
 }
 
 .cm-editor .cm-content {
+  /* Hide the native cursor */
+  @apply fine:[caret-color:transparent];
   width: 100%;
   padding: 0;
   white-space: pre-wrap;
@@ -40,7 +42,7 @@
 }
 
 .cm-editor .cm-panels-bottom {
-  @apply border-0;
+  @apply border-0 mt-4;
 }
 
 .cm-editor .cm-vim-panel,

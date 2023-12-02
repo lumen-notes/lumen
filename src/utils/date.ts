@@ -120,3 +120,8 @@ export function getNextBirthday(birthday: Date): Date {
 
   return nextBirthday
 }
+
+export function isValidUnixTimestamp(value: string): boolean {
+  const timestamp = Number(value)
+  return !isNaN(timestamp) && timestamp >= 0
+}
