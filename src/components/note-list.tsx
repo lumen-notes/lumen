@@ -270,9 +270,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-      onMouseEnter={() => setAngle((angle) => angle + 15)}
-      onMouseLeave={() => setAngle((angle) => angle - 15)}
+      className="group h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
       onClick={() => {
         setAngle((angle) => angle + 90)
         setNumber(Math.floor(Math.random() * 5) + 1)
@@ -281,9 +279,10 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     >
       <DiceIcon16
         number={number}
-        className="transition-transform will-change-transform duration-300"
+        className="rotate-[var(--angle)] transition-transform will-change-transform duration-300 group-hover:rotate-[calc(var(--angle)+15deg)]"
         style={{
-          transform: `rotate(${angle}deg)`,
+          // @ts-ignore
+          "--angle": `${angle}deg`,
         }}
       />
     </IconButton>
