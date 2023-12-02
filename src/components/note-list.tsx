@@ -1,4 +1,5 @@
 import React from "react"
+import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { templateSchema } from "../types"
@@ -10,13 +11,13 @@ import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, DiceIcon16, ListIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
+import { usePanel, usePanelActions } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { flushSync } from "react-dom"
 
 const viewTypeSchema = z.enum(["list", "cards"])
 
@@ -27,6 +28,8 @@ type NoteListProps = {
 }
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
+  const { openPanel } = usePanelActions()
+  const panel = usePanel()
 
   const [query, setQuery] = useSearchParam("q", {
     validate: z.string().catch("").parse,
@@ -101,7 +104,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     <div>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[1fr_auto] gap-2">
+          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
             <SearchInput
               placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
               value={query}
@@ -113,13 +116,19 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               }}
             />
             <IconButton
-              disableTooltip
-              aria-label="Change view"
+              aria-label={viewType === "cards" ? "List view" : "Card view"}
               className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
               onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
             >
               {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
             </IconButton>
+            <DiceButton
+              onClick={() => {
+                const resultsCount = noteResults.length
+                const randomIndex = Math.floor(Math.random() * resultsCount)
+                openPanel?.(noteResults[randomIndex].id, panel?.index)
+              }}
+            />
           </div>
           {query ? (
             <span className="text-sm text-text-secondary">
@@ -251,5 +260,31 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
         </Button>
       ) : null}
     </div>
+  )
+}
+
+function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
+  const [angle, setAngle] = React.useState(0)
+  const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 5) + 1)
+  return (
+    <IconButton
+      disabled={disabled}
+      aria-label="Roll the dice"
+      className="group/dice h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+      onClick={() => {
+        setAngle((angle) => angle + 90)
+        setNumber(Math.floor(Math.random() * 5) + 1)
+        onClick?.()
+      }}
+    >
+      <DiceIcon16
+        number={number}
+        className="rotate-[var(--angle)] transition-transform will-change-transform duration-300 group-hover/dice:rotate-[calc(var(--angle)+15deg)]"
+        style={{
+          // @ts-ignore
+          "--angle": `${angle}deg`,
+        }}
+      />
+    </IconButton>
   )
 }

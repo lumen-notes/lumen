@@ -152,11 +152,7 @@ export function Panel({ id, title, description, icon, actions, children, onClose
                 </DropdownMenu>
               ) : null}
               {onClose ? (
-                <IconButton
-                  aria-label="Close panel"
-                  shortcut={["⌘", "X"]}
-                  onClick={() => onClose()}
-                >
+                <IconButton aria-label="Close" shortcut={["⌘", "X"]} onClick={() => onClose()}>
                   <CloseIcon16 />
                 </IconButton>
               ) : null}

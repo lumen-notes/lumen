@@ -1,4 +1,5 @@
 import React from "react"
+import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ClearIcon16, SearchIcon16 } from "./icons"
 import { Keys } from "./keys"
@@ -22,7 +23,10 @@ export function SearchInput({
       </div>
       <input
         ref={ref}
-        className="focus-ring h-10 w-full rounded-md bg-bg-secondary px-10 [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary hover:bg-bg-tertiary focus-visible:bg-bg coarse:h-12 coarse:px-12"
+        className={cx(
+          "focus-ring h-10 w-full rounded-md bg-bg-secondary pl-10 [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary hover:bg-bg-tertiary focus-visible:bg-bg coarse:h-12 coarse:pl-12",
+          props.value ? "pr-10 coarse:pr-12" : "pr-3 coarse:pr-4",
+        )}
         type="search"
         placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
