@@ -570,9 +570,9 @@ export function MinimizeIcon16({ className }: { className?: string }) {
 
 export function DiceIcon16({
   className,
-  number,
+  number = 5,
   ...props
-}: React.ComponentPropsWithoutRef<"svg"> & { number: number }) {
+}: React.ComponentPropsWithoutRef<"svg"> & { number?: number }) {
   return (
     <svg
       className={cx("h-4 w-4", className)}
