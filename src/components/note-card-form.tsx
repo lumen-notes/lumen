@@ -167,7 +167,11 @@ export function NoteCardForm({
                     Cancel
                   </Button>
                 ) : null}
-                <Button type="submit" variant="primary" shortcut={["⌘", "⏎"]}>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  shortcut={vimMode ? [":", "x"] : ["⌘", "⏎"]}
+                >
                   Save
                 </Button>
               </div>
