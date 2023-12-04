@@ -134,6 +134,14 @@ async function getUser(token: string) {
     },
   })
 
+  if (emailResponse.status === 401) {
+    throw new Error("Invalid token")
+  }
+
+  if (!emailResponse.ok) {
+    throw new Error("Error getting user's emails")
+  }
+
   const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean }>
   const primaryEmail = emails.find((email) => email.primary)
 
