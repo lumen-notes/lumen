@@ -77,7 +77,7 @@ function FullscreenDialog({ path }: { path: string }) {
   const noteId = path.replace(/^\//, "")
 
   return (
-    <Dialog.Root open onOpenChange={closeFullscreen}>
+    <Dialog.Root open onOpenChange={closeFullscreen} disableOutsidePointerEvents>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
         <Dialog.Content asChild>
