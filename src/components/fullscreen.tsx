@@ -117,8 +117,8 @@ function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClo
 
   return (
     <div>
-      <header className="sticky top-0 z-10 grid grid-cols-3 items-center bg-bg p-2">
-        <div className="justify-self-start">
+      <header className="sticky top-0 z-10 flex items-center justify-between gap-4 bg-bg p-2">
+        <div className="flex w-full items-center gap-4">
           <IconButton
             aria-label="Exit fullscreen"
             disableTooltip
@@ -127,11 +127,12 @@ function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClo
           >
             <MinimizeIcon16 />
           </IconButton>
+          <span className="w-0 flex-grow truncate font-mono tracking-wide text-text-secondary">
+            {noteId}.md
+          </span>
         </div>
-        <div className="flex items-center justify-self-center">
-          <span className="font-mono tracking-wide text-text-secondary">{noteId}.md</span>
-        </div>
-        <div className="justify-self-end">
+
+        <div className="">
           {isEditing ? (
             <div className="flex gap-2">
               <Button
