@@ -131,7 +131,7 @@ function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?:
   )
 
   return (
-    <div>
+    <div className="flex h-full flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between gap-4 bg-bg p-2">
         <div className="flex w-full items-center gap-4">
           <IconButton
@@ -189,8 +189,8 @@ function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?:
           )}
         </div>
       </header>
-      <div className="p-4 md:p-10 lg:p-12">
-        <div className="mx-auto max-w-3xl">
+      <div className="flex-grow p-4 md:p-10 lg:p-12">
+        <div className="mx-auto h-full max-w-3xl">
           {isResolvingRepo ? (
             <span className="flex items-center gap-2 text-text-secondary">
               <LoadingIcon16 />
@@ -202,6 +202,7 @@ function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?:
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               defaultValue={note?.content ?? ""}
+              className="h-full [&_.cm-editor]:h-full"
             />
           ) : note ? (
             <Markdown>{note!.content}</Markdown>
