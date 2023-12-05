@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { flushSync } from "react-dom"
+import { useHotkeys } from "react-hotkeys-hook"
 import { Params } from "react-router-dom"
 import { z } from "zod"
 import { globalStateMachineAtom } from "../global-state"
@@ -77,12 +78,12 @@ function FullscreenDialog({ path }: { path: string }) {
   const noteId = path.replace(/^\//, "")
 
   return (
-    <Dialog.Root open onOpenChange={closeFullscreen}>
+    <Dialog.Root open>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
         <Dialog.Content asChild onPointerDownOutside={(event) => event.preventDefault()}>
           <Card className="fixed inset-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-[max(0.5rem,env(safe-area-inset-left))] right-[max(0.5rem,env(safe-area-inset-right))] top-[max(0.5rem,env(safe-area-inset-top))] z-10 overflow-auto focus:outline-none">
-            <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
+            <FullscreenNote params={{ "*": noteId }} onClose={closeFullscreen} />
           </Card>
         </Dialog.Content>
       </Dialog.Portal>
@@ -94,7 +95,7 @@ const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
 )
 
-function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClose?: () => void }) {
+function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?: () => void }) {
   const { "*": noteId = "" } = params
   const note = useNoteById(noteId)
   const saveNote = useSaveNote()
@@ -113,7 +114,21 @@ function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClo
     saveNote(note)
   }, [editorRef, noteId, saveNote])
 
-  // TODO: Add keyboard shortcuts
+  useHotkeys(
+    "e",
+    () => {
+      setIsEditing(true)
+    },
+    { enabled: !isEditing },
+  )
+
+  useHotkeys(
+    "esc",
+    () => {
+      onClose?.()
+    },
+    { enabled: !isEditing },
+  )
 
   return (
     <div>
@@ -165,7 +180,7 @@ function FullscreenNotePage({ params, onClose }: { params: Params<string>; onClo
                   onSelect={() => {
                     setIsEditing(true)
                   }}
-                  // shortcut={["E"]}
+                  shortcut={["E"]}
                 >
                   Edit
                 </DropdownMenu.Item>
