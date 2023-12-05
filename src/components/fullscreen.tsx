@@ -77,10 +77,10 @@ function FullscreenDialog({ path }: { path: string }) {
   const noteId = path.replace(/^\//, "")
 
   return (
-    <Dialog.Root open onOpenChange={closeFullscreen} disableOutsidePointerEvents>
+    <Dialog.Root open onOpenChange={closeFullscreen}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-10 bg-bg-inset" />
-        <Dialog.Content asChild>
+        <Dialog.Content asChild onPointerDownOutside={(event) => event.preventDefault()}>
           <Card className="fixed inset-2 bottom-[max(0.5rem,env(safe-area-inset-bottom))] left-[max(0.5rem,env(safe-area-inset-left))] right-[max(0.5rem,env(safe-area-inset-right))] top-[max(0.5rem,env(safe-area-inset-top))] z-10 overflow-auto focus:outline-none">
             <FullscreenNotePage params={{ "*": noteId }} onClose={closeFullscreen} />
           </Card>
