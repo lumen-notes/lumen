@@ -172,8 +172,8 @@ export const NoteCard = React.memo(function NoteCard({
             event.preventDefault()
           }
 
-          // Open note in fullscreen mode with `option + enter`
-          if (event.altKey && event.key === "Enter") {
+          // Open note in fullscreen mode with `shift + enter`
+          if (event.shiftKey && event.key === "Enter") {
             openFullscreen(`/${id}`)
             event.preventDefault()
           }
@@ -214,7 +214,7 @@ export const NoteCard = React.memo(function NoteCard({
               <DropdownMenu.Item
                 icon={<MaximizeIcon16 />}
                 onSelect={() => openFullscreen(`/${id}`)}
-                shortcut={["⌥", "⏎"]}
+                shortcut={["⇧", "⏎"]}
               >
                 Open fullscreen
               </DropdownMenu.Item>
