@@ -9,9 +9,10 @@ import { useDebouncedValue } from "../utils/use-debounced-value"
 import { parseQuery, useSearchNotes } from "../utils/use-search"
 import { useSearchParam } from "../utils/use-search-param"
 import { Button } from "./button"
+import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, DiceIcon16, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
@@ -266,25 +267,21 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
   const [angle, setAngle] = React.useState(0)
   const [number, setNumber] = React.useState(3)
+  const [isHovered, setIsHovered] = React.useState(false)
   return (
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
       className="group/dice h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
       onClick={() => {
-        setAngle((angle) => angle + 90)
-        setNumber(Math.floor(Math.random() * 5) + 1)
+        setAngle((angle) => angle + 180)
+        setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <DiceIcon16
-        number={number}
-        className="rotate-[var(--angle)] transition-transform will-change-transform duration-300 group-hover/dice:rotate-[calc(var(--angle)+15deg)]"
-        style={{
-          // @ts-ignore
-          "--angle": `${angle}deg`,
-        }}
-      />
+      <Dice number={number} angle={isHovered ? angle + 90 : angle} />
     </IconButton>
   )
 }

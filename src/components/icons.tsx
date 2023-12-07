@@ -568,56 +568,6 @@ export function MinimizeIcon16({ className }: { className?: string }) {
   )
 }
 
-export function DiceIcon16({
-  className,
-  number = 3,
-  ...props
-}: React.ComponentPropsWithoutRef<"svg"> & { number?: number }) {
-  return (
-    <svg
-      className={cx("h-4 w-4", className)}
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden
-      {...props}
-    >
-      <path d="M14 1.5a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h12ZM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z" />
-      {number === 1 && <rect x="7" y="7" width="2" height="2" />}
-      {number === 2 && (
-        <>
-          <rect x="4" y="4" width="2" height="2" />
-          <rect x="10" y="10" width="2" height="2" />
-        </>
-      )}
-      {number === 3 && (
-        <>
-          <rect x="4" y="4" width="2" height="2" />
-          <rect x="7" y="7" width="2" height="2" />
-          <rect x="10" y="10" width="2" height="2" />
-        </>
-      )}
-      {number === 4 && (
-        <>
-          <rect x="4" y="4" width="2" height="2" />
-          <rect x="4" y="10" width="2" height="2" />
-          <rect x="10" y="4" width="2" height="2" />
-          <rect x="10" y="10" width="2" height="2" />
-        </>
-      )}
-      {number === 5 && (
-        <>
-          <rect x="4" y="4" width="2" height="2" />
-          <rect x="4" y="10" width="2" height="2" />
-          <rect x="7" y="7" width="2" height="2" />
-          <rect x="10" y="4" width="2" height="2" />
-          <rect x="10" y="10" width="2" height="2" />
-        </>
-      )}
-      {/* 6 dots is too dense to be legible at 16px */}
-    </svg>
-  )
-}
-
 // Brand icons
 
 export function GitHubIcon16() {
