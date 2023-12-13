@@ -50,9 +50,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Border colors */
-    --color-border-focus: var(--cyan-10);
-
     /* Backround colors */
     --color-bg: var(--sand-2);
     --color-bg-inset: black;
@@ -62,6 +59,10 @@
     --color-bg-tertiary: var(--sand-a5);
     --color-bg-code-block: var(--sand-a3);
     --color-bg-highlight: var(--yellow-a4);
+
+    /* Border colors */
+    --color-border-secondary: var(--sand-a5);
+    --color-border-focus: var(--cyan-10);
 
     /* Syntax colors */
     --color-syntax-yellow: var(--yellow-12);
