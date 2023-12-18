@@ -1,20 +1,20 @@
 import { Getter, useSetAtom } from "jotai"
 import { atomWithStorage, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { githubRepoAtom, githubUserAtom, notesAtom, rawNotesAtom } from "../global-state"
-import { writeFiles } from "./github-fs"
+import { REPO_DIR, githubUserAtom, notesAtom, rawNotesAtom } from "../global-state"
+import git from "isomorphic-git"
+import http from "isomorphic-git/http/web"
+import { fs } from "./fs"
+import { logFileSystemState } from "./logFileSystem"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
 export const shaAtom = atomWithStorage<string | null>("sha", null)
 
 const githubUserCallback = (get: Getter) => get(githubUserAtom)
-const githubRepoCallback = (get: Getter) => get(githubRepoAtom)
-
 const notesCallback = (get: Getter) => get(notesAtom)
 
 export function useRenameTag() {
   const getGitHubUser = useAtomCallback(githubUserCallback)
-  const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const getNotes = useAtomCallback(notesCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
 
@@ -22,46 +22,56 @@ export function useRenameTag() {
     async (oldName: string, newName: string) => {
       const notes = getNotes()
 
-      const updatedRawNotes = [...notes.values()]
-        // Notes that contain the old tag
-        .filter((note) => note.tags.includes(oldName))
-        .reduce<Record<string, string>>((updatedRawNotes, note) => {
-          // Find and replace the old tag with the new tag
-          updatedRawNotes[note.id] = note.content.replace(`#${oldName}`, `#${newName}`)
-          return updatedRawNotes
-        }, {})
+      const updatedNotesContent: Record<string, string> = {}
+      for (const note of notes.values()) {
+        if (note.tags.includes(oldName)) {
+          const newContent = note.content.replace(`#${oldName}`, `#${newName}`)
+          updatedNotesContent[note.id] = newContent
 
-      // Update state
-      setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+          // Write updated content to fs
+          await fs.promises.writeFile(`${REPO_DIR}/${note.id}.md`, newContent, "utf8")
+          await git.add({ fs, dir: REPO_DIR, filepath: `${note.id}.md` })
+        }
+      }
 
       // Push to GitHub
       try {
         const githubUser = getGitHubUser()
-        const githubRepo = getGitHubRepo()
-        if (!githubUser || !githubRepo) return
+        if (!githubUser) return
 
-        const files = mapObject(updatedRawNotes, (content, id) => {
-          return [`${id}.md`, content]
+        await git.commit({
+          fs,
+          dir: REPO_DIR,
+          message: `Rename tag #${oldName} to #${newName}`,
+          author: {
+            name: githubUser.name,
+            email: githubUser.email,
+          },
         })
 
-        await writeFiles({
-          githubToken: githubUser.token,
-          githubRepo,
-          files,
-          commitMessage: `Rename tag #${oldName} to #${newName}`,
+        await git.push({
+          fs,
+          http,
+          dir: REPO_DIR,
+          onAuth: () => ({ username: githubUser.login, password: githubUser.token }),
         })
+
+        setRawNotes((rawNotes) => {
+          return { ...rawNotes, ...updatedNotesContent }
+        })
+
+        await logFileSystemState(fs)
       } catch (error) {
         // TODO: Display error
         console.error(error)
       }
     },
-    [getNotes, setRawNotes, getGitHubUser, getGitHubRepo],
+    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
   )
 }
 
 export function useDeleteTag() {
   const getGitHubUser = useAtomCallback(githubUserCallback)
-  const getGitHubRepo = useAtomCallback(githubRepoCallback)
   const getNotes = useAtomCallback(notesCallback)
   const setRawNotes = useSetAtom(rawNotesAtom)
 
@@ -69,43 +79,53 @@ export function useDeleteTag() {
     async (tagName: string) => {
       const notes = getNotes()
 
-      // Regex to match the tag and its children
-      const tagRegex = new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g")
-
-      const updatedRawNotes = [...notes.values()]
-        // Notes that contain the tag to be deleted
-        .filter((note) => note.tags.includes(tagName))
-        .reduce<Record<string, string>>((updatedRawNotes, note) => {
+      const updatedNotesContent: Record<string, string> = {}
+      for (const note of notes.values()) {
+        if (note.tags.includes(tagName)) {
           // Find and replace the tag with an empty string
-          updatedRawNotes[note.id] = note.content.replace(tagRegex, ``)
-          return updatedRawNotes
-        }, {})
+          const newContent = note.content.replace(
+            new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g"),
+            "",
+          )
+          updatedNotesContent[note.id] = newContent
 
-      // Update state
-      setRawNotes((rawNotes) => ({ ...rawNotes, ...updatedRawNotes }))
+          // Write updated content to fs
+          await fs.promises.writeFile(`${REPO_DIR}/${note.id}.md`, newContent, "utf8")
+          await git.add({ fs, dir: REPO_DIR, filepath: `${note.id}.md` })
+        }
+      }
 
       // Push to GitHub
       try {
         const githubUser = getGitHubUser()
-        const githubRepo = getGitHubRepo()
-        if (!githubUser || !githubRepo) return
+        if (!githubUser) return
 
-        const files = mapObject(updatedRawNotes, (content, id) => {
-          return [`${id}.md`, content]
+        await git.commit({
+          fs,
+          dir: REPO_DIR,
+          message: `Delete tag #${tagName}`,
+          author: {
+            name: githubUser.name,
+            email: githubUser.email,
+          },
         })
 
-        await writeFiles({
-          githubToken: githubUser.token,
-          githubRepo,
-          files,
-          commitMessage: `Delete tag #${tagName}`,
+        await git.push({
+          fs,
+          http,
+          dir: REPO_DIR,
+          onAuth: () => ({ username: githubUser.login, password: githubUser.token }),
+        })
+
+        setRawNotes((rawNotes) => {
+          return { ...rawNotes, ...updatedNotesContent }
         })
       } catch (error) {
         // TODO: Display error
         console.error(error)
       }
     },
-    [getNotes, setRawNotes, getGitHubUser, getGitHubRepo],
+    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
   )
 }
 
