@@ -129,14 +129,14 @@ export function useDeleteTag() {
   )
 }
 
-function mapObject<T, U extends string | number | symbol, V>(
-  obj: Record<string, T>,
-  fn: (value: T, key: string) => [U, V],
-): Record<U, V> {
-  const result: Record<U, V> = {} as Record<U, V>
-  for (const key in obj) {
-    const [newKey, newValue] = fn(obj[key], key)
-    result[newKey] = newValue
-  }
-  return result
-}
+// function mapObject<T, U extends string | number | symbol, V>(
+//   obj: Record<string, T>,
+//   fn: (value: T, key: string) => [U, V],
+// ): Record<U, V> {
+//   const result: Record<U, V> = {} as Record<U, V>
+//   for (const key in obj) {
+//     const [newKey, newValue] = fn(obj[key], key)
+//     result[newKey] = newValue
+//   }
+//   return result
+// }
