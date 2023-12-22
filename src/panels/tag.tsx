@@ -56,7 +56,6 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
             Open in new window
           </DropdownMenu.Item>
           <DropdownMenu.Separator /> */}
-          {/* TODO: Re-implement rename and delete tag */}
           <DropdownMenu.Item icon={<EditIcon16 />} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
