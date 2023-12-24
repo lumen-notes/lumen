@@ -1,13 +1,10 @@
 import { Getter, useSetAtom } from "jotai"
-import { atomWithStorage, useAtomCallback } from "jotai/utils"
+import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { REPO_DIR, githubUserAtom, notesAtom, rawNotesAtom } from "../global-state"
 import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
 import { fs } from "./fs"
-
-// Store SHA to avoid re-fetching notes if the SHA hasn't changed
-export const shaAtom = atomWithStorage<string | null>("sha", null)
 
 const githubUserCallback = (get: Getter) => get(githubUserAtom)
 const notesCallback = (get: Getter) => get(notesAtom)

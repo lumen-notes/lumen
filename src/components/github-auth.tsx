@@ -5,7 +5,6 @@ import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
 import { githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
-import { shaAtom } from "../utils/tags"
 import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
@@ -100,13 +99,9 @@ export function SignedInUser() {
 
 export function useSignOut() {
   const send = useSetAtom(globalStateMachineAtom)
-  const setSha = useSetAtom(shaAtom)
 
   return () => {
     send({ type: "SIGN_OUT" })
-
-    // Always refetch notes when signing back in
-    setSha(null)
   }
 }
 
