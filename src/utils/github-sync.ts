@@ -24,8 +24,26 @@ export function useRenameTag() {
 
       const updatedNotesContent: Record<string, string> = {}
       for (const note of notes.values()) {
-        if (note.tags.includes(oldName)) {
-          const newContent = note.content.replace(`#${oldName}`, `#${newName}`)
+        let newContent = note.content
+
+        // Replace #oldName with #newName
+        const hashTagPattern = new RegExp(`#${oldName}\\b`, "g")
+        newContent = newContent.replace(hashTagPattern, `#${newName}`)
+
+        // Handle tags: [tag1, tag2] format
+        const tagsPattern = /tags: \[([^\]]+)\]/g
+        let match
+        while ((match = tagsPattern.exec(newContent)) !== null) {
+          if (match[1].includes(oldName)) {
+            const updatedTags = match[1]
+              .split(",")
+              .map((tag) => (tag.trim() === oldName ? newName : tag))
+              .join(",")
+            newContent = newContent.replace(match[0], `tags: [${updatedTags}]`)
+          }
+        }
+
+        if (newContent !== note.content) {
           updatedNotesContent[note.id] = newContent
 
           // Write updated content to fs
@@ -59,8 +77,6 @@ export function useRenameTag() {
         setRawNotes((rawNotes) => {
           return { ...rawNotes, ...updatedNotesContent }
         })
-
-        await logFileSystemState(fs)
       } catch (error) {
         // TODO: Display error
         console.error(error)
@@ -81,12 +97,25 @@ export function useDeleteTag() {
 
       const updatedNotesContent: Record<string, string> = {}
       for (const note of notes.values()) {
-        if (note.tags.includes(tagName)) {
-          // Find and replace the tag with an empty string
-          const newContent = note.content.replace(
-            new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g"),
-            "",
-          )
+        let newContent = note.content
+
+        // Delete #tagName
+        newContent = newContent.replace(new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g"), "")
+
+        // Handle tags: [tag1, tag2] format
+        const tagsPattern = /tags: \[([^\]]+)\]/g
+        let match
+        while ((match = tagsPattern.exec(newContent)) !== null) {
+          const updatedTags = match[1]
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag !== tagName)
+            .join(", ")
+          const newTagsString = updatedTags ? `tags: [${updatedTags}]` : ""
+          newContent = newContent.replace(match[0], newTagsString)
+        }
+
+        if (newContent !== note.content) {
           updatedNotesContent[note.id] = newContent
 
           // Write updated content to fs
