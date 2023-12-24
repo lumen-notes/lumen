@@ -25,22 +25,7 @@ export function useRenameTag() {
       for (const note of notes.values()) {
         let newContent = note.content
 
-        // Replace #oldName with #newName
-        const hashTagPattern = new RegExp(`#${oldName}\\b`, "g")
-        newContent = newContent.replace(hashTagPattern, `#${newName}`)
-
-        // Handle tags: [tag1, tag2] format
-        const tagsPattern = /tags: \[([^\]]+)\]/g
-        let match
-        while ((match = tagsPattern.exec(newContent)) !== null) {
-          if (match[1].includes(oldName)) {
-            const updatedTags = match[1]
-              .split(",")
-              .map((tag) => (tag.trim() === oldName ? newName : tag))
-              .join(",")
-            newContent = newContent.replace(match[0], `tags: [${updatedTags}]`)
-          }
-        }
+        newContent = updateTagInContent(newContent, oldName, "rename", newName)
 
         if (newContent !== note.content) {
           updatedNotesContent[note.id] = newContent
@@ -98,21 +83,7 @@ export function useDeleteTag() {
       for (const note of notes.values()) {
         let newContent = note.content
 
-        // Delete #tagName
-        newContent = newContent.replace(new RegExp(`#${tagName}\\b(\\/[\\w\\-_\\d]*)*`, "g"), "")
-
-        // Handle tags: [tag1, tag2] format
-        const tagsPattern = /tags: \[([^\]]+)\]/g
-        let match
-        while ((match = tagsPattern.exec(newContent)) !== null) {
-          const updatedTags = match[1]
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((tag) => tag !== tagName)
-            .join(", ")
-          const newTagsString = updatedTags ? `tags: [${updatedTags}]` : ""
-          newContent = newContent.replace(match[0], newTagsString)
-        }
+        newContent = updateTagInContent(newContent, tagName, "delete")
 
         if (newContent !== note.content) {
           updatedNotesContent[note.id] = newContent
@@ -157,14 +128,40 @@ export function useDeleteTag() {
   )
 }
 
-// function mapObject<T, U extends string | number | symbol, V>(
-//   obj: Record<string, T>,
-//   fn: (value: T, key: string) => [U, V],
-// ): Record<U, V> {
-//   const result: Record<U, V> = {} as Record<U, V>
-//   for (const key in obj) {
-//     const [newKey, newValue] = fn(obj[key], key)
-//     result[newKey] = newValue
-//   }
-//   return result
-// }
+export function updateTagInContent(
+  content: string,
+  tagName: string,
+  operation: "rename" | "delete",
+  newName = "",
+) {
+  let newContent = content
+
+  const hashTagPattern = new RegExp(`#${tagName}\\b`, "g")
+  const tagsPattern = /tags: \[([^\]]+)\]/g
+
+  if (operation === "rename") {
+    newContent = newContent.replace(hashTagPattern, `#${newName}`)
+  } else if (operation === "delete") {
+    newContent = newContent.replace(hashTagPattern, "")
+  }
+
+  let match
+  while ((match = tagsPattern.exec(newContent)) !== null) {
+    let tagsArray = match[1].split(",").map((tag) => tag.trim())
+
+    if (operation === "rename") {
+      tagsArray = tagsArray.map((tag) => (tag === tagName ? newName : tag))
+    } else if (operation === "delete") {
+      tagsArray = tagsArray.filter((tag) => tag !== tagName)
+    }
+
+    const updatedTags = tagsArray.join(", ")
+    const newTagsString = updatedTags ? `tags: [${updatedTags}]` : "tags: []"
+    newContent = newContent.replace(match[0], newTagsString)
+  }
+
+  // Remove any trailing comma and space in the tags list
+  newContent = newContent.replace(/tags: \[([^,\]]+),\s*\]/g, "tags: [$1]")
+
+  return newContent
+}
