@@ -5,7 +5,6 @@ import { REPO_DIR, githubUserAtom, notesAtom, rawNotesAtom } from "../global-sta
 import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
 import { fs } from "./fs"
-import { logFileSystemState } from "./log-file-system"
 
 // Store SHA to avoid re-fetching notes if the SHA hasn't changed
 export const shaAtom = atomWithStorage<string | null>("sha", null)
