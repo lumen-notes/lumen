@@ -3,22 +3,27 @@ import { z } from "zod"
 export type NoteId = string
 
 export type Note = {
-  /**  Markdown file name without the extension */
+  /** The markdown file path without the extension (e.g. `foo/bar.md` → `foo/bar`) */
   id: NoteId
-
-  /**  Content of the markdown file */
+  /** The content of the markdown file */
   content: string
 
-  // Parsed from the content
+  // ↓ Parsed from the content
+
+  /** The frontmatter of the markdown file */
   frontmatter: Record<string, unknown>
+  /** If the markdown file contains an h1 (e.g. `# title`), we use that as the title */
   title: string
-  /** If the title contains a link (e.g. `# [title](url)`), this will be the url */
+  /** If the title contains a link (e.g. `# [title](url)`), we use that as the url */
   url: string | null
+  /** The ids of all notes that are linked to from this note */
   links: NoteId[]
   dates: string[]
   tags: string[]
 
-  // Derived from links
+  // ↓ Derived from links
+
+  /** The ids of all notes that link to this note */
   backlinks: NoteId[]
 }
 
