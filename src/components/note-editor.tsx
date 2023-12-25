@@ -20,7 +20,7 @@ import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../utils/use-save-note"
-import { useStableSearchNotes } from "../utils/use-search"
+import { useStableSearchNotes } from "../hooks/search"
 import { getVimMode } from "../utils/vim-mode"
 import { useInsertTemplate } from "./insert-template"
 

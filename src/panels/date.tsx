@@ -31,7 +31,7 @@ import {
   toDateString,
 } from "../utils/date"
 import { useNoteById } from "../utils/use-note-by-id"
-import { useSearchNotes } from "../utils/use-search"
+import { useSearchNotes } from "../hooks/search"
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params

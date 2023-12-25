@@ -15,7 +15,7 @@ import { removeParentTags } from "../utils/remove-parent-tags"
 import { flushSync } from "react-dom"
 import { useDebouncedValue } from "../utils/use-debounced-value"
 import { useSaveNote } from "../utils/use-save-note"
-import { useSearchNotes } from "../utils/use-search"
+import { useSearchNotes } from "../hooks/search"
 import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 
