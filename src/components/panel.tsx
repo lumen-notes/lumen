@@ -177,10 +177,12 @@ function ResizeHandle({
   onChange: (value: number) => void
   onStop?: () => void
 }) {
+  const draggableRef = React.useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = React.useState(false)
   const isResizing = isDragging
   return (
     <DraggableCore
+      nodeRef={draggableRef}
       onStart={() => setIsDragging(true)}
       onStop={() => {
         setIsDragging(false)
@@ -192,6 +194,7 @@ function ResizeHandle({
       }}
     >
       <div
+        ref={draggableRef}
         data-resizing={isDragging}
         className={clsx(
           "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",

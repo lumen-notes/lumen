@@ -161,6 +161,7 @@ function Dialog() {
     focusNoteEditor,
     focusPrevActiveElement,
   } = React.useContext(NewNoteDialogContext)
+  const draggableRef = React.useRef<HTMLDivElement>(null)
 
   // We consider any viewport wider than 640px a desktop viewport.
   // This breakpoint is copied from Tailwind's default breakpoints.
@@ -175,6 +176,7 @@ function Dialog() {
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div className="fixed inset-0 z-10 bg-bg-backdrop animate-in fade-in sm:hidden" />
           <DraggableCore
+            nodeRef={draggableRef}
             onDrag={(event, data) =>
               setPosition({
                 x: position.x + data.deltaX,
@@ -188,6 +190,7 @@ function Dialog() {
           >
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
+              ref={draggableRef}
               className="fixed left-2 right-2 top-2 z-20 sm:left-[calc(50vw_+_var(--left)_-_var(--width)_/_2)] sm:right-[unset] sm:top-[calc(128px_+_var(--top))] sm:w-[var(--width)]"
               style={{
                 // @ts-ignore
