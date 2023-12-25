@@ -228,7 +228,10 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
       // Preserve the view type when navigating between panels
       const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
       const { pathname, search } = resolvePath(to)
-      const href = `${pathname}?${qs.stringify({ v: viewType, ...qs.parse(search) })}`
+      const href = `${pathname}?${qs.stringify({
+        v: viewType,
+        ...qs.parse(search, { ignoreQueryPrefix: true }),
+      })}`
 
       // Fall back to default browser behavior when any modifier keys are pressed
       if (event?.metaKey || event?.ctrlKey || event?.shiftKey) {
@@ -255,7 +258,7 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
         // Preserve the current search params
         const combinedSearch = {
           ...qs.parse(location.search, { ignoreQueryPrefix: true }),
-          ...qs.parse(search),
+          ...qs.parse(search, { ignoreQueryPrefix: true }),
         }
 
         navigate({

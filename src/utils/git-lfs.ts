@@ -36,9 +36,14 @@ export async function isTrackedWithGitLfs(path: string) {
       // Check if file path matches pattern and if filter=lfs is set
       return (
         micromatch.isMatch(
-          // Remove leading slash from path and pattern
-          path.replace(/^\//, ""),
-          pattern.replace(/^\//, ""),
+          path
+            // Remove REPO_DIR from path
+            .replace(REPO_DIR, "")
+            // Remove leading slash from path
+            .replace(/^\/*/, ""),
+          pattern
+            // Remove leading slash from pattern
+            .replace(/^\//, ""),
         ) && attrs.includes("filter=lfs")
       )
     })
