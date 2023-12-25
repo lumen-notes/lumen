@@ -555,7 +555,7 @@ function createGlobalStateMachine() {
   )
 }
 
-/** Retrieve cached markdown files from local storage */
+/** Get cached markdown files from local storage */
 function getMarkdownFilesFromLocalStorage() {
   const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_KEY) ?? "null")
   if (!markdownFiles) return null
@@ -566,6 +566,7 @@ function getMarkdownFilesFromLocalStorage() {
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
   console.time("getMarkdownFilesFromFs()")
+
   const markdownFiles = await git.walk({
     fs,
     dir,
@@ -585,6 +586,7 @@ async function getMarkdownFilesFromFs(dir: string) {
       return [filepath, new TextDecoder().decode(content)]
     },
   })
+
   console.timeEnd("getMarkdownFilesFromFs()")
 
   return Object.fromEntries(markdownFiles)
