@@ -2,7 +2,7 @@ import { useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { globalStateMachineAtom } from "../global-state"
-import { updateTag } from "./update-tag"
+import { updateTag } from "../utils/update-tag"
 
 const markdownFilesAtom = selectAtom(globalStateMachineAtom, (state) => state.context.markdownFiles)
 
