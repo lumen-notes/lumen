@@ -4,8 +4,8 @@ import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
+import { useNoteById } from "../hooks/note"
 import { DATE_REGEX } from "../utils/date"
-import { useNoteById } from "../utils/use-note-by-id"
 import { DatePanel } from "./date"
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {

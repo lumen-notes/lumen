@@ -13,14 +13,16 @@ import {
   TriangleRightIcon8,
 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
-import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Link } from "../components/link"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { datesAtom, templatesAtom } from "../global-state"
+import { useNoteById } from "../hooks/note"
+import { useSearchNotes } from "../hooks/search"
 import { cx } from "../utils/cx"
 import {
   DATE_REGEX,
@@ -30,8 +32,6 @@ import {
   formatDateDistance,
   toDateString,
 } from "../utils/date"
-import { useNoteById } from "../utils/use-note-by-id"
-import { useSearchNotes } from "../hooks/search"
 
 export function DatePanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
