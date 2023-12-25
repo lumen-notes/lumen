@@ -3,7 +3,7 @@ import qs from "qs"
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { usePanel, usePanelActions } from "../components/panels"
-import { savePathParams } from "./prev-path-params"
+import { savePathParams } from "../utils/prev-path-params"
 
 type SearchParamOptions<T = string> = {
   validate?: (value: unknown) => T

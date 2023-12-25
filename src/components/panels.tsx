@@ -9,7 +9,7 @@ import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
-import { useSearchParam } from "../utils/use-search-param"
+import { useSearchParam } from "../hooks/search-param"
 import { LinkClickHandler, LinkContext } from "./link"
 
 type PanelValue = {
