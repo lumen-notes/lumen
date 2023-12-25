@@ -45,14 +45,13 @@ type Event =
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
   | { type: "PUSH" }
-  | { type: "WRITE_FILE"; filepath: string; content: string }
   | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz58q4HgftEX5BIgezeOK9ipoBcyjl4vGqs566uUaEDyQAFlgVDGhAKBgAwADqOpvHSe4-AAYm8R63tp4LkW4SyYgk3iLF1EXCh4yh-iECYJq+ljRMNPGOZhmXYTl+WFTA7AlWVAAih57jV9WNXuzUBTppixYBUw2OYDi-r175CjF6zQm4kThDYNhDgmE0SulUFyQpkALUVuAAO74KCVB1WQpXIcaaGmk50ECW5uVSAVf2A8DUCg6VKmuoR6h+V2+2tUFV2RKdnjMfy0LRjdModdyoELi4rgfbJLnfQjSNLSj8gg2DZUluJ5aVtWM2w9lty-RzQNc2jPOY2p7qaf5LIE4dFH9pRg6zAucb9T+WxRb+sZjhNexTecMn8aLP2I4tbAQGApVS+jZXMChJoYebs1w-N1t-XbDsiE7su9PLnr472yLKEGlEbEsnIRpy-VvbgDiAQuEpWWO5hMxbrPi7b9tgI7POlKJpYSRWUkw198N57gfuFwHMv4cHGmh0rvaWGd1EJFiaY+NEicSrCg2xji8SWKkpvKh7Iu57AgQUFIVwPFIUhwLArwAJpfMee3t+RziBgBiz2ZYUQmZ3-g3WEyTJ9KKaLj48LZ57lu5fPi+4HzW873v94qxMbuE9PDzAvrsYUWJAxQgWM4F+s8a4fyXtoB4KAUAiAhqhTg0NhbV3mogqoKC0FUCDu2HGCs8b7yCjELY9hrKTWDKPCBcY-yH0jMxSicDcFi3wcg1B6C+ZlkklWaSfFX5zwXkgwhIgSHYz-oFFWgprDJCnNEPY8JUzOAgdCCI7hNgOFgdNGeXCfo8KkVQBgciDrshiP+TuopJ7qKSBA1MkdBrSmhMGHEipDGiPgXgiRBDYB5XQS7SGWD3a+OMe-AJyCgnSObqQyxysxjuGsBGbwE8xyOM0dfDkMIgIGLNpElmCCYkPDieYgR5dBYiIyn47hZSKlQBkepMhbd-4pJ8LCRYP4ZRhFUU46+URpy-jOhwnxdSolXEacE8xSTezJhhMBfETgpQTWRFoky-5Rx7EKdPYpWVxGf0RmAKQXARAvFkHIcpGC3a1M+iU-xxy8qnPOVQS51zYAtJDlpMO5FfRij5HoyiEDdhcmGtMY4xwTLtU4Y8hpzzXkXKubIG5oTMHoXuczQ5pTEVnORZ875HY3DkNIlY2KAFxTJnYTktYixfy2BYjSuFOKnlLxOfi95KKblVIFpXHB8KTEBI5W8qAHzUVfISbI3GZLkmhHfDOBwBwTLJgmIxXJ8wgw-m6gYokFA0B23gECEk7T5FjABcGLV8J2GLCivMYUAKgzwmRJRTuUpBRpQmbkIQjZOimvJQgOMydgJLBNqq2Mgy1inW2AmPYopDjHE7iyx4sh-VyuCgqcUyQz7HysHCJiEQwjQNtRNRcWcvXYopGm3sAL7JWumEqhUE8Jw3U5HYGcMo5zAUXFPKuLkGzCTQNW-5wEDKdsOKozkkZYyTkjN0hYqSQL0pZRqTc241iKw6ZCY4kQTJyjCpFaKawI5TFnMfBcp8V1e0Uk2XQw7CZQmTlYKycd7DjRsMKZ6WwAKImGe4ex5aimTMFRAe9KtfT03rTapt9qqbwhhNKSMgowgJCWBmCtOca4+xgGB81BwpjUocBGeEAprprHatGo4SGwipGYoiK9b9a5kBWrh0I04AKxAWA-GFv5+qeCGiNOUrhxqTQY7nbDbBOaN1Kqx4KsRIjBgAnMAMKIB5UysPdRDMDdheLE1h9m+d-bcxk78yhCjpQGUAmEOIKmlhqfI+rf8IZgLCYmnEPTbLZMQbCFBxtdqW10o2NOZE7jgyzBiB5hFS9YArzXrAI1m6zV+k7r5ieMGAtsdvqGh+9kn7eKAw81lUWv6l3wF5x9DgnBLGssAjZ18fzWCcPEXZkWhWf14UQqAsngEGSSMkYM-SNEQOVbYsm59fD5f2cBorbXJFNO66OhMjhxpqIGbS0IyZI6ht2TpiLGGxG4vZS8zlYruUJYoVu8YT1k7vn0Uwj8BlgLAt1WkIAA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz7RO44ZLG+wobHykTSkObgOM4hwSrxqrOeurlGhA8kABZYFQxoQCgYAMAA6jqbx0nuPwAGJvEeLy3tp4LkWF-6pE4oqvtKULRQq1jKDY5iAZYEocmFDnnDJ-FZbceUFTA7DFaVAAih57tVdUNXuzUBTppiIO1772DKUrmCZ76WNFcrTskwaDq4kY-mlUFyQpkALYVuAAO74KCVC1WQJWwMhxpoaaTnQQJbk5VI+XfX9ANQEDIMqa6hHqH5Xb7a1QXQso-7MdKH7HEm0ZBIgHgsZEszRAunI2BxPGOZhGXYdlX1LUj8iA8DcClKJpYSRWUlQ+9sNc2wPMiKjcDo2p7qaf5LJ44dFFxkGiUKmFexxnE0XDrTSzhLEP4mVNyozezMOc-Di1sBAYAlbzKP82DqGcJDbPQ3Nn3299Tsu7L-MK70SuerjvauITzELixUQLPY0WIoNsbAVEmzeEOr2yS5H1wwjS1B2Arty4LYllpJVbSXxNt+4XDu4CXZeh-h4caZHqu9rGEQbMlrjjt4Kf9iEQ2zEsCobPZuezQXVyBBQUhXA8UhSHAoMvAAml8x57d35EeHdyQyh+Zu+AblPjPMhMOFxvi9VCXiz-X8+wIvy8low2+7-v97q-CSyE9UjuEnhsa6V94SOCmOEUUk8wg2EjC-X2b8P5VAeCgFAIgPYmgwtbFBkt35L3QZgkQYd2xY2VjjA+QV+SBhGvYCalhYynWFIsKIBkmYymAnyUUsZkES05kQ5e2gMFYKoBXYW5ZKzVh9oI+awiSHiKgOQzGf9ArqxCnycMAEoz3TYR4QMJszauHhBmVm+D5GfUUaI0hEj1EHUfH+Rh9gdgXVjM4AxEYgwJk5LsUygFnACPzoQtBojYC5WwcwFCuDa7pQIUIsJDwIlkPbhQhxasxixhhAGeIfDJrQmiGwxwbhtiCiWByQUiJgmZVQcQ8JkSJFfyrqLGu4sQmJPqckxpKi0lqOxqRRxiBkR-g5AGDOCYdaeMgbKf8MRQGxAmEsGpHMFFJJSfYgZLVo6Ri1jKACcRiYHDYa4Lk0o5TJjHL+RUFi64JLWcQ+GYApBcBEC8WQchkk4Ihngu5VicqKKeS8t5HzZDJNUepShXd-5jAutOOIlEUw-jsN4SijFIFWWnNMJIxwRoSmYUE258T-kL0eblZ5ryqDvM+aDaJ4Mva-OJR0h5y8gWUqgNSsFsAIX9DcFQwZmTEA6w6sGNMAEwpmQxZsTEI5YzxBDIcFZtsWV5QpSCmlkjxLSLFnI5l1i0FsvVVynlnctJR3Io4QMEYWIjSHCTX8bCkjWAOAmFMQ05SEiJBQNATt4BAhJNCjRYxfSpi2FKdwEx0wRmDMKX004FhJBSjZRwP5kS5wbB0MQgahkIE1vOJYexM5LKSMKYa2wEx7FFIcY4Y0amPFkNmwVwUFTimSMwgC4RKILCYhEMIT9FjTAmPZcwSrG29hDckIMY5C1RqshOK+nI7Azg8PTKyk0EgjqJW9FyGalJoDHeRONpTfBQkOPTRmUZJy7MFAsdwb49abumn8lym5txrBVjCyExxIgmTlHyd8n5-BX2RLHWcHaFz2RZk+pltScJ7oPfjKEuA4zys5NaywEZS3SoAqnW9xwwiPqts+2D2UEPqxDQBKdEbmGImjT4aKqY-zxAAsGewdC+RKoblLMjwaaY7BRcmYMUpJnRVSDCTqVbUhWXxJx+eAclpkBWjxqm054SFIVIBI4TqbobCmOKuULD4TLK3XnEj815PS3+q3EGyngqxn-PZOIiUwoTXnWsRK9nmNT2OAkSisnJYWebs7UuIcSq2dcKUpYEYb0LA80B9zr5jbzkM8TfznSpC2d9MlKjM7aNzvi6EVFthaPuL2AqtLKrYCr3XrAP1H6g2hGnJGZEhTz4bDc415MyGCX03smdaEFX9XEK-pl6w4bcvwjnZfNYKLRScKE7RVNUGiMwdWUNkRYiRC2csBMImco7Uygw8kNh8xSmigOMNRYL4RqDYBesnp22whTHOz+EB1MimQORFsbwBTJrTBuyZueoSyVqqpaC5JtmYhbHlSmMaiDRUdfGK4qY0xkphR8Mw+YGQMhAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -76,9 +75,6 @@ function createGlobalStateMachine() {
           }
           checkStatus: {
             data: { isSynced: boolean }
-          }
-          writeFile: {
-            data: void
           }
           writeFiles: {
             data: void
@@ -162,23 +158,8 @@ function createGlobalStateMachine() {
                   states: {
                     idle: {
                       on: {
-                        WRITE_FILE: "writingFile",
                         WRITE_FILES: "writingFiles",
                         DELETE_FILE: "deletingFile",
-                      },
-                    },
-                    writingFile: {
-                      entry: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
-                      invoke: {
-                        src: "writeFile",
-                        onDone: {
-                          target: "idle",
-                          actions: raise("SYNC"),
-                        },
-                        onError: {
-                          target: "idle",
-                          actions: "setError",
-                        },
                       },
                     },
                     writingFiles: {
@@ -446,38 +427,15 @@ function createGlobalStateMachine() {
 
           return { isSynced }
         },
-        writeFile: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
-
-          const { filepath, content } = event
-
-          // Write file to file system
-          await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
-
-          // Stage file
-          console.log(`$ git add ${filepath}`)
-          await git.add({
-            fs,
-            dir: REPO_DIR,
-            filepath,
-          })
-
-          // Commit file
-          console.log(`$ git commit -m "Update ${filepath}"`)
-          await git.commit({
-            fs,
-            dir: REPO_DIR,
-            message: `Update ${filepath}`,
-          })
-        },
         writeFiles: async (context, event) => {
           if (!context.githubUser) {
             throw new Error("Not signed in")
           }
 
-          const { markdownFiles, commitMessage } = event
+          const {
+            markdownFiles,
+            commitMessage = `Update ${Object.keys(markdownFiles).join(" ")}`,
+          } = event
 
           // Write files to file system
           Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
@@ -493,11 +451,11 @@ function createGlobalStateMachine() {
           })
 
           // Commit files
-          console.log(`$ git commit -m "Update ${Object.keys(markdownFiles).join(" ")}"`)
+          console.log(`$ git commit -m "${commitMessage}"`)
           await git.commit({
             fs,
             dir: REPO_DIR,
-            message: commitMessage || `Update ${Object.keys(markdownFiles).join(" ")}`,
+            message: commitMessage,
           })
         },
         deleteFile: async (context, event) => {
@@ -569,20 +527,10 @@ function createGlobalStateMachine() {
         mergeMarkdownFilesLocalStorage: (context, event) => {
           localStorage.setItem(
             MARKDOWN_FILES_KEY,
-            JSON.stringify({ ...context.markdownFiles, ...event.markdownFiles }),
-          )
-        },
-        setMarkdownFile: assign({
-          markdownFiles: (context, event) => {
-            const { filepath, content } = event
-            return { ...context.markdownFiles, [filepath]: content }
-          },
-        }),
-        setMarkdownFileLocalStorage: (context, event) => {
-          const { filepath, content } = event
-          localStorage.setItem(
-            MARKDOWN_FILES_KEY,
-            JSON.stringify({ ...context.markdownFiles, [filepath]: content }),
+            JSON.stringify({
+              ...context.markdownFiles,
+              ...event.markdownFiles,
+            }),
           )
         },
         deleteMarkdownFile: assign({

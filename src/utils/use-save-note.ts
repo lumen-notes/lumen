@@ -8,7 +8,10 @@ export function useSaveNote() {
 
   const saveNote = React.useCallback(
     ({ id, content }: Pick<Note, "id" | "content">) => {
-      send({ type: "WRITE_FILE", filepath: `${id}.md`, content })
+      send({
+        type: "WRITE_FILES",
+        markdownFiles: { [`${id}.md`]: content },
+      })
     },
     [send],
   )
