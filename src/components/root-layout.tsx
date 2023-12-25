@@ -3,7 +3,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
-import { useThemeColorProvider } from "../utils/use-theme-color"
+import { useThemeColorProvider } from "../hooks/theme-color"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 
