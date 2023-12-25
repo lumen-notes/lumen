@@ -46,6 +46,7 @@ type Event =
   | { type: "SYNC" }
   | { type: "PUSH" }
   | { type: "WRITE_FILE"; filepath: string; content: string }
+  | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
@@ -77,6 +78,9 @@ function createGlobalStateMachine() {
             data: { isSynced: boolean }
           }
           writeFile: {
+            data: void
+          }
+          writeFiles: {
             data: void
           }
           deleteFile: {
@@ -159,6 +163,7 @@ function createGlobalStateMachine() {
                     idle: {
                       on: {
                         WRITE_FILE: "writingFile",
+                        WRITE_FILES: "writingFiles",
                         DELETE_FILE: "deletingFile",
                       },
                     },
@@ -166,6 +171,20 @@ function createGlobalStateMachine() {
                       entry: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
                       invoke: {
                         src: "writeFile",
+                        onDone: {
+                          target: "idle",
+                          actions: raise("SYNC"),
+                        },
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
+                      },
+                    },
+                    writingFiles: {
+                      entry: ["mergeMarkdownFiles", "mergeMarkdownFilesLocalStorage"],
+                      invoke: {
+                        src: "writeFiles",
                         onDone: {
                           target: "idle",
                           actions: raise("SYNC"),
@@ -453,6 +472,34 @@ function createGlobalStateMachine() {
             message: `Update ${filepath}`,
           })
         },
+        writeFiles: async (context, event) => {
+          if (!context.githubUser) {
+            throw new Error("Not signed in")
+          }
+
+          const { markdownFiles, commitMessage } = event
+
+          // Write files to file system
+          Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
+            await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
+          })
+
+          // Stage files
+          console.log(`$ git add ${Object.keys(markdownFiles).join(" ")}`)
+          await git.add({
+            fs,
+            dir: REPO_DIR,
+            filepath: Object.keys(markdownFiles),
+          })
+
+          // Commit files
+          console.log(`$ git commit -m "Update ${Object.keys(markdownFiles).join(" ")}"`)
+          await git.commit({
+            fs,
+            dir: REPO_DIR,
+            message: commitMessage || `Update ${Object.keys(markdownFiles).join(" ")}`,
+          })
+        },
         deleteFile: async (context, event) => {
           if (!context.githubUser) {
             throw new Error("Not signed in")
@@ -512,6 +559,18 @@ function createGlobalStateMachine() {
         }),
         setMarkdownFilesLocalStorage: (_, event) => {
           localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
+        },
+        mergeMarkdownFiles: assign({
+          markdownFiles: (context, event) => ({
+            ...context.markdownFiles,
+            ...event.markdownFiles,
+          }),
+        }),
+        mergeMarkdownFilesLocalStorage: (context, event) => {
+          localStorage.setItem(
+            MARKDOWN_FILES_KEY,
+            JSON.stringify({ ...context.markdownFiles, ...event.markdownFiles }),
+          )
         },
         setMarkdownFile: assign({
           markdownFiles: (context, event) => {

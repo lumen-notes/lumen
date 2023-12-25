@@ -1,164 +1,92 @@
 import { Getter, useSetAtom } from "jotai"
-import { useAtomCallback } from "jotai/utils"
+import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { REPO_DIR, githubUserAtom, notesAtom, rawNotesAtom } from "../global-state"
-import git from "isomorphic-git"
-import http from "isomorphic-git/http/web"
-import { fs } from "./fs"
+import { globalStateMachineAtom } from "../global-state"
 
-const githubUserCallback = (get: Getter) => get(githubUserAtom)
-const notesCallback = (get: Getter) => get(notesAtom)
+const markdownFilesAtom = selectAtom(globalStateMachineAtom, (state) => state.context.markdownFiles)
+const markdownFilesCallback = (get: Getter) => get(markdownFilesAtom)
 
 export function useRenameTag() {
-  const getGitHubUser = useAtomCallback(githubUserCallback)
-  const getNotes = useAtomCallback(notesCallback)
-  const setRawNotes = useSetAtom(rawNotesAtom)
+  const getMarkdownFiles = useAtomCallback(markdownFilesCallback)
+  const send = useSetAtom(globalStateMachineAtom)
 
   return React.useCallback(
     async (oldName: string, newName: string) => {
-      const notes = getNotes()
+      const markdownFiles = getMarkdownFiles()
+      const updatedMarkdownFiles: Record<string, string> = {}
 
-      const updatedNotesContent: Record<string, string> = {}
-      for (const note of notes.values()) {
-        let newContent = note.content
+      for (const [filepath, content] of Object.entries(markdownFiles)) {
+        const newContent = updateTag({ fileContent: content, oldName, newName })
 
-        newContent = updateTagInContent(newContent, oldName, "rename", newName)
-
-        if (newContent !== note.content) {
-          updatedNotesContent[note.id] = newContent
-
-          // Write updated content to fs
-          await fs.promises.writeFile(`${REPO_DIR}/${note.id}.md`, newContent, "utf8")
-          await git.add({ fs, dir: REPO_DIR, filepath: `${note.id}.md` })
+        if (newContent !== content) {
+          updatedMarkdownFiles[filepath] = newContent
         }
       }
 
-      // Push to GitHub
-      try {
-        const githubUser = getGitHubUser()
-        if (!githubUser) return
-
-        await git.commit({
-          fs,
-          dir: REPO_DIR,
-          message: `Rename tag #${oldName} to #${newName}`,
-          author: {
-            name: githubUser.name,
-            email: githubUser.email,
-          },
-        })
-
-        await git.push({
-          fs,
-          http,
-          dir: REPO_DIR,
-          onAuth: () => ({ username: githubUser.login, password: githubUser.token }),
-        })
-
-        setRawNotes((rawNotes) => {
-          return { ...rawNotes, ...updatedNotesContent }
-        })
-      } catch (error) {
-        // TODO: Display error
-        console.error(error)
-      }
+      send({
+        type: "WRITE_FILES",
+        markdownFiles: updatedMarkdownFiles,
+        commitMessage: `Rename tag #${oldName} to #${newName}`,
+      })
     },
-    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
+    [getMarkdownFiles, send],
   )
 }
 
 export function useDeleteTag() {
-  const getGitHubUser = useAtomCallback(githubUserCallback)
-  const getNotes = useAtomCallback(notesCallback)
-  const setRawNotes = useSetAtom(rawNotesAtom)
+  const getMarkdownFiles = useAtomCallback(markdownFilesCallback)
+  const send = useSetAtom(globalStateMachineAtom)
 
   return React.useCallback(
     async (tagName: string) => {
-      const notes = getNotes()
+      const markdownFiles = getMarkdownFiles()
+      const updatedMarkdownFiles: Record<string, string> = {}
 
-      const updatedNotesContent: Record<string, string> = {}
-      for (const note of notes.values()) {
-        let newContent = note.content
+      for (const [filepath, content] of Object.entries(markdownFiles)) {
+        const newContent = updateTag({ fileContent: content, oldName: tagName, newName: null })
 
-        newContent = updateTagInContent(newContent, tagName, "delete")
-
-        if (newContent !== note.content) {
-          updatedNotesContent[note.id] = newContent
-
-          // Write updated content to fs
-          await fs.promises.writeFile(`${REPO_DIR}/${note.id}.md`, newContent, "utf8")
-          await git.add({ fs, dir: REPO_DIR, filepath: `${note.id}.md` })
+        if (newContent !== content) {
+          updatedMarkdownFiles[filepath] = newContent
         }
       }
 
-      // Push to GitHub
-      try {
-        const githubUser = getGitHubUser()
-        if (!githubUser) return
-
-        await git.commit({
-          fs,
-          dir: REPO_DIR,
-          message: `Delete tag #${tagName}`,
-          author: {
-            name: githubUser.name,
-            email: githubUser.email,
-          },
-        })
-
-        await git.push({
-          fs,
-          http,
-          dir: REPO_DIR,
-          onAuth: () => ({ username: githubUser.login, password: githubUser.token }),
-        })
-
-        setRawNotes((rawNotes) => {
-          return { ...rawNotes, ...updatedNotesContent }
-        })
-      } catch (error) {
-        // TODO: Display error
-        console.error(error)
-      }
+      send({
+        type: "WRITE_FILES",
+        markdownFiles: updatedMarkdownFiles,
+        commitMessage: `Delete tag #${tagName}`,
+      })
     },
-    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
+    [getMarkdownFiles, send],
   )
 }
 
-export function updateTagInContent(
-  content: string,
-  tagName: string,
-  operation: "rename" | "delete",
-  newName = "",
-) {
-  let newContent = content
+/** Rename or delete a tag in a markdown file */
+export function updateTag({
+  fileContent,
+  oldName,
+  newName,
+}: {
+  fileContent: string
+  oldName: string
+  newName: string | null // null means delete
+}): string {
+  // Replace the old tag name with the new one in the file content
+  let updatedContent = fileContent.replace(
+    new RegExp(`#${oldName}\\b`, "g"),
+    newName ? `#${newName}` : "",
+  )
 
-  const hashTagPattern = new RegExp(`#${tagName}\\b`, "g")
-  const tagsPattern = /tags: \[([^\]]+)\]/g
-
-  if (operation === "rename") {
-    newContent = newContent.replace(hashTagPattern, `#${newName}`)
-  } else if (operation === "delete") {
-    newContent = newContent.replace(hashTagPattern, "")
+  // Replace the old tag name with the new one in the frontmatter
+  const frontmatterTagsRegex = /tags: \[(.*?)\]/g
+  const matches = frontmatterTagsRegex.exec(fileContent)
+  if (matches && matches[1]) {
+    const tags = matches[1].split(",").map((tag) => tag.trim())
+    const updatedTags = tags
+      .map((tag) => (tag === oldName ? newName : tag))
+      .filter(Boolean)
+      .join(", ")
+    updatedContent = updatedContent.replace(frontmatterTagsRegex, `tags: [${updatedTags}]`)
   }
 
-  let match
-  while ((match = tagsPattern.exec(newContent)) !== null) {
-    let tagsArray = match[1].split(",").map((tag) => tag.trim())
-
-    if (operation === "rename") {
-      tagsArray = tagsArray.map((tag) => (tag === tagName ? newName : tag))
-    } else if (operation === "delete") {
-      tagsArray = tagsArray.filter((tag) => tag !== tagName)
-    }
-
-    const updatedTags = tagsArray.join(", ")
-    const newTagsString = updatedTags ? `tags: [${updatedTags}]` : "tags: []"
-    newContent = newContent.replace(match[0], newTagsString)
-  }
-
-  // Remove any trailing comma and space in the tags list
-  newContent = newContent.replace(/tags: \[([^,\]]+),\s*\]/g, "tags: [$1]")
-
-  return newContent
+  return updatedContent
 }

@@ -1,73 +1,192 @@
 import { expect, test } from "vitest"
-import { updateTagInContent } from "./tags"
+import { updateTag } from "./tags"
 
-type TestCases = Array<{
-  input: string
-  tagName: string
-  operation: "rename" | "delete"
-  newName?: string
-  output: string
-}>
+type TestCase = {
+  input: Parameters<typeof updateTag>[0]
+  output: ReturnType<typeof updateTag>
+}
 
-function runTagUpdateTests(tests: TestCases) {
-  for (const { input, tagName, operation, newName, output } of tests) {
-    test(`${operation} tag '${tagName}'`, () => {
-      const result = updateTagInContent(input, tagName, operation, newName)
+function runTests(tests: TestCase[]) {
+  for (const { input, output } of tests) {
+    test(JSON.stringify(input), () => {
+      const result = updateTag(input)
       expect(result).toBe(output)
     })
   }
 }
 
-runTagUpdateTests([
+runTests([
+  // Rename tag
   {
-    input: "Content with #oldTag and tags: [oldTag, anotherTag]",
-    tagName: "oldTag",
-    operation: "rename",
-    newName: "newTag",
-    output: "Content with #newTag and tags: [newTag, anotherTag]",
+    input: {
+      fileContent: "#old-tag",
+      oldName: "old-tag",
+      newName: "new-tag",
+    },
+    output: "#new-tag",
   },
   {
-    input: "Delete tags: [tagToDelete, keepTag]",
-    tagName: "tagToDelete",
-    operation: "delete",
-    output: "Delete tags: [keepTag]",
+    input: {
+      fileContent: "#old-tag #other-tag",
+      oldName: "old-tag",
+      newName: "new-tag",
+    },
+    output: "#new-tag #other-tag",
   },
   {
-    input: "Delete #some",
-    tagName: "some",
-    operation: "delete",
-    output: "Delete ",
+    input: {
+      fileContent: "#old-tag#other-tag",
+      oldName: "old-tag",
+      newName: "new-tag",
+    },
+    output: "#new-tag#other-tag",
   },
   {
-    input: "Content #tagInContent tags: [tagInContent, anotherTag]",
-    tagName: "tagInContent",
-    operation: "delete",
-    output: "Content  tags: [anotherTag]",
+    input: {
+      fileContent: "#first-tag #second-tag #third-tag",
+      oldName: "second-tag",
+      newName: "new-tag",
+    },
+    output: "#first-tag #new-tag #third-tag",
   },
   {
-    input: "Rename #tagToRename tags: [tagToRename, otherTag]",
-    tagName: "tagToRename",
-    operation: "rename",
-    newName: "renamedTag",
-    output: "Rename #renamedTag tags: [renamedTag, otherTag]",
+    input: {
+      fileContent: "#first-tagsecond-tag #third-tag",
+      oldName: "first-tag",
+      newName: "new-tag",
+    },
+    output: "#first-tagsecond-tag #third-tag",
   },
   {
-    input: "No tags present",
-    tagName: "absentTag",
-    operation: "delete",
+    input: {
+      fileContent: `---
+tags: [old-tag, other-tag]
+---`,
+      oldName: "old-tag",
+      newName: "new-tag",
+    },
+    output: `---
+tags: [new-tag, other-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [first-tag, second-tag, third-tag]
+---`,
+      oldName: "second-tag",
+      newName: "new-tag",
+    },
+    output: `---
+tags: [first-tag, new-tag, third-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+foo: bar
+tags: [first-tag, second-tag, third-tag]
+---`,
+      oldName: "second-tag",
+      newName: "new-tag",
+    },
+    output: `---
+foo: bar
+tags: [first-tag, new-tag, third-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [first-tagsecond-tag, third-tag]
+---`,
+      oldName: "second-tag",
+      newName: "new-tag",
+    },
+    output: `---
+tags: [first-tagsecond-tag, third-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: "No tags present",
+      oldName: "old-tag",
+      newName: "new-tag",
+    },
     output: "No tags present",
   },
+
+  // Delete tag
   {
-    input: "Empty tags: []",
-    tagName: "irrelevantTag",
-    operation: "rename",
-    newName: "newName",
-    output: "Empty tags: []",
+    input: {
+      fileContent: "#old-tag",
+      oldName: "old-tag",
+      newName: null,
+    },
+    output: "",
   },
   {
-    input: "Single tag: #singleTag",
-    tagName: "singleTag",
-    operation: "delete",
-    output: "Single tag: ",
+    input: {
+      fileContent: "#old-tag #other-tag",
+      oldName: "old-tag",
+      newName: null,
+    },
+    output: " #other-tag",
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [old-tag]
+---`,
+      oldName: "old-tag",
+      newName: null,
+    },
+    output: `---
+tags: []
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [old-tag, other-tag]
+---`,
+      oldName: "old-tag",
+      newName: null,
+    },
+    output: `---
+tags: [other-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [first-tag, second-tag, third-tag]
+---`,
+      oldName: "second-tag",
+      newName: null,
+    },
+    output: `---
+tags: [first-tag, third-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: `---
+tags: [first-tag, second-tag, third-tag]
+---`,
+      oldName: "third-tag",
+      newName: null,
+    },
+    output: `---
+tags: [first-tag, second-tag]
+---`,
+  },
+  {
+    input: {
+      fileContent: "No tags present",
+      oldName: "old-tag",
+      newName: null,
+    },
+    output: "No tags present",
   },
 ])
