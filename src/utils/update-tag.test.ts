@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { updateTag } from "./tags"
+import { updateTag } from "./update-tag"
 
 type TestCase = {
   input: Parameters<typeof updateTag>[0]

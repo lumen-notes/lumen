@@ -9,7 +9,7 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, usePanel, usePanelActions } from "../components/panels"
-import { useDeleteTag, useRenameTag } from "../utils/tags"
+import { useDeleteTag, useRenameTag } from "../utils/use-tags"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
