@@ -3,7 +3,7 @@ import git, { WORKDIR } from "isomorphic-git"
 import http from "isomorphic-git/http/web"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { atomWithStorage, selectAtom } from "jotai/utils"
+import { selectAtom } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
