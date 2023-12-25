@@ -6,8 +6,6 @@ import { globalStateMachineAtom } from "../global-state"
 import { useThemeColorProvider } from "../utils/use-theme-color"
 import { ErrorIcon16 } from "./icons"
 import { SyntaxHighlighter } from "./syntax-highlighter"
-// @ts-ignore
-import LagRadar from "react-lag-radar"
 
 const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
 
@@ -39,11 +37,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="truncate">{error.message}</span>
         </div>
       ) : null}
-      {import.meta.env.DEV ? (
-        <div className="fixed bottom-4 right-4 z-20 rounded-full bg-[black] p-2 shadow-lg">
-          <LagRadar />
-        </div>
-      ) : null}
+
       {children}
       <DevBar />
     </div>
