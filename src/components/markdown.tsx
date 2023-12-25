@@ -25,7 +25,7 @@ import {
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { UPLOADS_DIR } from "../utils/use-attach-file"
+import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../utils/use-note-by-id"
 import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
