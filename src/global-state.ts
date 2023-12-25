@@ -610,8 +610,6 @@ export const githubRepoAtom = selectAtom(
 // Notes
 // -----------------------------------------------------------------------------
 
-export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
-
 export const notesAtom = atom((get) => {
   const state = get(globalStateMachineAtom)
   const markdownFiles = state.context.markdownFiles
