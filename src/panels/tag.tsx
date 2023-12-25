@@ -9,7 +9,7 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, usePanel, usePanelActions } from "../components/panels"
-import { useDeleteTag, useRenameTag } from "../utils/use-tags"
+import { useDeleteTag, useRenameTag } from "../utils/use-update-tag"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -26,15 +26,12 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
 
   const handleDeleteTag = React.useCallback(() => {
     // Confirm deletion
-    if (!window.confirm(`Are you sure you want to delete the "${name}" tag?`)) {
-      return
+    if (window.confirm(`Are you sure you want to delete the "${name}" tag?`)) {
+      deleteTag(name)
+
+      // Close the current tag panel
+      onClose?.()
     }
-
-    // Close the current tag panel
-    onClose?.()
-
-    // Update state
-    deleteTag(name)
   }, [onClose, deleteTag, name])
 
   return (

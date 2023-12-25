@@ -1,14 +1,13 @@
-import { Getter, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { globalStateMachineAtom } from "../global-state"
 import { updateTag } from "./update-tag"
 
 const markdownFilesAtom = selectAtom(globalStateMachineAtom, (state) => state.context.markdownFiles)
-const markdownFilesCallback = (get: Getter) => get(markdownFilesAtom)
 
 export function useRenameTag() {
-  const getMarkdownFiles = useAtomCallback(markdownFilesCallback)
+  const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const send = useSetAtom(globalStateMachineAtom)
 
   return React.useCallback(
@@ -35,7 +34,7 @@ export function useRenameTag() {
 }
 
 export function useDeleteTag() {
-  const getMarkdownFiles = useAtomCallback(markdownFilesCallback)
+  const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const send = useSetAtom(globalStateMachineAtom)
 
   return React.useCallback(
