@@ -44,18 +44,6 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon16 />}
       actions={
         <>
-          {/* <DropdownMenu.Item
-            icon={<ExternalLinkIcon16 />}
-            onSelect={() => {
-              const url = panel
-                ? `${panel.pathname}?${panel.search}`
-                : `${location.pathname}?${location.search}`
-              openNewWindow(url)
-            }}
-          >
-            Open in new window
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator /> */}
           <DropdownMenu.Item icon={<EditIcon16 />} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
@@ -71,10 +59,15 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
           {isRenaming ? (
             <Card className="mb-4 p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 id="rename-tag-heading" className="text-xl font-semibold leading-4">
+                <h3 id="rename-tag-heading" className="text-lg font-semibold leading-4">
                   Rename tag
                 </h3>
-                <IconButton aria-label="Close" className="-m-2" onClick={closeRenameForm}>
+                <IconButton
+                  aria-label="Close"
+                  className="-m-2"
+                  onClick={closeRenameForm}
+                  disableTooltip
+                >
                   <CloseIcon16 />
                 </IconButton>
               </div>
@@ -114,7 +107,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                       }
                     }}
                   />
-                  <Button type="submit" variant="primary" className="!h-full">
+                  <Button type="submit" variant="primary">
                     Save
                   </Button>
                 </div>
