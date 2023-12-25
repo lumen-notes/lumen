@@ -1,6 +1,6 @@
 import { useSetAtom } from "jotai"
 import { globalStateMachineAtom } from "../global-state"
-import { Note } from "../types"
+import { Note } from "../schema"
 import React from "react"
 
 export function useSaveNote() {

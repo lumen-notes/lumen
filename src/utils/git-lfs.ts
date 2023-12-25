@@ -1,5 +1,5 @@
 import { REPO_DIR } from "../global-state"
-import { GitHubRepository, GitHubUser } from "../types"
+import { GitHubRepository, GitHubUser } from "../schema"
 import { fs } from "./fs"
 import micromatch from "micromatch"
 

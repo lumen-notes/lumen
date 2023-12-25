@@ -1,6 +1,6 @@
 import { useSetAtom } from "jotai"
 import { globalStateMachineAtom } from "../global-state"
-import { NoteId } from "../types"
+import { NoteId } from "../schema"
 import React from "react"
 
 export function useDeleteNote() {

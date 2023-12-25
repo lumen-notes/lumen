@@ -14,7 +14,7 @@ import {
   Template,
   githubUserSchema,
   templateSchema,
-} from "./types"
+} from "./schema"
 import { fs, fsWipe } from "./utils/fs"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"

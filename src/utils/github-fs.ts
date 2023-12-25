@@ -1,6 +1,6 @@
 import { Buffer } from "buffer"
 import mime from "mime"
-import { GitHubRepository } from "../types"
+import { GitHubRepository } from "../schema"
 
 function getFileEndpoint(githubRepo: GitHubRepository, path: string) {
   return `https://api.github.com/repos/${githubRepo.owner}/${githubRepo.name}/contents/${

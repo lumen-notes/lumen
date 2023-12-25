@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs"
 import mime from "mime"
-import { GitHubRepository, GitHubUser } from "../types"
+import { GitHubRepository, GitHubUser } from "../schema"
 import {
   createGitLfsPointer,
   isTrackedWithGitLfs,

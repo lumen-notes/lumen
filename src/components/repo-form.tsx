@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
-import { GitHubRepository } from "../types"
+import { GitHubRepository } from "../schema"
 import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"

@@ -13,7 +13,7 @@ import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { templateSchema } from "../types"
+import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
