@@ -82,7 +82,7 @@ export async function writeFile({
 }
 
 /** Log the state of the file system to the console */
-export async function logFileSystemState(fs: LightningFS, dir = REPO_DIR) {
+export async function fsDebug(fs: LightningFS, dir = REPO_DIR) {
   try {
     // List files and directories at the specified path
     const files = await fs.promises.readdir(dir)
@@ -97,7 +97,7 @@ export async function logFileSystemState(fs: LightningFS, dir = REPO_DIR) {
       const stats = await fs.promises.stat(filePath)
       if (stats.isDirectory()) {
         // If directory, recursively log its contents
-        await logFileSystemState(fs, `${filePath}/`)
+        await fsDebug(fs, `${filePath}/`)
       } else {
         // If file, read and log its contents
         const content = await fs.promises.readFile(filePath, "utf8")
