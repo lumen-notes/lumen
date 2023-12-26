@@ -64,6 +64,6 @@ graph
     state-machine <--> local-storage
     isomorphic-git <--> lightning-fs
     isomorphic-git <--> /cors-proxy
-    /cors-proxy <--> github.com
     lightning-fs <--> indexeddb
+    /cors-proxy <--> github.com
 ```
