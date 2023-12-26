@@ -45,6 +45,7 @@ Notes in Lumen are...
 - [Templates](/docs/templates.md)
 - [Query language](/docs/query-language.md)
 - [Keyboard shortcuts](/docs/keyboard-shortcuts.md)
+- [Contributing](https://github.com/lumen-notes/lumen/blob/main/CONTRIBUTING.md)
 
 <br>
 
