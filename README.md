@@ -4,23 +4,26 @@ Lumen is a free, open-source note-taking app for lifelong learners.
 
 [**Open Lumen →**](https://app.uselumen.com)
 
-<br>
+> [!WARNING]
+>  Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates.
+
+---
 
 Think of Lumen as your private knowledge garden. It's where you plant, grow, and harvest ideas.
 
-### 🌱 Plant
+#### 🌱 Plant
 
 Write notes with [markdown](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data. Forever.
 
-### 🌿 Grow
+#### 🌿 Grow
 
 Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover new connections.
 
-### 🌻 Harvest
+#### 🌻 Harvest
 
 Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
 
-<br>
+---
 
 Notes in Lumen are...
 
@@ -33,12 +36,9 @@ Notes in Lumen are...
 - accessible on any device
 - compatible with [other apps](#alternatives)
 
-<br>
+---
 
-## Docs
-
-> [!WARNING]
->  Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates.
+### Docs
 
 - [Markdown syntax](/docs/markdown-syntax.md)
 - [Metadata](/docs/metadata.md)
@@ -48,18 +48,18 @@ Notes in Lumen are...
 - [Status](/docs/status.md)
 - [Contributing](https://github.com/lumen-notes/lumen/blob/main/CONTRIBUTING.md)
 
-<br>
+---
 
-## Recommended reading
+### Recommended reading
 
 - [Introduction to the Zettelkasten Method by Sascha](https://zettelkasten.de/introduction/)
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
 - [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
 
-<br>
+---
 
-## Alternatives
+### Alternatives
 
 - [Bear](https://bear.app)
 - [Foam](https://foambubble.github.io/foam)
@@ -71,8 +71,6 @@ Notes in Lumen are...
 - [Supernotes](https://supernotes.app)
 - [Tana](https://tana.inc)
 - [Tangent](https://www.tangentnotes.com)
-
-<br>
 
 ---
 
