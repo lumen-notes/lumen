@@ -266,7 +266,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
   const [angle, setAngle] = React.useState(0)
-  const [number, setNumber] = React.useState(3)
+  const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 6) + 1)
   const [isHovered, setIsHovered] = React.useState(false)
   return (
     <IconButton
