@@ -1,10 +1,10 @@
-import { GitHubRepository, GitHubUser } from "../schema"
-import { fsWipe, fs } from "./fs"
 import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
+import { GitHubRepository, GitHubUser } from "../schema"
+import { fs, fsWipe } from "./fs"
 import { startTimer } from "./timer"
 
-export const REPO_DIR = `/repo`
+export const REPO_DIR = "/repo"
 const DEFAULT_BRANCH = "main"
 
 export async function gitClone(repo: GitHubRepository, user: GitHubUser) {
@@ -43,8 +43,99 @@ export async function gitClone(repo: GitHubRepository, user: GitHubUser) {
   stopTimer()
 }
 
-// gitPull
-// gitPush
-// gitAdd
-// gitDelete
-// gitCommit
+export async function gitPull(user: GitHubUser) {
+  const options: Parameters<typeof git.pull>[0] = {
+    fs,
+    http,
+    dir: REPO_DIR,
+    singleBranch: true,
+    onMessage: (message) => console.debug("onMessage", message),
+    onProgress: (progress) => console.debug("onProgress", progress),
+    onAuth: () => ({ username: user.login, password: user.token }),
+  }
+
+  const stopTimer = startTimer("git pull")
+  await git.pull(options)
+  stopTimer()
+}
+
+export async function gitPush(user: GitHubUser) {
+  const options: Parameters<typeof git.push>[0] = {
+    fs,
+    http,
+    dir: REPO_DIR,
+    onMessage: (message) => console.debug("onMessage", message),
+    onProgress: (progress) => console.debug("onProgress", progress),
+    onAuth: () => ({ username: user.login, password: user.token }),
+  }
+
+  const stopTimer = startTimer("git push")
+  await git.push(options)
+  stopTimer()
+}
+
+export async function gitAdd(filePaths: string[]) {
+  const options: Parameters<typeof git.add>[0] = {
+    fs,
+    dir: REPO_DIR,
+    filepath: filePaths,
+  }
+
+  const stopTimer = startTimer(`git add ${filePaths.join(" ")}`)
+  await git.add(options)
+  stopTimer()
+}
+
+export async function gitRemove(filePath: string) {
+  const options: Parameters<typeof git.remove>[0] = {
+    fs,
+    dir: REPO_DIR,
+    filepath: filePath,
+  }
+
+  const stopTimer = startTimer(`git remove ${filePath}`)
+  await git.remove(options)
+  stopTimer()
+}
+
+export async function gitCommit(message: string) {
+  const options: Parameters<typeof git.commit>[0] = {
+    fs,
+    dir: REPO_DIR,
+    message,
+  }
+
+  const stopTimer = startTimer(`git commit -m "${message}"`)
+  await git.commit(options)
+  stopTimer()
+}
+
+/** Check if the repo is synced with the remote origin */
+export async function isRepoSynced() {
+  const latestLocalCommit = await git.resolveRef({
+    fs,
+    dir: REPO_DIR,
+    ref: `refs/heads/${DEFAULT_BRANCH}`,
+  })
+
+  const latestRemoteCommit = await git.resolveRef({
+    fs,
+    dir: REPO_DIR,
+    ref: `refs/remotes/origin/${DEFAULT_BRANCH}`,
+  })
+
+  const isSynced = latestLocalCommit === latestRemoteCommit
+
+  return isSynced
+}
+
+export async function getRemoteOriginUrl() {
+  // Check git config for remote origin url
+  const remoteOriginUrl = await git.getConfig({
+    fs,
+    dir: REPO_DIR,
+    path: "remote.origin.url",
+  })
+
+  return remoteOriginUrl
+}

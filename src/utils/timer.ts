@@ -1,5 +1,5 @@
-const START_LABEL = ["%c[START]", "color: black; background: aquamarine"]
-const END_LABEL = "[END]"
+const START_LABEL = ["%c[start]", "color: black; background: lightgreen; border-radius: 2px"]
+const END_LABEL = "[end]"
 
 export function startTimer(label: string) {
   console.log(...START_LABEL, label)

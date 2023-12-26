@@ -1,7 +1,7 @@
-import { REPO_DIR } from "../global-state"
+import micromatch from "micromatch"
 import { GitHubRepository, GitHubUser } from "../schema"
 import { fs } from "./fs"
-import micromatch from "micromatch"
+import { REPO_DIR } from "./git"
 
 /** Check if a file is tracked with Git LFS by checking the .gitattributes file */
 export async function isTrackedWithGitLfs(path: string) {

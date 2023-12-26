@@ -2,8 +2,9 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { useNetworkState } from "react-use"
 import { ErrorIcon16, LoadingIcon16, OfflineIcon16 } from "../components/icons"
-import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { getFileUrl, readFile } from "../utils/fs"
+import { REPO_DIR } from "../utils/git"
 
 export const fileCache = new Map<string, { file: File; url: string }>()
 

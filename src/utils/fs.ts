@@ -7,7 +7,7 @@ import {
   resolveGitLfsPointer,
   uploadToGitLfsServer,
 } from "./git-lfs"
-import { REPO_DIR } from "../global-state"
+import { REPO_DIR } from "./git"
 
 const DB_NAME = "fs"
 

@@ -1,6 +1,5 @@
 import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
-import http from "isomorphic-git/http/web"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import { selectAtom } from "jotai/utils"
@@ -16,17 +15,25 @@ import {
   templateSchema,
 } from "./schema"
 import { fs } from "./utils/fs"
-import { gitClone } from "./utils/git"
-import { startTimer } from "./utils/timer"
+import {
+  REPO_DIR,
+  getRemoteOriginUrl,
+  gitAdd,
+  gitClone,
+  gitCommit,
+  gitPull,
+  gitPush,
+  gitRemove,
+  isRepoSynced,
+} from "./utils/git"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
+import { startTimer } from "./utils/timer"
 
 // -----------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------
 
-export const REPO_DIR = `/repo`
-const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"
 
@@ -140,7 +147,7 @@ function createGlobalStateMachine() {
               invoke: {
                 src: "cloneRepo",
                 onDone: {
-                  target: "cloned",
+                  target: "cloned.sync.success",
                   actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
@@ -298,12 +305,7 @@ function createGlobalStateMachine() {
         resolveRepo: async () => {
           const stopTimer = startTimer("resolveRepo()")
 
-          // Check git config for repo name
-          const remoteOriginUrl = await git.getConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "remote.origin.url",
-          })
+          const remoteOriginUrl = await getRemoteOriginUrl()
 
           // Remove https://github.com/ from the beginning of the URL to get the repo name
           const repo = String(remoteOriginUrl).replace(/^https:\/\/github.com\//, "")
@@ -324,74 +326,29 @@ function createGlobalStateMachine() {
           return { githubRepo, markdownFiles }
         },
         cloneRepo: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
           await gitClone(event.githubRepo, context.githubUser)
 
-          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
-
-          return { markdownFiles }
+          return { markdownFiles: await getMarkdownFilesFromFs(REPO_DIR) }
         },
         pull: async (context) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const { login, token } = context.githubUser
+          await gitPull(context.githubUser)
 
-          console.time(`$ git pull`)
-          await git.pull({
-            fs,
-            http,
-            dir: REPO_DIR,
-            singleBranch: true,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git pull`)
-
-          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
-
-          return { markdownFiles }
+          return { markdownFiles: await getMarkdownFilesFromFs(REPO_DIR) }
         },
         push: async (context) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const { login, token } = context.githubUser
-
-          console.time(`$ git push`)
-          await git.push({
-            fs,
-            http,
-            dir: REPO_DIR,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git push`)
+          await gitPush(context.githubUser)
         },
         checkStatus: async () => {
-          const latestLocalCommit = await git.resolveRef({
-            fs,
-            dir: REPO_DIR,
-            ref: `refs/heads/${DEFAULT_BRANCH}`,
-          })
-
-          const latestRemoteCommit = await git.resolveRef({
-            fs,
-            dir: REPO_DIR,
-            ref: `refs/remotes/origin/${DEFAULT_BRANCH}`,
-          })
-
-          const isSynced = latestLocalCommit === latestRemoteCommit
-
-          return { isSynced }
+          return { isSynced: await isRepoSynced() }
         },
         writeFiles: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
           const {
             markdownFiles,
@@ -404,25 +361,13 @@ function createGlobalStateMachine() {
           })
 
           // Stage files
-          console.log(`$ git add ${Object.keys(markdownFiles).join(" ")}`)
-          await git.add({
-            fs,
-            dir: REPO_DIR,
-            filepath: Object.keys(markdownFiles),
-          })
+          await gitAdd(Object.keys(markdownFiles))
 
           // Commit files
-          console.log(`$ git commit -m "${commitMessage}"`)
-          await git.commit({
-            fs,
-            dir: REPO_DIR,
-            message: commitMessage,
-          })
+          await gitCommit(commitMessage)
         },
         deleteFile: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
           const { filepath } = event
 
@@ -430,20 +375,10 @@ function createGlobalStateMachine() {
           await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
 
           // Stage deletion
-          console.log(`$ git rm ${filepath}`)
-          await git.remove({
-            fs,
-            dir: REPO_DIR,
-            filepath,
-          })
+          await gitRemove(filepath)
 
           // Commit deletion
-          console.log(`$ git commit -m "Delete ${filepath}"`)
-          await git.commit({
-            fs,
-            dir: REPO_DIR,
-            message: `Delete ${filepath}`,
-          })
+          await gitCommit(`Delete ${filepath}`)
         },
       },
       actions: {
@@ -528,11 +463,13 @@ function getMarkdownFilesFromLocalStorage() {
 async function getMarkdownFilesFromFs(dir: string) {
   const stopTimer = startTimer("getMarkdownFilesFromFs()")
 
-  const markdownFiles = await git.walk({
+  const entries = await git.walk({
     fs,
     dir,
     trees: [WORKDIR()],
     map: async (filepath, [entry]) => {
+      if (!entry) return null
+
       // Ignore .git directory
       if (filepath.startsWith(".git")) return
 
@@ -540,17 +477,21 @@ async function getMarkdownFilesFromFs(dir: string) {
       if (!filepath.endsWith(".md")) return
 
       // Get file content
-      const content = await entry?.content()
+      const content = await entry.content()
 
       if (!content) return null
+
+      console.debug(filepath, (await entry.stat()).size)
 
       return [filepath, new TextDecoder().decode(content)]
     },
   })
 
+  const markdownFiles = Object.fromEntries(entries)
+
   stopTimer()
 
-  return Object.fromEntries(markdownFiles)
+  return markdownFiles
 }
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
