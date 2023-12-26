@@ -34,7 +34,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <div>
             <ErrorIcon16 />
           </div>
-          <span className="truncate">{error.message}</span>
+          <span className="font-mono">{error.message}</span>
         </div>
       ) : null}
 
