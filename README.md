@@ -76,6 +76,4 @@ Notes in Lumen are...
 
 ---
 
-<br>
-
 [GitHub](https://github.com/lumen-notes/lumen)&nbsp;&nbsp;·&nbsp;&nbsp;[Twitter](https://twitter.com/lumen_notes)
