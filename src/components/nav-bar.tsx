@@ -25,6 +25,7 @@ import {
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
+  SettingsIcon16,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
@@ -128,7 +129,11 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               {position === "bottom" ? <SyncDropdownMenuItem /> : null}
-              <DropdownMenu.Item onClick={() => navigate("/settings")} shortcut={["⌘", ","]}>
+              <DropdownMenu.Item
+                icon={<SettingsIcon16 />}
+                onClick={() => navigate("/settings")}
+                shortcut={["⌘", ","]}
+              >
                 Settings
               </DropdownMenu.Item>
             </DropdownMenu.Content>
