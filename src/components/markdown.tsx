@@ -78,7 +78,13 @@ export const Markdown = React.memo(
 
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
 
-    const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
+    const contextValue = React.useMemo(
+      () => ({
+        markdown: body,
+        onChange: (value: string) => onChange?.(children.replace(body, value)),
+      }),
+      [body, children, onChange],
+    )
 
     return (
       <MarkdownContext.Provider value={contextValue}>
