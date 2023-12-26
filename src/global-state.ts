@@ -15,7 +15,9 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./schema"
-import { fs, fsWipe } from "./utils/fs"
+import { fs } from "./utils/fs"
+import { gitClone } from "./utils/git"
+import { startTimer } from "./utils/timer"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 
@@ -294,7 +296,7 @@ function createGlobalStateMachine() {
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
         resolveRepo: async () => {
-          console.time("resolveRepo()")
+          const stopTimer = startTimer("resolveRepo()")
 
           // Check git config for repo name
           const remoteOriginUrl = await git.getConfig({
@@ -317,7 +319,7 @@ function createGlobalStateMachine() {
           const markdownFiles =
             getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(REPO_DIR))
 
-          console.timeEnd("resolveRepo()")
+          stopTimer()
 
           return { githubRepo, markdownFiles }
         },
@@ -326,48 +328,7 @@ function createGlobalStateMachine() {
             throw new Error("Not signed in")
           }
 
-          const githubRepo = event.githubRepo
-          const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
-          const { login, token, name, email } = context.githubUser
-
-          // Wipe file system
-          // TODO: Only remove the repo directory instead of wiping the entire file system
-          // Blocked by https://github.com/isomorphic-git/lightning-fs/issues/71
-          fsWipe()
-
-          // Clone repo
-          // This could take awhile if the repo is large
-          console.time(`$ git clone ${url}.git ${REPO_DIR}`)
-          await git.clone({
-            fs,
-            http,
-            dir: REPO_DIR,
-            corsProxy: "https://cors.isomorphic-git.org",
-            url,
-            ref: DEFAULT_BRANCH,
-            singleBranch: true,
-            depth: 1,
-            onMessage: console.log,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git clone ${url}.git ${REPO_DIR}`)
-
-          // Set user in git config
-          console.log(`$ git config user.name "Cole Bemis"`)
-          await git.setConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "user.name",
-            value: name,
-          })
-
-          console.log(`$ git config user.email "colebemis@github.com"`)
-          await git.setConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "user.email",
-            value: email,
-          })
+          await gitClone(event.githubRepo, context.githubUser)
 
           const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
 
@@ -565,7 +526,7 @@ function getMarkdownFilesFromLocalStorage() {
 
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
-  console.time("getMarkdownFilesFromFs()")
+  const stopTimer = startTimer("getMarkdownFilesFromFs()")
 
   const markdownFiles = await git.walk({
     fs,
@@ -587,7 +548,7 @@ async function getMarkdownFilesFromFs(dir: string) {
     },
   })
 
-  console.timeEnd("getMarkdownFilesFromFs()")
+  stopTimer()
 
   return Object.fromEntries(markdownFiles)
 }
