@@ -24,11 +24,10 @@ Access your notes from anywhere—even offline. Use Lumen's flexible [query lang
 
 Notes in Lumen are...
 
-- atomic
-- interconnected
 - written in [markdown](/docs/markdown-syntax.md)
 - stored as files on GitHub
 - version-controlled with Git
+- interconnected
 - searchable
 - available offline
 - accessible on any device
