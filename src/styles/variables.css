@@ -33,14 +33,6 @@
   --color-syntax-purple: var(--purple-11);
   --color-syntax-green: var(--green-11);
 
-  /* Priority colors */
-  /* TODO: Remove these */
-  --hsl-priority-1: 0deg 60% 50%;
-  --hsl-priority-2: 30deg 90% 50%;
-  --hsl-priority-3: 200deg 100% 40%;
-  --a-bg-priority: 0.1;
-  --a-bg-priority-hover: 0.2;
-
   /* Font sizes */
   --font-size-sm: 0.75rem; /* 12px */
   --font-size-base: 0.875rem; /* 14px */
@@ -69,12 +61,6 @@
     --color-syntax-red: var(--red-12);
     --color-syntax-purple: var(--purple-12);
     --color-syntax-green: var(--green-12);
-
-    /* Priority colors */
-    /* TODO: Remove these */
-    --hsl-priority-1: 0deg 100% 70%;
-    --hsl-priority-2: 30deg 100% 60%;
-    --hsl-priority-3: 200deg 100% 70%;
   }
 }
 
