@@ -27,7 +27,7 @@ export function SettingsPage() {
       <CommandMenu />
       <Panel icon={<SettingsIcon16 />} title="Settings">
         <div className="grid gap-4 p-4">
-          <h3 className="text-xl font-semibold leading-4">GitHub</h3>
+          <h3 className="text-lg font-semibold leading-4">GitHub</h3>
           <SignedInUser />
           {githubUser && githubRepo ? (
             !isEditingRepo ? (
@@ -63,7 +63,7 @@ export function SettingsPage() {
           ) : null}
         </div>
         <div className="grid gap-4 p-4">
-          <h3 className="text-xl font-semibold leading-4">Editor</h3>
+          <h3 className="text-lg font-semibold leading-4">Editor</h3>
           <Card className="p-4">
             <div className="flex items-center gap-2">
               {/* TODO: Create a Switch component and use it instead of Checkbox */}

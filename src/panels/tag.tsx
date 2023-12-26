@@ -2,8 +2,7 @@ import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
-import { IconButton } from "../components/icon-button"
-import { CloseIcon16, EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
+import { EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
 import { Input } from "../components/input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
@@ -59,14 +58,6 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                 <h3 id="rename-tag-heading" className="text-lg font-semibold leading-4">
                   Rename tag
                 </h3>
-                <IconButton
-                  aria-label="Close"
-                  className="-m-2"
-                  onClick={closeRenameForm}
-                  disableTooltip
-                >
-                  <CloseIcon16 />
-                </IconButton>
               </div>
               <form
                 aria-labelledby="rename-tag-heading"
@@ -104,6 +95,11 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                       }
                     }}
                   />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="secondary" onClick={closeRenameForm}>
+                    Cancel
+                  </Button>
                   <Button type="submit" variant="primary">
                     Save
                   </Button>

@@ -34,7 +34,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
         {isEmpty ? (
           <div className="flex w-full flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <h1 className="text-xl font-semibold">Choose a repository</h1>
+              <h1 className="text-lg font-semibold">Choose a repository</h1>
               <p className="text-text-secondary">
                 Store your notes as markdown files in a GitHub repository of your choice.
               </p>
