@@ -53,7 +53,6 @@ type Event =
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
-  | { type: "PUSH" }
   | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
 
