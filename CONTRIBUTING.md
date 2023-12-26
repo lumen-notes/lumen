@@ -38,6 +38,8 @@
 
 ## Architecture
 
+### GitHub sync
+
 ```mermaid
 graph
     subgraph local[Local machine]
