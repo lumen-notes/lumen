@@ -37,7 +37,8 @@ Notes in Lumen are...
 
 ## Docs
 
-> ⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for updates.
+> [!WARNING]
+>  Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates.
 
 - [Markdown syntax](/docs/markdown-syntax.md)
 - [Metadata](/docs/metadata.md)
