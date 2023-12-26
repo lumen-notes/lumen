@@ -1,6 +1,6 @@
 # Lumen
 
-Lumen is a free, open-source note-taking app based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+Lumen is a free, open-source note-taking app for lifelong learners.
 
 [**Open Lumen →**](https://app.uselumen.com)
 
@@ -45,18 +45,8 @@ Notes in Lumen are...
 - [Templates](/docs/templates.md)
 - [Query language](/docs/query-language.md)
 - [Keyboard shortcuts](/docs/keyboard-shortcuts.md)
+- [Status](/docs/status.md)
 - [Contributing](https://github.com/lumen-notes/lumen/blob/main/CONTRIBUTING.md)
-
-<br>
-
-## Links
-
-| Link                                           | Status                                                                                                                                                               |
-| :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [App](https://app.uselumen.com)                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
-| [Storybook](https://storybook.uselumen.com/)   | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| [GitHub](https://github.com/lumen-notes/lumen) | —                                                                                                                                                                    |
-| [Twitter](https://twitter.com/lumen_notes)     | —                                                                                                                                                                    |
 
 <br>
 
@@ -81,3 +71,11 @@ Notes in Lumen are...
 - [Supernotes](https://supernotes.app)
 - [Tana](https://tana.inc)
 - [Tangent](https://www.tangentnotes.com)
+
+<br>
+
+---
+
+<br>
+
+[GitHub](https://github.com/lumen-notes/lumen)&nbsp;&nbsp;·&nbsp;&nbsp;[Twitter](https://twitter.com/lumen_notes)
