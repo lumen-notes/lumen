@@ -34,3 +34,32 @@
     ```
 
 1.  Open the app at http://localhost:8888
+
+
+## Architecture
+
+```mermaid
+graph
+    subgraph local[Local machine]
+      subgraph app.uselumen.com
+        state-machine[state machine]
+        isomorphic-git
+        lightning-fs
+      end
+
+      indexeddb[(IndexedDB)]
+    end
+
+    subgraph edge[Netlify Edge Functions]
+      cors-proxy
+    end
+
+    github.com
+
+    state-machine <---> isomorphic-git
+    state-machine <---> lightning-fs
+    isomorphic-git <--> lightning-fs
+    isomorphic-git <--> cors-proxy
+    cors-proxy <--> github.com
+    lightning-fs <--> indexeddb
+```
