@@ -151,7 +151,7 @@ function createGlobalStateMachine() {
                 },
                 onError: {
                   target: "empty",
-                  actions: "setError",
+                  actions: ["clearGitHubRepo", "setError"],
                 },
               },
             },
@@ -406,6 +406,9 @@ function createGlobalStateMachine() {
                 return event.data.githubRepo
             }
           },
+        }),
+        clearGitHubRepo: assign({
+          githubRepo: null,
         }),
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
