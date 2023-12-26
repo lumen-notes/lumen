@@ -33,4 +33,4 @@
     npm run dev:netlify
     ```
 
-1.  Open the app at http://localhost:8888.
+1.  Open the app at http://localhost:8888
