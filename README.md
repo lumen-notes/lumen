@@ -1,6 +1,6 @@
 # Lumen
 
-_Lumen is a free, open-source note-taking app for lifelong learners._
+Lumen is a free, open-source note-taking app for lifelong learners.
 
 [**Open Lumen →**](https://app.uselumen.com)
 
@@ -9,7 +9,7 @@ _Lumen is a free, open-source note-taking app for lifelong learners._
 
 ---
 
-Think of Lumen as your private knowledge garden. It's where you plant, grow, and harvest ideas.
+Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
 #### 🌱 Plant
 
