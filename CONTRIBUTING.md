@@ -56,8 +56,8 @@ graph
 
     github.com
 
-    state-machine <---> isomorphic-git
-    state-machine <---> lightning-fs
+    state-machine <--> isomorphic-git
+    state-machine <--> lightning-fs
     isomorphic-git <--> lightning-fs
     isomorphic-git <--> cors-proxy
     cors-proxy <--> github.com
