@@ -49,6 +49,7 @@ graph
         lightning-fs([lightning-fs])
       end
 
+      local-storage[(localStorage)]
       indexeddb[(IndexedDB)]
     end
 
@@ -60,6 +61,7 @@ graph
 
     state-machine <--> isomorphic-git
     state-machine <--> lightning-fs
+    state-machine <--> local-storage
     isomorphic-git <--> lightning-fs
     isomorphic-git <--> /cors-proxy
     /cors-proxy <--> github.com
