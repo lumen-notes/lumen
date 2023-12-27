@@ -145,8 +145,8 @@ function Root({ children }: React.PropsWithChildren) {
   return (
     <PanelsContext.Provider value={panels}>
       <PanelActionsContext.Provider value={panelActions}>
-        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
-          {children}
+        <div className="flex h-full overflow-y-hidden">
+          <div className="flex h-full sm:border-r sm:border-border-secondary">{children}</div>
         </div>
       </PanelActionsContext.Provider>
     </PanelsContext.Provider>
