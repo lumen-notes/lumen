@@ -9,7 +9,7 @@ export default {
   title: "Markdown",
   component: Markdown,
   render: (args: MarkdownProps) => (
-    <Card className="mx-auto max-w-lg p-4">
+    <Card className="mx-auto max-w-2xl p-4">
       <Markdown {...args} />
     </Card>
   ),
@@ -276,7 +276,7 @@ export const TaskList: StoryObj<typeof Markdown> = {
   },
   render: (args: MarkdownProps) => {
     return (
-      <Card className="mx-auto max-w-lg p-4">
+      <Card className="mx-auto max-w-2xl p-4">
         <MarkdownWithState>{args.children}</MarkdownWithState>
       </Card>
     )
