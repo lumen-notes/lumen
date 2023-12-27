@@ -7,6 +7,7 @@ import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
 import { Markdown } from "./markdown"
+import { RadioGroup } from "./radio-group"
 
 type RepoFormProps = {
   onSubmit?: (repo: GitHubRepository) => void
@@ -113,39 +114,24 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           }
         }}
       >
-        <div className="flex flex-col gap-3 coarse:gap-4">
+        <RadioGroup
+          value={repoType}
+          onValueChange={(value) => setRepoType(value as "new" | "existing")}
+          className="flex flex-col gap-3 coarse:gap-4"
+        >
           <div className="flex items-center gap-2">
-            {/* TODO: Style radio buttons */}
-            <input
-              type="radio"
-              id="repo-new"
-              name="repo-type"
-              value="new"
-              defaultChecked={repoType === "new"}
-              onChange={(event) => {
-                if (event.target.checked) setRepoType("new")
-              }}
-            />
+            <RadioGroup.Item id="repo-new" value="new" />
             <label htmlFor="repo-new" className="leading-4">
               Create a new repository
             </label>
           </div>
           <div className="flex items-center gap-2">
-            <input
-              type="radio"
-              id="repo-existing"
-              name="repo-type"
-              value="existing"
-              defaultChecked={repoType === "existing"}
-              onChange={(event) => {
-                if (event.target.checked) setRepoType("existing")
-              }}
-            />
+            <RadioGroup.Item id="repo-existing" value="existing" />
             <label htmlFor="repo-existing" className="leading-4">
               Select an existing repository
             </label>
           </div>
-        </div>
+        </RadioGroup>
         <div className="flex flex-col gap-4">
           <div className="grid flex-grow gap-2">
             <label htmlFor="repo-owner" className="leading-4">
