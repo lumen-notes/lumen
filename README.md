@@ -4,8 +4,7 @@ Lumen is a free, open-source note-taking app for lifelong learners.
 
 [**Open Lumen →**](https://app.uselumen.com)
 
-> [!WARNING]
->  Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates.
+🚧 _Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates._
 
 ![Screenshot](https://github.com/lumen-notes/lumen/assets/4608155/6e52c46b-59f4-46c6-987d-65abee003b8a)
 
