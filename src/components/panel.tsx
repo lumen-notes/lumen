@@ -41,12 +41,12 @@ export function Panel({ id, title, description, icon, actions, children, onClose
         // Used to restore focus to active note when moving focus between panels
         data-active-note-id={activeNoteId}
         id={id}
-        className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] [&:not(:first-of-type)]:shadow-lg [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
+        className="sticky left-0 h-full w-screen flex-shrink-0 snap-center border-border-secondary bg-bg-inset focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] sm:[&:last-of-type]:border-r [&:not(:first-of-type)]:border-l [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
         style={{
           // @ts-ignore TypeScript doesn't know about custom properties
           "--width": `max(${MIN_WIDTH}px, ${width}px)`,
           // Stagger sticky offset of panels
-          "--left": panel ? `${(panel.index + 1) * 8}px` : 0,
+          "--left": panel ? `${(panel.index + 1) * 44}px` : 0,
         }}
         onKeyDown={(event) => {
           // Close with `command + x` if no text is selected
