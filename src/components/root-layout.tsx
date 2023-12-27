@@ -29,6 +29,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
+      {children}
       {error ? (
         <div className="flex items-center gap-3 bg-[var(--red-a4)] px-4 py-2 text-[var(--red-12)]">
           <div>
@@ -37,8 +38,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <span className="font-mono">{error.message}</span>
         </div>
       ) : null}
-
-      {children}
       <DevBar />
     </div>
   )
