@@ -7,9 +7,11 @@ import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, MoreIcon16 } from "./icons"
 import { Panels, usePanel } from "./panels"
+import { cx } from "../utils/cx"
 
 type PanelProps = {
   id?: string
+  className?: string
   title: string
   description?: string
   icon?: React.ReactNode
@@ -21,7 +23,16 @@ type PanelProps = {
 const MIN_WIDTH = 560
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
-export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
+export function Panel({
+  id,
+  className,
+  title,
+  description,
+  icon,
+  actions,
+  children,
+  onClose,
+}: PanelProps) {
   const [widthParam, setWidthParam] = useSearchParam("w", {
     validate: z.string().catch(String(MIN_WIDTH)).parse,
   })
@@ -41,7 +52,10 @@ export function Panel({ id, title, description, icon, actions, children, onClose
         // Used to restore focus to active note when moving focus between panels
         data-active-note-id={activeNoteId}
         id={id}
-        className="sticky left-0 h-full w-screen flex-shrink-0 snap-center border-border-secondary bg-bg-inset focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] sm:[&:not(:first-of-type)]:border-l [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
+        className={cx(
+          "sticky left-0 h-full w-screen flex-shrink-0 snap-center border-border-secondary bg-bg-inset focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] sm:[&:not(:first-of-type)]:border-l [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block",
+          className,
+        )}
         style={{
           // @ts-ignore TypeScript doesn't know about custom properties
           "--width": `max(${MIN_WIDTH}px, ${width}px)`,
