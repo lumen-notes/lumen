@@ -19,7 +19,7 @@
   --color-bg-tertiary: var(--sand-a4);
   --color-bg-code-block: var(--sand-a2);
   --color-bg-highlight: var(--yellow-a3);
-  --color-bg-selection: var(--cyan-a3);
+  --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
   --color-border: var(--sand-a8);
@@ -51,6 +51,7 @@
     --color-bg-tertiary: var(--sand-a5);
     --color-bg-code-block: var(--sand-a3);
     --color-bg-highlight: var(--yellow-a4);
+    --color-bg-selection: var(--cyan-a5);
 
     /* Border colors */
     --color-border-secondary: var(--sand-a5);

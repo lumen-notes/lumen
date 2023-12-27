@@ -3,7 +3,7 @@ import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
-import { Input } from "../components/input"
+import { TextInput } from "../components/text-input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
@@ -79,7 +79,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                   Name
                 </label>
                 <div className="flex  gap-2">
-                  <Input
+                  <TextInput
                     ref={nameInputRef}
                     id="name"
                     name="name"

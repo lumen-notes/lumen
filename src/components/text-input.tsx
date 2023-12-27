@@ -1,8 +1,8 @@
 import React from "react"
 
-type InputProps = React.ComponentPropsWithoutRef<"input">
+type TextInputProps = React.ComponentPropsWithoutRef<"input">
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
   ({ type = "text", ...props }, ref) => {
     return (
       <input

@@ -5,7 +5,7 @@ import { GitHubRepository } from "../schema"
 import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
-import { Input } from "./input"
+import { TextInput } from "./text-input"
 import { Markdown } from "./markdown"
 
 type RepoFormProps = {
@@ -151,7 +151,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             <label htmlFor="repo-owner" className="leading-4">
               Repository owner
             </label>
-            <Input
+            <TextInput
               id="repo-owner"
               name="repo-owner"
               spellCheck={false}
@@ -163,7 +163,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             <label htmlFor="repo-name" className="leading-4">
               Repository name
             </label>
-            <Input
+            <TextInput
               id="repo-name"
               name="repo-name"
               spellCheck={false}

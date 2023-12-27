@@ -246,12 +246,12 @@ export const Book: StoryObj<typeof Markdown> = {
 
 const person = `---
 phone: 555-555-5555
-website: nat.org
-github: nat
-twitter: natfriedman
+website: https://colebemis.com 
+github: colebemis
+twitter: colebemis
 ---
 
-# Nat Friedman
+# Cole Bemis
 `
 
 export const Person: StoryObj<typeof Markdown> = {

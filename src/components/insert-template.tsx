@@ -10,7 +10,7 @@ import { Button } from "./button"
 import { Card } from "./card"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
-import { Input } from "./input"
+import { TextInput } from "./text-input"
 import { Markdown } from "./markdown"
 
 // Template pending insertion into editor because it requires user input
@@ -106,7 +106,7 @@ export function InsertTemplateDialog() {
                         {formatLabel(name)}
                         {required ? <span className="ml-1 text-text-secondary">*</span> : null}
                       </label>
-                      <Input
+                      <TextInput
                         id={name}
                         name={name}
                         type="text"
