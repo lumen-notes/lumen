@@ -45,8 +45,8 @@ graph
     subgraph local[Local machine]
       subgraph app.uselumen.com
         state-machine([state machine])
-        isomorphic-git([isomorphic-git])
-        lightning-fs([lightning-fs])
+        isomorphic-git[isomorphic-git]
+        lightning-fs[lightning-fs]
       end
 
       local-storage[(localStorage)]
@@ -54,16 +54,16 @@ graph
     end
 
     subgraph edge[Netlify Edge Functions]
-      /cors-proxy
+      cors-proxy(["/cors-proxy"])
     end
 
-    github.com
+    github.com([github.com])
 
     state-machine <--> isomorphic-git
     state-machine <--> lightning-fs
     state-machine <--> local-storage
     isomorphic-git <--> lightning-fs
-    isomorphic-git <--> /cors-proxy
+    isomorphic-git <--> cors-proxy
     lightning-fs <--> indexeddb
-    /cors-proxy <--> github.com
+    cors-proxy <--> github.com
 ```
