@@ -22,6 +22,8 @@ Think of Lumen as your _private knowledge garden_. It's where you plant, grow, a
 
    Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
 
+<br />
+
 Notes in Lumen are...
 
 - written in [markdown](/docs/markdown-syntax.md)
