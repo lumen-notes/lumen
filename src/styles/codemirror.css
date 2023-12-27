@@ -34,7 +34,7 @@
 }
 
 .cm-editor:not(.cm-focused) .cm-fat-cursor {
-  @apply outline-border-focus;
+  @apply bg-bg-selection outline-none;
 }
 
 .cm-editor .cm-panels {
@@ -42,7 +42,7 @@
 }
 
 .cm-editor .cm-panels-bottom {
-  @apply border-0 mt-4;
+  @apply mt-4 border-0;
 }
 
 .cm-editor .cm-vim-panel,
