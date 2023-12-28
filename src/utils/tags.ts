@@ -63,7 +63,7 @@ export function useRenameTag() {
         console.error(error)
       }
     },
-    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
+    [getNotes, setRawNotes, getGitHubUser],
   )
 }
 
@@ -121,7 +121,7 @@ export function useDeleteTag() {
         console.error(error)
       }
     },
-    [getNotes, setRawNotes, getGitHubUser, REPO_DIR],
+    [getNotes, setRawNotes, getGitHubUser],
   )
 }
 
