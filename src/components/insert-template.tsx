@@ -102,7 +102,7 @@ export function InsertTemplateDialog() {
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
                     <div key={name} className="grid gap-2">
-                      <label htmlFor={name} className="leading-4">
+                      <label htmlFor={name} className="justify-self-start leading-4">
                         {formatLabel(name)}
                         {required ? <span className="ml-1 text-text-secondary">*</span> : null}
                       </label>
