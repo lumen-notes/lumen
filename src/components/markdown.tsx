@@ -46,6 +46,8 @@ import { NoteFavicon } from "./note-favicon"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
 
 export type MarkdownProps = {
   children: string
@@ -157,9 +159,16 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkNoteEmbed,
         remarkTagLink,
         remarkDateLink,
+        remarkMath,
       ]}
+      rehypePlugins={[rehypeKatex]}
       remarkRehypeOptions={{
         handlers: {
+          rehypeKatex(h, node) {
+            return h(node, "math", {
+              output: "mathml",
+            })
+          },
           // TODO: Improve type-safety of `node`
           noteLink(h, node) {
             return h(node, "noteLink", {
@@ -557,6 +566,9 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
+  if (className?.includes("language-math")) {
+    return <div>{children}</div>
+  }
   if (inline) {
     return <code className={className}>{children}</code>
   }
