@@ -60,3 +60,7 @@ body:has([data-resizing="true"]) * {
   vertical-align: middle;
   margin-left: 2px;
 }
+
+.katex-html {
+  display: none;
+}
