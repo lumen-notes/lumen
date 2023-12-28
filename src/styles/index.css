@@ -47,7 +47,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .link {
-  @apply rounded-xs underline decoration-text-secondary decoration-1 underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus;
+  @apply rounded-xs underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus;
+}
+
+.link:hover {
+  @apply decoration-solid;
 }
 
 .link-external::after {

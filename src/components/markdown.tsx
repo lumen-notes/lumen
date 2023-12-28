@@ -706,7 +706,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
 
   return (
-    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
+    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
       {note ? (
         <Markdown hideFrontmatter>{note.content}</Markdown>
       ) : (
