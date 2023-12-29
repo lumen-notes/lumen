@@ -128,3 +128,7 @@
 .markdown a[href^="http"] {
   @apply link-external;
 }
+
+.markdown .katex-html {
+  display: none;
+}
