@@ -170,12 +170,12 @@ function MarkdownContent({ children, className }: { children: string; className?
       rehypePlugins={[rehypeKatex]}
       remarkRehypeOptions={{
         handlers: {
+          // TODO: Improve type-safety of `node`
           rehypeKatex(h, node) {
             return h(node, "math", {
               output: "mathml",
             })
           },
-          // TODO: Improve type-safety of `node`
           noteLink(h, node) {
             return h(node, "noteLink", {
               id: node.data.id,
@@ -575,6 +575,7 @@ function Code({ className, inline, children }: CodeProps) {
   if (className?.includes("language-math")) {
     return <div>{children}</div>
   }
+
   if (inline) {
     return <code className={className}>{children}</code>
   }
