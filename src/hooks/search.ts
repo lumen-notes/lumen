@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai"
 import React from "react"
 import { noteSearcherAtom, sortedNotesAtom } from "../global-state"
-import { Note } from "../types"
+import { Note } from "../schema"
 
 type Qualifier = {
   key: string

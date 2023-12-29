@@ -27,15 +27,3 @@ export const Disabled = {
     disabled: true,
   },
 }
-
-export const Priority1 = {
-  args: {
-    priority: 1,
-  },
-}
-
-export const Priority2 = {
-  args: {
-    priority: 2,
-  },
-}

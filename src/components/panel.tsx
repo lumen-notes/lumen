@@ -2,14 +2,16 @@ import clsx from "clsx"
 import React from "react"
 import { DraggableCore } from "react-draggable"
 import { z } from "zod"
-import { useSearchParam } from "../utils/use-search-param"
+import { useSearchParam } from "../hooks/search-param"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, MoreIcon16 } from "./icons"
 import { Panels, usePanel } from "./panels"
+import { cx } from "../utils/cx"
 
 type PanelProps = {
   id?: string
+  className?: string
   title: string
   description?: string
   icon?: React.ReactNode
@@ -21,7 +23,16 @@ type PanelProps = {
 const MIN_WIDTH = 560
 const MAX_WIDTH = Number.MAX_SAFE_INTEGER
 
-export function Panel({ id, title, description, icon, actions, children, onClose }: PanelProps) {
+export function Panel({
+  id,
+  className,
+  title,
+  description,
+  icon,
+  actions,
+  children,
+  onClose,
+}: PanelProps) {
   const [widthParam, setWidthParam] = useSearchParam("w", {
     validate: z.string().catch(String(MIN_WIDTH)).parse,
   })
@@ -41,12 +52,15 @@ export function Panel({ id, title, description, icon, actions, children, onClose
         // Used to restore focus to active note when moving focus between panels
         data-active-note-id={activeNoteId}
         id={id}
-        className="sticky left-0 h-full w-screen flex-shrink-0 snap-center bg-bg-inset shadow-lg ring-1 ring-border-secondary focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block"
+        className={cx(
+          "sticky left-0 h-full w-screen flex-shrink-0 snap-center border-border-secondary bg-bg-inset focus:outline-none sm:left-[var(--left)] sm:w-[var(--width)] sm:[&:not(:first-of-type)]:border-l [&:not(:last-of-type)]:hidden sm:[&:not(:last-of-type)]:block",
+          className,
+        )}
         style={{
           // @ts-ignore TypeScript doesn't know about custom properties
           "--width": `max(${MIN_WIDTH}px, ${width}px)`,
           // Stagger sticky offset of panels
-          "--left": panel ? `${(panel.index + 1) * 8}px` : 0,
+          "--left": panel ? `${(panel.index + 1) * 44}px` : 0,
         }}
         onKeyDown={(event) => {
           // Close with `command + x` if no text is selected
@@ -177,10 +191,12 @@ function ResizeHandle({
   onChange: (value: number) => void
   onStop?: () => void
 }) {
+  const draggableRef = React.useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = React.useState(false)
   const isResizing = isDragging
   return (
     <DraggableCore
+      nodeRef={draggableRef}
       onStart={() => setIsDragging(true)}
       onStop={() => {
         setIsDragging(false)
@@ -192,6 +208,7 @@ function ResizeHandle({
       }}
     >
       <div
+        ref={draggableRef}
         data-resizing={isDragging}
         className={clsx(
           "absolute bottom-0 right-0 top-0 z-20 w-1 cursor-col-resize delay-75",

@@ -1,5 +1,5 @@
 import { useNetworkState } from "react-use"
-import { Note, templateSchema } from "../types"
+import { Note, templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import { GitHubAvatar } from "./github-avatar"
 import { NoteIcon16, NoteTemplateIcon16 } from "./icons"

@@ -16,8 +16,6 @@ import { Panels } from "../components/panels"
 // import { githubRepoAtom } from "../global-state"
 import { NotePanel } from "../panels/note"
 // import { useIsFullscreen } from "../utils/use-is-fullscreen"
-// import { useNoteById } from "../utils/use-note-by-id"
-// import { useSaveNote } from "../utils/use-save-note"
 // import { useSearchParam } from "../utils/use-search-param"
 // import { flushSync } from "react-dom"
 

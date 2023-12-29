@@ -9,11 +9,14 @@ import { useNetworkState } from "react-use"
 import remarkGfm from "remark-gfm"
 import { sentenceCase } from "sentence-case"
 import { z } from "zod"
+import { UPLOADS_DIR } from "../hooks/attach-file"
+import { useNoteById } from "../hooks/note"
+import { useSearchNotes } from "../hooks/search"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
-import { templateSchema } from "../types"
+import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   MONTH_NAMES,
@@ -25,9 +28,6 @@ import {
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { UPLOADS_DIR } from "../utils/use-attach-file"
-import { useNoteById } from "../utils/use-note-by-id"
-import { useSearchNotes } from "../utils/use-search"
 import { Card } from "./card"
 import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
@@ -80,7 +80,13 @@ export const Markdown = React.memo(
 
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
 
-    const contextValue = React.useMemo(() => ({ markdown: content, onChange }), [content, onChange])
+    const contextValue = React.useMemo(
+      () => ({
+        markdown: body,
+        onChange: (value: string) => onChange?.(children.replace(body, value)),
+      }),
+      [body, children, onChange],
+    )
 
     return (
       <MarkdownContext.Provider value={contextValue}>
@@ -712,7 +718,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
 
   return (
-    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:rounded-full before:bg-border before:content-['']">
+    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
       {note ? (
         <Markdown hideFrontmatter>{note.content}</Markdown>
       ) : (

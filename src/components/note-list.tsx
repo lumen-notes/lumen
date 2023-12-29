@@ -2,12 +2,12 @@ import React from "react"
 import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
-import { templateSchema } from "../types"
+import { templateSchema } from "../schema"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
-import { useDebouncedValue } from "../utils/use-debounced-value"
-import { parseQuery, useSearchNotes } from "../utils/use-search"
-import { useSearchParam } from "../utils/use-search-param"
+import { useDebouncedValue } from "../hooks/debounced-value"
+import { parseQuery, useSearchNotes } from "../hooks/search"
+import { useSearchParam } from "../hooks/search-param"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
@@ -266,7 +266,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
   const [angle, setAngle] = React.useState(0)
-  const [number, setNumber] = React.useState(3)
+  const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 6) + 1)
   const [isHovered, setIsHovered] = React.useState(false)
   return (
     <IconButton

@@ -1,4 +1,4 @@
-import { Note, NoteId } from "../types"
+import { Note, NoteId } from "../schema"
 
 export async function exportAsGist({
   githubToken,

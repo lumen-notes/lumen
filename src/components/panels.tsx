@@ -9,7 +9,7 @@ import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
-import { useSearchParam } from "../utils/use-search-param"
+import { useSearchParam } from "../hooks/search-param"
 import { LinkClickHandler, LinkContext } from "./link"
 
 type PanelValue = {
@@ -145,8 +145,8 @@ function Root({ children }: React.PropsWithChildren) {
   return (
     <PanelsContext.Provider value={panels}>
       <PanelActionsContext.Provider value={panelActions}>
-        <div className="flex h-full snap-x overflow-y-hidden sm:snap-none fine:snap-none">
-          {children}
+        <div className="flex h-full overflow-y-hidden">
+          <div className="flex h-full sm:border-r sm:border-border-secondary">{children}</div>
         </div>
       </PanelActionsContext.Provider>
     </PanelsContext.Provider>
@@ -228,7 +228,10 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
       // Preserve the view type when navigating between panels
       const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
       const { pathname, search } = resolvePath(to)
-      const href = `${pathname}?${qs.stringify({ v: viewType, ...qs.parse(search) })}`
+      const href = `${pathname}?${qs.stringify({
+        v: viewType,
+        ...qs.parse(search, { ignoreQueryPrefix: true }),
+      })}`
 
       // Fall back to default browser behavior when any modifier keys are pressed
       if (event?.metaKey || event?.ctrlKey || event?.shiftKey) {
@@ -255,7 +258,7 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
         // Preserve the current search params
         const combinedSearch = {
           ...qs.parse(location.search, { ignoreQueryPrefix: true }),
-          ...qs.parse(search),
+          ...qs.parse(search, { ignoreQueryPrefix: true }),
         }
 
         navigate({

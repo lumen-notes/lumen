@@ -6,5 +6,5 @@ module.exports = {
   skipWaiting: true,
   navigateFallback: "index.html",
   // Do not cache edge function routes
-  navigateFallbackDenylist: [/github-auth/, /git-lfs-file/],
+  navigateFallbackDenylist: [/cors-proxy/, /git-lfs-file/, /github-auth/],
 }

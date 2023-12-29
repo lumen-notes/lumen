@@ -10,19 +10,12 @@
   @apply mb-0;
 }
 
-.markdown h1,
-.markdown h2,
-.markdown h3,
-.markdown h4,
-.markdown h5,
-.markdown h6,
-.markdown p,
-.markdown pre,
-.markdown ul,
-.markdown ol,
-.markdown table,
-.markdown blockquote {
+.markdown :is(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote) {
   @apply my-3;
+}
+
+.markdown li :is(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote) {
+  @apply my-2;
 }
 
 .markdown hr {

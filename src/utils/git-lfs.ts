@@ -1,7 +1,7 @@
-import { REPO_DIR } from "../global-state"
-import { GitHubRepository, GitHubUser } from "../types"
-import { fs } from "./fs"
 import micromatch from "micromatch"
+import { GitHubRepository, GitHubUser } from "../schema"
+import { fs } from "./fs"
+import { REPO_DIR } from "./git"
 
 /** Check if a file is tracked with Git LFS by checking the .gitattributes file */
 export async function isTrackedWithGitLfs(path: string) {
@@ -36,9 +36,14 @@ export async function isTrackedWithGitLfs(path: string) {
       // Check if file path matches pattern and if filter=lfs is set
       return (
         micromatch.isMatch(
-          // Remove leading slash from path and pattern
-          path.replace(/^\//, ""),
-          pattern.replace(/^\//, ""),
+          path
+            // Remove REPO_DIR from path
+            .replace(REPO_DIR, "")
+            // Remove leading slash from path
+            .replace(/^\/*/, ""),
+          pattern
+            // Remove leading slash from pattern
+            .replace(/^\//, ""),
         ) && attrs.includes("filter=lfs")
       )
     })

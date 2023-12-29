@@ -11,7 +11,7 @@ import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
-import { useSearchParam } from "../utils/use-search-param"
+import { useSearchParam } from "../hooks/search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)

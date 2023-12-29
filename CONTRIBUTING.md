@@ -33,4 +33,37 @@
     npm run dev:netlify
     ```
 
-1.  Open the app at http://localhost:8888.
+1.  Open the app at http://localhost:8888
+
+
+## Architecture
+
+### GitHub sync
+
+```mermaid
+graph
+    subgraph local[Local machine]
+      subgraph app.uselumen.com
+        state-machine([state machine])
+        isomorphic-git[isomorphic-git]
+        lightning-fs[lightning-fs]
+      end
+
+      local-storage[(localStorage)]
+      indexeddb[(IndexedDB)]
+    end
+
+    subgraph edge[Netlify Edge Functions]
+      cors-proxy(["/cors-proxy"])
+    end
+
+    github.com([github.com])
+
+    state-machine <--> isomorphic-git
+    state-machine <--> lightning-fs
+    state-machine <--> local-storage
+    isomorphic-git <--> lightning-fs
+    isomorphic-git <--> cors-proxy
+    lightning-fs <--> indexeddb
+    cors-proxy <--> github.com
+```

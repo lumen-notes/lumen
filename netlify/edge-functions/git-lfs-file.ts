@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 
 import type { Config } from "https://edge.netlify.com"
-import { decode } from "https://deno.land/std/encoding/base64.ts"
+import { decodeBase64 } from "https://deno.land/std/encoding/base64.ts"
 
 // Reference: https://github.com/git-lfs/git-lfs/blob/main/docs/api/batch.md
 
@@ -74,7 +74,7 @@ async function post(request: Request) {
       throw new Error("Invalid request")
     }
 
-    const binaryContent = decode(content)
+    const binaryContent = decodeBase64(content)
 
     // Request upload URL and headers
     const response = await fetch(`https://github.com/${repo}.git/info/lfs/objects/batch`, {

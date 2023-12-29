@@ -1,7 +1,7 @@
 import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
 import { within } from "@storybook/testing-library"
-import { Note } from "../types"
+import { Note } from "../schema"
 import { NoteFavicon } from "./note-favicon"
 
 export default {

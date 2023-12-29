@@ -2,14 +2,13 @@ import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
-import { IconButton } from "../components/icon-button"
-import { CloseIcon16, EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
-import { Input } from "../components/input"
+import { EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
+import { TextInput } from "../components/text-input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, usePanel, usePanelActions } from "../components/panels"
-import { useDeleteTag, useRenameTag } from "../utils/tags"
+import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": name = "" } = params
@@ -26,15 +25,12 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
 
   const handleDeleteTag = React.useCallback(() => {
     // Confirm deletion
-    if (!window.confirm(`Are you sure you want to delete the "${name}" tag?`)) {
-      return
+    if (window.confirm(`Are you sure you want to delete the "${name}" tag?`)) {
+      deleteTag(name)
+
+      // Close the current tag panel
+      onClose?.()
     }
-
-    // Close the current tag panel
-    onClose?.()
-
-    // Update state
-    deleteTag(name)
   }, [onClose, deleteTag, name])
 
   return (
@@ -44,18 +40,6 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon16 />}
       actions={
         <>
-          {/* <DropdownMenu.Item
-            icon={<ExternalLinkIcon16 />}
-            onSelect={() => {
-              const url = panel
-                ? `${panel.pathname}?${panel.search}`
-                : `${location.pathname}?${location.search}`
-              openNewWindow(url)
-            }}
-          >
-            Open in new window
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator /> */}
           <DropdownMenu.Item icon={<EditIcon16 />} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
@@ -71,12 +55,9 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
           {isRenaming ? (
             <Card className="mb-4 p-4">
               <div className="mb-4 flex items-center justify-between">
-                <h3 id="rename-tag-heading" className="text-xl font-semibold leading-4">
+                <h3 id="rename-tag-heading" className="text-lg font-semibold leading-4">
                   Rename tag
                 </h3>
-                <IconButton aria-label="Close" className="-m-2" onClick={closeRenameForm}>
-                  <CloseIcon16 />
-                </IconButton>
               </div>
               <form
                 aria-labelledby="rename-tag-heading"
@@ -98,7 +79,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                   Name
                 </label>
                 <div className="flex  gap-2">
-                  <Input
+                  <TextInput
                     ref={nameInputRef}
                     id="name"
                     name="name"
@@ -114,7 +95,12 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                       }
                     }}
                   />
-                  <Button type="submit" variant="primary" className="!h-full">
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="secondary" onClick={closeRenameForm}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="primary">
                     Save
                   </Button>
                 </div>

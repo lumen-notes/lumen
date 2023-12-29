@@ -1,10 +1,10 @@
 import { EditorView } from "@codemirror/view"
-import git from "isomorphic-git"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { fileCache } from "../components/file-preview"
-import { REPO_DIR, githubRepoAtom, githubUserAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { fs, writeFile } from "../utils/fs"
+import { REPO_DIR, gitAdd, gitCommit } from "../utils/git"
 
 export const UPLOADS_DIR = "/uploads"
 
@@ -46,20 +46,10 @@ export function useAttachFile() {
             const relativePath = path.replace(/^\//, "")
 
             // Stage file
-            console.log(`$ git add ${relativePath}`)
-            await git.add({
-              fs,
-              dir: REPO_DIR,
-              filepath: relativePath,
-            })
+            await gitAdd([relativePath])
 
             // Commit file
-            console.log(`$ git commit -m "Update ${relativePath}"`)
-            await git.commit({
-              fs,
-              dir: REPO_DIR,
-              message: `Update ${relativePath}`,
-            })
+            await gitCommit(`Update ${relativePath}`)
           })
           .catch((error) => {
             console.error(error)

@@ -9,7 +9,7 @@ import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
-import { NoteId } from "../types"
+import { NoteId } from "../schema"
 import { getNextBirthday, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
 

@@ -1,9 +1,8 @@
 import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
-import http from "isomorphic-git/http/web"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { atomWithStorage, selectAtom } from "jotai/utils"
+import { selectAtom } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
@@ -14,17 +13,27 @@ import {
   Template,
   githubUserSchema,
   templateSchema,
-} from "./types"
-import { fs, fsWipe } from "./utils/fs"
+} from "./schema"
+import { fs } from "./utils/fs"
+import {
+  REPO_DIR,
+  getRemoteOriginUrl,
+  gitAdd,
+  gitClone,
+  gitCommit,
+  gitPull,
+  gitPush,
+  gitRemove,
+  isRepoSynced,
+} from "./utils/git"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
+import { startTimer } from "./utils/timer"
 
 // -----------------------------------------------------------------------------
 // Constants
 // -----------------------------------------------------------------------------
 
-export const REPO_DIR = `/repo`
-const DEFAULT_BRANCH = "main"
 const GITHUB_USER_KEY = "github_user"
 const MARKDOWN_FILES_KEY = "markdown_files"
 
@@ -44,14 +53,13 @@ type Event =
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
-  | { type: "PUSH" }
-  | { type: "WRITE_FILE"; filepath: string; content: string }
+  | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7PstlTUPczminPcwq85hsuGUdhHCEHgynKcrLvwFprhqUjoBQIhFmghqsOwzrcLwK61jBcEIc23RtkoHYekCd49j6CCWMitgSjiLgLPC5jCtEdiBvYzEJmElF8pYEGXFhNqwSwuHFvg5SVNUdSNGakGrrmuCCfB9q6C20gEX0RGaCR3asg+iA8rgqYvq+yiLPCMZ7LCNg+HGH7Ym46REjWObWvJcGQPuR6nueV43sRTLDGRukIASz58q4HgftEX5BIgezeOK9ipoBcyjl4vGqs566uUaEDyQAFlgVDGhAKBgAwADqOpvHSe4-AAYm8R63tp4LkW4SyYgk3iLF1EXCh4yh-iECYJq+ljRMNPGOZhmXYTl+WFTA7AlWVAAih57jV9WNXuzUBTppixYBUw2OYDi-r175CjF6zQm4kThDYNhDgmE0SulUFyQpkALUVuAAO74KCVB1WQpXIcaaGmk50ECW5uVSAVf2A8DUCg6VKmuoR6h+V2+2tUFV2RKdnjMfy0LRjdModdyoELi4rgfbJLnfQjSNLSj8gg2DZUluJ5aVtWM2w9lty-RzQNc2jPOY2p7qaf5LIE4dFH9pRg6zAucb9T+WxRb+sZjhNexTecMn8aLP2I4tbAQGApVS+jZXMChJoYebs1w-N1t-XbDsiE7su9PLnr472yLKEGlEbEsnIRpy-VvbgDiAQuEpWWO5hMxbrPi7b9tgI7POlKJpYSRWUkw198N57gfuFwHMv4cHGmh0rvaWGd1EJFiaY+NEicSrCg2xji8SWKkpvKh7Iu57AgQUFIVwPFIUhwLArwAJpfMee3t+RziBgBiz2ZYUQmZ3-g3WEyTJ9KKaLj48LZ57lu5fPi+4HzW873v94qxMbuE9PDzAvrsYUWJAxQgWM4F+s8a4fyXtoB4KAUAiAhqhTg0NhbV3mogqoKC0FUCDu2HGCs8b7yCjELY9hrKTWDKPCBcY-yH0jMxSicDcFi3wcg1B6C+ZlkklWaSfFX5zwXkgwhIgSHYz-oFFWgprDJCnNEPY8JUzOAgdCCI7hNgOFgdNGeXCfo8KkVQBgciDrshiP+TuopJ7qKSBA1MkdBrSmhMGHEipDGiPgXgiRBDYB5XQS7SGWD3a+OMe-AJyCgnSObqQyxysxjuGsBGbwE8xyOM0dfDkMIgIGLNpElmCCYkPDieYgR5dBYiIyn47hZSKlQBkepMhbd-4pJ8LCRYP4ZRhFUU46+URpy-jOhwnxdSolXEacE8xSTezJhhMBfETgpQTWRFoky-5Rx7EKdPYpWVxGf0RmAKQXARAvFkHIcpGC3a1M+iU-xxy8qnPOVQS51zYAtJDlpMO5FfRij5HoyiEDdhcmGtMY4xwTLtU4Y8hpzzXkXKubIG5oTMHoXuczQ5pTEVnORZ875HY3DkNIlY2KAFxTJnYTktYixfy2BYjSuFOKnlLxOfi95KKblVIFpXHB8KTEBI5W8qAHzUVfISbI3GZLkmhHfDOBwBwTLJgmIxXJ8wgw-m6gYokFA0B23gECEk7T5FjABcGLV8J2GLCivMYUAKgzwmRJRTuUpBRpQmbkIQjZOimvJQgOMydgJLBNqq2Mgy1inW2AmPYopDjHE7iyx4sh-VyuCgqcUyQz7HysHCJiEQwjQNtRNRcWcvXYopGm3sAL7JWumEqhUE8Jw3U5HYGcMo5zAUXFPKuLkGzCTQNW-5wEDKdsOKozkkZYyTkjN0hYqSQL0pZRqTc241iKw6ZCY4kQTJyjCpFaKawI5TFnMfBcp8V1e0Uk2XQw7CZQmTlYKycd7DjRsMKZ6WwAKImGe4ex5aimTMFRAe9KtfT03rTapt9qqbwhhNKSMgowgJCWBmCtOca4+xgGB81BwpjUocBGeEAprprHatGo4SGwipGYoiK9b9a5kBWrh0I04AKxAWA-GFv5+qeCGiNOUrhxqTQY7nbDbBOaN1Kqx4KsRIjBgAnMAMKIB5UysPdRDMDdheLE1h9m+d-bcxk78yhCjpQGUAmEOIKmlhqfI+rf8IZgLCYmnEPTbLZMQbCFBxtdqW10o2NOZE7jgyzBiB5hFS9YArzXrAI1m6zV+k7r5ieMGAtsdvqGh+9kn7eKAw81lUWv6l3wF5x9DgnBLGssAjZ18fzWCcPEXZkWhWf14UQqAsngEGSSMkYM-SNEQOVbYsm59fD5f2cBorbXJFNO66OhMjhxpqIGbS0IyZI6ht2TpiLGGxG4vZS8zlYruUJYoVu8YT1k7vn0Uwj8BlgLAt1WkIAA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7MWmOOnITiOilmcwq8-dFwd8zh8hKsbLvwFprhqUjoBQIhFmghqsOwzrcLwK61pB0Gwc23RtkoHYekCd49j6CCfjYtgSjiLgLPC5jCtEdiBvYDEJmEn58pYoGXOhNpQSwWHFvg5SVNUdSNGaYGrrmuB8TB9q6C20i4X0+GaIR3asg+iA2Modi4Hs0LJnKrgxDGbh6XYjFWco9iCg4XGqjm1oydBkD7kep7nleN4EUywzEVpCB2c+EqxOY76fsKvgypEC5LNEIQLqxXgOeB0myZAMkABZYFQxoQCgYAMAA6jqbx0nuPwAGJvEeLy3hp4IkR+uDKKkTh-q40pQlFCrWDZ5iWZYEoch+6REjWTnri5RoQNluUwOwBVFQAIoee4VdVtV7g1-maaYiAtYB9gylK5htYBlhRXK07JMGg5ddC5ipVJzkZXNUg5XluAAO74KCVBVWQhWwAhxrIaak0QbxrkfV9i1-QDUBAyDimunh6i+V2e1NYF0LKK1DHStEuxyjYsxRcOkSzNEC6cjpoqcRNaFTRhs3zd9iPyIDwNwKUQmlqJFbiVD6WwxzCP-dzyO87AaPKe6al+SyuMHaRcZBuZCofnscZxJTjHU0s4SxD+bXjeckk8TNtwS2wEBgIV0so0VzCISaqFW6zMPs59C3247YDO7z8u9Irno472rgEwxcUmQs9hRYi-WxolUSbN4Q4vdb7127gDtOyILv88JZZiVWEncd7NuZX730F0HRchzhYeqRHKu9rGEQbM4veWOO3hJ-2IQ2bMSwKhsbgW8qXvQzXc2wIEFBSFcDxSFIcCgy8ACaXzHrtHckTK1gfiTfLzmEY50UEoQHORukj74djeGRGbM7PYvs4vy+4CWjA73vA+941YBlascKEH42pOFHF+G+4w+TkS6jYQaSRYzSmztXXO38V7aAeCgFAIgwZIU4JDFmc8sFLxwXgghVBQ7tkxkrbGh9ArBgJimJwqRwE8mvmsRYURxQLnmEORYWsMHkPFtgqo1DCF-zLsLCuos3oSMoVI-BIg6EYyAQFNW0JEGWRlIxeYsYFTCkSr3IMI8OoJD5FiMRn9baSNwWoqgDAtH7XZLGcUcRkhtXMgGZEpjUzkWQR4BKoUGKKnflXcRX8VG4NgFlQhbtwYkM9tE+xmVHEPASeolu9C3GqzGJYRKrV4TJEAvyRYtNTGOGnCkSyUp3ARn7nYpRsSf7xMSS42RQtKzVjIRkhecTsldKgBolSDD27AI8XpXwPgSZjgcNKGwpjZS4GflKPYYQSaDWcK06aFCOkjMIQUqOjh9L2AmAscKUQrCmNcFsXYkYfyk1TBKfZbMHEqM+mAKQXARAvFkHIbJRCPaV0cjEr5P8fl-IBUC2Q2Txnh3UpHEiSwYQ-lpsNaU4R6amPJnpRY-4rm+HsB8n2UKV4wv+VQQFwLQbJOIShcFaU2mUuyr8mlUA6UIrlnkzRbhGFEXcYgcesIIwOFSMY3uQo4HtUebEQRT8hxuHJfPK43ysqcrhfSkugtyx9JZa9A5yjoVathbS+FiL+UTNOSRGIBNe6ChlGxVwV05WoPFFfaYuwtbQgyESCgaAHbwCBCSKZ2ixi+inhEO+OlNh2SlAlYUvppwLFQcNIcUJOSzDfpbS4DYOhiAjSKhAGt5xLD2OnCYCpYFrGQdsBMexRSHGOMNfZjxZAlsKYgQ4jzkj9wflYOE9FY3zDhNrCYMbyXdt7NGnEmJkTxqSEShIsq1icj0lYAxHJYxnyzlEiF0lC3yTQLOkiqa3D6RlL3Ce9MoyTkjLCeYU73DJEWM9Q9rLpqbm3GsZW0ze0ckJqnBIswfyWGiI+mOs4jj9x8MUtVskBJnpRcwkBCpWpTlSO+cy5N3VrHiBEfkA17A2QcClL9xrPmQHPYFX0NhyJxqcCunECRoxwN8BGSIOlcUHAGnKJD4s64wDo2rX0hsdgbO8MGBmHG1h7HJpiHScGYjTE2NPRRJrfbw3yoVMTYw9iYiSDEBUlkjioOuhsKYukSbynfEsITOn-a-Slk3EGBne2eJTDpdwfVRoTk4w4PS8RbO+HCh+PZVGc7Cd0-nQOwd9NocA0FSY8VIzzAWOZdwUUoTWCiJZNOxsiZOcpZ5hA-oCbMYTauhipjvDkS47HAMWa4ilcySo2Aa8N6wFDQByNoqmMhJRIlS+w1TF31anMFM5kX5Tna0Mn+f9yv5d9epqwswNg5bgc-TDITyOxg8DmhbGqjnOKgCt3wQZgwTASOTBc425XzCvRAqUBxkT8hO1knJVAVtxFhOZBiw1oSHAWPchI6yGvIOfq4L7mrtWWvpeVs66yTKm2RCqqDcqUSYhxFCHSjGrDjQyEAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -76,7 +84,7 @@ function createGlobalStateMachine() {
           checkStatus: {
             data: { isSynced: boolean }
           }
-          writeFile: {
+          writeFiles: {
             data: void
           }
           deleteFile: {
@@ -134,16 +142,16 @@ function createGlobalStateMachine() {
               },
             },
             cloningRepo: {
-              entry: "setGitHubRepo",
+              entry: ["setGitHubRepo", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
               invoke: {
                 src: "cloneRepo",
                 onDone: {
-                  target: "cloned",
+                  target: "cloned.sync.success",
                   actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
                   target: "empty",
-                  actions: "setError",
+                  actions: ["clearGitHubRepo", "setError"],
                 },
               },
             },
@@ -158,14 +166,14 @@ function createGlobalStateMachine() {
                   states: {
                     idle: {
                       on: {
-                        WRITE_FILE: "writingFile",
+                        WRITE_FILES: "writingFiles",
                         DELETE_FILE: "deletingFile",
                       },
                     },
-                    writingFile: {
-                      entry: ["setMarkdownFile", "setMarkdownFileLocalStorage"],
+                    writingFiles: {
+                      entry: ["mergeMarkdownFiles", "mergeMarkdownFilesLocalStorage"],
                       invoke: {
-                        src: "writeFile",
+                        src: "writeFiles",
                         onDone: {
                           target: "idle",
                           actions: raise("SYNC"),
@@ -294,14 +302,9 @@ function createGlobalStateMachine() {
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
         resolveRepo: async () => {
-          console.time("resolveRepo()")
+          const stopTimer = startTimer("resolveRepo()")
 
-          // Check git config for repo name
-          const remoteOriginUrl = await git.getConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "remote.origin.url",
-          })
+          const remoteOriginUrl = await getRemoteOriginUrl()
 
           // Remove https://github.com/ from the beginning of the URL to get the repo name
           const repo = String(remoteOriginUrl).replace(/^https:\/\/github.com\//, "")
@@ -317,146 +320,53 @@ function createGlobalStateMachine() {
           const markdownFiles =
             getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(REPO_DIR))
 
-          console.timeEnd("resolveRepo()")
+          stopTimer()
 
           return { githubRepo, markdownFiles }
         },
         cloneRepo: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const githubRepo = event.githubRepo
-          const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}`
-          const { login, token, name, email } = context.githubUser
+          await gitClone(event.githubRepo, context.githubUser)
 
-          // Wipe file system
-          // TODO: Only remove the repo directory instead of wiping the entire file system
-          // Blocked by https://github.com/isomorphic-git/lightning-fs/issues/71
-          fsWipe()
-
-          // Clone repo
-          // This could take awhile if the repo is large
-          console.time(`$ git clone ${url}.git ${REPO_DIR}`)
-          await git.clone({
-            fs,
-            http,
-            dir: REPO_DIR,
-            corsProxy: "https://cors.isomorphic-git.org",
-            url,
-            ref: DEFAULT_BRANCH,
-            singleBranch: true,
-            depth: 1,
-            onMessage: console.log,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git clone ${url}.git ${REPO_DIR}`)
-
-          // Set user in git config
-          console.log(`$ git config user.name "Cole Bemis"`)
-          await git.setConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "user.name",
-            value: name,
-          })
-
-          console.log(`$ git config user.email "colebemis@github.com"`)
-          await git.setConfig({
-            fs,
-            dir: REPO_DIR,
-            path: "user.email",
-            value: email,
-          })
-
-          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
-
-          return { markdownFiles }
+          return { markdownFiles: await getMarkdownFilesFromFs(REPO_DIR) }
         },
         pull: async (context) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const { login, token } = context.githubUser
+          await gitPull(context.githubUser)
 
-          console.time(`$ git pull`)
-          await git.pull({
-            fs,
-            http,
-            dir: REPO_DIR,
-            singleBranch: true,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git pull`)
-
-          const markdownFiles = await getMarkdownFilesFromFs(REPO_DIR)
-
-          return { markdownFiles }
+          return { markdownFiles: await getMarkdownFilesFromFs(REPO_DIR) }
         },
         push: async (context) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const { login, token } = context.githubUser
-
-          console.time(`$ git push`)
-          await git.push({
-            fs,
-            http,
-            dir: REPO_DIR,
-            onAuth: () => ({ username: login, password: token }),
-          })
-          console.timeEnd(`$ git push`)
+          await gitPush(context.githubUser)
         },
         checkStatus: async () => {
-          const latestLocalCommit = await git.resolveRef({
-            fs,
-            dir: REPO_DIR,
-            ref: `refs/heads/${DEFAULT_BRANCH}`,
-          })
-
-          const latestRemoteCommit = await git.resolveRef({
-            fs,
-            dir: REPO_DIR,
-            ref: `refs/remotes/origin/${DEFAULT_BRANCH}`,
-          })
-
-          const isSynced = latestLocalCommit === latestRemoteCommit
-
-          return { isSynced }
+          return { isSynced: await isRepoSynced() }
         },
-        writeFile: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+        writeFiles: async (context, event) => {
+          if (!context.githubUser) throw new Error("Not signed in")
 
-          const { filepath, content } = event
+          const {
+            markdownFiles,
+            commitMessage = `Update ${Object.keys(markdownFiles).join(" ")}`,
+          } = event
 
-          // Write file to file system
-          await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
-
-          // Stage file
-          console.log(`$ git add ${filepath}`)
-          await git.add({
-            fs,
-            dir: REPO_DIR,
-            filepath,
+          // Write files to file system
+          Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
+            await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
           })
 
-          // Commit file
-          console.log(`$ git commit -m "Update ${filepath}"`)
-          await git.commit({
-            fs,
-            dir: REPO_DIR,
-            message: `Update ${filepath}`,
-          })
+          // Stage files
+          await gitAdd(Object.keys(markdownFiles))
+
+          // Commit files
+          await gitCommit(commitMessage)
         },
         deleteFile: async (context, event) => {
-          if (!context.githubUser) {
-            throw new Error("Not signed in")
-          }
+          if (!context.githubUser) throw new Error("Not signed in")
 
           const { filepath } = event
 
@@ -464,20 +374,10 @@ function createGlobalStateMachine() {
           await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
 
           // Stage deletion
-          console.log(`$ git rm ${filepath}`)
-          await git.remove({
-            fs,
-            dir: REPO_DIR,
-            filepath,
-          })
+          await gitRemove(filepath)
 
           // Commit deletion
-          console.log(`$ git commit -m "Delete ${filepath}"`)
-          await git.commit({
-            fs,
-            dir: REPO_DIR,
-            message: `Delete ${filepath}`,
-          })
+          await gitCommit(`Delete ${filepath}`)
         },
       },
       actions: {
@@ -507,23 +407,28 @@ function createGlobalStateMachine() {
             }
           },
         }),
+        clearGitHubRepo: assign({
+          githubRepo: null,
+        }),
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
         }),
         setMarkdownFilesLocalStorage: (_, event) => {
           localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
         },
-        setMarkdownFile: assign({
-          markdownFiles: (context, event) => {
-            const { filepath, content } = event
-            return { ...context.markdownFiles, [filepath]: content }
-          },
+        mergeMarkdownFiles: assign({
+          markdownFiles: (context, event) => ({
+            ...context.markdownFiles,
+            ...event.markdownFiles,
+          }),
         }),
-        setMarkdownFileLocalStorage: (context, event) => {
-          const { filepath, content } = event
+        mergeMarkdownFilesLocalStorage: (context, event) => {
           localStorage.setItem(
             MARKDOWN_FILES_KEY,
-            JSON.stringify({ ...context.markdownFiles, [filepath]: content }),
+            JSON.stringify({
+              ...context.markdownFiles,
+              ...event.markdownFiles,
+            }),
           )
         },
         deleteMarkdownFile: assign({
@@ -535,6 +440,12 @@ function createGlobalStateMachine() {
         deleteMarkdownFileLocalStorage: (context, event) => {
           const { [event.filepath]: _, ...markdownFiles } = context.markdownFiles
           localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(markdownFiles))
+        },
+        clearMarkdownFiles: assign({
+          markdownFiles: {},
+        }),
+        clearMarkdownFilesLocalStorage: () => {
+          localStorage.removeItem(MARKDOWN_FILES_KEY)
         },
         setError: assign({
           // TODO: Remove `as Error`
@@ -548,7 +459,7 @@ function createGlobalStateMachine() {
   )
 }
 
-/** Retrieve cached markdown files from local storage */
+/** Get cached markdown files from local storage */
 function getMarkdownFilesFromLocalStorage() {
   const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_KEY) ?? "null")
   if (!markdownFiles) return null
@@ -558,12 +469,15 @@ function getMarkdownFilesFromLocalStorage() {
 
 /** Walk the file system and return the contents of all markdown files */
 async function getMarkdownFilesFromFs(dir: string) {
-  console.time("getMarkdownFilesFromFs()")
-  const markdownFiles = await git.walk({
+  const stopTimer = startTimer("getMarkdownFilesFromFs()")
+
+  const entries = await git.walk({
     fs,
     dir,
     trees: [WORKDIR()],
     map: async (filepath, [entry]) => {
+      if (!entry) return null
+
       // Ignore .git directory
       if (filepath.startsWith(".git")) return
 
@@ -571,16 +485,21 @@ async function getMarkdownFilesFromFs(dir: string) {
       if (!filepath.endsWith(".md")) return
 
       // Get file content
-      const content = await entry?.content()
+      const content = await entry.content()
 
       if (!content) return null
+
+      console.debug(filepath, (await entry.stat()).size)
 
       return [filepath, new TextDecoder().decode(content)]
     },
   })
-  console.timeEnd("getMarkdownFilesFromFs()")
 
-  return Object.fromEntries(markdownFiles)
+  const markdownFiles = Object.fromEntries(entries)
+
+  stopTimer()
+
+  return markdownFiles
 }
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
@@ -602,8 +521,6 @@ export const githubRepoAtom = selectAtom(
 // -----------------------------------------------------------------------------
 // Notes
 // -----------------------------------------------------------------------------
-
-export const rawNotesAtom = atomWithStorage<Record<NoteId, string>>("raw_notes", {})
 
 export const notesAtom = atom((get) => {
   const state = get(globalStateMachineAtom)

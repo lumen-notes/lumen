@@ -1,63 +1,49 @@
 # Lumen
 
-Lumen is a free, open-source note-taking app based on the [Zettelkasten Method](https://zettelkasten.de/introduction/).
+Lumen is a free, open-source note-taking app for lifelong learners.
 
 [**Open Lumen →**](https://app.uselumen.com)
 
-<br>
+🚧 _Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates._
 
-Think of Lumen as your private knowledge garden. It's where you plant, grow, and harvest ideas.
+![Screenshot](https://github.com/lumen-notes/lumen/assets/4608155/6e52c46b-59f4-46c6-987d-65abee003b8a)
 
-### 🌱 Plant
+Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
-Write notes with [markdown](/docs/markdown-syntax.md) and store them as plain text files in a GitHub repository of your choice. You own your data. Forever.
+ - **🌱 Plant**
 
-### 🌿 Grow
+   Write notes in [markdown](/docs/markdown-syntax.md) files and store them in a GitHub repository of your choice. You own your data, forever.
 
-Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover new connections.
+ - **🌿 Grow**
 
-### 🌻 Harvest
+   Connect your notes with links and tags. Lumen makes it easy to explore your knowledge graph and discover new connections.
 
-Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
+ - **🌻 Harvest**
 
-<br>
+   Access your notes from anywhere—even offline. Use Lumen's flexible [query language](/docs/query-language.md) to find exactly what you're looking for.
+
+<br />
 
 Notes in Lumen are...
 
-- atomic
-- interconnected
 - written in [markdown](/docs/markdown-syntax.md)
 - stored as files on GitHub
 - version-controlled with Git
+- interconnected
 - searchable
 - available offline
 - accessible on any device
 - compatible with [other apps](#alternatives)
 
-<br>
-
 ## Docs
-
-> ⚠️ **Warning:** Work in progress. Expect breaking changes. Follow Lumen on [Twitter](https://twitter.com/lumen_notes) for updates.
 
 - [Markdown syntax](/docs/markdown-syntax.md)
 - [Metadata](/docs/metadata.md)
 - [Templates](/docs/templates.md)
 - [Query language](/docs/query-language.md)
 - [Keyboard shortcuts](/docs/keyboard-shortcuts.md)
-
-<br>
-
-## Links
-
-| Link                                           | Status                                                                                                                                                               |
-| :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [App](https://app.uselumen.com)                | [![Netlify Status](https://api.netlify.com/api/v1/badges/9e55f1c2-783d-4abb-9fa2-edc59f8aa0c3/deploy-status)](https://app.netlify.com/sites/lumen-notes/deploys)     |
-| [Storybook](https://storybook.uselumen.com/)   | [![Netlify Status](https://api.netlify.com/api/v1/badges/acd80077-43c2-4292-8721-6f77e633a896/deploy-status)](https://app.netlify.com/sites/lumen-storybook/deploys) |
-| [GitHub](https://github.com/lumen-notes/lumen) | —                                                                                                                                                                    |
-| [Twitter](https://twitter.com/lumen_notes)     | —                                                                                                                                                                    |
-
-<br>
+- [Status](/docs/status.md)
+- [Contributing](https://github.com/lumen-notes/lumen/blob/main/CONTRIBUTING.md)
 
 ## Recommended reading
 
@@ -65,8 +51,6 @@ Notes in Lumen are...
 - [How To Take Smart Notes by Sönke Ahrens](https://takesmartnotes.com/)
 - [Digital Zettelkasten by David Kadavy](https://www.amazon.com/dp/0578928094)
 - [Andy Matuschak's notes](https://notes.andymatuschak.org/)
-
-<br>
 
 ## Alternatives
 
@@ -80,3 +64,7 @@ Notes in Lumen are...
 - [Supernotes](https://supernotes.app)
 - [Tana](https://tana.inc)
 - [Tangent](https://www.tangentnotes.com)
+
+---
+
+[GitHub](https://github.com/lumen-notes/lumen)&nbsp;&nbsp;·&nbsp;&nbsp;[Twitter](https://twitter.com/lumen_notes)

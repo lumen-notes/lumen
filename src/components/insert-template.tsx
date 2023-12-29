@@ -4,13 +4,13 @@ import ejs from "ejs"
 import { atom, useAtom, useSetAtom } from "jotai"
 import React from "react"
 import { sentenceCase } from "sentence-case"
-import { Template } from "../types"
+import { Template } from "../schema"
 import { toDateString } from "../utils/date"
 import { Button } from "./button"
 import { Card } from "./card"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
-import { Input } from "./input"
+import { TextInput } from "./text-input"
 import { Markdown } from "./markdown"
 
 // Template pending insertion into editor because it requires user input
@@ -89,11 +89,11 @@ export function InsertTemplateDialog() {
           >
             <div className="grid gap-5 p-4">
               <div className="flex items-center justify-between">
-                <Dialog.Title className="text-xl font-semibold leading-4">
+                <Dialog.Title className="text-lg font-semibold leading-4">
                   {template.name}
                 </Dialog.Title>
                 <Dialog.Close asChild>
-                  <IconButton aria-label="Close" className="-m-2">
+                  <IconButton aria-label="Close" className="-m-2" disableTooltip>
                     <CloseIcon16 />
                   </IconButton>
                 </Dialog.Close>
@@ -102,11 +102,11 @@ export function InsertTemplateDialog() {
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
                     <div key={name} className="grid gap-2">
-                      <label htmlFor={name} className="leading-4">
+                      <label htmlFor={name} className="justify-self-start leading-4">
                         {formatLabel(name)}
                         {required ? <span className="ml-1 text-text-secondary">*</span> : null}
                       </label>
-                      <Input
+                      <TextInput
                         id={name}
                         name={name}
                         type="text"

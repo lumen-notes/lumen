@@ -3,12 +3,12 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
-import { Checkbox } from "../components/checkbox"
 import { CommandMenu } from "../components/command-menu"
 import { SignedInUser } from "../components/github-auth"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { Panel } from "../components/panel"
 import { RepoForm } from "../components/repo-form"
+import { Switch } from "../components/switch"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { getVimMode, setVimMode } from "../utils/vim-mode"
 
@@ -25,9 +25,13 @@ export function SettingsPage() {
   return (
     <>
       <CommandMenu />
-      <Panel icon={<SettingsIcon16 />} title="Settings">
+      <Panel
+        icon={<SettingsIcon16 />}
+        title="Settings"
+        className="border-r border-border-secondary"
+      >
         <div className="grid gap-4 p-4">
-          <h3 className="text-xl font-semibold leading-4">GitHub</h3>
+          <h3 className="text-lg font-semibold leading-4">GitHub</h3>
           <SignedInUser />
           {githubUser && githubRepo ? (
             !isEditingRepo ? (
@@ -63,19 +67,11 @@ export function SettingsPage() {
           ) : null}
         </div>
         <div className="grid gap-4 p-4">
-          <h3 className="text-xl font-semibold leading-4">Editor</h3>
+          <h3 className="text-lg font-semibold leading-4">Editor</h3>
           <Card className="p-4">
-            <div className="flex items-center gap-2">
-              {/* TODO: Create a Switch component and use it instead of Checkbox */}
-              {/* https://www.radix-ui.com/primitives/docs/components/switch */}
-              <Checkbox
-                id="vim-mode"
-                defaultChecked={getVimMode()}
-                onCheckedChange={(checked) => {
-                  setVimMode(Boolean(checked))
-                }}
-              />
-              <label htmlFor="vim-mode">Vim mode (experimental)</label>
+            <div className="flex items-center gap-3">
+              <Switch id="vim-mode" defaultChecked={getVimMode()} onCheckedChange={setVimMode} />
+              <label htmlFor="vim-mode">Vim mode</label>
             </div>
           </Card>
         </div>
