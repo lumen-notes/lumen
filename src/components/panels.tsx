@@ -245,7 +245,7 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Open link in a new panel
-      if (target === "_blank") {
+      if (target === "_blank" && !event?.altKey) {
         openPanel(href, panel?.index)
         event?.preventDefault()
         return
