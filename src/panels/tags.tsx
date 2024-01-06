@@ -2,16 +2,16 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { z } from "zod"
 import { IconButton } from "../components/icon-button"
-import { DotIcon8, TagIcon16, TriangleRightIcon8 } from "../components/icons"
+import { TagIcon16, TriangleRightIcon8 } from "../components/icons"
 import { Link } from "../components/link"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
+import { useSearchParam } from "../hooks/search-param"
 import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
-import { useSearchParam } from "../hooks/search-param"
 
 export function TagsPanel({ id, onClose }: PanelProps) {
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
