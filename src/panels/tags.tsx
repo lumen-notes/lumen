@@ -131,7 +131,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
           </IconButton>
         ) : (
           <div className="grid place-items-center text-text-secondary">
-            <DotIcon8 />
+            <TagIcon16 />
           </div>
         )}
         <span className="py-2 leading-4 ">
