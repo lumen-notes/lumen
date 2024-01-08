@@ -33,6 +33,7 @@ import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  CopyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
@@ -48,6 +49,7 @@ import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
+import { IconButton } from "./icon-button"
 
 export type MarkdownProps = {
   children: string
@@ -588,9 +590,18 @@ function Code({ className, inline, children }: CodeProps) {
   }
 
   return (
-    <pre>
-      <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
-    </pre>
+    <div className="relative">
+      <pre>
+        <IconButton
+          onClick={() => console.log("copying ", children)}
+          aria-label="copy code"
+          className="absolute end-2 top-2"
+        >
+          <CopyIcon16 />
+        </IconButton>
+        <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
+      </pre>
+    </div>
   )
 }
 
