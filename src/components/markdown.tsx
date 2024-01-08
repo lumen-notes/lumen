@@ -12,6 +12,7 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
+import { useClipboard } from "../hooks/clipboard"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
@@ -574,6 +575,8 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
+  const { copy } = useClipboard()
+
   if (className?.includes("language-math")) {
     return <div>{children}</div>
   }
@@ -593,7 +596,7 @@ function Code({ className, inline, children }: CodeProps) {
     <div className="relative">
       <pre>
         <IconButton
-          onClick={() => console.log("copying ", children)}
+          onClick={() => copy(children)}
           aria-label="copy code"
           className="absolute end-2 top-2"
         >
