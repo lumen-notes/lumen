@@ -3,6 +3,7 @@ import { isToday } from "date-fns"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
+import copy from "copy-to-clipboard"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 // import remarkEmoji from "remark-emoji"
 import { useNetworkState } from "react-use"
@@ -12,7 +13,6 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { useClipboard } from "../hooks/clipboard"
 import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
@@ -575,7 +575,6 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
-  const { copy } = useClipboard()
 
   if (className?.includes("language-math")) {
     return <div>{children}</div>
@@ -596,8 +595,8 @@ function Code({ className, inline, children }: CodeProps) {
     <div className="relative">
       <pre>
         <IconButton
-          onClick={() => copy(children)}
-          aria-label="copy code"
+          onClick={() => copy(children as string)}
+          aria-label="Copy"
           className="absolute end-2 top-2"
         >
           <CopyIcon16 />
