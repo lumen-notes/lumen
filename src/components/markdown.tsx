@@ -575,7 +575,6 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
-
   if (className?.includes("language-math")) {
     return <div>{children}</div>
   }
@@ -593,7 +592,7 @@ function Code({ className, inline, children }: CodeProps) {
 
   return (
     <div className="relative">
-      <pre>
+      <pre style={{ paddingInlineEnd: 50 }}>
         <IconButton
           onClick={() => copy(children as string)}
           aria-label="Copy"
