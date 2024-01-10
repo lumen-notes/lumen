@@ -1,7 +1,7 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { isToday } from "date-fns"
 import qs from "qs"
-import React from "react"
+import React, { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import copy from "copy-to-clipboard"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
@@ -34,6 +34,7 @@ import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  CheckIcon16,
   CopyIcon16,
   ErrorIcon16,
   GitHubIcon16,
@@ -575,6 +576,8 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
+  const [hasCopied, setHasCopied] = useState(false)
+
   if (className?.includes("language-math")) {
     return <div>{children}</div>
   }
@@ -590,15 +593,17 @@ function Code({ className, inline, children }: CodeProps) {
     return <QueryResults query={String(children)} />
   }
 
+  const handleCopy = () => {
+    copy(children as string)
+    setHasCopied(true)
+    setTimeout(() => setHasCopied(false), 2000)
+  }
+
   return (
     <div className="relative">
       <pre className="!pe-12">
-        <IconButton
-          onClick={() => copy(children as string)}
-          aria-label="Copy"
-          className="absolute end-2 top-2"
-        >
-          <CopyIcon16 />
+        <IconButton onClick={handleCopy} aria-label="Copy" className="absolute end-2 top-2">
+          {hasCopied ? <CheckIcon16 /> : <CopyIcon16 />}
         </IconButton>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
       </pre>
