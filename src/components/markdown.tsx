@@ -592,7 +592,7 @@ function Code({ className, inline, children }: CodeProps) {
 
   return (
     <div className="relative">
-      <pre style={{ paddingInlineEnd: 50 }}>
+      <pre className="!pe-12">
         <IconButton
           onClick={() => copy(children as string)}
           aria-label="Copy"
