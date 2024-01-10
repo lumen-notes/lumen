@@ -3,6 +3,7 @@ import { isToday } from "date-fns"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
+import copy from "copy-to-clipboard"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 // import remarkEmoji from "remark-emoji"
 import { useNetworkState } from "react-use"
@@ -33,6 +34,7 @@ import { Checkbox } from "./checkbox"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  CopyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
@@ -48,6 +50,7 @@ import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
 import remarkMath from "remark-math"
 import rehypeKatex from "rehype-katex"
+import { IconButton } from "./icon-button"
 
 export type MarkdownProps = {
   children: string
@@ -588,9 +591,18 @@ function Code({ className, inline, children }: CodeProps) {
   }
 
   return (
-    <pre>
-      <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
-    </pre>
+    <div className="relative">
+      <pre className="!pe-12">
+        <IconButton
+          onClick={() => copy(children as string)}
+          aria-label="Copy"
+          className="absolute end-2 top-2"
+        >
+          <CopyIcon16 />
+        </IconButton>
+        <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
+      </pre>
+    </div>
   )
 }
 
