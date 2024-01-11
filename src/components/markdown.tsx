@@ -1,13 +1,14 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { isToday } from "date-fns"
 import qs from "qs"
-import React, { useState } from "react"
+import React from "react"
 import ReactMarkdown from "react-markdown"
-import copy from "copy-to-clipboard"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 // import remarkEmoji from "remark-emoji"
 import { useNetworkState } from "react-use"
+import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
+import remarkMath from "remark-math"
 import { sentenceCase } from "sentence-case"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
@@ -31,11 +32,10 @@ import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Card } from "./card"
 import { Checkbox } from "./checkbox"
+import { CopyButton } from "./copy-button"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
-  CheckIcon16,
-  CopyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
@@ -49,9 +49,6 @@ import { NoteFavicon } from "./note-favicon"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
-import remarkMath from "remark-math"
-import rehypeKatex from "rehype-katex"
-import { IconButton } from "./icon-button"
 
 export type MarkdownProps = {
   children: string
@@ -576,8 +573,6 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
 }
 
 function Code({ className, inline, children }: CodeProps) {
-  const [hasCopied, setHasCopied] = useState(false)
-
   if (className?.includes("language-math")) {
     return <div>{children}</div>
   }
@@ -593,18 +588,12 @@ function Code({ className, inline, children }: CodeProps) {
     return <QueryResults query={String(children)} />
   }
 
-  const handleCopy = () => {
-    copy(children as string)
-    setHasCopied(true)
-    setTimeout(() => setHasCopied(false), 2000)
-  }
-
   return (
     <div className="relative">
       <pre className="!pe-12">
-        <IconButton onClick={handleCopy} aria-label="Copy" className="absolute end-2 top-2">
-          {hasCopied ? <CheckIcon16 /> : <CopyIcon16 />}
-        </IconButton>
+        <div className="absolute end-2 top-2 rounded-sm bg-bg-code-block">
+          <CopyButton text={children.toString()} />
+        </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
       </pre>
     </div>

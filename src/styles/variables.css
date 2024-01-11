@@ -17,7 +17,7 @@
   --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
   --color-bg-secondary: var(--sand-a3);
   --color-bg-tertiary: var(--sand-a4);
-  --color-bg-code-block: var(--sand-a2);
+  --color-bg-code-block: var(--sand-2);
   --color-bg-highlight: var(--yellow-a3);
   --color-bg-selection: var(--cyan-a4);
 
@@ -49,7 +49,7 @@
     --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
     --color-bg-secondary: var(--sand-a4);
     --color-bg-tertiary: var(--sand-a5);
-    --color-bg-code-block: var(--sand-a3);
+    --color-bg-code-block: var(--sand-4);
     --color-bg-highlight: var(--yellow-a4);
     --color-bg-selection: var(--cyan-a5);
 
