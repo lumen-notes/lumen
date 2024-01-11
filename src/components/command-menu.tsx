@@ -70,7 +70,7 @@ export function CommandMenu() {
 
   // Toggle the menu with `command + k`
   useEvent("keydown", (event: KeyboardEvent) => {
-    if (event.key === "k" && event.metaKey) {
+    if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
       if (isOpen) {
         closeMenu()
       } else {
