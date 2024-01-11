@@ -40,7 +40,7 @@ function Root({ children }: React.PropsWithChildren) {
     // Focus prev/next panel with `command + shift + left/right`
     if (
       (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
-      event.metaKey &&
+      (event.metaKey || event.ctrlKey)  &&
       event.shiftKey
     ) {
       const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))

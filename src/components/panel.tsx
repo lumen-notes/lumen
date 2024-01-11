@@ -70,7 +70,8 @@ export function Panel({
           }
 
           // Focus search input with `command + f`
-          if (event.key === "f" && event.metaKey) {
+          // Note: on windows+chrome a note needs to be in focus. Otherwise it will open Chrome's find-in-page 
+          if (event.key === "f" && (event.metaKey || event.ctrlKey)) {
             const searchInput =
               panelRef.current?.querySelector<HTMLInputElement>("input[type=search]")
             if (searchInput) {
@@ -82,7 +83,7 @@ export function Panel({
           // Focus prev/next note with `command + shift + up/down`
           if (
             (event.key === "ArrowUp" || event.key === "ArrowDown") &&
-            event.metaKey &&
+            (event.metaKey || event.ctrlKey) &&
             event.shiftKey
           ) {
             const noteElements = Array.from(

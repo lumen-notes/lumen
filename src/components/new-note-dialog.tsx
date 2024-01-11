@@ -104,7 +104,7 @@ function Provider({ children }: { children: React.ReactNode }) {
 
   useEvent("keydown", (event) => {
     // Toggle dialog with `command + i`
-    if (event.key === "i" && event.metaKey && !event.shiftKey && !disabled) {
+    if (event.key === "i" && (event.metaKey || event.ctrlKey) && !event.shiftKey && !disabled) {
       toggle()
       event.preventDefault()
     }
