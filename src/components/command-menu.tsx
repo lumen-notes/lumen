@@ -82,6 +82,7 @@ export function CommandMenu() {
         }
 
         openMenu()
+        event.preventDefault()
       }
     }
   })
