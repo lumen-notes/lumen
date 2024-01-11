@@ -462,15 +462,6 @@ export function CardsIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M13 1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h10ZM3 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H3ZM13 10.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h10ZM3 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z" />
-      {/* <path d="M14 1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h12ZM2 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2ZM14 10.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h12ZM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H2Z" /> */}
-    </svg>
-  )
-}
-
-export function DotIcon8() {
-  return (
-    <svg className="h-2 w-2" viewBox="0 0 8 8" fill="currentColor" aria-hidden>
-      <circle cx="4" cy="4" r="2" />
     </svg>
   )
 }
@@ -488,10 +479,39 @@ export function TriangleRightIcon8({ className }: { className?: string }) {
   )
 }
 
+export function CheckIcon8({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cx("h-2 w-2 overflow-visible", className)}
+      viewBox="0 0 8 8"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M8.05.85 3.1 7.45a.75.75 0 0 1-1.186.019L-.554 4.383l1.171-.937 1.864 2.33L6.851-.05l1.2.9Z" />
+    </svg>
+  )
+}
+
+export function CheckIcon12({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-3 w-3", className)} viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+      <path d="M10.795 1.82 4.9 10.181a.75.75 0 0 1-1.22.01L.953 6.452l1.212-.885 2.111 2.896L9.57.955l1.226.864Z" />
+    </svg>
+  )
+}
+
 export function CheckIcon16({ className }: { className?: string }) {
   return (
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="m12.05 4.85-4.95 6.6a.75.75 0 0 1-1.186.019L3.446 8.383l1.171-.937 1.864 2.33L10.85 3.95l1.2.9Z" />{" "}
+      <path d="M14.05 2.846 6.351 13.197a.75.75 0 0 1-1.228-.034L1.961 8.37l1.252-.826 2.574 3.9 7.059-9.493 1.203.895Z" />
+    </svg>
+  )
+}
+
+export function CloseIcon8({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-2 w-2", className)} viewBox="0 0 8 8" fill="currentColor" aria-hidden>
+      <path d="M4 2.94 6.47.47l1.06 1.06L5.06 4l2.47 2.47-1.06 1.06L4 5.06 1.53 7.53.47 6.47 2.94 4 .47 1.53 1.53.47 4 2.94Z" />
     </svg>
   )
 }
