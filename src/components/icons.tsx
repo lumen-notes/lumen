@@ -488,10 +488,18 @@ export function TriangleRightIcon8({ className }: { className?: string }) {
   )
 }
 
+export function CheckIcon12({ className }: { className?: string }) {
+  return (
+    <svg className={cx("h-3 w-3", className)} viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+      <path d="m10.552 2.613-1.19-.915-4.845 6.3-1.852-2.546-1.213.883L3.893 9.69a.75.75 0 0 0 1.201.016l5.458-7.094Z" />
+    </svg>
+  )
+}
+
 export function CheckIcon16({ className }: { className?: string }) {
   return (
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="m12.05 4.85-4.95 6.6a.75.75 0 0 1-1.186.019L3.446 8.383l1.171-.937 1.864 2.33L10.85 3.95l1.2.9Z" />{" "}
+      <path d="M14.05 2.846 6.351 13.197a.75.75 0 0 1-1.228-.034L1.961 8.37l1.252-.826 2.574 3.9 7.059-9.493 1.203.895Z" />
     </svg>
   )
 }

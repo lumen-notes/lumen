@@ -1,7 +1,7 @@
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import React from "react"
 import { cx } from "../utils/cx"
-import { CheckIcon16 } from "./icons"
+import { CheckIcon12 } from "./icons"
 
 type CheckboxProps = CheckboxPrimitive.CheckboxProps
 
@@ -18,7 +18,7 @@ export const Checkbox = React.forwardRef<
     {...props}
   >
     <CheckboxPrimitive.Indicator>
-      <CheckIcon16 className="text-bg coarse:h-5 coarse:w-5" />
+      <CheckIcon12 className="text-bg" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))
