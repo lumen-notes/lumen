@@ -2,7 +2,14 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
-import { CheckIcon12, OfflineIcon16, OfflineIcon24 } from "./icons"
+import {
+  CheckIcon12,
+  CheckIcon8,
+  CloseIcon12,
+  CloseIcon8,
+  OfflineIcon16,
+  OfflineIcon24,
+} from "./icons"
 
 const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.success"),
@@ -54,10 +61,8 @@ export function SyncStatusIcon({ size }: { size: 16 | 24 }) {
 
 function SuccessIcon16() {
   return (
-    <div className="rounded-full bg-[var(--green-11)] text-bg">
-      <svg viewBox="0 0 16" width="16" height="16" fill="currentColor">
-        <path d="m12.05 4.85-4.95 6.6a.75.75 0 0 1-1.186.019L3.446 8.383l1.171-.937 1.864 2.33L10.85 3.95l1.2.9Z" />
-      </svg>
+    <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--green-11)] text-bg">
+      <CheckIcon8 />
     </div>
   )
 }
@@ -92,20 +97,16 @@ function PendingIcon24() {
 
 function ErrorIcon16() {
   return (
-    <div className="rounded-full bg-[var(--red-11)] text-bg">
-      <svg viewBox="0 0 16" width="16" height="16" fill="currentColor">
-        <path d="m8 6.94 2.47-2.47 1.06 1.06L9.06 8l2.47 2.47-1.06 1.06L8 9.06l-2.47 2.47-1.06-1.06L6.94 8 4.47 5.53l1.06-1.06L8 6.94Z" />
-      </svg>
+    <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--red-11)] text-bg">
+      <CloseIcon8 />
     </div>
   )
 }
 
 function ErrorIcon24() {
   return (
-    <div className="rounded-full bg-[var(--red-11)] text-bg dark:bg-[var(--red-a4)] dark:text-[var(--red-a11)] dark:ring-1 dark:ring-inset dark:ring-[var(--red-a4)]">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-        <path d="M12.0001 10.9393L15.4697 7.46967L16.5304 8.53033L13.0607 12L16.5304 15.4697L15.4697 16.5303L12.0001 13.0607L8.53039 16.5303L7.46973 15.4697L10.9394 12L7.46973 8.53033L8.53039 7.46967L12.0001 10.9393Z" />
-      </svg>
+    <div className="grid h-6 w-6 place-items-center rounded-full bg-[var(--red-11)] text-bg dark:bg-[var(--red-a4)] dark:text-[var(--red-a11)] dark:ring-1 dark:ring-inset dark:ring-[var(--red-a4)]">
+      <CloseIcon12 />
     </div>
   )
 }
