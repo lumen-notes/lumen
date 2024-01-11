@@ -147,7 +147,7 @@ export const NoteCard = React.memo(function NoteCard({
           }
 
           // Copy markdown with `command + c` if no text is selected
-          if (event.metaKey && event.key == "c" && !window.getSelection()?.toString()) {
+          if ((event.metaKey || event.ctrlKey) && event.key == "c" && !window.getSelection()?.toString()) {
             copy(note?.content || "")
             event.preventDefault()
           }
@@ -159,13 +159,13 @@ export const NoteCard = React.memo(function NoteCard({
           }
 
           // Open dropdown with `command + .`
-          if (event.key === "." && event.metaKey) {
+          if (event.key === "." && (event.metaKey || event.ctrlKey)) {
             setIsDropdownOpen(true)
             event.preventDefault()
           }
 
           // Delete note with `command + backspace`
-          if (event.metaKey && event.key === "Backspace") {
+          if ((event.metaKey || event.ctrlKey) && event.key === "Backspace") {
             handleDeleteNote(id)
             event.preventDefault()
           }

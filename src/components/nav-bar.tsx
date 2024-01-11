@@ -42,7 +42,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
 
   useEvent("keydown", (event: KeyboardEvent) => {
     // Navigate to settings page with `command + ,`
-    if (event.key === "," && event.metaKey) {
+    if (event.key === "," && (event.metaKey || event.ctrlKey)) {
       navigate("/settings")
       event.preventDefault()
     }

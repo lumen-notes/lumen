@@ -147,7 +147,7 @@ export function NoteCardForm({
               }
 
               // Submit on Command + Enter
-              if (event.key === "Enter" && event.metaKey) {
+              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
                 handleSubmit()
                 event.preventDefault()
               }
