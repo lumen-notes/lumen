@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
-import { OfflineIcon16, OfflineIcon24 } from "./icons"
+import { CheckIcon12, OfflineIcon16, OfflineIcon24 } from "./icons"
 
 const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.success"),
@@ -64,10 +64,8 @@ function SuccessIcon16() {
 
 function SuccessIcon24() {
   return (
-    <div className="rounded-full bg-[var(--green-11)] text-bg dark:bg-[var(--green-a4)] dark:text-[var(--green-a11)] dark:ring-1 dark:ring-inset dark:ring-[var(--green-a4)]">
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-        <path d="m16.552 8.613-5.458 7.094a.75.75 0 0 1-1.2-.016l-2.442-3.356 1.213-.883 1.852 2.546 4.846-6.3 1.189.915Z" />
-      </svg>
+    <div className="grid h-6 w-6 place-items-center rounded-full bg-[var(--green-11)] text-bg dark:bg-[var(--green-a4)] dark:text-[var(--green-a11)] dark:ring-1 dark:ring-inset dark:ring-[var(--green-a4)]">
+      <CheckIcon12 />
     </div>
   )
 }
