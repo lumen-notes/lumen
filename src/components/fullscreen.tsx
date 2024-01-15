@@ -130,7 +130,7 @@ function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?:
   )
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-full flex-col">
       <header className="sticky top-0 z-10 flex items-center justify-between gap-4 bg-bg p-2">
         <div className="flex w-full items-center gap-4">
           <IconButton
