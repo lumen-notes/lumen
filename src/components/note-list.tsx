@@ -142,6 +142,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             <>
               {tagQualifiers.map((qualifier) => (
                 <PillButton
+                  removable={true}
                   key={qualifier.values.join(",")}
                   data-tag={qualifier.values.join(",")}
                   variant="primary"
@@ -168,7 +169,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       <span key={value}>{value}</span>
                     </React.Fragment>
                   ))}
-                  <CloseIcon12 className="-mr-0.5" />
                 </PillButton>
               ))}
               {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
