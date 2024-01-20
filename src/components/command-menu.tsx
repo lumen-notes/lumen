@@ -13,10 +13,17 @@ import { useDebouncedValue } from "../hooks/debounced-value"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { templateSchema } from "../schema"
-import { formatDate, formatDateDistance } from "../utils/date"
+import { formatDate, formatDateDistance, toDateString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
-import { CalendarIcon16, PlusIcon16, SearchIcon16, TagIcon16 } from "./icons"
+import {
+  CalendarIcon16,
+  NoteIcon16,
+  PlusIcon16,
+  SearchIcon16,
+  SettingsIcon16,
+  TagIcon16,
+} from "./icons"
 import { NoteFavicon } from "./note-favicon"
 
 export function CommandMenu() {
@@ -26,6 +33,7 @@ export function CommandMenu() {
   const panels = usePanels()
   const { openPanel } = usePanelActions()
   const routerNavigate = useNavigate()
+  // const navigate = useNavigateWithCache()
 
   // Refs
   const prevActiveElement = React.useRef<HTMLElement>()
@@ -50,8 +58,8 @@ export function CommandMenu() {
   }, [])
 
   const navigate = React.useCallback(
-    (url: string) => {
-      if (openPanel) {
+    (url: string, toPage?: boolean) => {
+      if (openPanel && !toPage) {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
         // } else if (isFullscreen) {
@@ -224,7 +232,30 @@ export function CommandMenu() {
                 Create new note "{debouncedQuery}"
               </CommandItem>
             </Command.Group>
-          ) : null}
+          ) : (
+            <Command.Group heading="Jump to">
+              <CommandItem key={"Notes"} icon={<NoteIcon16 />} onSelect={() => navigate(`/`)}>
+                Notes
+              </CommandItem>
+              <CommandItem key={"Tags"} icon={<TagIcon16 />} onSelect={() => navigate(`/tags`)}>
+                Tags
+              </CommandItem>
+              <CommandItem
+                key={"Calendar"}
+                icon={<CalendarIcon16 />}
+                onSelect={() => navigate(`/${toDateString(new Date())}`)}
+              >
+                Calendar
+              </CommandItem>
+              <CommandItem
+                key={"Settings"}
+                icon={<SettingsIcon16 />}
+                onSelect={() => navigate("/settings", true)}
+              >
+                Settings
+              </CommandItem>
+            </Command.Group>
+          )}
         </Command.List>
       </Card>
     </Command.Dialog>
