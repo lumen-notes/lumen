@@ -118,6 +118,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           value={repoType}
           onValueChange={(value) => setRepoType(value as "new" | "existing")}
           className="flex flex-col gap-3 coarse:gap-4"
+          name="repo-type"
         >
           <div className="flex items-center gap-2">
             <RadioGroup.Item id="repo-new" value="new" />
