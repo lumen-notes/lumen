@@ -28,7 +28,7 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
         <LumenLogo size={24} className="mb-8" />
         <h1 className="mb-1 text-xl font-semibold">Welcome to Lumen</h1>
         <p className="mb-8 text-text-secondary">
-          Lumen is a note-taking app for lifelong learners.{" "}
+          Lumen is a simple note-taking app for better thinking.{" "}
           <a className="link link-external" href="https://uselumen.com">
             Learn more
           </a>
