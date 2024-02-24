@@ -1,16 +1,18 @@
 import { Slot } from "@radix-ui/react-slot"
-import { cx } from "../utils/cx"
 import React from "react"
+import { cx } from "../utils/cx"
+import { CloseIcon12 } from "./icons"
 
 type PillButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   children: React.ReactNode
   asChild?: boolean
   className?: string
   variant?: "primary" | "secondary" | "dashed"
+  removable?: boolean
 }
 
 export const PillButton = React.forwardRef<HTMLButtonElement, PillButtonProps>(
-  ({ children, asChild, className, variant = "secondary", ...props }, ref) => {
+  ({ children, asChild, className, variant = "secondary", removable = false, ...props }, ref) => {
     const Component = asChild ? Slot : "button"
     return (
       <Component
@@ -26,6 +28,7 @@ export const PillButton = React.forwardRef<HTMLButtonElement, PillButtonProps>(
         {...props}
       >
         {children}
+        {removable ? <CloseIcon12 className="-mr-0.5" /> : null}
       </Component>
     )
   },

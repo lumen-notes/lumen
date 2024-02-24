@@ -2,17 +2,17 @@ import React from "react"
 import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
-import { templateSchema } from "../schema"
-import { pluralize } from "../utils/pluralize"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import { useDebouncedValue } from "../hooks/debounced-value"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { useSearchParam } from "../hooks/search-param"
+import { templateSchema } from "../schema"
+import { pluralize } from "../utils/pluralize"
+import { removeParentTags } from "../utils/remove-parent-tags"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, ListIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
@@ -145,6 +145,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                   key={qualifier.values.join(",")}
                   data-tag={qualifier.values.join(",")}
                   variant="primary"
+                  removable
                   onClick={() => {
                     const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(",")}`
 
@@ -168,7 +169,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       <span key={value}>{value}</span>
                     </React.Fragment>
                   ))}
-                  <CloseIcon12 className="-mr-0.5" />
                 </PillButton>
               ))}
               {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
