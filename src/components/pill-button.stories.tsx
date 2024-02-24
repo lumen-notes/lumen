@@ -6,6 +6,9 @@ export default {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    onClick: { action: "onClick" },
+  },
 }
 
 export const Primary = {
@@ -14,7 +17,6 @@ export const Primary = {
     variant: "primary",
     removable: false,
   },
-  argTypes: { onRemove: { action: "onRemove" } },
 }
 
 export const Secondary = {
@@ -23,7 +25,6 @@ export const Secondary = {
     variant: "secondary",
     removable: false,
   },
-  argTypes: { onRemove: { action: "onRemove" } },
 }
 
 export const Dashed = {
@@ -32,5 +33,12 @@ export const Dashed = {
     variant: "dashed",
     removable: false,
   },
-  argTypes: { onRemove: { action: "onRemove" } },
+}
+
+export const Removable = {
+  args: {
+    children: "Pill button",
+    variant: "primary",
+    removable: true,
+  },
 }
