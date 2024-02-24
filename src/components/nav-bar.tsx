@@ -1,21 +1,12 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import React from "react"
-import {
-  NavLinkProps,
-  NavLink as RouterNavLink,
-  resolvePath,
-  useLocation,
-  useMatch,
-  useNavigate,
-  useResolvedPath,
-} from "react-router-dom"
+import { NavLinkProps, NavLink as RouterNavLink, useMatch, useResolvedPath } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
+import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { cx } from "../utils/cx"
 import { toDateString } from "../utils/date"
-import { getPrevPathParams } from "../utils/prev-path-params"
 import { DropdownMenu } from "./dropdown-menu"
 import { useSignOut } from "./github-auth"
 import { IconButton } from "./icon-button"
@@ -174,33 +165,6 @@ function NavLink({
       </Tooltip.Trigger>
       <Tooltip.Content side={tooltipSide}>{props["aria-label"]}</Tooltip.Content>
     </Tooltip>
-  )
-}
-
-function useNavigateWithCache() {
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  return React.useCallback(
-    (to: string) => {
-      const { pathname } = resolvePath(to)
-
-      const prevPathParams = getPrevPathParams(pathname)
-
-      // Clicking the nav link for the current page resets the params for that pages
-      if (location.pathname === pathname) {
-        navigate(to)
-        return
-      }
-
-      if (prevPathParams) {
-        // Navigate to the new path with the previous params for that path
-        navigate({ pathname, search: prevPathParams })
-      } else {
-        navigate(to)
-      }
-    },
-    [navigate, location],
   )
 }
 
