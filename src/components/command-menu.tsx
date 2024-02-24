@@ -4,12 +4,12 @@ import { useAtomValue } from "jotai"
 import qs from "qs"
 import React from "react"
 import { flushSync } from "react-dom"
-import { useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
 import { usePanelActions, usePanels } from "../components/panels"
 import { tagSearcherAtom } from "../global-state"
 import { useDebouncedValue } from "../hooks/debounced-value"
+import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { templateSchema } from "../schema"
@@ -32,8 +32,7 @@ export function CommandMenu() {
   const saveNote = useSaveNote()
   const panels = usePanels()
   const { openPanel } = usePanelActions()
-  const routerNavigate = useNavigate()
-  // const navigate = useNavigateWithCache()
+  const routerNavigate = useNavigateWithCache()
 
   // Refs
   const prevActiveElement = React.useRef<HTMLElement>()
@@ -58,13 +57,10 @@ export function CommandMenu() {
   }, [])
 
   const navigate = React.useCallback(
-    (url: string, toPage?: boolean) => {
-      if (openPanel && !toPage) {
+    (url: string, { openInPanel = true }: { openInPanel?: boolean } = {}) => {
+      if (openInPanel && openPanel) {
         // If we're in a panels context, navigate by opening a panel
         openPanel(url, panels.length - 1)
-        // } else if (isFullscreen) {
-        //   // If we're in fullscreen mode, add `fullscreen=true` to the query string
-        //   routerNavigate(url.includes("?") ? `${url}&fullscreen=true` : `${url}?fullscreen=true`)
       } else {
         // Otherwise, navigate using the router
         routerNavigate(url)
@@ -234,23 +230,31 @@ export function CommandMenu() {
             </Command.Group>
           ) : (
             <Command.Group heading="Jump to">
-              <CommandItem key={"Notes"} icon={<NoteIcon16 />} onSelect={() => navigate(`/`)}>
+              <CommandItem
+                key="Notes"
+                icon={<NoteIcon16 />}
+                onSelect={() => navigate(`/`, { openInPanel: false })}
+              >
                 Notes
               </CommandItem>
-              <CommandItem key={"Tags"} icon={<TagIcon16 />} onSelect={() => navigate(`/tags`)}>
-                Tags
+              <CommandItem
+                key="Today"
+                icon={<CalendarIcon16 date={new Date().getDate()} />}
+                onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
+              >
+                Today
               </CommandItem>
               <CommandItem
-                key={"Calendar"}
-                icon={<CalendarIcon16 />}
-                onSelect={() => navigate(`/${toDateString(new Date())}`)}
+                key="Tags"
+                icon={<TagIcon16 />}
+                onSelect={() => navigate(`/tags`, { openInPanel: false })}
               >
-                Calendar
+                Tags
               </CommandItem>
               <CommandItem
                 key={"Settings"}
                 icon={<SettingsIcon16 />}
-                onSelect={() => navigate("/settings", true)}
+                onSelect={() => navigate("/settings", { openInPanel: false })}
               >
                 Settings
               </CommandItem>
