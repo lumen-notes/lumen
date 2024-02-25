@@ -224,7 +224,7 @@ function pasteExtension({
 }
 
 function dateCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/(\[\[[^\]|^|]*|\w*)/)
+  const word = context.matchBefore(/\[\[[^\]|^|]*/)
 
   if (!word) {
     return null

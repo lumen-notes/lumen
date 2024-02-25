@@ -4,7 +4,6 @@ import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
-// import remarkEmoji from "remark-emoji"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
@@ -14,10 +13,9 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { remarkDateLink } from "../remark-plugins/date-link"
-import { remarkNoteEmbed } from "../remark-plugins/note-embed"
-import { remarkNoteLink } from "../remark-plugins/note-link"
-import { remarkTagLink } from "../remark-plugins/tag-link"
+import { remarkEmbed } from "../remark-plugins/embed"
+import { remarkWikilink } from "../remark-plugins/wikilink"
+import { remarkTag } from "../remark-plugins/tag"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
@@ -25,6 +23,7 @@ import {
   formatDate,
   formatDateDistance,
   getNextBirthday,
+  isValidDateString,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -162,10 +161,9 @@ function MarkdownContent({ children, className }: { children: string; className?
       remarkPlugins={[
         remarkGfm,
         // remarkEmoji,
-        remarkNoteLink,
-        remarkNoteEmbed,
-        remarkTagLink,
-        remarkDateLink,
+        remarkWikilink,
+        remarkEmbed,
+        remarkTag,
         remarkMath,
       ]}
       rehypePlugins={[rehypeKatex]}
@@ -177,26 +175,21 @@ function MarkdownContent({ children, className }: { children: string; className?
               output: "mathml",
             })
           },
-          noteLink(h, node) {
-            return h(node, "noteLink", {
+          wikilink(h, node) {
+            return h(node, "wikilink", {
               id: node.data.id,
               text: node.data.text,
             })
           },
-          noteEmbed(h, node) {
-            return h(node, "noteEmbed", {
+          embed(h, node) {
+            return h(node, "embed", {
               id: node.data.id,
               text: node.data.text,
             })
           },
-          tagLink(h, node) {
-            return h(node, "tagLink", {
+          tag(h, node) {
+            return h(node, "tag", {
               name: node.data.name,
-            })
-          },
-          dateLink(h, node) {
-            return h(node, "dateLink", {
-              date: node.data.date,
             })
           },
         },
@@ -210,13 +203,11 @@ function MarkdownContent({ children, className }: { children: string; className?
         pre: ({ children }) => <>{children}</>,
         code: Code,
         // @ts-ignore I don't know how to extend the list of accepted component keys
-        noteLink: NoteLink,
+        wikilink: NoteLink,
         // @ts-ignore
-        noteEmbed: NoteEmbed,
+        embed: NoteEmbed,
         // @ts-ignore
-        tagLink: TagLink,
-        // @ts-ignore
-        dateLink: DateLink,
+        tag: TagLink,
       }}
     >
       {children}
@@ -682,6 +673,10 @@ function NoteLink({ id, text }: NoteLinkProps) {
     }
   }, [])
 
+  if (isValidDateString(id)) {
+    return <DateLink date={id} text={text} />
+  }
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
@@ -745,15 +740,16 @@ function NoteEmbed({ id }: NoteEmbedProps) {
 
 type DateLinkProps = {
   date: string
+  text?: string
   className?: string
 }
 
-function DateLink({ date, className }: DateLinkProps) {
+function DateLink({ date, text, className }: DateLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link className={className} to={`/${date}`} target="_blank">
-          {formatDate(date)}
+          {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
