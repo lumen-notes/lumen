@@ -15,7 +15,7 @@ import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkWikilink } from "../remark-plugins/wikilink"
-import { remarkTagLink } from "../remark-plugins/tag-link"
+import { remarkTag } from "../remark-plugins/tag"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
@@ -163,7 +163,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         // remarkEmoji,
         remarkWikilink,
         remarkNoteEmbed,
-        remarkTagLink,
+        remarkTag,
         remarkMath,
       ]}
       rehypePlugins={[rehypeKatex]}
@@ -187,8 +187,8 @@ function MarkdownContent({ children, className }: { children: string; className?
               text: node.data.text,
             })
           },
-          tagLink(h, node) {
-            return h(node, "tagLink", {
+          tag(h, node) {
+            return h(node, "tag", {
               name: node.data.name,
             })
           },
@@ -207,7 +207,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         // @ts-ignore
         noteEmbed: NoteEmbed,
         // @ts-ignore
-        tagLink: TagLink,
+        tag: TagLink,
       }}
     >
       {children}

@@ -14,22 +14,22 @@ import { Plugin } from "unified"
 import { Node } from "unist"
 
 const types = {
-  tagLink: "tagLink",
-  tagLinkMarker: "tagLinkMarker",
-  tagLinkName: "tagLinkName",
+  tag: "tag",
+  tagMarker: "tagMarker",
+  tagName: "tagName",
 }
 
 /** Syntax extension (text -> tokens) */
-export function tagLink(): Extension {
+export function tag(): Extension {
   const tokenize: Tokenizer = (effects, ok, nok) => {
     return enter
 
     function enter(code: Code): State | void {
       if (isMarkerChar(code)) {
-        effects.enter(types.tagLink)
-        effects.enter(types.tagLinkMarker)
+        effects.enter(types.tag)
+        effects.enter(types.tagMarker)
         effects.consume(code)
-        effects.exit(types.tagLinkMarker)
+        effects.exit(types.tagMarker)
         return enterName
       } else {
         return nok(code)
@@ -38,7 +38,7 @@ export function tagLink(): Extension {
 
     function enterName(code: Code): State | void {
       if (isAlphaChar(code)) {
-        effects.enter(types.tagLinkName)
+        effects.enter(types.tagName)
         effects.consume(code)
         return continueName
       } else {
@@ -51,8 +51,8 @@ export function tagLink(): Extension {
         effects.consume(code)
         return continueName
       } else {
-        effects.exit(types.tagLinkName)
-        effects.exit(types.tagLink)
+        effects.exit(types.tagName)
+        effects.exit(types.tag)
         return ok(code)
       }
     }
@@ -69,7 +69,7 @@ export function tagLink(): Extension {
   }
 
   const construct: Construct = {
-    name: "tagLink",
+    name: "tag",
     tokenize,
     previous,
   }
@@ -117,10 +117,10 @@ function isNameChar(code: Code): boolean {
  * HTML extension (tokens -> HTML)
  * This is only used for unit testing
  */
-export function tagLinkHtml(): HtmlExtension {
+export function tagHtml(): HtmlExtension {
   return {
     enter: {
-      [types.tagLinkName](token) {
+      [types.tagName](token) {
         const name = this.sliceSerialize(token)
         this.tag(`<tag-link name="${name}" />`)
       },
@@ -128,38 +128,38 @@ export function tagLinkHtml(): HtmlExtension {
   }
 }
 
-// Register tagLink as an mdast node type
-interface TagLink extends Node {
-  type: "tagLink"
+// Register tag as an mdast node type
+interface Tag extends Node {
+  type: "tag"
   value: string
   data: { name: string }
 }
 
 declare module "mdast" {
   interface StaticPhrasingContentMap {
-    tagLink: TagLink
+    tag: Tag
   }
 }
 
 /** MDAST extension (tokens -> MDAST) */
-export function tagLinkFromMarkdown(): FromMarkdownExtension {
+export function tagFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let name: string | undefined
 
   return {
     enter: {
-      [types.tagLink](token) {
-        this.enter({ type: "tagLink", value: "", data: { name: "" } }, token)
+      [types.tag](token) {
+        this.enter({ type: "tag", value: "", data: { name: "" } }, token)
       },
-      [types.tagLinkName](token) {
+      [types.tagName](token) {
         name = this.sliceSerialize(token)
       },
     },
     exit: {
-      [types.tagLink](token) {
+      [types.tag](token) {
         const node = this.stack[this.stack.length - 1]
 
-        if (node.type === "tagLink") {
+        if (node.type === "tag") {
           node.data.name = name || ""
           node.value = `#${name}`
         }
@@ -177,12 +177,12 @@ export function tagLinkFromMarkdown(): FromMarkdownExtension {
  * Remark plugin
  * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
  */
-export function remarkTagLink(): ReturnType<Plugin<[], Root>> {
+export function remarkTag(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()
 
-  add("micromarkExtensions", tagLink())
-  add("fromMarkdownExtensions", tagLinkFromMarkdown())
+  add("micromarkExtensions", tag())
+  add("fromMarkdownExtensions", tagFromMarkdown())
 
   function add(field: string, value: unknown) {
     const list = data[field] ? data[field] : (data[field] = [])

@@ -7,7 +7,7 @@ import { visit } from "unist-util-visit"
 import { z } from "zod"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
-import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
+import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { NoteId } from "../schema"
 import { getNextBirthday, isValidDateString, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
@@ -34,12 +34,12 @@ export const parseNote = memoize((id: NoteId, content: string) => {
       // It's important that noteEmbed is included after wikilink.
       // noteEmbed is a subset of wikilink. In other words, all noteEmbeds are also wikilinks.
       // If noteEmbed is included before wikilink, all noteEmbeds are parsed as wikilinks.
-      extensions: [gfmTaskListItem(), wikilink(), noteEmbed(), tagLink()],
+      extensions: [gfmTaskListItem(), wikilink(), noteEmbed(), tag()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
         wikilinkFromMarkdown(),
         noteEmbedFromMarkdown(),
-        tagLinkFromMarkdown(),
+        tagFromMarkdown(),
       ],
     },
   )
@@ -70,7 +70,7 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         break
       }
 
-      case "tagLink": {
+      case "tag": {
         // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
         node.data.name.split("/").forEach((_, index) => {
           tags.add(
