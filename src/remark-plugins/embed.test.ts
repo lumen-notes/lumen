@@ -1,13 +1,13 @@
 import { micromark } from "micromark"
 import { expect, test } from "vitest"
-import { noteEmbed, noteEmbedHtml } from "./note-embed"
+import { embed, embedHtml } from "./embed"
 
 function runTests(tests: Array<{ input: string; output: string }>) {
   for (const { input, output } of tests) {
     test(input, () => {
       const html = micromark(input, {
-        extensions: [noteEmbed()],
-        htmlExtensions: [noteEmbedHtml()],
+        extensions: [embed()],
+        htmlExtensions: [embedHtml()],
       })
       expect(html).toBe(output)
     })

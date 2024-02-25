@@ -5,7 +5,7 @@ import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { z } from "zod"
-import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
+import { embed, embedFromMarkdown } from "../remark-plugins/embed"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { NoteId } from "../schema"
@@ -31,14 +31,14 @@ export const parseNote = memoize((id: NoteId, content: string) => {
     content,
     // @ts-ignore TODO: Fix types
     {
-      // It's important that noteEmbed is included after wikilink.
-      // noteEmbed is a subset of wikilink. In other words, all noteEmbeds are also wikilinks.
-      // If noteEmbed is included before wikilink, all noteEmbeds are parsed as wikilinks.
-      extensions: [gfmTaskListItem(), wikilink(), noteEmbed(), tag()],
+      // It's important that embed is included after wikilink.
+      // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
+      // If embed is included before wikilink, all embeds are parsed as wikilinks.
+      extensions: [gfmTaskListItem(), wikilink(), embed(), tag()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
         wikilinkFromMarkdown(),
-        noteEmbedFromMarkdown(),
+        embedFromMarkdown(),
         tagFromMarkdown(),
       ],
     },
@@ -60,7 +60,7 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         break
       }
 
-      case "noteEmbed":
+      case "embed":
       case "wikilink": {
         links.add(node.data.id)
 

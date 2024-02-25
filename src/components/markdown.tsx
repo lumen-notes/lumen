@@ -13,7 +13,7 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { remarkNoteEmbed } from "../remark-plugins/note-embed"
+import { remarkEmbed } from "../remark-plugins/embed"
 import { remarkWikilink } from "../remark-plugins/wikilink"
 import { remarkTag } from "../remark-plugins/tag"
 import { templateSchema } from "../schema"
@@ -162,7 +162,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkGfm,
         // remarkEmoji,
         remarkWikilink,
-        remarkNoteEmbed,
+        remarkEmbed,
         remarkTag,
         remarkMath,
       ]}
@@ -181,8 +181,8 @@ function MarkdownContent({ children, className }: { children: string; className?
               text: node.data.text,
             })
           },
-          noteEmbed(h, node) {
-            return h(node, "noteEmbed", {
+          embed(h, node) {
+            return h(node, "embed", {
               id: node.data.id,
               text: node.data.text,
             })
@@ -205,7 +205,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         // @ts-ignore I don't know how to extend the list of accepted component keys
         wikilink: NoteLink,
         // @ts-ignore
-        noteEmbed: NoteEmbed,
+        embed: NoteEmbed,
         // @ts-ignore
         tag: TagLink,
       }}
