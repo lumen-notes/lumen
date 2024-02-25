@@ -6,22 +6,22 @@ import { Plugin } from "unified"
 import { Node } from "unist"
 
 const types = {
-  noteLink: "noteLink",
-  noteLinkMarker: "noteLinkMarker",
-  noteLinkId: "noteLinkId",
-  noteLinkSeparator: "noteLinkSeparator",
-  noteLinkText: "noteLinkText",
+  wikilink: "wikilink",
+  wikilinkMarker: "wikilinkMarker",
+  wikilinkId: "wikilinkId",
+  wikilinkSeparator: "wikilinkSeparator",
+  wikilinkText: "wikilinkText",
 }
 
 /** Syntax extension (text -> tokens) */
-export function noteLink(): Extension {
+export function wikilink(): Extension {
   const tokenize: Tokenizer = (effects, ok, nok) => {
     return enter
 
     function enter(code: Code): State | void {
       if (isOpeningMarkerChar(code)) {
-        effects.enter(types.noteLink)
-        effects.enter(types.noteLinkMarker)
+        effects.enter(types.wikilink)
+        effects.enter(types.wikilinkMarker)
         effects.consume(code)
         return exitOpeningMarker
       } else {
@@ -32,7 +32,7 @@ export function noteLink(): Extension {
     function exitOpeningMarker(code: Code): State | void {
       if (isOpeningMarkerChar(code)) {
         effects.consume(code)
-        effects.exit(types.noteLinkMarker)
+        effects.exit(types.wikilinkMarker)
 
         return enterId
       } else {
@@ -42,7 +42,7 @@ export function noteLink(): Extension {
 
     function enterId(code: Code): State | void {
       if (isFilenameChar(code)) {
-        effects.enter(types.noteLinkId)
+        effects.enter(types.wikilinkId)
         effects.consume(code)
         return continueId
       } else {
@@ -52,14 +52,14 @@ export function noteLink(): Extension {
 
     function continueId(code: Code): State | void {
       if (isSeparatorChar(code)) {
-        effects.exit(types.noteLinkId)
-        effects.enter(types.noteLinkSeparator)
+        effects.exit(types.wikilinkId)
+        effects.enter(types.wikilinkSeparator)
         effects.consume(code)
-        effects.exit(types.noteLinkSeparator)
+        effects.exit(types.wikilinkSeparator)
         return enterText
       } else if (isClosingMarkerChar(code)) {
-        effects.exit(types.noteLinkId)
-        effects.enter(types.noteLinkMarker)
+        effects.exit(types.wikilinkId)
+        effects.enter(types.wikilinkMarker)
         effects.consume(code)
         return exitClosingMarker
       } else if (isFilenameChar(code)) {
@@ -72,7 +72,7 @@ export function noteLink(): Extension {
 
     function enterText(code: Code): State | void {
       if (isTextChar(code)) {
-        effects.enter(types.noteLinkText)
+        effects.enter(types.wikilinkText)
         effects.consume(code)
         return continueText
       } else {
@@ -85,8 +85,8 @@ export function noteLink(): Extension {
         effects.consume(code)
         return continueText
       } else if (isClosingMarkerChar(code)) {
-        effects.exit(types.noteLinkText)
-        effects.enter(types.noteLinkMarker)
+        effects.exit(types.wikilinkText)
+        effects.enter(types.wikilinkMarker)
         effects.consume(code)
         return exitClosingMarker
       } else {
@@ -97,8 +97,8 @@ export function noteLink(): Extension {
     function exitClosingMarker(code: Code): State | void {
       if (isClosingMarkerChar(code)) {
         effects.consume(code)
-        effects.exit(types.noteLinkMarker)
-        effects.exit(types.noteLink)
+        effects.exit(types.wikilinkMarker)
+        effects.exit(types.wikilink)
         return ok
       } else {
         return nok(code)
@@ -106,7 +106,7 @@ export function noteLink(): Extension {
     }
   }
   const construct: Construct = {
-    name: "noteLink",
+    name: "wikilink",
     tokenize,
   }
 
@@ -175,23 +175,23 @@ function isTextChar(code: Code): boolean {
  * HTML extension (tokens -> HTML)
  * This is only used for unit testing
  */
-export function noteLinkHtml(): HtmlExtension {
+export function wikilinkHtml(): HtmlExtension {
   // Initialize state
   let id: string | undefined
   let text: string | undefined
 
   return {
     enter: {
-      [types.noteLinkId](token) {
+      [types.wikilinkId](token) {
         id = this.sliceSerialize(token)
       },
-      [types.noteLinkText](token) {
+      [types.wikilinkText](token) {
         text = this.sliceSerialize(token)
       },
     },
     exit: {
-      [types.noteLink]() {
-        this.tag(`<note-link id="${id}" text="${text || ""}" />`)
+      [types.wikilink]() {
+        this.tag(`<wikilink id="${id}" text="${text || ""}" />`)
 
         // Reset state
         id = undefined
@@ -201,42 +201,42 @@ export function noteLinkHtml(): HtmlExtension {
   }
 }
 
-// Register noteLink as an mdast node type
-interface NoteLink extends Node {
-  type: "noteLink"
+// Register wikilink as an mdast node type
+interface Wikilink extends Node {
+  type: "wikilink"
   value: string
   data: { id: string; text: string }
 }
 
 declare module "mdast" {
   interface StaticPhrasingContentMap {
-    noteLink: NoteLink
+    wikilink: Wikilink
   }
 }
 
 /** MDAST extension (tokens -> MDAST) */
-export function noteLinkFromMarkdown(): FromMarkdownExtension {
+export function wikilinkFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let id: string | undefined
   let text: string | undefined
 
   return {
     enter: {
-      [types.noteLink](token) {
-        this.enter({ type: "noteLink", value: "", data: { id: "", text: "" } }, token)
+      [types.wikilink](token) {
+        this.enter({ type: "wikilink", value: "", data: { id: "", text: "" } }, token)
       },
-      [types.noteLinkId](token) {
+      [types.wikilinkId](token) {
         id = this.sliceSerialize(token)
       },
-      [types.noteLinkText](token) {
+      [types.wikilinkText](token) {
         text = this.sliceSerialize(token)
       },
     },
     exit: {
-      [types.noteLink](token) {
+      [types.wikilink](token) {
         const node = this.stack[this.stack.length - 1]
 
-        if (node.type === "noteLink") {
+        if (node.type === "wikilink") {
           node.data.id = id || ""
           node.data.text = text || ""
           node.value = text || id || ""
@@ -256,12 +256,12 @@ export function noteLinkFromMarkdown(): FromMarkdownExtension {
  * Remark plugin
  * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
  */
-export function remarkNoteLink(): ReturnType<Plugin<[], Root>> {
+export function remarkWikilink(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()
 
-  add("micromarkExtensions", noteLink())
-  add("fromMarkdownExtensions", noteLinkFromMarkdown())
+  add("micromarkExtensions", wikilink())
+  add("fromMarkdownExtensions", wikilinkFromMarkdown())
 
   function add(field: string, value: unknown) {
     const list = data[field] ? data[field] : (data[field] = [])

@@ -1,13 +1,13 @@
 import { micromark } from "micromark"
 import { expect, test } from "vitest"
-import { noteLink, noteLinkHtml } from "./note-link"
+import { wikilink, wikilinkHtml } from "./wikilink"
 
 function runTests(tests: Array<{ input: string; output: string }>) {
   for (const { input, output } of tests) {
     test(input, () => {
       const html = micromark(input, {
-        extensions: [noteLink()],
-        htmlExtensions: [noteLinkHtml()],
+        extensions: [wikilink()],
+        htmlExtensions: [wikilinkHtml()],
       })
       expect(html).toBe(output)
     })
@@ -15,18 +15,18 @@ function runTests(tests: Array<{ input: string; output: string }>) {
 }
 
 runTests([
-  // Valid note links
+  // Valid wikilinks
   {
     input: `[[123]]`,
-    output: `<p><note-link id="123" text="" /></p>`,
+    output: `<p><wikilink id="123" text="" /></p>`,
   },
   {
     input: `[[[123]]]`,
-    output: `<p>[<note-link id="123" text="" />]</p>`,
+    output: `<p>[<wikilink id="123" text="" />]</p>`,
   },
   {
     input: `[[[[123]]]]`,
-    output: `<p>[[<note-link id="123" text="" />]]</p>`,
+    output: `<p>[[<wikilink id="123" text="" />]]</p>`,
   },
   {
     input: `\`\`\`
@@ -41,48 +41,48 @@ runTests([
   },
   {
     input: `_[[123]]_`,
-    output: `<p><em><note-link id="123" text="" /></em></p>`,
+    output: `<p><em><wikilink id="123" text="" /></em></p>`,
   },
   {
     input: `- [[123]]`,
     output: `<ul>
-<li><note-link id="123" text="" /></li>
+<li><wikilink id="123" text="" /></li>
 </ul>`,
   },
   {
     input: `[[123|hello]]`,
-    output: `<p><note-link id="123" text="hello" /></p>`,
+    output: `<p><wikilink id="123" text="hello" /></p>`,
   },
   {
     input: `[[123|hello world]]`,
-    output: `<p><note-link id="123" text="hello world" /></p>`,
+    output: `<p><wikilink id="123" text="hello world" /></p>`,
   },
   {
     input: `[[123|hello]] [[456]]`,
-    output: `<p><note-link id="123" text="hello" /> <note-link id="456" text="" /></p>`,
+    output: `<p><wikilink id="123" text="hello" /> <wikilink id="456" text="" /></p>`,
   },
   {
     input: `[[123x]]`,
-    output: `<p><note-link id="123x" text="" /></p>`,
+    output: `<p><wikilink id="123x" text="" /></p>`,
   },
   {
     input: `[[x]]`,
-    output: `<p><note-link id="x" text="" /></p>`,
+    output: `<p><wikilink id="x" text="" /></p>`,
   },
   {
     input: `[[x|y]]`,
-    output: `<p><note-link id="x" text="y" /></p>`,
+    output: `<p><wikilink id="x" text="y" /></p>`,
   },
   {
     input: `[[Hello world|foo]]`,
-    output: `<p><note-link id="Hello world" text="foo" /></p>`,
+    output: `<p><wikilink id="Hello world" text="foo" /></p>`,
   },
   {
     input: `[[foo.bar]]`,
-    output: `<p><note-link id="foo.bar" text="" /></p>`,
+    output: `<p><wikilink id="foo.bar" text="" /></p>`,
   },
 
-  // Invalid note links
+  // Invalid wikilinks
   {
     input: `hello`,
     output: `<p>hello</p>`,

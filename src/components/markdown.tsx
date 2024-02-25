@@ -14,7 +14,7 @@ import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
-import { remarkNoteLink } from "../remark-plugins/note-link"
+import { remarkWikilink } from "../remark-plugins/wikilink"
 import { remarkTagLink } from "../remark-plugins/tag-link"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
@@ -161,7 +161,7 @@ function MarkdownContent({ children, className }: { children: string; className?
       remarkPlugins={[
         remarkGfm,
         // remarkEmoji,
-        remarkNoteLink,
+        remarkWikilink,
         remarkNoteEmbed,
         remarkTagLink,
         remarkMath,
@@ -175,8 +175,8 @@ function MarkdownContent({ children, className }: { children: string; className?
               output: "mathml",
             })
           },
-          noteLink(h, node) {
-            return h(node, "noteLink", {
+          wikilink(h, node) {
+            return h(node, "wikilink", {
               id: node.data.id,
               text: node.data.text,
             })
@@ -203,7 +203,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         pre: ({ children }) => <>{children}</>,
         code: Code,
         // @ts-ignore I don't know how to extend the list of accepted component keys
-        noteLink: NoteLink,
+        wikilink: NoteLink,
         // @ts-ignore
         noteEmbed: NoteEmbed,
         // @ts-ignore

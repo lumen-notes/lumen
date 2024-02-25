@@ -1,6 +1,6 @@
 import Benchmark from "benchmark"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { noteLink, noteLinkFromMarkdown } from "../src/remark-plugins/note-link"
+import { wikilink, wikilinkFromMarkdown } from "../src/remark-plugins/wikilink"
 import { tagLink, tagLinkFromMarkdown } from "../src/remark-plugins/tag-link"
 
 const markdown = `
@@ -57,17 +57,17 @@ suite.add("With tag link syntax", () => {
   })
 })
 
-suite.add("With note link syntax", () => {
+suite.add("With wikilink syntax", () => {
   fromMarkdown(markdown, {
-    extensions: [noteLink()],
-    mdastExtensions: [noteLinkFromMarkdown()],
+    extensions: [wikilink()],
+    mdastExtensions: [wikilinkFromMarkdown()],
   })
 })
 
 suite.add("With all syntax extensions", () => {
   fromMarkdown(markdown, {
-    extensions: [noteLink(), tagLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown()],
+    extensions: [wikilink(), tagLink()],
+    mdastExtensions: [wikilinkFromMarkdown(), tagLinkFromMarkdown()],
   })
 })
 

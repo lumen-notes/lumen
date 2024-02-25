@@ -6,7 +6,7 @@ import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { z } from "zod"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
-import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
+import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../schema"
 import { getNextBirthday, isValidDateString, toDateStringUtc } from "./date"
@@ -31,13 +31,13 @@ export const parseNote = memoize((id: NoteId, content: string) => {
     content,
     // @ts-ignore TODO: Fix types
     {
-      // It's important that noteEmbed is included after noteLink.
-      // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
-      // If noteEmbed is included before noteLink, all noteEmbeds are parsed as noteLinks.
-      extensions: [gfmTaskListItem(), noteLink(), noteEmbed(), tagLink()],
+      // It's important that noteEmbed is included after wikilink.
+      // noteEmbed is a subset of wikilink. In other words, all noteEmbeds are also wikilinks.
+      // If noteEmbed is included before wikilink, all noteEmbeds are parsed as wikilinks.
+      extensions: [gfmTaskListItem(), wikilink(), noteEmbed(), tagLink()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
-        noteLinkFromMarkdown(),
+        wikilinkFromMarkdown(),
         noteEmbedFromMarkdown(),
         tagLinkFromMarkdown(),
       ],
@@ -60,9 +60,8 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         break
       }
 
-      // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
       case "noteEmbed":
-      case "noteLink": {
+      case "wikilink": {
         links.add(node.data.id)
 
         if (isValidDateString(node.data.id)) {
