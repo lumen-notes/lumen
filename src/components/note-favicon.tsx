@@ -1,8 +1,9 @@
 import { useNetworkState } from "react-use"
 import { Note, templateSchema } from "../schema"
 import { cx } from "../utils/cx"
+import { isValidDateString } from "../utils/date"
 import { GitHubAvatar } from "./github-avatar"
-import { NoteIcon16, NoteTemplateIcon16 } from "./icons"
+import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
@@ -19,6 +20,11 @@ export function NoteFavicon({
   const { online } = useNetworkState()
 
   let icon = defaultFavicon
+
+  // Date
+  if (isValidDateString(note.id)) {
+    icon = <CalendarIcon16 date={new Date(note.id).getUTCDate()} />
+  }
 
   // GitHub
   if (typeof note.frontmatter.github === "string" && online) {
