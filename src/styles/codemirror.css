@@ -17,6 +17,7 @@
 
 .cm-editor .cm-line {
   padding: 0;
+  white-space: break-spaces;
 }
 
 .cm-editor .cm-scroller {
