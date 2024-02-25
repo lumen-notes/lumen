@@ -18,15 +18,15 @@ runTests([
   // Valid note links
   {
     input: `![[123]]`,
-    output: `<p><note-embed id="123" text="123" /></p>`,
+    output: `<p><embed id="123" text="123" /></p>`,
   },
   {
     input: `[![[123]]]`,
-    output: `<p>[<note-embed id="123" text="123" />]</p>`,
+    output: `<p>[<embed id="123" text="123" />]</p>`,
   },
   {
     input: `[[![[123]]]]`,
-    output: `<p>[[<note-embed id="123" text="123" />]]</p>`,
+    output: `<p>[[<embed id="123" text="123" />]]</p>`,
   },
   {
     input: `\`\`\`
@@ -41,45 +41,45 @@ runTests([
   },
   {
     input: `_![[123]]_`,
-    output: `<p><em><note-embed id="123" text="123" /></em></p>`,
+    output: `<p><em><embed id="123" text="123" /></em></p>`,
   },
   {
     input: `- ![[123]]`,
     output: `<ul>
-<li><note-embed id="123" text="123" /></li>
+<li><embed id="123" text="123" /></li>
 </ul>`,
   },
   {
     input: `![[123|hello]]`,
-    output: `<p><note-embed id="123" text="hello" /></p>`,
+    output: `<p><embed id="123" text="hello" /></p>`,
   },
   {
     input: `![[123|hello world]]`,
-    output: `<p><note-embed id="123" text="hello world" /></p>`,
+    output: `<p><embed id="123" text="hello world" /></p>`,
   },
   {
     input: `![[123|hello]] ![[456]]`,
-    output: `<p><note-embed id="123" text="hello" /> <note-embed id="456" text="456" /></p>`,
+    output: `<p><embed id="123" text="hello" /> <embed id="456" text="456" /></p>`,
   },
   {
     input: `![[123x]]`,
-    output: `<p><note-embed id="123x" text="123x" /></p>`,
+    output: `<p><embed id="123x" text="123x" /></p>`,
   },
   {
     input: `![[x]]`,
-    output: `<p><note-embed id="x" text="x" /></p>`,
+    output: `<p><embed id="x" text="x" /></p>`,
   },
   {
     input: `![[x|y]]`,
-    output: `<p><note-embed id="x" text="y" /></p>`,
+    output: `<p><embed id="x" text="y" /></p>`,
   },
   {
     input: `![[Hello world|foo]]`,
-    output: `<p><note-embed id="Hello world" text="foo" /></p>`,
+    output: `<p><embed id="Hello world" text="foo" /></p>`,
   },
   {
     input: `![[foo.bar]]`,
-    output: `<p><note-embed id="foo.bar" text="foo.bar" /></p>`,
+    output: `<p><embed id="foo.bar" text="foo.bar" /></p>`,
   },
 
   // Invalid note links

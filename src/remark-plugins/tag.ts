@@ -122,7 +122,7 @@ export function tagHtml(): HtmlExtension {
     enter: {
       [types.tagName](token) {
         const name = this.sliceSerialize(token)
-        this.tag(`<tag-link name="${name}" />`)
+        this.tag(`<tag name="${name}" />`)
       },
     },
   }

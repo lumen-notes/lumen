@@ -207,7 +207,7 @@ export function embedHtml(): HtmlExtension {
     },
     exit: {
       [types.embed]() {
-        this.tag(`<note-embed id="${id}" text="${text || id}" />`)
+        this.tag(`<embed id="${id}" text="${text || id}" />`)
 
         // Reset state
         id = undefined
