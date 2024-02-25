@@ -1,4 +1,4 @@
-// Copied from note-link.ts
+// Copied from wikilink.ts
 
 import { Root } from "mdast"
 import { Extension as FromMarkdownExtension } from "mdast-util-from-markdown"
@@ -8,22 +8,22 @@ import { Plugin } from "unified"
 import { Node } from "unist"
 
 const types = {
-  noteEmbed: "noteEmbed",
-  noteEmbedMarker: "noteEmbedMarker",
-  noteEmbedId: "noteEmbedId",
-  noteEmbedSeparator: "noteEmbedSeparator",
-  noteEmbedText: "noteEmbedText",
+  embed: "embed",
+  embedMarker: "embedMarker",
+  embedId: "embedId",
+  embedSeparator: "embedSeparator",
+  embedText: "embedText",
 }
 
 /** Syntax extension (text -> tokens) */
-export function noteEmbed(): Extension {
+export function embed(): Extension {
   const tokenize: Tokenizer = (effects, ok, nok) => {
     return enter
 
     function enter(code: Code): State | void {
       if (isExclamationMarkChar(code)) {
-        effects.enter(types.noteEmbed)
-        effects.enter(types.noteEmbedMarker)
+        effects.enter(types.embed)
+        effects.enter(types.embedMarker)
         effects.consume(code)
         return enterOpeningMarker
       } else {
@@ -43,7 +43,7 @@ export function noteEmbed(): Extension {
     function exitOpeningMarker(code: Code): State | void {
       if (isOpeningMarkerChar(code)) {
         effects.consume(code)
-        effects.exit(types.noteEmbedMarker)
+        effects.exit(types.embedMarker)
 
         return enterId
       } else {
@@ -53,7 +53,7 @@ export function noteEmbed(): Extension {
 
     function enterId(code: Code): State | void {
       if (isFilenameChar(code)) {
-        effects.enter(types.noteEmbedId)
+        effects.enter(types.embedId)
         effects.consume(code)
         return continueId
       } else {
@@ -63,14 +63,14 @@ export function noteEmbed(): Extension {
 
     function continueId(code: Code): State | void {
       if (isSeparatorChar(code)) {
-        effects.exit(types.noteEmbedId)
-        effects.enter(types.noteEmbedSeparator)
+        effects.exit(types.embedId)
+        effects.enter(types.embedSeparator)
         effects.consume(code)
-        effects.exit(types.noteEmbedSeparator)
+        effects.exit(types.embedSeparator)
         return enterText
       } else if (isClosingMarkerChar(code)) {
-        effects.exit(types.noteEmbedId)
-        effects.enter(types.noteEmbedMarker)
+        effects.exit(types.embedId)
+        effects.enter(types.embedMarker)
         effects.consume(code)
         return exitClosingMarker
       } else if (isFilenameChar(code)) {
@@ -83,7 +83,7 @@ export function noteEmbed(): Extension {
 
     function enterText(code: Code): State | void {
       if (isTextChar(code)) {
-        effects.enter(types.noteEmbedText)
+        effects.enter(types.embedText)
         effects.consume(code)
         return continueText
       } else {
@@ -96,8 +96,8 @@ export function noteEmbed(): Extension {
         effects.consume(code)
         return continueText
       } else if (isClosingMarkerChar(code)) {
-        effects.exit(types.noteEmbedText)
-        effects.enter(types.noteEmbedMarker)
+        effects.exit(types.embedText)
+        effects.enter(types.embedMarker)
         effects.consume(code)
         return exitClosingMarker
       } else {
@@ -108,8 +108,8 @@ export function noteEmbed(): Extension {
     function exitClosingMarker(code: Code): State | void {
       if (isClosingMarkerChar(code)) {
         effects.consume(code)
-        effects.exit(types.noteEmbedMarker)
-        effects.exit(types.noteEmbed)
+        effects.exit(types.embedMarker)
+        effects.exit(types.embed)
         return ok
       } else {
         return nok(code)
@@ -117,7 +117,7 @@ export function noteEmbed(): Extension {
     }
   }
   const construct: Construct = {
-    name: "noteEmbed",
+    name: "embed",
     tokenize,
   }
 
@@ -191,23 +191,23 @@ function isTextChar(code: Code): boolean {
  * HTML extension (tokens -> HTML)
  * This is only used for unit testing
  */
-export function noteEmbedHtml(): HtmlExtension {
+export function embedHtml(): HtmlExtension {
   // Initialize state
   let id: string | undefined
   let text: string | undefined
 
   return {
     enter: {
-      [types.noteEmbedId](token) {
+      [types.embedId](token) {
         id = this.sliceSerialize(token)
       },
-      [types.noteEmbedText](token) {
+      [types.embedText](token) {
         text = this.sliceSerialize(token)
       },
     },
     exit: {
-      [types.noteEmbed]() {
-        this.tag(`<note-embed id="${id}" text="${text || id}" />`)
+      [types.embed]() {
+        this.tag(`<embed id="${id}" text="${text || id}" />`)
 
         // Reset state
         id = undefined
@@ -217,41 +217,41 @@ export function noteEmbedHtml(): HtmlExtension {
   }
 }
 
-// Register noteEmbed as an mdast node type
-interface NoteEmbed extends Node {
-  type: "noteEmbed"
+// Register embed as an mdast node type
+interface Embed extends Node {
+  type: "embed"
   data: { id: string; text: string }
 }
 
 declare module "mdast" {
   interface StaticPhrasingContentMap {
-    noteEmbed: NoteEmbed
+    embed: Embed
   }
 }
 
 /** MDAST extension (tokens -> MDAST) */
-export function noteEmbedFromMarkdown(): FromMarkdownExtension {
+export function embedFromMarkdown(): FromMarkdownExtension {
   // Initialize state
   let id: string | undefined
   let text: string | undefined
 
   return {
     enter: {
-      [types.noteEmbed](token) {
-        this.enter({ type: "noteEmbed", data: { id: "", text: "" } }, token)
+      [types.embed](token) {
+        this.enter({ type: "embed", data: { id: "", text: "" } }, token)
       },
-      [types.noteEmbedId](token) {
+      [types.embedId](token) {
         id = this.sliceSerialize(token)
       },
-      [types.noteEmbedText](token) {
+      [types.embedText](token) {
         text = this.sliceSerialize(token)
       },
     },
     exit: {
-      [types.noteEmbed](token) {
+      [types.embed](token) {
         const node = this.stack[this.stack.length - 1]
 
-        if (node.type === "noteEmbed") {
+        if (node.type === "embed") {
           node.data.id = id || ""
           node.data.text = text || id || ""
         }
@@ -270,12 +270,12 @@ export function noteEmbedFromMarkdown(): FromMarkdownExtension {
  * Remark plugin
  * Reference: https://github.com/remarkjs/remark-gfm/blob/main/index.js
  */
-export function remarkNoteEmbed(): ReturnType<Plugin<[], Root>> {
+export function remarkEmbed(): ReturnType<Plugin<[], Root>> {
   // @ts-ignore I'm not sure how to type `this`
   const data = this.data()
 
-  add("micromarkExtensions", noteEmbed())
-  add("fromMarkdownExtensions", noteEmbedFromMarkdown())
+  add("micromarkExtensions", embed())
+  add("fromMarkdownExtensions", embedFromMarkdown())
 
   function add(field: string, value: unknown) {
     const list = data[field] ? data[field] : (data[field] = [])

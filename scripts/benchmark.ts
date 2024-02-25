@@ -1,8 +1,7 @@
 import Benchmark from "benchmark"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { dateLink, dateLinkFromMarkdown } from "../src/remark-plugins/date-link"
-import { noteLink, noteLinkFromMarkdown } from "../src/remark-plugins/note-link"
-import { tagLink, tagLinkFromMarkdown } from "../src/remark-plugins/tag-link"
+import { wikilink, wikilinkFromMarkdown } from "../src/remark-plugins/wikilink"
+import { tag, tagFromMarkdown } from "../src/remark-plugins/tag"
 
 const markdown = `
 # Heading 1
@@ -51,31 +50,24 @@ suite.add("Without syntax extensions", () => {
   fromMarkdown(markdown)
 })
 
-suite.add("With tag link syntax", () => {
+suite.add("With tag syntax", () => {
   fromMarkdown(markdown, {
-    extensions: [tagLink()],
-    mdastExtensions: [tagLinkFromMarkdown()],
+    extensions: [tag()],
+    mdastExtensions: [tagFromMarkdown()],
   })
 })
 
-suite.add("With note link syntax", () => {
+suite.add("With wikilink syntax", () => {
   fromMarkdown(markdown, {
-    extensions: [noteLink()],
-    mdastExtensions: [noteLinkFromMarkdown()],
-  })
-})
-
-suite.add("With date link syntax", () => {
-  fromMarkdown(markdown, {
-    extensions: [dateLink()],
-    mdastExtensions: [dateLinkFromMarkdown()],
+    extensions: [wikilink()],
+    mdastExtensions: [wikilinkFromMarkdown()],
   })
 })
 
 suite.add("With all syntax extensions", () => {
   fromMarkdown(markdown, {
-    extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
+    extensions: [wikilink(), tag()],
+    mdastExtensions: [wikilinkFromMarkdown(), tagFromMarkdown()],
   })
 })
 

@@ -1,13 +1,13 @@
 import { micromark } from "micromark"
 import { expect, test } from "vitest"
-import { tagLink, tagLinkHtml } from "./tag-link"
+import { tag, tagHtml } from "./tag"
 
 function runTests(tests: Array<{ input: string; output: string }>) {
   for (const { input, output } of tests) {
     test(input, () => {
       const html = micromark(input, {
-        extensions: [tagLink()],
-        htmlExtensions: [tagLinkHtml()],
+        extensions: [tag()],
+        htmlExtensions: [tagHtml()],
       })
       expect(html).toBe(output)
     })
@@ -18,66 +18,66 @@ runTests([
   // Valid tag links
   {
     input: `#hello`,
-    output: `<p><tag-link name="hello" /></p>`,
+    output: `<p><tag name="hello" /></p>`,
   },
   {
     input: `#HELLO`,
-    output: `<p><tag-link name="HELLO" /></p>`,
+    output: `<p><tag name="HELLO" /></p>`,
   },
   {
     input: `# #hello`,
-    output: `<h1><tag-link name="hello" /></h1>`,
+    output: `<h1><tag name="hello" /></h1>`,
   },
   {
     input: `#hello#world`,
-    output: `<p><tag-link name="hello" />#world</p>`,
+    output: `<p><tag name="hello" />#world</p>`,
   },
   {
     input: `#hello #world`,
-    output: `<p><tag-link name="hello" /> <tag-link name="world" /></p>`,
+    output: `<p><tag name="hello" /> <tag name="world" /></p>`,
   },
   {
     input: `hello #world`,
-    output: `<p>hello <tag-link name="world" /></p>`,
+    output: `<p>hello <tag name="world" /></p>`,
   },
   {
     input: `hello
 
 #world`,
     output: `<p>hello</p>
-<p><tag-link name="world" /></p>`,
+<p><tag name="world" /></p>`,
   },
 
   {
     input: `#hello-world`,
-    output: `<p><tag-link name="hello-world" /></p>`,
+    output: `<p><tag name="hello-world" /></p>`,
   },
   {
     input: `#hello_world`,
-    output: `<p><tag-link name="hello_world" /></p>`,
+    output: `<p><tag name="hello_world" /></p>`,
   },
   {
     input: `#tag0123456789`,
-    output: `<p><tag-link name="tag0123456789" /></p>`,
+    output: `<p><tag name="tag0123456789" /></p>`,
   },
   {
     input: `#hello!`,
-    output: `<p><tag-link name="hello" />!</p>`,
+    output: `<p><tag name="hello" />!</p>`,
   },
   {
     input: `#hello world`,
-    output: `<p><tag-link name="hello" /> world</p>`,
+    output: `<p><tag name="hello" /> world</p>`,
   },
   {
     input: `- #hello`,
     output: `<ul>
-<li><tag-link name="hello" /></li>
+<li><tag name="hello" /></li>
 </ul>`,
   },
   {
     input: `> #hello`,
     output: `<blockquote>
-<p><tag-link name="hello" /></p>
+<p><tag name="hello" /></p>
 </blockquote>`,
   },
 

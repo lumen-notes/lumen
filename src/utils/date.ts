@@ -29,6 +29,11 @@ export const DAY_NAMES = [
   "Saturday",
 ]
 
+/** Checks if string is a valid date in the format "YYYY-MM-DD" */
+export function isValidDateString(dateString: string) {
+  return DATE_REGEX.test(dateString)
+}
+
 /**
  * Formats a date string
  *
@@ -90,6 +95,7 @@ export function formatDateDistance(dateString: string) {
   })
 }
 
+/** Converts a date to a string in the format "YYYY-MM-DD" */
 export function toDateString(date: Date) {
   const year = date.getFullYear().toString().padStart(4, "0")
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
