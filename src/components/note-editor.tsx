@@ -19,9 +19,9 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance, isValidUnixTimestamp } from "../utils/date"
+import { getEditorSettings } from "../utils/editor-settings"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
-import { getVimMode } from "../utils/vim-mode"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
@@ -42,6 +42,10 @@ const theme = createTheme({
     foreground: "var(--color-text)",
     caret: "var(--color-border-focus)",
     selection: "var(--color-bg-selection)",
+    gutterBackground: "transparent",
+    gutterForeground: "var(--color-text-secondary)",
+    gutterActiveForeground: "var(--color-text)",
+    gutterBorder: "transparent",
   },
   styles: [],
 })
@@ -60,6 +64,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   ) => {
     const attachFile = useAttachFile()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
+    const editorSettings = getEditorSettings()
 
     // Completions
     const noteCompletion = useNoteCompletion()
@@ -85,7 +90,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       pasteExtension({ attachFile, onPaste }),
     ]
 
-    if (getVimMode()) {
+    if (editorSettings.vimMode) {
       extensions.push(vim())
     }
 
@@ -97,7 +102,8 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         value={defaultValue}
         theme={theme}
         basicSetup={{
-          lineNumbers: false,
+          lineNumbers: editorSettings.lineNumbers,
+          foldGutter: false,
           highlightActiveLine: false,
           highlightSelectionMatches: false,
           bracketMatching: false,

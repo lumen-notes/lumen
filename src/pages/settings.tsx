@@ -10,7 +10,7 @@ import { Panel } from "../components/panel"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
-import { getVimMode, setVimMode } from "../utils/vim-mode"
+import { getEditorSettings, setEditorSettings } from "../utils/editor-settings"
 
 const isCloningAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloningRepo"),
@@ -21,6 +21,7 @@ export function SettingsPage() {
   const githubRepo = useAtomValue(githubRepoAtom)
   const isCloning = useAtomValue(isCloningAtom)
   const [isEditingRepo, setIsEditingRepo] = React.useState(false)
+  const editorSettings = getEditorSettings()
 
   return (
     <>
@@ -68,10 +69,22 @@ export function SettingsPage() {
         </div>
         <div className="grid gap-4 p-4">
           <h3 className="text-lg font-semibold leading-4">Editor</h3>
-          <Card className="p-4">
+          <Card className="grid gap-2 p-4">
             <div className="flex items-center gap-3">
-              <Switch id="vim-mode" defaultChecked={getVimMode()} onCheckedChange={setVimMode} />
+              <Switch
+                id="vim-mode"
+                defaultChecked={editorSettings.vimMode}
+                onCheckedChange={(checked) => setEditorSettings({ vimMode: checked })}
+              />
               <label htmlFor="vim-mode">Vim mode</label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="line-numbers"
+                defaultChecked={editorSettings.lineNumbers}
+                onCheckedChange={(checked) => setEditorSettings({ lineNumbers: checked })}
+              />
+              <label htmlFor="line-numbers">Line numbers</label>
             </div>
           </Card>
         </div>

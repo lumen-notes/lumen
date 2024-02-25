@@ -13,6 +13,7 @@
   padding: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  flex-shrink: 1;
 }
 
 .cm-editor .cm-line {
@@ -84,6 +85,10 @@
   @apply text-text-tertiary;
 }
 
-.cm-editor .cm-gutters {
+/* .cm-editor .cm-gutters {
   @apply hidden;
+} */
+
+.ͼ1 .cm-lineNumbers {
+  @apply pr-2;
 }

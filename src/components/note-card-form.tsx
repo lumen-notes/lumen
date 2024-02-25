@@ -8,7 +8,7 @@ import { githubRepoAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
-import { getVimMode } from "../utils/vim-mode"
+import { getEditorSettings } from "../utils/editor-settings"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
 import { FileInputButton } from "./file-input-button"
@@ -47,7 +47,7 @@ export function NoteCardForm({
   const saveNote = useSaveNote()
   const githubRepo = useAtomValue(githubRepoAtom)
   const attachFile = useAttachFile()
-  const vimMode = getVimMode()
+  const vimMode = getEditorSettings().vimMode
   const newEditorRef = React.useRef<ReactCodeMirrorRef>(null)
   const editorRef = providedEditorRef ?? newEditorRef
   const [editorHasFocus, setEditorHasFocus] = React.useState(false)
