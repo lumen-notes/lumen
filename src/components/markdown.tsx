@@ -4,7 +4,6 @@ import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
-// import remarkEmoji from "remark-emoji"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
@@ -14,7 +13,6 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { remarkDateLink } from "../remark-plugins/date-link"
 import { remarkNoteEmbed } from "../remark-plugins/note-embed"
 import { remarkNoteLink } from "../remark-plugins/note-link"
 import { remarkTagLink } from "../remark-plugins/tag-link"
@@ -25,6 +23,7 @@ import {
   formatDate,
   formatDateDistance,
   getNextBirthday,
+  isValidDateString,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -165,7 +164,6 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkNoteLink,
         remarkNoteEmbed,
         remarkTagLink,
-        remarkDateLink,
         remarkMath,
       ]}
       rehypePlugins={[rehypeKatex]}
@@ -194,11 +192,6 @@ function MarkdownContent({ children, className }: { children: string; className?
               name: node.data.name,
             })
           },
-          dateLink(h, node) {
-            return h(node, "dateLink", {
-              date: node.data.date,
-            })
-          },
         },
       }}
       components={{
@@ -215,8 +208,6 @@ function MarkdownContent({ children, className }: { children: string; className?
         noteEmbed: NoteEmbed,
         // @ts-ignore
         tagLink: TagLink,
-        // @ts-ignore
-        dateLink: DateLink,
       }}
     >
       {children}
@@ -682,6 +673,10 @@ function NoteLink({ id, text }: NoteLinkProps) {
     }
   }, [])
 
+  if (isValidDateString(id)) {
+    return <DateLink date={id} text={text} />
+  }
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
@@ -745,15 +740,16 @@ function NoteEmbed({ id }: NoteEmbedProps) {
 
 type DateLinkProps = {
   date: string
+  text?: string
   className?: string
 }
 
-function DateLink({ date, className }: DateLinkProps) {
+function DateLink({ date, text, className }: DateLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link className={className} to={`/${date}`} target="_blank">
-          {formatDate(date)}
+          {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>

@@ -5,12 +5,11 @@ import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { z } from "zod"
-import { dateLink, dateLinkFromMarkdown } from "../remark-plugins/date-link"
 import { noteEmbed, noteEmbedFromMarkdown } from "../remark-plugins/note-embed"
 import { noteLink, noteLinkFromMarkdown } from "../remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../remark-plugins/tag-link"
 import { NoteId } from "../schema"
-import { getNextBirthday, toDateStringUtc } from "./date"
+import { getNextBirthday, isValidDateString, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
 
 /**
@@ -32,16 +31,15 @@ export const parseNote = memoize((id: NoteId, content: string) => {
     content,
     // @ts-ignore TODO: Fix types
     {
-      // It's important that dateLink is included after noteLink.
-      // dateLink is a subset of noteLink. In other words, all dateLinks are also noteLinks.
-      // If dateLink is included before noteLink, all dateLinks are parsed as noteLinks.
-      extensions: [gfmTaskListItem(), noteLink(), noteEmbed(), tagLink(), dateLink()],
+      // It's important that noteEmbed is included after noteLink.
+      // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
+      // If noteEmbed is included before noteLink, all noteEmbeds are parsed as noteLinks.
+      extensions: [gfmTaskListItem(), noteLink(), noteEmbed(), tagLink()],
       mdastExtensions: [
         gfmTaskListItemFromMarkdown(),
         noteLinkFromMarkdown(),
         noteEmbedFromMarkdown(),
         tagLinkFromMarkdown(),
-        dateLinkFromMarkdown(),
       ],
     },
   )
@@ -62,16 +60,14 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         break
       }
 
-      case "dateLink": {
-        dates.add(node.data.date)
-        links.add(node.data.date)
-        break
-      }
-
       // noteEmbed is a subset of noteLink. In other words, all noteEmbeds are also noteLinks.
       case "noteEmbed":
       case "noteLink": {
         links.add(node.data.id)
+
+        if (isValidDateString(node.data.id)) {
+          dates.add(node.data.id)
+        }
         break
       }
 

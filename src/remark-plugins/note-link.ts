@@ -191,7 +191,7 @@ export function noteLinkHtml(): HtmlExtension {
     },
     exit: {
       [types.noteLink]() {
-        this.tag(`<note-link id="${id}" text="${text || id}" />`)
+        this.tag(`<note-link id="${id}" text="${text || ""}" />`)
 
         // Reset state
         id = undefined
@@ -238,7 +238,7 @@ export function noteLinkFromMarkdown(): FromMarkdownExtension {
 
         if (node.type === "noteLink") {
           node.data.id = id || ""
-          node.data.text = text || id || ""
+          node.data.text = text || ""
           node.value = text || id || ""
         }
 

@@ -1,6 +1,5 @@
 import Benchmark from "benchmark"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { dateLink, dateLinkFromMarkdown } from "../src/remark-plugins/date-link"
 import { noteLink, noteLinkFromMarkdown } from "../src/remark-plugins/note-link"
 import { tagLink, tagLinkFromMarkdown } from "../src/remark-plugins/tag-link"
 
@@ -65,17 +64,10 @@ suite.add("With note link syntax", () => {
   })
 })
 
-suite.add("With date link syntax", () => {
-  fromMarkdown(markdown, {
-    extensions: [dateLink()],
-    mdastExtensions: [dateLinkFromMarkdown()],
-  })
-})
-
 suite.add("With all syntax extensions", () => {
   fromMarkdown(markdown, {
-    extensions: [noteLink(), tagLink(), dateLink()],
-    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown(), dateLinkFromMarkdown()],
+    extensions: [noteLink(), tagLink()],
+    mdastExtensions: [noteLinkFromMarkdown(), tagLinkFromMarkdown()],
   })
 })
 
