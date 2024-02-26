@@ -1,8 +1,14 @@
-import { addDays, formatDistance, isSameDay, subDays } from "date-fns"
+import {
+  addDays,
+  differenceInCalendarISOWeeks,
+  formatDistance,
+  isSameDay,
+  parseISO,
+  startOfToday,
+  subDays,
+} from "date-fns"
 
 // Date utilities
-
-export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
 
 export const MONTH_NAMES = [
   "January",
@@ -29,17 +35,30 @@ export const DAY_NAMES = [
   "Saturday",
 ]
 
-/** Checks if string is a valid date in the format "YYYY-MM-DD" */
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
+const WEEK_REGEX = /^(?<year>\d{4})-W(?<week>\d{2})$/
+
+/** Checks if string is a valid date in ISO format (YYYY-MM-DD) */
 export function isValidDateString(dateString: string) {
   return DATE_REGEX.test(dateString) && !isNaN(Date.parse(dateString))
 }
 
-/** Checks if string is a valid week in the format "YYYY-W##" */
+/** Checks if string is a valid week in ISO format (YYYY-W##) */
 export function isValidWeekString(weekString: string) {
-  const match = weekString.match(/^(?<year>\d{4})-W(?<week>\d{2})$/)
+  const match = weekString.match(WEEK_REGEX)
   if (!match) return false
   const { year, week } = match.groups!
   return !isNaN(Date.parse(`${year}-01-01`)) && Number(week) >= 1 && Number(week) <= 53
+}
+
+export function isValidUnixTimestamp(value: string): boolean {
+  if (value === "") return false
+  const timestamp = Number(value)
+  const isNumber = !isNaN(timestamp)
+  const isPositive = timestamp >= 0
+  const isInteger = Number.isInteger(timestamp)
+  return isNumber && isPositive && isInteger
 }
 
 /**
@@ -103,6 +122,58 @@ export function formatDateDistance(dateString: string) {
   })
 }
 
+/**
+ * Formats a week string
+ *
+ * @example
+ * formatWeek("1998-W07") // "Week 7, 1998"
+ */
+export function formatWeek(weekString: string) {
+  if (!isValidWeekString(weekString)) {
+    throw new Error(`Invalid week: ${weekString}`)
+  }
+
+  const match = weekString.match(WEEK_REGEX)
+  if (!match) return ""
+  const { year, week } = match.groups!
+  let formattedWeek = `Week ${Number(week)}`
+
+  // Only show the year if it's not the current year
+  if (Number(year) !== new Date().getUTCFullYear()) {
+    formattedWeek += `, ${Number(year)}`
+  }
+
+  return formattedWeek
+}
+
+/**
+ * Formats a week string to show the distance from the current week
+ *
+ * @example
+ * formatWeekDistance("2021-W07") // "This week"
+ * formatWeekDistance("2021-W08") // "Next week"
+ * formatWeekDistance("2021-W06") // "Last week"
+ * formatWeekDistance("2020-W07") // "52 weeks ago"
+ * formatWeekDistance("2022-W07") // "In 52 weeks"
+ */
+export function formatWeekDistance(weekString: string) {
+  const weekDate = parseISO(weekString)
+  const currentDate = startOfToday()
+  const weeksDiff = differenceInCalendarISOWeeks(weekDate, currentDate)
+
+  if (weeksDiff === 0) {
+    return "This week"
+  } else if (weeksDiff === 1) {
+    return "Next week"
+  } else if (weeksDiff === -1) {
+    return "Last week"
+  } else if (weeksDiff < 0) {
+    return `${Math.abs(weeksDiff)} weeks ago`
+  } else {
+    return `In ${Math.abs(weeksDiff)} weeks`
+  }
+}
+
 /** Converts a date to a string in the format "YYYY-MM-DD" */
 export function toDateString(date: Date) {
   const year = date.getFullYear().toString().padStart(4, "0")
@@ -133,13 +204,4 @@ export function getNextBirthday(birthday: Date): Date {
   }
 
   return nextBirthday
-}
-
-export function isValidUnixTimestamp(value: string): boolean {
-  if (value === "") return false
-  const timestamp = Number(value)
-  const isNumber = !isNaN(timestamp)
-  const isPositive = timestamp >= 0
-  const isInteger = Number.isInteger(timestamp)
-  return isNumber && isPositive && isInteger
 }

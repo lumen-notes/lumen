@@ -20,38 +20,26 @@ import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { datesAtom, templatesAtom } from "../global-state"
+import { datesAtom, globalStateMachineAtom, templatesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { cx } from "../utils/cx"
-import {
-  DATE_REGEX,
-  DAY_NAMES,
-  MONTH_NAMES,
-  formatDate,
-  formatDateDistance,
-  toDateString,
-} from "../utils/date"
+import { DAY_NAMES, MONTH_NAMES, formatDate, formatDateDistance, toDateString } from "../utils/date"
+
+const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.resolvingRepo"),
+)
 
 export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
   const note = useNoteById(date)
+  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
   const searchNotes = useSearchNotes()
   const backlinks = React.useMemo(
     () => searchNotes(`link:"${date}" -id:"${date}"`),
     [date, searchNotes],
   )
   const dailyTemplate = useDailyTemplate(date)
-
-  // Check if the date is valid
-  const isValidDate = DATE_REGEX.test(date) && !isNaN(Date.parse(date))
-  if (!isValidDate) {
-    return (
-      <Panel id={id} title={date} icon={<CalendarIcon16 />} onClose={onClose}>
-        Invalid date
-      </Panel>
-    )
-  }
 
   return (
     <Panel
@@ -64,10 +52,10 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={date} activeDate={date} />
         <div className="flex flex-col gap-4 p-4">
-          {note ? (
-            <NoteCard id={date} />
-          ) : (
+          {!isResolvingRepo && !note ? (
             <NoteCardForm key={date} minHeight="10rem" id={date} defaultValue={dailyTemplate} />
+          ) : (
+            <NoteCard id={date} />
           )}
           {backlinks.length > 0 ? (
             <details open className="group space-y-4">
