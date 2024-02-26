@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Calendar } from "../components/calendar"
-import { CalendarIcon16, LoadingIcon16, TriangleRightIcon8 } from "../components/icons"
+import { CalendarIcon16, TriangleRightIcon8 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
@@ -15,8 +15,9 @@ import { PanelProps } from "../components/panels"
 import { globalStateMachineAtom, templatesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
+import { NoteId } from "../schema"
 import { formatWeek, formatWeekDistance, toDateString } from "../utils/date"
-import { DailyNoteCard } from "./daily"
+import { useDailyTemplate } from "./daily"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -24,14 +25,11 @@ const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
 
 export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
   const { week = "" } = params
-  const note = useNoteById(week)
-  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
   const searchNotes = useSearchNotes()
-  const backlinks = React.useMemo(
-    () => searchNotes(`link:"${week}" -id:"${week}"`),
+  const hasBacklinks = React.useMemo(
+    () => searchNotes(`link:"${week}" -id:"${week}"`).length > 0,
     [week, searchNotes],
   )
-  const weeklyTemplate = useWeeklyTemplate(week)
   const daysOfWeek = React.useMemo(() => {
     const startOfWeek = parseISO(week)
     const endOfWeek = addDays(startOfWeek, 6)
@@ -49,51 +47,45 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={week} activeNoteId={week} />
         <div className="flex flex-col gap-4 p-4">
-          {isResolvingRepo ? (
-            <span className="flex items-center gap-2 text-text-secondary">
-              <LoadingIcon16 />
-              Loading…
-            </span>
-          ) : (
-            <>
-              {note ? (
-                <NoteCard id={week} />
-              ) : (
-                <NoteCardForm
-                  key={week}
-                  minHeight="10rem"
-                  id={week}
-                  defaultValue={weeklyTemplate}
-                />
-              )}
+          <WeeklyNoteCard id={week} />
 
-              <details open className="group space-y-4">
-                <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-                  <TriangleRightIcon8 className=" group-open:rotate-90" />
-                  Days
-                </summary>
-                {daysOfWeek.map((date) => (
-                  <DailyNoteCard key={date} id={date} />
-                ))}
-              </details>
+          <details open className="group space-y-4">
+            <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
+              <TriangleRightIcon8 className=" group-open:rotate-90" />
+              Days
+            </summary>
+            {daysOfWeek.map((date) => (
+              <DailyNoteCard key={date} id={date} />
+            ))}
+          </details>
 
-              {backlinks.length > 0 ? (
-                <details open className="group space-y-4">
-                  <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-                    <TriangleRightIcon8 className=" group-open:rotate-90" />
-                    Backlinks
-                  </summary>
-                  <LinkHighlightProvider href={`/${week}`}>
-                    <NoteList baseQuery={`link:"${week}" -id:"${week}"`} />
-                  </LinkHighlightProvider>
-                </details>
-              ) : null}
-            </>
-          )}
+          {hasBacklinks ? (
+            <details open className="group space-y-4">
+              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
+                <TriangleRightIcon8 className=" group-open:rotate-90" />
+                Backlinks
+              </summary>
+              <LinkHighlightProvider href={`/${week}`}>
+                <NoteList baseQuery={`link:"${week}" -id:"${week}"`} />
+              </LinkHighlightProvider>
+            </details>
+          ) : null}
         </div>
       </div>
     </Panel>
   )
+}
+
+function WeeklyNoteCard({ id }: { id: NoteId }) {
+  const note = useNoteById(id)
+  const weeklyTemplate = useWeeklyTemplate(id)
+  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
+
+  if (!isResolvingRepo && !note) {
+    return <NoteCardForm key={id} minHeight="10rem" id={id} defaultValue={weeklyTemplate} />
+  }
+
+  return <NoteCard id={id} />
 }
 
 const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
@@ -113,4 +105,32 @@ function useWeeklyTemplate(week: string) {
   }, [weeklyTemplate, week])
 
   return renderedWeeklyTemplate
+}
+
+function DailyNoteCard({ id }: { id: NoteId }) {
+  const note = useNoteById(id)
+  const dailyTemplate = useDailyTemplate(id)
+  const [showForm, setShowForm] = React.useState(false)
+
+  if (!note) {
+    return showForm ? (
+      <NoteCardForm
+        key={id}
+        minHeight="10rem"
+        id={id}
+        defaultValue={dailyTemplate}
+        onCancel={() => setShowForm(false)}
+      />
+    ) : (
+      // Note card placeholder
+      <button
+        className="flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-4 font-mono tracking-wide text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
+        onClick={() => setShowForm(true)}
+      >
+        {id}.md
+      </button>
+    )
+  }
+
+  return <NoteCard id={id} />
 }

@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Calendar } from "../components/calendar"
-import { CalendarIcon16, LoadingIcon16, TriangleRightIcon8 } from "../components/icons"
+import { CalendarIcon16, TriangleRightIcon8 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
@@ -14,6 +14,7 @@ import { PanelProps } from "../components/panels"
 import { globalStateMachineAtom, templatesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
+import { NoteId } from "../schema"
 import { formatDate, formatDateDistance } from "../utils/date"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
@@ -22,7 +23,6 @@ const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
 
 export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
-  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
   const searchNotes = useSearchNotes()
   const backlinks = React.useMemo(
     () => searchNotes(`link:"${date}" -id:"${date}"`),
@@ -40,38 +40,30 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={date} activeNoteId={date} />
         <div className="flex flex-col gap-4 p-4">
-          {isResolvingRepo ? (
-            <span className="flex items-center gap-2 text-text-secondary">
-              <LoadingIcon16 />
-              Loading…
-            </span>
-          ) : (
-            <>
-              <DailyNoteCard id={date} />
-              {backlinks.length > 0 ? (
-                <details open className="group space-y-4">
-                  <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-                    <TriangleRightIcon8 className=" group-open:rotate-90" />
-                    Backlinks
-                  </summary>
-                  <LinkHighlightProvider href={`/${date}`}>
-                    <NoteList baseQuery={`link:"${date}" -id:"${date}"`} />
-                  </LinkHighlightProvider>
-                </details>
-              ) : null}
-            </>
-          )}
+          <DailyNoteCard id={date} />
+          {backlinks.length > 0 ? (
+            <details open className="group space-y-4">
+              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
+                <TriangleRightIcon8 className=" group-open:rotate-90" />
+                Backlinks
+              </summary>
+              <LinkHighlightProvider href={`/${date}`}>
+                <NoteList baseQuery={`link:"${date}" -id:"${date}"`} />
+              </LinkHighlightProvider>
+            </details>
+          ) : null}
         </div>
       </div>
     </Panel>
   )
 }
 
-export function DailyNoteCard({ id }: { id: string }) {
+function DailyNoteCard({ id }: { id: NoteId }) {
   const note = useNoteById(id)
   const dailyTemplate = useDailyTemplate(id)
+  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
 
-  if (!note) {
+  if (!isResolvingRepo && !note) {
     return <NoteCardForm key={id} minHeight="10rem" id={id} defaultValue={dailyTemplate} />
   }
 
@@ -82,7 +74,7 @@ const dailyTemplateAtom = selectAtom(templatesAtom, (templates) =>
   Object.values(templates).find((t) => t.name.match(/^daily$/i)),
 )
 
-function useDailyTemplate(date: string) {
+export function useDailyTemplate(date: string) {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
 
   const renderedDailyTemplate = React.useMemo(() => {

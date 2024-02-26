@@ -147,7 +147,11 @@ export const NoteCard = React.memo(function NoteCard({
           }
 
           // Copy markdown with `command + c` if no text is selected
-          if ((event.metaKey || event.ctrlKey) && event.key == "c" && !window.getSelection()?.toString()) {
+          if (
+            (event.metaKey || event.ctrlKey) &&
+            event.key == "c" &&
+            !window.getSelection()?.toString()
+          ) {
             copy(note?.content || "")
             event.preventDefault()
           }
@@ -271,9 +275,24 @@ export const NoteCard = React.memo(function NoteCard({
               <DropdownMenu.Item
                 variant="danger"
                 icon={<TrashIcon16 />}
-                onSelect={() => handleDeleteNote(id)}
+                onSelect={() => {
+                  // Ask the user to confirm before deleting a note with backlinks
+                  if (
+                    note &&
+                    note.backlinks.length > 0 &&
+                    !window.confirm(
+                      `${id}.md has ${pluralize(
+                        note.backlinks.length,
+                        "backlink",
+                      )}. Are you sure you want to delete it?`,
+                    )
+                  ) {
+                    return
+                  }
+
+                  handleDeleteNote(id)
+                }}
                 shortcut={["⌘", "⌫"]}
-                disabled={note && note.backlinks.length > 0}
               >
                 Delete
               </DropdownMenu.Item>
