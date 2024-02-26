@@ -1,4 +1,5 @@
-import { NoteIcon16, TriangleRightIcon8 } from "../components/icons"
+import { Details } from "../components/details"
+import { NoteIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -26,15 +27,12 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col gap-4 p-4">
         <NoteCard id={noteId} />
         {note?.backlinks?.length ? (
-          <details open className="group space-y-4">
-            <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-              <TriangleRightIcon8 className=" group-open:rotate-90" />
-              Backlinks
-            </summary>
+          <Details>
+            <Details.Summary>Backlinks</Details.Summary>
             <LinkHighlightProvider href={`/${noteId}`}>
               <NoteList baseQuery={`link:"${noteId}" -id:"${noteId}"`} />
             </LinkHighlightProvider>
-          </details>
+          </Details>
         ) : null}
       </div>
     </Panel>

@@ -4,7 +4,8 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Calendar } from "../components/calendar"
-import { CalendarIcon16, TriangleRightIcon8 } from "../components/icons"
+import { Details } from "../components/details"
+import { CalendarIcon16 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
@@ -49,26 +50,20 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
         <div className="flex flex-col gap-4 p-4">
           <WeeklyNoteCard id={week} />
 
-          <details open className="group space-y-4">
-            <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-              <TriangleRightIcon8 className=" group-open:rotate-90" />
-              Days
-            </summary>
+          <Details>
+            <Details.Summary>Days</Details.Summary>
             {daysOfWeek.map((date) => (
               <DailyNoteCard key={date} id={date} />
             ))}
-          </details>
+          </Details>
 
           {hasBacklinks ? (
-            <details open className="group space-y-4">
-              <summary className="-m-4 inline-flex cursor-pointer list-none items-center gap-2 rounded-sm p-4 text-text-secondary hover:text-text [&::-webkit-details-marker]:hidden">
-                <TriangleRightIcon8 className=" group-open:rotate-90" />
-                Backlinks
-              </summary>
+            <Details>
+              <Details.Summary>Backlinks</Details.Summary>
               <LinkHighlightProvider href={`/${week}`}>
                 <NoteList baseQuery={`link:"${week}" -id:"${week}"`} />
               </LinkHighlightProvider>
-            </details>
+            </Details>
           ) : null}
         </div>
       </div>
