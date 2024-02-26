@@ -14,8 +14,8 @@ import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { remarkEmbed } from "../remark-plugins/embed"
-import { remarkWikilink } from "../remark-plugins/wikilink"
 import { remarkTag } from "../remark-plugins/tag"
+import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
@@ -48,6 +48,7 @@ import {
 } from "./icons"
 import { Link } from "./link"
 import { NoteFavicon } from "./note-favicon"
+import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
@@ -98,9 +99,11 @@ export const Markdown = React.memo(
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
-                <span className="inline-block rounded-full border border-dashed border-border px-2 leading-5 text-text-secondary">
-                  Template
-                </span>
+                <PillButton variant="dashed" asChild>
+                  <Link to={`/?${qs.stringify({ q: "has:template" })}`} target="_blank">
+                    Template
+                  </Link>
+                </PillButton>
               </div>
               {/* TODO: Display more input metadata (type, description, etc.) */}
               {parsedTemplate.data.inputs ? (

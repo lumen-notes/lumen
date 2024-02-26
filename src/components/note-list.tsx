@@ -12,7 +12,7 @@ import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteCard } from "./note-card"
@@ -168,7 +168,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                     key={qualifier.values.join(",")}
                     data-tag={qualifier.values.join(",")}
                     variant="primary"
-                    removable
                     onClick={() => {
                       const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(
                         ",",
@@ -194,6 +193,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                         <span key={value}>{value}</span>
                       </React.Fragment>
                     ))}
+                    <CloseIcon12 className="-mr-0.5" />
                   </PillButton>
                 ))}
                 {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
