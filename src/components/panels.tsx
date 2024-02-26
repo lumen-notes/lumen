@@ -4,13 +4,15 @@ import { flushSync } from "react-dom"
 import { Params, To, matchRoutes, resolvePath, useNavigate } from "react-router-dom"
 import { useEvent } from "react-use"
 import { z } from "zod"
+import { useSearchParam } from "../hooks/search-param"
 import { FilePanel } from "../panels/file"
 import { NotePanel } from "../panels/note"
 import { NotesPanel } from "../panels/notes"
 import { TagPanel } from "../panels/tag"
 import { TagsPanel } from "../panels/tags"
-import { useSearchParam } from "../hooks/search-param"
+import { ErrorIcon16 } from "./icons"
 import { LinkClickHandler, LinkContext } from "./link"
+import { Panel } from "./panel"
 
 type PanelValue = {
   id: string
@@ -40,7 +42,7 @@ function Root({ children }: React.PropsWithChildren) {
     // Focus prev/next panel with `command + shift + left/right`
     if (
       (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
-      (event.metaKey || event.ctrlKey)  &&
+      (event.metaKey || event.ctrlKey) &&
       event.shiftKey
     ) {
       const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
@@ -195,11 +197,15 @@ const PanelRouter = React.memo(function PanelRouter({ value, index }: PanelRoute
     [panel, index],
   )
 
-  if (!panel) return <div>Unexpected error</div>
+  if (!panel) {
+    return <ErrorPanel onClose={() => closePanel?.(index, "")}>Invalid panel</ErrorPanel>
+  }
 
   const [match] = matchRoutes(ROUTES, { pathname: panel.pathname }) || []
 
-  if (!match || !("panel" in match.route)) return <div>Unexpected error</div>
+  if (!match || !("panel" in match.route)) {
+    return <ErrorPanel onClose={() => closePanel?.(index, panel.id)}>Invalid panel</ErrorPanel>
+  }
 
   // @ts-ignore If we get here, we know that the `panel` property exists
   const { panel: Panel } = match.route
@@ -217,6 +223,14 @@ const PanelRouter = React.memo(function PanelRouter({ value, index }: PanelRoute
     </PanelContext.Provider>
   )
 })
+
+function ErrorPanel({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <Panel title="Error" icon={<ErrorIcon16 className="text-text-danger" />} onClose={onClose}>
+      <div className="p-4 text-text-danger">{children}</div>
+    </Panel>
+  )
+}
 
 function LinkProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()

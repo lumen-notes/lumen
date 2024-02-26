@@ -177,7 +177,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             </Button>
           </div>
           {error ? (
-            <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)] ">
+            <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
               <div className="grid h-6 flex-shrink-0 place-items-center">
                 <ErrorIcon16 />
               </div>
