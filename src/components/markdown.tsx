@@ -22,8 +22,11 @@ import {
   MONTH_NAMES,
   formatDate,
   formatDateDistance,
+  formatWeek,
+  formatWeekDistance,
   getNextBirthday,
   isValidDateString,
+  isValidWeekString,
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
@@ -677,6 +680,10 @@ function NoteLink({ id, text }: NoteLinkProps) {
     return <DateLink date={id} text={text} />
   }
 
+  if (isValidWeekString(id)) {
+    return <WeekLink week={id} text={text} />
+  }
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
@@ -688,7 +695,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
               defaultFavicon={null}
             />
           ) : null}
-          {text}
+          {text || id}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
@@ -759,6 +766,34 @@ function DateLink({ date, text, className }: DateLinkProps) {
             elevation={2}
           >
             {formatDateDistance(date)}
+          </Card>
+        </HoverCard.Content>
+      </HoverCard.Portal>
+    </HoverCard.Root>
+  )
+}
+
+type WeekLinkProps = {
+  week: string
+  text?: string
+  className?: string
+}
+
+function WeekLink({ week, text, className }: WeekLinkProps) {
+  return (
+    <HoverCard.Root>
+      <HoverCard.Trigger asChild>
+        <Link className={className} to={`/${week}`} target="_blank">
+          {text || formatWeek(week)}
+        </Link>
+      </HoverCard.Trigger>
+      <HoverCard.Portal>
+        <HoverCard.Content side="top" sideOffset={4} asChild>
+          <Card
+            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            elevation={2}
+          >
+            {formatWeekDistance(week)}
           </Card>
         </HoverCard.Content>
       </HoverCard.Portal>

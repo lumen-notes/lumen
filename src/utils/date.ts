@@ -2,6 +2,8 @@ import {
   addDays,
   differenceInCalendarISOWeeks,
   formatDistance,
+  getISOWeek,
+  getISOWeekYear,
   isSameDay,
   parseISO,
   startOfToday,
@@ -136,14 +138,7 @@ export function formatWeek(weekString: string) {
   const match = weekString.match(WEEK_REGEX)
   if (!match) return ""
   const { year, week } = match.groups!
-  let formattedWeek = `Week ${Number(week)}`
-
-  // Only show the year if it's not the current year
-  if (Number(year) !== new Date().getUTCFullYear()) {
-    formattedWeek += `, ${Number(year)}`
-  }
-
-  return formattedWeek
+  return `Week ${Number(week)}, ${Number(year)}`
 }
 
 /**
@@ -187,6 +182,12 @@ export function toDateStringUtc(date: Date) {
   const month = (date.getUTCMonth() + 1).toString().padStart(2, "0")
   const day = date.getUTCDate().toString().padStart(2, "0")
   return `${year}-${month}-${day}`
+}
+
+export function toWeekString(date: Date) {
+  const year = getISOWeekYear(date).toString().padStart(4, "0")
+  const weekNumber = getISOWeek(date).toString().padStart(2, "0")
+  return `${year}-W${weekNumber}`
 }
 
 export function getNextBirthday(birthday: Date): Date {
