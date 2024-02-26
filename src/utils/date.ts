@@ -31,7 +31,7 @@ export const DAY_NAMES = [
 
 /** Checks if string is a valid date in the format "YYYY-MM-DD" */
 export function isValidDateString(dateString: string) {
-  return DATE_REGEX.test(dateString)
+  return DATE_REGEX.test(dateString) && !isNaN(Date.parse(dateString))
 }
 
 /**
@@ -128,6 +128,10 @@ export function getNextBirthday(birthday: Date): Date {
 }
 
 export function isValidUnixTimestamp(value: string): boolean {
+  if (value === "") return false
   const timestamp = Number(value)
-  return !isNaN(timestamp) && timestamp >= 0
+  const isNumber = !isNaN(timestamp)
+  const isPositive = timestamp >= 0
+  const isInteger = Number.isInteger(timestamp)
+  return isNumber && isPositive && isInteger
 }
