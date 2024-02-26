@@ -121,7 +121,7 @@
     "@types/benchmark": "^2.1.2",
     "@types/chrome": "^0.0.243",
     "@types/d3-force": "^3.0.3",
-    "@types/d3-selection": "^3.0.3",
+    "@types/d3-selection": "^3.0.10",
     "@types/d3-zoom": "^3.0.1",
     "@types/lodash.debounce": "^4.0.9",
     "@types/mdast": "^3.0.10",
