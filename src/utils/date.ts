@@ -34,6 +34,14 @@ export function isValidDateString(dateString: string) {
   return DATE_REGEX.test(dateString) && !isNaN(Date.parse(dateString))
 }
 
+/** Checks if string is a valid week in the format "YYYY-W##" */
+export function isValidWeekString(weekString: string) {
+  const match = weekString.match(/^(?<year>\d{4})-W(?<week>\d{2})$/)
+  if (!match) return false
+  const { year, week } = match.groups!
+  return !isNaN(Date.parse(`${year}-01-01`)) && Number(week) >= 1 && Number(week) <= 53
+}
+
 /**
  * Formats a date string
  *

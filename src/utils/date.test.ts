@@ -1,3 +1,4 @@
+import { addDays } from "date-fns"
 import { describe, expect, test } from "vitest"
 import {
   formatDate,
@@ -5,9 +6,9 @@ import {
   getNextBirthday,
   isValidDateString,
   isValidUnixTimestamp,
+  isValidWeekString,
   toDateString,
 } from "./date"
-import { addDays } from "date-fns"
 
 describe("isValidDateString", () => {
   test("returns true for valid date strings", () => {
@@ -23,6 +24,21 @@ describe("isValidDateString", () => {
     expect(isValidDateString("2021-13-11")).toBe(false)
     expect(isValidDateString("2021-07-11T12:00:00")).toBe(false)
     expect(isValidDateString("hello")).toBe(false)
+  })
+})
+
+describe("isValidWeekString", () => {
+  test("returns true for valid week strings", () => {
+    expect(isValidWeekString("2021-W01")).toBe(true)
+    expect(isValidWeekString("2021-W53")).toBe(true)
+  })
+
+  test("returns false for invalid week strings", () => {
+    expect(isValidWeekString("")).toBe(false)
+    expect(isValidWeekString("2021-W00")).toBe(false)
+    expect(isValidWeekString("2021-W54")).toBe(false)
+    expect(isValidWeekString("2021-07-11")).toBe(false)
+    expect(isValidWeekString("hello")).toBe(false)
   })
 })
 
