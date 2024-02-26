@@ -97,7 +97,7 @@
     "remark-math": "^6.0.0",
     "sentence-case": "^3.0.4",
     "serverless-http": "^3.2.0",
-    "tailwind-merge": "^1.8.1",
+    "tailwind-merge": "^2.2.1",
     "unified": "^10.1.2",
     "unist-util-visit": "^4.1.0",
     "urlcat": "^3.1.0",
