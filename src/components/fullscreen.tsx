@@ -141,9 +141,7 @@ function FullscreenNote({ params, onClose }: { params: Params<string>; onClose?:
           >
             <MinimizeIcon16 />
           </IconButton>
-          <span className="w-0 flex-grow truncate font-mono tracking-wide text-text-secondary">
-            {noteId}.md
-          </span>
+          <span className="filepath w-0 flex-grow truncate text-text-secondary">{noteId}.md</span>
         </div>
 
         <div className="">

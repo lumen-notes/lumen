@@ -160,7 +160,7 @@ export function NoteCardForm({
             }}
           >
             <div className="flex items-center justify-between p-2">
-              <span className="px-2 font-mono tracking-wide text-text-secondary">{id}.md</span>
+              <span className="filepath px-2 text-text-secondary">{id}.md</span>
               <div className="flex gap-2">
                 {onCancel ? (
                   <Button shortcut={vimMode ? [":", "q"] : ["esc"]} onClick={handleCancel}>

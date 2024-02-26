@@ -124,7 +124,7 @@ function DailyNoteCard({ id }: { id: NoteId }) {
     ) : (
       // Note card placeholder
       <button
-        className="flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-4 font-mono tracking-wide text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
+        className="filepath flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-4 text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
         onClick={() => setShowForm(true)}
       >
         {id}.md

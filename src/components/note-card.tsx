@@ -186,7 +186,7 @@ export const NoteCard = React.memo(function NoteCard({
             <Link
               target="_blank"
               to={`/${id}`}
-              className="link font-mono tracking-wide !no-underline hover:!underline"
+              className="link filepath !no-underline hover:!underline"
             >
               {id}.md
             </Link>
