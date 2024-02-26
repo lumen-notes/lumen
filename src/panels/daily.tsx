@@ -33,7 +33,7 @@ import {
   toDateString,
 } from "../utils/date"
 
-export function DatePanel({ id, params = {}, onClose }: PanelProps) {
+export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
   const note = useNoteById(date)
   const searchNotes = useSearchNotes()
@@ -60,21 +60,6 @@ export function DatePanel({ id, params = {}, onClose }: PanelProps) {
       description={formatDateDistance(date)}
       icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
       onClose={onClose}
-      // actions={
-      //   <>
-      //     <DropdownMenu.Item
-      //       icon={<ExternalLinkIcon16 />}
-      //       onSelect={() => {
-      //         const url = panel
-      //           ? `${panel.pathname}?${panel.search}`
-      //           : `${location.pathname}${location.search}`
-      //         openNewWindow(url)
-      //       }}
-      //     >
-      //       Open in new window
-      //     </DropdownMenu.Item>
-      //   </>
-      // }
     >
       <div className="flex flex-col">
         <Calendar key={date} activeDate={date} />

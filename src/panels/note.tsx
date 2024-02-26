@@ -5,15 +5,15 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { useNoteById } from "../hooks/note"
-import { DATE_REGEX } from "../utils/date"
-import { DatePanel } from "./date"
+import { isValidDateString } from "../utils/date"
+import { DailyPanel } from "./daily"
 
 export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   const { "*": noteId = "" } = params
   const note = useNoteById(noteId)
 
-  if (DATE_REGEX.test(noteId)) {
-    return <DatePanel id={id} params={{ date: noteId }} onClose={onClose} />
+  if (isValidDateString(noteId)) {
+    return <DailyPanel id={id} params={{ date: noteId }} onClose={onClose} />
   }
 
   return (
