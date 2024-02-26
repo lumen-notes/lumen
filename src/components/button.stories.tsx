@@ -28,3 +28,10 @@ export const WithKeyboardShortcut = {
     shortcut: ["⌘", "⏎"],
   },
 }
+
+export const Disabled = {
+  args: {
+    children: "Button",
+    disabled: true,
+  },
+}
