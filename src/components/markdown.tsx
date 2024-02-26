@@ -97,8 +97,8 @@ export const Markdown = React.memo(
         <div>
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold leading-4">{parsedTemplate.data.name}</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
                   <Link to={`/?${qs.stringify({ q: "has:template" })}`} target="_blank">
                     Template
