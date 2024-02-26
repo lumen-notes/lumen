@@ -41,7 +41,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
       id={id}
       title={formatWeek(week)}
       description={formatWeekDistance(week)}
-      icon={<CalendarIcon16 date={Number(week.split("-W")[1])} />}
+      icon={<CalendarIcon16 number={Number(week.split("-W")[1])} />}
       onClose={onClose}
     >
       <div className="flex flex-col">

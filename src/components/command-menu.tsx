@@ -141,7 +141,7 @@ export function CommandMenu() {
             <Command.Group heading="Date">
               <CommandItem
                 key={dateString}
-                icon={<CalendarIcon16 date={new Date(dateString).getUTCDate()} />}
+                icon={<CalendarIcon16 number={new Date(dateString).getUTCDate()} />}
                 description={formatDateDistance(dateString)}
                 onSelect={() => navigate(`/${dateString}`)}
               >
@@ -239,7 +239,7 @@ export function CommandMenu() {
               </CommandItem>
               <CommandItem
                 key="Today"
-                icon={<CalendarIcon16 date={new Date().getDate()} />}
+                icon={<CalendarIcon16 number={new Date().getDate()} />}
                 onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
               >
                 Today

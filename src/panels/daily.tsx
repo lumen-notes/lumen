@@ -34,7 +34,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       id={id}
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon16 date={new Date(date).getUTCDate()} />}
+      icon={<CalendarIcon16 number={new Date(date).getUTCDate()} />}
       onClose={onClose}
     >
       <div className="flex flex-col">

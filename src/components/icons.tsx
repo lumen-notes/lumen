@@ -1,111 +1,126 @@
 import { cx } from "../utils/cx"
 
-export function MoreIcon16() {
+type IconProps = React.ComponentPropsWithoutRef<"svg">
+
+function Icon({ size, ...props }: IconProps & { size: number }) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      fill="currentColor"
+      aria-hidden
+      {...props}
+    />
+  )
+}
+
+export function MoreIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M8 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm13 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function MoreIcon24() {
+export function MoreIcon24(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <circle cx="4" cy="12" r="2" />
       <circle cx="12" cy="12" r="2" />
       <circle cx="20" cy="12" r="2" />
-    </svg>
+    </Icon>
   )
 }
 
-export function NoteIcon24() {
+export function NoteIcon24(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M4 4.5h16A1.5 1.5 0 0 1 21.5 6v12a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V6A1.5 1.5 0 0 1 4 4.5ZM1 6a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V6Zm6 3h10v1.5H7V9Zm0 4h7v1.5H7V13Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function NoteFillIcon24() {
+export function NoteFillIcon24(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M3.5 3C2.11929 3 1 4.11929 1 5.5V18.5C1 19.8807 2.11929 21 3.5 21H20.5C21.8807 21 23 19.8807 23 18.5V5.5C23 4.11929 21.8807 3 20.5 3H3.5ZM7 9H17V10.5H7V9ZM7 13H14V14.5H7V13Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function NoteIcon16(props: React.ComponentPropsWithoutRef<"svg">) {
+export function NoteIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden {...props}>
+    <Icon size={16} {...props}>
       <path d="M4 6h8v1.5H4V6ZM9 9H4v1.5h5V9Z" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M2 2a2 2 0 0 0-2 2v8.5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2Zm12 1.5H2a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V4a.5.5 0 0 0-.5-.5Z"
       />
-    </svg>
+    </Icon>
   )
 }
-export function NoteTemplateIcon16(props: React.ComponentPropsWithoutRef<"svg">) {
+export function NoteTemplateIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden {...props}>
+    <Icon size={16} {...props}>
       <path d="M10.5 2h-5v1.5h5V2ZM12 13h2a.5.5 0 0 0 .5-.5v-1H16v1a2 2 0 0 1-2 2h-2V13ZM16 10V6.5h-1.5V10H16ZM1.5 4v1H0V4a2 2 0 0 1 2-2h2v1.5H2a.5.5 0 0 0-.5.5ZM0 10V6.5h1.5V10H0ZM0 11.5v1a2 2 0 0 0 2 2h2V13H2a.5.5 0 0 1-.5-.5v-1H0ZM14.5 4v1H16V4a2 2 0 0 0-2-2h-2v1.5h2a.5.5 0 0 1 .5.5ZM10.5 13h-5v1.5h5V13Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function TagIcon24() {
+export function TagIcon24(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M20.5 5v6.757a1.5 1.5 0 0 1-.44 1.061l-8 8a1.5 1.5 0 0 1-2.12 0l-6.758-6.757a1.5 1.5 0 0 1 0-2.122l8-8a1.5 1.5 0 0 1 1.06-.439H19A1.5 1.5 0 0 1 20.5 5Zm1.5 6.757V5a3 3 0 0 0-3-3h-6.757a3 3 0 0 0-2.122.879l-8 8a3 3 0 0 0 0 4.242L8.88 21.88a3 3 0 0 0 4.242 0l8-8A3 3 0 0 0 22 11.757ZM15.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function TagFillIcon24() {
+export function TagFillIcon24(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M22 5v6.757a3 3 0 0 1-.879 2.122l-8 8a3 3 0 0 1-4.242 0L2.12 15.12a3 3 0 0 1 0-4.242l8-8A3 3 0 0 1 12.243 2H19a3 3 0 0 1 3 3Zm-6.5 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function TagIcon16() {
+export function TagIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M11 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="m.914 9.914 5.172 5.172a2 2 0 0 0 2.828 0l6.5-6.5A2 2 0 0 0 16 7.172V2a2 2 0 0 0-2-2H8.828a2 2 0 0 0-1.414.586l-6.5 6.5a2 2 0 0 0 0 2.828ZM14.5 2v5.172a.5.5 0 0 1-.146.353l-6.5 6.5a.5.5 0 0 1-.708 0L1.975 8.854a.5.5 0 0 1 0-.708l6.5-6.5a.5.5 0 0 1 .353-.146H14a.5.5 0 0 1 .5.5Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function CalendarIcon24({ date }: { date?: number }) {
+export function CalendarIcon24({ number }: IconProps & { number?: number }) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -118,15 +133,15 @@ export function CalendarIcon24({ date }: { date?: number }) {
         fontSize="10px"
         className="font-mono font-semibold leading-none"
       >
-        {date}
+        {number}
       </text>
-    </svg>
+    </Icon>
   )
 }
 
-export function CalendarFillIcon24({ date }: { date?: number }) {
+export function CalendarFillIcon24({ number, ...props }: IconProps & { number?: number }) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={24} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -140,15 +155,15 @@ export function CalendarFillIcon24({ date }: { date?: number }) {
         fill="currentColor"
         className="font-mono font-semibold leading-none text-bg-inset"
       >
-        {date}
+        {number}
       </text>
-    </svg>
+    </Icon>
   )
 }
 
-export function CalendarIcon16({ date }: { date?: number }) {
+export function CalendarIcon16({ number, ...props }: IconProps & { number?: number }) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M13 4H3v1.5h10V4Z" />
       <path
         fillRule="evenodd"
@@ -163,85 +178,85 @@ export function CalendarIcon16({ date }: { date?: number }) {
         fill="currentColor"
         className="font-mono font-bold leading-none"
       >
-        {date}
+        {number}
       </text>
-    </svg>
+    </Icon>
   )
 }
 
-export function SearchIcon16() {
+export function SearchIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M11.5 6.5a5 5 0 1 1-10 0 5 5 0 0 1 10 0Zm-.965 5.096a6.5 6.5 0 1 1 1.06-1.06l3.935 3.934-1.06 1.06-3.935-3.934Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function LoadingIcon16() {
+export function LoadingIcon16({ className, ...props }: IconProps) {
   return (
-    <svg className="h-4 w-4 animate-spin" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} className={cx("animate-spin", className)} {...props}>
       <path d="M8 1a7 7 0 1 0 7 7h-1.5A5.5 5.5 0 1 1 8 2.5V1Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function CloseIcon16() {
+export function CloseIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M2.5 1.44 8 6.94l5.5-5.5 1.06 1.06L9.06 8l5.5 5.5-1.06 1.06L8 9.06l-5.5 5.5-1.06-1.06L6.94 8l-5.5-5.5L2.5 1.44Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
-export function PlusIcon16() {
+export function PlusIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M8.5 1H7v6H1v1.5h6v6h1.5v-6h6V7h-6V1Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function MinusIcon16() {
+export function MinusIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M1 7v1.5h13.5V7H1Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function ChevronLeftIcon16() {
+export function ChevronLeftIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="m5.06 8 5.97-5.97L9.97.97 2.94 8l7.03 7.03 1.06-1.06L5.06 8Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function ChevronRightIcon16() {
+export function ChevronRightIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="m10.94 8-5.97 5.97 1.06 1.06L13.06 8 6.03.97 4.97 2.03 10.94 8Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function PaperclipIcon16() {
+export function PaperclipIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M12.345 2.405a2.255 2.255 0 0 0-3.19 0L3.533 8.028a3.67 3.67 0 0 0 5.19 5.19L13.5 8.438 14.56 9.5l-4.777 4.778a5.17 5.17 0 1 1-7.31-7.31l5.622-5.623a3.755 3.755 0 1 1 5.31 5.31l-5.5 5.5a2.341 2.341 0 0 1-3.31-3.31L9 4.439 10.06 5.5 5.656 9.905a.841.841 0 0 0 1.19 1.19l5.5-5.5c.88-.881.88-2.309 0-3.19Z"
       />
-    </svg>
+    </Icon>
   )
 }
 
@@ -492,75 +507,69 @@ export function CheckIcon8({ className }: { className?: string }) {
   )
 }
 
-export function CheckIcon12({ className }: { className?: string }) {
+export function CheckIcon12(props: IconProps) {
   return (
-    <svg className={cx("h-3 w-3", className)} viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+    <Icon size={12} {...props}>
       <path d="M10.795 1.82 4.9 10.181a.75.75 0 0 1-1.22.01L.953 6.452l1.212-.885 2.111 2.896L9.57.955l1.226.864Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function CheckIcon16({ className }: { className?: string }) {
+export function CheckIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M14.05 2.846 6.351 13.197a.75.75 0 0 1-1.228-.034L1.961 8.37l1.252-.826 2.574 3.9 7.059-9.493 1.203.895Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function CloseIcon8({ className }: { className?: string }) {
+export function CloseIcon8(props: IconProps) {
   return (
-    <svg className={cx("h-2 w-2", className)} viewBox="0 0 8 8" fill="currentColor" aria-hidden>
+    <Icon size={8} {...props}>
       <path d="M4 2.94 6.47.47l1.06 1.06L5.06 4l2.47 2.47-1.06 1.06L4 5.06 1.53 7.53.47 6.47 2.94 4 .47 1.53 1.53.47 4 2.94Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function CloseIcon12({ className }: { className?: string }) {
+export function CloseIcon12(props: IconProps) {
   return (
-    <svg className={cx("h-3 w-3", className)} viewBox="0 0 12 12" fill="currentColor" aria-hidden>
+    <Icon size={12} {...props}>
       <path d="M10.56 2.5 7.008 6.054 10.56 9.48l-1.04 1.08-3.574-3.446L2.5 10.56 1.44 9.5l3.426-3.427L1.44 2.77l1.04-1.08 3.447 3.324L9.5 1.439 10.56 2.5Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function ShareIcon16({ className, ...props }: React.ComponentPropsWithoutRef<"svg">) {
+export function ShareIcon16(props: IconProps) {
   return (
-    <svg
-      className={cx("h-4 w-4", className)}
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden
-      {...props}
-    >
+    <Icon size={16} {...props}>
       <path d="M8 .19 3.69 4.5l1.06 1.06 2.5-2.5V11h1.5V3.06l2.5 2.5 1.06-1.06L8 .19Z" />
       <path d="M1 9v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9h-1.5v5a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V9H1Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function TaskListIcon16({ className }: { className?: string }) {
+export function TaskListIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M9 2h6v1.5H9V2ZM9 7h6v1.5H9V7ZM9 12h6v1.5H9V12ZM2.5 2.5h3v3h-3v-3ZM2 1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2ZM7.044 9.81l-3.197 4.617a.75.75 0 0 1-1.22.018l-1.676-2.27 1.207-.89L3.21 12.71l2.6-3.755 1.233.854Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function SidebarIcon16({ className }: { className?: string }) {
+export function SidebarIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M1.95 1A1.95 1.95 0 0 0 0 2.95v9.6a1.95 1.95 0 0 0 1.95 1.95h12.1A1.95 1.95 0 0 0 16 12.55v-9.6A1.95 1.95 0 0 0 14.05 1H1.95ZM1.5 2.95a.45.45 0 0 1 .45-.45H9.5V13H1.95a.45.45 0 0 1-.45-.45v-9.6ZM11 13V2.5h3.05a.45.45 0 0 1 .45.45v9.6a.45.45 0 0 1-.45.45H11Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function OfflineIcon16({ className }: { className?: string }) {
+export function OfflineIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M3.845 4.104 1.449 1.51 2.55.49l12 13-1.102 1.018-4.812-5.213a4.5 4.5 0 0 0-3.819 1.272l-1.06-1.06a6 6 0 0 1 3.496-1.71L4.935 5.285a8.964 8.964 0 0 0-3.299 2.1l-1.06-1.06a10.47 10.47 0 0 1 3.269-2.222Z" />
       <path d="M7 13a1 1 0 1 1 2 0 1 1 0 0 1-2 0ZM7.17 3.283l1.368 1.483c2.12.126 4.205 1 5.826 2.62l1.06-1.06A10.477 10.477 0 0 0 7.17 3.283Z" />
-    </svg>
+    </Icon>
   )
 }
 

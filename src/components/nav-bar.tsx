@@ -64,9 +64,9 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
           >
             {({ isActive }) =>
               isActive ? (
-                <CalendarFillIcon24 date={new Date().getDate()} />
+                <CalendarFillIcon24 number={new Date().getDate()} />
               ) : (
-                <CalendarIcon24 date={new Date().getDate()} />
+                <CalendarIcon24 number={new Date().getDate()} />
               )
             }
           </NavLink>

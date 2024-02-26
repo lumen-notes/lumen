@@ -1,5 +1,6 @@
 import React from "react"
 import * as icons from "./icons"
+import { StoryObj } from "@storybook/react"
 
 export default {
   title: "Icons",
@@ -37,4 +38,31 @@ export const All = {
       ))}
     </div>
   ),
+}
+
+export const Calendar: StoryObj<{ size: "16" | "24"; number: number }> = {
+  render: (args) => {
+    switch (args.size) {
+      case "16":
+        return <icons.CalendarIcon16 number={args.number} />
+      case "24":
+        return <icons.CalendarIcon24 number={args.number} />
+    }
+  },
+  args: {
+    size: "16",
+    number: 1,
+  },
+  argTypes: {
+    size: {
+      options: ["16", "24"],
+      control: { type: "radio" },
+    },
+    number: {
+      control: { type: "number" },
+    },
+  },
+  parameters: {
+    layout: "centered",
+  },
 }

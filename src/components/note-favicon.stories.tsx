@@ -47,6 +47,26 @@ export const IsTemplate: Story = {
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-template"),
 }
 
+export const IsDailyNote: Story = {
+  args: {
+    note: {
+      ...emptyNote,
+      id: "2023-07-11",
+    },
+  },
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-daily"),
+}
+
+export const IsWeeklyNote: Story = {
+  args: {
+    note: {
+      ...emptyNote,
+      id: "2023-W07",
+    },
+  },
+  play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-weekly"),
+}
+
 export const HasIsbn: Story = {
   args: {
     note: {

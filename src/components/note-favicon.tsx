@@ -1,7 +1,7 @@
 import { useNetworkState } from "react-use"
 import { Note, templateSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { isValidDateString } from "../utils/date"
+import { isValidDateString, isValidWeekString } from "../utils/date"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
@@ -21,9 +21,14 @@ export function NoteFavicon({
 
   let icon = defaultFavicon
 
-  // Date
+  // Daily note
   if (isValidDateString(note.id)) {
-    icon = <CalendarIcon16 date={new Date(note.id).getUTCDate()} />
+    icon = <CalendarIcon16 data-testid="favicon-daily" number={new Date(note.id).getUTCDate()} />
+  }
+
+  // Weekly note
+  if (isValidWeekString(note.id)) {
+    icon = <CalendarIcon16 data-testid="favicon-weekly" number={Number(note.id.split("-W")[1])} />
   }
 
   // GitHub
