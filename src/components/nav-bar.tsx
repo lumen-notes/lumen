@@ -1,6 +1,7 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
+import React from "react"
 import { NavLinkProps, NavLink as RouterNavLink, useMatch, useResolvedPath } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
@@ -13,6 +14,7 @@ import { IconButton } from "./icon-button"
 import {
   CalendarFillIcon24,
   CalendarIcon24,
+  ComposeIcon24,
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
@@ -20,9 +22,10 @@ import {
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
-import { NewNoteDialog } from "./new-note-dialog"
+import { usePanelActions, usePanels } from "./panels"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
+import { useHotkeys } from "react-hotkeys-hook"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const navigate = useNavigateWithCache()
@@ -77,7 +80,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
           </NavLink>
         </li>
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
-          <NewNoteDialog.Trigger className="w-full" tooltipSide={tooltipSide} />
+          <NewNoteButton className="w-full" tooltipSide={tooltipSide} />
         </li>
         {/* Spacer */}
         {position === "left" ? <div className="flex-grow" /> : null}
@@ -165,6 +168,47 @@ function NavLink({
       </Tooltip.Trigger>
       <Tooltip.Content side={tooltipSide}>{props["aria-label"]}</Tooltip.Content>
     </Tooltip>
+  )
+}
+
+function NewNoteButton({
+  tooltipSide,
+  className,
+}: {
+  tooltipSide: TooltipContentProps["side"]
+  className?: string
+}) {
+  const panels = usePanels()
+  const { openPanel } = usePanelActions()
+  const routerNavigate = useNavigateWithCache()
+
+  const navigate = React.useCallback(
+    (url: string) => {
+      if (openPanel) {
+        // If we're in a panels context, navigate by opening a panel
+        openPanel(url, panels.length - 1)
+      } else {
+        // Otherwise, navigate using the router
+        routerNavigate(url)
+      }
+    },
+    [openPanel, panels, routerNavigate],
+  )
+
+  useHotkeys("mod+i", (event) => {
+    navigate(`/${Date.now()}`)
+    event.preventDefault()
+  })
+
+  return (
+    <IconButton
+      className={className}
+      aria-label="New note"
+      tooltipSide={tooltipSide}
+      onClick={() => navigate(`/${Date.now()}`)}
+    >
+      <ComposeIcon24 />
+    </IconButton>
   )
 }
 

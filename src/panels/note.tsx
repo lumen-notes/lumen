@@ -1,7 +1,8 @@
 import { Details } from "../components/details"
-import { NoteIcon16 } from "../components/icons"
+import { NoteIcon16, NoteTemplateIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
+import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
@@ -23,9 +24,14 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
   }
 
   return (
-    <Panel id={id} title="Note" icon={<NoteIcon16 />} onClose={onClose}>
+    <Panel
+      id={id}
+      title={note ? "Note" : "New note"}
+      icon={note ? <NoteIcon16 /> : <NoteTemplateIcon16 />}
+      onClose={onClose}
+    >
       <div className="flex flex-col gap-4 p-4">
-        <NoteCard id={noteId} />
+        {note ? <NoteCard id={noteId} /> : <NoteCardForm id={noteId} />}
         {note?.backlinks?.length ? (
           <Details>
             <Details.Summary>Backlinks</Details.Summary>

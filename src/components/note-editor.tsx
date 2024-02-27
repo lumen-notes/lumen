@@ -44,7 +44,7 @@ const theme = createTheme({
     selection: "var(--color-bg-selection)",
     gutterBackground: "transparent",
     gutterForeground: "var(--color-text-secondary)",
-    gutterActiveForeground: "var(--color-text)",
+    gutterActiveForeground: "var(--color-text-secondary)",
     gutterBorder: "transparent",
   },
   styles: [],

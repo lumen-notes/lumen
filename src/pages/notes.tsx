@@ -1,13 +1,11 @@
-import { CommandMenu } from "../components/command-menu"
 import { Panels } from "../components/panels"
 import { NotesPanel } from "../panels/notes"
 
 export function NotesPage() {
   return (
-    <Panels>
-      <CommandMenu />
+    <Panels.Container>
       <NotesPanel />
       <Panels.Outlet />
-    </Panels>
+    </Panels.Container>
   )
 }

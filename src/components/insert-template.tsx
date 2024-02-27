@@ -11,7 +11,6 @@ import { Card } from "./card"
 import { IconButton } from "./icon-button"
 import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
-import { Markdown } from "./markdown"
 
 // Template pending insertion into editor because it requires user input
 const pendingTemplateAtom = atom<{ template: Template; editor: EditorView } | null>(null)
@@ -127,7 +126,7 @@ export function InsertTemplateDialog() {
                     <div className="grid h-5 flex-shrink-0 place-items-center">
                       <ErrorIcon16 />
                     </div>
-                    <Markdown>{error.message}</Markdown>
+                    <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
                   </div>
                 ) : null}
               </form>

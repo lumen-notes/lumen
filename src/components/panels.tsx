@@ -2,7 +2,6 @@ import qs from "qs"
 import React from "react"
 import { flushSync } from "react-dom"
 import { Params, To, matchRoutes, resolvePath, useNavigate } from "react-router-dom"
-import { useEvent } from "react-use"
 import { z } from "zod"
 import { useSearchParam } from "../hooks/search-param"
 import { FilePanel } from "../panels/file"
@@ -33,49 +32,49 @@ const PanelActionsContext = React.createContext<{
 }>({})
 export const usePanelActions = () => React.useContext(PanelActionsContext)
 
-function Root({ children }: React.PropsWithChildren) {
+function Provider({ children }: React.PropsWithChildren) {
   const [panels, setPanels] = useSearchParam("p", {
     validate: z.array(z.string().catch("")).catch([]).parse,
   })
 
-  useEvent("keydown", (event) => {
-    // Focus prev/next panel with `command + shift + left/right`
-    if (
-      (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
-      (event.metaKey || event.ctrlKey) &&
-      event.shiftKey
-    ) {
-      const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
+  // useEvent("keydown", (event) => {
+  //   // Focus prev/next panel with `command + shift + left/right`
+  //   if (
+  //     (event.key === "ArrowLeft" || event.key === "ArrowRight") &&
+  //     (event.metaKey || event.ctrlKey) &&
+  //     event.shiftKey
+  //   ) {
+  //     const panelElements = Array.from(document.querySelectorAll<HTMLElement>("[data-panel]"))
 
-      const focusedPanelElement = panelElements.find((panelElement) =>
-        panelElement.contains(document.activeElement),
-      )
+  //     const focusedPanelElement = panelElements.find((panelElement) =>
+  //       panelElement.contains(document.activeElement),
+  //     )
 
-      const focusedPanelIndex = focusedPanelElement
-        ? panelElements.indexOf(focusedPanelElement)
-        : -1
+  //     const focusedPanelIndex = focusedPanelElement
+  //       ? panelElements.indexOf(focusedPanelElement)
+  //       : -1
 
-      if (event.key === "ArrowLeft" && event.altKey) {
-        const firstPanel = panelElements[0]
-        focusPanel(firstPanel)
-      } else if (event.key === "ArrowRight" && event.altKey) {
-        const lastPanel = panelElements[panelElements.length - 1]
-        focusPanel(lastPanel)
-      } else if (event.key === "ArrowLeft" && focusedPanelIndex > 0) {
-        // If the user presses the left arrow key and focus is not on the first panel,
-        // move focus to the previous panel
-        const prevPanel = panelElements[focusedPanelIndex - 1]
-        focusPanel(prevPanel)
-        event.preventDefault()
-      } else if (event.key === "ArrowRight" && focusedPanelIndex < panelElements.length - 1) {
-        // If the user presses the right arrow key and focus is not on the last panel,
-        // move focus to the next panel
-        const nextPanel = panelElements[focusedPanelIndex + 1]
-        focusPanel(nextPanel)
-        event.preventDefault()
-      }
-    }
-  })
+  //     if (event.key === "ArrowLeft" && event.altKey) {
+  //       const firstPanel = panelElements[0]
+  //       focusPanel(firstPanel)
+  //     } else if (event.key === "ArrowRight" && event.altKey) {
+  //       const lastPanel = panelElements[panelElements.length - 1]
+  //       focusPanel(lastPanel)
+  //     } else if (event.key === "ArrowLeft" && focusedPanelIndex > 0) {
+  //       // If the user presses the left arrow key and focus is not on the first panel,
+  //       // move focus to the previous panel
+  //       const prevPanel = panelElements[focusedPanelIndex - 1]
+  //       focusPanel(prevPanel)
+  //       event.preventDefault()
+  //     } else if (event.key === "ArrowRight" && focusedPanelIndex < panelElements.length - 1) {
+  //       // If the user presses the right arrow key and focus is not on the last panel,
+  //       // move focus to the next panel
+  //       const nextPanel = panelElements[focusedPanelIndex + 1]
+  //       focusPanel(nextPanel)
+  //       event.preventDefault()
+  //     }
+  //   }
+  // })
 
   const openPanel = React.useCallback(
     (to: To, afterIndex?: number) => {
@@ -146,16 +145,22 @@ function Root({ children }: React.PropsWithChildren) {
 
   return (
     <PanelsContext.Provider value={panels}>
-      <PanelActionsContext.Provider value={panelActions}>
-        <div className="flex h-full overflow-y-hidden">
-          <div className="flex h-full sm:border-r sm:border-border-secondary">{children}</div>
-        </div>
-      </PanelActionsContext.Provider>
+      <PanelActionsContext.Provider value={panelActions}>{children}</PanelActionsContext.Provider>
     </PanelsContext.Provider>
   )
 }
 
-Root.displayName = "Panels"
+Provider.displayName = "Panels.Provider"
+
+function Container({ children }: React.PropsWithChildren) {
+  return (
+    <div className="flex h-full overflow-y-hidden">
+      <div className="flex h-full sm:border-r sm:border-border-secondary">{children}</div>
+    </div>
+  )
+}
+
+Container.displayName = "Panels.Container"
 
 function Outlet() {
   const panels = usePanels()
@@ -289,7 +294,7 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
   return <LinkContext.Provider value={handleClick}>{children}</LinkContext.Provider>
 }
 
-export const Panels = Object.assign(Root, { Outlet, LinkProvider })
+export const Panels = Object.assign({}, { Provider, Container, Outlet, LinkProvider })
 
 // Utilities
 

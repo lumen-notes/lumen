@@ -5,9 +5,8 @@ import { GitHubRepository } from "../schema"
 import { Button } from "./button"
 import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
-import { TextInput } from "./text-input"
-import { Markdown } from "./markdown"
 import { RadioGroup } from "./radio-group"
+import { TextInput } from "./text-input"
 
 type RepoFormProps = {
   onSubmit?: (repo: GitHubRepository) => void
@@ -181,7 +180,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
               <div className="grid h-6 flex-shrink-0 place-items-center">
                 <ErrorIcon16 />
               </div>
-              <Markdown>{`${error.message}`}</Markdown>
+              <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
             </div>
           ) : null}
         </div>
