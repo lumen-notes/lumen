@@ -339,11 +339,11 @@ export function TrashIcon16() {
   )
 }
 
-export function EditIcon16() {
+export function EditIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M10.586 1.354a2 2 0 0 1 2.828 0l1.232 1.232a2 2 0 0 1 0 2.828L6.281 13.78a2.25 2.25 0 0 1-.88.543l-3.215 1.072c-.977.326-1.907-.604-1.581-1.58l1.071-3.216a2.25 2.25 0 0 1 .544-.88l8.366-8.365Zm1.768 1.06a.5.5 0 0 0-.708 0L3.281 10.78a.75.75 0 0 0-.181.293l-.914 2.741 2.74-.914a.751.751 0 0 0 .294-.18l8.366-8.366a.5.5 0 0 0 0-.708l-1.232-1.232ZM8 14h8v1.5H8V14Z" />
-    </svg>
+    </Icon>
   )
 }
 
@@ -594,6 +594,14 @@ export function MinimizeIcon16({ className }: { className?: string }) {
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M9 7h6V5.5h-3.44l4-4L14.5.44l-4 4V1H9v6ZM7 9H1v1.5h3.44l-4 4 1.06 1.06 4-4V15H7V9Z" />
     </svg>
+  )
+}
+
+export function GlassesIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M3 2.5A1.5 1.5 0 0 0 1.5 4v3.627A3.501 3.501 0 0 1 6.92 9.75h2.16a3.501 3.501 0 0 1 5.42-2.123V4A1.5 1.5 0 0 0 13 2.5V1a3 3 0 0 1 3 3v6.5a3.5 3.5 0 0 1-6.92.75H6.92A3.501 3.501 0 0 1 0 10.5V4a3 3 0 0 1 3-3v1.5Zm11.5 8a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-11 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+    </Icon>
   )
 }
 
