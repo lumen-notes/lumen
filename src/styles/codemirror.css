@@ -85,10 +85,10 @@
   @apply text-text-tertiary;
 }
 
-/* .cm-editor .cm-gutters {
-  @apply hidden;
-} */
-
-.ͼ1 .cm-lineNumbers {
+.cm-editor .cm-lineNumbers {
   @apply pr-2;
+}
+
+.cm-editor .cm-lineNumbers .cm-gutterElement {
+  @apply min-w-[1.5rem] p-0;
 }
