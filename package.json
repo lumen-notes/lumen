@@ -151,7 +151,7 @@
     "patch-package": "^6.4.7",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
-    "prettier-plugin-tailwindcss": "^0.1.13",
+    "prettier-plugin-tailwindcss": "^0.2.1",
     "rollup-plugin-visualizer": "^5.9.0",
     "storybook": "^7.6.7",
     "tailwindcss": "^3.4.1",
