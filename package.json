@@ -28,7 +28,7 @@
     "@codemirror/commands": "^6.0.1",
     "@codemirror/lang-markdown": "^6.2.2",
     "@codemirror/state": "^6.1.0",
-    "@codemirror/view": "^6.1.1",
+    "@codemirror/view": "^6.24.1",
     "@isomorphic-git/cors-proxy": "^2.7.1",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "@netlify/functions": "^2.4.1",
