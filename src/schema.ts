@@ -25,6 +25,8 @@ export type Note = {
 
   /** The ids of all notes that link to this note */
   backlinks: NoteId[]
+  /** How many open tasks (`- [ ]`) the note has */
+  openTasks: number
 }
 
 export type GitHubRepository = {

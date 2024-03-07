@@ -163,6 +163,10 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
         value = qualifier.values.some((value) => isInRange(item.backlinks.length, value))
         break
 
+      case "tasks":
+        value = qualifier.values.some((value) => isInRange(item.openTasks, value))
+        break
+
       case "no":
         // Match if the item doesn't have the specified property
         value = qualifier.values.some((value) => {
@@ -170,6 +174,8 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "backlinks":
               if (!("backlinks" in item)) return true
               return item.backlinks.length === 0
+            case "tasks":
+              return item.openTasks === 0
             case "tag":
             case "tags":
               return item.tags.length === 0
@@ -201,6 +207,9 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "link":
             case "links":
               return item.links.length === 0
+            case "task":
+            case "tasks":
+              return item.openTasks === 0
             default:
               return !(value in frontmatter)
           }

@@ -24,6 +24,7 @@ export const parseNote = memoize((id: NoteId, content: string) => {
   const tags = new Set<string>()
   const dates = new Set<string>()
   const links = new Set<NoteId>()
+  let openTasks = 0
 
   const { frontmatter } = parseFrontmatter(content)
 
@@ -82,6 +83,13 @@ export const parseNote = memoize((id: NoteId, content: string) => {
         })
         break
       }
+
+      case "listItem": {
+        if (node.checked === false) {
+          openTasks++
+        }
+        break
+      }
     }
   })
 
@@ -133,5 +141,6 @@ export const parseNote = memoize((id: NoteId, content: string) => {
     dates: Array.from(dates),
     links: Array.from(links),
     tags: Array.from(tags),
+    openTasks,
   }
 })
