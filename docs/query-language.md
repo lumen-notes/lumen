@@ -22,6 +22,7 @@ Search your notes with Lumen's [GitHub-style](https://docs.github.com/en/search-
 | `links`     | `links:>1` matches notes with more than one link.                                                                                          |
 | `backlink`  | `backlink:1652342106359` matches notes that are linked to by the note with ID `1652342106359`.                                             |
 | `backlinks` | `backlinks:>1` matches notes with more than one backlink.                                                                                  |
+| `tasks`     | `tasks:>0` matches notes with at least one open task.                                                                                      |
 | `no`        | `no:tag` matches notes without a tag. `no` can be used with any qualifier key or frontmatter key.                                          |
 | `has`       | `has:tag` matches notes with one or more tag. `has` can be used with any qualifier key or frontmatter key. `has` and `-no` are equivalent. |
 
