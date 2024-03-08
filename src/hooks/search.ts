@@ -207,7 +207,6 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "link":
             case "links":
               return item.links.length === 0
-            case "task":
             case "tasks":
               return item.openTasks === 0
             default:
