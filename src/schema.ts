@@ -20,6 +20,8 @@ export type Note = {
   links: NoteId[]
   dates: string[]
   tags: string[]
+  /** How many open tasks (`- [ ]`) the note has */
+  openTasks: number
 
   // ↓ Derived from links
 

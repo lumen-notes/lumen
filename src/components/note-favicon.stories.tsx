@@ -23,6 +23,7 @@ const emptyNote: Note = {
   links: [],
   title: "",
   url: null,
+  openTasks: 0,
   backlinks: [],
 }
 
