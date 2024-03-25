@@ -69,7 +69,7 @@
     "mdast-util-from-markdown": "^1.2.0",
     "mdast-util-gfm-task-list-item": "^2.0.0",
     "mdast-util-to-markdown": "^2.1.0",
-    "mdast-util-to-string": "^3.1.0",
+    "mdast-util-to-string": "^4.0.0",
     "micromark": "^3.0.10",
     "micromark-extension-gfm-task-list-item": "^2.0.1",
     "micromark-util-symbol": "^1.0.1",
