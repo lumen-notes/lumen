@@ -59,7 +59,9 @@ export function Panel({
           ) : null}
         </div>
       </div>
-      <div className="h-full scroll-pb-4 scroll-pt-4 overflow-auto">{children}</div>
+      <div className="h-full scroll-pb-4 scroll-pt-4 overflow-auto fine:lg:[scrollbar-gutter:stable_both-edges]">
+        {children}
+      </div>
     </div>
   )
 }
