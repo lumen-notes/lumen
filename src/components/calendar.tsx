@@ -36,7 +36,7 @@ export function Calendar({ activeNoteId }: { activeNoteId: string }) {
   )
 
   return (
-    <div className="shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+    <div>
       <div className="container flex flex-col gap-2 overflow-hidden p-2">
         <div className="flex items-center justify-between">
           <span className="px-2 text-lg font-semibold">
@@ -57,7 +57,7 @@ export function Calendar({ activeNoteId }: { activeNoteId: string }) {
             </IconButton>
           </div>
         </div>
-        <div className="grid">
+        <div className="grid px-2">
           <RovingFocusGroup.Root orientation="horizontal" className="flex">
             <CalendarWeek
               startOfWeek={startOfWeek}
@@ -189,7 +189,7 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:bg-text before:content-['']",
+            "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:rounded-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
