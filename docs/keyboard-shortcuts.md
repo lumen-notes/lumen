@@ -9,13 +9,6 @@
 | Focus next panel       | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>→</kbd>              |
 | Focus last panel       | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>⌥</kbd> <kbd>→</kbd> |
 
-**With focus inside the new note dialog...**
-
-| Action       | Shortcut                      |
-| ------------ | ----------------------------- |
-| Create note  | <kbd>⌘</kbd> <kbd>Enter</kbd> |
-| Close dialog | <kbd>Esc</kbd>                |
-
 **With focus inside a panel...**
 
 | Action              | Shortcut                                            |
