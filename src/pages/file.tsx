@@ -1,14 +1,10 @@
 import { useLocation } from "react-router-dom"
-import { FilePreview } from "../components/file-preview"
+import { FilePanel } from "../panels/file"
 
 export function FilePage() {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const path = searchParams.get("path") || ""
 
-  return (
-    <div className="grid h-full place-items-center">
-      <FilePreview path={path} />
-    </div>
-  )
+  return <FilePanel params={{ path }} />
 }
