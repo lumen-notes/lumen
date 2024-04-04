@@ -189,7 +189,7 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-semibold text-text before:absolute before:-bottom-2 before:h-[0.125rem] before:w-full before:rounded-full before:bg-text before:content-['']",
+            "font-semibold text-text before:absolute before:-bottom-2 before:h-[3px] before:w-full before:rounded-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
