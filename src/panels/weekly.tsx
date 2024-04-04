@@ -16,7 +16,7 @@ import { templatesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { NoteId } from "../schema"
-import { formatWeek, formatWeekDistance, toDateString } from "../utils/date"
+import { DAY_NAMES, formatWeek, formatWeekDistance, toDateString } from "../utils/date"
 import { useDailyTemplate } from "./daily"
 
 export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
@@ -36,6 +36,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
   return (
     <Panel
       id={id}
+      key={week}
       title={formatWeek(week)}
       description={formatWeekDistance(week)}
       icon={<CalendarIcon16 number={Number(week.split("-W")[1])} />}
@@ -43,7 +44,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
     >
       <div className="flex flex-col">
         <Calendar key={week} activeNoteId={week} />
-        <div className="flex flex-col gap-4 p-4">
+        <div className="container flex flex-col gap-4 p-4">
           <NoteCard id={week} defaultValue={weeklyTemplate} />
 
           <Details>
@@ -90,6 +91,7 @@ function DailyNoteCard({ id }: { id: NoteId }) {
   const note = useNoteById(id)
   const dailyTemplate = useDailyTemplate(id)
   const [showForm, setShowForm] = React.useState(false)
+  const day = parseISO(id).getDay()
 
   if (!note) {
     return showForm ? (
@@ -97,10 +99,10 @@ function DailyNoteCard({ id }: { id: NoteId }) {
     ) : (
       // Note card placeholder
       <button
-        className="filepath flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-4 text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
+        className="filepath flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-[calc(1rem-1px)] text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
         onClick={() => setShowForm(true)}
       >
-        {id}.md
+        {id}.md · {DAY_NAMES[day]}
       </button>
     )
   }

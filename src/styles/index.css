@@ -41,6 +41,10 @@ body:has([data-resizing="true"]) * {
   pointer-events: none;
 }
 
+.container {
+  @apply mx-auto w-full max-w-3xl;
+}
+
 /* Focus styles for buttons, inputs, etc. */
 .focus-ring {
   @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;

@@ -100,9 +100,7 @@ export const Markdown = React.memo(
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
-                  <Link to={`/?${qs.stringify({ q: "has:template" })}`} target="_blank">
-                    Template
-                  </Link>
+                  <Link to={`/?${qs.stringify({ q: "has:template" })}`}>Template</Link>
                 </PillButton>
               </div>
               {/* TODO: Display more input metadata (type, description, etc.) */}
@@ -417,7 +415,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" target="_blank" to={`/${dateString}`}>
+            <Link className="link" to={`/${dateString}`}>
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -427,7 +425,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           )}
           <span className="text-text-secondary">
             {" · "}
-            <Link className="link" target="_blank" to={`/${nextBirthdayString}`}>
+            <Link className="link" to={`/${nextBirthdayString}`}>
               {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"}
             </Link>{" "}
             is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
@@ -509,11 +507,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
 
   // Open uploads in a panel
   if (props.href?.startsWith(UPLOADS_DIR)) {
-    return (
-      <Link to={`/file?${qs.stringify({ path: props.href })}`} target="_blank">
-        {props.children}
-      </Link>
-    )
+    return <Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Link>
   }
 
   // Render relative links with React Router
@@ -555,11 +549,7 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Link
-        to={`/file?${qs.stringify({ path: props.src })}`}
-        target="_blank"
-        className="block w-fit !no-underline"
-      >
+      <Link to={`/file?${qs.stringify({ path: props.src })}`} className="block w-fit !no-underline">
         <FilePreview path={props.src} alt={props.alt} />
       </Link>
     )
@@ -690,7 +680,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} to={`/${id}`} target="_blank">
+        <Link ref={ref} to={`/${id}`}>
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
@@ -740,9 +730,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </span>
       )}
       <div className="mt-2 text-sm text-text-secondary">
-        <Link target="_blank" to={`/${id}`}>
-          Source
-        </Link>
+        <Link to={`/${id}`}>Source</Link>
       </div>
     </div>
   )
@@ -758,7 +746,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${date}`} target="_blank">
+        <Link className={className} to={`/${date}`}>
           {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
@@ -786,7 +774,7 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${week}`} target="_blank">
+        <Link className={className} to={`/${week}`}>
           {text || formatWeek(week)}
         </Link>
       </HoverCard.Trigger>

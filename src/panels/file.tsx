@@ -1,11 +1,10 @@
 import { FilePreview } from "../components/file-preview"
 import { FileIcon16 } from "../components/icons"
 import { Panel } from "../components/panel"
-import { PanelProps, usePanel } from "../components/panels"
+import { PanelProps } from "../components/panels"
 
-export function FilePanel({ id, onClose }: PanelProps) {
-  const { search } = usePanel() || {}
-  const path = new URLSearchParams(search).get("path") || ""
+export function FilePanel({ id, params = {}, onClose }: PanelProps) {
+  const { path = "" } = params
 
   return (
     <Panel

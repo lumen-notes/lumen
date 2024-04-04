@@ -1,7 +1,7 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import React from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { NavLinkProps, NavLink as RouterNavLink, useMatch, useResolvedPath } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
@@ -22,10 +22,8 @@ import {
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
-import { usePanelActions, usePanels } from "./panels"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
-import { useHotkeys } from "react-hotkeys-hook"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const navigate = useNavigateWithCache()
@@ -178,22 +176,7 @@ function NewNoteButton({
   tooltipSide: TooltipContentProps["side"]
   className?: string
 }) {
-  const panels = usePanels()
-  const { openPanel } = usePanelActions()
-  const routerNavigate = useNavigateWithCache()
-
-  const navigate = React.useCallback(
-    (url: string) => {
-      if (openPanel) {
-        // If we're in a panels context, navigate by opening a panel
-        openPanel(url, panels.length - 1)
-      } else {
-        // Otherwise, navigate using the router
-        routerNavigate(url)
-      }
-    },
-    [openPanel, panels, routerNavigate],
-  )
+  const navigate = useNavigateWithCache()
 
   useHotkeys("mod+i", (event) => {
     navigate(`/${Date.now()}`)
@@ -206,6 +189,7 @@ function NewNoteButton({
       aria-label="New note"
       tooltipSide={tooltipSide}
       onClick={() => navigate(`/${Date.now()}`)}
+      shortcut={["⌘", "I"]}
     >
       <ComposeIcon24 />
     </IconButton>
