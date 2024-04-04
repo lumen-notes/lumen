@@ -189,6 +189,7 @@ function NewNoteButton({
       aria-label="New note"
       tooltipSide={tooltipSide}
       onClick={() => navigate(`/${Date.now()}`)}
+      shortcut={["⌘", "I"]}
     >
       <ComposeIcon24 />
     </IconButton>

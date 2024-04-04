@@ -5,13 +5,11 @@ import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/button"
-import { FullscreenProvider } from "./components/fullscreen"
 import { GitHubAuth } from "./components/github-auth"
 import { Markdown } from "./components/markdown"
 import { NavLayout } from "./components/nav-layout"
 import { RootLayout } from "./components/root-layout"
 import { FilePage } from "./pages/file"
-import { NewPage } from "./pages/new"
 import { NotePage } from "./pages/note"
 import { NotesPage } from "./pages/notes"
 import { SettingsPage } from "./pages/settings"
@@ -33,23 +31,20 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Tooltip.Provider>
         <BrowserRouter>
-          <FullscreenProvider>
-            <GitHubAuth>
-              <RootLayout>
-                <Routes>
-                  <Route path="/new" element={<NewPage />} />
-                  <Route path="/file" element={<FilePage />} />
-                  <Route path="/" element={<NavLayout />}>
-                    <Route index element={<NotesPage />} />
-                    <Route path="tags" element={<TagsPage />} />
-                    <Route path="tags/*" element={<TagPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                    <Route path="*" element={<NotePage />} />
-                  </Route>
-                </Routes>
-              </RootLayout>
-            </GitHubAuth>
-          </FullscreenProvider>
+          <GitHubAuth>
+            <RootLayout>
+              <Routes>
+                <Route path="/file" element={<FilePage />} />
+                <Route path="/" element={<NavLayout />}>
+                  <Route index element={<NotesPage />} />
+                  <Route path="tags" element={<TagsPage />} />
+                  <Route path="tags/*" element={<TagPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="*" element={<NotePage />} />
+                </Route>
+              </Routes>
+            </RootLayout>
+          </GitHubAuth>
         </BrowserRouter>
       </Tooltip.Provider>
     </ErrorBoundary>

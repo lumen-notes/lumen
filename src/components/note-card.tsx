@@ -443,9 +443,7 @@ const _NoteCard = React.memo(function NoteCard({
       <div className="p-4 pt-0">
         {mode === "read" ? (
           editorValue ? (
-            <Markdown onChange={(value) => handleSave({ id, content: value })}>
-              {editorValue}
-            </Markdown>
+            <Markdown onChange={handleChange}>{editorValue}</Markdown>
           ) : (
             <span className="italic text-text-secondary">Empty note</span>
           )
