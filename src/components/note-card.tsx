@@ -282,6 +282,13 @@ const _NoteCard = React.memo(function NoteCard({
             handleSave({ id, content: editorValue })
             switchToReading()
           })
+          Vim.defineEx("wq", "wq", () => {
+            handleSave({ id, content: editorValue })
+            switchToReading()
+          })
+          Vim.defineEx("q", "q", () => {
+            switchToReading()
+          })
         }
       }}
     >
