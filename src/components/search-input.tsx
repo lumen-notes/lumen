@@ -10,7 +10,7 @@ type SearchInputProps = Omit<React.ComponentPropsWithoutRef<"input">, "onChange"
 }
 
 export function SearchInput({
-  shortcut = ["⌘", "F"],
+  shortcut,
   placeholder = "Search…",
   onChange,
   ...props

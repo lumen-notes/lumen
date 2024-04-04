@@ -68,17 +68,6 @@ export function Panel({
             onClose?.()
             event.preventDefault()
           }
-
-          // Focus search input with Command + F
-          // Note: On windows+chrome a note needs to be in focus. Otherwise it will open Chrome's find-in-page
-          if (event.key === "f" && (event.metaKey || event.ctrlKey)) {
-            const searchInput =
-              panelRef.current?.querySelector<HTMLInputElement>("input[type=search]")
-            if (searchInput) {
-              searchInput.focus()
-              event.preventDefault()
-            }
-          }
         }}
         onFocus={() => {
           setActiveNoteId(
