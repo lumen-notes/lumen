@@ -63,56 +63,19 @@ export function Panel({
           "--left": panel ? `${(panel.index + 1) * 44}px` : 0,
         }}
         onKeyDown={(event) => {
-          // Close with `command + x` if no text is selected
+          // Close with Command + X if no text is selected
           if (event.metaKey && event.key === "x" && !window.getSelection()?.toString()) {
             onClose?.()
             event.preventDefault()
           }
 
-          // Focus search input with `command + f`
-          // Note: on windows+chrome a note needs to be in focus. Otherwise it will open Chrome's find-in-page 
+          // Focus search input with Command + F
+          // Note: On windows+chrome a note needs to be in focus. Otherwise it will open Chrome's find-in-page
           if (event.key === "f" && (event.metaKey || event.ctrlKey)) {
             const searchInput =
               panelRef.current?.querySelector<HTMLInputElement>("input[type=search]")
             if (searchInput) {
               searchInput.focus()
-              event.preventDefault()
-            }
-          }
-
-          // Focus prev/next note with `command + shift + up/down`
-          if (
-            (event.key === "ArrowUp" || event.key === "ArrowDown") &&
-            (event.metaKey || event.ctrlKey) &&
-            event.shiftKey
-          ) {
-            const noteElements = Array.from(
-              panelRef.current?.querySelectorAll<HTMLElement>("[data-note-id]") ?? [],
-            )
-
-            const focusedNoteElement = noteElements.find((noteElement) =>
-              noteElement.contains(document.activeElement),
-            )
-
-            const focusedNoteIndex = focusedNoteElement
-              ? noteElements.indexOf(focusedNoteElement)
-              : -1
-
-            if (event.key === "ArrowUp" && event.altKey) {
-              const firstNote = noteElements[0]
-              firstNote.focus()
-              event.preventDefault()
-            } else if (event.key === "ArrowDown" && event.altKey) {
-              const lastNote = noteElements[noteElements.length - 1]
-              lastNote.focus()
-              event.preventDefault()
-            } else if (event.key === "ArrowUp" && focusedNoteIndex > 0) {
-              const prevNote = noteElements[focusedNoteIndex - 1]
-              prevNote.focus()
-              event.preventDefault()
-            } else if (event.key === "ArrowDown" && focusedNoteIndex < noteElements.length - 1) {
-              const nextNote = noteElements[focusedNoteIndex + 1]
-              nextNote.focus()
               event.preventDefault()
             }
           }

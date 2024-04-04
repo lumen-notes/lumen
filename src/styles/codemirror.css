@@ -35,8 +35,9 @@
   @apply bg-border-focus !text-bg;
 }
 
+/* Hide the cursor when the editor is not focused */
 .cm-editor:not(.cm-focused) .cm-fat-cursor {
-  @apply bg-bg-selection outline-none;
+  @apply hidden;
 }
 
 .cm-editor .cm-panels {

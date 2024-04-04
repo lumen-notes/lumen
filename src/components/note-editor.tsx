@@ -30,6 +30,7 @@ type NoteEditorProps = {
   placeholder?: string
   editorRef?: React.MutableRefObject<ReactCodeMirrorRef>
   autoFocus?: boolean
+  onChange?: (value: string) => void
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
 }
@@ -57,6 +58,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       defaultValue = "",
       placeholder = "Write a note…",
       autoFocus = false,
+      onChange,
       onStateChange,
       onPaste,
     },
@@ -119,6 +121,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           }
         }}
         onUpdate={onStateChange}
+        onChange={onChange}
         onKeyDownCapture={(event) => {
           // Command + Enter is reserved for submitting the form so we need to prevent the default behavior
           if (event.key === "Enter" && event.metaKey) {
