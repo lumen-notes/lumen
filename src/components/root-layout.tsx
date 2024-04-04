@@ -1,14 +1,12 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { useLocation } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { useThemeColorProvider } from "../hooks/theme-color"
 import { CommandMenu } from "./command-menu"
 import { ErrorIcon16 } from "./icons"
 import { InsertTemplateDialog } from "./insert-template"
-import { Panels } from "./panels"
 import { SyntaxHighlighter } from "./syntax-highlighter"
 
 const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
@@ -18,7 +16,6 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
-  const location = useLocation()
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
@@ -33,7 +30,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <Panels.Provider key={location.pathname}>
+    <>
       <CommandMenu />
       <InsertTemplateDialog />
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
@@ -48,7 +45,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         ) : null}
         <DevBar />
       </div>
-    </Panels.Provider>
+    </>
   )
 }
 

@@ -16,7 +16,6 @@ export function TagLink({ name, className }: TagLinkProps) {
           <React.Fragment key={i}>
             {i > 0 && <span>/</span>}
             <Link
-              target="_blank"
               className="link"
               to={`/tags/${name
                 .split("/")

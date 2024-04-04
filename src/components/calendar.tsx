@@ -36,41 +36,46 @@ export function Calendar({ activeNoteId }: { activeNoteId: string }) {
   )
 
   return (
-    <div className="flex flex-col gap-2 overflow-hidden px-2 py-2 shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
-      <div className="flex items-center justify-between">
-        <span className="px-2 text-lg font-semibold">
-          {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
-        </span>
-        <div className="flex ">
-          <IconButton
-            aria-label="Previous week"
-            onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
-          >
-            <ChevronLeftIcon16 />
-          </IconButton>
-          <IconButton
-            aria-label="Next week"
-            onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
-          >
-            <ChevronRightIcon16 />
-          </IconButton>
+    <div className="shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
+      <div className="mx-auto flex max-w-3xl flex-col gap-2 overflow-hidden p-2">
+        <div className="flex items-center justify-between">
+          <span className="px-2 text-lg font-semibold">
+            {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
+          </span>
+          <div className="flex ">
+            <IconButton
+              aria-label="Previous week"
+              onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
+            >
+              <ChevronLeftIcon16 />
+            </IconButton>
+            <IconButton
+              aria-label="Next week"
+              onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
+            >
+              <ChevronRightIcon16 />
+            </IconButton>
+          </div>
         </div>
-      </div>
-      <div className="grid">
-        <RovingFocusGroup.Root orientation="horizontal" className="flex">
-          <CalendarWeek
-            startOfWeek={startOfWeek}
-            isActive={toWeekString(startOfWeek) === activeNoteId}
-          />
-          <div role="separator" className="my-[0.375rem] w-px flex-shrink-0 bg-border-secondary" />
-          {daysOfWeek.map((date) => (
-            <CalendarDate
-              key={date.toISOString()}
-              date={date}
-              isActive={toDateString(date) === activeNoteId}
+        <div className="grid">
+          <RovingFocusGroup.Root orientation="horizontal" className="flex">
+            <CalendarWeek
+              startOfWeek={startOfWeek}
+              isActive={toWeekString(startOfWeek) === activeNoteId}
             />
-          ))}
-        </RovingFocusGroup.Root>
+            <div
+              role="separator"
+              className="my-[0.375rem] w-px flex-shrink-0 bg-border-secondary"
+            />
+            {daysOfWeek.map((date) => (
+              <CalendarDate
+                key={date.toISOString()}
+                date={date}
+                isActive={toDateString(date) === activeNoteId}
+              />
+            ))}
+          </RovingFocusGroup.Root>
+        </div>
       </div>
     </div>
   )
@@ -193,10 +198,10 @@ function CalendarItem({
           hasNotes && !isActive && "after:bg-border",
         )}
       >
-        <div className="flex flex-col items-center gap-1 @[6rem]:flex-row @[6rem]:gap-2 coarse:gap-2">
-          <span className="@[6rem]:hidden">{shortName}</span>
+        <div className="flex flex-col items-center gap-1 @[3rem]:gap-2 coarse:gap-2">
+          <span className="@[3rem]:hidden">{shortName}</span>
           {/* Show full name when there's enough space */}
-          <span className="hidden @[6rem]:inline">{name}</span>
+          <span className="hidden @[3rem]:inline">{name}</span>
           <span
             className={cx(
               isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",

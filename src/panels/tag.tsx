@@ -51,7 +51,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <LinkHighlightProvider href={`/tags/${name}`}>
-        <div className="p-4">
+        <div className="mx-auto max-w-3xl p-4">
           {isRenaming ? (
             <Card className="mb-4 p-4">
               <div className="mb-4 flex items-center justify-between">
@@ -61,7 +61,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
               </div>
               <form
                 aria-labelledby="rename-tag-heading"
-                className="grid gap-4"
+                className="flex flex-col items-end gap-4"
                 onSubmit={(event) => {
                   event.preventDefault()
                   const formData = new FormData(event.currentTarget)
@@ -78,7 +78,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                 <label htmlFor="name" className="sr-only">
                   Name
                 </label>
-                <div className="flex  gap-2">
+                <div className="flex w-full gap-2">
                   <TextInput
                     ref={nameInputRef}
                     id="name"
@@ -96,7 +96,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                     }}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex gap-2">
                   <Button variant="secondary" onClick={closeRenameForm}>
                     Cancel
                   </Button>

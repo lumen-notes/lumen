@@ -6,7 +6,6 @@ import React from "react"
 import { flushSync } from "react-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
-import { usePanelActions, usePanels } from "../components/panels"
 import { tagSearcherAtom } from "../global-state"
 import { useDebouncedValue } from "../hooks/debounced-value"
 import { useNavigateWithCache } from "../hooks/navigate-with-cache"
@@ -30,8 +29,6 @@ export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
-  const panels = usePanels()
-  const { openPanel } = usePanelActions()
   const routerNavigate = useNavigateWithCache()
 
   // Refs
@@ -58,18 +55,11 @@ export function CommandMenu() {
 
   const navigate = React.useCallback(
     (url: string, { openInPanel = true }: { openInPanel?: boolean } = {}) => {
-      if (openInPanel && openPanel) {
-        // If we're in a panels context, navigate by opening a panel
-        openPanel(url, panels.length - 1)
-      } else {
-        // Otherwise, navigate using the router
-        routerNavigate(url)
-      }
-
+      routerNavigate(url)
       setIsOpen(false)
       setQuery("")
     },
-    [openPanel, panels, routerNavigate],
+    [routerNavigate],
   )
 
   // Toggle the menu with `command + k`

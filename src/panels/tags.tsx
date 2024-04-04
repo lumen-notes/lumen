@@ -32,7 +32,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
 
   return (
     <Panel id={id} title="Tags" icon={<TagIcon16 />} onClose={onClose}>
-      <div className="flex flex-col gap-2 p-4">
+      <div className="mx-auto flex max-w-3xl flex-col gap-2 p-4">
         <div className="flex flex-col gap-2">
           <SearchInput
             placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
@@ -136,7 +136,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
         )}
         <span className="py-2 leading-4 ">
           <PillButton asChild>
-            <Link to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
+            <Link to={`/tags/${[...path, node.name].join("/")}`}>
               {node.name}
               <span className="text-text-secondary">{node.count}</span>
             </Link>

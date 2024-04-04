@@ -296,11 +296,7 @@ const _NoteCard = React.memo(function NoteCard({
       <div className="flex items-center justify-between p-2">
         <span className="flex items-center gap-1 px-2 text-text-secondary">
           {note ? (
-            <Link
-              to={`/${id}`}
-              target="_blank"
-              className="link filepath !no-underline hover:!underline"
-            >
+            <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
               {id}.md
             </Link>
           ) : (
@@ -447,7 +443,9 @@ const _NoteCard = React.memo(function NoteCard({
       <div className="p-4 pt-0">
         {mode === "read" ? (
           editorValue ? (
-            <Markdown onChange={handleChange}>{editorValue}</Markdown>
+            <Markdown onChange={(value) => handleSave({ id, content: value })}>
+              {editorValue}
+            </Markdown>
           ) : (
             <span className="italic text-text-secondary">Empty note</span>
           )

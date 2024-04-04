@@ -29,7 +29,7 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
       icon={!note || note.frontmatter.template ? <NoteTemplateIcon16 /> : <NoteIcon16 />}
       onClose={onClose}
     >
-      <div className="flex flex-col gap-4 p-4">
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
         <NoteCard id={noteId} />
         {note?.backlinks?.length ? (
           <Details>

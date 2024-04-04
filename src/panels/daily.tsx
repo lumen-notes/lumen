@@ -27,6 +27,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
   return (
     <Panel
       id={id}
+      key={date}
       title={formatDate(date)}
       description={formatDateDistance(date)}
       icon={<CalendarIcon16 number={new Date(date).getUTCDate()} />}
@@ -34,7 +35,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
     >
       <div className="flex flex-col">
         <Calendar key={date} activeNoteId={date} />
-        <div className="flex flex-col gap-4 p-4">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
           <NoteCard id={date} defaultValue={dailyTemplate} />
           {backlinks.length > 0 ? (
             <Details>
