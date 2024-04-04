@@ -23,7 +23,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
 
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon16 />} onClose={onClose}>
-      <div className="mx-auto max-w-3xl p-4">
+      <div className="container p-4">
         {isEmpty ? (
           <div className="flex w-full flex-col gap-4">
             <div className="flex flex-col gap-1">

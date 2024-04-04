@@ -37,7 +37,7 @@ export function Calendar({ activeNoteId }: { activeNoteId: string }) {
 
   return (
     <div className="shadow-[inset_0_-1px_0_var(--color-border-secondary)]">
-      <div className="mx-auto flex max-w-3xl flex-col gap-2 overflow-hidden p-2">
+      <div className="container flex flex-col gap-2 overflow-hidden p-2">
         <div className="flex items-center justify-between">
           <span className="px-2 text-lg font-semibold">
             {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}

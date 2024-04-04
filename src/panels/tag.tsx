@@ -51,7 +51,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       onClose={onClose}
     >
       <LinkHighlightProvider href={`/tags/${name}`}>
-        <div className="mx-auto max-w-3xl p-4">
+        <div className="container p-4">
           {isRenaming ? (
             <Card className="mb-4 p-4">
               <div className="mb-4 flex items-center justify-between">
