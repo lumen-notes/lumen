@@ -1,4 +1,5 @@
 import { EditorSelection } from "@codemirror/state"
+import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
 import { Vim } from "@replit/codemirror-vim"
 import { ReactCodeMirrorRef, ViewUpdate } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
@@ -342,31 +343,31 @@ const _NoteCard = React.memo(function NoteCard({
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
               <div className="mb-1 flex h-8 gap-1 rounded-sm bg-bg-secondary p-0.5">
-                <button
+                <RadixDropdownMenu.Item
                   className={cx(
-                    "inline-flex w-full items-center justify-center gap-2 rounded-[0.25rem]",
+                    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[0.25rem] focus:outline-none",
                     mode === "read"
-                      ? "bg-bg shadow-sm ring-1 ring-border-secondary hover:ring-border"
-                      : "hover:bg-bg-secondary",
+                      ? "bg-bg shadow-sm ring-1 ring-border-secondary focus:ring-border"
+                      : "focus:bg-bg-secondary",
                   )}
                   onClick={switchToReading}
                 >
                   <GlassesIcon16 className="text-text-secondary" />
                   Read
-                </button>
+                </RadixDropdownMenu.Item>
 
-                <button
+                <RadixDropdownMenu.Item
                   className={cx(
-                    "inline-flex w-full items-center justify-center gap-2 rounded-[0.25rem]",
+                    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[0.25rem] focus:outline-none",
                     mode === "write"
-                      ? "bg-bg shadow-sm ring-1 ring-border-secondary hover:ring-border"
-                      : "hover:bg-bg-secondary",
+                      ? "bg-bg shadow-sm ring-1 ring-border-secondary focus:ring-border"
+                      : "focus:bg-bg-secondary",
                   )}
                   onClick={switchToWriting}
                 >
                   <EditIcon16 className="text-text-secondary" />
                   <span>Write</span>
-                </button>
+                </RadixDropdownMenu.Item>
               </div>
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
