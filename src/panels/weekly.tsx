@@ -9,23 +9,19 @@ import { CalendarIcon16 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
-import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { globalStateMachineAtom, templatesAtom } from "../global-state"
+import { templatesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { NoteId } from "../schema"
 import { formatWeek, formatWeekDistance, toDateString } from "../utils/date"
 import { useDailyTemplate } from "./daily"
 
-const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.resolvingRepo"),
-)
-
 export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
   const { week = "" } = params
+  const weeklyTemplate = useWeeklyTemplate(week)
   const searchNotes = useSearchNotes()
   const hasBacklinks = React.useMemo(
     () => searchNotes(`link:"${week}" -id:"${week}"`).length > 0,
@@ -48,7 +44,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={week} activeNoteId={week} />
         <div className="flex flex-col gap-4 p-4">
-          <WeeklyNoteCard id={week} />
+          <NoteCard id={week} defaultValue={weeklyTemplate} />
 
           <Details>
             <Details.Summary>Days</Details.Summary>
@@ -69,18 +65,6 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
       </div>
     </Panel>
   )
-}
-
-function WeeklyNoteCard({ id }: { id: NoteId }) {
-  const note = useNoteById(id)
-  const weeklyTemplate = useWeeklyTemplate(id)
-  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
-
-  if (!isResolvingRepo && !note) {
-    return <NoteCardForm key={id} minHeight="10rem" id={id} defaultValue={weeklyTemplate} />
-  }
-
-  return <NoteCard id={id} />
 }
 
 const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
@@ -109,13 +93,7 @@ function DailyNoteCard({ id }: { id: NoteId }) {
 
   if (!note) {
     return showForm ? (
-      <NoteCardForm
-        key={id}
-        minHeight="10rem"
-        id={id}
-        defaultValue={dailyTemplate}
-        onCancel={() => setShowForm(false)}
-      />
+      <NoteCard key={id} id={id} defaultValue={dailyTemplate} onCancel={() => setShowForm(false)} />
     ) : (
       // Note card placeholder
       <button

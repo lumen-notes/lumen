@@ -8,22 +8,16 @@ import { CalendarIcon16 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
-import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
-import { globalStateMachineAtom, templatesAtom } from "../global-state"
-import { useNoteById } from "../hooks/note"
+import { templatesAtom } from "../global-state"
 import { useSearchNotes } from "../hooks/search"
-import { NoteId } from "../schema"
 import { formatDate, formatDateDistance } from "../utils/date"
-
-const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.resolvingRepo"),
-)
 
 export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
   const { date = "" } = params
+  const dailyTemplate = useDailyTemplate(date)
   const searchNotes = useSearchNotes()
   const backlinks = React.useMemo(
     () => searchNotes(`link:"${date}" -id:"${date}"`),
@@ -41,7 +35,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       <div className="flex flex-col">
         <Calendar key={date} activeNoteId={date} />
         <div className="flex flex-col gap-4 p-4">
-          <DailyNoteCard id={date} />
+          <NoteCard id={date} defaultValue={dailyTemplate} />
           {backlinks.length > 0 ? (
             <Details>
               <Details.Summary>Backlinks</Details.Summary>
@@ -54,18 +48,6 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       </div>
     </Panel>
   )
-}
-
-function DailyNoteCard({ id }: { id: NoteId }) {
-  const note = useNoteById(id)
-  const dailyTemplate = useDailyTemplate(id)
-  const isResolvingRepo = useAtomValue(isResolvingRepoAtom)
-
-  if (!isResolvingRepo && !note) {
-    return <NoteCardForm key={id} minHeight="10rem" id={id} defaultValue={dailyTemplate} />
-  }
-
-  return <NoteCard id={id} />
 }
 
 const dailyTemplateAtom = selectAtom(templatesAtom, (templates) =>

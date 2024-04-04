@@ -1,7 +1,6 @@
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { LoadingIcon16, NoteIcon16 } from "../components/icons"
-import { NoteCardForm } from "../components/note-card-form"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
@@ -16,17 +15,11 @@ const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
 
 const isClonedAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn.cloned"))
 
-const noteCountAtom = selectAtom(
-  globalStateMachineAtom,
-  (state) => Object.keys(state.context.markdownFiles).length,
-)
-
 export function NotesPanel({ id, onClose }: PanelProps) {
   const isEmpty = useAtomValue(isEmptyAtom)
   const isCloningRepo = useAtomValue(isCloningRepoAtom)
   const isCloned = useAtomValue(isClonedAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const noteCount = useAtomValue(noteCountAtom)
 
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon16 />} onClose={onClose}>
@@ -50,13 +43,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
           </span>
         ) : null}
 
-        {isCloned ? (
-          noteCount === 0 ? (
-            <NoteCardForm placeholder="Write your first note…" minHeight="12rem" />
-          ) : (
-            <NoteList />
-          )
-        ) : null}
+        {isCloned ? <NoteList /> : null}
       </div>
     </Panel>
   )
