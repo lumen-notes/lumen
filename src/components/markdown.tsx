@@ -168,7 +168,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkWikilink,
         remarkEmbed,
         remarkTag,
-        remarkMath,
+        [remarkMath, { singleDollarTextMath: false }],
       ]}
       rehypePlugins={[rehypeKatex]}
       remarkRehypeOptions={{
