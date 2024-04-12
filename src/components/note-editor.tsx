@@ -124,7 +124,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         onChange={onChange}
         onKeyDownCapture={(event) => {
           // Command + Enter is reserved for submitting the form so we need to prevent the default behavior
-          if (event.key === "Enter" && event.metaKey) {
+          if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
             event.preventDefault()
           }
 
@@ -135,6 +135,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           if (
             (event.key === "Escape" || event.key === "Enter") &&
             !event.metaKey &&
+            !event.ctrlKey &&
             isTooltipOpen
           ) {
             event.stopPropagation()
