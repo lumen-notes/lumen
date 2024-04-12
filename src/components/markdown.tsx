@@ -425,10 +425,10 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           )}
           <span className="text-text-secondary">
             {" · "}
+            {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
             <Link className="link" to={`/${nextBirthdayString}`}>
-              {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"}
+              {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
             </Link>{" "}
-            is {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}{" "}
             {isBirthdayToday ? "🎂" : null}
           </span>
         </span>
