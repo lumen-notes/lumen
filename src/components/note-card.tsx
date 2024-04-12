@@ -293,8 +293,8 @@ const _NoteCard = React.memo(function NoteCard({
         }
       }}
     >
-      <div className="flex items-center justify-between p-2">
-        <span className="flex items-center gap-1 px-2 text-text-secondary">
+      <div className="flex items-center justify-between gap-2 p-2">
+        <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
           {note ? (
             <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
               {id}.md
@@ -303,14 +303,22 @@ const _NoteCard = React.memo(function NoteCard({
             <span className="filepath">{id}.md</span>
           )}
           {isDirty ? (
-            <svg viewBox="0 0 16 16" width="16" height="16" fill="var(--yellow-11)">
+            <svg
+              viewBox="0 0 16 16"
+              width="16"
+              height="16"
+              fill="var(--yellow-11)"
+              className="flex-shrink-0"
+            >
               <circle cx="8" cy="8" r="4" />
             </svg>
           ) : null}
           {note?.backlinks.length ? (
             <>
               <span>·</span>
-              <span>{pluralize(note.backlinks.length, "backlink")}</span>
+              <span className="whitespace-nowrap">
+                {pluralize(note.backlinks.length, "backlink")}
+              </span>
             </>
           ) : null}
         </span>
