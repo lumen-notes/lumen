@@ -12,6 +12,7 @@ export function FilePanel({ id, params = {}, onClose }: PanelProps) {
       title="File"
       description={path.split("/").pop()}
       icon={<FileIcon16 />}
+      layout="fullwidth"
       onClose={onClose}
     >
       <div className="grid h-full w-full place-items-center">

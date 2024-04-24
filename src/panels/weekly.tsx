@@ -44,7 +44,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
     >
       <div className="flex flex-col">
         <Calendar key={week} activeNoteId={week} />
-        <div className="container flex flex-col gap-4 p-4">
+        <div className="flex flex-col gap-4 p-4">
           <NoteCard id={week} defaultValue={weeklyTemplate} />
 
           <Details>

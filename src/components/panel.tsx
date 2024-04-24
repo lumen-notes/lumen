@@ -1,8 +1,14 @@
 import React from "react"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CloseIcon16, MoreIcon16 } from "./icons"
+import { CenteredIcon16, CloseIcon16, FullwidthIcon16, MoreIcon16 } from "./icons"
 import { cx } from "../utils/cx"
+import { z } from "zod"
+import { useSearchParam } from "../hooks/search-param"
+
+const layoutSchema = z.enum(["centered", "fullwidth"])
+
+type Layout = z.infer<typeof layoutSchema>
 
 type PanelProps = {
   // TODO: Remove `id` prop
@@ -11,6 +17,8 @@ type PanelProps = {
   title: string
   description?: string
   icon?: React.ReactNode
+  // If layout is not provided, we give users the ability to choose
+  layout?: Layout
   actions?: React.ReactNode
   children?: React.ReactNode
   onClose?: () => void
@@ -21,10 +29,18 @@ export function Panel({
   title,
   description,
   icon,
+  layout: controlledLayout,
   actions,
   children,
   onClose,
 }: PanelProps) {
+  const [layout, setLayout] = useSearchParam<Layout>("layout", {
+    validate: layoutSchema.catch("centered").parse,
+    replace: true,
+  })
+
+  const resolvedLayout = controlledLayout ?? layout
+
   return (
     <div className={cx("grid h-full grid-rows-[auto_1fr]", className)}>
       <div
@@ -42,14 +58,35 @@ export function Panel({
           </div>
         </div>
         <div className="flex gap-2">
-          {actions ? (
+          {!controlledLayout || actions ? (
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="Panel actions" disableTooltip>
                   <MoreIcon16 />
                 </IconButton>
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="end">{actions}</DropdownMenu.Content>
+              <DropdownMenu.Content align="end">
+                {!controlledLayout ? (
+                  <>
+                    <DropdownMenu.Item
+                      selected={layout === "centered"}
+                      icon={<CenteredIcon16 />}
+                      onSelect={() => setLayout("centered")}
+                    >
+                      Centered layout
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      selected={layout === "fullwidth"}
+                      icon={<FullwidthIcon16 />}
+                      onSelect={() => setLayout("fullwidth")}
+                    >
+                      Fullwidth layout
+                    </DropdownMenu.Item>
+                  </>
+                ) : null}
+                {!controlledLayout && actions ? <DropdownMenu.Separator /> : null}
+                {actions}
+              </DropdownMenu.Content>
             </DropdownMenu>
           ) : null}
           {onClose ? (
@@ -59,8 +96,8 @@ export function Panel({
           ) : null}
         </div>
       </div>
-      <div className="h-full scroll-pb-4 scroll-pt-4 overflow-auto fine:lg:[scrollbar-gutter:stable_both-edges]">
-        {children}
+      <div className="h-full scroll-pb-4 scroll-pt-4 overflow-auto">
+        <div className={cx(resolvedLayout === "centered" && "container")}>{children}</div>
       </div>
     </div>
   )

@@ -23,8 +23,8 @@ export function SettingsPage() {
   const editorSettings = getEditorSettings()
 
   return (
-    <Panel icon={<SettingsIcon16 />} title="Settings">
-      <div className="container grid gap-4 p-4">
+    <Panel icon={<SettingsIcon16 />} title="Settings" layout="centered">
+      <div className="grid gap-4 p-4">
         <h3 className="text-lg font-semibold leading-4">GitHub</h3>
         <SignedInUser />
         {githubUser && githubRepo ? (

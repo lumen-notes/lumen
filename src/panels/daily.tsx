@@ -35,7 +35,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
     >
       <div className="flex flex-col">
         <Calendar key={date} activeNoteId={date} />
-        <div className="container flex w-full flex-col gap-4 p-4">
+        <div className="flex w-full flex-col gap-4 p-4">
           <NoteCard id={date} defaultValue={dailyTemplate} />
           {backlinks.length > 0 ? (
             <Details>

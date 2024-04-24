@@ -2,7 +2,7 @@ import qs from "qs"
 import { z } from "zod"
 
 const STORAGE_KEY = "prev_path_params"
-const ALLOWED_PARAMS = ["w", "p", "q", "v"]
+const ALLOWED_PARAMS = ["query", "view", "layout"]
 
 const prevPathParamsSchema = z.record(z.string()).catch({})
 

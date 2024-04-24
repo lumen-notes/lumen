@@ -605,6 +605,24 @@ export function GlassesIcon16(props: IconProps) {
   )
 }
 
+export function FullwidthIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M14 2.5C14.2761 2.5 14.5 2.72386 14.5 3V13C14.5 13.2761 14.2761 13.5 14 13.5H2C1.72386 13.5 1.5 13.2761 1.5 13V3C1.5 2.72386 1.72386 2.5 2 2.5H14ZM2 1C0.895431 1 0 1.89543 0 3V13C0 14.1046 0.895431 15 2 15H14C15.1046 15 16 14.1046 16 13V3C16 1.89543 15.1046 1 14 1H2Z" />
+      <path d="M3 4H13V12H3V4Z" className="opacity-50" />
+    </Icon>
+  )
+}
+
+export function CenteredIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M14 2.5C14.2761 2.5 14.5 2.72386 14.5 3V13C14.5 13.2761 14.2761 13.5 14 13.5H2C1.72386 13.5 1.5 13.2761 1.5 13V3C1.5 2.72386 1.72386 2.5 2 2.5H14ZM2 1C0.895431 1 0 1.89543 0 3V13C0 14.1046 0.895431 15 2 15H14C15.1046 15 16 14.1046 16 13V3C16 1.89543 15.1046 1 14 1H2Z" />
+      <path d="M5 4h6v8H5V4Z" className="opacity-50" />
+    </Icon>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {
