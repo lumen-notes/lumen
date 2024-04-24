@@ -293,7 +293,7 @@ const _NoteCard = React.memo(function NoteCard({
         }
       }}
     >
-      <div className="flex items-center justify-between gap-2 p-2">
+      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 rounded-lg bg-bg p-2">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
           {note ? (
             <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
