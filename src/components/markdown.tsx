@@ -52,6 +52,7 @@ import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { WebsiteFavicon } from "./website-favicon"
+import { Tooltip } from "./tooltip"
 
 export type MarkdownProps = {
   children: string
@@ -505,7 +506,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
     }
   }, [])
 
-  // Open uploads in a panel
+  // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
     return <Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Link>
   }
@@ -524,8 +525,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
     children = parsedChildren.data[0].replace(/^https?:\/\//, "").replace(/\/$/, "")
   }
 
-  return (
-    // eslint-disable-next-line jsx-a11y/anchor-has-content
+  const link = (
     <a
       ref={ref}
       target="_blank"
@@ -543,6 +543,20 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       {children}
     </a>
   )
+
+  // If the link text is not a URL, wrap it in a tooltip
+  if (!parsedChildren.success) {
+    return (
+      <Tooltip>
+        <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
+        <Tooltip.Content>
+          {props.href?.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+        </Tooltip.Content>
+      </Tooltip>
+    )
+  }
+
+  return link
 }
 
 function Image(props: React.ComponentPropsWithoutRef<"img">) {
