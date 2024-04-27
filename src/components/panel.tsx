@@ -97,7 +97,7 @@ export function Panel({
         </div>
       </div>
       <div className="h-full scroll-pb-4 scroll-pt-4 overflow-auto">
-        <div className={cx(resolvedLayout === "centered" && "container")}>{children}</div>
+        <div className={cx("h-full", resolvedLayout === "centered" && "container")}>{children}</div>
       </div>
     </div>
   )
