@@ -1,5 +1,4 @@
 import { EditorSelection } from "@codemirror/state"
-import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
 import { Vim } from "@replit/codemirror-vim"
 import { ReactCodeMirrorRef, ViewUpdate } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
@@ -10,7 +9,6 @@ import { flushSync } from "react-dom"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
-import { cx } from "../utils/cx"
 import { getEditorSettings } from "../utils/editor-settings"
 import { exportAsGist } from "../utils/export-as-gist"
 import { pluralize } from "../utils/pluralize"
@@ -145,7 +143,7 @@ const _NoteCard = React.memo(function NoteCard({
     flushSync(() => {
       setMode("read")
     })
-    cardRef.current?.focus()
+    cardRef.current?.focus({ preventScroll: true })
   }, [])
 
   const focusNextCard = React.useCallback(() => {
@@ -173,10 +171,13 @@ const _NoteCard = React.memo(function NoteCard({
 
   const handleSave = React.useCallback(
     ({ id, content }: { id: NoteId; content: string }) => {
-      saveNote({ id, content })
+      // Only save if the content has changed
+      if (content !== note?.content) {
+        saveNote({ id, content })
+      }
       localStorage.removeItem(getStorageKey({ githubRepo, id }))
     },
-    [saveNote, githubRepo],
+    [note, saveNote, githubRepo],
   )
 
   const handleDelete = React.useCallback(() => {
@@ -210,6 +211,12 @@ const _NoteCard = React.memo(function NoteCard({
       focusVisible={selected || editorHasFocus}
       className="flex flex-col"
       elevation={elevation}
+      onDoubleClick={(event) => {
+        if (mode === "read") {
+          switchToWriting()
+          event.preventDefault()
+        }
+      }}
       onKeyDown={(event) => {
         // Switch to writing with E
         if (mode === "read" && event.key === "e") {
@@ -275,6 +282,16 @@ const _NoteCard = React.memo(function NoteCard({
           event.preventDefault()
         }
 
+        // Switch between read and write mode with Command + E
+        if (event.key === "e" && (event.metaKey || event.ctrlKey)) {
+          if (mode === "read") {
+            switchToWriting()
+          } else {
+            switchToReading()
+          }
+          event.preventDefault()
+        }
+
         if (vimMode) {
           Vim.defineEx("w", "w", () => {
             handleSave({ id, content: editorValue })
@@ -323,22 +340,33 @@ const _NoteCard = React.memo(function NoteCard({
           ) : null}
         </span>
 
-        <div className="flex gap-2">
-          {editorValue !== note?.content ? (
-            <>
-              {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
-              <Button
-                variant="primary"
-                onClick={() => {
-                  handleSave({ id, content: editorValue })
-                  switchToReading()
-                }}
-                shortcut={["⌘", "⏎"]}
-              >
-                {!note ? "Create" : "Save"}
-              </Button>
-            </>
+        <div className="flex">
+          {onCancel ? (
+            <Button onClick={onCancel} className="mr-2">
+              Cancel
+            </Button>
           ) : null}
+          {!note || isDirty ? (
+            <Button
+              variant="primary"
+              onClick={() => {
+                handleSave({ id, content: editorValue })
+              }}
+              shortcut={["⌘", "S"]}
+              className="mr-2"
+            >
+              {!note ? "Create" : "Save"}
+            </Button>
+          ) : null}
+          {mode === "write" ? (
+            <IconButton aria-label="Read mode" shortcut={["⌘", "E"]} onClick={switchToReading}>
+              <GlassesIcon16 />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="Write mode" shortcut={["⌘", "E"]} onClick={switchToWriting}>
+              <EditIcon16 />
+            </IconButton>
+          )}
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
               <IconButton aria-label="Note actions" shortcut={["⌘", "."]} disableTooltip>
@@ -346,33 +374,6 @@ const _NoteCard = React.memo(function NoteCard({
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
-              <div className="mb-1 flex h-8 gap-1 rounded-sm bg-bg-secondary p-0.5">
-                <RadixDropdownMenu.Item
-                  className={cx(
-                    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[0.25rem] focus:outline-none",
-                    mode === "read"
-                      ? "bg-bg shadow-sm ring-1 ring-border-secondary focus:ring-border"
-                      : "focus:bg-bg-secondary",
-                  )}
-                  onClick={switchToReading}
-                >
-                  <GlassesIcon16 className="text-text-secondary" />
-                  Read
-                </RadixDropdownMenu.Item>
-
-                <RadixDropdownMenu.Item
-                  className={cx(
-                    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[0.25rem] focus:outline-none",
-                    mode === "write"
-                      ? "bg-bg shadow-sm ring-1 ring-border-secondary focus:ring-border"
-                      : "focus:bg-bg-secondary",
-                  )}
-                  onClick={switchToWriting}
-                >
-                  <EditIcon16 className="text-text-secondary" />
-                  <span>Write</span>
-                </RadixDropdownMenu.Item>
-              </div>
               <DropdownMenu.Item
                 icon={<CopyIcon16 />}
                 onSelect={() => copy(note?.content || "")}
