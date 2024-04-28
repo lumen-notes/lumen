@@ -344,11 +344,99 @@ const _NoteCard = React.memo(function NoteCard({
         <div
           className={cx(
             "absolute right-2 top-2 flex rounded-lg bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
-            (isDirty || isDropdownOpen || !note) && "!opacity-100",
+            (mode === "write" || isDirty || isDropdownOpen || !note) && "!opacity-100",
           )}
         >
+          {mode === "write" ? (
+            <IconButton aria-label="Read mode" shortcut={["⌘", "E"]} onClick={switchToReading}>
+              <GlassesIcon16 />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="Write mode" shortcut={["⌘", "E"]} onClick={switchToWriting}>
+              <EditIcon16 />
+            </IconButton>
+          )}
+          {note ? (
+            <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
+              <DropdownMenu.Trigger asChild>
+                <IconButton aria-label="Note actions" shortcut={["⌘", "."]} disableTooltip>
+                  <MoreIcon16 />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item
+                  icon={<CopyIcon16 />}
+                  onSelect={() => copy(note?.content || "")}
+                  shortcut={["⌘", "C"]}
+                >
+                  Copy markdown
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<CopyIcon16 />}
+                  onSelect={() => copy(id)}
+                  shortcut={["⌘", "⇧", "C"]}
+                >
+                  Copy ID
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  icon={<ExternalLinkIcon16 />}
+                  href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open in GitHub
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ShareIcon16 />}
+                  onSelect={async () => {
+                    if (!note) return
+
+                    const url = await exportAsGist({
+                      githubToken: githubUser?.token ?? "",
+                      noteId: id,
+                      note,
+                    })
+
+                    // Copy Gist URL to clipboard
+                    copy(url)
+
+                    // Open Gist in new tab
+                    window.open(url, "_blank")
+                  }}
+                >
+                  Export as Gist
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  variant="danger"
+                  icon={<TrashIcon16 />}
+                  onSelect={() => {
+                    // Ask the user to confirm before deleting a note with backlinks
+                    if (
+                      note &&
+                      note.backlinks.length > 0 &&
+                      !window.confirm(
+                        `${id}.md has ${pluralize(
+                          note.backlinks.length,
+                          "backlink",
+                        )}. Are you sure you want to delete it?`,
+                      )
+                    ) {
+                      return
+                    }
+
+                    handleDelete()
+                  }}
+                  shortcut={["⌘", "⌫"]}
+                >
+                  Delete
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          ) : null}
           {onCancel ? (
-            <Button onClick={onCancel} className="mr-2">
+            <Button onClick={onCancel} className="ml-2">
               Cancel
             </Button>
           ) : null}
@@ -360,100 +448,11 @@ const _NoteCard = React.memo(function NoteCard({
                 switchToReading()
               }}
               shortcut={["⌘", "⏎"]}
-              className="mr-2"
+              className="ml-2"
             >
               {!note ? "Create" : "Save"}
             </Button>
           ) : null}
-          {mode === "write" ? (
-            <IconButton aria-label="Read mode" shortcut={["⌘", "E"]} onClick={switchToReading}>
-              <GlassesIcon16 />
-            </IconButton>
-          ) : (
-            <IconButton aria-label="Write mode" shortcut={["⌘", "E"]} onClick={switchToWriting}>
-              <EditIcon16 />
-            </IconButton>
-          )}
-          <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-            <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Note actions" shortcut={["⌘", "."]} disableTooltip>
-                <MoreIcon16 />
-              </IconButton>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(note?.content || "")}
-                shortcut={["⌘", "C"]}
-              >
-                Copy markdown
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(id)}
-                shortcut={["⌘", "⇧", "C"]}
-              >
-                Copy ID
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                icon={<ExternalLinkIcon16 />}
-                disabled={!note}
-                href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Open in GitHub
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<ShareIcon16 />}
-                disabled={!note}
-                onSelect={async () => {
-                  if (!note) return
-
-                  const url = await exportAsGist({
-                    githubToken: githubUser?.token ?? "",
-                    noteId: id,
-                    note,
-                  })
-
-                  // Copy Gist URL to clipboard
-                  copy(url)
-
-                  // Open Gist in new tab
-                  window.open(url, "_blank")
-                }}
-              >
-                Export as Gist
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                variant="danger"
-                icon={<TrashIcon16 />}
-                disabled={!note}
-                onSelect={() => {
-                  // Ask the user to confirm before deleting a note with backlinks
-                  if (
-                    note &&
-                    note.backlinks.length > 0 &&
-                    !window.confirm(
-                      `${id}.md has ${pluralize(
-                        note.backlinks.length,
-                        "backlink",
-                      )}. Are you sure you want to delete it?`,
-                    )
-                  ) {
-                    return
-                  }
-
-                  handleDelete()
-                }}
-                shortcut={["⌘", "⌫"]}
-              >
-                Delete
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu>
         </div>
       </div>
       <div className="p-4 pt-0">
