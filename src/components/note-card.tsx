@@ -209,7 +209,7 @@ const _NoteCard = React.memo(function NoteCard({
       ref={cardRef}
       tabIndex={0}
       focusVisible={selected || editorHasFocus}
-      className="flex flex-col"
+      className="group flex flex-col"
       elevation={elevation}
       onDoubleClick={(event) => {
         if (mode === "read") {
@@ -313,7 +313,11 @@ const _NoteCard = React.memo(function NoteCard({
       <div className="sticky top-0 z-10 flex items-center justify-between gap-2 rounded-lg bg-bg p-2">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
           {note ? (
-            <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
+            <Link
+              to={`/${id}`}
+              target="_blank"
+              className="link filepath !no-underline hover:!underline"
+            >
               {id}.md
             </Link>
           ) : (

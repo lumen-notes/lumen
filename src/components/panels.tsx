@@ -154,9 +154,7 @@ Provider.displayName = "Panels.Provider"
 
 function Container({ children }: React.PropsWithChildren) {
   return (
-    <div className="flex h-full overflow-y-hidden">
-      <div className="flex h-full sm:border-r sm:border-border-secondary">{children}</div>
-    </div>
+    <div className="flex h-full divide-x divide-border-secondary overflow-y-hidden">{children}</div>
   )
 }
 
@@ -244,17 +242,18 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
 
   const handleClick: LinkClickHandler = React.useCallback(
     ({ to, target }, event) => {
-      // Preserve the view type when navigating between panels
-      const viewType = new URLSearchParams(panel ? panel.search : location.search).get("v")
+      // Preserve the view and layout when navigating between panels
+      const view = new URLSearchParams(panel ? panel.search : location.search).get("view")
+      const layout = new URLSearchParams(panel ? panel.search : location.search).get("layout")
       const { pathname, search } = resolvePath(to)
       const href = `${pathname}?${qs.stringify({
-        v: viewType,
+        view,
+        layout,
         ...qs.parse(search, { ignoreQueryPrefix: true }),
       })}`
 
       // Fall back to default browser behavior when any modifier keys are pressed
       if (event?.metaKey || event?.ctrlKey || event?.shiftKey) {
-        //
         return
       }
 
@@ -312,14 +311,12 @@ function getFirstFocusableChild(element: HTMLElement): HTMLElement | null {
 }
 
 function focusPanel(panelElement: HTMLElement) {
-  const activeNoteId = panelElement.dataset.activeNoteId
-  const activeNote = panelElement.querySelector<HTMLElement>(`[data-note-id="${activeNoteId}"]`)
   const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
   const firstFocusableChild = getFirstFocusableChild(panelElement)
 
-  if (activeNote) {
-    activeNote.focus()
-  } else if (firstNote) {
+  console.log(firstNote)
+
+  if (firstNote) {
     firstNote.focus()
   } else if (firstFocusableChild) {
     firstFocusableChild.focus()

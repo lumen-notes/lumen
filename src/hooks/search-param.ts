@@ -51,7 +51,7 @@ export function useSearchParam<T = string>(
   const setParam = React.useCallback(
     debounce((value: T) => {
       const searchString = qs.stringify(
-        { ...searchParamsRef.current, [key]: value },
+        { ...searchParamsRef.current, [key]: value || null },
         { skipNulls: true },
       )
 
