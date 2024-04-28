@@ -207,10 +207,25 @@ function Outlet() {
           <React.Fragment key={id}>
             <DraggableCore
               onStart={() => {
+                // Measure container width when dragging starts
                 const container = document.querySelector("[data-panel-container]")
+
                 if (container) {
                   setContainerWidth(container.getBoundingClientRect().width)
                 }
+
+                // Disable text selection while dragging
+                document.body.style.userSelect = "none"
+
+                // Set cursor to `col-resize` while dragging
+                document.body.style.cursor = "col-resize"
+              }}
+              onStop={() => {
+                // Re-enable text selection after dragging
+                document.body.style.userSelect = ""
+
+                // Reset cursor after dragging
+                document.body.style.cursor = ""
               }}
               onDrag={(event, { deltaX }) => {
                 setColumnWidths((columnWidths) =>
@@ -225,7 +240,7 @@ function Outlet() {
                 )
               }}
             >
-              <div className="hidden h-full w-2 bg-[red] md:block" />
+              <div className="hidden h-full w-2 cursor-col-resize bg-[red] md:block" />
             </DraggableCore>
             <PanelRouter key={id} value={value} index={index} />
           </React.Fragment>
