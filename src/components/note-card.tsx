@@ -351,8 +351,9 @@ const _NoteCard = React.memo(function NoteCard({
               variant="primary"
               onClick={() => {
                 handleSave({ id, content: editorValue })
+                switchToReading()
               }}
-              shortcut={["⌘", "S"]}
+              shortcut={["⌘", "⏎"]}
               className="mr-2"
             >
               {!note ? "Create" : "Save"}
