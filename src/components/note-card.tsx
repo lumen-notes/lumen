@@ -30,6 +30,7 @@ import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { usePanel, usePanelActions } from "./panels"
+import { cx } from "../utils/cx"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -310,7 +311,7 @@ const _NoteCard = React.memo(function NoteCard({
         }
       }}
     >
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-2 rounded-lg bg-bg p-2">
+      <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
           {note ? (
             <Link
@@ -344,7 +345,12 @@ const _NoteCard = React.memo(function NoteCard({
           ) : null}
         </span>
 
-        <div className="flex">
+        <div
+          className={cx(
+            "absolute right-2 top-2 flex rounded-lg bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
+            (isDirty || isDropdownOpen || !note) && "!opacity-100",
+          )}
+        >
           {onCancel ? (
             <Button onClick={onCancel} className="mr-2">
               Cancel
@@ -355,8 +361,9 @@ const _NoteCard = React.memo(function NoteCard({
               variant="primary"
               onClick={() => {
                 handleSave({ id, content: editorValue })
+                switchToReading()
               }}
-              shortcut={["⌘", "S"]}
+              shortcut={["⌘", "⏎"]}
               className="mr-2"
             >
               {!note ? "Create" : "Save"}
