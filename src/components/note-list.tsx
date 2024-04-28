@@ -122,12 +122,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
       })
   }, [qualifiers])
 
-  const pinnedQualifier = "pinned:true"
-
-  const pinnedCount = React.useMemo(() => {
-    return noteResults.filter((note) => note.frontmatter.pinned === true).length
-  }, [noteResults])
-
   return (
     <LinkHighlightProvider href={highlightPaths}>
       <div>
@@ -166,29 +160,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2 empty:hidden">
-            {pinnedCount > 0 || sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
+            {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
               <>
-                {pinnedCount > 0 ? (
-                  <PillButton
-                    variant={query.includes(pinnedQualifier) ? "primary" : "secondary"}
-                    onClick={() => {
-                      if (query.includes(pinnedQualifier)) {
-                        // Remove the pinned qualifier from the query
-                        setQuery(query.replace(pinnedQualifier, "").trim())
-                      } else {
-                        // Add the pinned qualifier to the query
-                        setQuery(query ? `${query} ${pinnedQualifier}` : pinnedQualifier)
-                      }
-                    }}
-                  >
-                    Pinned
-                    {query.includes(pinnedQualifier) ? (
-                      <CloseIcon12 className="-mr-0.5" />
-                    ) : (
-                      <span className="text-text-secondary">{pinnedCount}</span>
-                    )}
-                  </PillButton>
-                ) : null}
                 {tagQualifiers.map((qualifier) => (
                   <PillButton
                     key={qualifier.values.join(",")}
