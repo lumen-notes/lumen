@@ -12,6 +12,9 @@ import { TagsPanel } from "../panels/tags"
 import { ErrorIcon16 } from "./icons"
 import { LinkClickHandler, LinkContext } from "./link"
 import { Panel } from "./panel"
+import { atom, useAtom } from "jotai"
+import { DraggableCore } from "react-draggable"
+import { set } from "date-fns"
 
 type PanelValue = {
   id: string
@@ -32,9 +35,24 @@ const PanelActionsContext = React.createContext<{
 }>({})
 export const usePanelActions = () => React.useContext(PanelActionsContext)
 
+const ColumnWidthsContext = React.createContext<
+  [number[], React.Dispatch<React.SetStateAction<number[]>>]
+>([[], () => {}])
+export const useColumnWidths = () => React.useContext(ColumnWidthsContext)
+
 function Provider({ children }: React.PropsWithChildren) {
   const [panels, setPanels] = useSearchParam("p", {
     validate: z.array(z.string().catch("")).catch([]).parse,
+  })
+
+  const panelsRef = React.useRef<string[]>(panels)
+
+  React.useEffect(() => {
+    panelsRef.current = panels
+  }, [panels])
+
+  const [columnWidths, setColumnWidths] = React.useState<number[]>(() => {
+    return new Array(panels.length + 1).fill(1 / (panels.length + 1))
   })
 
   // useEvent("keydown", (event) => {
@@ -85,8 +103,11 @@ function Provider({ children }: React.PropsWithChildren) {
       const { pathname, search } = resolvePath(to)
       const value = stringifyPanelValue({ id, pathname, search })
 
+      const newPanels = panelsRef.current.slice(0, index).concat(value)
+
       flushSync(() => {
-        setPanels((panels) => panels.slice(0, index).concat(value))
+        setPanels(newPanels)
+        setColumnWidths(new Array(newPanels.length + 1).fill(1 / (newPanels.length + 1)))
       })
 
       const panelElement = document.getElementById(id)
@@ -96,7 +117,7 @@ function Provider({ children }: React.PropsWithChildren) {
         focusPanel(panelElement)
       }
     },
-    [setPanels],
+    [setPanels, setColumnWidths],
   )
 
   const closePanel = React.useCallback(
@@ -110,9 +131,12 @@ function Provider({ children }: React.PropsWithChildren) {
 
       const prevPanelElement = panelElements[currentIndex - 1]
 
+      const newPanels = panelsRef.current.slice(0, index)
+
       // Update state
       flushSync(() => {
-        setPanels((panels) => panels.slice(0, index))
+        setPanels(newPanels)
+        setColumnWidths(new Array(newPanels.length + 1).fill(1 / (newPanels.length + 1)))
       })
 
       // Focus the previous panel
@@ -120,7 +144,7 @@ function Provider({ children }: React.PropsWithChildren) {
         focusPanel(prevPanelElement)
       }
     },
-    [setPanels],
+    [setPanels, setColumnWidths],
   )
 
   const updatePanel = React.useCallback(
@@ -144,17 +168,28 @@ function Provider({ children }: React.PropsWithChildren) {
   )
 
   return (
-    <PanelsContext.Provider value={panels}>
-      <PanelActionsContext.Provider value={panelActions}>{children}</PanelActionsContext.Provider>
-    </PanelsContext.Provider>
+    <ColumnWidthsContext.Provider value={[columnWidths, setColumnWidths]}>
+      <PanelsContext.Provider value={panels}>
+        <PanelActionsContext.Provider value={panelActions}>{children}</PanelActionsContext.Provider>
+      </PanelsContext.Provider>
+    </ColumnWidthsContext.Provider>
   )
 }
 
 Provider.displayName = "Panels.Provider"
 
 function Container({ children }: React.PropsWithChildren) {
+  const [columnWidths] = useColumnWidths()
   return (
-    <div className="flex h-full divide-x divide-border-secondary overflow-y-hidden">{children}</div>
+    <div
+      data-panel-container
+      className="block h-full overflow-hidden md:grid"
+      style={{
+        gridTemplateColumns: columnWidths.map((width) => `${width}fr`).join(" auto "),
+      }}
+    >
+      {children}
+    </div>
   )
 }
 
@@ -162,11 +197,39 @@ Container.displayName = "Panels.Container"
 
 function Outlet() {
   const panels = usePanels()
+  const [containerWidth, setContainerWidth] = React.useState(0)
+  const [columnWidths, setColumnWidths] = useColumnWidths()
   return (
     <>
       {panels.map((value, index) => {
         const { id } = parsePanelValue(value)
-        return <PanelRouter key={id} value={value} index={index} />
+        return (
+          <React.Fragment key={id}>
+            <DraggableCore
+              onStart={() => {
+                const container = document.querySelector("[data-panel-container]")
+                if (container) {
+                  setContainerWidth(container.getBoundingClientRect().width)
+                }
+              }}
+              onDrag={(event, { deltaX }) => {
+                setColumnWidths((columnWidths) =>
+                  columnWidths.map((width, i) => {
+                    if (i === index) {
+                      return width + deltaX / containerWidth
+                    } else if (i === index + 1) {
+                      return width - deltaX / containerWidth
+                    }
+                    return width
+                  }),
+                )
+              }}
+            >
+              <div className="hidden h-full w-2 bg-[red] md:block" />
+            </DraggableCore>
+            <PanelRouter key={id} value={value} index={index} />
+          </React.Fragment>
+        )
       })}
     </>
   )
@@ -314,12 +377,10 @@ function focusPanel(panelElement: HTMLElement) {
   const firstNote = panelElement.querySelector<HTMLElement>("[data-note-id]")
   const firstFocusableChild = getFirstFocusableChild(panelElement)
 
-  console.log(firstNote)
-
   if (firstNote) {
-    firstNote.focus()
+    firstNote.focus({ preventScroll: true })
   } else if (firstFocusableChild) {
-    firstFocusableChild.focus()
+    firstFocusableChild.focus({ preventScroll: true })
   }
 
   scrollPanelIntoView(panelElement)

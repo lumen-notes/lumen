@@ -44,7 +44,13 @@ export function Panel({
 
   return (
     <Panels.LinkProvider>
-      <div id={id} className={cx("grid h-full w-full grid-rows-[auto_1fr]", className)}>
+      <div
+        id={id}
+        className={cx(
+          "grid h-full w-full grid-rows-[auto_1fr] overflow-hidden [&:not(:last-of-type)]:hidden md:[&:not(:last-of-type)]:grid",
+          className,
+        )}
+      >
         <div
           className={
             "flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset p-2 pl-4 coarse:h-14"
