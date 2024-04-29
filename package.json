@@ -48,7 +48,7 @@
     "@replit/codemirror-vim": "^6.1.0",
     "@types/express": "^4.17.21",
     "@types/uuid": "^9.0.3",
-    "@uiw/codemirror-themes": "^4.21.18",
+    "@uiw/codemirror-themes": "^4.22.0",
     "@uiw/react-codemirror": "^4.21.18",
     "buffer": "^6.0.3",
     "chrono-node": "^2.7.0",
