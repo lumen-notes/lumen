@@ -133,7 +133,7 @@
     "@types/unist": "^2.0.6",
     "@types/wicg-file-system-access": "^2023.10.5",
     "@types/yamljs": "^0.2.31",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.11.0",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.19",
