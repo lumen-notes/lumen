@@ -13,7 +13,7 @@ import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, TagIcon16 } from "./icons"
+import { CardsIcon16, CloseIcon12, ListIcon16, PinFillIcon16, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteCard } from "./note-card"
@@ -255,9 +255,12 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       // Used for focus management
                       data-note-id={note.id}
                       to={`/${note.id}`}
-                      className="focus-ring flex gap-3 rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
+                      className="focus-ring flex rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >
-                      <NoteFavicon note={note} />
+                      <NoteFavicon note={note} className="mr-3" />
+                      {note.frontmatter.pinned === true ? (
+                        <PinFillIcon16 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
+                      ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text">
                           {parsedTemplate.success
