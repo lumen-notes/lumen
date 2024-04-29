@@ -248,8 +248,13 @@ function Frontmatter({
   return (
     <div className={cx("@container", className)}>
       {Object.entries(frontmatter)
-        // Filter out empty values
-        .filter(([, value]) => Boolean(value))
+        .filter(([key, value]) => {
+          // Skip `pinned` frontmatter key
+          if (key === "pinned" && value === true) return false
+
+          // Filter out empty values
+          return Boolean(value)
+        })
         .map(([key, value]) => {
           return (
             <div key={key} className="grid gap-1 py-2 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]">

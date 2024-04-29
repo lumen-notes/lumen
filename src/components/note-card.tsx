@@ -23,6 +23,7 @@ import {
   GlassesIcon16,
   LoadingIcon16,
   MoreIcon16,
+  PinFillIcon16,
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
@@ -313,6 +314,9 @@ const _NoteCard = React.memo(function NoteCard({
     >
       <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
+          {note?.frontmatter.pinned === true ? (
+            <PinFillIcon16 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
+          ) : null}
           {note ? (
             <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
               {id}.md
