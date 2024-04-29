@@ -559,7 +559,14 @@ export const sortedNotesAtom = atom((get) => {
 
   // Sort notes by when they were created in descending order
   return [...notes.values()].sort((a, b) => {
-    // Put numeric IDs first
+    // Favor pinned notes
+    if (a.frontmatter.pinned === true && b.frontmatter.pinned !== true) {
+      return -1
+    } else if (a.frontmatter.pinned !== true && b.frontmatter.pinned === true) {
+      return 1
+    }
+
+    // Favor numeric IDs
     if (a.id.match(/^\d+$/) && !b.id.match(/^\d+$/)) {
       return -1
     } else if (!a.id.match(/^\d+$/) && b.id.match(/^\d+$/)) {

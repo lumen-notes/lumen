@@ -622,6 +622,13 @@ export function CenteredIcon16(props: IconProps) {
     </Icon>
   )
 }
+export function PinFillIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M3.95.99a1.95 1.95 0 0 1 2.985.274l1.719 2.5.18.011c.35.025.832.075 1.367.175 1.033.194 2.412.602 3.33 1.52a.75.75 0 0 1 0 1.06l-7 7a.75.75 0 0 1-1.061 0c-.918-.917-1.326-2.296-1.52-3.33a12.24 12.24 0 0 1-.186-1.546l-2.5-1.719A1.95 1.95 0 0 1 .99 3.95L3.95.99ZM10.47 11.53l4 4 1.06-1.06-4-4-1.06 1.06Z" />
+    </Icon>
+  )
+}
 
 // Brand icons
 
