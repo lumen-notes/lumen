@@ -436,6 +436,34 @@ const _NoteCard = React.memo(function NoteCard({
                 >
                   Delete
                 </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<PinFillIcon16 />}
+                  onSelect={() => {
+                    // Toggle the pinned status of the note
+                    const updatedContent = note?.content.replace(
+                      /^---\n([\s\S]*?)\n---/,
+                      (frontmatterBlock, frontmatterContent) => {
+                        const frontmatterLines = frontmatterContent.split("\n")
+                        const pinnedIndex = frontmatterLines.findIndex((line) =>
+                          line.startsWith("pinned:"),
+                        )
+                        if (pinnedIndex !== -1) {
+                          // Note is currently pinned, so unpin it
+                          frontmatterLines.splice(pinnedIndex, 1)
+                        } else {
+                          // Note is currently unpinned, so pin it
+                          frontmatterLines.push("pinned: true")
+                        }
+                        return `---\n${frontmatterLines.join("\n")}\n---`
+                      },
+                    )
+                    if (updatedContent) {
+                      handleSave({ id, content: updatedContent })
+                    }
+                  }}
+                >
+                  {note?.frontmatter.pinned ? "Unpin note" : "Pin note"}
+                </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
           ) : null}
