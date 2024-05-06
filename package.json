@@ -118,7 +118,7 @@
     "@tailwindcss/container-queries": "^0.1.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/benchmark": "^2.1.2",
-    "@types/chrome": "^0.0.243",
+    "@types/chrome": "^0.0.267",
     "@types/d3-force": "^3.0.3",
     "@types/d3-selection": "^3.0.10",
     "@types/d3-zoom": "^3.0.8",
