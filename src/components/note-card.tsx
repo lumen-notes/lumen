@@ -444,7 +444,7 @@ const _NoteCard = React.memo(function NoteCard({
                       /^---\n([\s\S]*?)\n---/,
                       (frontmatterBlock, frontmatterContent) => {
                         const frontmatterLines = frontmatterContent.split("\n")
-                        const pinnedIndex = frontmatterLines.findIndex((line) =>
+                        const pinnedIndex = frontmatterLines.findIndex((line: string) =>
                           line.startsWith("pinned:"),
                         )
                         if (pinnedIndex !== -1) {
