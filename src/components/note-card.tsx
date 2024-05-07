@@ -9,8 +9,10 @@ import { flushSync } from "react-dom"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
+import { cx } from "../utils/cx"
 import { getEditorSettings } from "../utils/editor-settings"
 import { exportAsGist } from "../utils/export-as-gist"
+import { isPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
@@ -24,6 +26,7 @@ import {
   LoadingIcon16,
   MoreIcon16,
   PinFillIcon16,
+  PinIcon16,
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
@@ -31,7 +34,6 @@ import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { usePanel, usePanelActions } from "./panels"
-import { cx } from "../utils/cx"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -314,7 +316,7 @@ const _NoteCard = React.memo(function NoteCard({
     >
       <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
-          {note?.frontmatter.pinned === true ? (
+          {isPinned(note) ? (
             <PinFillIcon16 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
           {note ? (
@@ -384,6 +386,15 @@ const _NoteCard = React.memo(function NoteCard({
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
+                  icon={isPinned(note) ? <PinFillIcon16 /> : <PinIcon16 />}
+                  onSelect={() => {
+                    handleSave({ id, content: togglePin(note.content) })
+                  }}
+                >
+                  {isPinned(note) ? "Unpin" : "Pin"}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
                   icon={<ExternalLinkIcon16 />}
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                   target="_blank"
@@ -435,34 +446,6 @@ const _NoteCard = React.memo(function NoteCard({
                   shortcut={["⌘", "⌫"]}
                 >
                   Delete
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<PinFillIcon16 />}
-                  onSelect={() => {
-                    // Toggle the pinned status of the note
-                    const updatedContent = note?.content.replace(
-                      /^---\n([\s\S]*?)\n---/,
-                      (frontmatterBlock, frontmatterContent) => {
-                        const frontmatterLines = frontmatterContent.split("\n")
-                        const pinnedIndex = frontmatterLines.findIndex((line: string) =>
-                          line.startsWith("pinned:"),
-                        )
-                        if (pinnedIndex !== -1) {
-                          // Note is currently pinned, so unpin it
-                          frontmatterLines.splice(pinnedIndex, 1)
-                        } else {
-                          // Note is currently unpinned, so pin it
-                          frontmatterLines.push("pinned: true")
-                        }
-                        return `---\n${frontmatterLines.join("\n")}\n---`
-                      },
-                    )
-                    if (updatedContent) {
-                      handleSave({ id, content: updatedContent })
-                    }
-                  }}
-                >
-                  {note?.frontmatter.pinned ? "Unpin note" : "Pin note"}
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
