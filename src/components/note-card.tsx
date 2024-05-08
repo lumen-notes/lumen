@@ -386,7 +386,7 @@ const _NoteCard = React.memo(function NoteCard({
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  icon={isPinned(note) ? <PinFillIcon16 className="text-[var(--orange-11)]" /> : <PinIcon16 />}
+                  icon={<PinIcon16 />}
                   onSelect={() => {
                     handleSave({ id, content: togglePin(note.content) })
                   }}
