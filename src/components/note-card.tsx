@@ -9,8 +9,10 @@ import { flushSync } from "react-dom"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
+import { cx } from "../utils/cx"
 import { getEditorSettings } from "../utils/editor-settings"
 import { exportAsGist } from "../utils/export-as-gist"
+import { isPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
@@ -24,6 +26,7 @@ import {
   LoadingIcon16,
   MoreIcon16,
   PinFillIcon16,
+  PinIcon16,
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
@@ -31,7 +34,6 @@ import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { usePanel, usePanelActions } from "./panels"
-import { cx } from "../utils/cx"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -314,11 +316,15 @@ const _NoteCard = React.memo(function NoteCard({
     >
       <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
-          {note?.frontmatter.pinned === true ? (
+          {isPinned(note) ? (
             <PinFillIcon16 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
           {note ? (
-            <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
+            <Link
+              to={`/${id}`}
+              target="_blank"
+              className="link filepath !no-underline hover:!underline"
+            >
               {id}.md
             </Link>
           ) : (
@@ -381,6 +387,15 @@ const _NoteCard = React.memo(function NoteCard({
                   shortcut={["⌘", "⇧", "C"]}
                 >
                   Copy ID
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  icon={isPinned(note) ? <PinFillIcon16 className="text-[var(--orange-11)]" /> : <PinIcon16 />}
+                  onSelect={() => {
+                    handleSave({ id, content: togglePin(note.content) })
+                  }}
+                >
+                  {isPinned(note) ? "Unpin" : "Pin"}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item

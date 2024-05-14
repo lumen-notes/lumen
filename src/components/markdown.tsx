@@ -51,8 +51,8 @@ import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
-import { WebsiteFavicon } from "./website-favicon"
 import { Tooltip } from "./tooltip"
+import { WebsiteFavicon } from "./website-favicon"
 
 export type MarkdownProps = {
   children: string
@@ -421,7 +421,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" to={`/${dateString}`}>
+            <Link className="link" to={`/${dateString}`} target="_blank">
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -432,7 +432,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
-            <Link className="link" to={`/${nextBirthdayString}`}>
+            <Link className="link" to={`/${nextBirthdayString}`} target="_blank">
               {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
             </Link>{" "}
             {isBirthdayToday ? "🎂" : null}
@@ -513,7 +513,11 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
 
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
-    return <Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Link>
+    return (
+      <Link to={`/file?${qs.stringify({ path: props.href })}`} target="_blank">
+        {props.children}
+      </Link>
+    )
   }
 
   // Render relative links with React Router
@@ -568,7 +572,11 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Link to={`/file?${qs.stringify({ path: props.src })}`} className="block w-fit !no-underline">
+      <Link
+        to={`/file?${qs.stringify({ path: props.src })}`}
+        target="_blank"
+        className="block w-fit !no-underline"
+      >
         <FilePreview path={props.src} alt={props.alt} />
       </Link>
     )
@@ -699,7 +707,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} to={`/${id}`}>
+        <Link ref={ref} to={`/${id}`} target="_blank">
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
@@ -749,7 +757,9 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </span>
       )}
       <div className="mt-2 text-sm text-text-secondary">
-        <Link to={`/${id}`}>Source</Link>
+        <Link to={`/${id}`} target="_blank">
+          Source
+        </Link>
       </div>
     </div>
   )
@@ -765,7 +775,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${date}`}>
+        <Link className={className} to={`/${date}`} target="_blank">
           {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
