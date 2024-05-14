@@ -320,7 +320,11 @@ const _NoteCard = React.memo(function NoteCard({
             <PinFillIcon16 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
           {note ? (
-            <Link to={`/${id}`} className="link filepath !no-underline hover:!underline">
+            <Link
+              to={`/${id}`}
+              target="_blank"
+              className="link filepath !no-underline hover:!underline"
+            >
               {id}.md
             </Link>
           ) : (

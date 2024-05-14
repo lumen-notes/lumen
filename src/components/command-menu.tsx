@@ -24,11 +24,14 @@ import {
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { usePanelActions, usePanels } from "./panels"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
+  const panels = usePanels()
+  const { openPanel } = usePanelActions()
   const routerNavigate = useNavigateWithCache()
 
   // Refs
@@ -55,11 +58,18 @@ export function CommandMenu() {
 
   const navigate = React.useCallback(
     (url: string, { openInPanel = true }: { openInPanel?: boolean } = {}) => {
-      routerNavigate(url)
+      if (openInPanel && openPanel) {
+        // If we're in a panels context, navigate by opening a panel
+        openPanel(url, panels.length - 1)
+      } else {
+        // Otherwise, navigate using the router
+        routerNavigate(url)
+      }
+
       setIsOpen(false)
       setQuery("")
     },
-    [routerNavigate],
+    [openPanel, panels, routerNavigate],
   )
 
   // Toggle the menu with `command + k`
@@ -194,7 +204,7 @@ export function CommandMenu() {
                 <CommandItem
                   key={`Show all notes matching "${debouncedQuery}"`}
                   icon={<SearchIcon16 />}
-                  onSelect={() => navigate(`/?${qs.stringify({ q: debouncedQuery })}`)}
+                  onSelect={() => navigate(`/?${qs.stringify({ query: debouncedQuery })}`)}
                 >
                   Show all {pluralize(noteResults.length, "note")} matching "{debouncedQuery}"
                 </CommandItem>

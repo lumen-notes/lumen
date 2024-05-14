@@ -1,6 +1,7 @@
 import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
+import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { NavLinkProps, NavLink as RouterNavLink, useMatch, useResolvedPath } from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
@@ -22,6 +23,7 @@ import {
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
+import { usePanelActions, usePanels } from "./panels"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
 
@@ -176,7 +178,23 @@ function NewNoteButton({
   tooltipSide: TooltipContentProps["side"]
   className?: string
 }) {
-  const navigate = useNavigateWithCache()
+  // const navigate = useNavigateWithCache()
+  const panels = usePanels()
+  const { openPanel } = usePanelActions()
+  const routerNavigate = useNavigateWithCache()
+
+  const navigate = React.useCallback(
+    (url: string) => {
+      if (openPanel) {
+        // If we're in a panels context, navigate by opening a panel
+        openPanel(url, panels.length - 1)
+      } else {
+        // Otherwise, navigate using the router
+        routerNavigate(url)
+      }
+    },
+    [openPanel, panels, routerNavigate],
+  )
 
   useHotkeys("mod+i", (event) => {
     navigate(`/${Date.now()}`)

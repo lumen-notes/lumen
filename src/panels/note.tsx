@@ -1,5 +1,5 @@
 import { Details } from "../components/details"
-import { NoteIcon16, NoteTemplateIcon16 } from "../components/icons"
+import { NoteIcon16 } from "../components/icons"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
 import { NoteList } from "../components/note-list"
@@ -26,8 +26,8 @@ export function NotePanel({ id, params = {}, onClose }: PanelProps) {
     <Panel
       id={id}
       key={noteId}
-      title="Note"
-      icon={!note || note.frontmatter.template ? <NoteTemplateIcon16 /> : <NoteIcon16 />}
+      title={!note ? "New note" : "Note"}
+      icon={<NoteIcon16 />}
       onClose={onClose}
     >
       <div className="flex w-full flex-col gap-4 p-4">

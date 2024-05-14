@@ -17,7 +17,7 @@ export function TagsPanel({ id, onClose }: PanelProps) {
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
-  const [query, setQuery] = useSearchParam("q", {
+  const [query, setQuery] = useSearchParam("query", {
     validate: z.string().catch("").parse,
     replace: true,
   })
@@ -136,7 +136,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
         )}
         <span className="py-2 leading-4 ">
           <PillButton asChild>
-            <Link to={`/tags/${[...path, node.name].join("/")}`}>
+            <Link to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
               {node.name}
               <span className="text-text-secondary">{node.count}</span>
             </Link>

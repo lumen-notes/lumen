@@ -3,7 +3,6 @@ import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { z } from "zod"
 import { useDebouncedValue } from "../hooks/debounced-value"
-import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { useSearchParam } from "../hooks/search-param"
 import { templateSchema } from "../schema"
@@ -18,6 +17,7 @@ import { Link } from "./link"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
+import { usePanel, usePanelActions } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
@@ -30,7 +30,8 @@ type NoteListProps = {
 }
 export function NoteList({ baseQuery = "" }: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const navigate = useNavigateWithCache()
+  const { openPanel } = usePanelActions()
+  const panel = usePanel()
 
   const [query, setQuery] = useSearchParam("query", {
     validate: z.string().catch("").parse,
@@ -149,7 +150,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 onClick={() => {
                   const resultsCount = noteResults.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
-                  navigate(`/${noteResults[randomIndex].id}`)
+                  openPanel?.(noteResults[randomIndex].id, panel?.index)
                 }}
               />
             </div>
@@ -256,6 +257,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       data-note-id={note.id}
                       to={`/${note.id}`}
                       className="focus-ring flex rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
+                      target="_blank"
                     >
                       <NoteFavicon note={note} className="mr-3" />
                       {note.frontmatter.pinned === true ? (

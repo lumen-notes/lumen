@@ -21,6 +21,7 @@ export function TagLink({ name, className }: TagLinkProps) {
                 .split("/")
                 .slice(0, i + 1)
                 .join("/")}`}
+              target="_blank"
             >
               {part}
             </Link>
