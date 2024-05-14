@@ -12,9 +12,6 @@ import { TagsPanel } from "../panels/tags"
 import { ErrorIcon16 } from "./icons"
 import { LinkClickHandler, LinkContext } from "./link"
 import { Panel } from "./panel"
-import { atom, useAtom } from "jotai"
-import { DraggableCore } from "react-draggable"
-import { set } from "date-fns"
 
 type PanelValue = {
   id: string
@@ -35,11 +32,6 @@ const PanelActionsContext = React.createContext<{
 }>({})
 export const usePanelActions = () => React.useContext(PanelActionsContext)
 
-const ColumnWidthsContext = React.createContext<
-  [number[], React.Dispatch<React.SetStateAction<number[]>>]
->([[], () => {}])
-export const useColumnWidths = () => React.useContext(ColumnWidthsContext)
-
 function Provider({ children }: React.PropsWithChildren) {
   const [panels, setPanels] = useSearchParam("p", {
     validate: z.array(z.string().catch("")).catch([]).parse,
@@ -50,10 +42,6 @@ function Provider({ children }: React.PropsWithChildren) {
   React.useEffect(() => {
     panelsRef.current = panels
   }, [panels])
-
-  const [columnWidths, setColumnWidths] = React.useState<number[]>(() => {
-    return new Array(panels.length + 1).fill(1 / (panels.length + 1))
-  })
 
   // useEvent("keydown", (event) => {
   //   // Focus prev/next panel with `command + shift + left/right`
@@ -107,7 +95,6 @@ function Provider({ children }: React.PropsWithChildren) {
 
       flushSync(() => {
         setPanels(newPanels)
-        setColumnWidths(new Array(newPanels.length + 1).fill(1 / (newPanels.length + 1)))
       })
 
       const panelElement = document.getElementById(id)
@@ -117,7 +104,7 @@ function Provider({ children }: React.PropsWithChildren) {
         focusPanel(panelElement)
       }
     },
-    [setPanels, setColumnWidths],
+    [setPanels],
   )
 
   const closePanel = React.useCallback(
@@ -136,7 +123,6 @@ function Provider({ children }: React.PropsWithChildren) {
       // Update state
       flushSync(() => {
         setPanels(newPanels)
-        setColumnWidths(new Array(newPanels.length + 1).fill(1 / (newPanels.length + 1)))
       })
 
       // Focus the previous panel
@@ -144,7 +130,7 @@ function Provider({ children }: React.PropsWithChildren) {
         focusPanel(prevPanelElement)
       }
     },
-    [setPanels, setColumnWidths],
+    [setPanels],
   )
 
   const updatePanel = React.useCallback(
@@ -168,26 +154,17 @@ function Provider({ children }: React.PropsWithChildren) {
   )
 
   return (
-    <ColumnWidthsContext.Provider value={[columnWidths, setColumnWidths]}>
-      <PanelsContext.Provider value={panels}>
-        <PanelActionsContext.Provider value={panelActions}>{children}</PanelActionsContext.Provider>
-      </PanelsContext.Provider>
-    </ColumnWidthsContext.Provider>
+    <PanelsContext.Provider value={panels}>
+      <PanelActionsContext.Provider value={panelActions}>{children}</PanelActionsContext.Provider>
+    </PanelsContext.Provider>
   )
 }
 
 Provider.displayName = "Panels.Provider"
 
 function Container({ children }: React.PropsWithChildren) {
-  const [columnWidths] = useColumnWidths()
   return (
-    <div
-      data-panel-container
-      className="block h-full overflow-hidden md:grid"
-      style={{
-        gridTemplateColumns: columnWidths.map((width) => `${width}fr`).join(" auto "),
-      }}
-    >
+    <div data-panel-container className="block h-full overflow-hidden md:flex">
       {children}
     </div>
   )
@@ -197,51 +174,13 @@ Container.displayName = "Panels.Container"
 
 function Outlet() {
   const panels = usePanels()
-  const [containerWidth, setContainerWidth] = React.useState(0)
-  const [columnWidths, setColumnWidths] = useColumnWidths()
   return (
     <>
       {panels.map((value, index) => {
         const { id } = parsePanelValue(value)
         return (
           <React.Fragment key={id}>
-            <DraggableCore
-              onStart={() => {
-                // Measure container width when dragging starts
-                const container = document.querySelector("[data-panel-container]")
-
-                if (container) {
-                  setContainerWidth(container.getBoundingClientRect().width)
-                }
-
-                // Disable text selection while dragging
-                document.body.style.userSelect = "none"
-
-                // Set cursor to `col-resize` while dragging
-                document.body.style.cursor = "col-resize"
-              }}
-              onStop={() => {
-                // Re-enable text selection after dragging
-                document.body.style.userSelect = ""
-
-                // Reset cursor after dragging
-                document.body.style.cursor = ""
-              }}
-              onDrag={(event, { deltaX }) => {
-                setColumnWidths((columnWidths) =>
-                  columnWidths.map((width, i) => {
-                    if (i === index) {
-                      return width + deltaX / containerWidth
-                    } else if (i === index + 1) {
-                      return width - deltaX / containerWidth
-                    }
-                    return width
-                  }),
-                )
-              }}
-            >
-              <div className="hidden h-full w-2 cursor-col-resize bg-[red] md:block" />
-            </DraggableCore>
+            <div className="hidden h-full w-px flex-shrink-0 bg-border-secondary md:block" />
             <PanelRouter key={id} value={value} index={index} />
           </React.Fragment>
         )
