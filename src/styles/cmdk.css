@@ -1,5 +1,5 @@
 [cmdk-overlay] {
-  @apply fixed inset-0 z-20 bg-bg-backdrop animate-in fade-in;
+  @apply fixed inset-0 z-20;
 }
 
 [cmdk-dialog] {

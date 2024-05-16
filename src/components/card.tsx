@@ -15,7 +15,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           "relative rounded-lg ring-1 ring-border-secondary dark:ring-inset",
           elevation === 1 && "bg-bg shadow-sm dark:ring-0",
           elevation === 2 && "bg-bg-overlay shadow-lg",
-          elevation === 3 && "bg-bg-overlay shadow-xl",
+          elevation === 3 && "bg-bg-overlay shadow-2xl",
           props.tabIndex === 0 && "focus:outline focus:outline-2 focus:outline-border-focus",
           focusVisible && "outline outline-2 outline-border-focus",
           className,
