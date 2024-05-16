@@ -6,18 +6,20 @@ import React from "react"
 import { flushSync } from "react-dom"
 import { useEvent } from "react-use"
 import { Card } from "../components/card"
-import { tagSearcherAtom } from "../global-state"
+import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
 import { useDebouncedValue } from "../hooks/debounced-value"
 import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { templateSchema } from "../schema"
+import { Note, templateSchema } from "../schema"
 import { formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import {
   CalendarIcon16,
   NoteIcon16,
+  PinFillIcon12,
   PlusIcon16,
   SearchIcon16,
   SettingsIcon16,
@@ -33,6 +35,7 @@ export function CommandMenu() {
   const panels = usePanels()
   const { openPanel } = usePanelActions()
   const routerNavigate = useNavigateWithCache()
+  const pinnedNotes = useAtomValue(pinnedNotesAtom)
 
   // Refs
   const prevActiveElement = React.useRef<HTMLElement>()
@@ -174,32 +177,9 @@ export function CommandMenu() {
           ) : null}
           {debouncedQuery ? (
             <Command.Group heading="Notes">
-              {noteResults.slice(0, numVisibleNotes).map((note) => {
-                const parsedTemplate = templateSchema
-                  .omit({ body: true })
-                  .safeParse(note.frontmatter.template)
-                return (
-                  <CommandItem
-                    key={note.id}
-                    value={note.id}
-                    icon={<NoteFavicon note={note} />}
-                    onSelect={() => navigate(`/${note.id}`)}
-                  >
-                    <span className="inline-flex gap-2">
-                      {parsedTemplate.success ? (
-                        <span>{parsedTemplate.data.name} template</span>
-                      ) : (
-                        <span>{note.title || note.id}</span>
-                      )}
-                      <span className="text-text-secondary">
-                        {removeParentTags(note.tags)
-                          .map((tag) => `#${tag}`)
-                          .join(" ")}
-                      </span>
-                    </span>
-                  </CommandItem>
-                )
-              })}
+              {noteResults.slice(0, numVisibleNotes).map((note) => (
+                <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
+              ))}
               {noteResults.length > 0 ? (
                 <CommandItem
                   key={`Show all notes matching "${debouncedQuery}"`}
@@ -229,36 +209,43 @@ export function CommandMenu() {
               </CommandItem>
             </Command.Group>
           ) : (
-            <Command.Group heading="Jump to">
-              <CommandItem
-                key="Notes"
-                icon={<NoteIcon16 />}
-                onSelect={() => navigate(`/`, { openInPanel: false })}
-              >
-                Notes
-              </CommandItem>
-              <CommandItem
-                key="Today"
-                icon={<CalendarIcon16 number={new Date().getDate()} />}
-                onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
-              >
-                Today
-              </CommandItem>
-              <CommandItem
-                key="Tags"
-                icon={<TagIcon16 />}
-                onSelect={() => navigate(`/tags`, { openInPanel: false })}
-              >
-                Tags
-              </CommandItem>
-              <CommandItem
-                key={"Settings"}
-                icon={<SettingsIcon16 />}
-                onSelect={() => navigate("/settings", { openInPanel: false })}
-              >
-                Settings
-              </CommandItem>
-            </Command.Group>
+            <>
+              <Command.Group heading="Jump to">
+                <CommandItem
+                  key="Notes"
+                  icon={<NoteIcon16 />}
+                  onSelect={() => navigate(`/`, { openInPanel: false })}
+                >
+                  Notes
+                </CommandItem>
+                <CommandItem
+                  key="Today"
+                  icon={<CalendarIcon16 number={new Date().getDate()} />}
+                  onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
+                >
+                  Today
+                </CommandItem>
+                <CommandItem
+                  key="Tags"
+                  icon={<TagIcon16 />}
+                  onSelect={() => navigate(`/tags`, { openInPanel: false })}
+                >
+                  Tags
+                </CommandItem>
+                <CommandItem
+                  key={"Settings"}
+                  icon={<SettingsIcon16 />}
+                  onSelect={() => navigate("/settings", { openInPanel: false })}
+                >
+                  Settings
+                </CommandItem>
+              </Command.Group>
+              <Command.Group heading="Pinned">
+                {pinnedNotes.map((note) => (
+                  <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
+                ))}
+              </Command.Group>
+            </>
           )}
         </Command.List>
       </Card>
@@ -279,9 +266,37 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
     <Command.Item value={value} onSelect={onSelect}>
       <div className="grid grid-cols-[1.75rem_1fr_auto]">
         <span className="text-text-secondary">{icon}</span>
-        <span className="truncate">{children}</span>
+        <span className="flex truncate">{children}</span>
         {description ? <span className="text-text-secondary">{description}</span> : null}
       </div>
     </Command.Item>
+  )
+}
+
+function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
+  const parsedTemplate = templateSchema.omit({ body: true }).safeParse(note.frontmatter.template)
+  return (
+    <CommandItem
+      key={note.id}
+      value={note.id}
+      icon={<NoteFavicon note={note} />}
+      onSelect={onSelect}
+    >
+      <span className="inline-flex items-center gap-2">
+        {isPinned(note) ? (
+          <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
+        ) : null}
+        {parsedTemplate.success ? (
+          <span>{parsedTemplate.data.name} template</span>
+        ) : (
+          <span>{note.title || note.id}</span>
+        )}
+        <span className="text-text-secondary">
+          {removeParentTags(note.tags)
+            .map((tag) => `#${tag}`)
+            .join(" ")}
+        </span>
+      </span>
+    </CommandItem>
   )
 }
