@@ -25,6 +25,7 @@ import {
   GlassesIcon16,
   LoadingIcon16,
   MoreIcon16,
+  PinFillIcon12,
   PinFillIcon16,
   PinIcon16,
   ShareIcon16,
@@ -318,7 +319,7 @@ const _NoteCard = React.memo(function NoteCard({
       <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
         <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
           {isPinned(note) ? (
-            <PinFillIcon16 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
+            <PinFillIcon12 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
           {note ? (
             <Link
