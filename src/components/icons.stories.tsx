@@ -40,26 +40,26 @@ export const All = {
   ),
 }
 
-export const Calendar: StoryObj<{ size: "16" | "24"; number: number }> = {
+export const Calendar: StoryObj<{ size: "16" | "24"; children: string }> = {
   render: (args) => {
     switch (args.size) {
       case "16":
-        return <icons.CalendarIcon16 number={args.number} />
+        return <icons.CalendarIcon16>{args.children}</icons.CalendarIcon16>
       case "24":
-        return <icons.CalendarIcon24 number={args.number} />
+        return <icons.CalendarIcon24>{args.children}</icons.CalendarIcon24>
     }
   },
   args: {
     size: "16",
-    number: 1,
+    children: "1",
   },
   argTypes: {
     size: {
       options: ["16", "24"],
       control: { type: "radio" },
     },
-    number: {
-      control: { type: "number" },
+    children: {
+      control: { type: "text" },
     },
   },
   parameters: {

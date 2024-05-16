@@ -118,7 +118,7 @@ export function TagIcon16(props: IconProps) {
   )
 }
 
-export function CalendarIcon24({ number }: IconProps & { number?: number }) {
+export function CalendarIcon24({ children }: IconProps & { children?: number | string }) {
   return (
     <Icon size={24}>
       <path
@@ -133,13 +133,16 @@ export function CalendarIcon24({ number }: IconProps & { number?: number }) {
         fontSize="10px"
         className="font-mono font-semibold leading-none"
       >
-        {number}
+        {children}
       </text>
     </Icon>
   )
 }
 
-export function CalendarFillIcon24({ number, ...props }: IconProps & { number?: number }) {
+export function CalendarFillIcon24({
+  children,
+  ...props
+}: IconProps & { children?: number | string }) {
   return (
     <Icon size={24} {...props}>
       <path
@@ -155,13 +158,13 @@ export function CalendarFillIcon24({ number, ...props }: IconProps & { number?: 
         fill="currentColor"
         className="font-mono font-semibold leading-none text-bg-inset"
       >
-        {number}
+        {children}
       </text>
     </Icon>
   )
 }
 
-export function CalendarIcon16({ number, ...props }: IconProps & { number?: number }) {
+export function CalendarIcon16({ children, ...props }: IconProps & { children?: number | string }) {
   return (
     <Icon size={16} {...props}>
       <path d="M13 4H3v1.5h10V4Z" />
@@ -178,7 +181,7 @@ export function CalendarIcon16({ number, ...props }: IconProps & { number?: numb
         fill="currentColor"
         className="font-mono font-bold leading-none"
       >
-        {number}
+        {children}
       </text>
     </Icon>
   )
