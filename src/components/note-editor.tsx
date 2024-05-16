@@ -5,6 +5,7 @@ import {
   CompletionResult,
 } from "@codemirror/autocomplete"
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
+import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
 import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
 import { createTheme } from "@uiw/codemirror-themes"
@@ -12,6 +13,7 @@ import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { parseDate } from "chrono-node"
 import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
+import { tags } from "@lezer/highlight"
 import { vim } from "@replit/codemirror-vim"
 import React from "react"
 import { tagsAtom, templatesAtom } from "../global-state"
@@ -50,6 +52,30 @@ const theme = createTheme({
   },
   styles: [],
 })
+
+const syntaxHighlighter = HighlightStyle.define([
+  {
+    tag: tags.heading1,
+    fontSize: "var(--font-size-xl)",
+    fontWeight: 550,
+  },
+  {
+    tag: [tags.comment, tags.contentSeparator],
+    color: "var(--color-text-secondary)",
+  },
+  {
+    tag: tags.emphasis,
+    fontStyle: "italic",
+  },
+  {
+    tag: tags.strong,
+    fontWeight: 650,
+  },
+  {
+    tag: tags.strikethrough,
+    textDecoration: "line-through",
+  },
+])
 
 export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   (
@@ -90,6 +116,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       frontmatterExtension(),
       spellcheckExtension(),
       pasteExtension({ attachFile, onPaste }),
+      syntaxHighlighting(syntaxHighlighter),
     ]
 
     if (editorSettings.vimMode) {
