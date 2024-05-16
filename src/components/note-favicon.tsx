@@ -23,12 +23,14 @@ export function NoteFavicon({
 
   // Daily note
   if (isValidDateString(note.id)) {
-    icon = <CalendarIcon16 data-testid="favicon-daily" number={new Date(note.id).getUTCDate()} />
+    icon = (
+      <CalendarIcon16 data-testid="favicon-daily">{new Date(note.id).getUTCDate()}</CalendarIcon16>
+    )
   }
 
   // Weekly note
   if (isValidWeekString(note.id)) {
-    icon = <CalendarIcon16 data-testid="favicon-weekly" number={Number(note.id.split("-W")[1])} />
+    icon = <CalendarIcon16 data-testid="favicon-weekly">W</CalendarIcon16>
   }
 
   // GitHub

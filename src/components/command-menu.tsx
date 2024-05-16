@@ -12,7 +12,7 @@ import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note, templateSchema } from "../schema"
-import { formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -144,7 +144,7 @@ export function CommandMenu() {
             <Command.Group heading="Date">
               <CommandItem
                 key={dateString}
-                icon={<CalendarIcon16 number={new Date(dateString).getUTCDate()} />}
+                icon={<CalendarIcon16>{new Date(dateString).getUTCDate()}</CalendarIcon16>}
                 description={formatDateDistance(dateString)}
                 onSelect={() => navigate(`/${dateString}`)}
               >
@@ -220,10 +220,17 @@ export function CommandMenu() {
                 </CommandItem>
                 <CommandItem
                   key="Today"
-                  icon={<CalendarIcon16 number={new Date().getDate()} />}
+                  icon={<CalendarIcon16>{new Date().getDate()}</CalendarIcon16>}
                   onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
                 >
                   Today
+                </CommandItem>
+                <CommandItem
+                  key="This week"
+                  icon={<CalendarIcon16>W</CalendarIcon16>}
+                  onSelect={() => navigate(`/${toWeekString(new Date())}`, { openInPanel: false })}
+                >
+                  This week
                 </CommandItem>
                 <CommandItem
                   key="Tags"
