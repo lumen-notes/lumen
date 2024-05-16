@@ -10,7 +10,7 @@ export function GitHubAvatar({ login, size = 32, className, style, ...props }: G
     <div
       aria-hidden
       className={cx(
-        "inline-block flex-shrink-0 rounded-full bg-bg-secondary bg-cover ring-1 ring-inset ring-border-secondary",
+        "inline-block flex-shrink-0 rounded-full bg-[white] bg-cover ring-1 ring-inset ring-border-secondary",
         className,
       )}
       style={{
