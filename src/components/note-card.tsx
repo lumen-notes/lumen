@@ -215,10 +215,11 @@ const _NoteCard = React.memo(function NoteCard({
       focusVisible={selected || editorHasFocus}
       className="group flex flex-col"
       elevation={elevation}
-      onDoubleClick={(event) => {
-        if (mode === "read") {
-          switchToWriting()
+      onMouseDown={(event) => {
+        // Double click to edit
+        if (event.detail > 1 && mode === "read") {
           event.preventDefault()
+          switchToWriting()
         }
       }}
       onKeyDown={(event) => {
