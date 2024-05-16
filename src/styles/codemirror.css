@@ -22,7 +22,7 @@
 }
 
 .cm-editor .cm-scroller {
-  @apply leading-5;
+  @apply leading-6;
   font-family: unset;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .cm-editor .cm-lineNumbers {
-  @apply pr-2;
+  @apply pr-3;
 }
 
 .cm-editor .cm-lineNumbers .cm-gutterElement {
