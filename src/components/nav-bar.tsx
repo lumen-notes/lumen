@@ -3,12 +3,18 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import { NavLinkProps, NavLink as RouterNavLink, useMatch, useResolvedPath } from "react-router-dom"
+import {
+  NavLinkProps,
+  NavLink as RouterNavLink,
+  useLocation,
+  useMatch,
+  useResolvedPath,
+} from "react-router-dom"
 import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
 import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { cx } from "../utils/cx"
-import { toDateString } from "../utils/date"
+import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
 import { DropdownMenu } from "./dropdown-menu"
 import { useSignOut } from "./github-auth"
 import { IconButton } from "./icon-button"
@@ -30,6 +36,7 @@ import { Tooltip } from "./tooltip"
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
+  const isCalendarActive = useIsCalendarActive()
 
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
@@ -61,17 +68,16 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
           <NavLink
             to={`/${toDateString(new Date())}`}
-            aria-label="Today"
+            aria-label="Calendar"
+            active={isCalendarActive}
             tooltipSide={tooltipSide}
             end
           >
-            {({ isActive }) =>
-              isActive ? (
-                <CalendarFillIcon24>{new Date().getDate()}</CalendarFillIcon24>
-              ) : (
-                <CalendarIcon24>{new Date().getDate()}</CalendarIcon24>
-              )
-            }
+            {isCalendarActive ? (
+              <CalendarFillIcon24>{new Date().getDate()}</CalendarFillIcon24>
+            ) : (
+              <CalendarIcon24>{new Date().getDate()}</CalendarIcon24>
+            )}
           </NavLink>
         </li>
         <li className={cx({ left: "flex-grow-0", bottom: "flex-grow" }[position])}>
@@ -138,10 +144,21 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
   )
 }
 
+function useIsCalendarActive() {
+  const location = useLocation()
+  const path = location.pathname.slice(1)
+  return isValidDateString(path) || isValidWeekString(path)
+}
+
 function NavLink({
+  active,
   tooltipSide,
   ...props
-}: Omit<NavLinkProps, "to"> & { to: string; tooltipSide?: TooltipContentProps["side"] }) {
+}: Omit<NavLinkProps, "to"> & {
+  to: string
+  active?: boolean
+  tooltipSide?: TooltipContentProps["side"]
+}) {
   const navigate = useNavigateWithCache()
   const path = useResolvedPath(props.to)
   const match = useMatch({
@@ -149,7 +166,7 @@ function NavLink({
     end: props.end,
     caseSensitive: props.caseSensitive,
   })
-  const isActive = match !== null
+  const isActive = active || match !== null
 
   return (
     <Tooltip>
