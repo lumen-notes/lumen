@@ -375,6 +375,21 @@ const _NoteCard = React.memo(function NoteCard({
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
                 <DropdownMenu.Item
+                  icon={
+                    isPinned(note) ? (
+                      <PinFillIcon16 className="text-[var(--orange-11)]" />
+                    ) : (
+                      <PinIcon16 />
+                    )
+                  }
+                  onSelect={() => {
+                    handleSave({ id, content: togglePin(note.content) })
+                  }}
+                >
+                  {isPinned(note) ? "Unpin" : "Pin"}
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
                   icon={<CopyIcon16 />}
                   onSelect={() => copy(note?.content || "")}
                   shortcut={["⌘", "C"]}
@@ -387,15 +402,6 @@ const _NoteCard = React.memo(function NoteCard({
                   shortcut={["⌘", "⇧", "C"]}
                 >
                   Copy ID
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                  icon={isPinned(note) ? <PinFillIcon16 className="text-[var(--orange-11)]" /> : <PinIcon16 />}
-                  onSelect={() => {
-                    handleSave({ id, content: togglePin(note.content) })
-                  }}
-                >
-                  {isPinned(note) ? "Unpin" : "Pin"}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
