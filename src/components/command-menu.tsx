@@ -12,7 +12,7 @@ import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note, templateSchema } from "../schema"
-import { formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -27,6 +27,7 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { usePanelActions, usePanels } from "./panels"
+import { getISOWeek } from "date-fns"
 
 export function CommandMenu() {
   const searchNotes = useSearchNotes()
@@ -224,6 +225,13 @@ export function CommandMenu() {
                   onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
                 >
                   Today
+                </CommandItem>
+                <CommandItem
+                  key="This week"
+                  icon={<CalendarIcon16 number={getISOWeek(new Date())} />}
+                  onSelect={() => navigate(`/${toWeekString(new Date())}`, { openInPanel: false })}
+                >
+                  This week
                 </CommandItem>
                 <CommandItem
                   key="Tags"
