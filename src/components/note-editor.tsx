@@ -5,6 +5,7 @@ import {
   CompletionResult,
 } from "@codemirror/autocomplete"
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
+import { yamlFrontmatter } from "@codemirror/lang-yaml"
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
 import { EditorSelection } from "@codemirror/state"
 import { EditorView, ViewUpdate } from "@codemirror/view"
@@ -60,6 +61,15 @@ const syntaxHighlighter = HighlightStyle.define([
     fontWeight: 550,
   },
   {
+    tag: tags.heading2,
+    fontSize: "var(--font-size-lg)",
+    fontWeight: 550,
+  },
+  {
+    tag: [tags.heading3, tags.heading4, tags.heading5, tags.heading6],
+    fontWeight: 550,
+  },
+  {
     tag: [tags.comment, tags.contentSeparator],
     color: "var(--color-text-secondary)",
   },
@@ -74,6 +84,14 @@ const syntaxHighlighter = HighlightStyle.define([
   {
     tag: tags.strikethrough,
     textDecoration: "line-through",
+  },
+  {
+    tag: tags.url,
+    textDecorationLine: "underline",
+    textDecorationStyle: "dotted",
+    textDecorationThickness: "1px",
+    textUnderlineOffset: "3px",
+    textDecorationColor: "var(--color-text-secondary)",
   },
 ])
 
@@ -101,7 +119,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const templateCompletion = useTemplateCompletion()
 
     const extensions = [
-      markdown({ base: markdownLanguage }),
+      yamlFrontmatter({ content: markdown({ base: markdownLanguage }) }),
       autocompletion({
         override: [
           // emojiCompletion,
