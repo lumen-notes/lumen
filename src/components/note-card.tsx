@@ -22,7 +22,7 @@ import {
   CopyIcon16,
   EditIcon16,
   ExternalLinkIcon16,
-  GlassesIcon16,
+  EyeIcon16,
   LoadingIcon16,
   MoreIcon16,
   PinFillIcon12,
@@ -101,6 +101,7 @@ const _NoteCard = React.memo(function NoteCard({
     // then clear it when the note is saved
     return localStorage.getItem(getStorageKey({ githubRepo, id })) ?? note?.content ?? defaultValue
   })
+  // TODO: Change read/write to view/edit
   const [mode, setMode] = React.useState<"read" | "write">(
     !note || editorValue !== note.content ? "write" : "read",
   )
@@ -360,11 +361,11 @@ const _NoteCard = React.memo(function NoteCard({
           )}
         >
           {mode === "write" ? (
-            <IconButton aria-label="Read mode" shortcut={["⌘", "E"]} onClick={switchToReading}>
-              <GlassesIcon16 />
+            <IconButton aria-label="View mode" shortcut={["⌘", "E"]} onClick={switchToReading}>
+              <EyeIcon16 />
             </IconButton>
           ) : (
-            <IconButton aria-label="Write mode" shortcut={["⌘", "E"]} onClick={switchToWriting}>
+            <IconButton aria-label="Edit mode" shortcut={["⌘", "E"]} onClick={switchToWriting}>
               <EditIcon16 />
             </IconButton>
           )}
