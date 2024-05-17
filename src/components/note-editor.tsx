@@ -85,14 +85,6 @@ const syntaxHighlighter = HighlightStyle.define([
     tag: tags.strikethrough,
     textDecoration: "line-through",
   },
-  {
-    tag: tags.url,
-    textDecorationLine: "underline",
-    textDecorationStyle: "dotted",
-    textDecorationThickness: "1px",
-    textUnderlineOffset: "3px",
-    textDecorationColor: "var(--color-text-secondary)",
-  },
 ])
 
 export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
