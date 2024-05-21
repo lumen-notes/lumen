@@ -575,7 +575,7 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
       <Link
         to={`/file?${qs.stringify({ path: props.src })}`}
         target="_blank"
-        className="block w-fit !no-underline"
+        className="block w-fit overflow-hidden !rounded-sm !no-underline"
       >
         <FilePreview path={props.src} alt={props.alt} />
       </Link>
