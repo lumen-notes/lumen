@@ -173,7 +173,7 @@ function NavLink({
       <Tooltip.Trigger asChild>
         <RouterNavLink
           className={cx(
-            "focus-ring inline-flex w-full justify-center rounded-sm p-2 hover:bg-bg-secondary coarse:p-3",
+            "focus-ring inline-flex w-full justify-center rounded-sm p-2 transition-transform duration-100 hover:bg-bg-secondary active:scale-95 coarse:p-3",
             isActive ? "text-text" : "text-text-secondary",
           )}
           {...props}
