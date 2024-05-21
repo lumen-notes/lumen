@@ -470,7 +470,7 @@ const _NoteCard = React.memo(function NoteCard({
           ) : null}
           {!note || isDirty ? (
             <Button
-              variant="primary"
+              variant={isDirty ? "primary" : "secondary"}
               onClick={() => {
                 handleSave({ id, content: editorValue })
                 switchToReading()

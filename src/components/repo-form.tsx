@@ -159,7 +159,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 sm:self-end">
           <div className="flex gap-2">
             {onCancel ? (
               <Button className="w-full" onClick={onCancel}>

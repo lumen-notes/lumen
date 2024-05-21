@@ -61,7 +61,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
               </div>
               <form
                 aria-labelledby="rename-tag-heading"
-                className="flex flex-col items-end gap-4"
+                className="flex flex-col gap-4"
                 onSubmit={(event) => {
                   event.preventDefault()
                   const formData = new FormData(event.currentTarget)
@@ -96,11 +96,11 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
                     }}
                   />
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="secondary" onClick={closeRenameForm}>
+                <div className="flex gap-2 sm:self-end">
+                  <Button variant="secondary" className="w-full" onClick={closeRenameForm}>
                     Cancel
                   </Button>
-                  <Button type="submit" variant="primary">
+                  <Button type="submit" variant="primary" className="w-full">
                     Save
                   </Button>
                 </div>
