@@ -46,13 +46,14 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
       )
 
       if (!response.ok) {
-        console.error(await response.json())
-
         if (response.status === 422) {
           throw new Error("Repository already exists.")
         }
 
-        throw new Error("Failed to create repository. Please try again.")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { message } = (await response.json()) as any
+
+        throw new Error(message || "Failed to create repository. Please try again.")
       }
 
       // 1 second delay to allow GitHub API to catch up
@@ -80,7 +81,14 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
       })
 
       if (!response.ok) {
-        throw new Error("Repository does not exist.")
+        if (response.status === 404) {
+          throw new Error("Repository does not exist or you do not have access.")
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { message } = (await response.json()) as any
+
+        throw new Error(message || "Something went wrong.")
       }
 
       send({ type: "SELECT_REPO", githubRepo: { owner, name } })
@@ -158,9 +166,8 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             />
           </div>
         </div>
-
-        <div className="flex flex-col gap-4 sm:self-end">
-          <div className="flex gap-2">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-shrink-0 gap-2 sm:ml-auto">
             {onCancel ? (
               <Button className="w-full" onClick={onCancel}>
                 Cancel
@@ -180,7 +187,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
               <div className="grid h-6 flex-shrink-0 place-items-center">
                 <ErrorIcon16 />
               </div>
-              <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
+              <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
             </div>
           ) : null}
         </div>
