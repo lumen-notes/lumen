@@ -25,8 +25,8 @@ function Summary({ children, className }: { children: React.ReactNode; className
         className,
       )}
     >
-      <span className="inline-flex items-center gap-2 rounded-sm px-1 group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
-        <TriangleRightIcon8 className="group-open/details:rotate-90" />
+      <span className="inline-flex select-none items-center gap-2 rounded-sm px-1 group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
+        <TriangleRightIcon8 className="transition-transform duration-150 group-open/details:rotate-90" />
         {children}
       </span>
     </summary>
