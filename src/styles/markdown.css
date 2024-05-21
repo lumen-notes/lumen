@@ -129,6 +129,10 @@
   @apply link-external;
 }
 
+.markdown img {
+  @apply overflow-hidden rounded-sm;
+}
+
 .markdown .katex-html {
   display: none;
 }
