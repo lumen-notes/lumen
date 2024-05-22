@@ -1,7 +1,7 @@
 {
   "name": "Lumen",
   "short_name": "Lumen",
-  "description": "A system for thinking, writing, learning, and mindfulness",
+  "description": "A simple note-taking app for better thinking",
   "icons": [
     {
       "src": "icon-1024.png",
