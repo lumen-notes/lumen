@@ -208,7 +208,7 @@ const _NoteCard = React.memo(function NoteCard({
     return editorValue !== note.content
   }, [note, editorValue, defaultValue])
 
-  const revertChanges = React.useCallback(() => {
+  const discardChanges = React.useCallback(() => {
     // Reset editor value to the last saved state of the note
     setEditorValue(note?.content ?? defaultValue)
     // Clear the "draft" from localStorage
@@ -387,9 +387,9 @@ const _NoteCard = React.memo(function NoteCard({
                {isDirty ? (
                  <DropdownMenu.Item
                     icon={<ExternalLinkIcon16 />}
-                    onSelect={revertChanges}
+                    onSelect={discardChanges}
                   >
-                    Revert changes
+                    Discard changes
                   </DropdownMenu.Item>
                ) : null}
                 <DropdownMenu.Item
