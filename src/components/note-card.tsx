@@ -116,6 +116,16 @@ const _NoteCard = React.memo(function NoteCard({
     setEditorValue(note.content)
   }
 
+  // If the default value changes and there is no pending draft in localStorage,
+  // update the editor value
+  if (
+    !note &&
+    editorValue !== defaultValue &&
+    localStorage.getItem(getStorageKey({ githubRepo, id })) === null
+  ) {
+    setEditorValue(defaultValue)
+  }
+
   const handleEditorStateChange = React.useCallback((event: ViewUpdate) => {
     setEditorHasFocus(event.view.hasFocus)
   }, [])
@@ -123,9 +133,14 @@ const _NoteCard = React.memo(function NoteCard({
   const handleChange = React.useCallback(
     (value: string) => {
       setEditorValue(value)
-      localStorage.setItem(getStorageKey({ githubRepo, id }), value)
+
+      if (note ? value !== note.content : value !== defaultValue) {
+        localStorage.setItem(getStorageKey({ githubRepo, id }), value)
+      } else {
+        localStorage.removeItem(getStorageKey({ githubRepo, id }))
+      }
     },
-    [githubRepo, id],
+    [note, defaultValue, githubRepo, id],
   )
 
   const switchToWriting = React.useCallback(() => {
@@ -389,7 +404,7 @@ const _NoteCard = React.memo(function NoteCard({
                     handleSave({ id, content: togglePin(note.content) })
                   }}
                 >
-                  {isPinned(note) ? "Unpin" : "Pin"}
+                  {isPinned(note) ? "Pinned" : "Pin"}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
