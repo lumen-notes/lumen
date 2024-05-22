@@ -20,7 +20,22 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
       <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
         <Card
           elevation={2}
-          className="z-20 max-h-[48svh] overflow-auto rounded-md p-1 animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className={cx(
+            "z-20 max-h-[48svh] overflow-auto rounded-md p-1 animate-in fade-in zoom-in-95 after:rounded-md",
+            // Set transform-origin for every combination of side and align
+            "data-[side=bottom]:data-[align=center]:origin-top",
+            "data-[side=bottom]:data-[align=end]:origin-top-right",
+            "data-[side=bottom]:data-[align=start]:origin-top-left",
+            "data-[side=left]:data-[align=center]:origin-right",
+            "data-[side=left]:data-[align=end]:origin-bottom-right",
+            "data-[side=left]:data-[align=start]:origin-top-right",
+            "data-[side=right]:data-[align=center]:origin-left",
+            "data-[side=right]:data-[align=end]:origin-bottom-left",
+            "data-[side=right]:data-[align=start]:origin-top-left",
+            "data-[side=top]:data-[align=center]:origin-bottom",
+            "data-[side=top]:data-[align=end]:origin-bottom-right",
+            "data-[side=top]:data-[align=start]:origin-bottom-left",
+          )}
           style={{ minWidth }}
         >
           {children}
