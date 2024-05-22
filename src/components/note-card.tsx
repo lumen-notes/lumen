@@ -208,6 +208,13 @@ const _NoteCard = React.memo(function NoteCard({
     return editorValue !== note.content
   }, [note, editorValue, defaultValue])
 
+  const revertChanges = React.useCallback(() => {
+    // Reset editor value to the last saved state of the note
+    setEditorValue(note?.content ?? defaultValue)
+    // Clear the "draft" from localStorage
+    localStorage.removeItem(getStorageKey({ githubRepo, id }))
+  }, [note, defaultValue, githubRepo, id])
+
   return (
     <Card
       // Used for focus management
@@ -377,6 +384,14 @@ const _NoteCard = React.memo(function NoteCard({
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
+               {isDirty ? (
+                 <DropdownMenu.Item
+                    icon={<ExternalLinkIcon16 />}
+                    onSelect={revertChanges}
+                  >
+                    Revert changes
+                  </DropdownMenu.Item>
+               ) : null}
                 <DropdownMenu.Item
                   icon={
                     isPinned(note) ? (
