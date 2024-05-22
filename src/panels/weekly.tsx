@@ -99,10 +99,12 @@ function DailyNoteCard({ id }: { id: NoteId }) {
     ) : (
       // Note card placeholder
       <button
-        className="filepath flex h-12 w-full items-center rounded-lg border border-dashed border-border bg-clip-border px-[calc(1rem-1px)] text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
+        className="flex h-12 w-full items-center gap-1 rounded-lg border border-dashed border-border bg-clip-border px-[calc(1rem-1px)] text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
         onClick={() => setShowForm(true)}
       >
-        {id}.md · {DAY_NAMES[day]}
+        <span className="filepath">{id}.md</span>
+        <span>·</span>
+        <span>{DAY_NAMES[day]}</span>
       </button>
     )
   }
