@@ -658,6 +658,15 @@ export function PinFillIcon12(props: IconProps) {
     </Icon>
   )
 }
+
+export function UndoIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="m3.31 5 2.75-2.75L5 1.19.44 5.75 5 10.31l1.06-1.06L3.31 6.5h7.19a3 3 0 1 1 0 6H9V14h1.5a4.5 4.5 0 1 0 0-9H3.31Z" />
+    </Icon>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {

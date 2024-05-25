@@ -30,6 +30,7 @@ import {
   PinIcon16,
   ShareIcon16,
   TrashIcon16,
+  UndoIcon16,
 } from "./icons"
 import { Link } from "./link"
 import { Markdown } from "./markdown"
@@ -384,14 +385,11 @@ const _NoteCard = React.memo(function NoteCard({
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
-               {isDirty ? (
-                 <DropdownMenu.Item
-                    icon={<ExternalLinkIcon16 />}
-                    onSelect={discardChanges}
-                  >
+                {isDirty ? (
+                  <DropdownMenu.Item icon={<UndoIcon16 />} onSelect={discardChanges}>
                     Discard changes
                   </DropdownMenu.Item>
-               ) : null}
+                ) : null}
                 <DropdownMenu.Item
                   icon={
                     isPinned(note) ? (
