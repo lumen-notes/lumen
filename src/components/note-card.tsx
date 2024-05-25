@@ -30,6 +30,7 @@ import {
   PinIcon16,
   ShareIcon16,
   TrashIcon16,
+  UndoIcon16,
 } from "./icons"
 import { Link } from "./link"
 import { Markdown } from "./markdown"
@@ -223,6 +224,13 @@ const _NoteCard = React.memo(function NoteCard({
     return editorValue !== note.content
   }, [note, editorValue, defaultValue])
 
+  const discardChanges = React.useCallback(() => {
+    // Reset editor value to the last saved state of the note
+    setEditorValue(note?.content ?? defaultValue)
+    // Clear the "draft" from localStorage
+    localStorage.removeItem(getStorageKey({ githubRepo, id }))
+  }, [note, defaultValue, githubRepo, id])
+
   return (
     <Card
       // Used for focus management
@@ -392,6 +400,14 @@ const _NoteCard = React.memo(function NoteCard({
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
+                {isDirty ? (
+                  <>
+                    <DropdownMenu.Item icon={<UndoIcon16 />} onSelect={discardChanges}>
+                      Discard changes
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
+                ) : null}
                 <DropdownMenu.Item
                   icon={
                     isPinned(note) ? (
