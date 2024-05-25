@@ -386,9 +386,12 @@ const _NoteCard = React.memo(function NoteCard({
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
                 {isDirty ? (
-                  <DropdownMenu.Item icon={<UndoIcon16 />} onSelect={discardChanges}>
-                    Discard changes
-                  </DropdownMenu.Item>
+                  <>
+                    <DropdownMenu.Item icon={<UndoIcon16 />} onSelect={discardChanges}>
+                      Discard changes
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
                 ) : null}
                 <DropdownMenu.Item
                   icon={
