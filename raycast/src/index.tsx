@@ -1,5 +1,5 @@
 import { AI, Action, ActionPanel, Form, Toast, getPreferenceValues, showToast } from "@raycast/api";
-import { OAuthService, getAccessToken, withAccessToken } from "@raycast/utils";
+import { FormValidation, OAuthService, getAccessToken, useForm, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
 import { Octokit } from "octokit";
 import { useRef, useState } from "react";
@@ -47,19 +47,59 @@ tags: [reference, app]
 ];
 
 type FormValues = {
-  url: string;
   noteContent: string;
 };
 
 function Command() {
   const urlRef = useRef<Form.TextField>(null);
-  const [noteContent, setNoteContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  function resetForm() {
-    urlRef.current?.reset();
-    setNoteContent("");
-  }
+  const { handleSubmit, itemProps, setValue, reset } = useForm<FormValues>({
+    onSubmit: async (values) => {
+      const { token } = getAccessToken();
+      const octokit = new Octokit({ auth: token, request: { fetch } });
+
+      // TODO: Should this be configurable?
+      const path = `${Date.now()}.md`;
+
+      // TODO: Validate repository format
+      const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
+
+      const toast = await showToast({
+        style: Toast.Style.Animated,
+        title: "Creating note...",
+      });
+
+      try {
+        await octokit.rest.repos.createOrUpdateFileContents({
+          owner,
+          repo,
+          path,
+          message: `Create ${path}`,
+          content: Buffer.from(values.noteContent).toString("base64"),
+        });
+
+        // Show success message
+        toast.style = Toast.Style.Success;
+        toast.title = "Created note";
+
+        // Reset form
+        reset();
+        urlRef.current?.reset();
+        urlRef.current?.focus();
+      } catch (error) {
+        // Show error message
+        toast.style = Toast.Style.Failure;
+        toast.title = "Failed to create note";
+        if (error instanceof Error) {
+          toast.message = error.message;
+        }
+      }
+    },
+    validation: {
+      noteContent: FormValidation.Required,
+    },
+  });
 
   return (
     <>
@@ -67,49 +107,7 @@ function Command() {
         isLoading={isLoading}
         actions={
           <ActionPanel>
-            <Action.SubmitForm
-              title="Create Note"
-              onSubmit={async (values: FormValues) => {
-                console.log(values);
-                const { token } = getAccessToken();
-                const octokit = new Octokit({ auth: token, request: { fetch } });
-
-                // TODO: Should this be configurable?
-                const path = `${Date.now()}.md`;
-
-                // TODO: Validate repository format
-                const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
-
-                const toast = await showToast({
-                  style: Toast.Style.Animated,
-                  title: "Creating note...",
-                });
-
-                try {
-                  // TODO: Ensure note content is not empty
-                  await octokit.rest.repos.createOrUpdateFileContents({
-                    owner,
-                    repo,
-                    path,
-                    message: `Create ${path}`,
-                    content: Buffer.from(values.noteContent).toString("base64"),
-                  });
-
-                  // Show success message
-                  toast.style = Toast.Style.Success;
-                  toast.title = "Created note";
-
-                  resetForm();
-                } catch (error) {
-                  // Show error message
-                  toast.style = Toast.Style.Failure;
-                  toast.title = "Failed to create note";
-                  if (error instanceof Error) {
-                    toast.message = error.message;
-                  }
-                }
-              }}
-            />
+            <Action.SubmitForm title="Create Note" onSubmit={handleSubmit} />
           </ActionPanel>
         }
       >
@@ -147,7 +145,7 @@ function Command() {
               },
             );
 
-            setNoteContent(answer);
+            setValue("noteContent", answer);
             setIsLoading(false);
           }}
         />
@@ -156,7 +154,7 @@ function Command() {
         {/* <Form.Dropdown id="template" title="Template">
           <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
         </Form.Dropdown> */}
-        <Form.TextArea id="noteContent" title="Note" value={noteContent} onChange={setNoteContent} />
+        <Form.TextArea title="Note" {...itemProps.noteContent} />
       </Form>
     </>
   );
