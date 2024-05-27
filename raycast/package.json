@@ -13,9 +13,19 @@
   "commands": [
     {
       "name": "index",
-      "title": "Quick Capture",
+      "title": "Smart Web Capture",
       "description": "Template for submitting a form",
       "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "repository",
+      "title": "Repository",
+      "description": "A GitHub repository to store your notes in",
+      "type": "textfield",
+      "required": true,
+      "placeholder": "owner/repo"
     }
   ],
   "dependencies": {

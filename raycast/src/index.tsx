@@ -1,10 +1,11 @@
-import { AI, Action, ActionPanel, Form, popToRoot } from "@raycast/api";
+import { AI, Action, ActionPanel, Form, getPreferenceValues, popToRoot } from "@raycast/api";
 import { OAuthService, getAccessToken, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useState } from "react";
 import { Octokit } from "octokit";
 
 // TODO: Add UI for managing templates
+// TODO: Support EJS templates
 const templates = [
   {
     id: "book",
@@ -68,16 +69,19 @@ function Command() {
                 // TODO: Validation
 
                 const { token } = getAccessToken();
-
-                const fileName = `${Date.now()}.md`;
-
                 const octokit = new Octokit({ auth: token, request: { fetch } });
 
+                const path = `${Date.now()}.md`;
+
+                // TODO: Validate repository format
+                const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
+
+                // TODO: Show success/error message
                 await octokit.rest.repos.createOrUpdateFileContents({
-                  owner: "colebemis",
-                  repo: "test",
-                  path: fileName,
-                  message: `Create ${fileName}`,
+                  owner,
+                  repo,
+                  path,
+                  message: `Create ${path}`,
                   content: Buffer.from(values.noteContent).toString("base64"),
                 });
 
