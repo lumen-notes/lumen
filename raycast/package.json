@@ -22,7 +22,8 @@
     "@raycast/api": "^1.75.1",
     "@raycast/utils": "^1.15.0",
     "dedent": "^1.5.3",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "octokit": "^4.0.2"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.6",

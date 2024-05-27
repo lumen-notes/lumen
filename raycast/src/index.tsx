@@ -1,7 +1,8 @@
-import { AI, Form } from "@raycast/api";
-import { OAuthService, withAccessToken } from "@raycast/utils";
+import { AI, Action, ActionPanel, Form, popToRoot } from "@raycast/api";
+import { OAuthService, getAccessToken, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useState } from "react";
+import { Octokit } from "octokit";
 
 // TODO: Add UI for managing templates
 const templates = [
@@ -44,13 +45,48 @@ tags: [reference, app]
   },
 ];
 
+type FormValues = {
+  url: string;
+  noteContent: string;
+};
+
 function Command() {
   const [noteContent, setNoteContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
-      <Form isLoading={isLoading}>
+      <Form
+        isLoading={isLoading}
+        actions={
+          <ActionPanel>
+            <Action.SubmitForm
+              title="Create Note"
+              onSubmit={async (values: FormValues) => {
+                console.log(values);
+
+                // TODO: Validation
+
+                const { token } = getAccessToken();
+
+                const fileName = `${Date.now()}.md`;
+
+                const octokit = new Octokit({ auth: token, request: { fetch } });
+
+                await octokit.rest.repos.createOrUpdateFileContents({
+                  owner: "colebemis",
+                  repo: "test",
+                  path: fileName,
+                  message: `Create ${fileName}`,
+                  content: Buffer.from(values.noteContent).toString("base64"),
+                });
+
+                popToRoot();
+              }}
+            />
+          </ActionPanel>
+        }
+      >
         <Form.TextField
           id="url"
           title="URL"
@@ -92,7 +128,7 @@ function Command() {
         {/* <Form.Dropdown id="template" title="Template">
           <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
         </Form.Dropdown> */}
-        <Form.TextArea id="note-content" title="Note" value={noteContent} />
+        <Form.TextArea id="noteContent" title="Note" value={noteContent} onChange={setNoteContent} />
       </Form>
     </>
   );
