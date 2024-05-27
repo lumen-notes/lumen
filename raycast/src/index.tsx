@@ -1,15 +1,6 @@
-import { Form, ActionPanel, Action, showToast, AI } from "@raycast/api";
+import { AI, Form } from "@raycast/api";
 import fetch from "node-fetch";
 import { useState } from "react";
-
-type Values = {
-  textfield: string;
-  textarea: string;
-  datepicker: Date;
-  checkbox: boolean;
-  dropdown: string;
-  tokeneditor: string[];
-};
 
 // TODO: Add UI for managing templates
 const templates = [
@@ -56,21 +47,9 @@ export default function Command() {
   const [noteContent, setNoteContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(values: Values) {
-    console.log(values);
-    showToast({ title: "Submitted form", message: "See logs for submitted values" });
-  }
-
   return (
     <>
-      <Form
-        isLoading={isLoading}
-        actions={
-          <ActionPanel>
-            <Action.SubmitForm onSubmit={handleSubmit} />
-          </ActionPanel>
-        }
-      >
+      <Form isLoading={isLoading}>
         <Form.TextField
           id="url"
           title="URL"
@@ -94,7 +73,6 @@ export default function Command() {
 
             const text = await response.text();
 
-            // TODO: Add a dropdown to manually select a template if the AI choice is incorrect
             const answer = await AI.ask(
               `You will be provided with a list of note templates and a text representation of a webpage. Your task is to choose the most relavant template based on the content of the webpage and fill in that template with details from the webpage. Do not repond with anything expect the filled in content of the template.\n\n${JSON.stringify(templates)}\n\n${text}`,
               {
@@ -108,8 +86,8 @@ export default function Command() {
             setIsLoading(false);
           }}
         />
-
         <Form.Separator />
+        {/* TODO: Add a dropdown to manually select a template if the AI choice is incorrect */}
         {/* <Form.Dropdown id="template" title="Template">
           <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
         </Form.Dropdown> */}
