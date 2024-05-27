@@ -1,8 +1,8 @@
-import { AI, Action, ActionPanel, Form, getPreferenceValues, popToRoot } from "@raycast/api";
+import { AI, Action, ActionPanel, Form, Toast, getPreferenceValues, showToast } from "@raycast/api";
 import { OAuthService, getAccessToken, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
-import { useState } from "react";
 import { Octokit } from "octokit";
+import { useRef, useState } from "react";
 
 // TODO: Add UI for managing templates
 // TODO: Support EJS templates
@@ -52,8 +52,14 @@ type FormValues = {
 };
 
 function Command() {
+  const urlRef = useRef<Form.TextField>(null);
   const [noteContent, setNoteContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  function resetForm() {
+    urlRef.current?.reset();
+    setNoteContent("");
+  }
 
   return (
     <>
@@ -65,33 +71,50 @@ function Command() {
               title="Create Note"
               onSubmit={async (values: FormValues) => {
                 console.log(values);
-
-                // TODO: Validation
-
                 const { token } = getAccessToken();
                 const octokit = new Octokit({ auth: token, request: { fetch } });
 
+                // TODO: Should this be configurable?
                 const path = `${Date.now()}.md`;
 
                 // TODO: Validate repository format
                 const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
 
-                // TODO: Show success/error message
-                await octokit.rest.repos.createOrUpdateFileContents({
-                  owner,
-                  repo,
-                  path,
-                  message: `Create ${path}`,
-                  content: Buffer.from(values.noteContent).toString("base64"),
+                const toast = await showToast({
+                  style: Toast.Style.Animated,
+                  title: "Creating note...",
                 });
 
-                popToRoot();
+                try {
+                  // TODO: Ensure note content is not empty
+                  await octokit.rest.repos.createOrUpdateFileContents({
+                    owner,
+                    repo,
+                    path,
+                    message: `Create ${path}`,
+                    content: Buffer.from(values.noteContent).toString("base64"),
+                  });
+
+                  // Show success message
+                  toast.style = Toast.Style.Success;
+                  toast.title = "Created note";
+
+                  resetForm();
+                } catch (error) {
+                  // Show error message
+                  toast.style = Toast.Style.Failure;
+                  toast.title = "Failed to create note";
+                  if (error instanceof Error) {
+                    toast.message = error.message;
+                  }
+                }
               }}
             />
           </ActionPanel>
         }
       >
         <Form.TextField
+          ref={urlRef}
           id="url"
           title="URL"
           placeholder="https://example.com"
@@ -118,6 +141,7 @@ function Command() {
               `You will be provided with a list of note templates and a text representation of a webpage. Your task is to choose the most relavant template based on the content of the webpage and fill in that template with details from the webpage. Do not repond with anything expect the filled in content of the template.\n\n${JSON.stringify(templates)}\n\n${text}`,
               {
                 // TODO: Allow users to select the model
+                // TODO: Check whether user has access to the model
                 // @ts-expect-error gpt-4o is supported
                 model: "openai-gpt-4o",
               },
