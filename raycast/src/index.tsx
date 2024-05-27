@@ -1,4 +1,5 @@
 import { AI, Form } from "@raycast/api";
+import { OAuthService, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
 import { useState } from "react";
 
@@ -43,7 +44,7 @@ tags: [reference, app]
   },
 ];
 
-export default function Command() {
+function Command() {
   const [noteContent, setNoteContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -96,3 +97,7 @@ export default function Command() {
     </>
   );
 }
+
+const githubClient = OAuthService.github({ scope: "repo" });
+
+export default withAccessToken(githubClient)(Command);
