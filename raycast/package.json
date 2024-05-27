@@ -3,7 +3,7 @@
   "name": "lumen",
   "title": "Lumen",
   "description": "A simple note-taking app for better thinking",
-  "icon": "command-icon.png",
+  "icon": "icon.png",
   "author": "cole",
   "categories": [
     "Applications",
