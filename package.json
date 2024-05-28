@@ -33,7 +33,7 @@
     "@isomorphic-git/cors-proxy": "^2.7.1",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "@lezer/highlight": "^1.2.0",
-    "@netlify/functions": "^2.4.1",
+    "@netlify/functions": "^2.7.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-alert-dialog": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.0.4",
