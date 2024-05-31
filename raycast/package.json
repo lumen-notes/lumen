@@ -32,6 +32,7 @@
     "@raycast/api": "^1.75.1",
     "@raycast/utils": "^1.15.0",
     "dedent": "^1.5.3",
+    "ejs": "^3.1.10",
     "node-fetch": "^3.3.2",
     "octokit": "^4.0.2"
   },

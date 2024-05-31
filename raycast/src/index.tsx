@@ -1,105 +1,71 @@
-import { AI, Action, ActionPanel, Form, Toast, getPreferenceValues, showToast } from "@raycast/api";
-import { FormValidation, OAuthService, getAccessToken, useForm, withAccessToken } from "@raycast/utils";
+import { Action, ActionPanel, Form, Toast, getPreferenceValues, showToast } from "@raycast/api";
+import { OAuthService, getAccessToken, withAccessToken } from "@raycast/utils";
 import fetch from "node-fetch";
 import { Octokit } from "octokit";
 import { useRef, useState } from "react";
-
-// TODO: Add UI for managing templates
-// TODO: Support EJS templates
-const templates = [
-  {
-    id: "book",
-    title: "Book",
-    template: `---
-tags: [reference, book]
-isbn: <ai>ISBN 13 of the book</ai>
-author: <ai>Author of the book</ai>
----
-
-# <ai>Title of the book (excluding subtitle)</ai>
-
-- <ai>One-liner description of the book</ai>`,
-  },
-  {
-    id: "article",
-    title: "Article",
-    template: `---
-tags: [reference, article]
-# Suggested tags: <ai>1-3 short tag suggestions based on the content of the article in lowercase. Use kebab-case if the tag is more than one word. A tag should be no more than two words.</ai>
-author: <ai>Author of the article</ai>
----
-
-# [<ai>Title of the article</ai>](<ai>URL of the article</ai>)
-
-- <ai>One-liner description of the article</ai>`,
-  },
-  {
-    id: "app",
-    title: "App",
-    template: `---
-tags: [reference, app]
----
-
-# [<ai>Name of the app</ai>](<ai>URL of the app landing page</ai>)
-
-- <ai>One-liner description of the app</ai>`,
-  },
-];
-
-type FormValues = {
-  noteContent: string;
-};
+import { chooseTemplate } from "./choose-template";
+import { fetchWebContent } from "./fetch-web-content";
+import { fillTemplate } from "./fill-template";
+import { templates } from "./templates";
 
 function Command() {
   const urlRef = useRef<Form.TextField>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [webContent, setWebContent] = useState("");
+  const [templateId, setTemplateId] = useState(Object.keys(templates)[0]);
+  const [noteContent, setNoteContent] = useState<string | null>(null);
 
-  const { handleSubmit, itemProps, setValue, reset } = useForm<FormValues>({
-    onSubmit: async (values) => {
-      const { token } = getAccessToken();
-      const octokit = new Octokit({ auth: token, request: { fetch } });
+  function reset() {
+    // Clear form values
+    urlRef.current?.reset();
+    setWebContent("");
+    setNoteContent(null);
 
-      // TODO: Should this be configurable?
-      const path = `${Date.now()}.md`;
+    // Focus url field
+    urlRef.current?.focus();
+  }
 
-      // TODO: Validate repository format
-      const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
+  async function handleSubmit() {
+    setIsLoading(true);
 
-      const toast = await showToast({
-        style: Toast.Style.Animated,
-        title: "Creating note...",
+    const toast = await showToast({
+      style: Toast.Style.Animated,
+      title: "Creating note...",
+    });
+
+    const { token } = getAccessToken();
+    const octokit = new Octokit({ auth: token, request: { fetch } });
+
+    // TODO: Should this be configurable?
+    const path = `${Date.now()}.md`;
+
+    const [owner, repo] = getPreferenceValues<{ repository: string }>().repository.split("/");
+
+    try {
+      await octokit.rest.repos.createOrUpdateFileContents({
+        owner,
+        repo,
+        path,
+        message: `Create ${path}`,
+        content: Buffer.from(noteContent || "").toString("base64"),
       });
 
-      try {
-        await octokit.rest.repos.createOrUpdateFileContents({
-          owner,
-          repo,
-          path,
-          message: `Create ${path}`,
-          content: Buffer.from(values.noteContent).toString("base64"),
-        });
+      // Show success message
+      toast.style = Toast.Style.Success;
+      toast.title = `Created ${path} in ${owner}/${repo}`;
 
-        // Show success message
-        toast.style = Toast.Style.Success;
-        toast.title = "Created note";
-
-        // Reset form
-        reset();
-        urlRef.current?.reset();
-        urlRef.current?.focus();
-      } catch (error) {
-        // Show error message
-        toast.style = Toast.Style.Failure;
-        toast.title = "Failed to create note";
-        if (error instanceof Error) {
-          toast.message = error.message;
-        }
+      reset();
+    } catch (error) {
+      // Show error message
+      toast.style = Toast.Style.Failure;
+      toast.title = "Failed to create note";
+      if (error instanceof Error) {
+        toast.message = error.message;
       }
-    },
-    validation: {
-      noteContent: FormValidation.Required,
-    },
-  });
+    }
+
+    setIsLoading(false);
+  }
 
   return (
     <>
@@ -120,46 +86,69 @@ function Command() {
           onChange={async (url) => {
             // If value is not a valid HTTP URL, return early
             const urlRegex = new RegExp("^(http|https)://", "i");
+
             if (!urlRegex.test(url)) {
               return;
             }
 
             setIsLoading(true);
 
-            const response = await fetch(`https://r.jina.ai/${url}`);
+            const toast = await showToast({ style: Toast.Style.Animated, title: "Fetching web content..." });
+            const webContent = await fetchWebContent(url);
 
-            if (!response.ok) {
-              // TODO: Handle error
-              return;
-            }
+            toast.title = "Choosing note template...";
+            const templateId = await chooseTemplate(templates, webContent);
 
-            const text = await response.text();
+            toast.title = "Generating note content...";
+            const noteContent = await fillTemplate(templates[templateId].template, webContent);
 
-            const answer = await AI.ask(
-              `You will be provided with a list of note templates and a text representation of a webpage. Your task is to choose the most relavant template based on the content of the webpage and fill in that template with details from the webpage. Do not repond with anything expect the filled in content of the template.\n\n${JSON.stringify(templates)}\n\n${text}`,
-              {
-                // TODO: Allow users to select the model
-                // TODO: Check whether user has access to the model
-                // @ts-expect-error gpt-4o is supported
-                model: "openai-gpt-4o",
-              },
-            );
+            setWebContent(webContent);
+            setTemplateId(templateId);
+            setNoteContent(noteContent);
 
-            setValue("noteContent", answer);
+            toast.style = Toast.Style.Success;
+            toast.title = "Generated note content";
+
             setIsLoading(false);
           }}
         />
-        <Form.Separator />
-        {/* TODO: Add a dropdown to manually select a template if the AI choice is incorrect */}
-        {/* <Form.Dropdown id="template" title="Template">
-          <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
-        </Form.Dropdown> */}
-        <Form.TextArea title="Note" {...itemProps.noteContent} />
+        {noteContent !== null ? (
+          <>
+            <Form.Separator />
+            <Form.Dropdown
+              id="template"
+              title="Template"
+              value={templateId}
+              onChange={async (value) => {
+                setTemplateId(value);
+
+                if (!webContent) {
+                  return;
+                }
+
+                setIsLoading(true);
+
+                const toast = await showToast({ style: Toast.Style.Animated, title: "Generating note content..." });
+                const noteContent = await fillTemplate(templates[value].template, webContent);
+
+                setNoteContent(noteContent);
+
+                toast.style = Toast.Style.Success;
+                toast.title = "Generated note content";
+
+                setIsLoading(false);
+              }}
+            >
+              {Object.values(templates).map((template) => (
+                <Form.Dropdown.Item key={template.id} value={template.id} title={template.title} />
+              ))}
+            </Form.Dropdown>
+            <Form.TextArea id="noteContent" title="Note" value={noteContent} onChange={setNoteContent} />
+          </>
+        ) : null}
       </Form>
     </>
   );
 }
 
-const githubClient = OAuthService.github({ scope: "repo" });
-
-export default withAccessToken(githubClient)(Command);
+export default withAccessToken(OAuthService.github({ scope: "repo" }))(Command);
