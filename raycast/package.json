@@ -12,9 +12,15 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
+      "name": "smart-web-capture",
       "title": "Smart Web Capture",
       "description": "Capture web content with smart templates",
+      "mode": "view"
+    },
+    {
+      "name": "manage-smart-templates",
+      "title": "Manage Smart Templates",
+      "description": "Manage smart templates for web capture",
       "mode": "view"
     }
   ],
