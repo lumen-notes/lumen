@@ -18,7 +18,7 @@ import { parseFrontmatter } from "./parse-frontmatter"
  * We memoize this function because it's called a lot and it's expensive.
  * We're intentionally sacrificing memory usage for runtime performance.
  */
-export const parseNote = memoize((id: NoteId, content: string) => {
+export const parseNote = memoize((text: string) => {
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
@@ -26,7 +26,7 @@ export const parseNote = memoize((id: NoteId, content: string) => {
   const links = new Set<NoteId>()
   let openTasks = 0
 
-  const { frontmatter } = parseFrontmatter(content)
+  const { frontmatter, content } = parseFrontmatter(text)
 
   const mdast = fromMarkdown(
     content,

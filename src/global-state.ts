@@ -535,7 +535,7 @@ export const notesAtom = atom((get) => {
   for (const filepath in markdownFiles) {
     const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
-    notes.set(id, { id, content, ...parseNote(id, content), backlinks: [] })
+    notes.set(id, { id, content, ...parseNote(content), backlinks: [] })
   }
 
   // Derive backlinks
