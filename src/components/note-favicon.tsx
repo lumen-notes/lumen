@@ -2,10 +2,10 @@ import { useNetworkState } from "react-use"
 import { Note, templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString } from "../utils/date"
+import { getLeadingEmoji } from "../utils/emoji"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
-import emojiRegex from "emoji-regex"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
   note: Note
@@ -22,10 +22,16 @@ export function NoteFavicon({
 
   let icon = defaultFavicon
 
-  // Check if note title starts with a single emoji
-  const emojiMatch = note.title.match(emojiRegex())
-  if (emojiMatch && emojiMatch.index === 0) {
-    icon = emojiMatch[0]
+  // Emoji
+  const leadingEmoji = getLeadingEmoji(note.title)
+  if (leadingEmoji) {
+    icon = (
+      <svg className="h-4 w-4" viewBox="0 0 16 16">
+        <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={16}>
+          {leadingEmoji}
+        </text>
+      </svg>
+    )
   }
 
   // Daily note
