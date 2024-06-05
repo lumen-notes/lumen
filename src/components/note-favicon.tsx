@@ -5,6 +5,7 @@ import { isValidDateString, isValidWeekString } from "../utils/date"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
+import emojiRegex from "emoji-regex"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
   note: Note
@@ -20,6 +21,12 @@ export function NoteFavicon({
   const { online } = useNetworkState()
 
   let icon = defaultFavicon
+
+  // Check if note title starts with a single emoji
+  const emojiMatch = note.title.match(emojiRegex())
+  if (emojiMatch && emojiMatch.index === 0) {
+    icon = emojiMatch[0]
+  }
 
   // Daily note
   if (isValidDateString(note.id)) {
