@@ -76,6 +76,7 @@ export const parseNote = memoize((text: string) => {
       }
     }
   }
+  
   // It's important that embed is included after wikilink.
   // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
   // If embed is included before wikilink, all embeds are parsed as wikilinks.
