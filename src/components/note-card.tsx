@@ -240,6 +240,24 @@ const _NoteCard = React.memo(function NoteCard({
       focusVisible={selected || editorHasFocus}
       className="group flex flex-col"
       elevation={elevation}
+      onFocus={(event) => {
+        // Ignore focus events from children
+        if (event.target !== cardRef.current) {
+          return
+        }
+
+        // Forward focus to the editor when in write mode
+        // HACK: This makes it impossible to Shift + Tab out of the card when in write mode
+        if (mode === "write") {
+          setTimeout(
+            () => {
+              editorRef.current?.view?.focus()
+            },
+            // Make sure the editor is mounted before focusing
+            10,
+          )
+        }
+      }}
       onMouseDown={(event) => {
         // Double click to edit
         if (event.detail > 1 && mode === "read") {
