@@ -23,6 +23,7 @@ import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance, isValidUnixTimestamp } from "../utils/date"
 import { getEditorSettings } from "../utils/editor-settings"
+import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
@@ -436,7 +437,9 @@ function useNoteCompletion() {
           info: content,
           apply: (view, completion, from, to) => {
             // Insert link to note
-            const text = `[[${note.id}${note?.title ? `|${note.title}` : ""}]]`
+            const text = `[[${note.id}${
+              note?.title ? `|${removeLeadingEmoji(note.title).trim()}` : ""
+            }]]`
 
             const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
             view.dispatch({

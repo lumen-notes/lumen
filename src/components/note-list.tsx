@@ -6,6 +6,8 @@ import { useDebouncedValue } from "../hooks/debounced-value"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { useSearchParam } from "../hooks/search-param"
 import { templateSchema } from "../schema"
+import { removeLeadingEmoji } from "../utils/emoji"
+import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { Button } from "./button"
@@ -20,7 +22,6 @@ import { NoteFavicon } from "./note-favicon"
 import { usePanel, usePanelActions } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { isPinned } from "../utils/pin"
 
 const viewTypeSchema = z.enum(["list", "cards"])
 
@@ -268,7 +269,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                         <span className="text-text">
                           {parsedTemplate.success
                             ? `${parsedTemplate.data.name} template`
-                            : note.title || note.id}
+                            : removeLeadingEmoji(note.title) || note.id}
                         </span>
                         <span className="ml-2 ">
                           {removeParentTags(note.tags)

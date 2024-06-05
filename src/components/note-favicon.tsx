@@ -2,6 +2,7 @@ import { useNetworkState } from "react-use"
 import { Note, templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString } from "../utils/date"
+import { getLeadingEmoji } from "../utils/emoji"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
@@ -20,6 +21,18 @@ export function NoteFavicon({
   const { online } = useNetworkState()
 
   let icon = defaultFavicon
+
+  // Emoji
+  const leadingEmoji = getLeadingEmoji(note.title)
+  if (leadingEmoji) {
+    icon = (
+      <svg className="h-4 w-4" viewBox="0 0 16 16">
+        <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={16}>
+          {leadingEmoji}
+        </text>
+      </svg>
+    )
+  }
 
   // Daily note
   if (isValidDateString(note.id)) {

@@ -13,6 +13,7 @@ import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note, templateSchema } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
+import { removeLeadingEmoji } from "../utils/emoji"
 import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -272,7 +273,7 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="grid grid-cols-[1.75rem_1fr_auto]">
-        <span className="text-text-secondary">{icon}</span>
+        <span className="flex text-text-secondary">{icon}</span>
         <span className="flex truncate">{children}</span>
         {description ? <span className="text-text-secondary">{description}</span> : null}
       </div>
@@ -296,7 +297,7 @@ function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
         {parsedTemplate.success ? (
           <span>{parsedTemplate.data.name} template</span>
         ) : (
-          <span>{note.title || note.id}</span>
+          <span>{removeLeadingEmoji(note.title) || note.id}</span>
         )}
         <span className="text-text-secondary">
           {removeParentTags(note.tags)
