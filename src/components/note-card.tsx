@@ -254,7 +254,7 @@ const _NoteCard = React.memo(function NoteCard({
               editorRef.current?.view?.focus()
             },
             // Make sure the editor is mounted before focusing
-            10,
+            20,
           )
         }
       }}
