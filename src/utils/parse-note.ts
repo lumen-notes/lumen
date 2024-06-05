@@ -1,13 +1,14 @@
 import memoize from "fast-memoize"
 import { fromMarkdown } from "mdast-util-from-markdown"
+import { Node } from "mdast-util-from-markdown/lib"
 import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { z } from "zod"
 import { embed, embedFromMarkdown } from "../remark-plugins/embed"
-import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
+import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { NoteId } from "../schema"
 import { getNextBirthday, isValidDateString, toDateStringUtc } from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
@@ -28,24 +29,7 @@ export const parseNote = memoize((text: string) => {
 
   const { frontmatter, content } = parseFrontmatter(text)
 
-  const mdast = fromMarkdown(
-    content,
-    // @ts-ignore TODO: Fix types
-    {
-      // It's important that embed is included after wikilink.
-      // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
-      // If embed is included before wikilink, all embeds are parsed as wikilinks.
-      extensions: [gfmTaskListItem(), wikilink(), embed(), tag()],
-      mdastExtensions: [
-        gfmTaskListItemFromMarkdown(),
-        wikilinkFromMarkdown(),
-        embedFromMarkdown(),
-        tagFromMarkdown(),
-      ],
-    },
-  )
-
-  visit(mdast, (node) => {
+  function visitNode(node: Node) {
     switch (node.type) {
       case "heading": {
         // Only use the first heading
@@ -91,7 +75,36 @@ export const parseNote = memoize((text: string) => {
         break
       }
     }
-  })
+  }
+  
+  // It's important that embed is included after wikilink.
+  // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
+  // If embed is included before wikilink, all embeds are parsed as wikilinks.
+  const extensions = [gfmTaskListItem(), wikilink(), embed(), tag()]
+  const mdastExtensions = [
+    gfmTaskListItemFromMarkdown(),
+    wikilinkFromMarkdown(),
+    embedFromMarkdown(),
+    tagFromMarkdown(),
+  ]
+
+  const contentMdast = fromMarkdown(
+    content,
+    // @ts-ignore TODO: Fix types
+    { extensions, mdastExtensions },
+  )
+
+  visit(contentMdast, visitNode)
+
+  // Parse frontmatter as markdown to find things like wikilinks and tags
+  const frontmatterString = text.slice(0, text.length - content.length)
+  const frontmatterMdast = fromMarkdown(
+    frontmatterString,
+    // @ts-ignore TODO: Fix types
+    { extensions, mdastExtensions },
+  )
+
+  visit(frontmatterMdast, visitNode)
 
   // Check for dates in the frontmatter
   for (const value of Object.values(frontmatter)) {
