@@ -50,22 +50,3 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     </ErrorBoundary>
   </React.StrictMode>,
 )
-
-async function registerServiceWorker() {
-  if ("serviceWorker" in navigator) {
-    try {
-      console.log("Registering service worker…")
-      const registration = await navigator.serviceWorker.register("/service-worker.js")
-      console.log("Service worker registered:", registration)
-    } catch (error) {
-      console.error("Error during service worker registration:", error)
-    }
-  } else {
-    console.log("Service workers not supported")
-  }
-}
-
-// Register service worker in production
-if (process.env.NODE_ENV === "production") {
-  registerServiceWorker()
-}
