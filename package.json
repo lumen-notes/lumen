@@ -8,9 +8,7 @@
     "dev:netlify": "netlify dev",
     "dev:storybook": "storybook dev -p 6006",
     "build": "tsc && vite build",
-    "build:service-worker": "workbox generateSW workbox.config.cjs",
     "build:storybook": "storybook build",
-    "postbuild": "npm run build:service-worker",
     "preview": "vite preview",
     "format": "prettier --write .",
     "lint": "eslint --ext .js,.ts,.tsx src",
@@ -162,9 +160,9 @@
     "vite": "^4.5.3",
     "vite-node": "^0.24.3",
     "vite-plugin-node-polyfills": "^0.21.0",
+    "vite-plugin-pwa": "^0.20.0",
     "vitest": "^0.21.1",
-    "wait-on": "^7.0.1",
-    "workbox-cli": "^7.0.0"
+    "wait-on": "^7.0.1"
   },
   "prettier": {
     "semi": false,
