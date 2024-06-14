@@ -24,7 +24,7 @@
   "dependencies": {
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/commands": "^6.0.1",
-    "@codemirror/lang-markdown": "^6.2.2",
+    "@codemirror/lang-markdown": "^6.2.5",
     "@codemirror/lang-yaml": "^6.1.1",
     "@codemirror/state": "^6.1.0",
     "@codemirror/view": "^6.24.1",
@@ -120,7 +120,7 @@
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/benchmark": "^2.1.2",
     "@types/chrome": "^0.0.267",
-    "@types/d3-force": "^3.0.3",
+    "@types/d3-force": "^3.0.9",
     "@types/d3-selection": "^3.0.10",
     "@types/d3-zoom": "^3.0.8",
     "@types/lodash.debounce": "^4.0.9",
