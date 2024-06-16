@@ -2,7 +2,6 @@ import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 import {
   NavLinkProps,
   NavLink as RouterNavLink,
@@ -34,17 +33,41 @@ import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
-  const navigate = useNavigateWithCache()
+  const routerNavigate = useNavigateWithCache()
   const signOut = useSignOut()
   const isCalendarActive = useIsCalendarActive()
+  const panels = usePanels()
+  const { openPanel } = usePanelActions()
 
+ 
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
 
   useEvent("keydown", (event: KeyboardEvent) => {
     // Navigate to settings page with `command + ,`
     if (event.key === "," && (event.metaKey || event.ctrlKey)) {
-      navigate("/settings")
+      routerNavigate("/settings")
+      event.preventDefault()
+    }
+  })
+  
+  const routerNavigateIfNoPanel = React.useCallback(
+    (url: string) => {
+      if (openPanel) {
+        // If we're in a panels context, navigate by opening a panel
+        openPanel(url, panels.length - 1)
+      } else {
+        // Otherwise, navigate using the router
+        routerNavigate(url)
+      }
+    },
+    [openPanel, panels, routerNavigate],
+  )
+
+  useEvent("keydown", (event: KeyboardEvent) => {
+    // Navigate to new note with `command + i`
+    if (event.key === "i" && (event.metaKey || event.ctrlKey)) {
+      routerNavigateIfNoPanel(`/${Date.now()}`)
       event.preventDefault()
     }
   })
@@ -131,7 +154,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               {position === "bottom" ? <SyncDropdownMenuItem /> : null}
               <DropdownMenu.Item
                 icon={<SettingsIcon16 />}
-                onClick={() => navigate("/settings")}
+                onClick={() => routerNavigate("/settings")}
                 shortcut={["⌘", ","]}
               >
                 Settings
@@ -212,11 +235,6 @@ function NewNoteButton({
     },
     [openPanel, panels, routerNavigate],
   )
-
-  useHotkeys("mod+i", (event) => {
-    navigate(`/${Date.now()}`)
-    event.preventDefault()
-  })
 
   return (
     <IconButton
