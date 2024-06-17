@@ -147,7 +147,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.8.0",
     "http-server": "^14.1.1",
-    "netlify-cli": "^15.9.1",
+    "netlify-cli": "^17.27.0",
     "patch-package": "^6.4.7",
     "postcss": "^8.4.34",
     "prettier": "^2.7.1",
