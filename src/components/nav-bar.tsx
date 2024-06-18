@@ -213,10 +213,17 @@ function NewNoteButton({
     [openPanel, panels, routerNavigate],
   )
 
-  useHotkeys("mod+i", (event) => {
-    navigate(`/${Date.now()}`)
-    event.preventDefault()
-  })
+  useHotkeys(
+    "mod+i",
+    (event) => {
+      navigate(`/${Date.now()}`)
+      event.preventDefault()
+    },
+    {
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
 
   return (
     <IconButton
