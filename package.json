@@ -97,6 +97,7 @@
     "remark-math": "^6.0.0",
     "sentence-case": "^3.0.4",
     "serverless-http": "^3.2.0",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.2.1",
     "unified": "^10.1.2",
     "unist-util-visit": "^5.0.0",
@@ -162,7 +163,8 @@
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-pwa": "^0.20.0",
     "vitest": "^0.21.1",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "workbox-window": "^7.1.0"
   },
   "prettier": {
     "semi": false,
