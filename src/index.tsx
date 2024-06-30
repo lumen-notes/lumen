@@ -16,6 +16,8 @@ import { SettingsPage } from "./pages/settings"
 import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
 import "./styles/index.css"
+import { PromptUpdateProvider } from "./providers/prompt-update-provider"
+import { Toaster } from "./components/sonner"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -30,22 +32,25 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Tooltip.Provider>
-        <BrowserRouter>
-          <GitHubAuth>
-            <RootLayout>
-              <Routes>
-                <Route path="/" element={<NavLayout />}>
-                  <Route index element={<NotesPage />} />
-                  <Route path="tags" element={<TagsPage />} />
-                  <Route path="tags/*" element={<TagPage />} />
-                  <Route path="file" element={<FilePage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="*" element={<NotePage />} />
-                </Route>
-              </Routes>
-            </RootLayout>
-          </GitHubAuth>
-        </BrowserRouter>
+        <PromptUpdateProvider>
+          <BrowserRouter>
+            <GitHubAuth>
+              <RootLayout>
+                <Routes>
+                  <Route path="/" element={<NavLayout />}>
+                    <Route index element={<NotesPage />} />
+                    <Route path="tags" element={<TagsPage />} />
+                    <Route path="tags/*" element={<TagPage />} />
+                    <Route path="file" element={<FilePage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                    <Route path="*" element={<NotePage />} />
+                  </Route>
+                </Routes>
+              </RootLayout>
+            </GitHubAuth>
+          </BrowserRouter>
+        </PromptUpdateProvider>
+        <Toaster />
       </Tooltip.Provider>
     </ErrorBoundary>
   </React.StrictMode>,
