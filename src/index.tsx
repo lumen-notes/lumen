@@ -17,7 +17,6 @@ import { TagPage } from "./pages/tag"
 import { TagsPage } from "./pages/tags"
 import "./styles/index.css"
 import { PromptUpdateProvider } from "./providers/prompt-update-provider"
-import { Toaster } from "./components/sonner"
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
@@ -50,7 +49,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </GitHubAuth>
           </BrowserRouter>
         </PromptUpdateProvider>
-        <Toaster />
       </Tooltip.Provider>
     </ErrorBoundary>
   </React.StrictMode>,
