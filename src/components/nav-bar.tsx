@@ -169,7 +169,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 {position === "bottom" ? <SyncDropdownMenuItem /> : null}
-                {position === "bottom" ? (
+                {position === "bottom" && needRefresh ? (
                   <DropdownMenu.Item
                     icon={<RefreshIcon24 className="size-4" />}
                     onClick={() => setOpenUpdateAlertDialog(true)}
