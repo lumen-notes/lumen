@@ -34,9 +34,9 @@ import {
 import { usePanelActions, usePanels } from "./panels"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
-import { usePromptUpdate } from "../hooks/prompt-update"
 import { Card } from "./card"
 import { Button } from "./button"
+import { useRegisterSW } from "virtual:pwa-register/react"
 
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const navigate = useNavigateWithCache()
@@ -44,7 +44,22 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
   const isCalendarActive = useIsCalendarActive()
 
   // handle new update scenario
-  const { needRefresh, updateServiceWorker } = usePromptUpdate()
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(r) {
+      if (r) {
+        setInterval(() => {
+          r.update()
+        }, 60 * 60 * 1000)
+      }
+      console.log("SW Registered: " + r)
+    },
+    onRegisterError(error) {
+      console.error("SW registration error", error)
+    },
+  })
   const [openUpdateAlertDialog, setOpenUpdateAlertDialog] = useState(false)
 
   // Open tooltips on the side opposite to the nav bar.
