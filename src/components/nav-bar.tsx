@@ -124,6 +124,7 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 aria-label="New Update Available!"
                 tooltipSide="right"
                 onClick={() => setOpenUpdateAlertDialog(true)}
+                className="relative before:absolute before:right-0.5 before:top-0.5 before:size-2 before:rounded-full before:bg-text-danger"
               >
                 <RefreshIcon24 />
               </IconButton>
@@ -168,10 +169,11 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 {position === "bottom" ? <SyncDropdownMenuItem /> : null}
-                {position === "bottom" && needRefresh ? (
+                {position === "bottom" ? (
                   <DropdownMenu.Item
                     icon={<RefreshIcon24 className="size-4" />}
                     onClick={() => setOpenUpdateAlertDialog(true)}
+                    className="relative before:absolute before:left-1.5 before:top-1.5 before:size-1.5 before:rounded-full before:bg-text-danger"
                   >
                     New Update Available!
                   </DropdownMenu.Item>
