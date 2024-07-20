@@ -76,7 +76,7 @@ export const parseNote = memoize((text: string) => {
       }
     }
   }
-  
+
   // It's important that embed is included after wikilink.
   // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
   // If embed is included before wikilink, all embeds are parsed as wikilinks.
@@ -130,7 +130,7 @@ export const parseNote = memoize((text: string) => {
   }
 
   // Add tags from frontmatter
-  const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
+  const tagsSchema = z.array(z.string().regex(/^[\p{L}][\p{L}\p{N}_\-\/]*$/u))
   const parsedTags = tagsSchema.safeParse(frontmatter.tags)
 
   if (parsedTags.success) {
