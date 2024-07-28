@@ -90,8 +90,21 @@ function isMarkerChar(code: Code): boolean {
 function isAlphaChar(code: Code): boolean {
   if (code === null) return false
   return (
-    (code >= codes.lowercaseA && code <= codes.lowercaseZ) ||
-    (code >= codes.uppercaseA && code <= codes.uppercaseZ)
+    (code >= codes.lowercaseA && code <= codes.lowercaseZ) || // a-z
+    (code >= codes.uppercaseA && code <= codes.uppercaseZ) || // A-Z
+    (code >= 0x00c0 && code <= 0x00d6) || // Latin-1 Supplement (À-Ö)
+    (code >= 0x00d8 && code <= 0x00f6) || // Latin-1 Supplement (Ø-ö)
+    (code >= 0x00f8 && code <= 0x00ff) || // Latin-1 Supplement (ø-ÿ)
+    (code >= 0x0100 && code <= 0x017f) || // Latin Extended-A
+    (code >= 0x0180 && code <= 0x024f) || // Latin Extended-B
+    (code >= 0x0370 && code <= 0x03ff) || // Greek and Coptic
+    (code >= 0x0400 && code <= 0x04ff) || // Cyrillic
+    (code >= 0x0530 && code <= 0x058f) || // Armenian
+    (code >= 0x0590 && code <= 0x05ff) || // Hebrew
+    (code >= 0x0600 && code <= 0x06ff) || // Arabic
+    (code >= 0x0900 && code <= 0x097f) || // Devanagari
+    (code >= 0x4e00 && code <= 0x9fff) || // CJK Unified Ideographs
+    (code >= 0xac00 && code <= 0xd7af) // Hangul Syllables
   )
 }
 

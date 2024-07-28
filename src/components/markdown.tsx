@@ -442,7 +442,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     }
 
     case "tags": {
-      const tagsSchema = z.array(z.string().regex(/^[a-zA-Z][\w-/]*$/))
+      const tagsSchema = z.array(z.string().regex(/^[\p{L}][\p{L}\p{N}_\-\/]*$/u))
       const parsedTags = tagsSchema.safeParse(value)
       if (!parsedTags.success) break
 

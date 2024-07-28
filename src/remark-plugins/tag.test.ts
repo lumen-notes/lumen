@@ -47,7 +47,6 @@ runTests([
     output: `<p>hello</p>
 <p><tag name="world" /></p>`,
   },
-
   {
     input: `#hello-world`,
     output: `<p><tag name="hello-world" /></p>`,
@@ -79,6 +78,64 @@ runTests([
     output: `<blockquote>
 <p><tag name="hello" /></p>
 </blockquote>`,
+  },
+
+  // Valid non-English tag links
+  // {
+  //   input: `#こんにちは`,
+  //   output: `<p><tag name="こんにちは" /></p>`,
+  // },
+  {
+    input: `#Привет`,
+    output: `<p><tag name="Привет" /></p>`,
+  },
+  {
+    input: `#שלום`,
+    output: `<p><tag name="שלום" /></p>`,
+  },
+  {
+    input: `#مرحبا`,
+    output: `<p><tag name="مرحبا" /></p>`,
+  },
+  {
+    input: `#नमस्ते`,
+    output: `<p><tag name="नमस्ते" /></p>`,
+  },
+  {
+    input: `#안녕하세요`,
+    output: `<p><tag name="안녕하세요" /></p>`,
+  },
+  {
+    input: `#Γειάσου`,
+    output: `<p><tag name="Γειάσου" /></p>`,
+  },
+  {
+    input: `#Բարեւ`,
+    output: `<p><tag name="Բարեւ" /></p>`,
+  },
+  // {
+  //   input: `#ሰላም`,
+  //   output: `<p><tag name="ሰላም" /></p>`,
+  // },
+  {
+    input: `#Здравствуйте`,
+    output: `<p><tag name="Здравствуйте" /></p>`,
+  },
+  // {
+  //   input: `#สวัสดี`,
+  //   output: `<p><tag name="สวัสดี" /></p>`,
+  // },
+  {
+    input: `#xinchào`,
+    output: `<p><tag name="xinchào" /></p>`,
+  },
+  {
+    input: `#안녕하세요`,
+    output: `<p><tag name="안녕하세요" /></p>`,
+  },
+  {
+    input: `#chào`,
+    output: `<p><tag name="chào" /></p>`,
   },
 
   // Invalid tag links
@@ -132,5 +189,25 @@ runTests([
   {
     input: `##hello`,
     output: `<p>##hello</p>`,
+  },
+  {
+    input: `#你好!`,
+    output: `<p><tag name="你好" />!</p>`,
+  },
+  {
+    input: `#مرحبا!`,
+    output: `<p><tag name="مرحبا" />!</p>`,
+  },
+  // {
+  //   input: `#こんにちは!`,
+  //   output: `<p><tag name="こんにちは" />!</p>`,
+  // },
+  {
+    input: `#Γειάσου!`,
+    output: `<p><tag name="Γειάσου" />!</p>`,
+  },
+  {
+    input: `#Привет!`,
+    output: `<p><tag name="Привет" />!</p>`,
   },
 ])
