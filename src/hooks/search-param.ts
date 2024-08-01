@@ -48,6 +48,7 @@ export function useSearchParam<T = string>(
     searchParamsRef.current = searchParams
   }, [searchParams])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const setParam = React.useCallback(
     debounce((value: T) => {
       const searchString = qs.stringify(
