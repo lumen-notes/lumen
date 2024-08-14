@@ -26,7 +26,7 @@ export function NoteFavicon({
   const leadingEmoji = getLeadingEmoji(note.title)
   if (leadingEmoji) {
     icon = (
-      <svg className="h-4 w-4" viewBox="0 0 16 16">
+      <svg className="h-4 w-4 overflow-visible" viewBox="0 0 16 16">
         <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={16}>
           {leadingEmoji}
         </text>
