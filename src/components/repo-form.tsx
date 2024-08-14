@@ -7,6 +7,7 @@ import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { RadioGroup } from "./radio-group"
 import { TextInput } from "./text-input"
+import { cx } from "../utils/cx"
 
 type RepoFormProps = {
   onSubmit?: (repo: GitHubRepository) => void
@@ -173,11 +174,18 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             ) : null}
             <Button
               type="submit"
-              className="w-full flex-grow"
+              className="relative w-full flex-grow"
               variant="primary"
               disabled={isLoading}
             >
-              {isLoading ? <LoadingIcon16 /> : repoType === "new" ? "Create" : "Select"}
+              <span className={cx({ invisible: isLoading })}>
+                {repoType === "new" ? "Create" : "Select"}
+              </span>
+              {isLoading ? (
+                <span className="absolute inset-0 grid place-items-center">
+                  <LoadingIcon16 />
+                </span>
+              ) : null}
             </Button>
           </div>
           {error ? (
