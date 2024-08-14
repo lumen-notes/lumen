@@ -17,9 +17,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const [repoType, setRepoType] = React.useState<"new" | "existing">(
-    githubRepo ? "existing" : "new",
-  )
+  const [repoType, setRepoType] = React.useState<"new" | "existing">("existing")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
@@ -128,15 +126,15 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           name="repo-type"
         >
           <div className="flex items-center gap-2">
-            <RadioGroup.Item id="repo-new" value="new" />
-            <label htmlFor="repo-new" className="leading-4">
-              Create a new repository
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
             <RadioGroup.Item id="repo-existing" value="existing" />
             <label htmlFor="repo-existing" className="leading-4">
               Select an existing repository
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="repo-new" value="new" />
+            <label htmlFor="repo-new" className="leading-4">
+              Create a new repository
             </label>
           </div>
         </RadioGroup>
