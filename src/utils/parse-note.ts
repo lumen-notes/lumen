@@ -130,7 +130,7 @@ export const parseNote = memoize((text: string) => {
   }
 
   // Add tags from frontmatter
-  const tagsSchema = z.array(z.string().regex(/^[\p{L}][\p{L}\p{N}_\-\/]*$/u))
+  const tagsSchema = z.array(z.string().regex(/^[\p{L}][\p{L}\p{N}_\-/]*$/u))
   const parsedTags = tagsSchema.safeParse(frontmatter.tags)
 
   if (parsedTags.success) {

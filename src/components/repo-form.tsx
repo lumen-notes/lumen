@@ -7,6 +7,7 @@ import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { RadioGroup } from "./radio-group"
 import { TextInput } from "./text-input"
+import { cx } from "../utils/cx"
 
 type RepoFormProps = {
   onSubmit?: (repo: GitHubRepository) => void
@@ -17,9 +18,7 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const [repoType, setRepoType] = React.useState<"new" | "existing">(
-    githubRepo ? "existing" : "new",
-  )
+  const [repoType, setRepoType] = React.useState<"new" | "existing">("existing")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
@@ -128,15 +127,15 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
           name="repo-type"
         >
           <div className="flex items-center gap-2">
-            <RadioGroup.Item id="repo-new" value="new" />
-            <label htmlFor="repo-new" className="leading-4">
-              Create a new repository
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
             <RadioGroup.Item id="repo-existing" value="existing" />
             <label htmlFor="repo-existing" className="leading-4">
               Select an existing repository
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="repo-new" value="new" />
+            <label htmlFor="repo-new" className="leading-4">
+              Create a new repository
             </label>
           </div>
         </RadioGroup>
@@ -175,11 +174,18 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             ) : null}
             <Button
               type="submit"
-              className="w-full flex-grow"
+              className="relative w-full flex-grow"
               variant="primary"
               disabled={isLoading}
             >
-              {isLoading ? <LoadingIcon16 /> : repoType === "new" ? "Create" : "Select"}
+              <span className={cx({ invisible: isLoading })}>
+                {repoType === "new" ? "Create" : "Select"}
+              </span>
+              {isLoading ? (
+                <span className="absolute inset-0 grid place-items-center">
+                  <LoadingIcon16 />
+                </span>
+              ) : null}
             </Button>
           </div>
           {error ? (

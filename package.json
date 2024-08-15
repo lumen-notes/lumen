@@ -139,7 +139,7 @@
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.19",
     "benchmark": "^2.1.4",
-    "c8": "^9.1.0",
+    "c8": "^10.1.2",
     "concurrently": "^8.2.0",
     "eslint": "^8.54.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
@@ -162,7 +162,8 @@
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-pwa": "^0.20.0",
     "vitest": "^0.21.1",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "workbox-window": "^7.1.0"
   },
   "prettier": {
     "semi": false,
