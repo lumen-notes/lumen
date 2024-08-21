@@ -27,6 +27,7 @@ import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
+import { indentedLineWrap } from "../utils/codemirror/indentedLineWrap"
 
 type NoteEditorProps = {
   className?: string
@@ -128,6 +129,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       spellcheckExtension(),
       pasteExtension({ attachFile, onPaste }),
       syntaxHighlighting(syntaxHighlighter),
+      indentedLineWrap,
     ]
 
     if (editorSettings.vimMode) {

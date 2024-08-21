@@ -93,3 +93,16 @@
 .cm-editor .cm-lineNumbers .cm-gutterElement {
   @apply min-w-[1.5rem] p-0;
 }
+
+.indented-wrapped-line {
+  margin-left: calc(var(--indented));
+  text-indent: calc(-1 * var(--indented));
+}
+
+.indented-wrapped-line.cm-activeLine {
+  box-shadow: calc((-1 * var(--indented)) + 4px) 0 0 rgba(255, 255, 255, 0.025);
+}
+
+.indented-wrapped-line.cm-indent-markers::before {
+  left: calc(var(--indented) * -1);
+}
