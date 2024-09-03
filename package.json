@@ -160,7 +160,7 @@
     "vite": "^4.5.3",
     "vite-node": "^0.24.3",
     "vite-plugin-node-polyfills": "^0.21.0",
-    "vite-plugin-pwa": "^0.20.0",
+    "vite-plugin-pwa": "^0.20.2",
     "vitest": "^0.21.1",
     "wait-on": "^7.0.1",
     "workbox-window": "^7.1.0"
