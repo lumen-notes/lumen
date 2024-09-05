@@ -359,21 +359,15 @@ const _NoteCard = React.memo(function NoteCard({
       }}
     >
       <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
-        <span className="flex items-center gap-1 overflow-hidden px-2 text-text-secondary">
+        <Link
+          to={`/${id}`}
+          target="_blank"
+          className="focus-ring flex h-8 items-center gap-1 overflow-hidden rounded-sm px-2 text-text-secondary hover:bg-bg-secondary coarse:h-10"
+        >
           {isPinned(note) ? (
             <PinFillIcon12 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
-          {note ? (
-            <Link
-              to={`/${id}`}
-              target="_blank"
-              className="link filepath !no-underline hover:!underline"
-            >
-              {id}.md
-            </Link>
-          ) : (
-            <span className="filepath">{id}.md</span>
-          )}
+          <span className="filepath">{id}.md</span>
           {isDirty ? (
             <svg
               viewBox="0 0 16 16"
@@ -393,7 +387,7 @@ const _NoteCard = React.memo(function NoteCard({
               </span>
             </>
           ) : null}
-        </span>
+        </Link>
 
         <div
           className={cx(
