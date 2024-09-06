@@ -93,3 +93,11 @@
 .cm-editor .cm-lineNumbers .cm-gutterElement {
   @apply min-w-[1.5rem] p-0;
 }
+
+.cm-editor .cm-foldPlaceholder {
+  @apply rounded-xs border-none bg-bg-secondary px-1 text-text-secondary;
+}
+
+.cm-editor .cm-foldPlaceholder:hover {
+  @apply bg-bg-tertiary;
+}

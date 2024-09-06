@@ -78,6 +78,14 @@ export function SettingsPage() {
             />
             <label htmlFor="line-numbers">Line numbers</label>
           </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              id="fold-gutter"
+              defaultChecked={editorSettings.foldGutter}
+              onCheckedChange={(checked) => setEditorSettings({ foldGutter: checked })}
+            />
+            <label htmlFor="fold-gutter">Fold gutter</label>
+          </div>
         </Card>
       </div>
     </Panel>

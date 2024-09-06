@@ -143,7 +143,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         theme={theme}
         basicSetup={{
           lineNumbers: editorSettings.lineNumbers,
-          foldGutter: false,
+          foldGutter: editorSettings.foldGutter,
           highlightActiveLine: false,
           highlightSelectionMatches: false,
           bracketMatching: false,
