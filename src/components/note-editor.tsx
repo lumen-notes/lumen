@@ -24,6 +24,7 @@ import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance, isValidUnixTimestamp } from "../utils/date"
 import { getEditorSettings } from "../utils/editor-settings"
 import { removeLeadingEmoji } from "../utils/emoji"
+import { indentedLineWrapExtension } from "../utils/indented-line-wrap"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
@@ -128,6 +129,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       spellcheckExtension(),
       pasteExtension({ attachFile, onPaste }),
       syntaxHighlighting(syntaxHighlighter),
+      indentedLineWrapExtension,
     ]
 
     if (editorSettings.vimMode) {

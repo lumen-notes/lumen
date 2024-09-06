@@ -101,3 +101,8 @@
 .cm-editor .cm-foldPlaceholder:hover {
   @apply bg-bg-tertiary;
 }
+
+.cm-editor .indented-line {
+  margin-left: calc(1ch * var(--indent));
+  text-indent: calc(-1ch * var(--indent));
+}
