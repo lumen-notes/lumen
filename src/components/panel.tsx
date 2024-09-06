@@ -1,10 +1,11 @@
 import React from "react"
+import useResizeObserver from "use-resize-observer"
+import { z } from "zod"
+import { useSearchParam } from "../hooks/search-param"
+import { cx } from "../utils/cx"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CenteredIcon16, CloseIcon16, FullwidthIcon16, MoreIcon16 } from "./icons"
-import { cx } from "../utils/cx"
-import { z } from "zod"
-import { useSearchParam } from "../hooks/search-param"
 import { Panels } from "./panels"
 
 const layoutSchema = z.enum(["centered", "fullwidth"])
@@ -40,14 +41,17 @@ export function Panel({
     replace: true,
   })
 
+  const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
+
   const resolvedLayout = controlledLayout ?? layout
 
   return (
     <Panels.LinkProvider>
       <div
+        ref={containerRef}
         id={id}
         className={cx(
-          "grid h-full w-full grid-rows-[auto_1fr] overflow-hidden [&:not(:last-of-type)]:hidden md:[&:not(:last-of-type)]:grid",
+          "grid h-full w-full grid-rows-[auto_1fr] overflow-hidden @container [&:not(:last-of-type)]:hidden md:[&:not(:last-of-type)]:grid",
           className,
         )}
       >
@@ -66,34 +70,38 @@ export function Panel({
             </div>
           </div>
           <div className="flex gap-2">
-            {!controlledLayout || actions ? (
+            {actions ? (
               <DropdownMenu modal={false}>
                 <DropdownMenu.Trigger asChild>
                   <IconButton aria-label="Panel actions" disableTooltip>
                     <MoreIcon16 />
                   </IconButton>
                 </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="end">{actions}</DropdownMenu.Content>
+              </DropdownMenu>
+            ) : null}
+            {!controlledLayout && containerWidth > 800 ? (
+              <DropdownMenu modal={false}>
+                <DropdownMenu.Trigger asChild>
+                  <IconButton aria-label="Panel actions" disableTooltip>
+                    {layout === "centered" ? <CenteredIcon16 /> : <FullwidthIcon16 />}
+                  </IconButton>
+                </DropdownMenu.Trigger>
                 <DropdownMenu.Content align="end">
-                  {!controlledLayout ? (
-                    <>
-                      <DropdownMenu.Item
-                        selected={layout === "centered"}
-                        icon={<CenteredIcon16 />}
-                        onSelect={() => setLayout("centered")}
-                      >
-                        Centered layout
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        selected={layout === "fullwidth"}
-                        icon={<FullwidthIcon16 />}
-                        onSelect={() => setLayout("fullwidth")}
-                      >
-                        Fullwidth layout
-                      </DropdownMenu.Item>
-                    </>
-                  ) : null}
-                  {!controlledLayout && actions ? <DropdownMenu.Separator /> : null}
-                  {actions}
+                  <DropdownMenu.Item
+                    selected={layout === "centered"}
+                    icon={<CenteredIcon16 />}
+                    onSelect={() => setLayout("centered")}
+                  >
+                    Centered content
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    selected={layout === "fullwidth"}
+                    icon={<FullwidthIcon16 />}
+                    onSelect={() => setLayout("fullwidth")}
+                  >
+                    Fullwidth content
+                  </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu>
             ) : null}
