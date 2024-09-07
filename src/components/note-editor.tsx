@@ -17,14 +17,17 @@ import { useAtomCallback } from "jotai/utils"
 import { tags } from "@lezer/highlight"
 import { vim } from "@replit/codemirror-vim"
 import React from "react"
+import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
+import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
+import { pasteExtension } from "../codemirror-extensions/paste"
+import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
-import { formatDate, formatDateDistance, isValidUnixTimestamp } from "../utils/date"
+import { formatDate, formatDateDistance } from "../utils/date"
 import { getEditorSettings } from "../utils/editor-settings"
 import { removeLeadingEmoji } from "../utils/emoji"
-import { indentedLineWrapExtension } from "../utils/indented-line-wrap"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
@@ -129,7 +132,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       spellcheckExtension(),
       pasteExtension({ attachFile, onPaste }),
       syntaxHighlighting(syntaxHighlighter),
-      indentedLineWrapExtension,
+      indentedLineWrapExtension(),
     ]
 
     if (editorSettings.vimMode) {
@@ -186,92 +189,6 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     )
   },
 )
-
-function frontmatterExtension() {
-  return EditorView.inputHandler.of((view: EditorView, from: number, to: number, text: string) => {
-    // If you're inserting a `-` at index 2 and all previous characters are also `-`,
-    // insert a matching `---` below the line
-    if (
-      (text === "-" && from === 2 && view.state.sliceDoc(0, 2) === "--") ||
-      // Sometimes the mobile Safari replaces `--` with `—` so we need to handle that case too
-      (text === "-" && from === 1 && view.state.sliceDoc(0, 1) === "—")
-    ) {
-      view.dispatch({
-        changes: {
-          from: 0,
-          to,
-          insert: "---\n\n---",
-        },
-        selection: {
-          anchor: 4,
-        },
-      })
-
-      return true
-    }
-
-    return false
-  })
-}
-
-function spellcheckExtension() {
-  return EditorView.contentAttributes.of({ spellcheck: "true" })
-}
-
-function pasteExtension({
-  attachFile,
-  onPaste,
-}: {
-  attachFile: ReturnType<typeof useAttachFile>
-  onPaste: NoteEditorProps["onPaste"]
-}) {
-  return EditorView.domEventHandlers({
-    paste: (event, view) => {
-      const clipboardText = event.clipboardData?.getData("text/plain") ?? ""
-
-      // If the clipboard text is a URL or a Unix timestamp (likely a note ID),
-      // make the selected text a link to that URL or note
-      const isUrl = /^https?:\/\//.test(clipboardText)
-      const isUnixTimestamp = isValidUnixTimestamp(clipboardText)
-
-      if (isUrl || isUnixTimestamp) {
-        // Get the selected text
-        const { selection } = view.state
-        const { from = 0, to = 0 } = selection.ranges[selection.mainIndex] ?? {}
-        const selectedText = view?.state.doc.sliceString(from, to) ?? ""
-
-        if (selectedText) {
-          const markdown = isUnixTimestamp
-            ? `[[${clipboardText}|${selectedText}]]`
-            : `[${selectedText}](${clipboardText})`
-
-          view.dispatch({
-            changes: {
-              from,
-              to,
-              insert: markdown,
-            },
-            selection: {
-              anchor: from + markdown.length,
-            },
-          })
-
-          event.preventDefault()
-        }
-      }
-
-      // If the clipboard contains a file, upload it
-      const [file] = Array.from(event.clipboardData?.files ?? [])
-
-      if (file) {
-        attachFile(file, view)
-        event.preventDefault()
-      }
-
-      onPaste?.(event, view)
-    },
-  })
-}
 
 function dateCompletion(context: CompletionContext): CompletionResult | null {
   const word = context.matchBefore(/\[\[[^\]|^|]*/)

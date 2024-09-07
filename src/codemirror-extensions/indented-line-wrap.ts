@@ -45,6 +45,8 @@ function applyDecorations(state: EditorState) {
   return Decoration.set(decorations)
 }
 
-export const indentedLineWrapExtension: Extension = {
-  extension: listDecorationField,
+export function indentedLineWrapExtension(): Extension {
+  return {
+    extension: listDecorationField,
+  }
 }
