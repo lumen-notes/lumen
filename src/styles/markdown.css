@@ -76,7 +76,7 @@
 
 .markdown ul,
 .markdown ol {
-  @apply pl-9;
+  @apply pl-6;
 }
 
 .markdown ul ul,
@@ -100,7 +100,7 @@
 }
 
 .markdown ::marker {
-  @apply text-text-secondary;
+  @apply text-sm text-text-secondary;
 }
 
 .markdown table {
