@@ -252,7 +252,7 @@ function ErrorPanel({ children, onClose }: { children: React.ReactNode; onClose:
   )
 }
 
-function LinkProvider({ children }: { children: React.ReactNode }) {
+export function usePanelLinkClickHandler() {
   const navigate = useNavigate()
   const { openPanel, updatePanel } = usePanelActions()
   const panel = usePanel()
@@ -307,6 +307,11 @@ function LinkProvider({ children }: { children: React.ReactNode }) {
     [panel, openPanel, updatePanel, navigate],
   )
 
+  return handleClick
+}
+
+function LinkProvider({ children }: { children: React.ReactNode }) {
+  const handleClick = usePanelLinkClickHandler()
   return <LinkContext.Provider value={handleClick}>{children}</LinkContext.Provider>
 }
 

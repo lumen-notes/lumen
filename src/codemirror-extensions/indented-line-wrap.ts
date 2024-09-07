@@ -1,24 +1,23 @@
-import { EditorState, Extension, StateField } from "@codemirror/state"
+import { EditorState, Extension, Range, StateField } from "@codemirror/state"
 import { Decoration, EditorView } from "@codemirror/view"
 
 // Reference: https://discuss.codemirror.net/t/making-codemirror-6-respect-indent-for-wrapped-lines/2881/8
 
-// Create a state field to manage our decorations
-const listDecorationField = StateField.define({
+const indentedLineWrapField = StateField.define({
   create(state) {
-    return applyDecorations(state)
+    return getDecorations(state)
   },
   update(decorations, tr) {
     if (tr.docChanged || tr.selection) {
-      return applyDecorations(tr.state)
+      return getDecorations(tr.state)
     }
     return decorations
   },
   provide: (f) => EditorView.decorations.from(f),
 })
 
-function applyDecorations(state: EditorState) {
-  const decorations = []
+function getDecorations(state: EditorState) {
+  const decorations: Range<Decoration>[] = []
 
   for (let i = 0; i < state.doc.lines; i++) {
     const line = state.doc.line(i + 1)
@@ -35,7 +34,7 @@ function applyDecorations(state: EditorState) {
     const lineDecoration = Decoration.line({
       attributes: {
         style: `--indent: ${numLeadingSpaces + 2}`, // Add 2 for the bullet point and space
-        class: "indented-line",
+        class: "cm-indentedLine",
       },
     })
 
@@ -46,7 +45,5 @@ function applyDecorations(state: EditorState) {
 }
 
 export function indentedLineWrapExtension(): Extension {
-  return {
-    extension: listDecorationField,
-  }
+  return indentedLineWrapField
 }

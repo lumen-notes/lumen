@@ -95,14 +95,30 @@
 }
 
 .cm-editor .cm-foldPlaceholder {
-  @apply rounded-xs border-none bg-bg-secondary px-1 text-text-secondary;
+  @apply mx-0.5 rounded-xs border-none bg-bg-secondary px-1 text-text-secondary;
 }
 
 .cm-editor .cm-foldPlaceholder:hover {
   @apply bg-bg-tertiary;
 }
 
-.cm-editor .indented-line {
+.cm-editor .cm-indentedLine {
   margin-left: calc(1ch * var(--indent));
   text-indent: calc(-1ch * var(--indent));
+}
+
+.cm-editor .cm-wikilink {
+  @apply -mx-1 rounded-xs bg-bg-secondary px-1;
+}
+
+.cm-editor .cm-wikilink:hover {
+  @apply bg-bg-tertiary;
+}
+
+.cm-editor .cm-wikilink-enabled {
+  @apply underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
+}
+
+.cm-editor .cm-wikilink-enabled:hover {
+  @apply cursor-pointer decoration-solid;
 }

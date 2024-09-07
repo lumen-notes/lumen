@@ -57,7 +57,7 @@ export function Panel({
       >
         <div
           className={
-            "flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset p-2 pl-4 coarse:h-14"
+            "flex h-12 shrink-0 items-center justify-between gap-2 border-b border-border-secondary bg-bg-inset bg-clip-border p-2 pl-4 coarse:h-14"
           }
         >
           <div className="flex flex-shrink items-center gap-3">
