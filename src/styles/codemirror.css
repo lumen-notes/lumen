@@ -102,11 +102,6 @@
   @apply bg-bg-tertiary;
 }
 
-.cm-editor .cm-indentedLine {
-  margin-left: calc(1ch * var(--indent));
-  text-indent: calc(-1ch * var(--indent));
-}
-
 .cm-editor .cm-wikilink {
   @apply -mx-1 rounded-xs bg-bg-secondary px-1;
 }

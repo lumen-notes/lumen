@@ -118,31 +118,43 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
     const templateCompletion = useTemplateCompletion()
 
-    const extensions = [
-      yamlFrontmatter({ content: markdown({ base: markdownLanguage }) }),
-      autocompletion({
-        override: [
-          // emojiCompletion,
-          dateCompletion,
-          noteCompletion,
-          tagSyntaxCompletion,
-          tagPropertyCompletion,
-          templateCompletion,
-        ],
-        icons: false,
-      }),
-      frontmatterExtension(),
-      spellcheckExtension(),
-      pasteExtension({ attachFile, onPaste }),
-      indentedLineWrapExtension(),
-      // TODO: Improve performance of wikilink extension
-      // wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
-      syntaxHighlighting(syntaxHighlighter),
-    ]
+    const extensions = React.useMemo(() => {
+      const baseExtensions = [
+        yamlFrontmatter({ content: markdown({ base: markdownLanguage }) }),
+        autocompletion({
+          override: [
+            // emojiCompletion,
+            dateCompletion,
+            noteCompletion,
+            tagSyntaxCompletion,
+            tagPropertyCompletion,
+            templateCompletion,
+          ],
+          icons: false,
+        }),
+        frontmatterExtension(),
+        spellcheckExtension(),
+        pasteExtension({ attachFile, onPaste }),
+        indentedLineWrapExtension(),
+        // TODO: Improve performance of wikilink extension
+        // wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
+        syntaxHighlighting(syntaxHighlighter),
+      ]
 
-    if (editorSettings.vimMode) {
-      extensions.push(vim())
-    }
+      if (editorSettings.vimMode) {
+        baseExtensions.push(vim())
+      }
+
+      return baseExtensions
+    }, [
+      attachFile,
+      onPaste, // TODO
+      editorSettings.vimMode, // TODO
+      noteCompletion,
+      tagPropertyCompletion,
+      tagSyntaxCompletion,
+      templateCompletion,
+    ])
 
     return (
       <CodeMirror
