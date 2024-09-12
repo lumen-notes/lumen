@@ -118,7 +118,7 @@ function Provider({ children }: React.PropsWithChildren) {
 
       const prevPanelElement = panelElements[currentIndex - 1]
 
-      const newPanels = panelsRef.current.slice(0, index)
+      const newPanels = panelsRef.current.filter((_, i) => i !== index)
 
       // Update state
       flushSync(() => {
