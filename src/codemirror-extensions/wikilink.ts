@@ -4,12 +4,12 @@ import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/v
 function createWikilinkField(navigate: (to: string) => void) {
   return StateField.define<DecorationSet>({
     create(state) {
-      return getDecorations(state, navigate)
+      return createDecorations(state, navigate)
     },
     update(decorations, tr) {
       // Update decorations if the document has changed or the selection has changed
       if (tr.docChanged || tr.selection) {
-        return getDecorations(tr.state, navigate)
+        return createDecorations(tr.state, navigate)
       }
       return decorations
     },
@@ -19,7 +19,7 @@ function createWikilinkField(navigate: (to: string) => void) {
 
 const wikilinkRegex = /\[\[([^\]]+?)(?:\|([^\]]+))?\]\]/g
 
-function getDecorations(state: EditorState, navigate: (to: string) => void) {
+function createDecorations(state: EditorState, navigate: (to: string) => void) {
   const decorations: Range<Decoration>[] = []
   const { from, to } = state.selection.main
 
@@ -36,7 +36,7 @@ function getDecorations(state: EditorState, navigate: (to: string) => void) {
       if (from < startPos || to > endPos) {
         decorations.push(
           Decoration.replace({
-            widget: new WikilinkWidget(id, text, navigate, endPos),
+            widget: new WikilinkWidget(id, text, navigate, startPos, endPos),
           }).range(startPos, endPos),
         )
       }
@@ -51,6 +51,7 @@ class WikilinkWidget extends WidgetType {
     private id: string,
     private text: string,
     private navigate: (to: string) => void,
+    private startPos: number,
     private endPos: number,
   ) {
     super()
@@ -62,7 +63,7 @@ class WikilinkWidget extends WidgetType {
     span.className = "cm-wikilink"
 
     function updateClass(event: KeyboardEvent) {
-      if ((event.ctrlKey || event.metaKey) && view.hasFocus) {
+      if (event.ctrlKey || event.metaKey) {
         span.classList.add("cm-wikilink-enabled")
       } else {
         span.classList.remove("cm-wikilink-enabled")
@@ -74,11 +75,11 @@ class WikilinkWidget extends WidgetType {
 
     span.addEventListener("click", (event) => {
       event.preventDefault()
-      if ((event.ctrlKey || event.metaKey) && view.hasFocus) {
+      if (event.ctrlKey || event.metaKey) {
         this.navigate(this.id)
       } else {
         view.dispatch({
-          selection: { anchor: this.endPos - 2, head: this.endPos - 2 },
+          selection: { anchor: this.startPos, head: this.endPos },
           scrollIntoView: true,
         })
       }

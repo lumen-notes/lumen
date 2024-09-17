@@ -42,7 +42,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Backround colors */
+    /* Background colors */
     --color-bg: var(--sand-2);
     --color-bg-inset: black;
     --color-bg-overlay: var(--sand-3);

@@ -103,7 +103,7 @@
 }
 
 .cm-editor .cm-wikilink {
-  @apply -mx-1 rounded-xs bg-bg-secondary px-1;
+  @apply -mx-0.5 rounded-xs bg-bg-secondary px-0.5;
 }
 
 .cm-editor .cm-wikilink:hover {
@@ -111,7 +111,7 @@
 }
 
 .cm-editor .cm-wikilink-enabled {
-  @apply underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
+  @apply underline decoration-dotted decoration-1 underline-offset-[3px];
 }
 
 .cm-editor .cm-wikilink-enabled:hover {

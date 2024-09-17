@@ -21,7 +21,7 @@ import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
-// import { wikilinkExtension } from "../codemirror-extensions/wikilink"
+import { wikilinkExtension } from "../codemirror-extensions/wikilink"
 import { tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
@@ -32,7 +32,7 @@ import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
-// import { usePanelLinkClickHandler } from "./panels"
+import { usePanelLinkClickHandler } from "./panels"
 
 type NoteEditorProps = {
   className?: string
@@ -110,7 +110,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const attachFile = useAttachFile()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
     const editorSettings = getEditorSettings()
-    // const handleLinkClick = usePanelLinkClickHandler()
+    const handleLinkClick = usePanelLinkClickHandler()
 
     // Completions
     const noteCompletion = useNoteCompletion()
@@ -136,8 +136,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
-        // TODO: Improve performance of wikilink extension
-        // wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
+        wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
         syntaxHighlighting(syntaxHighlighter),
       ]
 
@@ -154,6 +153,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       tagPropertyCompletion,
       tagSyntaxCompletion,
       templateCompletion,
+      handleLinkClick,
     ])
 
     return (
