@@ -21,7 +21,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         <Card
           elevation={2}
           className={cx(
-            "z-20 max-h-[48svh] overflow-auto rounded-md p-1 animate-in fade-in zoom-in-95 after:rounded-md",
+            "z-20 max-h-[48svh] scroll-py-1 overflow-auto rounded-md p-1 animate-in fade-in zoom-in-95 after:rounded-md",
             // Set transform-origin for every combination of side and align
             "data-[side=bottom]:data-[align=center]:origin-top",
             "data-[side=bottom]:data-[align=end]:origin-top-right",
