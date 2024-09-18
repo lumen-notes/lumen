@@ -16,7 +16,8 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
           elevation === 1 && "bg-bg shadow-sm dark:ring-0",
           elevation === 2 && "bg-bg-overlay shadow-lg",
           elevation === 3 && "bg-bg-overlay shadow-2xl",
-          props.tabIndex === 0 && "focus:outline focus:outline-2 focus:outline-border-focus",
+          props.tabIndex === 0 &&
+            "fine:focus:outline fine:focus:outline-2 fine:focus:outline-border-focus",
           focusVisible && "outline outline-2 outline-border-focus",
           className,
         )}
