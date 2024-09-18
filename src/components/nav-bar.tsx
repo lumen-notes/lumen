@@ -19,13 +19,17 @@ import { DropdownMenu } from "./dropdown-menu"
 import { useSignOut } from "./github-auth"
 import { IconButton } from "./icon-button"
 import {
+  BookIcon16,
   CalendarFillIcon24,
   CalendarIcon24,
+  CommandIcon16,
   ComposeIcon24,
+  MessageIcon16,
   MoreIcon24,
   NoteFillIcon24,
   NoteIcon24,
   SettingsIcon16,
+  SignOutIcon16,
   TagFillIcon24,
   TagIcon24,
 } from "./icons"
@@ -104,30 +108,6 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content side={tooltipSide} align="end">
-              <DropdownMenu.Item onClick={signOut}>Sign out</DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                href="https://github.com/colebemis/lumen/issues/new"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Share feedback
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                href="https://lumen-notes.github.io/lumen"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Documentation
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                href="https://lumen-notes.github.io/lumen/keyboard-shortcuts"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Keyboard shortcuts
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
               {position === "bottom" ? <SyncDropdownMenuItem /> : null}
               <DropdownMenu.Item
                 icon={<SettingsIcon16 />}
@@ -135,6 +115,36 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
                 shortcut={["⌘", ","]}
               >
                 Settings
+              </DropdownMenu.Item>
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item
+                icon={<MessageIcon16 />}
+                href="https://github.com/colebemis/lumen/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Give feedback
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<BookIcon16 />}
+                href="https://lumen-notes.github.io/lumen"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Documentation
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<CommandIcon16 />}
+                href="https://lumen-notes.github.io/lumen/keyboard-shortcuts"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Keyboard shortcuts
+              </DropdownMenu.Item>
+
+              <DropdownMenu.Separator />
+              <DropdownMenu.Item icon={<SignOutIcon16 />} onClick={signOut}>
+                Sign out
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>

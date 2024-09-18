@@ -666,6 +666,31 @@ export function UndoIcon16(props: IconProps) {
   )
 }
 
+export function BookIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="m8.534 15.776.02-.019A6 6 0 0 1 12.795 14H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-1.204A7.5 7.5 0 0 0 8 1.734 7.5 7.5 0 0 0 3.204 0H2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h1.204a6 6 0 0 1 4.243 1.757l.019.02a.75.75 0 0 0 1.068 0ZM8.75 3.07A6 6 0 0 1 12.796 1.5H14a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-1.204a7.5 7.5 0 0 0-4.046 1.185V3.069Zm-1.5 10.616A7.5 7.5 0 0 0 3.204 12.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h1.204A6 6 0 0 1 7.25 3.07v10.615Z" />
+    </Icon>
+  )
+}
+
+export function CommandIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M3 1.5A1.5 1.5 0 0 1 4.5 3v1.5H3a1.5 1.5 0 1 1 0-3Zm3 3V3a3 3 0 1 0-3 3h1.5v4H3a3 3 0 1 0 3 3v-1.5h4V13a3 3 0 1 0 3-3h-1.5V6H13a3 3 0 1 0-3-3v1.5H6ZM6 6h4v4H6V6Zm5.5-1.5V3A1.5 1.5 0 1 1 13 4.5h-1.5Zm0 7H13a1.5 1.5 0 1 1-1.5 1.5v-1.5Zm-7 0V13A1.5 1.5 0 1 1 3 11.5h1.5Z" />
+    </Icon>
+  )
+}
+
+export function SignOutIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M8 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6v-1.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h6V0Z" />
+      <path d="M15.81 8 11.5 3.69l-1.06 1.06 2.5 2.5H5v1.5h7.94l-2.5 2.5 1.06 1.06L15.81 8Z" />
+    </Icon>
+  )
+}
+
 // Brand icons
 
 export function GitHubIcon16() {
