@@ -15,7 +15,7 @@
     gh repo clone lumen-notes/lumen
     ```
 
-1.  Generate a GitHub [personal access token (classic)](https://github.com/github /tokens/new) with `repo`, `gist`, and `user:email` scopes, or a [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) scoped to a specific repository with the additional read-only email scope and gist, then add it to a `.env.local` file in the root directory:
+1.  Generate a GitHub [personal access token (classic)](https://github.com/settings/tokens/new) with `repo`, `gist`, and `user:email` scopes, or a [fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) scoped to a specific repository with the additional read-only email scope and gist, then add it to a `.env.local` file in the root directory:
 
     ```shell
     VITE_GITHUB_PAT=<your token here>
