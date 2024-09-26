@@ -11,6 +11,7 @@
 | --------------------- | -------------------------------------- |
 | Open note action menu | <kbd>⌘</kbd> <kbd>.</kbd>              |
 | Edit note             | <kbd>E</kbd>                           |
+| Save and close edit   | <kbd>⌘</kbd> <kbd>↵</kbd>              |
 | Copy note markdown    | <kbd>⌘</kbd> <kbd>C</kbd>              |
 | Copy note ID          | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
 | Delete note           | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
