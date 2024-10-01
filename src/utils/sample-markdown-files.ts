@@ -32,7 +32,7 @@ Link to [[README|another note]] using its ID.
 
 ## Tags
 
-Tags can be written inline (e.g. #docs) or in the [[properties|frontmatter]] using the \`tags\` key.
+Tags can be written inline (e.g. #docs) or in [[properties|frontmatter]] using the \`tags\` key.
 
 \`\`\`
 ---
