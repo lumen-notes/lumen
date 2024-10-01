@@ -5,7 +5,6 @@ import ReactDOM from "react-dom/client"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import { Button } from "./components/button"
-import { GitHubAuth } from "./components/github-auth"
 import { Markdown } from "./components/markdown"
 import { NavLayout } from "./components/nav-layout"
 import { RootLayout } from "./components/root-layout"
@@ -31,20 +30,18 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Tooltip.Provider>
         <BrowserRouter>
-          <GitHubAuth>
-            <RootLayout>
-              <Routes>
-                <Route path="/" element={<NavLayout />}>
-                  <Route index element={<NotesPage />} />
-                  <Route path="tags" element={<TagsPage />} />
-                  <Route path="tags/*" element={<TagPage />} />
-                  <Route path="file" element={<FilePage />} />
-                  <Route path="settings" element={<SettingsPage />} />
-                  <Route path="*" element={<NotePage />} />
-                </Route>
-              </Routes>
-            </RootLayout>
-          </GitHubAuth>
+          <RootLayout>
+            <Routes>
+              <Route path="/" element={<NavLayout />}>
+                <Route index element={<NotesPage />} />
+                <Route path="tags" element={<TagsPage />} />
+                <Route path="tags/*" element={<TagPage />} />
+                <Route path="file" element={<FilePage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="*" element={<NotePage />} />
+              </Route>
+            </Routes>
+          </RootLayout>
         </BrowserRouter>
       </Tooltip.Provider>
     </ErrorBoundary>

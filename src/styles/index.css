@@ -42,7 +42,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .container {
-  @apply mx-auto w-full max-w-[50rem];
+  @apply mx-auto w-full max-w-[42rem];
 }
 
 /* Focus styles for buttons, inputs, etc. */

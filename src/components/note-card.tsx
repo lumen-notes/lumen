@@ -41,9 +41,14 @@ const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
 )
 
+const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned"),
+)
+
 type NoteCardProps = {
   id: NoteId
   defaultValue?: string
+  placeholder?: string
   elevation?: CardProps["elevation"]
   selected?: boolean
   onCancel?: () => void
@@ -75,6 +80,7 @@ export function NoteCard(props: NoteCardProps) {
 const _NoteCard = React.memo(function NoteCard({
   id,
   defaultValue = "",
+  placeholder = "Write a note…",
   elevation,
   selected = false,
   onCancel,
@@ -85,7 +91,7 @@ const _NoteCard = React.memo(function NoteCard({
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const { vimMode } = getEditorSettings()
-
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -193,13 +199,17 @@ const _NoteCard = React.memo(function NoteCard({
 
   const handleSave = React.useCallback(
     ({ id, content }: { id: NoteId; content: string }) => {
+      if (!isRepoCloned) {
+        return
+      }
+
       // Only save if the content has changed
       if (content !== note?.content) {
         saveNote({ id, content })
       }
       localStorage.removeItem(getStorageKey({ githubRepo, id }))
     },
-    [note, saveNote, githubRepo],
+    [note, saveNote, githubRepo, isRepoCloned],
   )
 
   const handleDelete = React.useCallback(() => {
@@ -514,6 +524,7 @@ const _NoteCard = React.memo(function NoteCard({
           {!note || isDirty ? (
             <Button
               variant={isDirty ? "primary" : "secondary"}
+              disabled={!isRepoCloned}
               onClick={() => {
                 handleSave({ id, content: editorValue })
                 switchToReading()
@@ -539,6 +550,8 @@ const _NoteCard = React.memo(function NoteCard({
           <NoteEditor
             ref={editorRef}
             defaultValue={editorValue}
+            placeholder={placeholder}
+            disabled={!isRepoCloned}
             onChange={handleChange}
             onStateChange={handleEditorStateChange}
             className="grid min-h-[12rem]"

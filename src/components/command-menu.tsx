@@ -248,11 +248,13 @@ export function CommandMenu() {
                   Settings
                 </CommandItem>
               </Command.Group>
-              <Command.Group heading="Pinned">
-                {pinnedNotes.map((note) => (
-                  <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
-                ))}
-              </Command.Group>
+              {pinnedNotes.length ? (
+                <Command.Group heading="Pinned">
+                  {pinnedNotes.map((note) => (
+                    <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
+                  ))}
+                </Command.Group>
+              ) : null}
             </>
           )}
         </Command.List>

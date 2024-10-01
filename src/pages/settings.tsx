@@ -27,8 +27,13 @@ export function SettingsPage() {
       <div className="grid gap-4 p-4">
         <h3 className="text-lg font-semibold leading-4">GitHub</h3>
         <SignedInUser />
-        {githubUser && githubRepo ? (
-          !isEditingRepo ? (
+        {githubUser ? (
+          isEditingRepo || !githubRepo ? (
+            <RepoForm
+              onSubmit={() => setIsEditingRepo(false)}
+              onCancel={githubRepo ? () => setIsEditingRepo(false) : undefined}
+            />
+          ) : (
             <Card className="flex items-center justify-between p-4">
               <div className="flex flex-col gap-1 coarse:gap-2">
                 <span className="text-sm leading-3 text-text-secondary">Repository</span>
@@ -52,11 +57,6 @@ export function SettingsPage() {
                 Change
               </Button>
             </Card>
-          ) : (
-            <RepoForm
-              onSubmit={() => setIsEditingRepo(false)}
-              onCancel={() => setIsEditingRepo(false)}
-            />
           )
         ) : null}
 

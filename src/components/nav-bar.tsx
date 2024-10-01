@@ -37,11 +37,13 @@ import { usePanelActions, usePanels } from "./panels"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 import { Tooltip } from "./tooltip"
 
+const isSignedInAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn"))
+
 export function NavBar({ position }: { position: "left" | "bottom" }) {
   const navigate = useNavigateWithCache()
   const signOut = useSignOut()
   const isCalendarActive = useIsCalendarActive()
-
+  const isSignedIn = useAtomValue(isSignedInAtom)
   // Open tooltips on the side opposite to the nav bar.
   const tooltipSide = ({ left: "right", bottom: "top" } as const)[position]
 
@@ -141,11 +143,14 @@ export function NavBar({ position }: { position: "left" | "bottom" }) {
               >
                 Keyboard shortcuts
               </DropdownMenu.Item>
-
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item icon={<SignOutIcon16 />} onClick={signOut}>
-                Sign out
-              </DropdownMenu.Item>
+              {isSignedIn ? (
+                <>
+                  <DropdownMenu.Separator />
+                  <DropdownMenu.Item icon={<SignOutIcon16 />} onClick={signOut}>
+                    Sign out
+                  </DropdownMenu.Item>
+                </>
+              ) : null}
             </DropdownMenu.Content>
           </DropdownMenu>
         </li>

@@ -43,6 +43,7 @@ type NoteEditorProps = {
   onChange?: (value: string) => void
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
+  disabled?: boolean
 }
 
 const theme = createTheme({
@@ -104,6 +105,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       onChange,
       onStateChange,
       onPaste,
+      disabled = false,
     },
     ref,
   ) => {
@@ -160,6 +162,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       <CodeMirror
         ref={ref}
         className={className}
+        editable={!disabled}
         placeholder={placeholder}
         value={defaultValue}
         theme={theme}

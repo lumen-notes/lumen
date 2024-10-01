@@ -14,7 +14,7 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./schema"
-import { fs } from "./utils/fs"
+import { fs, fsWipe } from "./utils/fs"
 import {
   REPO_DIR,
   getRemoteOriginUrl,
@@ -113,7 +113,13 @@ function createGlobalStateMachine() {
           },
         },
         signedOut: {
-          entry: ["clearGitHubUser", "clearGitHubUserLocalStorage"],
+          entry: [
+            "clearGitHubUser",
+            "clearGitHubUserLocalStorage",
+            "clearMarkdownFiles",
+            "clearMarkdownFilesLocalStorage",
+            "clearFileSystem",
+          ],
           on: {
             SIGN_IN: {
               target: "signedIn",
@@ -414,6 +420,9 @@ function createGlobalStateMachine() {
         clearGitHubRepo: assign({
           githubRepo: null,
         }),
+        clearFileSystem: () => {
+          fsWipe()
+        },
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
         }),
@@ -507,6 +516,10 @@ async function getMarkdownFilesFromFs(dir: string) {
 }
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
+
+export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned"),
+)
 
 // -----------------------------------------------------------------------------
 // GitHub

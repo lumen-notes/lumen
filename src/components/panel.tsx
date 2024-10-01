@@ -80,7 +80,7 @@ export function Panel({
                 <DropdownMenu.Content align="end">{actions}</DropdownMenu.Content>
               </DropdownMenu>
             ) : null}
-            {!controlledLayout && containerWidth > 800 ? (
+            {!controlledLayout && containerWidth > 672 ? (
               <DropdownMenu modal={false}>
                 <DropdownMenu.Trigger asChild>
                   <IconButton aria-label="Panel actions" disableTooltip>

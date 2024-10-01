@@ -37,11 +37,12 @@
           services: never;
         };
         eventsCausingActions: {
-          "clearGitHubRepo": "error.platform.global.signedIn.cloningRepo:invocation[0]";
+          "clearFileSystem": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
+"clearGitHubRepo": "error.platform.global.signedIn.cloningRepo:invocation[0]";
 "clearGitHubUser": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
 "clearGitHubUserLocalStorage": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
-"clearMarkdownFiles": "SELECT_REPO";
-"clearMarkdownFilesLocalStorage": "SELECT_REPO";
+"clearMarkdownFiles": "SELECT_REPO" | "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
+"clearMarkdownFilesLocalStorage": "SELECT_REPO" | "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
 "deleteMarkdownFile": "DELETE_FILE";
 "deleteMarkdownFileLocalStorage": "DELETE_FILE";
 "logError": "error.platform.global.signedIn.cloned.sync.checkingStatus:invocation[0]" | "error.platform.global.signedIn.cloned.sync.pulling:invocation[0]" | "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]";

@@ -4,7 +4,6 @@ import React from "react"
 import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
 import { githubUserAtom, globalStateMachineAtom } from "../global-state"
-import { cx } from "../utils/cx"
 import { Button } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
@@ -41,12 +40,12 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   )
 }
 
-function SignInButton({ className }: { className?: string }) {
+export function SignInButton({ className }: { className?: string }) {
   const send = useSetAtom(globalStateMachineAtom)
   return (
     <Button
       variant="primary"
-      className={cx("w-full", className)}
+      className={className}
       onClick={async () => {
         // Sign in with a personal access token in local development
         if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
@@ -77,10 +76,10 @@ export function SignedInUser() {
   const signOut = useSignOut()
   const { online } = useNetworkState()
 
-  if (!githubUser) return null
+  if (!githubUser) return <SignInButton />
 
   return (
-    <Card className="flex items-center justify-between px-4 py-4">
+    <Card className="flex items-center justify-between p-4">
       <div className="flex flex-col gap-1 coarse:gap-2">
         <span className="text-sm leading-3 text-text-secondary">Account</span>
         <span className="leading-5">

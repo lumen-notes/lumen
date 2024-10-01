@@ -149,6 +149,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
               </IconButton>
               <DiceButton
+                disabled={noteResults.length === 0}
                 onClick={() => {
                   const resultsCount = noteResults.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
