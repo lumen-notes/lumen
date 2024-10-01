@@ -6,7 +6,12 @@ import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { flushSync } from "react-dom"
-import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
+import {
+  githubRepoAtom,
+  githubUserAtom,
+  globalStateMachineAtom,
+  isReadOnlyAtom,
+} from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
 import { cx } from "../utils/cx"
@@ -39,10 +44,6 @@ import { usePanel, usePanelActions } from "./panels"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
-)
-
-const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloned"),
 )
 
 type NoteCardProps = {
@@ -91,7 +92,8 @@ const _NoteCard = React.memo(function NoteCard({
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const { vimMode } = getEditorSettings()
-  const isRepoCloned = useAtomValue(isRepoClonedAtom)
+  const isReadOnly = useAtomValue(isReadOnlyAtom)
+
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -199,7 +201,7 @@ const _NoteCard = React.memo(function NoteCard({
 
   const handleSave = React.useCallback(
     ({ id, content }: { id: NoteId; content: string }) => {
-      if (!isRepoCloned) {
+      if (isReadOnly) {
         return
       }
 
@@ -209,7 +211,7 @@ const _NoteCard = React.memo(function NoteCard({
       }
       localStorage.removeItem(getStorageKey({ githubRepo, id }))
     },
-    [note, saveNote, githubRepo, isRepoCloned],
+    [note, saveNote, githubRepo, isReadOnly],
   )
 
   const handleDelete = React.useCallback(() => {
@@ -438,6 +440,7 @@ const _NoteCard = React.memo(function NoteCard({
                       <PinIcon16 />
                     )
                   }
+                  disabled={isReadOnly}
                   onSelect={() => {
                     handleSave({ id, content: togglePin(note.content) })
                   }}
@@ -465,11 +468,13 @@ const _NoteCard = React.memo(function NoteCard({
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  disabled={isReadOnly}
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
+                  disabled={isReadOnly}
                   onSelect={async () => {
                     if (!note) return
 
@@ -492,6 +497,7 @@ const _NoteCard = React.memo(function NoteCard({
                 <DropdownMenu.Item
                   variant="danger"
                   icon={<TrashIcon16 />}
+                  disabled={isReadOnly}
                   onSelect={() => {
                     // Ask the user to confirm before deleting a note with backlinks
                     if (
@@ -524,7 +530,7 @@ const _NoteCard = React.memo(function NoteCard({
           {!note || isDirty ? (
             <Button
               variant={isDirty ? "primary" : "secondary"}
-              disabled={!isRepoCloned}
+              disabled={isReadOnly}
               onClick={() => {
                 handleSave({ id, content: editorValue })
                 switchToReading()
@@ -551,7 +557,7 @@ const _NoteCard = React.memo(function NoteCard({
             ref={editorRef}
             defaultValue={editorValue}
             placeholder={placeholder}
-            disabled={!isRepoCloned}
+            disabled={isReadOnly}
             onChange={handleChange}
             onStateChange={handleEditorStateChange}
             className="grid min-h-[12rem]"

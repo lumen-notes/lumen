@@ -1,13 +1,15 @@
+import { useAtomValue } from "jotai"
 import React from "react"
 import { Button } from "../components/button"
 import { Card } from "../components/card"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { EditIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
-import { TextInput } from "../components/text-input"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, usePanel, usePanelActions } from "../components/panels"
+import { TextInput } from "../components/text-input"
+import { isReadOnlyAtom } from "../global-state"
 import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
@@ -16,6 +18,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const deleteTag = useDeleteTag()
   const { updatePanel } = usePanelActions()
   const panel = usePanel()
+  const isReadOnly = useAtomValue(isReadOnlyAtom)
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -40,10 +43,15 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon16 />}
       actions={
         <>
-          <DropdownMenu.Item icon={<EditIcon16 />} onSelect={openRenameForm}>
+          <DropdownMenu.Item icon={<EditIcon16 />} disabled={isReadOnly} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
-          <DropdownMenu.Item icon={<TrashIcon16 />} variant="danger" onSelect={handleDeleteTag}>
+          <DropdownMenu.Item
+            icon={<TrashIcon16 />}
+            disabled={isReadOnly}
+            variant="danger"
+            onSelect={handleDeleteTag}
+          >
             Delete tag
           </DropdownMenu.Item>
         </>

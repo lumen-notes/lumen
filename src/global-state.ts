@@ -29,6 +29,7 @@ import {
 import { parseNote } from "./utils/parse-note"
 import { isPinned } from "./utils/pin"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
+import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
 
 // -----------------------------------------------------------------------------
@@ -116,10 +117,11 @@ function createGlobalStateMachine() {
           entry: [
             "clearGitHubUser",
             "clearGitHubUserLocalStorage",
-            "clearMarkdownFiles",
             "clearMarkdownFilesLocalStorage",
             "clearFileSystem",
+            "setSampleMarkdownFiles",
           ],
+          exit: ["clearMarkdownFiles"],
           on: {
             SIGN_IN: {
               target: "signedIn",
@@ -426,6 +428,9 @@ function createGlobalStateMachine() {
         setMarkdownFiles: assign({
           markdownFiles: (_, event) => event.data.markdownFiles,
         }),
+        setSampleMarkdownFiles: assign({
+          markdownFiles: getSampleMarkdownFiles(),
+        }),
         setMarkdownFilesLocalStorage: (_, event) => {
           localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
         },
@@ -517,8 +522,8 @@ async function getMarkdownFilesFromFs(dir: string) {
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
-export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloned"),
+export const isReadOnlyAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedOut"),
 )
 
 // -----------------------------------------------------------------------------

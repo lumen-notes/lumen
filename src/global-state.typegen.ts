@@ -19,6 +19,7 @@
 "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]": { type: "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.cloningRepo:invocation[0]": { type: "error.platform.global.signedIn.cloningRepo:invocation[0]"; data: unknown };
 "xstate.init": { type: "xstate.init" };
+"xstate.stop": { type: "xstate.stop" };
         };
         invokeSrcNameMap: {
           "checkStatus": "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]";
@@ -41,7 +42,7 @@
 "clearGitHubRepo": "error.platform.global.signedIn.cloningRepo:invocation[0]";
 "clearGitHubUser": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
 "clearGitHubUserLocalStorage": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
-"clearMarkdownFiles": "SELECT_REPO" | "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
+"clearMarkdownFiles": "SELECT_REPO" | "SIGN_IN" | "xstate.stop";
 "clearMarkdownFilesLocalStorage": "SELECT_REPO" | "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
 "deleteMarkdownFile": "DELETE_FILE";
 "deleteMarkdownFileLocalStorage": "DELETE_FILE";
@@ -53,6 +54,7 @@
 "setGitHubUser": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "setMarkdownFiles": "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
 "setMarkdownFilesLocalStorage": "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
+"setSampleMarkdownFiles": "SIGN_OUT" | "error.platform.global.resolvingUser:invocation[0]";
         };
         eventsCausingDelays: {
           
