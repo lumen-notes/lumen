@@ -48,7 +48,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
               "--color-bg": "var(--cyan-4)",
             }}
           >
-            <span className="px-2">
+            <span className="sm:px-2">
               Lumen is in read-only mode.
               <span className="hidden md:inline"> Sign in to start writing notes.</span>
             </span>
