@@ -41,7 +41,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
         {isReadOnly ? (
           <div
-            className="mx-2 mt-2 flex flex-col justify-between gap-3 rounded-lg bg-bg px-2 py-2 text-text sm:m-0 sm:flex-row sm:items-center sm:rounded-none"
+            className="flex flex-col justify-between gap-3 bg-bg p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2"
             style={{
               // @ts-ignore
               "--color-text": "var(--cyan-12)",
