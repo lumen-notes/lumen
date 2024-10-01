@@ -557,7 +557,6 @@ const _NoteCard = React.memo(function NoteCard({
             ref={editorRef}
             defaultValue={editorValue}
             placeholder={placeholder}
-            disabled={isReadOnly}
             onChange={handleChange}
             onStateChange={handleEditorStateChange}
             className="grid min-h-[12rem]"

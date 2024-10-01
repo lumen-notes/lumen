@@ -16,13 +16,14 @@ import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
 import { tags } from "@lezer/highlight"
 import { vim } from "@replit/codemirror-vim"
+import { useAtomValue } from "jotai"
 import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
-import { tagsAtom, templatesAtom } from "../global-state"
+import { isReadOnlyAtom, tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
@@ -330,6 +331,7 @@ function useTagPropertyCompletion() {
 function useNoteCompletion() {
   const saveNote = useSaveNote()
   const searchNotes = useStableSearchNotes()
+  const isReadOnly = useAtomValue(isReadOnlyAtom)
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -389,7 +391,7 @@ function useNoteCompletion() {
         }
       })
 
-      if (query) {
+      if (query && !isReadOnly) {
         options.push(createNewNoteOption)
       }
 
@@ -399,7 +401,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, saveNote],
+    [searchNotes, saveNote, isReadOnly],
   )
 
   return noteCompletion
