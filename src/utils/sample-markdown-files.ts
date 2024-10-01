@@ -12,7 +12,13 @@ Lumen is a simple note-taking app for capturing and organizing your thoughts.
 - Connect your notes with links and tags. Lumen makes it easy to explore  your knowledge graph and discover new connections.
 - Access your notes from any device, even offline. Use Lumen's flexible [[search-syntax|search syntax]] to find exactly what you're looking for.
 
-Sign in with GitHub to get started.`,
+---
+
+You're currently looking at Lumen in read-only mode. Feel free to explore!
+
+When you're ready to start writing notes, sign in with GitHub and choose a repository.
+
+`,
     "markdown-syntax.md": `---
 tags: [docs]
 pinned: true
