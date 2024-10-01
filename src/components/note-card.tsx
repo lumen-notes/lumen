@@ -41,6 +41,7 @@ import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { usePanel, usePanelActions } from "./panels"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -376,7 +377,7 @@ const _NoteCard = React.memo(function NoteCard({
           target="_blank"
           className="focus-ring flex h-8 items-center gap-1 overflow-hidden rounded-sm px-2 text-text-secondary hover:bg-bg-secondary coarse:h-10"
         >
-          {isPinned(note) ? (
+          {parseFrontmatter(editorValue).frontmatter.pinned ? (
             <PinFillIcon12 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
           <span className="filepath">{id}.md</span>
