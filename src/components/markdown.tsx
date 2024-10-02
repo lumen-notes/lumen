@@ -559,6 +559,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       <Tooltip>
         <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
         <Tooltip.Content>
+          {props.href ? <WebsiteFavicon url={props.href} className="mr-2 align-sub" /> : null}
           {props.href?.replace(/^https?:\/\//, "").replace(/\/$/, "")}
         </Tooltip.Content>
       </Tooltip>
