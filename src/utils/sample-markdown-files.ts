@@ -6,7 +6,7 @@ pinned: true
 
 # Welcome to Lumen
 
-Lumen is a free, open-source note-taking app for capturing and organizing your thoughts.
+Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app for capturing and organizing your thoughts.
 
 - Write notes in [[markdown-syntax|markdown]] files and store them in a GitHub repository of your choice. You stay in control of your data.
 - Connect your notes with links and tags. Lumen makes it easy to explore  your knowledge graph and discover new connections.
