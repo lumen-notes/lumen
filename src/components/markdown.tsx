@@ -720,7 +720,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="top" sideOffset={4} asChild>
+        <HoverCard.Content side="right" sideOffset={4} asChild>
           <Card
             className="z-20 max-h-[48svh] w-96 overflow-auto p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             elevation={2}
