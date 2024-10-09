@@ -251,7 +251,11 @@ const _NoteCard = React.memo(function NoteCard({
       ref={cardRef}
       tabIndex={0}
       focusVisible={selected || editorHasFocus}
-      className="group flex flex-col"
+      className={cx(
+        "group flex flex-col",
+        // Subtle top highlight to give the card more depth in dark mode
+        "relative dark:before:pointer-events-none dark:before:absolute dark:before:inset-0 dark:before:z-20 dark:before:rounded-lg dark:before:[box-shadow:inset_0_0.5px_var(--color-border-secondary)]",
+      )}
       elevation={elevation}
       onFocus={(event) => {
         // Ignore focus events from children
