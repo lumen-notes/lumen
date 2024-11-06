@@ -9,6 +9,7 @@ module.exports = {
       screens: {
         coarse: { raw: "(pointer: coarse)" },
         fine: { raw: "(pointer: fine)" },
+        "2x": { raw: "(min-resolution: 192dpi)" },
       },
       fontWeight: {
         semibold: "550",
