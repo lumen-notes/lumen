@@ -69,11 +69,11 @@ async function getUser(token: string) {
     throw new Error("Error getting user's emails")
   }
 
-  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean }>
-  const primaryEmail = emails.find((email) => email.primary)
+  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean; visibility: string }>
+  const primaryEmail = emails.find((email) => email.primary && email.visibility === "public")
 
   if (!primaryEmail) {
-    throw new Error("No primary email found")
+    throw new Error("No public primary email found. Check your privacy settings in https://github.com/settings/emails")
   }
 
   return { login, name, email: primaryEmail.email }
