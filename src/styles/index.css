@@ -10,7 +10,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-bg-inset font-body text-base text-text;
+  @apply bg-bg font-body text-base text-text;
 }
 
 ::selection {
@@ -19,7 +19,7 @@ body {
 
 /* .docs-story is the container for storybook stories on docs pages */
 .docs-story {
-  @apply bg-bg-inset;
+  @apply bg-bg;
 }
 
 body,

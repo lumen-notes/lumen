@@ -35,39 +35,45 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <Panels.Provider key={location.pathname}>
-      <CommandMenu />
-      <InsertTemplateDialog />
-      <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-        {isReadOnly ? (
-          <div
-            className="flex flex-col justify-between gap-3 bg-bg p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2"
-            style={{
-              // @ts-ignore
-              "--color-text": "var(--cyan-12)",
-              "--color-bg": "var(--cyan-4)",
-            }}
-          >
-            <span className="sm:px-2">
-              Lumen is in read-only mode.
-              <span className="hidden md:inline"> Sign in to start writing notes.</span>
-            </span>
-            <SignInButton />
-          </div>
-        ) : null}
-        {children}
-        {error ? (
-          <div className="flex items-center gap-3 bg-[var(--red-a4)] px-4 py-2 text-[var(--red-12)]">
-            <div>
-              <ErrorIcon16 />
-            </div>
-            <span className="font-mono">{error.message}</span>
-          </div>
-        ) : null}
-        <DevBar />
-      </div>
-    </Panels.Provider>
+    <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
+      {children}
+    </div>
   )
+
+  // return (
+  //   <Panels.Provider key={location.pathname}>
+  //     <CommandMenu />
+  //     <InsertTemplateDialog />
+  //     <div className="flex h-screen w-screen flex-col pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
+  //       {isReadOnly ? (
+  //         <div
+  //           className="flex flex-col justify-between gap-3 bg-bg p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2"
+  //           style={{
+  //             // @ts-ignore
+  //             "--color-text": "var(--cyan-12)",
+  //             "--color-bg": "var(--cyan-4)",
+  //           }}
+  //         >
+  //           <span className="sm:px-2">
+  //             Lumen is in read-only mode.
+  //             <span className="hidden md:inline"> Sign in to start writing notes.</span>
+  //           </span>
+  //           <SignInButton />
+  //         </div>
+  //       ) : null}
+  //       {children}
+  //       {error ? (
+  //         <div className="flex items-center gap-3 bg-[var(--red-a4)] px-4 py-2 text-[var(--red-12)]">
+  //           <div>
+  //             <ErrorIcon16 />
+  //           </div>
+  //           <span className="font-mono">{error.message}</span>
+  //         </div>
+  //       ) : null}
+  //       <DevBar />
+  //     </div>
+  //   </Panels.Provider>
+  // )
 }
 
 // Shows the current state of the global state machine for debugging purposes

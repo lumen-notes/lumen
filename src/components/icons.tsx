@@ -222,7 +222,8 @@ export function CloseIcon16(props: IconProps) {
 export function PlusIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
-      <path d="M8.5 1H7v6H1v1.5h6v6h1.5v-6h6V7h-6V1Z" />
+      <path d="M8.5 2H7v5H2v1.5h5v5h1.5v-5h5V7h-5V2Z" />
+      {/* <path d="M8.5 1H7v6H1v1.5h6v6h1.5v-6h6V7h-6V1Z" /> */}
     </Icon>
   )
 }
@@ -233,6 +234,18 @@ export function MinusIcon16(props: IconProps) {
       <path d="M1 7v1.5h13.5V7H1Z" />
     </Icon>
   )
+}
+
+export function ArrowLeftIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M8.06 3 3.81 7.25H15v1.5H3.81L8.06 13 7 14.06 1.47 8.53a.75.75 0 0 1 0-1.06L7 1.94 8.06 3Z" />
+    </Icon>
+  )
+}
+
+export function ArrowRightIcon16(props: IconProps) {
+  return <ArrowLeftIcon16 {...props} className={cx("-scale-x-100", props.className)} />
 }
 
 export function ChevronLeftIcon16(props: IconProps) {
@@ -553,7 +566,7 @@ export function TaskListIcon16(props: IconProps) {
 export function SidebarIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
-      <path d="M1.95 1A1.95 1.95 0 0 0 0 2.95v9.6a1.95 1.95 0 0 0 1.95 1.95h12.1A1.95 1.95 0 0 0 16 12.55v-9.6A1.95 1.95 0 0 0 14.05 1H1.95ZM1.5 2.95a.45.45 0 0 1 .45-.45H9.5V13H1.95a.45.45 0 0 1-.45-.45v-9.6ZM11 13V2.5h3.05a.45.45 0 0 1 .45.45v9.6a.45.45 0 0 1-.45.45H11Z" />
+      <path d="M14.05 1A1.95 1.95 0 0 1 16 2.95v10.1A1.95 1.95 0 0 1 14.05 15H1.95A1.95 1.95 0 0 1 0 13.05V2.95A1.95 1.95 0 0 1 1.95 1h12.1Zm.45 1.95a.448.448 0 0 0-.45-.45H6.5v11h7.55a.45.45 0 0 0 .45-.45V2.95ZM5 13.5v-11H1.95a.45.45 0 0 0-.45.45v10.1a.45.45 0 0 0 .45.45H5Z" />
     </Icon>
   )
 }
@@ -562,6 +575,15 @@ export function SidebarIcon24(props: IconProps) {
   return (
     <Icon size={24} {...props}>
       <path d="M1.879 3.879A3 3 0 0 0 1 6v12a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H4a3 3 0 0 0-2.121.879ZM8 4.5v15H4A1.5 1.5 0 0 1 2.5 18V6A1.5 1.5 0 0 1 4 4.5h4Zm1.5 0H20A1.5 1.5 0 0 1 21.5 6v12a1.5 1.5 0 0 1-1.5 1.5H9.5v-15Z" />
+    </Icon>
+  )
+}
+
+export function GridIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M14.5 1.5v4h-4v-4h4Zm-4-1.5A1.5 1.5 0 0 0 9 1.5v4A1.5 1.5 0 0 0 10.5 7h4A1.5 1.5 0 0 0 16 5.5v-4A1.5 1.5 0 0 0 14.5 0h-4ZM5.5 1.5v4h-4v-4h4ZM1.5 0A1.5 1.5 0 0 0 0 1.5v4A1.5 1.5 0 0 0 1.5 7h4A1.5 1.5 0 0 0 7 5.5v-4A1.5 1.5 0 0 0 5.5 0h-4ZM5.5 10.5v4h-4v-4h4ZM1.5 9A1.5 1.5 0 0 0 0 10.5v4A1.5 1.5 0 0 0 1.5 16h4A1.5 1.5 0 0 0 7 14.5v-4A1.5 1.5 0 0 0 5.5 9h-4ZM14.5 10.5v4h-4v-4h4Zm-4-1.5A1.5 1.5 0 0 0 9 10.5v4a1.5 1.5 0 0 0 1.5 1.5h4a1.5 1.5 0 0 0 1.5-1.5v-4A1.5 1.5 0 0 0 14.5 9h-4Z" />
+      {/* <path d="M14 1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h3ZM11 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-3ZM5 1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h3ZM2 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2ZM5 10.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h3ZM2 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H2ZM14 10.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h3ZM11 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-3Z" /> */}
     </Icon>
   )
 }

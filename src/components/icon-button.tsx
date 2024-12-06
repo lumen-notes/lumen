@@ -9,6 +9,7 @@ type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   size?: "small" | "medium"
   shortcut?: string[]
   tooltipSide?: TooltipContentProps["side"]
+  tooltipAlign?: TooltipContentProps["align"]
   disableTooltip?: boolean
 }
 
@@ -20,6 +21,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       shortcut,
       size = "medium",
       tooltipSide = "bottom",
+      tooltipAlign = "center",
       disableTooltip = false,
       ...props
     },
@@ -32,7 +34,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ref={ref}
             type="button"
             className={cx(
-              "focus-ring inline-flex items-center justify-center rounded-sm text-text-secondary transition-all duration-100 hover:bg-bg-secondary active:scale-95 disabled:pointer-events-none disabled:opacity-50",
+              "focus-ring inline-flex items-center justify-center rounded-sm text-text-secondary transition-[transform,background-color] duration-100 hover:bg-bg-secondary active:scale-95 disabled:pointer-events-none disabled:opacity-50",
               size === "small" && "px-2 py-1 coarse:py-2",
               size === "medium" && "p-2 coarse:p-3",
               className,
@@ -42,7 +44,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             {children}
           </button>
         </Tooltip.Trigger>
-        <Tooltip.Content side={tooltipSide}>
+        <Tooltip.Content side={tooltipSide} align={tooltipAlign}>
           <div className="flex items-center gap-3">
             <span>{props["aria-label"]}</span>
             {shortcut ? (

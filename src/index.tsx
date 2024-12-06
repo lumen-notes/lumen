@@ -32,14 +32,14 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <BrowserRouter>
           <RootLayout>
             <Routes>
-              <Route path="/" element={<NavLayout />}>
-                <Route index element={<NotesPage />} />
-                <Route path="tags" element={<TagsPage />} />
-                <Route path="tags/*" element={<TagPage />} />
-                <Route path="file" element={<FilePage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="*" element={<NotePage />} />
-              </Route>
+              {/* <Route path="/" element={<NavLayout />}> */}
+              <Route index element={<NotesPage />} />
+              <Route path="tags" element={<TagsPage />} />
+              <Route path="tags/*" element={<TagPage />} />
+              <Route path="file" element={<FilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotePage />} />
+              {/* </Route> */}
             </Routes>
           </RootLayout>
         </BrowserRouter>

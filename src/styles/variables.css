@@ -58,7 +58,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Background colors */
-    --color-bg: var(--sand-2);
+    --color-bg: var(--sand-1);
     --color-bg-inset: black;
     --color-bg-overlay: var(--sand-3);
     --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */

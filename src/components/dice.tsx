@@ -1,4 +1,14 @@
-export function Dice({ number, angle = 0 }: { number: number; angle?: number }) {
+import { cx } from "../utils/cx"
+
+export function Dice({
+  number,
+  angle = 0,
+  className,
+}: {
+  number: number
+  angle?: number
+  className?: string
+}) {
   return (
     <div
       style={{
@@ -9,7 +19,10 @@ export function Dice({ number, angle = 0 }: { number: number; angle?: number }) 
         "--shadow-small": "calc(var(--x-amount) * 2px) calc(var(--y-amount) * 2px) 4px -2px",
         "--shadow-large": "calc(var(--x-amount) * 4px) calc(var(--y-amount) * 4px) 6px -1px",
       }}
-      className="flex rotate-[var(--angle)] rounded-[2px] bg-bg text-text transition-[transform,box-shadow] duration-300 will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg-inset dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]"
+      className={cx(
+        "flex rotate-[var(--angle)] rounded-[2px] bg-bg text-text transition-[transform,box-shadow] duration-200 will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg-inset dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]",
+        className,
+      )}
     >
       <svg
         viewBox="0 0 16 16"

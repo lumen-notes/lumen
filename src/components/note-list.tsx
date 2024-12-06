@@ -9,12 +9,11 @@ import { templateSchema } from "../schema"
 import { removeLeadingEmoji } from "../utils/emoji"
 import { isPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
+import { CloseIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
 import { Link } from "./link"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteCard } from "./note-card"
@@ -23,7 +22,7 @@ import { usePanel, usePanelActions } from "./panels"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
-const viewTypeSchema = z.enum(["list", "cards"])
+const viewTypeSchema = z.enum(["list", "grid"])
 
 type ViewType = z.infer<typeof viewTypeSchema>
 
@@ -47,7 +46,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   }, [searchNotes, baseQuery, debouncedQuery])
 
   const [viewType, setViewType] = useSearchParam<ViewType>("view", {
-    validate: viewTypeSchema.catch("cards").parse,
+    validate: viewTypeSchema.catch("grid").parse,
     replace: true,
   })
 
@@ -142,11 +141,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 }}
               />
               <IconButton
-                aria-label={viewType === "cards" ? "List view" : "Card view"}
+                aria-label={viewType === "grid" ? "List view" : "Grid view"}
                 className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
+                onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}
               >
-                {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
+                {viewType === "grid" ? <ListIcon16 /> : <GridIcon16 />}
               </IconButton>
               <DiceButton
                 disabled={noteResults.length === 0}
@@ -243,7 +242,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               </>
             ) : null}
           </div>
-          {viewType === "cards"
+          {viewType === "grid"
             ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
             : null}
           {viewType === "list" ? (
@@ -272,11 +271,11 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                             ? `${parsedTemplate.data.name} template`
                             : removeLeadingEmoji(note.title) || note.id}
                         </span>
-                        <span className="ml-2 ">
+                        {/* <span className="ml-2">
                           {removeParentTags(note.tags)
                             .map((tag) => `#${tag}`)
                             .join(" ")}
-                        </span>
+                        </span> */}
                       </span>
                     </Link>
                   </li>
@@ -299,7 +298,6 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
   const [angle, setAngle] = React.useState(0)
   const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 6) + 1)
-  const [isHovered, setIsHovered] = React.useState(false)
   return (
     <IconButton
       disabled={disabled}
@@ -310,10 +308,8 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <Dice number={number} angle={isHovered ? angle + 90 : angle} />
+      <Dice number={number} angle={angle} className="group-active/dice:-translate-y-1" />
     </IconButton>
   )
 }

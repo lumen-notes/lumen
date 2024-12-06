@@ -20,8 +20,7 @@ export const PillButton = React.forwardRef<HTMLButtonElement, PillButtonProps>(
           variant === "dashed" &&
             "border-dashed border-border bg-transparent text-text-secondary hover:bg-bg-secondary",
           variant === "secondary" && "border-transparent bg-bg-secondary hover:bg-bg-tertiary",
-          variant === "primary" &&
-            "border-transparent bg-neutral-9 text-neutral-contrast hover:bg-neutral-10",
+          variant === "primary" && "border-transparent bg-text text-bg",
           className,
         )}
         {...props}
