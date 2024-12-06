@@ -14,7 +14,6 @@
     "lint": "eslint --ext .js,.ts,.tsx src",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
     "test:storybook": "test-storybook",
     "test:storybook:watch": "test-storybook --watch",
     "test:storybook:ci": "concurrently -k -s first -n \"storybook,test\" -c \"magenta,blue\" \"npm run build:storybook --quiet && npx http-server storybook-static --port 6006 --silent\" \"npx wait-on tcp:127.0.0.1:6006 && npm run test:storybook\"",
