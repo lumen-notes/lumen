@@ -126,7 +126,6 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/mdast": "^3.0.10",
     "@types/micromatch": "^4.0.5",
-    "@types/mime": "^4.0.0",
     "@types/prismjs": "^1.26.0",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.2.79",
