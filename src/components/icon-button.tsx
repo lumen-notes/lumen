@@ -6,6 +6,7 @@ import { Tooltip } from "./tooltip"
 
 type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   "aria-label": string // Required for accessibility
+  size?: "small" | "medium"
   shortcut?: string[]
   tooltipSide?: TooltipContentProps["side"]
   disableTooltip?: boolean
@@ -13,7 +14,15 @@ type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
 
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
   (
-    { className, children, shortcut, tooltipSide = "bottom", disableTooltip = false, ...props },
+    {
+      className,
+      children,
+      shortcut,
+      size = "medium",
+      tooltipSide = "bottom",
+      disableTooltip = false,
+      ...props
+    },
     ref,
   ) => {
     return (
@@ -23,7 +32,9 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ref={ref}
             type="button"
             className={cx(
-              "focus-ring inline-flex items-center justify-center rounded-sm p-2 text-text-secondary transition-transform duration-100 hover:bg-bg-secondary active:scale-95 disabled:pointer-events-none disabled:opacity-50 coarse:p-3",
+              "focus-ring inline-flex items-center justify-center rounded-sm text-text-secondary transition-all duration-100 hover:bg-bg-secondary active:scale-95 disabled:pointer-events-none disabled:opacity-50",
+              size === "small" && "px-2 py-1 coarse:py-2",
+              size === "medium" && "p-2 coarse:p-3",
               className,
             )}
             {...props}

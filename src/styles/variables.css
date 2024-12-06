@@ -3,6 +3,21 @@
 :root {
   color-scheme: light dark;
 
+  /* Neutral color scale */
+  --neutral-1: var(--sand-1);
+  --neutral-2: var(--sand-2);
+  --neutral-3: var(--sand-3);
+  --neutral-4: var(--sand-4);
+  --neutral-5: var(--sand-5);
+  --neutral-6: var(--sand-6);
+  --neutral-7: var(--sand-7);
+  --neutral-8: var(--sand-8);
+  --neutral-9: var(--sand-9);
+  --neutral-10: var(--sand-10);
+  --neutral-11: var(--sand-11);
+  --neutral-12: var(--sand-12);
+  --neutral-contrast: #fff;
+
   /* Text colors */
   --color-text: var(--sand-12);
   --color-text-secondary: var(--sand-11);

@@ -1,5 +1,5 @@
 import { IconButton } from "./icon-button"
-import { SearchIcon16 } from "./icons"
+import { MoreIcon16, SearchIcon16 } from "./icons"
 
 export default {
   title: "IconButton",
@@ -21,5 +21,13 @@ export const WithKeyboardShortcut = {
     "aria-label": "Search",
     children: <SearchIcon16 />,
     shortcut: ["⌘", "F"],
+  },
+}
+
+export const Small = {
+  args: {
+    "aria-label": "More actions",
+    children: <MoreIcon16 />,
+    size: "small",
   },
 }
