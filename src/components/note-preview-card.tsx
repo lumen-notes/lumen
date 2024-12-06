@@ -7,7 +7,7 @@ import {
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
-  isReadOnlyAtom,
+  isSignedOutAtom,
 } from "../global-state"
 import { useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
@@ -52,7 +52,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
   const isPinned = checkIfPinned(note)
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const saveNote = useSaveNote()
@@ -82,9 +82,9 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           aria-label={isPinned ? "Unpin" : "Pin"}
           size="small"
           tooltipAlign="end"
-          disabled={isReadOnly}
+          disabled={isSignedOut}
           onClick={() => {
-            if (isReadOnly) return
+            if (isSignedOut) return
             saveNote({ id, content: togglePin(note?.content ?? "") })
           }}
         >
@@ -125,13 +125,13 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                 href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                 target="_blank"
                 rel="noopener noreferrer"
-                disabled={isReadOnly}
+                disabled={isSignedOut}
               >
                 Open in GitHub
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
-                disabled={isReadOnly}
+                disabled={isSignedOut}
                 onSelect={async () => {
                   if (!note) return
 
@@ -154,7 +154,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               <DropdownMenu.Item
                 variant="danger"
                 icon={<TrashIcon16 />}
-                disabled={isReadOnly}
+                disabled={isSignedOut}
                 onSelect={() => {
                   // Ask the user to confirm before deleting a note with backlinks
                   if (

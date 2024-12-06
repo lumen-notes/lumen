@@ -10,7 +10,7 @@ import {
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
-  isReadOnlyAtom,
+  isSignedOutAtom,
 } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
@@ -93,7 +93,7 @@ const _NoteCard = React.memo(function NoteCard({
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const { vimMode } = getEditorSettings()
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
 
   // Refs
   const cardRef = React.useRef<HTMLDivElement>(null)
@@ -202,7 +202,7 @@ const _NoteCard = React.memo(function NoteCard({
 
   const handleSave = React.useCallback(
     ({ id, content }: { id: NoteId; content: string }) => {
-      if (isReadOnly) {
+      if (isSignedOut) {
         return
       }
 
@@ -212,7 +212,7 @@ const _NoteCard = React.memo(function NoteCard({
       }
       localStorage.removeItem(getStorageKey({ githubRepo, id }))
     },
-    [note, saveNote, githubRepo, isReadOnly],
+    [note, saveNote, githubRepo, isSignedOut],
   )
 
   const handleDelete = React.useCallback(() => {
@@ -441,7 +441,7 @@ const _NoteCard = React.memo(function NoteCard({
                       <PinIcon16 />
                     )
                   }
-                  disabled={isReadOnly}
+                  disabled={isSignedOut}
                   onSelect={() => {
                     handleSave({ id, content: togglePin(note.content) })
                   }}
@@ -469,13 +469,13 @@ const _NoteCard = React.memo(function NoteCard({
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  disabled={isReadOnly}
+                  disabled={isSignedOut}
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
-                  disabled={isReadOnly}
+                  disabled={isSignedOut}
                   onSelect={async () => {
                     if (!note) return
 
@@ -498,7 +498,7 @@ const _NoteCard = React.memo(function NoteCard({
                 <DropdownMenu.Item
                   variant="danger"
                   icon={<TrashIcon16 />}
-                  disabled={isReadOnly}
+                  disabled={isSignedOut}
                   onSelect={() => {
                     // Ask the user to confirm before deleting a note with backlinks
                     if (
@@ -531,7 +531,7 @@ const _NoteCard = React.memo(function NoteCard({
           {!note || isDirty ? (
             <Button
               variant={isDirty ? "primary" : "secondary"}
-              disabled={isReadOnly}
+              disabled={isSignedOut}
               onClick={() => {
                 handleSave({ id, content: editorValue })
                 switchToReading()

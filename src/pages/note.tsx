@@ -50,7 +50,7 @@ import {
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
-  isReadOnlyAtom,
+  isSignedOutAtom,
   templatesAtom,
 } from "../global-state"
 import { useNoteById, useSaveNote } from "../hooks/note"
@@ -104,7 +104,7 @@ export function useDailyTemplate(date: string) {
 
 export function NotePage() {
   const { "*": noteId = "" } = useParams()
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
   const note = useNoteById(noteId)
   const githubRepo = useAtomValue(githubRepoAtom)
   const githubUser = useAtomValue(githubUserAtom)
@@ -189,7 +189,7 @@ export function NotePage() {
 
   const handleSave = React.useCallback(
     (content: string) => {
-      if (isReadOnly) {
+      if (isSignedOut) {
         return
       }
 
@@ -200,7 +200,7 @@ export function NotePage() {
 
       localStorage.removeItem(getStorageKey({ githubRepo, noteId }))
     },
-    [note, saveNote, githubRepo, noteId, isReadOnly],
+    [note, saveNote, githubRepo, noteId, isSignedOut],
   )
 
   const handleDiscardChanges = React.useCallback(() => {
@@ -369,7 +369,7 @@ export function NotePage() {
                       <PinIcon16 />
                     )
                   }
-                  disabled={isReadOnly || !note}
+                  disabled={isSignedOut || !note}
                   onSelect={() => {
                     handleSave(togglePin(note?.content ?? ""))
                   }}
@@ -389,13 +389,13 @@ export function NotePage() {
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  disabled={isReadOnly || !note}
+                  disabled={isSignedOut || !note}
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
-                  disabled={isReadOnly || !note}
+                  disabled={isSignedOut || !note}
                   onSelect={async () => {
                     if (!note) return
 
@@ -418,7 +418,7 @@ export function NotePage() {
                 <DropdownMenu.Item
                   variant="danger"
                   icon={<TrashIcon16 />}
-                  disabled={isReadOnly || !note}
+                  disabled={isSignedOut || !note}
                   onSelect={() => {
                     // Ask the user to confirm before deleting a note with backlinks
                     if (

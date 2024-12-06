@@ -6,9 +6,11 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps } from "../components/panels"
 import { RepoForm } from "../components/repo-form"
-import { githubRepoAtom, globalStateMachineAtom, isReadOnlyAtom, notesAtom } from "../global-state"
+import { githubRepoAtom, globalStateMachineAtom, isSignedOutAtom, notesAtom } from "../global-state"
 
-const isEmptyAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn.empty"))
+const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.notCloned"),
+)
 
 const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloningRepo"),
@@ -21,17 +23,17 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
 const hasNotesAtom = selectAtom(notesAtom, (notes) => notes.size > 0)
 
 export function NotesPanel({ id, onClose }: PanelProps) {
-  const isEmpty = useAtomValue(isEmptyAtom)
+  const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
   const isCloningRepo = useAtomValue(isCloningRepoAtom)
   const isRepoCloned = useAtomValue(isRepoClonedAtom)
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const hasNotes = useAtomValue(hasNotesAtom)
 
   return (
     <Panel id={id} title="Notes" icon={<NoteIcon16 />} onClose={onClose}>
       <div className="p-4">
-        {isEmpty ? (
+        {isRepoNotCloned ? (
           <div className="flex w-full flex-col gap-4">
             <div className="flex flex-col gap-1">
               <h1 className="text-lg font-semibold">Choose a repository</h1>
@@ -46,7 +48,7 @@ export function NotesPanel({ id, onClose }: PanelProps) {
             <LoadingIcon16 />
             Cloning {githubRepo?.owner}/{githubRepo?.name}…
           </span>
-        ) : isRepoCloned || isReadOnly ? (
+        ) : isRepoCloned || isSignedOut ? (
           !hasNotes ? (
             <NoteCard id={`${Date.now()}`} placeholder="Write your first note…" />
           ) : (

@@ -4,7 +4,7 @@ import React from "react"
 import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
 import { githubUserAtom, globalStateMachineAtom } from "../global-state"
-import { Button } from "./button"
+import { Button, ButtonProps } from "./button"
 import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
 import { LumenLogo } from "./lumen-logo"
@@ -40,13 +40,13 @@ export function GitHubAuth({ children }: { children?: React.ReactNode }) {
   )
 }
 
-export function SignInButton({ className }: { className?: string }) {
+export function SignInButton(props: ButtonProps) {
   const send = useSetAtom(globalStateMachineAtom)
   return (
     <Button
       variant="primary"
-      className={className}
-      onClick={async () => {
+{...props}
+      onClick={async (event) => {
         // Sign in with a personal access token in local development
         if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
           try {
@@ -64,6 +64,8 @@ export function SignInButton({ className }: { className?: string }) {
           state: window.location.href,
           scope: "repo,gist,user:email",
         })
+
+        props.onClick?.(event)
       }}
     >
       Sign in with GitHub

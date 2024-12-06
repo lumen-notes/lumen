@@ -9,7 +9,7 @@ import { NoteList } from "../components/note-list"
 import { Panel } from "../components/panel"
 import { PanelProps, usePanel, usePanelActions } from "../components/panels"
 import { TextInput } from "../components/text-input"
-import { isReadOnlyAtom } from "../global-state"
+import { isSignedOutAtom } from "../global-state"
 import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
 export function TagPanel({ id, params = {}, onClose }: PanelProps) {
@@ -18,7 +18,7 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
   const deleteTag = useDeleteTag()
   const { updatePanel } = usePanelActions()
   const panel = usePanel()
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
   const [isRenaming, setIsRenaming] = React.useState(false)
   const nameInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -43,12 +43,12 @@ export function TagPanel({ id, params = {}, onClose }: PanelProps) {
       icon={<TagIcon16 />}
       actions={
         <>
-          <DropdownMenu.Item icon={<EditIcon16 />} disabled={isReadOnly} onSelect={openRenameForm}>
+          <DropdownMenu.Item icon={<EditIcon16 />} disabled={isSignedOut} onSelect={openRenameForm}>
             Rename tag
           </DropdownMenu.Item>
           <DropdownMenu.Item
             icon={<TrashIcon16 />}
-            disabled={isReadOnly}
+            disabled={isSignedOut}
             variant="danger"
             onSelect={handleDeleteTag}
           >

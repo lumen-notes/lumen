@@ -23,7 +23,7 @@ import { indentedLineWrapExtension } from "../codemirror-extensions/indented-lin
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
-import { isReadOnlyAtom, tagsAtom, templatesAtom } from "../global-state"
+import { isSignedOutAtom, tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
@@ -331,7 +331,7 @@ function useTagPropertyCompletion() {
 function useNoteCompletion() {
   const saveNote = useSaveNote()
   const searchNotes = useStableSearchNotes()
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -391,7 +391,7 @@ function useNoteCompletion() {
         }
       })
 
-      if (query && !isReadOnly) {
+      if (query && !isSignedOut) {
         options.push(createNewNoteOption)
       }
 
@@ -401,7 +401,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, saveNote, isReadOnly],
+    [searchNotes, saveNote, isSignedOut],
   )
 
   return noteCompletion
