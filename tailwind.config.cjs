@@ -29,21 +29,6 @@ module.exports = {
     colors: {
       transparent: "transparent",
       current: "currentColor",
-      neutral: {
-        1: "var(--neutral-1)",
-        2: "var(--neutral-2)",
-        3: "var(--neutral-3)",
-        4: "var(--neutral-4)",
-        5: "var(--neutral-5)",
-        6: "var(--neutral-6)",
-        7: "var(--neutral-7)",
-        8: "var(--neutral-8)",
-        9: "var(--neutral-9)",
-        10: "var(--neutral-10)",
-        11: "var(--neutral-11)",
-        12: "var(--neutral-12)",
-        contrast: "var(--neutral-contrast)",
-      },
       text: {
         DEFAULT: "var(--color-text)",
         secondary: "var(--color-text-secondary)",
@@ -54,6 +39,7 @@ module.exports = {
       bg: {
         DEFAULT: "var(--color-bg)",
         inset: "var(--color-bg-inset)",
+        card: "var(--color-bg-card)",
         overlay: "var(--color-bg-overlay)",
         backdrop: "var(--color-bg-backdrop)",
         secondary: "var(--color-bg-secondary)",
@@ -71,10 +57,10 @@ module.exports = {
     },
     borderRadius: {
       none: "0",
-      xs: "0.1875rem", // 3px (base / 2)
-      sm: "0.375rem", // 6px (base)
-      md: "0.625rem", // 10px (base + 4px)
-      lg: "0.875rem", // 14px (base + 8px)
+      xs: "2.5px", // base / 2)
+      sm: "5px", // base
+      md: "9px", // base + 4px
+      lg: "13px", // base + 8px
       full: "9999px",
     },
   },

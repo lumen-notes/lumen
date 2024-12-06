@@ -1,24 +1,23 @@
 import React from "react"
 import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
+import { Link, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { useDebouncedValue } from "../hooks/debounced-value"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { useSearchParam } from "../hooks/search-param"
 import { templateSchema } from "../schema"
 import { removeLeadingEmoji } from "../utils/emoji"
-import { isPinned } from "../utils/pin"
+import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { CloseIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
-import { Link } from "./link"
 import { LinkHighlightProvider } from "./link-highlight-provider"
-import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
-import { usePanel, usePanelActions } from "./panels"
+import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
@@ -28,11 +27,11 @@ type ViewType = z.infer<typeof viewTypeSchema>
 
 type NoteListProps = {
   baseQuery?: string
+  initialVisibleNotes?: number
 }
-export function NoteList({ baseQuery = "" }: NoteListProps) {
+export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const { openPanel } = usePanelActions()
-  const panel = usePanel()
+  const navigate = useNavigate()
 
   const [query, setQuery] = useSearchParam("query", {
     validate: z.string().catch("").parse,
@@ -50,8 +49,8 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     replace: true,
   })
 
-  // Only render the first 10 notes when the page loads
-  const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
+  // Only render the first 24 notes when the page loads
+  const [numVisibleNotes, setNumVisibleNotes] = React.useState(initialVisibleNotes)
 
   const [bottomRef, bottomInView] = useInView()
 
@@ -137,7 +136,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                   setQuery(value)
 
                   // Reset the number of visible notes when the user starts typing
-                  setNumVisibleNotes(10)
+                  setNumVisibleNotes(initialVisibleNotes)
                 }}
               />
               <IconButton
@@ -152,7 +151,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 onClick={() => {
                   const resultsCount = noteResults.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
-                  openPanel?.(noteResults[randomIndex].id, panel?.index)
+                  navigate(`/${noteResults[randomIndex].id}`)
                 }}
               />
             </div>
@@ -188,7 +187,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       // TODO: Move focus
                     }}
                   >
-                    {qualifier.exclude ? <span>not</span> : null}
+                    {qualifier.exclude ? <span className="italic">not</span> : null}
                     {qualifier.values.map((value, index) => (
                       <React.Fragment key={value}>
                         {index > 0 ? <span>or</span> : null}
@@ -242,9 +241,13 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               </>
             ) : null}
           </div>
-          {viewType === "grid"
-            ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
-            : null}
+          {viewType === "grid" ? (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+              {noteResults.slice(0, numVisibleNotes).map(({ id }) => (
+                <NotePreviewCard key={id} id={id} />
+              ))}
+            </div>
+          ) : null}
           {viewType === "list" ? (
             <ul>
               {noteResults.slice(0, numVisibleNotes).map((note) => {
@@ -259,10 +262,10 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                       data-note-id={note.id}
                       to={`/${note.id}`}
                       className="focus-ring flex items-center rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
-                      target="_blank"
+                      // target="_blank"
                     >
                       <NoteFavicon note={note} className="mr-3" />
-                      {isPinned(note) ? (
+                      {checkIfPinned(note) ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}
                       <span className="truncate text-text-secondary">

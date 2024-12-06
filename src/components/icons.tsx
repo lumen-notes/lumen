@@ -472,19 +472,27 @@ export function UnlinkIcon16() {
   )
 }
 
-export function ListIcon16() {
+export function ListIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M5 2h10v1.5H5V2ZM5 7h10v1.5H5V7ZM5 12h10v1.5H5V12ZM1 2h2v1.5H1V2ZM1 7h2v1.5H1V7ZM1 12h2v1.5H1V12Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function CardsIcon16() {
+export function MenuIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
+      <path d="M1 2h14v1.5H1V2Zm0 5h14v1.5H1V7Zm0 5h14v1.5H1V12Z" />
+    </Icon>
+  )
+}
+
+export function CardsIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
       <path d="M13 1.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5h10ZM3 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H3ZM13 10.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h10ZM3 9a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3Z" />
-    </svg>
+    </Icon>
   )
 }
 
@@ -676,6 +684,14 @@ export function PinFillIcon12(props: IconProps) {
   return (
     <Icon size={12} {...props}>
       <path d="M5.07.693a1.25 1.25 0 0 0-1.881-.13L.563 3.19a1.25 1.25 0 0 0 .13 1.88l1.882 1.424.624 2.893a1.25 1.25 0 0 0 2.105.62l1.82-1.82 3.658 3.657 1.06-1.06-3.656-3.658 1.82-1.82c.7-.7.347-1.898-.62-2.107l-2.893-.623L5.07.693Z" />
+    </Icon>
+  )
+}
+
+export function PinIcon12(props: IconProps) {
+  return (
+    <Icon size={12} {...props}>
+      <path d="M3.189.563a1.25 1.25 0 0 1 1.88.13l1.424 1.882 2.893.623a1.25 1.25 0 0 1 .62 2.106l-1.82 1.821 3.657 3.657-1.06 1.06-3.658-3.656-1.82 1.82c-.7.7-1.898.347-2.106-.62l-.624-2.893L.693 5.07a1.25 1.25 0 0 1-.13-1.881L3.19.563Zm2.443 3.361L4.046 1.827l-2.22 2.22 2.099 1.585.643 2.989 4.053-4.053-2.989-.644Z" />
     </Icon>
   )
 }

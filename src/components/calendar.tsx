@@ -21,7 +21,13 @@ import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
 
-export function Calendar({ activeNoteId }: { activeNoteId: string }) {
+export function Calendar({
+  activeNoteId,
+  className,
+}: {
+  activeNoteId: string
+  className?: string
+}) {
   const date = parseISO(activeNoteId)
 
   const [startOfWeek, setStartOfWeek] = React.useState(() =>
@@ -36,41 +42,47 @@ export function Calendar({ activeNoteId }: { activeNoteId: string }) {
   )
 
   return (
-    <div className="flex flex-col gap-2 overflow-hidden p-2">
-      <div className="flex items-center justify-between">
-        <span className="px-2 text-lg font-semibold">
-          {MONTH_NAMES[startOfWeek.getMonth()]} {startOfWeek.getFullYear()}
-        </span>
-        <div className="flex ">
-          <IconButton
-            aria-label="Previous week"
-            onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
-          >
-            <ChevronLeftIcon16 />
-          </IconButton>
-          <IconButton
-            aria-label="Next week"
-            onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
-          >
-            <ChevronRightIcon16 />
-          </IconButton>
+    <div className="border-b border-border-secondary">
+      <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden py-2", className)}>
+        <div className="flex items-center justify-between">
+          <span className="text-lg">
+            <span className="font-semibold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
+            {startOfWeek.getFullYear()}
+          </span>
+          <div className="flex ">
+            <IconButton
+              aria-label="Previous week"
+              onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
+            >
+              <ChevronLeftIcon16 />
+            </IconButton>
+            <IconButton
+              aria-label="Next week"
+              onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
+            >
+              <ChevronRightIcon16 />
+            </IconButton>
+          </div>
         </div>
-      </div>
-      <div className="grid px-2">
-        <RovingFocusGroup.Root orientation="horizontal" className="flex">
-          <CalendarWeek
-            startOfWeek={startOfWeek}
-            isActive={toWeekString(startOfWeek) === activeNoteId}
-          />
-          <div role="separator" className="my-[0.375rem] w-px flex-shrink-0 bg-border-secondary" />
-          {daysOfWeek.map((date) => (
-            <CalendarDate
-              key={date.toISOString()}
-              date={date}
-              isActive={toDateString(date) === activeNoteId}
+        <div className="grid">
+          <RovingFocusGroup.Root orientation="horizontal" className="flex">
+            <CalendarWeek
+              startOfWeek={startOfWeek}
+              isActive={toWeekString(startOfWeek) === activeNoteId}
             />
-          ))}
-        </RovingFocusGroup.Root>
+            <div
+              role="separator"
+              className="my-[0.375rem] w-px flex-shrink-0 bg-border-secondary"
+            />
+            {daysOfWeek.map((date) => (
+              <CalendarDate
+                key={date.toISOString()}
+                date={date}
+                isActive={toDateString(date) === activeNoteId}
+              />
+            ))}
+          </RovingFocusGroup.Root>
+        </div>
       </div>
     </div>
   )
@@ -184,7 +196,7 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-semibold text-text before:absolute before:-bottom-2 before:h-[3px] before:w-full before:rounded-full before:bg-text before:content-['']",
+            "font-semibold text-text before:absolute before:-bottom-2 before:h-[3px] before:w-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
@@ -193,7 +205,7 @@ function CalendarItem({
           hasNotes && !isActive && "after:bg-border",
         )}
       >
-        <div className="flex flex-col items-center gap-1 @[3rem]:gap-2 @[6rem]:flex-row coarse:gap-2">
+        <div className="flex flex-col items-center gap-1 @[3rem]:flex-row @[3rem]:gap-2 coarse:gap-2">
           <span className="@[3rem]:hidden">{shortName}</span>
           {/* Show full name when there's enough space */}
           <span className="hidden @[3rem]:inline">{name}</span>

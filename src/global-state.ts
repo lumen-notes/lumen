@@ -27,7 +27,7 @@ import {
   isRepoSynced,
 } from "./utils/git"
 import { parseNote } from "./utils/parse-note"
-import { isPinned } from "./utils/pin"
+import { checkIfPinned } from "./utils/pin"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
@@ -575,7 +575,7 @@ export const notesAtom = atom((get) => {
 
 export const pinnedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].filter(isPinned)
+  return [...notes.values()].filter(checkIfPinned)
 })
 
 export const sortedNotesAtom = atom((get) => {

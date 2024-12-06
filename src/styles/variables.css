@@ -28,7 +28,8 @@
   /* Background colors */
   --color-bg: white;
   --color-bg-inset: var(--sand-2);
-  --color-bg-overlay: white;
+  --color-bg-card: #fff;
+  --color-bg-overlay: #fff;
   --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
   --color-bg-secondary: var(--sand-a3);
   --color-bg-tertiary: var(--sand-a4);
@@ -38,7 +39,7 @@
 
   /* Border colors */
   --color-border: var(--sand-a8);
-  --color-border-secondary: var(--sand-a4);
+  --color-border-secondary: var(--sand-a6);
   --color-border-table: var(--sand-7);
   --color-border-focus: var(--cyan-9);
 
@@ -60,6 +61,7 @@
     /* Background colors */
     --color-bg: var(--sand-1);
     --color-bg-inset: black;
+    --color-bg-card: var(--sand-2);
     --color-bg-overlay: var(--sand-3);
     --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
     --color-bg-secondary: var(--sand-a4);
@@ -69,7 +71,7 @@
     --color-bg-selection: var(--cyan-a5);
 
     /* Border colors */
-    --color-border-secondary: var(--sand-a5);
+    /* --color-border-secondary: var(--sand-a5); */
     --color-border-focus: var(--cyan-11);
 
     /* Syntax colors */

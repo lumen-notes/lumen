@@ -33,7 +33,7 @@ import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
-import { usePanelLinkClickHandler } from "./panels"
+import { useNavigate } from "react-router-dom"
 
 type NoteEditorProps = {
   className?: string
@@ -113,7 +113,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     const attachFile = useAttachFile()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
     const editorSettings = getEditorSettings()
-    const handleLinkClick = usePanelLinkClickHandler()
+    const navigate = useNavigate()
 
     // Completions
     const noteCompletion = useNoteCompletion()
@@ -139,7 +139,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
-        wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
+        wikilinkExtension((to) => navigate(to)),
         syntaxHighlighting(syntaxHighlighter),
       ]
 
@@ -156,7 +156,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       tagPropertyCompletion,
       tagSyntaxCompletion,
       templateCompletion,
-      handleLinkClick,
+      navigate,
     ])
 
     return (

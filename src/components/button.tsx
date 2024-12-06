@@ -1,7 +1,5 @@
 import React from "react"
 import { cx } from "../utils/cx"
-import { Keys } from "./keys"
-import { Tooltip } from "./tooltip"
 
 export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   variant?: "secondary" | "primary"
@@ -28,7 +26,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
         {shortcut ? (
           <span
-            className={cx("font-normal coarse:hidden", variant === "secondary" && "opacity-75")}
+            className={cx(
+              "font-normal coarse:hidden",
+              variant === "secondary" && "text-text-secondary",
+            )}
           >
             {shortcut.join("")}
           </span>

@@ -17,7 +17,7 @@ import { GitHubRepository, NoteId } from "../schema"
 import { cx } from "../utils/cx"
 import { getEditorSettings } from "../utils/editor-settings"
 import { exportAsGist } from "../utils/export-as-gist"
-import { isPinned, togglePin } from "../utils/pin"
+import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Card, CardProps } from "./card"
@@ -435,7 +435,7 @@ const _NoteCard = React.memo(function NoteCard({
                 ) : null}
                 <DropdownMenu.Item
                   icon={
-                    isPinned(note) ? (
+                    checkIfPinned(note) ? (
                       <PinFillIcon16 className="text-[var(--orange-11)]" />
                     ) : (
                       <PinIcon16 />
@@ -446,7 +446,7 @@ const _NoteCard = React.memo(function NoteCard({
                     handleSave({ id, content: togglePin(note.content) })
                   }}
                 >
-                  {isPinned(note) ? "Pinned" : "Pin"}
+                  {checkIfPinned(note) ? "Pinned" : "Pin"}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item

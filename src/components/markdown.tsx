@@ -46,7 +46,7 @@ import {
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
-import { Link } from "./link"
+import { Link } from "react-router-dom"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
@@ -135,7 +135,7 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar login={frontmatter.github} />
+                  <GitHubAvatar login={frontmatter.github} size={64} />
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
@@ -223,7 +223,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="focus-ring inline-block aspect-[2/3] h-14 rounded-xs bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
+      className="focus-ring inline-block aspect-[2/3] h-24 rounded-sm bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -421,7 +421,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" to={`/${dateString}`} target="_blank">
+            <Link className="link" to={`/${dateString}`}>
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -432,7 +432,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
-            <Link className="link" to={`/${nextBirthdayString}`} target="_blank">
+            <Link className="link" to={`/${nextBirthdayString}`}>
               {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
             </Link>{" "}
             {isBirthdayToday ? "🎂" : null}
@@ -513,11 +513,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
 
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
-    return (
-      <Link to={`/file?${qs.stringify({ path: props.href })}`} target="_blank">
-        {props.children}
-      </Link>
-    )
+    return <Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Link>
   }
 
   // Render relative links with React Router
@@ -558,9 +554,14 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
     return (
       <Tooltip>
         <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
-        <Tooltip.Content>
-          {props.href ? <WebsiteFavicon url={props.href} className="mr-2 align-sub" /> : null}
-          {props.href?.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+        <Tooltip.Content className="flex items-center gap-2">
+          {props.href ? <WebsiteFavicon url={props.href} className="align-sub" /> : null}
+          <span className="inline-block max-w-[40vw] truncate leading-4">
+            {props.href
+              ?.replace(/^https?:\/\//, "")
+              .replace(/^www\./, "")
+              .replace(/\/$/, "")}
+          </span>
         </Tooltip.Content>
       </Tooltip>
     )
@@ -573,11 +574,7 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Link
-        to={`/file?${qs.stringify({ path: props.src })}`}
-        target="_blank"
-        className="block w-fit !no-underline"
-      >
+      <Link to={`/file?${qs.stringify({ path: props.src })}`} className="block w-fit !no-underline">
         <FilePreview path={props.src} alt={props.alt} />
       </Link>
     )
@@ -708,7 +705,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} to={`/${id}`} target="_blank">
+        <Link ref={ref} to={`/${id}`}>
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
@@ -720,15 +717,19 @@ function NoteLink({ id, text }: NoteLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="right" sideOffset={4} asChild>
+        <HoverCard.Content side="bottom" sideOffset={4} align="start" asChild>
           <Card
-            className="z-20 max-h-[48svh] w-96 overflow-auto p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+            className="z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
             elevation={2}
           >
             {note ? (
-              <Markdown>{note.content}</Markdown>
+              <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]">
+                <div {...{ inert: "" }} className="p-4 [zoom:80%]">
+                  <Markdown hideFrontmatter>{note.content}</Markdown>
+                </div>
+              </div>
             ) : (
-              <span className="flex items-center gap-2 text-text-danger">
+              <span className="flex items-center gap-2 p-4 text-text-danger">
                 <ErrorIcon16 />
                 File not found
               </span>
@@ -758,9 +759,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </span>
       )}
       <div className="mt-2 text-sm text-text-secondary">
-        <Link to={`/${id}`} target="_blank">
-          Source
-        </Link>
+        <Link to={`/${id}`}>Source</Link>
       </div>
     </div>
   )
@@ -776,7 +775,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${date}`} target="_blank">
+        <Link className={className} to={`/${date}`}>
           {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>

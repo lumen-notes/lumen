@@ -14,7 +14,7 @@ import { useSearchNotes } from "../hooks/search"
 import { Note, templateSchema } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { removeLeadingEmoji } from "../utils/emoji"
-import { isPinned } from "../utils/pin"
+import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import {
@@ -293,7 +293,7 @@ function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
       onSelect={onSelect}
     >
       <span className="inline-flex items-center gap-2">
-        {isPinned(note) ? (
+        {checkIfPinned(note) ? (
           <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
         ) : null}
         {parsedTemplate.success ? (
