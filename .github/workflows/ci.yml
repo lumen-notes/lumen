@@ -20,11 +20,7 @@ jobs:
           node-version: 18.x
           cache: "npm"
       - run: npm ci
-      - run: npm run test:coverage
-      - uses: actions/upload-artifact@v3.1.0
-        with:
-          name: coverage
-          path: coverage
+      - run: npm run test
   test-storybook:
     runs-on: ubuntu-latest
     steps:
