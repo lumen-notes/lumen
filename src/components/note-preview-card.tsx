@@ -66,7 +66,8 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
-        <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] [&_*]:!overflow-hidden">
+        {/* TODO: Hide scrollbar on non-webkit browsers */}
+        <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] [&_*::-webkit-scrollbar]:hidden">
           <div {...{ inert: "" }} className="p-4 [zoom:80%]">
             <Markdown hideFrontmatter>{note?.content ?? ""}</Markdown>
           </div>
@@ -74,7 +75,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       </Link>
       <div
         className={cx(
-          "absolute right-1 top-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
+          "absolute right-2 top-2 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
           isPinned && "!opacity-100",
         )}
       >
@@ -94,7 +95,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       {note ? (
         <div
           className={cx(
-            "absolute bottom-1 right-1 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
+            "absolute bottom-2 right-2 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
             isDropdownOpen && "!opacity-100",
           )}
         >
