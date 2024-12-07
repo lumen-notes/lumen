@@ -68,8 +68,8 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
         )}
       >
         {/* TODO: Hide scrollbar on non-webkit browsers */}
-        <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] [&_*::-webkit-scrollbar]:hidden">
-          <div {...{ inert: "" }} className="p-4 [zoom:80%]">
+        <div className="aspect-[5/3] w-full overflow-hidden p-3 [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] coarse:p-4 [&_*::-webkit-scrollbar]:hidden">
+          <div {...{ inert: "" }} className="[zoom:80%]">
             <Markdown hideFrontmatter>{note?.content ?? ""}</Markdown>
           </div>
         </div>

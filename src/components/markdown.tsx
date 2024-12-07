@@ -222,7 +222,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="focus-ring inline-block aspect-[2/3] h-24 rounded bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
+      className="focus-ring inline-block aspect-[2/3] h-24 rounded-sm bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -602,7 +602,7 @@ function Code({ className, inline, children }: CodeProps) {
   return (
     <div className="relative">
       <pre className="!pe-12">
-        <div className="absolute end-2 top-2 rounded bg-bg-code-block">
+        <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1">
           <CopyButton text={children.toString()} />
         </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>

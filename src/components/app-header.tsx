@@ -41,7 +41,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
   return (
     <header
       className={cx(
-        "flex h-10 items-center justify-between px-2 sm:grid sm:grid-cols-3",
+        "flex h-10 items-center justify-between px-2 sm:grid sm:grid-cols-3 coarse:h-14",
         className,
       )}
     >
@@ -60,21 +60,38 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                 )}
               >
                 <ul>
-                  <NavLink to="/" icon={<NoteIcon16 />}>
-                    Notes
-                  </NavLink>
-                  <NavLink
-                    to={`/notes/${toDateString(new Date())}`}
-                    icon={<CalendarIcon16>{new Date().getDate()}</CalendarIcon16>}
-                  >
-                    Calendar
-                  </NavLink>
-                  <NavLink to="/tags" icon={<TagIcon16 />}>
-                    Tags
-                  </NavLink>
-                  <NavLink to="/settings" icon={<SettingsIcon16 />}>
-                    Settings
-                  </NavLink>
+                  <li>
+                    <NavMenuLink>
+                      <Link to="/">
+                        <NoteIcon16 />
+                        Notes
+                      </Link>
+                    </NavMenuLink>
+                  </li>
+                  <li>
+                    <NavMenuLink>
+                      <Link to={`/notes/$`} params={{ _splat: toDateString(new Date()) }}>
+                        <CalendarIcon16>{new Date().getDate()}</CalendarIcon16>
+                        Calendar
+                      </Link>
+                    </NavMenuLink>
+                  </li>
+                  <li>
+                    <NavMenuLink>
+                      <Link to="/tags">
+                        <TagIcon16 />
+                        Tags
+                      </Link>
+                    </NavMenuLink>
+                  </li>
+                  <li>
+                    <NavMenuLink>
+                      <Link to="/settings">
+                        <SettingsIcon16 />
+                        Settings
+                      </Link>
+                    </NavMenuLink>
+                  </li>
                 </ul>
               </NavMenu.Content>
             </NavMenu.Item>
@@ -107,7 +124,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
             <div role="separator" className="h-5 w-px bg-border-secondary" />
           </>
         ) : null}
-        <div className="flex items-center">
+        <div className="flex items-center empty:hidden">
           <SyncIconButton size="small" />
           <div className="hidden sm:flex">
             <IconButton
@@ -127,26 +144,13 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
   )
 }
 
-function NavLink({
-  to,
-  icon,
-  children,
-}: {
-  to: string
-  icon: React.ReactNode
-  children: React.ReactNode
-}) {
+function NavMenuLink({ children }: { children: React.ReactNode }) {
   return (
-    <li>
-      <NavMenu.Link asChild>
-        <Link
-          to={to}
-          className="focus-ring flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10 coarse:gap-4 coarse:px-4"
-        >
-          <span className="flex text-text-secondary">{icon}</span>
-          <span>{children}</span>
-        </Link>
-      </NavMenu.Link>
-    </li>
+    <NavMenu.Link
+      asChild
+      className="focus-ring flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10 coarse:gap-4 coarse:px-4 [&>svg]:text-text-secondary"
+    >
+      {children}
+    </NavMenu.Link>
   )
 }
