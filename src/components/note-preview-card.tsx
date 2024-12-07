@@ -2,7 +2,7 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link } from "@tanstack/react-router"
 import {
   githubRepoAtom,
   githubUserAtom,
@@ -21,8 +21,8 @@ import {
   CopyIcon16,
   ExternalLinkIcon16,
   MoreIcon16,
-  PinFillIcon12,
-  PinIcon12,
+  PinFillIcon16,
+  PinIcon16,
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
@@ -60,7 +60,8 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   return (
     <div className="group relative transition-transform duration-100 [&:has(a:active)]:scale-[98%]">
       <Link
-        to={`/${id}`}
+        to="/notes/$"
+        params={{ _splat: id }}
         className={cx(
           "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 group-hover:ring-border [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border",
           isDropdownOpen && "ring-2 ring-border",
@@ -89,7 +90,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             saveNote({ id, content: togglePin(note?.content ?? "") })
           }}
         >
-          {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : <PinIcon12 />}
+          {isPinned ? <PinFillIcon16 className=" text-[var(--orange-11)]" /> : <PinIcon16 />}
         </IconButton>
       </div>
       {note ? (

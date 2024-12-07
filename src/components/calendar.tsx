@@ -12,7 +12,7 @@ import {
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { Link } from "../components/link"
+import { Link } from "@tanstack/react-router"
 import { datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"

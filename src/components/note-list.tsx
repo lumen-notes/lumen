@@ -1,11 +1,8 @@
+import { Link, useNavigate } from "@tanstack/react-router"
 import React from "react"
 import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
-import { Link, useNavigate } from "react-router-dom"
-import { z } from "zod"
-import { useDebouncedValue } from "../hooks/debounced-value"
 import { parseQuery, useSearchNotes } from "../hooks/search"
-import { useSearchParam } from "../hooks/search-param"
 import { templateSchema } from "../schema"
 import { removeLeadingEmoji } from "../utils/emoji"
 import { checkIfPinned } from "../utils/pin"
@@ -21,42 +18,33 @@ import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
-const viewTypeSchema = z.enum(["list", "grid"])
-
-type ViewType = z.infer<typeof viewTypeSchema>
-
 type NoteListProps = {
   baseQuery?: string
   initialVisibleNotes?: number
 }
+
 export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListProps) {
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
 
-  const [query, setQuery] = useSearchParam("query", {
-    validate: z.string().catch("").parse,
-    replace: true,
-  })
+  const [query, setQuery] = React.useState("")
 
-  const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
+  const deferredQuery = React.useDeferredValue(query)
+  // const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
 
-  const noteResults = React.useMemo(() => {
-    return searchNotes(`${baseQuery} ${debouncedQuery}`)
-  }, [searchNotes, baseQuery, debouncedQuery])
+  const defurredQuery = React.useMemo(() => {
+    return searchNotes(`${baseQuery} ${deferredQuery}`)
+  }, [searchNotes, baseQuery, deferredQuery])
 
-  const [viewType, setViewType] = useSearchParam<ViewType>("view", {
-    validate: viewTypeSchema.catch("grid").parse,
-    replace: true,
-  })
+  const [layout, setLayout] = React.useState<"grid" | "list">("grid")
 
-  // Only render the first 24 notes when the page loads
   const [numVisibleNotes, setNumVisibleNotes] = React.useState(initialVisibleNotes)
 
   const [bottomRef, bottomInView] = useInView()
 
   const loadMore = React.useCallback(() => {
-    setNumVisibleNotes((num) => Math.min(num + 10, noteResults.length))
-  }, [noteResults.length])
+    setNumVisibleNotes((num) => Math.min(num + 10, defurredQuery.length))
+  }, [defurredQuery.length])
 
   React.useEffect(() => {
     if (bottomInView) {
@@ -70,7 +58,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    const tags = noteResults.flatMap((note) => note.tags)
+    const tags = defurredQuery.flatMap((note) => note.tags)
 
     for (const tag of tags) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
@@ -81,7 +69,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
     return (
       frequencyEntries
         // Filter out tags that every note has
-        .filter(([, frequency]) => frequency < noteResults.length)
+        .filter(([, frequency]) => frequency < defurredQuery.length)
         // Filter out parent tags if the all the childs tag has the same frequency
         .filter(([tag, frequency]) => {
           const childTags = frequencyEntries.filter(
@@ -96,7 +84,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           return b[1] - a[1]
         })
     )
-  }, [noteResults])
+  }, [defurredQuery])
 
   const qualifiers = React.useMemo(() => {
     return parseQuery(query).qualifiers
@@ -130,7 +118,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-[1fr_auto_auto] gap-2">
               <SearchInput
-                placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
+                placeholder={`Search ${pluralize(defurredQuery.length, "note")}…`}
                 value={query}
                 onChange={(value) => {
                   setQuery(value)
@@ -140,24 +128,24 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                 }}
               />
               <IconButton
-                aria-label={viewType === "grid" ? "List view" : "Grid view"}
+                aria-label={layout === "grid" ? "List view" : "Grid view"}
                 className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}
+                onClick={() => setLayout(layout === "grid" ? "list" : "grid")}
               >
-                {viewType === "grid" ? <ListIcon16 /> : <GridIcon16 />}
+                {layout === "grid" ? <ListIcon16 /> : <GridIcon16 />}
               </IconButton>
               <DiceButton
-                disabled={noteResults.length === 0}
+                disabled={defurredQuery.length === 0}
                 onClick={() => {
-                  const resultsCount = noteResults.length
+                  const resultsCount = defurredQuery.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
-                  navigate(`/${noteResults[randomIndex].id}`)
+                  navigate({ to: `/notes/${defurredQuery[randomIndex].id}` })
                 }}
               />
             </div>
             {query ? (
               <span className="text-sm text-text-secondary">
-                {pluralize(noteResults.length, "result")}
+                {pluralize(defurredQuery.length, "result")}
               </span>
             ) : null}
           </div>
@@ -241,16 +229,16 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
               </>
             ) : null}
           </div>
-          {viewType === "grid" ? (
+          {layout === "grid" ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-              {noteResults.slice(0, numVisibleNotes).map(({ id }) => (
+              {defurredQuery.slice(0, numVisibleNotes).map(({ id }) => (
                 <NotePreviewCard key={id} id={id} />
               ))}
             </div>
           ) : null}
-          {viewType === "list" ? (
+          {layout === "list" ? (
             <ul>
-              {noteResults.slice(0, numVisibleNotes).map((note) => {
+              {defurredQuery.slice(0, numVisibleNotes).map((note) => {
                 const parsedTemplate = templateSchema
                   .omit({ body: true })
                   .safeParse(note.frontmatter.template)
@@ -258,11 +246,9 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                   // TODO: Move this into a NoteItem component
                   <li key={note.id}>
                     <Link
-                      // Used for focus management
-                      data-note-id={note.id}
-                      to={`/${note.id}`}
+                      to="/notes/$"
+                      params={{ _splat: note.id }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
-                      // target="_blank"
                     >
                       <NoteFavicon note={note} className="mr-3" />
                       {checkIfPinned(note) ? (
@@ -274,11 +260,6 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                             ? `${parsedTemplate.data.name} template`
                             : removeLeadingEmoji(note.title) || note.id}
                         </span>
-                        {/* <span className="ml-2">
-                          {removeParentTags(note.tags)
-                            .map((tag) => `#${tag}`)
-                            .join(" ")}
-                        </span> */}
                       </span>
                     </Link>
                   </li>
@@ -288,7 +269,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           ) : null}
         </div>
 
-        {noteResults.length > numVisibleNotes ? (
+        {defurredQuery.length > numVisibleNotes ? (
           <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
             Load more
           </Button>

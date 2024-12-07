@@ -24,7 +24,7 @@ export function SearchInput({
       <input
         ref={ref}
         className={cx(
-          "focus-ring h-10 w-full rounded-lg bg-bg-secondary pl-10 [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary focus-visible:bg-bg coarse:h-12 coarse:pl-12 [&:not(:focus-visible):hover]:ring-1 [&:not(:focus-visible):hover]:ring-inset [&:not(:focus-visible):hover]:ring-border-secondary",
+          "focus-ring h-10 w-full rounded-lg bg-bg-secondary pl-10 [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary coarse:h-12 coarse:pl-12 [&:not(:focus-visible):hover]:ring-1 [&:not(:focus-visible):hover]:ring-inset [&:not(:focus-visible):hover]:ring-border-secondary",
           props.value ? "pr-10 coarse:pr-12" : "pr-3 coarse:pr-4",
         )}
         type="search"

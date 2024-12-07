@@ -4,7 +4,7 @@ import { cx } from "../utils/cx"
 import { Keys } from "./keys"
 import { Tooltip } from "./tooltip"
 
-type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
+export type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   "aria-label": string // Required for accessibility
   size?: "small" | "medium"
   shortcut?: string[]
@@ -45,10 +45,10 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           </button>
         </Tooltip.Trigger>
         <Tooltip.Content side={tooltipSide} align={tooltipAlign}>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
             <span>{props["aria-label"]}</span>
             {shortcut ? (
-              <div className="flex coarse:hidden">
+              <div className="flex text-text-secondary coarse:hidden">
                 <Keys keys={shortcut} />
               </div>
             ) : null}

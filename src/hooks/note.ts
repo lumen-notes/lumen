@@ -4,8 +4,11 @@ import React from "react"
 import { globalStateMachineAtom, notesAtom } from "../global-state"
 import { Note, NoteId } from "../schema"
 
-export function useNoteById(id: NoteId) {
-  const noteAtom = React.useMemo(() => selectAtom(notesAtom, (notes) => notes.get(id)), [id])
+export function useNoteById(id: NoteId | undefined) {
+  const noteAtom = React.useMemo(
+    () => selectAtom(notesAtom, (notes) => (id ? notes.get(id) : undefined)),
+    [id],
+  )
   const note = useAtomValue(noteAtom)
   return note
 }

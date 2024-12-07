@@ -27,7 +27,7 @@ const Content: React.FC<ContentProps> = ({
         align={align}
         alignOffset={alignOffset}
         className={cx(
-          "card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "card-2 z-20 px-2.5 py-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           className,
         )}
       >
