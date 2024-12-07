@@ -5,7 +5,6 @@ import { useNetworkState } from "react-use"
 import urlcat from "urlcat"
 import { githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { Button, ButtonProps } from "./button"
-import { Card } from "./card"
 import { GitHubAvatar } from "./github-avatar"
 import { LumenLogo } from "./lumen-logo"
 

@@ -114,6 +114,8 @@
     "@storybook/test-runner": "^0.20.1",
     "@storybook/testing-library": "^0.2.2",
     "@tailwindcss/container-queries": "^0.1.0",
+    "@tanstack/router-devtools": "^1.86.1",
+    "@tanstack/router-plugin": "^1.86.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/benchmark": "^2.1.2",
     "@types/ejs": "^3.1.5",

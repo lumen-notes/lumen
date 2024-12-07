@@ -6,10 +6,12 @@ import { defineConfig } from "vite"
 import type { PluginOption } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import { VitePWA } from "vite-plugin-pwa"
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    TanStackRouterVite(),
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     visualizer({ filename: "dist/stats.html" }) as unknown as PluginOption,
     // Fixes isomorphic-git Buffer error
