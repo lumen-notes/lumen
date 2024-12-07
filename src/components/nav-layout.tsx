@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom"
 import { useMedia } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { Button } from "./button"
-import { Card } from "./card"
 import { NavBar } from "./nav-bar"
 
 /** Renders a navigation bar when not in fullscreen mode. */
@@ -39,9 +38,8 @@ export function NavLayout() {
       </div>
       <main className="relative w-full flex-grow overflow-auto">
         {needRefresh ? (
-          <Card
-            elevation={2}
-            className=" absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between gap-4 p-2 pl-4 sm:left-[unset]"
+          <div
+            className="card-2 absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between gap-4 p-2 pl-4 sm:left-[unset]"
           >
             <div className="flex items-center gap-3">
               {/* Dot to draw attention */}
@@ -49,7 +47,7 @@ export function NavLayout() {
               New version available
             </div>
             <Button onClick={() => updateServiceWorker(true)}>Update</Button>
-          </Card>
+          </div>
         ) : null}
         <Outlet />
       </main>

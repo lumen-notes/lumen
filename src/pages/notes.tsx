@@ -2,15 +2,40 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
 import { IconButton } from "../components/icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, MenuIcon16 } from "../components/icons"
+import {
+  ArrowLeftIcon16,
+  ArrowRightIcon16,
+  LoadingIcon16,
+  MenuIcon16,
+  PlusIcon16,
+} from "../components/icons"
 import { NoteList } from "../components/note-list"
+import { RepoForm } from "../components/repo-form"
 import { SyncStatusIcon, useSyncStatusText } from "../components/sync-status"
-import { globalStateMachineAtom } from "../global-state"
+import { githubRepoAtom, globalStateMachineAtom, isSignedOutAtom } from "../global-state"
+
+const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.notCloned"),
+)
+
+const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloningRepo"),
+)
+
+const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned"),
+)
 
 export function NotesPage() {
+  const githubRepo = useAtomValue(githubRepoAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
+  const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
+  const isCloningRepo = useAtomValue(isCloningRepoAtom)
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
+
   return (
     <div className="grid grid-rows-[auto_1fr] overflow-hidden">
-      <header className="xborder-b grid h-10 grid-cols-3 items-center border-border-secondary px-2">
+      <header className=" grid h-10 grid-cols-3 items-center  px-2">
         <div className="flex items-center">
           <IconButton aria-label="Menu" size="small" disableTooltip>
             <MenuIcon16 />
@@ -31,7 +56,24 @@ export function NotesPage() {
         </div>
       </header>
       <div className="overflow-auto p-4 [scrollbar-gutter:stable]">
-        <NoteList initialVisibleNotes={25} />
+        {isRepoNotCloned ? (
+          <div className="mx-auto flex w-full max-w-xl flex-col gap-6 md:py-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-lg font-semibold">Choose a repository</h1>
+              <p className="text-text-secondary">
+                Store your notes as markdown files in a GitHub repository of your choice.
+              </p>
+            </div>
+            <RepoForm />
+          </div>
+        ) : isCloningRepo ? (
+          <span className="inline-flex items-center gap-2 leading-4 text-text-secondary">
+            <LoadingIcon16 />
+            Cloning {githubRepo?.owner}/{githubRepo?.name}…
+          </span>
+        ) : isRepoCloned || isSignedOut ? (
+          <NoteList initialVisibleNotes={25} />
+        ) : null}
       </div>
     </div>
   )

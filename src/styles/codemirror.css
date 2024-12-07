@@ -54,7 +54,7 @@
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
-  @apply max-w-sm rounded-md border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  @apply max-w-sm rounded-lg border-0 bg-bg-overlay p-1 shadow-lg ring-1 ring-border-secondary dark:ring-inset;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
@@ -62,12 +62,12 @@
 }
 
 .cm-editor .cm-tooltip.cm-completionInfo {
-  @apply w-96 max-w-none whitespace-pre-wrap rounded-md border-0 bg-bg-overlay p-1 px-3 py-2 font-mono text-[inherit] shadow-lg ring-1 ring-border-secondary dark:ring-inset;
+  @apply w-96 max-w-none whitespace-pre-wrap rounded-lg border-0 bg-bg-overlay p-1 px-3 py-2 font-mono text-[inherit] shadow-lg ring-1 ring-border-secondary dark:ring-inset;
   word-break: break-word;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li {
-  @apply flex rounded-sm px-2 py-1 coarse:px-3 coarse:py-2;
+  @apply flex rounded px-2 py-1 coarse:px-3 coarse:py-2;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
@@ -95,7 +95,7 @@
 }
 
 .cm-editor .cm-foldPlaceholder {
-  @apply mx-0.5 rounded-xs border-none bg-bg-secondary px-1 text-text-secondary;
+  @apply mx-0.5 rounded-sm border-none bg-bg-secondary px-1 text-text-secondary;
 }
 
 .cm-editor .cm-foldPlaceholder:hover {
@@ -103,7 +103,7 @@
 }
 
 .cm-editor .cm-wikilink {
-  @apply -mx-0.5 rounded-xs bg-bg-secondary px-0.5;
+  @apply -mx-0.5 rounded-sm bg-bg-secondary px-0.5;
 }
 
 .cm-editor .cm-wikilink:hover {

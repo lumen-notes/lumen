@@ -42,7 +42,7 @@ export function NotePreviewCard(props: NoteCardProps) {
   // Show a loading state while resolving the repo
   // TODO: Add shimmer animation
   if (isResolvingRepo) {
-    return <div className="aspect-[5/3] w-full rounded-md bg-bg-secondary" />
+    return <div className="aspect-[5/3] w-full rounded-lg bg-bg-secondary" />
   }
 
   return <_NoteCard {...props} />
@@ -62,11 +62,11 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       <Link
         to={`/${id}`}
         className={cx(
-          "relative block w-full cursor-pointer overflow-hidden rounded-md bg-bg-card shadow-sm ring-1 ring-border-secondary transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 group-hover:ring-border [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border",
+          "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 group-hover:ring-border [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border",
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
-        <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint]">
+        <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] [&_*]:!overflow-hidden">
           <div {...{ inert: "" }} className="p-4 [zoom:80%]">
             <Markdown hideFrontmatter>{note?.content ?? ""}</Markdown>
           </div>
@@ -74,14 +74,14 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       </Link>
       <div
         className={cx(
-          "absolute right-1 top-1 rounded-sm bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
+          "absolute right-1 top-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
           isPinned && "!opacity-100",
         )}
       >
         <IconButton
           aria-label={isPinned ? "Unpin" : "Pin"}
           size="small"
-          tooltipAlign="end"
+          tooltipSide="left"
           disabled={isSignedOut}
           onClick={() => {
             if (isSignedOut) return
@@ -94,7 +94,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       {note ? (
         <div
           className={cx(
-            "absolute bottom-1 right-1 flex gap-1 rounded-sm bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
+            "absolute bottom-1 right-1 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
             isDropdownOpen && "!opacity-100",
           )}
         >

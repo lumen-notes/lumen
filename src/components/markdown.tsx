@@ -1,14 +1,15 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
+import { Link } from "react-router-dom"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
-import { sentenceCase } from "change-case"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
@@ -32,7 +33,6 @@ import {
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { Card } from "./card"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
 import { FilePreview } from "./file-preview"
@@ -46,7 +46,6 @@ import {
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
-import { Link } from "react-router-dom"
 import { NoteFavicon } from "./note-favicon"
 import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
@@ -111,14 +110,14 @@ export const Markdown = React.memo(
                   <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
                     {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
                       <div key={name}>
-                        <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                        <code className="rounded-sm bg-bg-secondary px-1">{name}</code>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : null}
               {/* Render template as a code block */}
-              <pre className="overflow-auto rounded-sm bg-bg-code-block p-3">
+              <pre className="overflow-auto rounded bg-bg-code-block p-3">
                 <TemplateSyntaxHighlighter>
                   {removeTemplateFrontmatter(children)}
                 </TemplateSyntaxHighlighter>
@@ -223,7 +222,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="focus-ring inline-block aspect-[2/3] h-24 rounded-sm bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
+      className="focus-ring inline-block aspect-[2/3] h-24 rounded bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -603,7 +602,7 @@ function Code({ className, inline, children }: CodeProps) {
   return (
     <div className="relative">
       <pre className="!pe-12">
-        <div className="absolute end-2 top-2 rounded-sm bg-bg-code-block">
+        <div className="absolute end-2 top-2 rounded bg-bg-code-block">
           <CopyButton text={children.toString()} />
         </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
@@ -717,24 +716,24 @@ function NoteLink({ id, text }: NoteLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="bottom" sideOffset={4} align="start" asChild>
-          <Card
-            className="z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
-            {note ? (
-              <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]">
-                <div {...{ inert: "" }} className="p-4 [zoom:80%]">
-                  <Markdown hideFrontmatter>{note.content}</Markdown>
-                </div>
+        <HoverCard.Content
+          side="bottom"
+          sideOffset={4}
+          align="start"
+          className=" card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+        >
+          {note ? (
+            <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [&_*]:!overflow-hidden">
+              <div {...{ inert: "" }} className="p-4 [zoom:80%]">
+                <Markdown hideFrontmatter>{note.content}</Markdown>
               </div>
-            ) : (
-              <span className="flex items-center gap-2 p-4 text-text-danger">
-                <ErrorIcon16 />
-                File not found
-              </span>
-            )}
-          </Card>
+            </div>
+          ) : (
+            <span className="flex items-center gap-2 p-4 text-text-danger">
+              <ErrorIcon16 />
+              Note not found
+            </span>
+          )}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
@@ -781,12 +780,9 @@ function DateLink({ date, text, className }: DateLinkProps) {
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content side="top" sideOffset={4} asChild>
-          <Card
-            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
+          <div className="card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
             {formatDateDistance(date)}
-          </Card>
+          </div>
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
@@ -808,13 +804,12 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="top" sideOffset={4} asChild>
-          <Card
-            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
-            {formatWeekDistance(week)}
-          </Card>
+        <HoverCard.Content
+          side="top"
+          sideOffset={4}
+          className="card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+        >
+          {formatWeekDistance(week)}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>

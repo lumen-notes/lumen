@@ -21,11 +21,11 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-4 inline-flex cursor-pointer list-none rounded-sm p-4 text-text-secondary outline-none hover:text-text focus-visible:text-text [&::-webkit-details-marker]:hidden",
+        "group/summary -m-4 inline-flex cursor-pointer list-none rounded p-4 text-text-secondary outline-none hover:text-text focus-visible:text-text [&::-webkit-details-marker]:hidden",
         className,
       )}
     >
-      <span className="inline-flex select-none items-center gap-2 rounded-sm px-1  group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
+      <span className="inline-flex select-none items-center gap-2 rounded px-1  group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
         <TriangleRightIcon8 className="transition-transform duration-150 group-open/details:rotate-90" />
         {children}
       </span>

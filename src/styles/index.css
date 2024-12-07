@@ -51,7 +51,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .link {
-  @apply focus-ring rounded-xs underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
+  @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
 }
 
 .link:hover {
@@ -69,6 +69,18 @@ body:has([data-resizing="true"]) * {
   margin-left: 2px;
 }
 
-.filepath {
-  @apply font-mono tracking-wide;
+.card {
+  @apply rounded-lg ring-1 ring-border-secondary dark:ring-inset;
+}
+
+.card-1 {
+  @apply card bg-bg-card shadow;
+}
+
+.card-2 {
+  @apply card bg-bg-overlay shadow-lg;
+}
+
+.card-3 {
+  @apply card bg-bg-overlay shadow-2xl;
 }

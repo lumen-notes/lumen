@@ -45,11 +45,11 @@
 }
 
 .markdown pre {
-  @apply overflow-auto rounded-sm bg-bg-code-block p-3;
+  @apply overflow-auto rounded bg-bg-code-block p-3;
 }
 
 .markdown code {
-  @apply rounded-xs bg-bg-secondary px-1;
+  @apply rounded-sm bg-bg-secondary px-1;
 }
 
 .markdown pre > code {
@@ -130,7 +130,7 @@
 }
 
 .markdown img {
-  @apply overflow-hidden rounded-sm;
+  @apply overflow-hidden rounded;
 }
 
 .markdown .katex-html {

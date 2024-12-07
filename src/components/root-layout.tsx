@@ -87,8 +87,8 @@ function DevBar() {
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-2 left-2 flex h-6 items-center rounded-sm bg-bg">
-      <div className="flex h-6 items-center rounded-sm bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
+    <div className="fixed bottom-2 left-2 flex h-6 items-center rounded bg-bg">
+      <div className="flex h-6 items-center rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         {formatState(state.value)}
       </div>
     </div>

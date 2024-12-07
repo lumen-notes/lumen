@@ -5,7 +5,6 @@ import qs from "qs"
 import React from "react"
 import { flushSync } from "react-dom"
 import { useEvent } from "react-use"
-import { Card } from "../components/card"
 import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
 import { useDebouncedValue } from "../hooks/debounced-value"
 import { useNavigateWithCache } from "../hooks/navigate-with-cache"
@@ -138,7 +137,7 @@ export function CommandMenu() {
         }
       }}
     >
-      <Card elevation={3}>
+      <div className="card-3">
         <Command.Input placeholder="Search or jump to…" value={query} onValueChange={setQuery} />
         <Command.List>
           {dateString ? (
@@ -258,7 +257,7 @@ export function CommandMenu() {
             </>
           )}
         </Command.List>
-      </Card>
+      </div>
     </Command.Dialog>
   )
 }

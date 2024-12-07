@@ -45,7 +45,7 @@ export function SignInButton(props: ButtonProps) {
   return (
     <Button
       variant="primary"
-{...props}
+      {...props}
       onClick={async (event) => {
         // Sign in with a personal access token in local development
         if (import.meta.env.DEV && import.meta.env.VITE_GITHUB_PAT) {
@@ -78,10 +78,12 @@ export function SignedInUser() {
   const signOut = useSignOut()
   const { online } = useNetworkState()
 
-  if (!githubUser) return <SignInButton />
+  if (!githubUser) {
+    return <div className="w-full text-center text-text-secondary">You're not signed in.</div>
+  }
 
   return (
-    <Card className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between">
       <div className="flex flex-col gap-1 coarse:gap-2">
         <span className="text-sm leading-3 text-text-secondary">Account</span>
         <span className="leading-5">
@@ -94,7 +96,7 @@ export function SignedInUser() {
       <Button className="flex-shrink-0" onClick={signOut}>
         Sign out
       </Button>
-    </Card>
+    </div>
   )
 }
 

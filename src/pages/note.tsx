@@ -453,7 +453,7 @@ export function NotePage() {
       </header>
       <div ref={scrollContainerRef} className="overflow-auto [scrollbar-gutter:stable]">
         <div className=""></div>
-        <div className={cx("w-full px-4 md:px-6", width === "fixed" && "mx-auto max-w-4xl ")}>
+        <div className={cx("w-full px-4", width === "fixed" && "mx-auto max-w-4xl ")}>
           {isDailyPage || isWeeklyPage ? (
             <Calendar activeNoteId={noteId} className="-mb-px" />
           ) : null}

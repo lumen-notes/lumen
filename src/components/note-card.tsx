@@ -64,7 +64,7 @@ export function NoteCard(props: NoteCardProps) {
     return (
       <Card elevation={props.elevation} className="flex flex-col">
         <div className="flex h-12 items-center px-4">
-          <span className="filepath text-text-secondary">{props.id}.md</span>
+          <span className="text-text-secondary">{props.id}.md</span>
         </div>
         <div className="p-4 pt-0">
           <span className="flex items-center gap-2 text-text-secondary">
@@ -371,16 +371,16 @@ const _NoteCard = React.memo(function NoteCard({
         }
       }}
     >
-      <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-lg bg-bg px-2 coarse:h-14">
+      <div className="rounded-xl sticky top-0 z-10 flex h-12 items-center justify-between gap-2 bg-bg px-2 coarse:h-14">
         <Link
           to={`/${id}`}
           target="_blank"
-          className="focus-ring flex h-8 items-center gap-1 overflow-hidden rounded-sm px-2 text-text-secondary hover:bg-bg-secondary coarse:h-10"
+          className="focus-ring flex h-8 items-center gap-1 overflow-hidden rounded px-2 text-text-secondary hover:bg-bg-secondary coarse:h-10"
         >
           {parseFrontmatter(editorValue).frontmatter?.pinned ? (
             <PinFillIcon12 className="mr-1 flex-shrink-0 text-[var(--orange-11)]" />
           ) : null}
-          <span className="filepath">{id}.md</span>
+          <span>{id}.md</span>
           {isDirty ? (
             <svg
               viewBox="0 0 16 16"
@@ -404,7 +404,7 @@ const _NoteCard = React.memo(function NoteCard({
 
         <div
           className={cx(
-            "absolute right-2 top-2 flex rounded-lg bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
+            "rounded-xl absolute right-2 top-2 flex bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
             (mode === "write" || isDirty || isDropdownOpen || !note) && "!opacity-100",
           )}
         >

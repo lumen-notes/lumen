@@ -141,7 +141,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
               />
               <IconButton
                 aria-label={viewType === "grid" ? "List view" : "Grid view"}
-                className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
                 onClick={() => setViewType(viewType === "grid" ? "list" : "grid")}
               >
                 {viewType === "grid" ? <ListIcon16 /> : <GridIcon16 />}
@@ -261,7 +261,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                       // Used for focus management
                       data-note-id={note.id}
                       to={`/${note.id}`}
-                      className="focus-ring flex items-center rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
+                      className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                       // target="_blank"
                     >
                       <NoteFavicon note={note} className="mr-3" />
@@ -305,7 +305,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
       onClick={() => {
         setAngle((angle) => angle + 180)
         setNumber(Math.floor(Math.random() * 6) + 1)
