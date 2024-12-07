@@ -14,7 +14,7 @@ type ContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
 }
 
 const Content = React.forwardRef<HTMLDivElement, ContentProps>(
-  ({ children, minWidth = "16rem", ...props }, ref) => (
+  ({ children, minWidth = 256, ...props }, ref) => (
     <Portal.Root>
       <RadixDropdownMenu.Content
         ref={ref}
@@ -22,7 +22,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         sideOffset={4}
         {...props}
         className={cx(
-          "card-2 z-20 max-h-[48svh] scroll-py-1 overflow-auto rounded-lg p-1 animate-in fade-in zoom-in-95 after:rounded-lg",
+          "card-2 z-20 max-h-[48svh] scroll-py-1 overflow-auto rounded-lg p-1 animate-in fade-in zoom-in-95",
           // Set transform-origin for every combination of side and align
           "data-[side=bottom]:data-[align=center]:origin-top",
           "data-[side=bottom]:data-[align=end]:origin-top-right",
@@ -96,7 +96,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer items-center gap-5 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:px-4",
+          "flex h-8 cursor-pointer select-none items-center gap-5 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:px-4",
           className,
         )}
         asChild={Boolean(href)}

@@ -1,8 +1,19 @@
-import { useNavigate, useRouter } from "@tanstack/react-router"
+import * as NavMenu from "@radix-ui/react-navigation-menu"
+import { Link, useNavigate, useRouter } from "@tanstack/react-router"
 import { useHotkeys } from "react-hotkeys-hook"
 import { cx } from "../utils/cx"
+import { toDateString } from "../utils/date"
 import { IconButton } from "./icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16 } from "./icons"
+import {
+  ArrowLeftIcon16,
+  ArrowRightIcon16,
+  CalendarIcon16,
+  MenuIcon16,
+  NoteIcon16,
+  PlusIcon16,
+  SettingsIcon16,
+  TagIcon16,
+} from "./icons"
 import { SyncIconButton } from "./sync-status"
 
 export type AppHeaderProps = {
@@ -35,9 +46,40 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
       )}
     >
       <div className="hidden items-center sm:flex">
-        <IconButton aria-label="Menu" size="small" disableTooltip>
-          <MenuIcon16 />
-        </IconButton>
+        <NavMenu.Root delayDuration={100} className="relative">
+          <NavMenu.List>
+            <NavMenu.Item>
+              <NavMenu.Trigger asChild>
+                <IconButton aria-label="Menu" size="small" disableTooltip>
+                  <MenuIcon16 />
+                </IconButton>
+              </NavMenu.Trigger>
+              <NavMenu.Content
+                className={cx(
+                  "card-2 absolute left-0 top-[calc(100%+4px)] z-20 min-w-[256px] rounded-lg p-1 animate-in fade-in slide-in-from-left-2",
+                )}
+              >
+                <ul>
+                  <NavLink to="/" icon={<NoteIcon16 />}>
+                    Notes
+                  </NavLink>
+                  <NavLink
+                    to={`/notes/${toDateString(new Date())}`}
+                    icon={<CalendarIcon16>{new Date().getDate()}</CalendarIcon16>}
+                  >
+                    Calendar
+                  </NavLink>
+                  <NavLink to="/tags" icon={<TagIcon16 />}>
+                    Tags
+                  </NavLink>
+                  <NavLink to="/settings" icon={<SettingsIcon16 />}>
+                    Settings
+                  </NavLink>
+                </ul>
+              </NavMenu.Content>
+            </NavMenu.Item>
+          </NavMenu.List>
+        </NavMenu.Root>
         <IconButton
           aria-label="Go back"
           size="small"
@@ -82,5 +124,29 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
         </div>
       </div>
     </header>
+  )
+}
+
+function NavLink({
+  to,
+  icon,
+  children,
+}: {
+  to: string
+  icon: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <li>
+      <NavMenu.Link asChild>
+        <Link
+          to={to}
+          className="focus-ring flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10 coarse:gap-4 coarse:px-4"
+        >
+          <span className="flex text-text-secondary">{icon}</span>
+          <span>{children}</span>
+        </Link>
+      </NavMenu.Link>
+    </li>
   )
 }
