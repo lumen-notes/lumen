@@ -1,11 +1,11 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import { Link } from "@tanstack/react-router"
 import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
 import qs from "qs"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
-import { Link } from "@tanstack/react-router"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
@@ -47,6 +47,7 @@ import {
   YouTubeIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { NotePreview } from "./note-preview"
 import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
@@ -723,11 +724,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           className=" card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         >
           {note ? (
-            <div className="aspect-[5/3] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [&_*]:!overflow-hidden">
-              <div {...{ inert: "" }} className="p-4 [zoom:80%]">
-                <Markdown hideFrontmatter>{note.content}</Markdown>
-              </div>
-            </div>
+            <NotePreview>{note.content}</NotePreview>
           ) : (
             <span className="flex items-center gap-2 p-4 text-text-danger">
               <ErrorIcon16 />

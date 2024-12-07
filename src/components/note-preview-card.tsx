@@ -1,8 +1,8 @@
+import { Link } from "@tanstack/react-router"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { Link } from "@tanstack/react-router"
 import {
   githubRepoAtom,
   githubUserAtom,
@@ -26,7 +26,7 @@ import {
   ShareIcon16,
   TrashIcon16,
 } from "./icons"
-import { Markdown } from "./markdown"
+import { NotePreview } from "./note-preview"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -45,10 +45,10 @@ export function NotePreviewCard(props: NoteCardProps) {
     return <div className="aspect-[5/3] w-full rounded-lg bg-bg-secondary" />
   }
 
-  return <_NoteCard {...props} />
+  return <_NotePreviewCard {...props} />
 }
 
-const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
+const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -67,12 +67,7 @@ const _NoteCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
-        {/* TODO: Hide scrollbar on non-webkit browsers */}
-        <div className="aspect-[5/3] w-full overflow-hidden p-3 [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] [contain:layout_paint] coarse:p-4 [&_*::-webkit-scrollbar]:hidden">
-          <div {...{ inert: "" }} className="[zoom:80%]">
-            <Markdown hideFrontmatter>{note?.content ?? ""}</Markdown>
-          </div>
-        </div>
+        <NotePreview>{note?.content ?? ""}</NotePreview>
       </Link>
       <div
         className={cx(
