@@ -54,14 +54,17 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const isPinned = checkIfPinned(note)
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
   const saveNote = useSaveNote()
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+
+  if (!note) return null
 
   return (
     <div className="group relative transition-transform duration-100 [&:has(a:active)]:scale-[98%]">
       <Link
         to="/notes/$"
         params={{ _splat: id }}
+        search={{ mode: "read", width: "fixed" }}
         className={cx(
           "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 group-hover:ring-border [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border",
           isDropdownOpen && "ring-2 ring-border",
@@ -81,7 +84,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           disabled={isSignedOut}
           onClick={() => {
             if (isSignedOut) return
-            saveNote({ id, content: togglePin(note?.content ?? "") })
+            saveNote({ id, content: togglePin(note.content) })
           }}
         >
           {isPinned ? <PinFillIcon16 className=" text-[var(--orange-11)]" /> : <PinIcon16 />}
@@ -101,18 +104,10 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end" side="top">
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(note?.content || "")}
-                // shortcut={["⌘", "C"]}
-              >
+              <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(note?.content ?? "")}>
                 Copy markdown
               </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<CopyIcon16 />}
-                onSelect={() => copy(id)}
-                // shortcut={["⌘", "⇧", "C"]}
-              >
+              <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(id)}>
                 Copy ID
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
@@ -129,8 +124,6 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                 icon={<ShareIcon16 />}
                 disabled={isSignedOut}
                 onSelect={async () => {
-                  if (!note) return
-
                   const url = await exportAsGist({
                     githubToken: githubUser?.token ?? "",
                     noteId: id,
@@ -150,11 +143,11 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               <DropdownMenu.Item
                 variant="danger"
                 icon={<TrashIcon16 />}
-                disabled={isSignedOut}
+                // disabled={isSignedOut}
+                disabled
                 onSelect={() => {
                   // Ask the user to confirm before deleting a note with backlinks
                   if (
-                    note &&
                     note.backlinks.length > 0 &&
                     !window.confirm(
                       `${id}.md has ${pluralize(
@@ -166,9 +159,8 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                     return
                   }
 
-                  // handleDelete()
+                  // TODO: handleDelete()
                 }}
-                // shortcut={["⌘", "⌫"]}
               >
                 Delete
               </DropdownMenu.Item>

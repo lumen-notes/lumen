@@ -109,7 +109,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
 )
 
 const Separator = () => {
-  return <RadixDropdownMenu.Separator className="mx-2 my-1 h-px bg-border-secondary" />
+  return <RadixDropdownMenu.Separator className="mx-2 my-1 h-px bg-border-secondary coarse:mx-3" />
 }
 
 export const DropdownMenu = Object.assign(Root, {

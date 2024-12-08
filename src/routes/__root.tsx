@@ -37,21 +37,23 @@ function RootComponent() {
       ) : null}
       <ScrollRestoration />
       <Outlet />
-      <DebugState />
+      <DevBar />
     </div>
   )
 }
 
 // Shows the current state of the global state machine for debugging purposes
-function DebugState() {
+function DevBar() {
   const state = useAtomValue(globalStateMachineAtom)
 
   if (!import.meta.env.DEV) return null
 
   return (
     <div className="fixed bottom-2 left-2 flex h-6 items-center rounded bg-bg">
-      <div className="flex h-6 items-center rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
-        {formatState(state.value)}
+      <div className="flex h-6 items-center gap-2 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
+        <span>{formatState(state.value)}</span>
+        <span className="text-text-tertiary">·</span>
+        <CurrentBreakpoint />
       </div>
     </div>
   )
@@ -76,4 +78,17 @@ function formatState(state: Record<string, unknown> | string): string {
   return `[${entries
     .map(([key, value]) => `${key}.${formatState(value as Record<string, unknown> | string)}`)
     .join("|")}]`
+}
+
+function CurrentBreakpoint() {
+  return (
+    <span>
+      <span className="sm:hidden">xs</span>
+      <span className="hidden sm:inline md:hidden">sm</span>
+      <span className="hidden md:inline lg:hidden">md</span>
+      <span className="hidden lg:inline xl:hidden">lg</span>
+      <span className="hidden xl:inline 2xl:hidden">xl</span>
+      <span className="hidden 2xl:inline">2xl</span>
+    </span>
+  )
 }

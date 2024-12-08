@@ -29,7 +29,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
   useHotkeys(
     "mod+shift+o",
     (event) => {
-      navigate({ to: "/notes/$", params: { _splat: `${Date.now()}` } })
+      navigate({
+        to: "/notes/$",
+        params: { _splat: `${Date.now()}` },
+        search: { mode: "write", width: "fixed" },
+      })
       event.preventDefault()
     },
     {
@@ -41,7 +45,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
   return (
     <header
       className={cx(
-        "flex h-10 items-center justify-between px-2 sm:grid sm:grid-cols-3 coarse:h-14",
+        "flex h-10 items-center gap-2 px-2 xl:grid xl:grid-cols-3 coarse:h-14",
         className,
       )}
     >
@@ -70,7 +74,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                   </li>
                   <li>
                     <NavMenuLink>
-                      <Link to={`/notes/$`} params={{ _splat: toDateString(new Date()) }}>
+                      <Link
+                        to={`/notes/$`}
+                        params={{ _splat: toDateString(new Date()) }}
+                        search={{ mode: "read", width: "fixed" }}
+                      >
                         <CalendarIcon16>{new Date().getDate()}</CalendarIcon16>
                         Calendar
                       </Link>
@@ -116,7 +124,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           <ArrowRightIcon16 className="transition-transform duration-100 group-active:translate-x-0.5" />
         </IconButton>
       </div>
-      <div className="justify-self-center whitespace-nowrap px-2">{title}</div>
+      <div className="flex-grow justify-self-center whitespace-nowrap px-2">{title}</div>
       <div className="flex items-center gap-2 justify-self-end">
         {actions ? (
           <>
@@ -132,7 +140,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
               shortcut={["⌘", "⇧", "O"]}
               size="small"
               onClick={() => {
-                navigate({ to: "/notes/$", params: { _splat: `${Date.now()}` } })
+                navigate({
+                  to: "/notes/$",
+                  params: { _splat: `${Date.now()}` },
+                  search: { mode: "write", width: "fixed" },
+                })
               }}
             >
               <PlusIcon16 />
