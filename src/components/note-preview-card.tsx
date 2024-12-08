@@ -71,13 +71,12 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       </Link>
       <div
         className={cx(
-          "absolute right-2 top-2 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
+          "absolute right-1.5 top-1.5 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100",
           isPinned && "!opacity-100",
         )}
       >
         <IconButton
           aria-label={isPinned ? "Unpin" : "Pin"}
-          size="small"
           tooltipSide="left"
           disabled={isSignedOut}
           onClick={() => {
@@ -91,13 +90,13 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       {note ? (
         <div
           className={cx(
-            "absolute bottom-2 right-2 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
+            "absolute bottom-1.5 right-1.5 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 ",
             isDropdownOpen && "!opacity-100",
           )}
         >
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
             <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Actions" disableTooltip size="small">
+              <IconButton aria-label="Actions" disableTooltip>
                 <MoreIcon16 />
               </IconButton>
             </DropdownMenu.Trigger>
