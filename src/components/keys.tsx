@@ -1,10 +1,10 @@
 export function Keys({ keys }: { keys: string[] }) {
   return (
-    <span className="inline-flex gap-0.5">
-      {keys.map((key) => (
-        <kbd key={key} className="font-body leading-none">
+    <span className="inline-flex gap-px font-normal leading-none tracking-wider">
+      {keys.map((key, index) => (
+        <span key={index} className={/^[a-zA-Z]$/.test(key) ? "font-mono" : ""}>
           {key}
-        </kbd>
+        </span>
       ))}
     </span>
   )
