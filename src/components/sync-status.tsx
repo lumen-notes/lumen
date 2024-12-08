@@ -6,9 +6,10 @@ import {
   CheckIcon12,
   CheckIcon8,
   CloseIcon12,
-  CloseIcon8,
+  XIcon8,
   OfflineIcon16,
   OfflineIcon24,
+  LoadingIcon12,
 } from "./icons"
 import { IconButton, IconButtonProps } from "./icon-button"
 
@@ -103,10 +104,8 @@ function SuccessIcon24() {
 
 function PendingIcon16() {
   return (
-    <div className="rounded-full bg-[var(--yellow-11)] text-bg">
-      <svg className="animate-spin" viewBox="0 0 16" width="16" height="16" fill="currentColor">
-        <path d="M8 3a5 5 0 1 0 5 5h-1.5A3.5 3.5 0 1 1 8 4.5V3Z" />
-      </svg>
+    <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--yellow-11)] text-bg">
+      <LoadingIcon12 />
     </div>
   )
 }
@@ -124,7 +123,7 @@ function PendingIcon24() {
 function ErrorIcon16() {
   return (
     <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--red-11)] text-bg">
-      <CloseIcon8 />
+      <XIcon8 />
     </div>
   )
 }
