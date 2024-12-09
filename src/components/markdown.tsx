@@ -104,7 +104,9 @@ export const Markdown = React.memo(
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
-                  <Link to={`/?${qs.stringify({ q: "has:template" })}`}>Template</Link>
+                  <Link to="/" search={{ query: "has:template" }}>
+                    Template
+                  </Link>
                 </PillButton>
               </div>
               {/* TODO: Display more input metadata (type, description, etc.) */}
@@ -716,6 +718,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           search={{
             mode: "read",
             width: search.width === "fill" ? "fill" : "fixed",
+            query: undefined,
           }}
         >
           {isFirst && note && online ? (
@@ -755,6 +758,7 @@ type NoteEmbedProps = {
 
 function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
+  const searchParams = useSearch({ strict: false })
 
   return (
     <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
@@ -767,7 +771,17 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </span>
       )}
       <div className="mt-2 text-sm text-text-secondary">
-        <Link to={`/${id}`}>Source</Link>
+        <Link
+          to="/notes/$"
+          params={{ _splat: id }}
+          search={{
+            mode: "read",
+            width: searchParams.width === "fill" ? "fill" : "fixed",
+            query: undefined,
+          }}
+        >
+          Source
+        </Link>
       </div>
     </div>
   )
@@ -795,6 +809,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
           search={{
             mode: hasDateNote ? "read" : "write",
             width: searchParams.width === "fill" ? "fill" : "fixed",
+            query: undefined,
           }}
         >
           {text || formatDate(date)}
@@ -833,6 +848,7 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
           search={{
             mode: hasWeekNote ? "read" : "write",
             width: searchParams.width === "fill" ? "fill" : "fixed",
+            query: undefined,
           }}
         >
           {text || formatWeek(week)}

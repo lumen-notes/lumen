@@ -73,6 +73,7 @@ export function Calendar({
                   search: {
                     mode: searchParams.mode === "write" ? "write" : "read",
                     width: searchParams.width === "fill" ? "fill" : "fixed",
+                    query: undefined,
                   },
                 })
               }}
@@ -217,6 +218,7 @@ function CalendarItem({
         search={{
           mode: searchParams.mode === "write" ? "write" : "read",
           width: searchParams.width === "fill" ? "fill" : "fixed",
+          query: undefined,
         }}
         aria-label={ariaLabel}
         className={cx(

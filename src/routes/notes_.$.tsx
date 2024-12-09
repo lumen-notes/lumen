@@ -59,10 +59,12 @@ import {
 import { exportAsGist } from "../utils/export-as-gist"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
+import { InsertTemplateDialogOutlet } from "../components/insert-template"
 
 type RouteSearch = {
   mode: "read" | "write"
   width: "fixed" | "fill"
+  query: string | undefined
 }
 
 export const Route = createFileRoute("/notes_/$")({
@@ -70,6 +72,7 @@ export const Route = createFileRoute("/notes_/$")({
     return {
       mode: search.mode === "write" ? "write" : "read",
       width: search.width === "fill" ? "fill" : "fixed",
+      query: typeof search.query === "string" ? search.query : undefined,
     }
   },
   component: RouteComponent,
@@ -139,7 +142,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, width } = Route.useSearch()
+  const { mode, width, query } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -196,15 +199,15 @@ function NotePage() {
   )
 
   const switchToWriting = useCallback(() => {
-    navigate({ search: { mode: "write", width }, replace: true })
+    navigate({ search: { mode: "write", width, query }, replace: true })
     setTimeout(() => {
       editorRef.current?.view?.focus()
     })
-  }, [navigate, width])
+  }, [navigate, width, query])
 
   const switchToReading = useCallback(() => {
-    navigate({ search: { mode: "read", width }, replace: true })
-  }, [navigate, width])
+    navigate({ search: { mode: "read", width, query }, replace: true })
+  }, [navigate, width, query])
 
   const toggleMode = useCallback(() => {
     if (mode === "read") {
@@ -387,7 +390,7 @@ function NotePage() {
                       selected={width === "fixed"}
                       onSelect={() => {
                         navigate({
-                          search: { width: "fixed", mode },
+                          search: { width: "fixed", mode, query },
                           replace: true,
                         })
                         editorRef.current?.view?.focus()
@@ -399,7 +402,7 @@ function NotePage() {
                       icon={<FullwidthIcon16 />}
                       selected={width === "fill"}
                       onSelect={() => {
-                        navigate({ search: { width: "fill", mode }, replace: true })
+                        navigate({ search: { width: "fill", mode, query }, replace: true })
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -420,13 +423,13 @@ function NotePage() {
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  disabled={isSignedOut}
+                  disabled={isSignedOut || !note}
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
-                  disabled={isSignedOut}
+                  disabled={isSignedOut || !note}
                   onSelect={async () => {
                     if (!note) return
 
@@ -449,7 +452,7 @@ function NotePage() {
                 <DropdownMenu.Item
                   variant="danger"
                   icon={<TrashIcon16 />}
-                  disabled={isSignedOut}
+                  disabled={isSignedOut || !note}
                   onSelect={() => {
                     if (!noteId) return
 
@@ -468,7 +471,7 @@ function NotePage() {
                     }
 
                     deleteNote(noteId)
-                    navigate({ to: "/", replace: true })
+                    navigate({ to: "/", search: { query: undefined }, replace: true })
                   }}
                 >
                   Delete
@@ -479,6 +482,7 @@ function NotePage() {
         </div>
       }
     >
+      <InsertTemplateDialogOutlet />
       <div ref={containerRef}>
         <div className="p-4">
           <div
@@ -524,7 +528,13 @@ function NotePage() {
               <Details>
                 <Details.Summary>Backlinks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <NoteList baseQuery={`link:"${noteId}" -id:"${noteId}"`} />
+                  <NoteList
+                    baseQuery={`link:"${noteId}" -id:"${noteId}"`}
+                    query={query ?? ""}
+                    onQueryChange={(query) =>
+                      navigate({ search: { mode, width, query }, replace: true })
+                    }
+                  />
                 </LinkHighlightProvider>
               </Details>
             ) : null}

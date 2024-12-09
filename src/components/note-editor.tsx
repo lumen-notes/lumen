@@ -143,7 +143,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           navigate({
             to: "/notes/$",
             params: { _splat: id },
-            search: { mode: "write", width: "fixed" },
+            search: { mode: "write", width: "fixed", query: undefined },
           }),
         ),
         syntaxHighlighting(syntaxHighlighter),

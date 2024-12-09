@@ -5,7 +5,7 @@ import { useSearchParam } from "../hooks/search-param"
 import { cx } from "../utils/cx"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CenteredIcon16, CloseIcon16, FullwidthIcon16, MoreIcon16 } from "./icons"
+import { CenteredIcon16, XIcon16, FullwidthIcon16, MoreIcon16 } from "./icons"
 import { Panels } from "./panels"
 
 const layoutSchema = z.enum(["centered", "fullwidth"])
@@ -107,7 +107,7 @@ export function Panel({
             ) : null}
             {onClose ? (
               <IconButton aria-label="Close" disableTooltip onClick={onClose}>
-                <CloseIcon16 />
+                <XIcon16 />
               </IconButton>
             ) : null}
           </div>

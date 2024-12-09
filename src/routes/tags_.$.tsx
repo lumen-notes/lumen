@@ -6,12 +6,22 @@ import { EditIcon16, MoreIcon16, TrashIcon16 } from "../components/icons"
 import { NoteList } from "../components/note-list"
 import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
+type RouteSearch = {
+  query: string | undefined
+}
+
 export const Route = createFileRoute("/tags_/$")({
+  validateSearch: (search: Record<string, unknown>): RouteSearch => {
+    return {
+      query: typeof search.query === "string" ? search.query : undefined,
+    }
+  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const { _splat: tag } = Route.useParams()
+  const { query } = Route.useSearch()
   const navigate = Route.useNavigate()
   const renameTag = useRenameTag()
   const deleteTag = useDeleteTag()
@@ -36,7 +46,12 @@ function RouteComponent() {
 
                 if (newName) {
                   renameTag(tag, newName)
-                  navigate({ to: "/tags/$", params: { _splat: newName }, replace: true })
+                  navigate({
+                    to: "/tags/$",
+                    params: { _splat: newName },
+                    search: { query },
+                    replace: true,
+                  })
                 }
               }}
             >
@@ -56,7 +71,7 @@ function RouteComponent() {
                   )
                 ) {
                   deleteTag(tag)
-                  navigate({ to: "/tags", replace: true })
+                  navigate({ to: "/tags", search: { query: undefined }, replace: true })
                 }
               }}
             >
@@ -67,7 +82,12 @@ function RouteComponent() {
       }
     >
       <div className="p-4 pt-0">
-        <NoteList key={tag} baseQuery={`tag:${tag}`} />
+        <NoteList
+          key={tag}
+          baseQuery={`tag:${tag}`}
+          query={query ?? ""}
+          onQueryChange={(query) => navigate({ search: { query }, replace: true })}
+        />
       </div>
     </AppLayout>
   )

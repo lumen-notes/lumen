@@ -1,6 +1,5 @@
 import { Link, useNavigate, useSearch } from "@tanstack/react-router"
 import React, { useDeferredValue, useMemo, useState } from "react"
-import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { templateSchema } from "../schema"
@@ -20,15 +19,18 @@ import { SearchInput } from "./search-input"
 
 type NoteListProps = {
   baseQuery?: string
-  initialVisibleNotes?: number
+  query: string
+  onQueryChange: (query: string) => void
 }
 
-export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListProps) {
+const initialVisibleNotes = 10
+
+export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps) {
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false })
 
-  const [query, setQuery] = useState("")
+  // const [query, setQuery] = useState("")
 
   const deferredQuery = useDeferredValue(query)
 
@@ -121,7 +123,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                 placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
                 value={query}
                 onChange={(value) => {
-                  setQuery(value)
+                  onQueryChange(value)
 
                   // Reset the number of visible notes when the user starts typing
                   setNumVisibleNotes(initialVisibleNotes)
@@ -170,7 +172,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                         query.slice(0, index) + query.slice(index + text.length).trimStart()
 
                       // Remove the tag qualifier from the query
-                      setQuery(newQuery.trim())
+                      onQueryChange(newQuery.trim())
 
                       // TODO: Move focus
                     }}
@@ -192,12 +194,12 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                     onClick={(event) => {
                       const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
 
-                      flushSync(() => {
-                        setQuery(query ? `${query} ${qualifier}` : qualifier)
-                      })
+                      onQueryChange(query ? `${query} ${qualifier}` : qualifier)
 
                       // Move focus
-                      document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
+                      setTimeout(() => {
+                        document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
+                      })
                     }}
                   >
                     {tag}
@@ -217,7 +219,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                           trailingVisual={<span className="text-text-secondary">{frequency}</span>}
                           onClick={(event) => {
                             const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                            setQuery(query ? `${query} ${qualifier}` : qualifier)
+                            onQueryChange(query ? `${query} ${qualifier}` : qualifier)
                           }}
                         >
                           {tag}
@@ -251,6 +253,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                       search={{
                         mode: "read",
                         width: searchParams.width === "fill" ? "fill" : "fixed",
+                        query: undefined,
                       }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >

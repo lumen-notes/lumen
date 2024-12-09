@@ -40,7 +40,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
       navigate({
         to: "/notes/$",
         params: { _splat: `${Date.now()}` },
-        search: { mode: "write", width: "fixed" },
+        search: { mode: "write", width: "fixed", query: undefined },
       })
       event.preventDefault()
     },
@@ -74,7 +74,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                 <ul>
                   <li>
                     <NavMenuLink>
-                      <Link to="/">
+                      <Link to="/" search={{ query: undefined }}>
                         <NoteIcon16 />
                         Notes
                       </Link>
@@ -85,7 +85,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                       <Link
                         to={`/notes/$`}
                         params={{ _splat: toDateString(new Date()) }}
-                        search={{ mode: hasDailyNote ? "read" : "write", width: "fixed" }}
+                        search={{
+                          mode: hasDailyNote ? "read" : "write",
+                          width: "fixed",
+                          query: undefined,
+                        }}
                       >
                         <CalendarDateIcon16 date={new Date().getDate()} />
                         Today
@@ -97,7 +101,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                       <Link
                         to={`/notes/$`}
                         params={{ _splat: toWeekString(new Date()) }}
-                        search={{ mode: hasWeeklyNote ? "read" : "write", width: "fixed" }}
+                        search={{
+                          mode: hasWeeklyNote ? "read" : "write",
+                          width: "fixed",
+                          query: undefined,
+                        }}
                       >
                         <CalendarIcon16 />
                         This week
@@ -106,7 +114,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                   </li>
                   <li>
                     <NavMenuLink>
-                      <Link to="/tags">
+                      <Link to="/tags" search={{ query: undefined }}>
                         <TagIcon16 />
                         Tags
                       </Link>
@@ -163,7 +171,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                 navigate({
                   to: "/notes/$",
                   params: { _splat: `${Date.now()}` },
-                  search: { mode: "write", width: "fixed" },
+                  search: { mode: "write", width: "fixed", query: undefined },
                 })
               }}
             >

@@ -1,6 +1,5 @@
-import React from "react"
 import { Link } from "@tanstack/react-router"
-import { useSearch } from "@tanstack/react-router"
+import React from "react"
 import { cx } from "../utils/cx"
 
 type TagLinkProps = {
@@ -9,8 +8,6 @@ type TagLinkProps = {
 }
 
 export function TagLink({ name, className }: TagLinkProps) {
-  const searchParams = useSearch({ strict: false })
-
   return (
     <span className={cx("text-text-secondary", className)}>
       #
@@ -27,7 +24,7 @@ export function TagLink({ name, className }: TagLinkProps) {
                   .slice(0, i + 1)
                   .join("/"),
               }}
-              search={{ mode: "read", width: searchParams.width === "fill" ? "fill" : "fixed" }}
+              search={{ query: undefined }}
             >
               {part}
             </Link>

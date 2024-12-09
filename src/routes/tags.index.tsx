@@ -46,7 +46,7 @@ function RouteComponent() {
           <SearchInput
             placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
             value={query ?? ""}
-            onChange={(value) => navigate({ search: { query: value } })}
+            onChange={(value) => navigate({ search: { query: value }, replace: true })}
           />
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
