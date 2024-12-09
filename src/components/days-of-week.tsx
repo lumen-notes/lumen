@@ -36,7 +36,7 @@ function Day({ date }: { date: string }) {
           width: searchParams.width === "fill" ? "fill" : "fixed",
           query: undefined,
         }}
-        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 italic text-text-secondary transition-[border-color] duration-100 hover:border-border hover:bg-bg-secondary active:bg-bg-tertiary"
+        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 italic text-text-secondary transition-[border-color] duration-100 hover:border-border"
       >
         {dayName}
       </Link>

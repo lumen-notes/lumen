@@ -35,7 +35,7 @@ export function useInsertTemplate() {
 }
 
 // TODO: Prevent other dialogs from opening while this one is open
-export function InsertTemplateDialogOutlet() {
+export function InsertTemplateDialog() {
   const [pendingTemplate, setPendingTemplate] = useAtom(pendingTemplateAtom)
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)

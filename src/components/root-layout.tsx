@@ -4,6 +4,7 @@ import { useEvent, useNetworkState } from "react-use"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColorProvider } from "../hooks/theme-color"
 import { SignInButton } from "./github-auth"
+import { CommandMenu } from "./command-menu"
 
 // const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
 
@@ -28,19 +29,22 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
   })
 
   return (
-    <div className="grid h-screen w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
-      {isSignedOut ? (
-        <div className="flex flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2">
-          <span className="sm:px-2">
-            Lumen is in <span className="italic">read-only</span> mode.
-            <span className="hidden md:inline"> Sign in to start writing notes.</span>
-          </span>
-          <SignInButton />
-        </div>
-      ) : null}
-      {children}
-      <DevBar />
-    </div>
+    <>
+      <CommandMenu />
+      <div className="grid h-screen w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
+        {isSignedOut ? (
+          <div className="flex flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2">
+            <span className="sm:px-2">
+              Lumen is in <span className="italic">read-only</span> mode.
+              <span className="hidden md:inline"> Sign in to start writing notes.</span>
+            </span>
+            <SignInButton />
+          </div>
+        ) : null}
+        {children}
+        <DevBar />
+      </div>
+    </>
   )
 
   // return (
@@ -87,7 +91,7 @@ function DevBar() {
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-2 left-2 flex h-6 items-center rounded bg-bg">
+    <div className="fixed bottom-2 right-2 flex h-6 items-center rounded bg-bg">
       <div className="flex h-6 items-center rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         {formatState(state.value)}
       </div>

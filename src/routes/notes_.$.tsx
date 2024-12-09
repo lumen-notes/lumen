@@ -59,7 +59,7 @@ import {
 import { exportAsGist } from "../utils/export-as-gist"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { InsertTemplateDialogOutlet } from "../components/insert-template"
+import { InsertTemplateDialog } from "../components/insert-template"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -482,7 +482,7 @@ function NotePage() {
         </div>
       }
     >
-      <InsertTemplateDialogOutlet />
+      <InsertTemplateDialog />
       <div ref={containerRef}>
         <div className="p-4">
           <div

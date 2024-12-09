@@ -1,13 +1,8 @@
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
 import { useAtomValue } from "jotai"
-import qs from "qs"
-import React from "react"
-import { flushSync } from "react-dom"
-import { useEvent } from "react-use"
+import { useCallback, useDeferredValue, useMemo, useState, useRef } from "react"
 import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
-import { useDebouncedValue } from "../hooks/debounced-value"
-import { useNavigateWithCache } from "../hooks/navigate-with-cache"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note, templateSchema } from "../schema"
@@ -15,7 +10,6 @@ import { formatDate, formatDateDistance, toDateString, toWeekString } from "../u
 import { removeLeadingEmoji } from "../utils/emoji"
 import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import {
   CalendarDateIcon16,
   CalendarIcon16,
@@ -27,96 +21,153 @@ import {
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
-import { usePanelActions, usePanels } from "./panels"
+import { useNavigate } from "@tanstack/react-router"
+import { useHotkeys } from "react-hotkeys-hook"
 
 export function CommandMenu() {
+  const navigate = useNavigate()
+
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
-  const panels = usePanels()
-  const { openPanel } = usePanelActions()
-  const routerNavigate = useNavigateWithCache()
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
 
   // Refs
-  const prevActiveElement = React.useRef<HTMLElement>()
+  const prevActiveElement = useRef<HTMLElement>()
 
   // Local state
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [query, setQuery] = React.useState("")
-  const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
+  const [isOpen, setIsOpen] = useState(false)
+  const [query, setQuery] = useState("")
+  const deferredQuery = useDeferredValue(query)
 
-  const openMenu = React.useCallback(() => {
+  const openMenu = useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement
     setIsOpen(true)
   }, [])
 
-  const closeMenu = React.useCallback(() => {
-    flushSync(() => {
-      setIsOpen(false)
+  const closeMenu = useCallback(() => {
+    setIsOpen(false)
+    setTimeout(() => {
+      prevActiveElement.current?.focus()
     })
-
-    // Focus the previously active element
-    prevActiveElement.current?.focus()
   }, [])
 
-  const navigate = React.useCallback(
-    (url: string, { openInPanel = true }: { openInPanel?: boolean } = {}) => {
-      if (openInPanel && openPanel) {
-        // If we're in a panels context, navigate by opening a panel
-        openPanel(url, panels.length - 1)
-      } else {
-        // Otherwise, navigate using the router
-        routerNavigate(url)
-      }
+  const toggleMenu = useCallback(() => {
+    if (isOpen) {
+      closeMenu()
+    } else {
+      openMenu()
+    }
+  }, [isOpen, openMenu, closeMenu])
 
+  const handleSelect = useCallback((callback: () => void) => {
+    return () => {
       setIsOpen(false)
       setQuery("")
-    },
-    [openPanel, panels, routerNavigate],
-  )
-
-  // Toggle the menu with `command + k`
-  useEvent("keydown", (event: KeyboardEvent) => {
-    if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
-      if (isOpen) {
-        closeMenu()
-      } else {
-        const textSelection = window.getSelection()?.toString()
-
-        // If text is selected, use that as the initial query
-        if (textSelection) {
-          setQuery(textSelection)
-        }
-
-        openMenu()
-        event.preventDefault()
-      }
+      callback()
     }
+  }, [])
+
+  useHotkeys("mod+k", toggleMenu, {
+    preventDefault: true,
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
   })
 
+  const navItems = useMemo(() => {
+    return [
+      {
+        label: "Notes",
+        icon: <NoteIcon16 />,
+        onSelect: () => {
+          navigate({
+            to: "/",
+            search: {
+              query: undefined,
+            },
+          })
+        },
+      },
+      {
+        label: "Today",
+        icon: <CalendarDateIcon16 date={new Date().getDate()} />,
+        onSelect: () => {
+          navigate({
+            to: "/notes/$",
+            params: {
+              _splat: toDateString(new Date()),
+            },
+            search: {
+              mode: "read",
+              width: "fixed",
+              query: undefined,
+            },
+          })
+        },
+      },
+      {
+        label: "This week",
+        icon: <CalendarIcon16 />,
+        onSelect: () => {
+          navigate({
+            to: "/notes/$",
+            params: {
+              _splat: toWeekString(new Date()),
+            },
+            search: {
+              mode: "read",
+              width: "fixed",
+              query: undefined,
+            },
+          })
+        },
+      },
+      {
+        label: "Tags",
+        icon: <TagIcon16 />,
+        onSelect: () => {
+          navigate({
+            to: "/tags",
+            search: {
+              query: undefined,
+            },
+          })
+        },
+      },
+      {
+        label: "Settings",
+        icon: <SettingsIcon16 />,
+        onSelect: () => {
+          navigate({
+            to: "/settings",
+          })
+        },
+      },
+    ]
+  }, [navigate])
+
+  const filteredNavItems = useMemo(() => {
+    return navItems.filter((item) => {
+      return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
+    })
+  }, [navItems, deferredQuery])
+
   // Check if query can be parsed as a date
-  const dateString = React.useMemo(() => {
-    const date = parseDate(debouncedQuery)
-
+  const dateString = useMemo(() => {
+    const date = parseDate(deferredQuery)
     if (!date) return ""
-
-    const year = String(date.getFullYear()).padStart(4, "0")
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-
-    return `${year}-${month}-${day}`
-  }, [debouncedQuery])
+    return toDateString(date)
+  }, [deferredQuery])
 
   // Search tags
-  const tagResults = React.useMemo(() => {
-    return tagSearcher.search(debouncedQuery)
-  }, [tagSearcher, debouncedQuery])
+  const tagResults = useMemo(() => {
+    return tagSearcher.search(deferredQuery)
+  }, [tagSearcher, deferredQuery])
 
   // Search notes
-  const noteResults = React.useMemo(() => {
-    return searchNotes(debouncedQuery)
-  }, [searchNotes, debouncedQuery])
+  const noteResults = useMemo(() => {
+    return searchNotes(deferredQuery)
+  }, [searchNotes, deferredQuery])
 
   // Only show the first 2 tags
   const numVisibleTags = 2
@@ -128,7 +179,13 @@ export function CommandMenu() {
     <Command.Dialog
       label="Global command menu"
       open={isOpen}
-      onOpenChange={(open) => (open ? openMenu() : closeMenu())}
+      onOpenChange={(open) => {
+        if (open) {
+          openMenu()
+        } else {
+          closeMenu()
+        }
+      }}
       shouldFilter={false}
       onKeyDown={(event) => {
         // Clear input with `esc`
@@ -138,16 +195,66 @@ export function CommandMenu() {
         }
       }}
     >
-      <div className="card-3">
+      <div className="card-3 overflow-hidden">
         <Command.Input placeholder="Search or jump to…" value={query} onValueChange={setQuery} />
         <Command.List>
+          {filteredNavItems.length ? (
+            <Command.Group heading="Jump to">
+              {filteredNavItems.map((item) => (
+                <CommandItem
+                  key={item.label}
+                  icon={item.icon}
+                  onSelect={handleSelect(item.onSelect)}
+                >
+                  {item.label}
+                </CommandItem>
+              ))}
+            </Command.Group>
+          ) : null}
+          {!deferredQuery && pinnedNotes.length ? (
+            <Command.Group heading="Pinned">
+              {pinnedNotes.map((note) => (
+                <NoteItem
+                  key={note.id}
+                  note={note}
+                  // Since they're all pinned, we don't need to show the pin icon
+                  pinned={false}
+                  onSelect={handleSelect(() =>
+                    navigate({
+                      to: "/notes/$",
+                      params: {
+                        _splat: note.id,
+                      },
+                      search: {
+                        mode: "read",
+                        width: "fixed",
+                        query: undefined,
+                      },
+                    }),
+                  )}
+                />
+              ))}
+            </Command.Group>
+          ) : null}
           {dateString ? (
             <Command.Group heading="Date">
               <CommandItem
                 key={dateString}
                 icon={<CalendarDateIcon16 date={new Date(dateString).getUTCDate()} />}
                 description={formatDateDistance(dateString)}
-                onSelect={() => navigate(`/${dateString}`)}
+                onSelect={handleSelect(() => {
+                  navigate({
+                    to: "/notes/$",
+                    params: {
+                      _splat: dateString,
+                    },
+                    search: {
+                      mode: "read",
+                      width: "fixed",
+                      query: undefined,
+                    },
+                  })
+                })}
               >
                 {formatDate(dateString)}
               </CommandItem>
@@ -160,103 +267,110 @@ export function CommandMenu() {
                   key={name}
                   icon={<TagIcon16 />}
                   description={pluralize(noteIds.length, "note")}
-                  onSelect={() => navigate(`/tags/${name}`)}
+                  onSelect={handleSelect(() =>
+                    navigate({
+                      to: "/tags/$",
+                      params: {
+                        _splat: name,
+                      },
+                      search: {
+                        query: undefined,
+                      },
+                    }),
+                  )}
                 >
                   {name}
                 </CommandItem>
               ))}
               {tagResults.length > numVisibleTags ? (
                 <CommandItem
-                  key={`Show all tags matching "${debouncedQuery}"`}
+                  key={`Show all tags matching "${deferredQuery}"`}
                   icon={<SearchIcon16 />}
-                  onSelect={() => navigate(`/tags?${qs.stringify({ q: debouncedQuery })}`)}
+                  onSelect={handleSelect(() =>
+                    navigate({
+                      to: "/tags/$",
+                      params: {
+                        _splat: deferredQuery,
+                      },
+                      search: {
+                        query: undefined,
+                      },
+                    }),
+                  )}
                 >
-                  Show all {pluralize(tagResults.length, "tag")} matching "{debouncedQuery}"
+                  Show all {pluralize(tagResults.length, "tag")} matching "{deferredQuery}"
                 </CommandItem>
               ) : null}
             </Command.Group>
           ) : null}
-          {debouncedQuery ? (
+          {deferredQuery ? (
             <Command.Group heading="Notes">
               {noteResults.slice(0, numVisibleNotes).map((note) => (
-                <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
+                <NoteItem
+                  key={note.id}
+                  note={note}
+                  pinned={checkIfPinned(note.content)}
+                  onSelect={handleSelect(() =>
+                    navigate({
+                      to: "/notes/$",
+                      params: {
+                        _splat: note.id,
+                      },
+                      search: {
+                        mode: "read",
+                        width: "fixed",
+                        query: undefined,
+                      },
+                    }),
+                  )}
+                />
               ))}
               {noteResults.length > 0 ? (
                 <CommandItem
-                  key={`Show all notes matching "${debouncedQuery}"`}
+                  key={`Show all notes matching "${deferredQuery}"`}
                   icon={<SearchIcon16 />}
-                  onSelect={() => navigate(`/?${qs.stringify({ query: debouncedQuery })}`)}
+                  onSelect={handleSelect(() =>
+                    navigate({
+                      to: "/",
+                      search: {
+                        query: deferredQuery,
+                      },
+                    }),
+                  )}
                 >
-                  Show all {pluralize(noteResults.length, "note")} matching "{debouncedQuery}"
+                  Show all {pluralize(noteResults.length, "note")} matching "{deferredQuery}"
                 </CommandItem>
               ) : null}
               <CommandItem
-                key={`Create new note "${debouncedQuery}"`}
+                key={`Create new note "${deferredQuery}"`}
                 icon={<PlusIcon16 />}
-                onSelect={() => {
+                onSelect={handleSelect(() => {
                   const note = {
                     id: Date.now().toString(),
-                    content: debouncedQuery,
+                    content: deferredQuery,
                   }
 
                   // Create new note
                   saveNote(note)
 
                   // Navigate to new note
-                  navigate(`/${note.id}`)
-                }}
+                  navigate({
+                    to: "/notes/$",
+                    params: {
+                      _splat: note.id,
+                    },
+                    search: {
+                      mode: "write",
+                      width: "fixed",
+                      query: undefined,
+                    },
+                  })
+                })}
               >
-                Create new note "{debouncedQuery}"
+                Create new note "{deferredQuery}"
               </CommandItem>
             </Command.Group>
-          ) : (
-            <>
-              <Command.Group heading="Jump to">
-                <CommandItem
-                  key="Notes"
-                  icon={<NoteIcon16 />}
-                  onSelect={() => navigate(`/`, { openInPanel: false })}
-                >
-                  Notes
-                </CommandItem>
-                <CommandItem
-                  key="Today"
-                  icon={<CalendarDateIcon16 date={new Date().getDate()} />}
-                  onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
-                >
-                  Today
-                </CommandItem>
-                <CommandItem
-                  key="This week"
-                  icon={<CalendarIcon16 />}
-                  onSelect={() => navigate(`/${toWeekString(new Date())}`, { openInPanel: false })}
-                >
-                  This week
-                </CommandItem>
-                <CommandItem
-                  key="Tags"
-                  icon={<TagIcon16 />}
-                  onSelect={() => navigate(`/tags`, { openInPanel: false })}
-                >
-                  Tags
-                </CommandItem>
-                <CommandItem
-                  key={"Settings"}
-                  icon={<SettingsIcon16 />}
-                  onSelect={() => navigate("/settings", { openInPanel: false })}
-                >
-                  Settings
-                </CommandItem>
-              </Command.Group>
-              {pinnedNotes.length ? (
-                <Command.Group heading="Pinned">
-                  {pinnedNotes.map((note) => (
-                    <NoteItem key={note.id} note={note} onSelect={() => navigate(`/${note.id}`)} />
-                  ))}
-                </Command.Group>
-              ) : null}
-            </>
-          )}
+          ) : null}
         </Command.List>
       </div>
     </Command.Dialog>
@@ -274,16 +388,31 @@ type CommandItemProps = {
 function CommandItem({ children, value, icon, description, onSelect }: CommandItemProps) {
   return (
     <Command.Item value={value} onSelect={onSelect}>
-      <div className="grid grid-cols-[1.75rem_1fr_auto]">
-        <span className="flex text-text-secondary">{icon}</span>
-        <span className="flex truncate">{children}</span>
-        {description ? <span className="text-text-secondary">{description}</span> : null}
+      <div className="flex items-center gap-3">
+        <div className="grid h-4 w-4 place-items-center text-text-secondary">{icon}</div>
+        <div className="flex-grow truncate">{children}</div>
+        {description ? (
+          <span className="flex-shrink-0 text-text-secondary [[aria-selected]_&]:hidden">
+            {description}
+          </span>
+        ) : null}
+        <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline">
+          ⏎
+        </span>
       </div>
     </Command.Item>
   )
 }
 
-function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
+function NoteItem({
+  note,
+  pinned,
+  onSelect,
+}: {
+  note: Note
+  pinned: boolean
+  onSelect: () => void
+}) {
   const parsedTemplate = templateSchema.omit({ body: true }).safeParse(note.frontmatter.template)
   return (
     <CommandItem
@@ -292,20 +421,13 @@ function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
       icon={<NoteFavicon note={note} />}
       onSelect={onSelect}
     >
-      <span className="inline-flex items-center gap-2">
-        {checkIfPinned(note.id) ? (
-          <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
-        ) : null}
+      <span className="flex items-center gap-2 truncate">
+        {pinned ? <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" /> : null}
         {parsedTemplate.success ? (
-          <span>{parsedTemplate.data.name} template</span>
+          <span className="truncate">{parsedTemplate.data.name} template</span>
         ) : (
-          <span>{removeLeadingEmoji(note.title) || note.id}</span>
+          <span className="truncate">{removeLeadingEmoji(note.title) || note.id}</span>
         )}
-        <span className="text-text-secondary">
-          {removeParentTags(note.tags)
-            .map((tag) => `#${tag}`)
-            .join(" ")}
-        </span>
       </span>
     </CommandItem>
   )

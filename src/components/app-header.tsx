@@ -1,5 +1,5 @@
 import * as NavMenu from "@radix-ui/react-navigation-menu"
-import { Link, useNavigate, useRouter } from "@tanstack/react-router"
+import { Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -12,7 +12,7 @@ import {
   ArrowRightIcon16,
   CalendarDateIcon16,
   CalendarIcon16,
-  MenuIcon16,
+  SidebarIcon16,
   NoteIcon16,
   PlusIcon16,
   SettingsIcon16,
@@ -32,19 +32,22 @@ const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekStrin
 export function AppHeader({ title, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
+  const searchParams = useSearch({ strict: false })
+
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
+
   useHotkeys(
     "mod+shift+o",
-    (event) => {
+    () => {
       navigate({
         to: "/notes/$",
         params: { _splat: `${Date.now()}` },
         search: { mode: "write", width: "fixed", query: undefined },
       })
-      event.preventDefault()
     },
     {
+      preventDefault: true,
       enableOnFormTags: true,
       enableOnContentEditable: true,
     },
@@ -63,7 +66,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
             <NavMenu.Item>
               <NavMenu.Trigger asChild>
                 <IconButton aria-label="Menu" size="small" disableTooltip>
-                  <MenuIcon16 />
+                  <SidebarIcon16 />
                 </IconButton>
               </NavMenu.Trigger>
               <NavMenu.Content
@@ -87,7 +90,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                         params={{ _splat: toDateString(new Date()) }}
                         search={{
                           mode: hasDailyNote ? "read" : "write",
-                          width: "fixed",
+                          width: searchParams.width === "fill" ? "fill" : "fixed",
                           query: undefined,
                         }}
                       >
@@ -103,7 +106,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                         params={{ _splat: toWeekString(new Date()) }}
                         search={{
                           mode: hasWeeklyNote ? "read" : "write",
-                          width: "fixed",
+                          width: searchParams.width === "fill" ? "fill" : "fixed",
                           query: undefined,
                         }}
                       >

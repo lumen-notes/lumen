@@ -24,6 +24,7 @@
 .cm-editor .cm-scroller {
   @apply leading-6;
   font-family: unset;
+  overflow: hidden;
 }
 
 .cm-editor .cm-cursor {

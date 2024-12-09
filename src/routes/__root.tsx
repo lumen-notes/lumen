@@ -4,6 +4,7 @@ import { useEvent, useNetworkState } from "react-use"
 import { SignInButton } from "../components/github-auth"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { cx } from "../utils/cx"
+import { CommandMenu } from "../components/command-menu"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -56,6 +57,7 @@ function RootComponent() {
       <ScrollRestoration />
       <Outlet />
       <DevBar />
+      <CommandMenu />
     </div>
   )
 }
@@ -67,7 +69,7 @@ function DevBar() {
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-2 left-2 flex h-6 items-center rounded bg-bg">
+    <div className="fixed bottom-2 right-2 flex h-6 items-center rounded bg-bg">
       <div className="flex h-6 items-center gap-1.5 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         <span>{formatState(state.value)}</span>
         <span className="text-text-tertiary">·</span>

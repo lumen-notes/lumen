@@ -60,38 +60,41 @@ export function AppLayout({
   }, [])
 
   return (
-    <div className="grid grid-rows-[auto_1fr] overflow-hidden">
-      <AppHeader
-        {...props}
-        actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
-        className={cx("border-b", isScrolled ? "border-border-secondary" : "border-transparent")}
-      />
-      <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
-        {/* Invisible sentinel element that helps detect scroll position */}
-        <div ref={topSentinelRef} className="pointer-events-none absolute top-0 h-[1px] w-full" />
-        {isRepoNotCloned && !disableGuard ? (
-          <div className="flex h-full flex-col items-center p-4 pt-0 sm:justify-center sm:pb-10">
-            <div className="mx-auto w-full max-w-lg">
-              <div className="card-1 flex flex-col gap-6 p-4">
-                <div className="flex flex-col gap-1">
-                  <h1 className="text-lg font-semibold">Choose a repository</h1>
-                  <p className="text-pretty text-text-secondary">
-                    Store your notes as markdown files in a GitHub repository of your choice.
-                  </p>
+    <div className="flex overflow-hidden">
+      {/* <div className="w-[240px] flex-shrink-0 border-r border-border-secondary p-2">Sidebar</div> */}
+      <div className="grid flex-grow grid-rows-[auto_1fr] overflow-hidden">
+        <AppHeader
+          {...props}
+          actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
+          className={cx("border-b", isScrolled ? "border-border-secondary" : "border-transparent")}
+        />
+        <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
+          {/* Invisible sentinel element that helps detect scroll position */}
+          <div ref={topSentinelRef} className="pointer-events-none absolute top-0 h-[1px] w-full" />
+          {isRepoNotCloned && !disableGuard ? (
+            <div className="flex h-full flex-col items-center p-4 pt-0 sm:justify-center sm:pb-10">
+              <div className="mx-auto w-full max-w-lg">
+                <div className="card-1 flex flex-col gap-6 p-4">
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-lg font-semibold">Choose a repository</h1>
+                    <p className="text-pretty text-text-secondary">
+                      Store your notes as markdown files in a GitHub repository of your choice.
+                    </p>
+                  </div>
+                  <RepoForm />
                 </div>
-                <RepoForm />
               </div>
             </div>
-          </div>
-        ) : null}
-        {isCloningRepo && githubRepo && !disableGuard ? (
-          <div className="flex items-center gap-2 p-4 leading-4 text-text-secondary">
-            <LoadingIcon16 />
-            Cloning {githubRepo.owner}/{githubRepo.name}…
-          </div>
-        ) : null}
-        {isRepoCloned || isSignedOut || disableGuard ? children : null}
-      </main>
+          ) : null}
+          {isCloningRepo && githubRepo && !disableGuard ? (
+            <div className="flex items-center gap-2 p-4 leading-4 text-text-secondary">
+              <LoadingIcon16 />
+              Cloning {githubRepo.owner}/{githubRepo.name}…
+            </div>
+          ) : null}
+          {isRepoCloned || isSignedOut || disableGuard ? children : null}
+        </main>
+      </div>
     </div>
   )
 }

@@ -11,7 +11,7 @@ function Root({
   defaultOpen?: boolean
 }) {
   return (
-    <details open={defaultOpen} className={cx("group/details space-y-4", className)}>
+    <details open={defaultOpen} className={cx("group/details flex flex-col gap-4", className)}>
       {children}
     </details>
   )
@@ -21,11 +21,11 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-4 flex cursor-pointer list-none rounded p-4 text-text-secondary outline-none hover:text-text focus-visible:text-text [&::-webkit-details-marker]:hidden",
+        "group/summary -m-4 flex cursor-pointer list-none self-start rounded p-4  outline-none [&::-webkit-details-marker]:hidden",
         className,
       )}
     >
-      <span className="flex select-none items-center gap-2 rounded px-1  group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
+      <span className="flex select-none items-center gap-2 rounded px-1 leading-5 text-text-secondary transition-colors duration-100 group-hover/summary:text-text group-focus-visible/summary:text-text group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
         <TriangleRightIcon12 className="transition-transform duration-150 group-open/details:rotate-90" />
         {children}
       </span>
