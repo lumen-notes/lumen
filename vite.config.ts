@@ -1,12 +1,12 @@
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react"
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label"
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh"
 import { visualizer } from "rollup-plugin-visualizer"
-import { defineConfig } from "vite"
 import type { PluginOption } from "vite"
+import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import { VitePWA } from "vite-plugin-pwa"
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
