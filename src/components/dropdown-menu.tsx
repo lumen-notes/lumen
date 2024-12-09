@@ -22,7 +22,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         sideOffset={4}
         {...props}
         className={cx(
-          "card-2 z-20 max-h-[48svh] scroll-py-1 overflow-auto rounded-lg p-1 animate-in fade-in zoom-in-95",
+          "card-2 place-items-strech z-20 grid overflow-hidden rounded-lg animate-in fade-in zoom-in-95",
           // Set transform-origin for every combination of side and align
           "data-[side=bottom]:data-[align=center]:origin-top",
           "data-[side=bottom]:data-[align=end]:origin-top-right",
@@ -39,7 +39,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         )}
         style={{ minWidth }}
       >
-        {children}
+        <div className="grid max-h-[48svh] scroll-py-1 overflow-auto p-1">{children}</div>
       </RadixDropdownMenu.Content>
     </Portal.Root>
   ),
