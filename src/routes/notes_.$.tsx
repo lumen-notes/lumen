@@ -246,7 +246,11 @@ function NotePage() {
       title={
         <span className="flex items-center gap-2">
           {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
-          <span className={!note ? "italic text-text-secondary" : ""}>{noteId}.md</span>
+          <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
+            {Array.from({ length: 200 })
+              .map((_, i) => i)
+              .join("")}
+          </span>
           {isDirty ? <DotIcon8 className="text-[var(--yellow-11)]" /> : null}
         </span>
       }

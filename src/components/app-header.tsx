@@ -124,7 +124,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           <ArrowRightIcon16 className="transition-transform duration-100 group-active:translate-x-0.5" />
         </IconButton>
       </div>
-      <div className="flex-grow justify-self-center whitespace-nowrap px-2">{title}</div>
+      <div className="w-0 flex-grow justify-self-center px-2">{title}</div>
       <div className="flex items-center gap-2 justify-self-end">
         {actions ? (
           <>
