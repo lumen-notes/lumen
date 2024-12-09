@@ -1,7 +1,8 @@
-import { Note } from "../schema"
+import { parseFrontmatter } from "./parse-frontmatter"
 
-export function checkIfPinned(note: Note | undefined): boolean {
-  return note?.frontmatter.pinned === true
+export function checkIfPinned(content: string): boolean {
+  const { frontmatter } = parseFrontmatter(content)
+  return frontmatter?.pinned === true
 }
 
 export function togglePin(content: string): string {

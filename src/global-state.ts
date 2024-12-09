@@ -575,7 +575,7 @@ export const notesAtom = atom((get) => {
 
 export const pinnedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].filter(checkIfPinned)
+  return [...notes.values()].filter((note) => checkIfPinned(note.content))
 })
 
 export const sortedNotesAtom = atom((get) => {

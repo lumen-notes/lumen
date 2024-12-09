@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router"
-import React from "react"
+import React, { useDeferredValue, useMemo, useState } from "react"
 import { flushSync } from "react-dom"
 import { useInView } from "react-intersection-observer"
 import { parseQuery, useSearchNotes } from "../hooks/search"
@@ -27,18 +27,17 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
 
-  const [query, setQuery] = React.useState("")
+  const [query, setQuery] = useState("")
 
-  const deferredQuery = React.useDeferredValue(query)
-  // const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
+  const deferredQuery = useDeferredValue(query)
 
-  const defurredQuery = React.useMemo(() => {
+  const defurredQuery = useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
-  const [layout, setLayout] = React.useState<"grid" | "list">("grid")
+  const [layout, setLayout] = useState<"grid" | "list">("grid")
 
-  const [numVisibleNotes, setNumVisibleNotes] = React.useState(initialVisibleNotes)
+  const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
 
   const [bottomRef, bottomInView] = useInView()
 
@@ -248,10 +247,11 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                     <Link
                       to="/notes/$"
                       params={{ _splat: note.id }}
+                      search={{ mode: "read", width: "fixed" }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >
                       <NoteFavicon note={note} className="mr-3" />
-                      {checkIfPinned(note) ? (
+                      {checkIfPinned(note.content) ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}
                       <span className="truncate text-text-secondary">

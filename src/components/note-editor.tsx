@@ -16,6 +16,7 @@ import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
 import { tags } from "@lezer/highlight"
 import { vim } from "@replit/codemirror-vim"
+import { useNavigate } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
@@ -28,12 +29,11 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { getEditorSettings } from "../utils/editor-settings"
+import { useEditorSettings } from "../hooks/editor-settings"
 import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
-import { useNavigate } from "react-router-dom"
 
 type NoteEditorProps = {
   className?: string
@@ -101,7 +101,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     {
       className,
       defaultValue = "",
-      placeholder = "Write a note…",
+      placeholder = "Write something…",
       autoFocus = false,
       onChange,
       onStateChange,
@@ -112,7 +112,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   ) => {
     const attachFile = useAttachFile()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
-    const editorSettings = getEditorSettings()
+    const [editorSettings] = useEditorSettings()
     const navigate = useNavigate()
 
     // Completions
@@ -139,7 +139,13 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
-        wikilinkExtension((to) => navigate(to)),
+        wikilinkExtension((id) =>
+          navigate({
+            to: "/notes/$",
+            params: { _splat: id },
+            search: { mode: "write", width: "fixed" },
+          }),
+        ),
         syntaxHighlighting(syntaxHighlighter),
       ]
 

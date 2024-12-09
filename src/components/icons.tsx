@@ -2,7 +2,7 @@ import { cx } from "../utils/cx"
 
 type IconProps = React.ComponentPropsWithoutRef<"svg">
 
-function Icon({ size, ...props }: IconProps & { size: number }) {
+function Icon({ size, className, ...props }: IconProps & { size: number }) {
   return (
     <svg
       width={size}
@@ -10,6 +10,7 @@ function Icon({ size, ...props }: IconProps & { size: number }) {
       viewBox={`0 0 ${size} ${size}`}
       fill="currentColor"
       aria-hidden
+      className={cx("flex-shrink-0 overflow-visible", className)}
       {...props}
     />
   )
@@ -551,7 +552,7 @@ export function TriangleRightIcon8({ className }: { className?: string }) {
   )
 }
 
-export function CheckIcon8({ className, ...props }: IconProps) {
+export function CheckIcon8(props: IconProps) {
   return (
     <Icon size={8} {...props}>
       <path
@@ -595,6 +596,14 @@ export function CloseIcon12(props: IconProps) {
   return (
     <Icon size={12} {...props}>
       <path d="M10.56 2.5 7.008 6.054 10.56 9.48l-1.04 1.08-3.574-3.446L2.5 10.56 1.44 9.5l3.426-3.427L1.44 2.77l1.04-1.08 3.447 3.324L9.5 1.439 10.56 2.5Z" />
+    </Icon>
+  )
+}
+
+export function DotIcon8(props: IconProps) {
+  return (
+    <Icon size={8} {...props}>
+      <circle cx="4" cy="4" r="4" />
     </Icon>
   )
 }
@@ -688,11 +697,14 @@ export function GlassesIcon16(props: IconProps) {
   )
 }
 
-export function EyeIcon16({ className, ...props }: IconProps) {
+export function EyeIcon16(props: IconProps) {
   return (
-    <Icon size={16} className={cx("overflow-visible", className)} {...props}>
-      <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
-      <path d="M8 2C6.03137 2 4.24423 2.88726 2.8371 3.89955C1.42214 4.91747 0.319832 6.11332 -0.294881 6.84697C-0.85768 7.51867 -0.857679 8.48134 -0.294881 9.15303C0.319832 9.88668 1.42214 11.0825 2.8371 12.1005C4.24423 13.1127 6.03137 14 8 14C9.96862 14 11.7558 13.1127 13.1629 12.1005C14.5779 11.0825 15.6802 9.88668 16.2949 9.15303C16.8577 8.48133 16.8577 7.51866 16.2949 6.84697C15.6802 6.11332 14.5779 4.91747 13.1629 3.89955C11.7558 2.88726 9.96862 2 8 2ZM0.854877 7.81033C1.4265 7.12811 2.43781 6.03463 3.71308 5.1172C4.99618 4.19413 6.47587 3.5 8 3.5C9.52412 3.5 11.0038 4.19413 12.2869 5.11719C13.5622 6.03463 14.5735 7.12811 15.1451 7.81033C15.2409 7.92467 15.2409 8.07533 15.1451 8.18967C14.5735 8.87189 13.5622 9.96537 12.2869 10.8828C11.0038 11.8059 9.52412 12.5 8 12.5C6.47587 12.5 4.99618 11.8059 3.71308 10.8828C2.43781 9.96537 1.4265 8.87189 0.854877 8.18967C0.759068 8.07533 0.759068 7.92467 0.854877 7.81033Z" />
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0.970315 7.58596C2.12844 6.11248 4.67451 3.5 8 3.5C11.3255 3.5 13.8716 6.11248 15.0297 7.58596C15.2261 7.83584 15.2261 8.16416 15.0297 8.41404C13.8716 9.88752 11.3255 12.5 8 12.5C4.67451 12.5 2.12844 9.88752 0.970315 8.41404C0.773918 8.16416 0.773918 7.83584 0.970315 7.58596ZM8 2C3.92111 2 0.981673 5.14413 -0.209011 6.65904C-0.832973 7.45291 -0.832973 8.54709 -0.209012 9.34096C0.981673 10.8559 3.92111 14 8 14C12.0789 14 15.0183 10.8559 16.209 9.34096C16.833 8.54709 16.833 7.45291 16.209 6.65904C15.0183 5.14413 12.0789 2 8 2ZM8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z"
+      />
     </Icon>
   )
 }
@@ -774,7 +786,11 @@ export function PinIcon12(props: IconProps) {
 export function UndoIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
-      <path d="m3.31 5 2.75-2.75L5 1.19.44 5.75 5 10.31l1.06-1.06L3.31 6.5h7.19a3 3 0 1 1 0 6H9V14h1.5a4.5 4.5 0 1 0 0-9H3.31Z" />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M5.78033 1.71967C6.07322 2.01256 6.07322 2.48744 5.78033 2.78033L3.56066 5H10.5C12.9853 5 15 7.01472 15 9.5C15 11.9853 12.9853 14 10.5 14H9.75C9.33579 14 9 13.6642 9 13.25C9 12.8358 9.33579 12.5 9.75 12.5H10.5C12.1569 12.5 13.5 11.1569 13.5 9.5C13.5 7.84315 12.1569 6.5 10.5 6.5H3.56066L5.78033 8.71967C6.07322 9.01256 6.07322 9.48744 5.78033 9.78033C5.48744 10.0732 5.01256 10.0732 4.71967 9.78033L1.21967 6.28033C0.926777 5.98744 0.926777 5.51256 1.21967 5.21967L4.71967 1.71967C5.01256 1.42678 5.48744 1.42678 5.78033 1.71967Z"
+      />
     </Icon>
   )
 }

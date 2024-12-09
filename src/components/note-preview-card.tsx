@@ -53,7 +53,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
-  const isPinned = checkIfPinned(note)
+  const isPinned = checkIfPinned(note?.content ?? "")
   const saveNote = useSaveNote()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 

@@ -12,11 +12,12 @@ import {
   globalStateMachineAtom,
   isSignedOutAtom,
 } from "../global-state"
+import { useEditorSettings } from "../hooks/editor-settings"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { GitHubRepository, NoteId } from "../schema"
 import { cx } from "../utils/cx"
-import { getEditorSettings } from "../utils/editor-settings"
 import { exportAsGist } from "../utils/export-as-gist"
+import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
@@ -41,7 +42,6 @@ import { Link } from "./link"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { usePanel, usePanelActions } from "./panels"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -79,6 +79,17 @@ export function NoteCard(props: NoteCardProps) {
   return <_NoteCard {...props} />
 }
 
+function getStorageKey({
+  githubRepo,
+  noteId,
+}: {
+  githubRepo: GitHubRepository | null
+  noteId: NoteId
+}) {
+  if (!githubRepo) return noteId
+  return `${githubRepo.owner}/${githubRepo.name}/${noteId}`
+}
+
 const _NoteCard = React.memo(function NoteCard({
   id,
   defaultValue = "",
@@ -92,7 +103,7 @@ const _NoteCard = React.memo(function NoteCard({
   const githubRepo = useAtomValue(githubRepoAtom)
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
-  const { vimMode } = getEditorSettings()
+  const [{ vimMode }] = useEditorSettings()
   const isSignedOut = useAtomValue(isSignedOutAtom)
 
   // Refs
@@ -109,7 +120,11 @@ const _NoteCard = React.memo(function NoteCard({
   const [editorValue, setEditorValue] = React.useState(() => {
     // We use localStorage to persist a "draft" of the note while editing,
     // then clear it when the note is saved
-    return localStorage.getItem(getStorageKey({ githubRepo, id })) ?? note?.content ?? defaultValue
+    return (
+      localStorage.getItem(getStorageKey({ githubRepo, noteId: id })) ??
+      note?.content ??
+      defaultValue
+    )
   })
   // TODO: Change read/write to view/edit
   const [mode, setMode] = React.useState<"read" | "write">(
@@ -121,7 +136,7 @@ const _NoteCard = React.memo(function NoteCard({
   if (
     note &&
     note.content !== editorValue &&
-    localStorage.getItem(getStorageKey({ githubRepo, id })) === null
+    localStorage.getItem(getStorageKey({ githubRepo, noteId: id })) === null
   ) {
     setEditorValue(note.content)
   }
@@ -131,7 +146,7 @@ const _NoteCard = React.memo(function NoteCard({
   if (
     !note &&
     editorValue !== defaultValue &&
-    localStorage.getItem(getStorageKey({ githubRepo, id })) === null
+    localStorage.getItem(getStorageKey({ githubRepo, noteId: id })) === null
   ) {
     setEditorValue(defaultValue)
   }
@@ -145,9 +160,9 @@ const _NoteCard = React.memo(function NoteCard({
       setEditorValue(value)
 
       if (note ? value !== note.content : value !== defaultValue) {
-        localStorage.setItem(getStorageKey({ githubRepo, id }), value)
+        localStorage.setItem(getStorageKey({ githubRepo, noteId: id }), value)
       } else {
-        localStorage.removeItem(getStorageKey({ githubRepo, id }))
+        localStorage.removeItem(getStorageKey({ githubRepo, noteId: id }))
       }
     },
     [note, defaultValue, githubRepo, id],
@@ -210,7 +225,7 @@ const _NoteCard = React.memo(function NoteCard({
       if (content !== note?.content) {
         saveNote({ id, content })
       }
-      localStorage.removeItem(getStorageKey({ githubRepo, id }))
+      localStorage.removeItem(getStorageKey({ githubRepo, noteId: id }))
     },
     [note, saveNote, githubRepo, isSignedOut],
   )
@@ -241,7 +256,7 @@ const _NoteCard = React.memo(function NoteCard({
     // Reset editor value to the last saved state of the note
     setEditorValue(note?.content ?? defaultValue)
     // Clear the "draft" from localStorage
-    localStorage.removeItem(getStorageKey({ githubRepo, id }))
+    localStorage.removeItem(getStorageKey({ githubRepo, noteId: id }))
   }, [note, defaultValue, githubRepo, id])
 
   return (
@@ -371,7 +386,7 @@ const _NoteCard = React.memo(function NoteCard({
         }
       }}
     >
-      <div className="rounded-xl sticky top-0 z-10 flex h-12 items-center justify-between gap-2 bg-bg px-2 coarse:h-14">
+      <div className="sticky top-0 z-10 flex h-12 items-center justify-between gap-2 rounded-xl bg-bg px-2 coarse:h-14">
         <Link
           to={`/${id}`}
           target="_blank"
@@ -404,7 +419,7 @@ const _NoteCard = React.memo(function NoteCard({
 
         <div
           className={cx(
-            "rounded-xl absolute right-2 top-2 flex bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
+            "absolute right-2 top-2 flex rounded-xl bg-bg shadow-[0_0_4px_4px_var(--color-bg)] transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 fine:opacity-0",
             (mode === "write" || isDirty || isDropdownOpen || !note) && "!opacity-100",
           )}
         >
@@ -435,7 +450,7 @@ const _NoteCard = React.memo(function NoteCard({
                 ) : null}
                 <DropdownMenu.Item
                   icon={
-                    checkIfPinned(note) ? (
+                    checkIfPinned(note.content) ? (
                       <PinFillIcon16 className="text-[var(--orange-11)]" />
                     ) : (
                       <PinIcon16 />
@@ -567,8 +582,3 @@ const _NoteCard = React.memo(function NoteCard({
     </Card>
   )
 })
-
-function getStorageKey({ githubRepo, id }: { githubRepo: GitHubRepository | null; id: string }) {
-  if (!githubRepo) return id
-  return `${githubRepo.owner}/${githubRepo.name}/${id}`
-}

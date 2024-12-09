@@ -84,9 +84,9 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         ) : null}
         {selected !== undefined ? (
           selected ? (
-            <CheckIcon16 className="-m-1 text-text-secondary" />
+            <CheckIcon16 className="text-text-secondary" />
           ) : (
-            <div className="-m-1 h-4 w-4" />
+            <div className="h-4 w-4" />
           )
         ) : null}
       </>
@@ -96,7 +96,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer select-none items-center gap-5 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:px-4",
+          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:gap-4 coarse:px-4",
           className,
         )}
         asChild={Boolean(href)}
@@ -109,7 +109,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
 )
 
 const Separator = () => {
-  return <RadixDropdownMenu.Separator className="mx-2 my-1 h-px bg-border-secondary coarse:mx-3" />
+  return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary coarse:mx-4" />
 }
 
 export const DropdownMenu = Object.assign(Root, {

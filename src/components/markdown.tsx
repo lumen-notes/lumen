@@ -53,6 +53,7 @@ import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlight
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
 import { WebsiteFavicon } from "./website-favicon"
+import { useSearch } from "@tanstack/react-router"
 
 export type MarkdownProps = {
   children: string
@@ -687,6 +688,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
   const { online } = useNetworkState()
+  const searchParams = useSearch({ strict: false })
 
   React.useLayoutEffect(() => {
     if (ref.current) {
@@ -705,7 +707,15 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} to={`/${id}`}>
+        <Link
+          ref={ref}
+          to={`/notes/$`}
+          params={{ _splat: id }}
+          search={{
+            mode: "read",
+            width: searchParams.width === "fill" ? "fill" : "fixed",
+          }}
+        >
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
@@ -768,10 +778,20 @@ type DateLinkProps = {
 }
 
 function DateLink({ date, text, className }: DateLinkProps) {
+  const searchParams = useSearch({ strict: false })
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${date}`}>
+        <Link
+          className={className}
+          to={`/notes/$`}
+          params={{ _splat: date }}
+          search={{
+            mode: "read",
+            width: searchParams.width === "fill" ? "fill" : "fixed",
+          }}
+        >
           {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
@@ -793,10 +813,20 @@ type WeekLinkProps = {
 }
 
 function WeekLink({ week, text, className }: WeekLinkProps) {
+  const searchParams = useSearch({ strict: false })
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${week}`}>
+        <Link
+          className={className}
+          to={`/notes/$`}
+          params={{ _splat: week }}
+          search={{
+            mode: "read",
+            width: searchParams.width === "fill" ? "fill" : "fixed",
+          }}
+        >
           {text || formatWeek(week)}
         </Link>
       </HoverCard.Trigger>

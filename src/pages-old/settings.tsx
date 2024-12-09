@@ -16,7 +16,7 @@ import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import { SyncStatusIcon, useSyncStatusText } from "../components/sync-status"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
-import { getEditorSettings, setEditorSettings } from "../utils/editor-settings"
+import { getEditorSettings, setEditorSettings } from "../hooks/editor-settings"
 
 const isCloningAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloningRepo"),

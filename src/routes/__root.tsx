@@ -50,7 +50,7 @@ function DevBar() {
 
   return (
     <div className="fixed bottom-2 left-2 flex h-6 items-center rounded bg-bg">
-      <div className="flex h-6 items-center gap-2 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
+      <div className="flex h-6 items-center gap-1.5 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         <span>{formatState(state.value)}</span>
         <span className="text-text-tertiary">·</span>
         <CurrentBreakpoint />
