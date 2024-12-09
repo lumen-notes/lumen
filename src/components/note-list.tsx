@@ -32,7 +32,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
 
   const deferredQuery = useDeferredValue(query)
 
-  const defurredQuery = useMemo(() => {
+  const searchResults = useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
@@ -43,8 +43,8 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
   const [bottomRef, bottomInView] = useInView()
 
   const loadMore = React.useCallback(() => {
-    setNumVisibleNotes((num) => Math.min(num + 10, defurredQuery.length))
-  }, [defurredQuery.length])
+    setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
+  }, [searchResults.length])
 
   React.useEffect(() => {
     if (bottomInView) {
@@ -58,7 +58,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    const tags = defurredQuery.flatMap((note) => note.tags)
+    const tags = searchResults.flatMap((note) => note.tags)
 
     for (const tag of tags) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
@@ -69,7 +69,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
     return (
       frequencyEntries
         // Filter out tags that every note has
-        .filter(([, frequency]) => frequency < defurredQuery.length)
+        .filter(([, frequency]) => frequency < searchResults.length)
         // Filter out parent tags if the all the childs tag has the same frequency
         .filter(([tag, frequency]) => {
           const childTags = frequencyEntries.filter(
@@ -84,7 +84,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           return b[1] - a[1]
         })
     )
-  }, [defurredQuery])
+  }, [searchResults])
 
   const qualifiers = React.useMemo(() => {
     return parseQuery(query).qualifiers
@@ -118,7 +118,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-[1fr_auto_auto] gap-2">
               <SearchInput
-                placeholder={`Search ${pluralize(defurredQuery.length, "note")}…`}
+                placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
                 value={query}
                 onChange={(value) => {
                   setQuery(value)
@@ -135,17 +135,17 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
                 {layout === "grid" ? <ListIcon16 /> : <GridIcon16 />}
               </IconButton>
               <DiceButton
-                disabled={defurredQuery.length === 0}
+                disabled={searchResults.length === 0}
                 onClick={() => {
-                  const resultsCount = defurredQuery.length
+                  const resultsCount = searchResults.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
-                  navigate({ to: `/notes/${defurredQuery[randomIndex].id}` })
+                  navigate({ to: `/notes/${searchResults[randomIndex].id}` })
                 }}
               />
             </div>
-            {query ? (
+            {deferredQuery ? (
               <span className="text-sm text-text-secondary">
-                {pluralize(defurredQuery.length, "result")}
+                {pluralize(searchResults.length, "result")}
               </span>
             ) : null}
           </div>
@@ -231,14 +231,14 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           </div>
           {layout === "grid" ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-              {defurredQuery.slice(0, numVisibleNotes).map(({ id }) => (
+              {searchResults.slice(0, numVisibleNotes).map(({ id }) => (
                 <NotePreviewCard key={id} id={id} />
               ))}
             </div>
           ) : null}
           {layout === "list" ? (
             <ul>
-              {defurredQuery.slice(0, numVisibleNotes).map((note) => {
+              {searchResults.slice(0, numVisibleNotes).map((note) => {
                 const parsedTemplate = templateSchema
                   .omit({ body: true })
                   .safeParse(note.frontmatter.template)
@@ -273,7 +273,7 @@ export function NoteList({ baseQuery = "", initialVisibleNotes = 10 }: NoteListP
           ) : null}
         </div>
 
-        {defurredQuery.length > numVisibleNotes ? (
+        {searchResults.length > numVisibleNotes ? (
           <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
             Load more
           </Button>

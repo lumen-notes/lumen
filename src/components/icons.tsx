@@ -327,6 +327,18 @@ export function ChevronRightIcon16(props: IconProps) {
   return <ChevronLeftIcon16 {...props} className={cx("-scale-x-100", props.className)} />
 }
 
+export function ChevronRightIcon12(props: IconProps) {
+  return (
+    <Icon size={12} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M3.96967 1.71967C4.26256 1.42678 4.73744 1.42678 5.03033 1.71967L8.78033 5.46967C9.07322 5.76256 9.07322 6.23744 8.78033 6.53033L5.03033 10.2803C4.73744 10.5732 4.26256 10.5732 3.96967 10.2803C3.67678 9.98744 3.67678 9.51256 3.96967 9.21967L7.18934 6L3.96967 2.78033C3.67678 2.48744 3.67678 2.01256 3.96967 1.71967Z"
+      />
+    </Icon>
+  )
+}
+
 export function PaperclipIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
@@ -588,16 +600,11 @@ export function CardsIcon16(props: IconProps) {
   )
 }
 
-export function TriangleRightIcon8({ className }: { className?: string }) {
+export function TriangleRightIcon12(props: IconProps) {
   return (
-    <svg
-      className={cx("h-2 w-2 overflow-visible", className)}
-      viewBox="0 0 8 8"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M7.43 3.593 1.79-.435A.5.5 0 0 0 1-.028v8.056a.5.5 0 0 0 .79.407l5.64-4.028a.5.5 0 0 0 0-.814Z" />
-    </svg>
+    <Icon size={12} {...props}>
+      <path d="M9.14558 5.3897L4.18593 1.84709C3.68953 1.49252 3 1.84736 3 2.45739V9.54261C3 10.1526 3.68953 10.5075 4.18593 10.1529L9.14558 6.6103C9.56434 6.31118 9.56434 5.68882 9.14558 5.3897Z" />
+    </Icon>
   )
 }
 

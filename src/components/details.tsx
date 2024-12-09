@@ -1,5 +1,5 @@
 import { cx } from "../utils/cx"
-import { TriangleRightIcon8 } from "./icons"
+import { TriangleRightIcon12 } from "./icons"
 
 function Root({
   children,
@@ -21,12 +21,12 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-4 inline-flex cursor-pointer list-none rounded p-4 text-text-secondary outline-none hover:text-text focus-visible:text-text [&::-webkit-details-marker]:hidden",
+        "group/summary -m-4 flex cursor-pointer list-none rounded p-4 text-text-secondary outline-none hover:text-text focus-visible:text-text [&::-webkit-details-marker]:hidden",
         className,
       )}
     >
-      <span className="inline-flex select-none items-center gap-2 rounded px-1  group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
-        <TriangleRightIcon8 className="transition-transform duration-150 group-open/details:rotate-90" />
+      <span className="flex select-none items-center gap-2 rounded px-1  group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus">
+        <TriangleRightIcon12 className="transition-transform duration-150 group-open/details:rotate-90" />
         {children}
       </span>
     </summary>
