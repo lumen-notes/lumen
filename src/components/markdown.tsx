@@ -1,9 +1,11 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
-import { Link } from "@tanstack/react-router"
+import { Link, useSearch } from "@tanstack/react-router"
 import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import qs from "qs"
-import React from "react"
+import React, { useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
@@ -11,6 +13,7 @@ import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
+import { notesAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -53,7 +56,6 @@ import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlight
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
 import { WebsiteFavicon } from "./website-favicon"
-import { useSearch } from "@tanstack/react-router"
 
 export type MarkdownProps = {
   children: string
@@ -688,7 +690,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
   const { online } = useNetworkState()
-  const searchParams = useSearch({ strict: false })
+  const search = useSearch({ strict: false })
 
   React.useLayoutEffect(() => {
     if (ref.current) {
@@ -713,7 +715,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           params={{ _splat: id }}
           search={{
             mode: "read",
-            width: searchParams.width === "fill" ? "fill" : "fixed",
+            width: search.width === "fill" ? "fill" : "fixed",
           }}
         >
           {isFirst && note && online ? (
@@ -779,16 +781,19 @@ type DateLinkProps = {
 
 function DateLink({ date, text, className }: DateLinkProps) {
   const searchParams = useSearch({ strict: false })
+  const hasDateNote = useAtomValue(
+    useMemo(() => selectAtom(notesAtom, (notes) => notes.has(date)), [date]),
+  )
 
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link
           className={className}
-          to={`/notes/$`}
+          to="/notes/$"
           params={{ _splat: date }}
           search={{
-            mode: "read",
+            mode: hasDateNote ? "read" : "write",
             width: searchParams.width === "fill" ? "fill" : "fixed",
           }}
         >
@@ -814,16 +819,19 @@ type WeekLinkProps = {
 
 function WeekLink({ week, text, className }: WeekLinkProps) {
   const searchParams = useSearch({ strict: false })
+  const hasWeekNote = useAtomValue(
+    useMemo(() => selectAtom(notesAtom, (notes) => notes.has(week)), [week]),
+  )
 
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link
           className={className}
-          to={`/notes/$`}
+          to="/notes/$"
           params={{ _splat: week }}
           search={{
-            mode: "read",
+            mode: hasWeekNote ? "read" : "write",
             width: searchParams.width === "fill" ? "fill" : "fixed",
           }}
         >
