@@ -1,4 +1,4 @@
-import { Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
+import { Link, Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { useEvent, useNetworkState } from "react-use"
 import { SignInButton } from "../components/github-auth"
@@ -7,7 +7,19 @@ import { cx } from "../utils/cx"
 
 export const Route = createRootRoute({
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 })
+
+function NotFoundComponent() {
+  return (
+    <div className="p-4">
+      Page not found.{" "}
+      <Link to="/" className="link">
+        Go home
+      </Link>
+    </div>
+  )
+}
 
 function RootComponent() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
