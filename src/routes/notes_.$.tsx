@@ -2,6 +2,7 @@ import { Vim } from "@replit/codemirror-vim"
 import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
+import ejs from "ejs"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -10,6 +11,7 @@ import useResizeObserver from "use-resize-observer"
 import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
 import { Calendar } from "../components/calendar"
+import { DaysOfWeek } from "../components/days-of-week"
 import { Details } from "../components/details"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
@@ -29,6 +31,7 @@ import {
   TrashIcon16,
   UndoIcon16,
 } from "../components/icons"
+import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
@@ -48,17 +51,14 @@ import { useSearchNotes } from "../hooks/search"
 import { GitHubRepository, Note, NoteId, Template } from "../schema"
 import { cx } from "../utils/cx"
 import {
-  isValidDateString,
-  isValidWeekString,
   formatDateDistance,
   formatWeekDistance,
+  isValidDateString,
+  isValidWeekString,
 } from "../utils/date"
 import { exportAsGist } from "../utils/export-as-gist"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { removeFrontmatterComments } from "../components/insert-template"
-import ejs from "ejs"
-
 type RouteSearch = {
   mode: "read" | "write"
   width: "fixed" | "fill"
@@ -509,10 +509,16 @@ function NotePage() {
                 onChange={setEditorValue}
               />
             </div>
+            {isWeeklyNote ? (
+              <Details>
+                <Details.Summary>Days</Details.Summary>
+                <DaysOfWeek week={noteId ?? ""} />
+              </Details>
+            ) : null}
             {backlinks.length > 0 ? (
               <Details>
                 <Details.Summary>Backlinks</Details.Summary>
-                <LinkHighlightProvider href={`/${noteId}`}>
+                <LinkHighlightProvider href={`/notes/${noteId}`}>
                   <NoteList baseQuery={`link:"${noteId}" -id:"${noteId}"`} />
                 </LinkHighlightProvider>
               </Details>

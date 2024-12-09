@@ -67,7 +67,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
         params={{ _splat: id }}
         search={{ mode: "read", width: "fixed" }}
         className={cx(
-          "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
+          "card-1 relative block w-full cursor-pointer overflow-hidden transition-[box-shadow,transform] duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
