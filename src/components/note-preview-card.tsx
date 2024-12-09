@@ -9,7 +9,7 @@ import {
   globalStateMachineAtom,
   isSignedOutAtom,
 } from "../global-state"
-import { useNoteById, useSaveNote } from "../hooks/note"
+import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
 import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
@@ -55,6 +55,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const isPinned = checkIfPinned(note?.content ?? "")
   const saveNote = useSaveNote()
+  const deleteNote = useDeleteNote()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
 
   if (!note) return null
@@ -66,7 +67,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
         params={{ _splat: id }}
         search={{ mode: "read", width: "fixed" }}
         className={cx(
-          "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 group-hover:ring-border [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border",
+          "card-1 relative block w-full cursor-pointer overflow-hidden transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
@@ -143,8 +144,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               <DropdownMenu.Item
                 variant="danger"
                 icon={<TrashIcon16 />}
-                // disabled={isSignedOut}
-                disabled
+                disabled={isSignedOut}
                 onSelect={() => {
                   // Ask the user to confirm before deleting a note with backlinks
                   if (
@@ -159,7 +159,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                     return
                   }
 
-                  // TODO: handleDelete()
+                  deleteNote(id)
                 }}
               >
                 Delete

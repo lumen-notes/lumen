@@ -1,3 +1,4 @@
+import { Vim } from "@replit/codemirror-vim"
 import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
@@ -8,6 +9,8 @@ import { useHotkeys } from "react-hotkeys-hook"
 import useResizeObserver from "use-resize-observer"
 import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
+import { Calendar } from "../components/calendar"
+import { Details } from "../components/details"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
@@ -26,27 +29,35 @@ import {
   TrashIcon16,
   UndoIcon16,
 } from "../components/icons"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
+import { NoteList } from "../components/note-list"
 import { SegmentedControl } from "../components/segmented-control"
 import {
+  dailyTemplateAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
+  weeklyTemplateAtom,
 } from "../global-state"
+import { useEditorSettings } from "../hooks/editor-settings"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
-import { GitHubRepository, Note, NoteId } from "../schema"
+import { useSearchNotes } from "../hooks/search"
+import { GitHubRepository, Note, NoteId, Template } from "../schema"
 import { cx } from "../utils/cx"
+import {
+  isValidDateString,
+  isValidWeekString,
+  formatDateDistance,
+  formatWeekDistance,
+} from "../utils/date"
 import { exportAsGist } from "../utils/export-as-gist"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { Vim } from "@replit/codemirror-vim"
-import { useEditorSettings } from "../hooks/editor-settings"
-import { useSearchNotes } from "../hooks/search"
-import { Details } from "../components/details"
-import { LinkHighlightProvider } from "../components/link-highlight-provider"
-import { NoteList } from "../components/note-list"
+import { removeFrontmatterComments } from "../components/insert-template"
+import ejs from "ejs"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -67,6 +78,30 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned"),
 )
 
+function PageTitle({ noteId }: { noteId: string }) {
+  if (isValidDateString(noteId)) {
+    return (
+      <span>
+        <span>{noteId}.md</span>
+        <span className="mx-2 text-text-secondary">·</span>
+        <span className="text-text-secondary">{formatDateDistance(noteId)}</span>
+      </span>
+    )
+  }
+
+  if (isValidWeekString(noteId)) {
+    return (
+      <span>
+        <span>{noteId}.md</span>
+        <span className="mx-2 text-text-secondary">·</span>
+        <span className="text-text-secondary">{formatWeekDistance(noteId)}</span>
+      </span>
+    )
+  }
+
+  return `${noteId}.md`
+}
+
 function RouteComponent() {
   const { _splat: noteId } = Route.useParams()
   const isSignedOut = useAtomValue(isSignedOutAtom)
@@ -77,7 +112,7 @@ function RouteComponent() {
   }
 
   return (
-    <AppLayout title={`${noteId}.md`}>
+    <AppLayout title={<PageTitle noteId={noteId ?? ""} />}>
       <div>{/* TODO */}</div>
     </AppLayout>
   )
@@ -93,31 +128,57 @@ function useGetter<T>(value: T) {
   return useCallback(() => valueRef.current, [])
 }
 
+function renderTemplate(template: Template, args: Record<string, unknown> = {}) {
+  let text = ejs.render(template.body, args)
+  text = removeFrontmatterComments(text)
+  text = text.replace("{cursor}", "")
+  return text
+}
+
 function NotePage() {
+  // Router
   const { _splat: noteId } = Route.useParams()
   const { mode, width } = Route.useSearch()
   const navigate = Route.useNavigate()
-  const note = useNoteById(noteId)
+
+  // Global state
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
-  const saveNote = useSaveNote()
-  const deleteNote = useDeleteNote()
-  const defaultEditorValue = ""
-  const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
-  const [editorSettings] = useEditorSettings()
-  const editorRef = useRef<ReactCodeMirrorRef>(null)
-  const { editorValue, setEditorValue, isDirty, discardChanges, clearDraft } = useEditorValue({
-    noteId: noteId ?? "",
-    note,
-    defaultValue: defaultEditorValue,
-  })
-  const isPinned = useMemo(() => checkIfPinned(editorValue), [editorValue])
+  const dailyTemplate = useAtomValue(dailyTemplateAtom)
+  const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
+
+  // Note data
+  const note = useNoteById(noteId)
   const searchNotes = useSearchNotes()
   const backlinks = useMemo(
     () => searchNotes(`link:"${noteId}" -id:"${noteId}"`),
     [noteId, searchNotes],
   )
+  const isDailyNote = isValidDateString(noteId ?? "")
+  const isWeeklyNote = isValidWeekString(noteId ?? "")
+
+  // Editor state
+  const editorRef = useRef<ReactCodeMirrorRef>(null)
+  const { editorValue, setEditorValue, isDirty, discardChanges, clearDraft } = useEditorValue({
+    noteId: noteId ?? "",
+    note,
+    defaultValue:
+      isDailyNote && dailyTemplate
+        ? renderTemplate(dailyTemplate, { date: noteId ?? "" })
+        : isWeeklyNote && weeklyTemplate
+        ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
+        : "",
+  })
+  const isPinned = useMemo(() => checkIfPinned(editorValue), [editorValue])
+  const [editorSettings] = useEditorSettings()
+
+  // Layout
+  const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
+
+  // Actions
+  const saveNote = useSaveNote()
+  const deleteNote = useDeleteNote()
 
   const handleSave = useCallback(
     (value: string) => {
@@ -152,6 +213,7 @@ function NotePage() {
     }
   }, [mode, switchToWriting, switchToReading])
 
+  // Keyboard shortcuts
   useHotkeys(
     "alt+tab",
     (event) => {
@@ -200,11 +262,12 @@ function NotePage() {
     },
   )
 
-  // Configure Vim mode
+  // Vim commands
   const getHandleSave = useGetter(handleSave)
   const getEditorValue = useGetter(editorValue)
   const getSwitchToReading = useGetter(switchToReading)
   const getIsDirty = useGetter(isDirty)
+
   useEffect(() => {
     // :w - Save
     Vim.defineEx("w", "w", () => {
@@ -244,12 +307,10 @@ function NotePage() {
   return (
     <AppLayout
       title={
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 xl:justify-center">
           {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
           <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
-            {Array.from({ length: 200 })
-              .map((_, i) => i)
-              .join("")}
+            <PageTitle noteId={noteId ?? ""} />
           </span>
           {isDirty ? <DotIcon8 className="text-[var(--yellow-11)]" /> : null}
         </span>
@@ -287,20 +348,6 @@ function NotePage() {
             {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
           </IconButton>
           <div className="flex items-center">
-            {/* {containerWidth > 800 && (
-              <IconButton
-                aria-label="Toggle width"
-                size="small"
-                onClick={() =>
-                  navigate({
-                    search: { width: width === "fixed" ? "fill" : "fixed", mode },
-                    replace: true,
-                  })
-                }
-              >
-                {width === "fixed" ? <CenteredIcon16 /> : <FullwidthIcon16 />}
-              </IconButton>
-            )} */}
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" size="small" disableTooltip>
@@ -338,6 +385,7 @@ function NotePage() {
                           search: { width: "fixed", mode },
                           replace: true,
                         })
+                        editorRef.current?.view?.focus()
                       }}
                     >
                       Centered content
@@ -347,6 +395,7 @@ function NotePage() {
                       selected={width === "fill"}
                       onSelect={() => {
                         navigate({ search: { width: "fill", mode }, replace: true })
+                        editorRef.current?.view?.focus()
                       }}
                     >
                       Fullwidth content
@@ -433,6 +482,7 @@ function NotePage() {
               width === "fixed" && "mx-auto max-w-3xl",
             )}
           >
+            {isDailyNote || isWeeklyNote ? <Calendar activeNoteId={noteId ?? ""} /> : null}
             {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
             <div
               hidden={mode !== "read"}

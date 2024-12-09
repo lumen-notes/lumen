@@ -6,17 +6,30 @@ export type ButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   variant?: "secondary" | "primary"
   size?: "small" | "medium"
   shortcut?: string[]
+  disablePressAnimation?: boolean
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "secondary", size = "medium", shortcut, className, children, ...props }, ref) => {
+  (
+    {
+      variant = "secondary",
+      size = "medium",
+      shortcut,
+      disablePressAnimation = false,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <button
         ref={ref}
         type="button"
         className={cx(
-          "focus-ring inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded leading-4 transition-[transform,background-color] duration-100 active:scale-95 disabled:pointer-events-none disabled:opacity-50",
+          "focus-ring inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded leading-4 transition-[transform,background-color] duration-100 disabled:pointer-events-none disabled:opacity-50",
           "coarse:h-10 coarse:px-4",
+          !disablePressAnimation && "active:scale-95",
           variant === "secondary" && "bg-bg-secondary hover:bg-bg-tertiary",
           variant === "primary" && "bg-text font-semibold text-bg",
           size === "small" && "h-6 px-2",

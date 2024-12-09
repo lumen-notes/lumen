@@ -1,6 +1,9 @@
 import * as NavMenu from "@radix-ui/react-navigation-menu"
 import { Link, useNavigate, useRouter } from "@tanstack/react-router"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import { useHotkeys } from "react-hotkeys-hook"
+import { notesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString } from "../utils/date"
 import { IconButton } from "./icon-button"
@@ -22,9 +25,12 @@ export type AppHeaderProps = {
   actions?: React.ReactNode
 }
 
+const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
+
 export function AppHeader({ title, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
+  const hasDailyNote = useAtomValue(hasDailyNoteAtom)
 
   useHotkeys(
     "mod+shift+o",
@@ -77,7 +83,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                       <Link
                         to={`/notes/$`}
                         params={{ _splat: toDateString(new Date()) }}
-                        search={{ mode: "read", width: "fixed" }}
+                        search={{ mode: hasDailyNote ? "read" : "write", width: "fixed" }}
                       >
                         <CalendarIcon16>{new Date().getDate()}</CalendarIcon16>
                         Calendar
@@ -124,7 +130,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           <ArrowRightIcon16 className="transition-transform duration-100 group-active:translate-x-0.5" />
         </IconButton>
       </div>
-      <div className="w-0 flex-grow justify-self-center px-2">{title}</div>
+      <div className="w-0 flex-grow justify-self-center px-2 xl:w-full xl:text-center">{title}</div>
       <div className="flex items-center gap-2 justify-self-end">
         {actions ? (
           <>

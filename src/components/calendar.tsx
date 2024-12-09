@@ -12,7 +12,7 @@ import {
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { Link } from "@tanstack/react-router"
+import { Link, useSearch, useNavigate } from "@tanstack/react-router"
 import { datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -20,6 +20,7 @@ import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "../utils/date"
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
+import { Button } from "./button"
 
 export function Calendar({
   activeNoteId,
@@ -28,6 +29,8 @@ export function Calendar({
   activeNoteId: string
   className?: string
 }) {
+  const navigate = useNavigate()
+  const searchParams = useSearch({ strict: false })
   const date = parseISO(activeNoteId)
 
   const [startOfWeek, setStartOfWeek] = React.useState(() =>
@@ -43,21 +46,43 @@ export function Calendar({
 
   return (
     <div className="border-b border-border-secondary">
-      <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden py-2", className)}>
+      <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden pb-2", className)}>
         <div className="flex items-center justify-between">
           <span className="text-lg">
             <span className="font-semibold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
-            {startOfWeek.getFullYear()}
+            <span>{startOfWeek.getFullYear()}</span>
           </span>
-          <div className="flex ">
+          <div className="flex gap-px rounded bg-bg-secondary">
             <IconButton
               aria-label="Previous week"
+              className="active:bg-bg-tertiary"
+              disablePressAnimation
               onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
             >
               <ChevronLeftIcon16 />
             </IconButton>
+            <Button
+              className="bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary"
+              disablePressAnimation
+              onClick={() => {
+                const today = new Date()
+                setStartOfWeek(isMonday(today) ? today : previousMonday(today))
+                navigate({
+                  to: "/notes/$",
+                  params: { _splat: toDateString(today) },
+                  search: {
+                    mode: searchParams.mode === "write" ? "write" : "read",
+                    width: searchParams.width === "fill" ? "fill" : "fixed",
+                  },
+                })
+              }}
+            >
+              Today
+            </Button>
             <IconButton
               aria-label="Next week"
+              className="active:bg-bg-tertiary"
+              disablePressAnimation
               onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
             >
               <ChevronRightIcon16 />
@@ -70,10 +95,7 @@ export function Calendar({
               startOfWeek={startOfWeek}
               isActive={toWeekString(startOfWeek) === activeNoteId}
             />
-            <div
-              role="separator"
-              className="my-[0.375rem] w-px flex-shrink-0 bg-border-secondary"
-            />
+            <div role="separator" className="mx-2 my-4 w-px flex-shrink-0 bg-border-secondary" />
             {daysOfWeek.map((date) => (
               <CalendarDate
                 key={date.toISOString()}
@@ -124,7 +146,7 @@ function CalendarWeek({
   return (
     <CalendarItem
       key={weekString}
-      to={`/${weekString}`}
+      id={weekString}
       aria-label={label}
       name="Week"
       shortName="W"
@@ -153,7 +175,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
   return (
     <CalendarItem
       key={date.toISOString()}
-      to={`/${dateString}`}
+      id={dateString}
       aria-label={label}
       name={dayName.slice(0, 3)}
       shortName={dayName.slice(0, 2)}
@@ -170,7 +192,7 @@ type CalendarItemProps = {
   name: string
   shortName: string
   number: number
-  to: string
+  id: string
   isActive?: boolean
   isToday?: boolean
   hasNotes?: boolean
@@ -181,26 +203,32 @@ function CalendarItem({
   name,
   shortName,
   number,
-  to,
+  id,
   isActive = false,
   isToday = false,
   hasNotes = false,
 }: CalendarItemProps) {
+  const searchParams = useSearch({ strict: false })
   return (
     <RovingFocusGroup.Item asChild active={isActive}>
       <Link
-        to={to}
+        to="/notes/$"
+        params={{ _splat: id }}
+        search={{
+          mode: searchParams.mode === "write" ? "write" : "read",
+          width: searchParams.width === "fill" ? "fill" : "fixed",
+        }}
         aria-label={ariaLabel}
         className={cx(
-          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary active:bg-bg-tertiary",
 
           // Underline the active day
           isActive &&
-            "font-semibold text-text before:absolute before:-bottom-2 before:h-[3px] before:w-full before:bg-text before:content-['']",
+            "font-semibold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] before:w-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
-            "after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+            "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
           hasNotes && isActive && "after:bg-text",
           hasNotes && !isActive && "after:bg-border",
         )}

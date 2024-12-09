@@ -693,3 +693,11 @@ export const templatesAtom = atom((get) => {
 
   return templates
 })
+
+export const dailyTemplateAtom = selectAtom(templatesAtom, (templates) =>
+  Object.values(templates).find((t) => t.name.match(/^daily$/i)),
+)
+
+export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
+  Object.values(templates).find((t) => t.name.match(/^weekly$/i)),
+)

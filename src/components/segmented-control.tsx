@@ -29,7 +29,12 @@ function Root({
   )
 }
 
-type SegmentedControlSegmentProps = Omit<ButtonProps, "size" | "variant"> & { selected?: boolean }
+type SegmentedControlSegmentProps = Omit<
+  ButtonProps,
+  "size" | "variant" | "disablePressAnimation"
+> & {
+  selected?: boolean
+}
 
 function Segment({ className, selected, ...props }: SegmentedControlSegmentProps) {
   const size = useContext(SizeContext)
@@ -40,10 +45,11 @@ function Segment({ className, selected, ...props }: SegmentedControlSegmentProps
         aria-current={selected ? "true" : "false"}
         className={cx(
           selected
-            ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg active:scale-100 active:bg-bg"
-            : "bg-transparent hover:bg-bg-secondary active:scale-100 active:bg-bg-tertiary",
+            ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg active:bg-bg"
+            : "bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary",
           className,
         )}
+        disablePressAnimation
         {...props}
       />
     </li>
