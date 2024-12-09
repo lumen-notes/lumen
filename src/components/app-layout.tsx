@@ -18,7 +18,13 @@ type AppLayoutProps = AppHeaderProps & {
   children?: React.ReactNode
 }
 
-export function AppLayout({ className, children, disableGuard = false, ...props }: AppLayoutProps) {
+export function AppLayout({
+  className,
+  children,
+  disableGuard = false,
+  actions,
+  ...props
+}: AppLayoutProps) {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
   const isCloningRepo = useAtomValue(isCloningRepoAtom)
@@ -57,6 +63,7 @@ export function AppLayout({ className, children, disableGuard = false, ...props 
     <div className="grid grid-rows-[auto_1fr] overflow-hidden">
       <AppHeader
         {...props}
+        actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
         className={cx("border-b", isScrolled ? "border-border-secondary" : "border-transparent")}
       />
       <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
