@@ -4,7 +4,6 @@ import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import qs from "qs"
 import React, { useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
@@ -286,6 +285,8 @@ function formatFrontmatterKey(key: string) {
 }
 
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
+  const searchParams = useSearch({ strict: false })
+
   // Recognized frontmatter keys
   switch (key) {
     case "phone":
@@ -426,7 +427,16 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" to={`/${dateString}`}>
+            <Link
+              className="link"
+              to="/notes/$"
+              params={{ _splat: dateString }}
+              search={{
+                mode: "read",
+                width: searchParams.width === "fill" ? "fill" : "fixed",
+                query: undefined,
+              }}
+            >
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -437,7 +447,16 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
-            <Link className="link" to={`/${nextBirthdayString}`}>
+            <Link
+              className="link"
+              to="/notes/$"
+              params={{ _splat: nextBirthdayString }}
+              search={{
+                mode: "read",
+                width: searchParams.width === "fill" ? "fill" : "fixed",
+                query: undefined,
+              }}
+            >
               {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
             </Link>{" "}
             {isBirthdayToday ? "🎂" : null}
@@ -518,10 +537,19 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
 
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
-    return <Link to={`/file?${qs.stringify({ path: props.href })}`}>{props.children}</Link>
+    return (
+      <Link
+        to="/file"
+        search={{
+          path: props.href,
+        }}
+      >
+        {props.children}
+      </Link>
+    )
   }
 
-  // Render relative links with React Router
+  // Render relative links with client-side routing
   if (props.href?.startsWith("/")) {
     return <Link to={props.href}>{props.children}</Link>
   }
@@ -579,7 +607,13 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   // Render local files with FilePreview
   if (props.src?.startsWith("/")) {
     return (
-      <Link to={`/file?${qs.stringify({ path: props.src })}`} className="block w-fit !no-underline">
+      <Link
+        to="/file"
+        search={{
+          path: props.src,
+        }}
+        className="block w-fit !no-underline"
+      >
         <FilePreview path={props.src} alt={props.alt} />
       </Link>
     )
@@ -713,7 +747,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
       <HoverCard.Trigger asChild>
         <Link
           ref={ref}
-          to={`/notes/$`}
+          to="/notes/$"
           params={{ _splat: id }}
           search={{
             mode: "read",
