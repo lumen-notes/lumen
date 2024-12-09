@@ -4,7 +4,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Calendar } from "../components/calendar"
 import { Details } from "../components/details"
-import { CalendarIcon16 } from "../components/icons"
+import { CalendarDateIcon16 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
@@ -30,7 +30,7 @@ export function DailyPanel({ id, params = {}, onClose }: PanelProps) {
       key={date}
       title={formatDate(date)}
       description={formatDateDistance(date)}
-      icon={<CalendarIcon16>{new Date(date).getUTCDate()}</CalendarIcon16>}
+      icon={<CalendarDateIcon16>{new Date(date).getUTCDate()}</CalendarDateIcon16>}
       onClose={onClose}
     >
       <div className="flex flex-col">

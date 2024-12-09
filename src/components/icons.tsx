@@ -167,7 +167,7 @@ export function CalendarFillIcon24({
   )
 }
 
-export function CalendarIcon16({ children, ...props }: IconProps & { children?: number | string }) {
+export function CalendarDateIcon16({ date, ...props }: IconProps & { date?: number }) {
   return (
     <Icon size={16} {...props}>
       <path
@@ -183,8 +183,54 @@ export function CalendarIcon16({ children, ...props }: IconProps & { children?: 
         fill="currentColor"
         className="font-mono font-bold leading-none"
       >
-        {children}
+        {date}
       </text>
+    </Icon>
+  )
+}
+
+export function CalendarDateFillIcon16({ date, ...props }: IconProps & { date?: number }) {
+  return (
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 2.5C0 1.11929 1.11929 0 2.5 0H13.5C14.8807 0 16 1.11929 16 2.5V13.5C16 14.8807 14.8807 16 13.5 16H2.5C1.11929 16 0 14.8807 0 13.5V2.5ZM2.75 3C2.33579 3 2 3.33579 2 3.75C2 4.16421 2.33579 4.5 2.75 4.5H13.25C13.6642 4.5 14 4.16421 14 3.75C14 3.33579 13.6642 3 13.25 3H2.75Z"
+      />
+      <text
+        textAnchor="middle"
+        x={8}
+        y={12.5}
+        fontSize="7.5px"
+        fill="currentColor"
+        className="font-mono font-bold leading-none text-bg"
+      >
+        {date}
+      </text>
+    </Icon>
+  )
+}
+
+export function CalendarIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2.5 0C1.11929 0 0 1.11929 0 2.5V4.75V13.5C0 14.8807 1.11929 16 2.5 16H13.5C14.8807 16 16 14.8807 16 13.5V4.75V2.5C16 1.11929 14.8807 0 13.5 0H2.5ZM14.5 4V2.5C14.5 1.94772 14.0523 1.5 13.5 1.5H2.5C1.94772 1.5 1.5 1.94772 1.5 2.5V4H14.5ZM1.5 5.5H14.5V13.5C14.5 14.0523 14.0523 14.5 13.5 14.5H2.5C1.94772 14.5 1.5 14.0523 1.5 13.5V5.5ZM3 8C3 7.44772 3.44772 7 4 7C4.55228 7 5 7.44772 5 8C5 8.55229 4.55228 9 4 9C3.44772 9 3 8.55229 3 8ZM8 7C7.44772 7 7 7.44772 7 8C7 8.55229 7.44772 9 8 9C8.55229 9 9 8.55229 9 8C9 7.44772 8.55229 7 8 7ZM11 8C11 7.44772 11.4477 7 12 7C12.5523 7 13 7.44772 13 8C13 8.55229 12.5523 9 12 9C11.4477 9 11 8.55229 11 8ZM4 11C3.44772 11 3 11.4477 3 12C3 12.5523 3.44772 13 4 13C4.55228 13 5 12.5523 5 12C5 11.4477 4.55228 11 4 11ZM7 12C7 11.4477 7.44772 11 8 11C8.55229 11 9 11.4477 9 12C9 12.5523 8.55229 13 8 13C7.44772 13 7 12.5523 7 12ZM12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11Z"
+      />
+    </Icon>
+  )
+}
+
+export function CalendarFillIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M0 2.5C0 1.11929 1.11929 0 2.5 0H13.5C14.8807 0 16 1.11929 16 2.5V13.5C16 14.8807 14.8807 16 13.5 16H2.5C1.11929 16 0 14.8807 0 13.5V2.5ZM2.75 3C2.33579 3 2 3.33579 2 3.75C2 4.16421 2.33579 4.5 2.75 4.5H13.25C13.6642 4.5 14 4.16421 14 3.75C14 3.33579 13.6642 3 13.25 3H2.75ZM4 7C3.44772 7 3 7.44772 3 8C3 8.55228 3.44772 9 4 9C4.55228 9 5 8.55228 5 8C5 7.44772 4.55228 7 4 7ZM7 8C7 7.44772 7.44772 7 8 7C8.55228 7 9 7.44772 9 8C9 8.55228 8.55228 9 8 9C7.44772 9 7 8.55228 7 8ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9C12.5523 9 13 8.55228 13 8C13 7.44772 12.5523 7 12 7ZM3 12C3 11.4477 3.44772 11 4 11C4.55228 11 5 11.4477 5 12C5 12.5523 4.55228 13 4 13C3.44772 13 3 12.5523 3 12ZM8 11C7.44772 11 7 11.4477 7 12C7 12.5523 7.44772 13 8 13C8.55228 13 9 12.5523 9 12C9 11.4477 8.55228 11 8 11ZM11 12C11 11.4477 11.4477 11 12 11C12.5523 11 13 11.4477 13 12C13 12.5523 12.5523 13 12 13C11.4477 13 11 12.5523 11 12Z"
+      />
     </Icon>
   )
 }

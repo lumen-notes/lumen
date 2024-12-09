@@ -19,7 +19,7 @@ import {
   ArrowLeftIcon16,
   ArrowRightIcon16,
   BookIcon16,
-  CalendarIcon16,
+  CalendarDateIcon16,
   CenteredIcon16,
   CopyIcon16,
   EditIcon16,
@@ -249,7 +249,7 @@ export function NotePage() {
                 Notes
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                icon={<CalendarIcon16>{new Date().getDate()}</CalendarIcon16>}
+                icon={<CalendarDateIcon16>{new Date().getDate()}</CalendarDateIcon16>}
                 onClick={() => navigate(`/${toDateString(new Date())}`)}
               >
                 Calendar

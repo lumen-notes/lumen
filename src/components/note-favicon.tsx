@@ -4,7 +4,7 @@ import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString } from "../utils/date"
 import { getLeadingEmoji } from "../utils/emoji"
 import { GitHubAvatar } from "./github-avatar"
-import { CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
+import { CalendarDateIcon16, CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
@@ -36,14 +36,12 @@ export function NoteFavicon({
 
   // Daily note
   if (isValidDateString(note.id)) {
-    icon = (
-      <CalendarIcon16 data-testid="favicon-daily">{new Date(note.id).getUTCDate()}</CalendarIcon16>
-    )
+    icon = <CalendarDateIcon16 data-testid="favicon-daily" date={new Date(note.id).getUTCDate()} />
   }
 
   // Weekly note
   if (isValidWeekString(note.id)) {
-    icon = <CalendarIcon16 data-testid="favicon-weekly">W</CalendarIcon16>
+    icon = <CalendarIcon16 data-testid="favicon-weekly" />
   }
 
   // GitHub

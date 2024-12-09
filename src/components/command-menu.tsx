@@ -17,6 +17,7 @@ import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import {
+  CalendarDateIcon16,
   CalendarIcon16,
   NoteIcon16,
   PinFillIcon12,
@@ -144,7 +145,7 @@ export function CommandMenu() {
             <Command.Group heading="Date">
               <CommandItem
                 key={dateString}
-                icon={<CalendarIcon16>{new Date(dateString).getUTCDate()}</CalendarIcon16>}
+                icon={<CalendarDateIcon16 date={new Date(dateString).getUTCDate()} />}
                 description={formatDateDistance(dateString)}
                 onSelect={() => navigate(`/${dateString}`)}
               >
@@ -220,14 +221,14 @@ export function CommandMenu() {
                 </CommandItem>
                 <CommandItem
                   key="Today"
-                  icon={<CalendarIcon16>{new Date().getDate()}</CalendarIcon16>}
+                  icon={<CalendarDateIcon16 date={new Date().getDate()} />}
                   onSelect={() => navigate(`/${toDateString(new Date())}`, { openInPanel: false })}
                 >
                   Today
                 </CommandItem>
                 <CommandItem
                   key="This week"
-                  icon={<CalendarIcon16>W</CalendarIcon16>}
+                  icon={<CalendarIcon16 />}
                   onSelect={() => navigate(`/${toWeekString(new Date())}`, { openInPanel: false })}
                 >
                   This week
@@ -292,7 +293,7 @@ function NoteItem({ note, onSelect }: { note: Note; onSelect: () => void }) {
       onSelect={onSelect}
     >
       <span className="inline-flex items-center gap-2">
-        {checkIfPinned(note) ? (
+        {checkIfPinned(note.id) ? (
           <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
         ) : null}
         {parsedTemplate.success ? (

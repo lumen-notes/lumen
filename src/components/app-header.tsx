@@ -5,11 +5,12 @@ import { selectAtom } from "jotai/utils"
 import { useHotkeys } from "react-hotkeys-hook"
 import { notesAtom } from "../global-state"
 import { cx } from "../utils/cx"
-import { toDateString } from "../utils/date"
+import { toDateString, toWeekString } from "../utils/date"
 import { IconButton } from "./icon-button"
 import {
   ArrowLeftIcon16,
   ArrowRightIcon16,
+  CalendarDateIcon16,
   CalendarIcon16,
   MenuIcon16,
   NoteIcon16,
@@ -26,12 +27,13 @@ export type AppHeaderProps = {
 }
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
+const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function AppHeader({ title, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
-
+  const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
   useHotkeys(
     "mod+shift+o",
     (event) => {
@@ -85,8 +87,20 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                         params={{ _splat: toDateString(new Date()) }}
                         search={{ mode: hasDailyNote ? "read" : "write", width: "fixed" }}
                       >
-                        <CalendarIcon16>{new Date().getDate()}</CalendarIcon16>
-                        Calendar
+                        <CalendarDateIcon16 date={new Date().getDate()} />
+                        Today
+                      </Link>
+                    </NavMenuLink>
+                  </li>
+                  <li>
+                    <NavMenuLink>
+                      <Link
+                        to={`/notes/$`}
+                        params={{ _splat: toWeekString(new Date()) }}
+                        search={{ mode: hasWeeklyNote ? "read" : "write", width: "fixed" }}
+                      >
+                        <CalendarIcon16 />
+                        This week
                       </Link>
                     </NavMenuLink>
                   </li>

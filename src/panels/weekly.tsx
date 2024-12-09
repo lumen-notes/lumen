@@ -5,7 +5,7 @@ import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Calendar } from "../components/calendar"
 import { Details } from "../components/details"
-import { CalendarIcon16 } from "../components/icons"
+import { CalendarDateIcon16 } from "../components/icons"
 import { removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { NoteCard } from "../components/note-card"
@@ -39,7 +39,7 @@ export function WeeklyPanel({ id, params = {}, onClose }: PanelProps) {
       key={week}
       title={formatWeek(week)}
       description={formatWeekDistance(week)}
-      icon={<CalendarIcon16>W</CalendarIcon16>}
+      icon={<CalendarDateIcon16>W</CalendarDateIcon16>}
       onClose={onClose}
     >
       <div className="flex flex-col">
@@ -99,7 +99,7 @@ function DailyNoteCard({ id }: { id: NoteId }) {
     ) : (
       // Note card placeholder
       <button
-        className="rounded-xl flex h-12 w-full items-center gap-1 border border-dashed border-border bg-clip-border px-[calc(1rem-1px)] text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
+        className="flex h-12 w-full items-center gap-1 rounded-xl border border-dashed border-border bg-clip-border px-[calc(1rem-1px)] text-text-secondary hover:bg-bg-secondary focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus coarse:h-14"
         onClick={() => setShowForm(true)}
       >
         <span>{id}.md</span>
