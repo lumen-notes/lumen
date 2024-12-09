@@ -522,6 +522,18 @@ async function getMarkdownFilesFromFs(dir: string) {
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
+export const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.notCloned"),
+)
+
+export const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloningRepo"),
+)
+
+export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned"),
+)
+
 export const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedOut"),
 )

@@ -1,13 +1,30 @@
 import { useEffect, useRef, useState } from "react"
 import { cx } from "../utils/cx"
 import { AppHeader, AppHeaderProps } from "./app-header"
+import {
+  isSignedOutAtom,
+  isRepoNotClonedAtom,
+  isCloningRepoAtom,
+  isRepoClonedAtom,
+  githubRepoAtom,
+} from "../global-state"
+import { useAtomValue } from "jotai"
+import { RepoForm } from "../components/repo-form"
+import { LoadingIcon16 } from "../components/icons"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
-  children: React.ReactNode
+  disableGuard?: boolean
+  children?: React.ReactNode
 }
 
-export function AppLayout({ className, children, ...props }: AppLayoutProps) {
+export function AppLayout({ className, children, disableGuard = false, ...props }: AppLayoutProps) {
+  const isSignedOut = useAtomValue(isSignedOutAtom)
+  const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
+  const isCloningRepo = useAtomValue(isCloningRepoAtom)
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
+
   const [isScrolled, setIsScrolled] = useState(false)
   const scrollContainerRef = useRef<HTMLElement>(null)
   // Reference to an invisible element at the top of the content
@@ -45,7 +62,28 @@ export function AppLayout({ className, children, ...props }: AppLayoutProps) {
       <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
         {/* Invisible sentinel element that helps detect scroll position */}
         <div ref={topSentinelRef} className="pointer-events-none absolute top-0 h-[1px] w-full" />
-        {children}
+        {isRepoNotCloned && !disableGuard ? (
+          <div className="flex h-full flex-col items-center p-4 pt-0 sm:justify-center sm:pb-10">
+            <div className="mx-auto w-full max-w-lg">
+              <div className="card-1 flex flex-col gap-6 p-4">
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-lg font-semibold">Choose a repository</h1>
+                  <p className="text-pretty text-text-secondary">
+                    Store your notes as markdown files in a GitHub repository of your choice.
+                  </p>
+                </div>
+                <RepoForm />
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {isCloningRepo && githubRepo && !disableGuard ? (
+          <div className="flex items-center gap-2 p-4 leading-4 text-text-secondary">
+            <LoadingIcon16 />
+            Cloning {githubRepo.owner}/{githubRepo.name}…
+          </div>
+        ) : null}
+        {isRepoCloned || isSignedOut || disableGuard ? children : null}
       </main>
     </div>
   )

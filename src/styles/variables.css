@@ -16,31 +16,43 @@
   --neutral-10: var(--sand-10);
   --neutral-11: var(--sand-11);
   --neutral-12: var(--sand-12);
+  --neutral-a1: var(--sand-a1);
+  --neutral-a2: var(--sand-a2);
+  --neutral-a3: var(--sand-a3);
+  --neutral-a4: var(--sand-a4);
+  --neutral-a5: var(--sand-a5);
+  --neutral-a6: var(--sand-a6);
+  --neutral-a7: var(--sand-a7);
+  --neutral-a8: var(--sand-a8);
+  --neutral-a9: var(--sand-a9);
+  --neutral-a10: var(--sand-a10);
+  --neutral-a11: var(--sand-a11);
+  --neutral-a12: var(--sand-a12);
   --neutral-contrast: #fff;
 
   /* Text colors */
-  --color-text: var(--sand-12);
-  --color-text-secondary: var(--sand-11);
-  --color-text-tertiary: var(--sand-10);
+  --color-text: var(--neutral-12);
+  --color-text-secondary: var(--neutral-11);
+  --color-text-tertiary: var(--neutral-10);
   --color-text-highlight: var(--yellow-a12);
   --color-text-danger: var(--red-11);
 
   /* Background colors */
-  --color-bg: white;
-  --color-bg-inset: var(--sand-2);
-  --color-bg-card: #fff;
-  --color-bg-overlay: #fff;
+  --color-bg: var(--neutral-1);
+  --color-bg-inset: var(--neutral-2);
+  --color-bg-card: white;
+  --color-bg-overlay: white;
   --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
-  --color-bg-secondary: var(--sand-a3);
-  --color-bg-tertiary: var(--sand-a4);
-  --color-bg-code-block: var(--sand-2);
-  --color-bg-highlight: var(--yellow-a3);
+  --color-bg-secondary: var(--neutral-a3);
+  --color-bg-tertiary: var(--neutral-a4);
+  --color-bg-code-block: var(--neutral-3);
+  --color-bg-highlight: var(--yellow-a4);
   --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
-  --color-border: var(--sand-a8);
-  --color-border-secondary: var(--sand-a5);
-  --color-border-table: var(--sand-7);
+  --color-border: var(--neutral-a8);
+  --color-border-secondary: var(--neutral-a5);
+  --color-border-table: var(--neutral-7);
   --color-border-focus: var(--cyan-9);
 
   /* Syntax colors */
@@ -59,19 +71,13 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Background colors */
-    --color-bg: var(--sand-1);
+    --color-bg: var(--neutral-1);
     --color-bg-inset: black;
-    --color-bg-card: var(--sand-2);
-    --color-bg-overlay: var(--sand-3);
+    --color-bg-card: var(--neutral-2);
+    --color-bg-overlay: var(--neutral-3);
     --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
-    --color-bg-secondary: var(--sand-a4);
-    --color-bg-tertiary: var(--sand-a5);
-    --color-bg-code-block: var(--sand-4);
-    --color-bg-highlight: var(--yellow-a4);
-    --color-bg-selection: var(--cyan-a5);
 
     /* Border colors */
-    /* --color-border-secondary: var(--sand-a5); */
     --color-border-focus: var(--cyan-11);
 
     /* Syntax colors */

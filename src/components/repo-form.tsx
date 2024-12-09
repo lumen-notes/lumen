@@ -138,33 +138,49 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
           </label>
         </div>
       </RadioGroup>
-      <div className="flex flex-col gap-4 @[480px]:flex-row">
-        <div className="grid flex-grow gap-2">
-          <label htmlFor="repo-owner" className="justify-self-start leading-4">
-            Repository owner
-          </label>
-          <TextInput
-            id="repo-owner"
-            name="repo-owner"
-            spellCheck={false}
-            defaultValue={githubRepo?.owner ?? githubUser?.login}
-            required
-          />
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-2">
+          <div className="grid flex-grow gap-2">
+            <label
+              htmlFor="repo-owner"
+              className="justify-self-start text-sm leading-4 text-text-secondary"
+            >
+              Repository owner
+            </label>
+            <TextInput
+              id="repo-owner"
+              name="repo-owner"
+              spellCheck={false}
+              defaultValue={githubRepo?.owner ?? githubUser?.login}
+              required
+            />
+          </div>
+          <div className="grid flex-grow gap-2">
+            <label
+              htmlFor="repo-name"
+              className="justify-self-start text-sm leading-4 text-text-secondary"
+            >
+              Repository name
+            </label>
+            <TextInput
+              id="repo-name"
+              name="repo-name"
+              spellCheck={false}
+              defaultValue={githubRepo?.name}
+              required
+            />
+          </div>
         </div>
-        <div className="grid flex-grow gap-2">
-          <label htmlFor="repo-name" className="justify-self-start leading-4">
-            Repository name
-          </label>
-          <TextInput
-            id="repo-name"
-            name="repo-name"
-            spellCheck={false}
-            defaultValue={githubRepo?.name}
-            required
-          />
-        </div>
+        {error ? (
+          <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
+            <div className="grid h-6 flex-shrink-0 place-items-center">
+              <ErrorIcon16 />
+            </div>
+            <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
+          </div>
+        ) : null}
       </div>
-      <div className={cx("flex gap-2", onCancel && "sm:ml-auto")}>
+      <div className="flex gap-2 @lg:ml-auto">
         {onCancel ? (
           <Button className="w-full" onClick={onCancel}>
             Cancel
@@ -186,14 +202,6 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
           ) : null}
         </Button>
       </div>
-      {error ? (
-        <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
-          <div className="grid h-6 flex-shrink-0 place-items-center">
-            <ErrorIcon16 />
-          </div>
-          <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
-        </div>
-      ) : null}
     </form>
   )
 }

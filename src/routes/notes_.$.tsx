@@ -318,7 +318,12 @@ function NotePage() {
       actions={
         <div className="flex items-center gap-2">
           {!note || isDirty ? (
-            <Button size="small" shortcut={["⌘", "S"]} onClick={() => handleSave(editorValue)}>
+            <Button
+              disabled={isSignedOut}
+              size="small"
+              shortcut={["⌘", "S"]}
+              onClick={() => handleSave(editorValue)}
+            >
               {!note ? "Create" : "Save"}
             </Button>
           ) : null}
@@ -367,7 +372,6 @@ function NotePage() {
                   icon={
                     isPinned ? <PinFillIcon16 className="text-[var(--orange-11)]" /> : <PinIcon16 />
                   }
-                  disabled={isSignedOut}
                   onSelect={() => {
                     setEditorValue(togglePin(editorValue))
                   }}

@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { useEvent, useNetworkState } from "react-use"
 import { SignInButton } from "../components/github-auth"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
+import { cx } from "../utils/cx"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -25,10 +26,15 @@ function RootComponent() {
   })
 
   return (
-    <div className="grid h-screen w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]">
+    <div
+      className={cx(
+        "grid h-screen w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]",
+        isSignedOut && "grid-rows-[auto_1fr_auto]",
+      )}
+    >
       {isSignedOut ? (
         <div className="flex flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2">
-          <span className="sm:px-2">
+          <span className="text-text-secondary sm:px-2">
             Lumen is in <span className="italic">read-only</span> mode.
             <span className="hidden md:inline"> Sign in to start writing notes.</span>
           </span>
