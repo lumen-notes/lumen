@@ -107,7 +107,7 @@
   @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5;
 }
 
-.cm-editor .cm-wikilink:hover {
+.cm-editor .cm-wikilink:not(.cm-wikilink-enabled):hover {
   @apply ring-1 ring-inset ring-border-secondary;
 }
 

@@ -347,7 +347,7 @@ export function CommandMenu() {
                 onSelect={handleSelect(() => {
                   const note = {
                     id: Date.now().toString(),
-                    content: deferredQuery,
+                    content: `# ${deferredQuery}`,
                   }
 
                   // Create new note

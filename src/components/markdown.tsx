@@ -85,7 +85,7 @@ export const Markdown = React.memo(
       [content],
     )
 
-    const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
+    const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter?.template)
 
     const contextValue = React.useMemo(
       () => ({
@@ -145,7 +145,7 @@ export const Markdown = React.memo(
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {!hideFrontmatter && !isObjectEmpty(frontmatter) ? (
+                  {frontmatter && !hideFrontmatter && !isObjectEmpty(frontmatter) ? (
                     <Frontmatter frontmatter={frontmatter} />
                   ) : null}
                 </div>

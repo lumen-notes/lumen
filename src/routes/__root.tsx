@@ -1,10 +1,11 @@
 import { Link, Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { useEvent, useNetworkState } from "react-use"
+import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
+import { useThemeColor } from "../hooks/theme-color"
 import { cx } from "../utils/cx"
-import { CommandMenu } from "../components/command-menu"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -23,6 +24,7 @@ function NotFoundComponent() {
 }
 
 function RootComponent() {
+  useThemeColor()
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
