@@ -33,7 +33,7 @@
 }
 
 [cmdk-item] {
-  @apply cursor-default rounded-sm px-3 py-3 leading-4;
+  @apply cursor-default rounded px-3 py-3 leading-4;
 }
 
 [cmdk-item][aria-selected] {

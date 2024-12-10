@@ -1,15 +1,17 @@
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react"
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label"
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh"
 import { visualizer } from "rollup-plugin-visualizer"
-import { defineConfig } from "vite"
 import type { PluginOption } from "vite"
+import { defineConfig } from "vite"
 import { nodePolyfills } from "vite-plugin-node-polyfills"
 import { VitePWA } from "vite-plugin-pwa"
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    TanStackRouterVite(),
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     visualizer({ filename: "dist/stats.html" }) as unknown as PluginOption,
     // Fixes isomorphic-git Buffer error
@@ -22,7 +24,7 @@ export default defineConfig({
         name: "Lumen",
         short_name: "Lumen",
         description: "A simple note-taking app for better thinking",
-        theme_color: "",
+        theme_color: "#ffffff",
         icons: [
           {
             src: "icon-1024.png",
