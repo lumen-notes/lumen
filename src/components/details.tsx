@@ -11,7 +11,7 @@ function Root({
   defaultOpen?: boolean
 }) {
   return (
-    <details open={defaultOpen} className={cx("group/details flex flex-col gap-4", className)}>
+    <details open={defaultOpen} className={cx("group/details space-y-4", className)}>
       {children}
     </details>
   )

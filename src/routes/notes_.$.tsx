@@ -63,7 +63,6 @@ import { InsertTemplateDialog } from "../components/insert-template"
 
 type RouteSearch = {
   mode: "read" | "write"
-  width: "fixed" | "fill"
   query: string | undefined
 }
 
@@ -71,7 +70,6 @@ export const Route = createFileRoute("/notes_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       mode: search.mode === "write" ? "write" : "read",
-      width: search.width === "fill" ? "fill" : "fixed",
       query: typeof search.query === "string" ? search.query : undefined,
     }
   },
@@ -142,7 +140,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, width, query } = Route.useSearch()
+  const { mode, width, query, sidebar } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -199,15 +197,15 @@ function NotePage() {
   )
 
   const switchToWriting = useCallback(() => {
-    navigate({ search: { mode: "write", width, query }, replace: true })
+    navigate({ search: { mode: "write", width, query, sidebar }, replace: true })
     setTimeout(() => {
       editorRef.current?.view?.focus()
     })
-  }, [navigate, width, query])
+  }, [navigate, width, query, sidebar])
 
   const switchToReading = useCallback(() => {
-    navigate({ search: { mode: "read", width, query }, replace: true })
-  }, [navigate, width, query])
+    navigate({ search: { mode: "read", width, query, sidebar }, replace: true })
+  }, [navigate, width, query, sidebar])
 
   const toggleMode = useCallback(() => {
     if (mode === "read") {
@@ -390,7 +388,7 @@ function NotePage() {
                       selected={width === "fixed"}
                       onSelect={() => {
                         navigate({
-                          search: { width: "fixed", mode, query },
+                          search: { width: "fixed", mode, query, sidebar },
                           replace: true,
                         })
                         editorRef.current?.view?.focus()
@@ -402,7 +400,7 @@ function NotePage() {
                       icon={<FullwidthIcon16 />}
                       selected={width === "fill"}
                       onSelect={() => {
-                        navigate({ search: { width: "fill", mode, query }, replace: true })
+                        navigate({ search: { width: "fill", mode, query, sidebar }, replace: true })
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -471,7 +469,11 @@ function NotePage() {
                     }
 
                     deleteNote(noteId)
-                    navigate({ to: "/", search: { query: undefined }, replace: true })
+                    navigate({
+                      to: "/",
+                      search: { width, query: undefined, sidebar },
+                      replace: true,
+                    })
                   }}
                 >
                   Delete
@@ -532,7 +534,7 @@ function NotePage() {
                     baseQuery={`link:"${noteId}" -id:"${noteId}"`}
                     query={query ?? ""}
                     onQueryChange={(query) =>
-                      navigate({ search: { mode, width, query }, replace: true })
+                      navigate({ search: { mode, width, query, sidebar }, replace: true })
                     }
                   />
                 </LinkHighlightProvider>

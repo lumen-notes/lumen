@@ -70,6 +70,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           mode: "read",
           width: searchParams.width === "fill" ? "fill" : "fixed",
           query: undefined,
+          sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
         }}
         className={cx(
           "card-1 relative block w-full cursor-pointer overflow-hidden transition-[box-shadow,transform] duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",

@@ -11,6 +11,8 @@ import {
 import { useAtomValue } from "jotai"
 import { RepoForm } from "../components/repo-form"
 import { LoadingIcon16 } from "../components/icons"
+import { useSearch } from "@tanstack/react-router"
+import { Sidebar } from "./sidebar"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -25,6 +27,7 @@ export function AppLayout({
   actions,
   ...props
 }: AppLayoutProps) {
+  const searchParams = useSearch({ strict: false })
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
   const isCloningRepo = useAtomValue(isCloningRepoAtom)
@@ -61,7 +64,7 @@ export function AppLayout({
 
   return (
     <div className="flex overflow-hidden">
-      {/* <div className="w-[240px] flex-shrink-0 border-r border-border-secondary p-2">Sidebar</div> */}
+      {searchParams.sidebar === "expanded" ? <Sidebar /> : null}
       <div className="grid flex-grow grid-rows-[auto_1fr] overflow-hidden">
         <AppHeader
           {...props}

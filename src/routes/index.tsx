@@ -24,7 +24,9 @@ function RouteComponent() {
       <div className="p-4 pt-0">
         <NoteList
           query={query ?? ""}
-          onQueryChange={(query) => navigate({ search: { query }, replace: true })}
+          onQueryChange={(query) =>
+            navigate({ to: ".", search: (prev) => ({ ...prev, query }), replace: true })
+          }
         />
       </div>
     </AppLayout>
