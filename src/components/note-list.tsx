@@ -14,6 +14,7 @@ import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
+import { useDebounce } from "use-debounce"
 
 type NoteListProps = {
   baseQuery?: string
@@ -35,7 +36,7 @@ export function NoteList({
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
 
-  const deferredQuery = useDeferredValue(query)
+  const [deferredQuery] = useDebounce(query, 150)
 
   const searchResults = useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)

@@ -2,8 +2,9 @@ import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
 import { useAtomValue } from "jotai"
-import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
+import { useDebounce } from "use-debounce"
 import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -37,7 +38,7 @@ export function CommandMenu() {
   // Local state
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState("")
-  const deferredQuery = useDeferredValue(query)
+  const [deferredQuery] = useDebounce(query, 150)
 
   const openMenu = useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement

@@ -98,6 +98,7 @@
     "unified": "^10.1.2",
     "unist-util-visit": "^5.0.0",
     "urlcat": "^3.1.0",
+    "use-debounce": "^10.0.4",
     "use-resize-observer": "^9.1.0",
     "uuid": "^9.0.0",
     "vaul": "^1.1.1",
