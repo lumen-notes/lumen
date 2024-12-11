@@ -62,10 +62,10 @@
   --color-syntax-green: var(--green-11);
 
   /* Font sizes */
-  --font-size-sm: 0.75rem; /* 12px */
-  --font-size-base: 0.875rem; /* 14px */
-  --font-size-lg: 1rem; /* 16px */
-  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -92,9 +92,9 @@
 @media (pointer: coarse) {
   :root {
     /* Font sizes */
-    --font-size-sm: 0.8125rem; /* 13px */
-    --font-size-base: 0.9375rem; /* 15px */
-    --font-size-lg: 1.125rem; /* 18px */
-    --font-size-xl: 1.25rem; /* 20px */
+    --font-size-sm: 13px;
+    --font-size-base: 15px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
   }
 }
