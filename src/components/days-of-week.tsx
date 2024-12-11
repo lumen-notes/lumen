@@ -1,9 +1,9 @@
+import { Link } from "@tanstack/react-router"
 import { addDays, eachDayOfInterval, parseISO } from "date-fns"
 import { useMemo } from "react"
 import { useNoteById } from "../hooks/note"
-import { toDateString, DAY_NAMES } from "../utils/date"
+import { DAY_NAMES, toDateString } from "../utils/date"
 import { NotePreviewCard } from "./note-preview-card"
-import { useSearch, Link } from "@tanstack/react-router"
 
 export function DaysOfWeek({ week }: { week: string }) {
   const daysOfWeek = useMemo(() => {
@@ -23,20 +23,19 @@ export function DaysOfWeek({ week }: { week: string }) {
 
 function Day({ date }: { date: string }) {
   const note = useNoteById(date)
-  const searchParams = useSearch({ strict: false })
   const dayName = DAY_NAMES[new Date(date).getUTCDay()]
 
   if (!note) {
+    // Placeholder
     return (
       <Link
         to="/notes/$"
         params={{ _splat: date }}
         search={{
           mode: "write",
-          width: searchParams.width === "fill" ? "fill" : "fixed",
           query: undefined,
         }}
-        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 italic text-text-secondary transition-[border-color] duration-100 hover:border-border"
+        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 italic text-text-secondary hover:border-border"
       >
         {dayName}
       </Link>

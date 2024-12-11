@@ -1,5 +1,5 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
-import { Link, useSearch } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
 import { useAtomValue } from "jotai"
@@ -285,8 +285,6 @@ function formatFrontmatterKey(key: string) {
 }
 
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
-  const searchParams = useSearch({ strict: false })
-
   // Recognized frontmatter keys
   switch (key) {
     case "phone":
@@ -433,7 +431,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
               params={{ _splat: dateString }}
               search={{
                 mode: "read",
-                width: searchParams.width === "fill" ? "fill" : "fixed",
                 query: undefined,
               }}
             >
@@ -453,7 +450,6 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
               params={{ _splat: nextBirthdayString }}
               search={{
                 mode: "read",
-                width: searchParams.width === "fill" ? "fill" : "fixed",
                 query: undefined,
               }}
             >
@@ -726,7 +722,6 @@ function NoteLink({ id, text }: NoteLinkProps) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
   const { online } = useNetworkState()
-  const search = useSearch({ strict: false })
 
   React.useLayoutEffect(() => {
     if (ref.current) {
@@ -751,7 +746,6 @@ function NoteLink({ id, text }: NoteLinkProps) {
           params={{ _splat: id }}
           search={{
             mode: "read",
-            width: search.width === "fill" ? "fill" : "fixed",
             query: undefined,
           }}
         >
@@ -792,7 +786,6 @@ type NoteEmbedProps = {
 
 function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
-  const searchParams = useSearch({ strict: false })
 
   return (
     <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
@@ -810,7 +803,6 @@ function NoteEmbed({ id }: NoteEmbedProps) {
           params={{ _splat: id }}
           search={{
             mode: "read",
-            width: searchParams.width === "fill" ? "fill" : "fixed",
             query: undefined,
           }}
         >
@@ -828,7 +820,6 @@ type DateLinkProps = {
 }
 
 function DateLink({ date, text, className }: DateLinkProps) {
-  const searchParams = useSearch({ strict: false })
   const hasDateNote = useAtomValue(
     useMemo(() => selectAtom(notesAtom, (notes) => notes.has(date)), [date]),
   )
@@ -842,7 +833,6 @@ function DateLink({ date, text, className }: DateLinkProps) {
           params={{ _splat: date }}
           search={{
             mode: hasDateNote ? "read" : "write",
-            width: searchParams.width === "fill" ? "fill" : "fixed",
             query: undefined,
           }}
         >
@@ -867,7 +857,6 @@ type WeekLinkProps = {
 }
 
 function WeekLink({ week, text, className }: WeekLinkProps) {
-  const searchParams = useSearch({ strict: false })
   const hasWeekNote = useAtomValue(
     useMemo(() => selectAtom(notesAtom, (notes) => notes.has(week)), [week]),
   )
@@ -881,7 +870,6 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
           params={{ _splat: week }}
           search={{
             mode: hasWeekNote ? "read" : "write",
-            width: searchParams.width === "fill" ? "fill" : "fixed",
             query: undefined,
           }}
         >

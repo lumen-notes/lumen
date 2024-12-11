@@ -70,9 +70,7 @@ export function Calendar({
                   params: { _splat: toDateString(today) },
                   search: {
                     mode: searchParams.mode === "write" ? "write" : "read",
-                    width: searchParams.width === "fill" ? "fill" : "fixed",
                     query: undefined,
-                    sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
                   },
                 })
               }}
@@ -215,9 +213,7 @@ function CalendarItem({
         params={{ _splat: id }}
         search={{
           mode: searchParams.mode === "write" ? "write" : "read",
-          width: searchParams.width === "fill" ? "fill" : "fixed",
           query: undefined,
-          sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
         }}
         aria-label={ariaLabel}
         className={cx(

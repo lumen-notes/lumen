@@ -1,6 +1,7 @@
-import * as NavMenu from "@radix-ui/react-navigation-menu"
-import { useNavigate, useRouter, useSearch } from "@tanstack/react-router"
+import { useNavigate, useRouter } from "@tanstack/react-router"
+import { useAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
+import { sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
@@ -15,7 +16,7 @@ export type AppHeaderProps = {
 export function AppHeader({ title, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
-  const searchParams = useSearch({ strict: false })
+  const [sidebar, setSidebar] = useAtom(sidebarAtom)
 
   useHotkeys(
     "mod+shift+o",
@@ -25,9 +26,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
         params: { _splat: `${Date.now()}` },
         search: {
           mode: "write",
-          width: "fixed",
           query: undefined,
-          sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
         },
       })
     },
@@ -46,17 +45,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
       )}
     >
       <div className="hidden items-center empty:hidden sm:flex">
-        {searchParams.sidebar === "collapsed" ? (
+        {sidebar === "collapsed" ? (
           <IconButton
             aria-label="Expand sidebar"
             size="small"
-            onClick={() => {
-              navigate({
-                to: ".",
-                search: (prev) => ({ ...prev, sidebar: "expanded" }),
-                replace: true,
-              })
-            }}
+            onClick={() => setSidebar("expanded")}
           >
             <SidebarIcon16 />
           </IconButton>
@@ -69,7 +62,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           onClick={() => router.history.back()}
           className="group"
         >
-          <ArrowLeftIcon16 className="transition-transform duration-100 group-active:-translate-x-0.5" />
+          <ArrowLeftIcon16 className="transition-transform group-active:-translate-x-0.5" />
         </IconButton>
         <IconButton
           aria-label="Go forward"
@@ -77,7 +70,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           className="group"
           onClick={() => router.history.forward()}
         >
-          <ArrowRightIcon16 className="transition-transform duration-100 group-active:translate-x-0.5" />
+          <ArrowRightIcon16 className="transition-transform group-active:translate-x-0.5" />
         </IconButton>
       </div>
       <div className="col-start-2 w-0 flex-grow justify-self-center px-2 xl:w-full xl:text-center">
@@ -103,9 +96,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                   params: { _splat: `${Date.now()}` },
                   search: {
                     mode: "write",
-                    width: searchParams.width === "fill" ? "fill" : "fixed",
                     query: undefined,
-                    sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
                   },
                 })
               }}

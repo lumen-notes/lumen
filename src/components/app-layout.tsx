@@ -1,17 +1,17 @@
+import { useAtomValue } from "jotai"
 import { useEffect, useRef, useState } from "react"
-import { cx } from "../utils/cx"
-import { AppHeader, AppHeaderProps } from "./app-header"
+import { LoadingIcon16 } from "../components/icons"
+import { RepoForm } from "../components/repo-form"
 import {
-  isSignedOutAtom,
-  isRepoNotClonedAtom,
+  githubRepoAtom,
   isCloningRepoAtom,
   isRepoClonedAtom,
-  githubRepoAtom,
+  isRepoNotClonedAtom,
+  isSignedOutAtom,
+  sidebarAtom,
 } from "../global-state"
-import { useAtomValue } from "jotai"
-import { RepoForm } from "../components/repo-form"
-import { LoadingIcon16 } from "../components/icons"
-import { useSearch } from "@tanstack/react-router"
+import { cx } from "../utils/cx"
+import { AppHeader, AppHeaderProps } from "./app-header"
 import { Sidebar } from "./sidebar"
 
 type AppLayoutProps = AppHeaderProps & {
@@ -27,12 +27,12 @@ export function AppLayout({
   actions,
   ...props
 }: AppLayoutProps) {
-  const searchParams = useSearch({ strict: false })
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
   const isCloningRepo = useAtomValue(isCloningRepoAtom)
   const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const sidebar = useAtomValue(sidebarAtom)
 
   const [isScrolled, setIsScrolled] = useState(false)
   const scrollContainerRef = useRef<HTMLElement>(null)
@@ -64,7 +64,7 @@ export function AppLayout({
 
   return (
     <div className="flex overflow-hidden">
-      {searchParams.sidebar === "expanded" ? <Sidebar /> : null}
+      {sidebar === "expanded" ? <Sidebar /> : null}
       <div className="grid flex-grow grid-rows-[auto_1fr] overflow-hidden">
         <AppHeader
           {...props}

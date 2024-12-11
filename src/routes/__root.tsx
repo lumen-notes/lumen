@@ -7,18 +7,7 @@ import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 import { cx } from "../utils/cx"
 
-type RouteSearch = {
-  sidebar: "expanded" | "collapsed"
-  width: "fixed" | "fill"
-}
-
 export const Route = createRootRoute({
-  validateSearch: (search: Record<string, unknown>): RouteSearch => {
-    return {
-      sidebar: search.sidebar === "collapsed" ? "collapsed" : "expanded",
-      width: search.width === "fill" ? "fill" : "fixed",
-    }
-  },
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 })
@@ -27,11 +16,7 @@ function NotFoundComponent() {
   return (
     <div className="p-4">
       Page not found.{" "}
-      <Link
-        to="/"
-        search={{ query: undefined, sidebar: "expanded", width: "fixed" }}
-        className="link"
-      >
+      <Link to="/" search={{ query: undefined }} className="link">
         Go home
       </Link>
     </div>

@@ -1,8 +1,8 @@
 import { Slot } from "@radix-ui/react-slot"
-import { Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router"
-import { useAtomValue } from "jotai"
+import { Link, useRouter } from "@tanstack/react-router"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { notesAtom } from "../global-state"
+import { notesAtom, sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import { IconButton } from "./icon-button"
@@ -24,11 +24,9 @@ const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function Sidebar() {
-  const searchParams = useSearch({ strict: false })
-  const navigate = useNavigate()
-
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
+  const setSidebar = useSetAtom(sidebarAtom)
 
   const today = new Date()
   const todayString = toDateString(today)
@@ -40,26 +38,13 @@ export function Sidebar() {
         aria-label="Collapse sidebar"
         tooltipSide="right"
         size="small"
-        onClick={() => {
-          navigate({
-            to: ".",
-            search: (prev) => ({ ...prev, sidebar: "collapsed" }),
-            replace: true,
-          })
-        }}
+        onClick={() => setSidebar("collapsed")}
       >
         <SidebarFillIcon16 />
       </IconButton>
       <ul className="flex flex-col gap-1">
         <NavLink pathname="/">
-          <Link
-            to="/"
-            search={{
-              width: searchParams.width === "fill" ? "fill" : "fixed",
-              query: undefined,
-              sidebar: "expanded",
-            }}
-          >
+          <Link to="/" search={{ query: undefined }}>
             <NoteFillIcon16 data-active-icon />
             <NoteIcon16 data-inactive-icon />
             <span>Notes</span>
@@ -71,9 +56,7 @@ export function Sidebar() {
             params={{ _splat: todayString }}
             search={{
               mode: hasDailyNote ? "read" : "write",
-              width: searchParams.width === "fill" ? "fill" : "fixed",
               query: undefined,
-              sidebar: "expanded",
             }}
           >
             <CalendarDateFillIcon16 data-active-icon date={today.getDate()} />
@@ -87,9 +70,7 @@ export function Sidebar() {
             params={{ _splat: weekString }}
             search={{
               mode: hasWeeklyNote ? "read" : "write",
-              width: searchParams.width === "fill" ? "fill" : "fixed",
               query: undefined,
-              sidebar: "expanded",
             }}
           >
             <CalendarFillIcon16 data-active-icon />
@@ -98,27 +79,14 @@ export function Sidebar() {
           </Link>
         </NavLink>
         <NavLink pathname="/tags">
-          <Link
-            to="/tags"
-            search={{
-              width: searchParams.width === "fill" ? "fill" : "fixed",
-              query: undefined,
-              sidebar: "expanded",
-            }}
-          >
+          <Link to="/tags" search={{ query: undefined }}>
             <TagFillIcon16 data-active-icon />
             <TagIcon16 data-inactive-icon />
             <span>Tags</span>
           </Link>
         </NavLink>
         <NavLink pathname="/settings">
-          <Link
-            to="/settings"
-            search={{
-              width: searchParams.width === "fill" ? "fill" : "fixed",
-              sidebar: "expanded",
-            }}
-          >
+          <Link to="/settings">
             <SettingsFillIcon16 data-active-icon />
             <SettingsIcon16 data-inactive-icon />
             <span>Settings</span>
@@ -144,7 +112,7 @@ function NavLink({
     <Slot
       aria-current={isActive ? "page" : undefined}
       className={cx(
-        "group/nav-link flex h-8 items-center gap-3 rounded px-2 transition-colors duration-100 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
+        "group/nav-link flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
         // Show inactive icon when link is not active
         "[&_[data-active-icon]]:hidden [&_[data-inactive-icon]]:block [&_[data-inactive-icon]]:text-text-secondary",
         // Show active icon when link is active

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import ejs from "ejs"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -44,6 +44,7 @@ import {
   globalStateMachineAtom,
   isSignedOutAtom,
   weeklyTemplateAtom,
+  widthAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
@@ -140,7 +141,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, width, query, sidebar } = Route.useSearch()
+  const { mode, query } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -149,6 +150,7 @@ function NotePage() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
+  const [width, setWidth] = useAtom(widthAtom)
 
   // Note data
   const note = useNoteById(noteId)
@@ -197,15 +199,15 @@ function NotePage() {
   )
 
   const switchToWriting = useCallback(() => {
-    navigate({ search: { mode: "write", width, query, sidebar }, replace: true })
+    navigate({ search: (prev) => ({ ...prev, mode: "write" }), replace: true })
     setTimeout(() => {
       editorRef.current?.view?.focus()
     })
-  }, [navigate, width, query, sidebar])
+  }, [navigate])
 
   const switchToReading = useCallback(() => {
-    navigate({ search: { mode: "read", width, query, sidebar }, replace: true })
-  }, [navigate, width, query, sidebar])
+    navigate({ search: (prev) => ({ ...prev, mode: "read" }), replace: true })
+  }, [navigate])
 
   const toggleMode = useCallback(() => {
     if (mode === "read") {
@@ -387,10 +389,7 @@ function NotePage() {
                       icon={<CenteredIcon16 />}
                       selected={width === "fixed"}
                       onSelect={() => {
-                        navigate({
-                          search: { width: "fixed", mode, query, sidebar },
-                          replace: true,
-                        })
+                        setWidth("fixed")
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -400,7 +399,7 @@ function NotePage() {
                       icon={<FullwidthIcon16 />}
                       selected={width === "fill"}
                       onSelect={() => {
-                        navigate({ search: { width: "fill", mode, query, sidebar }, replace: true })
+                        setWidth("fill")
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -471,7 +470,7 @@ function NotePage() {
                     deleteNote(noteId)
                     navigate({
                       to: "/",
-                      search: { width, query: undefined, sidebar },
+                      search: { query: undefined },
                       replace: true,
                     })
                   }}
@@ -534,7 +533,7 @@ function NotePage() {
                     baseQuery={`link:"${noteId}" -id:"${noteId}"`}
                     query={query ?? ""}
                     onQueryChange={(query) =>
-                      navigate({ search: { mode, width, query, sidebar }, replace: true })
+                      navigate({ search: (prev) => ({ ...prev, query }), replace: true })
                     }
                   />
                 </LinkHighlightProvider>

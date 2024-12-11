@@ -1,4 +1,4 @@
-import { Link, useSearch } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
@@ -49,7 +49,6 @@ export function NotePreviewCard(props: NoteCardProps) {
 }
 
 const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
-  const searchParams = useSearch({ strict: false })
   const note = useNoteById(id)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -68,12 +67,10 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
         params={{ _splat: id }}
         search={{
           mode: "read",
-          width: searchParams.width === "fill" ? "fill" : "fixed",
           query: undefined,
-          sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
         }}
         className={cx(
-          "card-1 relative block w-full cursor-pointer overflow-hidden transition-[box-shadow,transform] duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
+          "card-1 relative block w-full cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
@@ -81,7 +78,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       </Link>
       <div
         className={cx(
-          "absolute right-1.5 top-1.5 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 coarse:opacity-100",
+          "absolute right-1.5 top-1.5 rounded bg-bg-card opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 coarse:opacity-100",
           isPinned && "!opacity-100",
         )}
       >
@@ -100,7 +97,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       {note ? (
         <div
           className={cx(
-            "absolute bottom-1.5 right-1.5 flex gap-1 rounded bg-bg-card opacity-0 transition-opacity duration-150 group-focus-within:opacity-100 group-hover:opacity-100 coarse:opacity-100",
+            "absolute bottom-1.5 right-1.5 flex gap-1 rounded bg-bg-card opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 coarse:opacity-100",
             isDropdownOpen && "!opacity-100",
           )}
         >

@@ -20,7 +20,7 @@ export function Dice({
         "--shadow-large": "calc(var(--x-amount) * 4px) calc(var(--y-amount) * 4px) 6px -1px",
       }}
       className={cx(
-        "flex rotate-[var(--angle)] rounded-[2.5px] bg-bg text-text transition-[transform,box-shadow] duration-200 will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg-inset dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]",
+        "flex rotate-[var(--angle)] rounded-[2.5px] bg-bg text-text transition-[transform,box-shadow] will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg-inset dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]",
         className,
       )}
     >

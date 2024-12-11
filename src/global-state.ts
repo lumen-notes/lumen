@@ -2,7 +2,7 @@ import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { selectAtom } from "jotai/utils"
+import { selectAtom, atomWithStorage } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
@@ -713,3 +713,11 @@ export const dailyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
   Object.values(templates).find((t) => t.name.match(/^weekly$/i)),
 )
+
+// -----------------------------------------------------------------------------
+// Layout
+// -----------------------------------------------------------------------------
+
+export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
+
+export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")

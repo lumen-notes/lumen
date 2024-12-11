@@ -1,4 +1,4 @@
-import { Link, useNavigate, useSearch } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import React, { useDeferredValue, useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { parseQuery, useSearchNotes } from "../hooks/search"
@@ -28,7 +28,6 @@ const initialVisibleNotes = 10
 export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps) {
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
-  const searchParams = useSearch({ strict: false })
 
   // const [query, setQuery] = useState("")
 
@@ -252,7 +251,6 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
                       params={{ _splat: note.id }}
                       search={{
                         mode: "read",
-                        width: searchParams.width === "fill" ? "fill" : "fixed",
                         query: undefined,
                       }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"

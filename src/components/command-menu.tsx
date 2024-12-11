@@ -99,7 +99,6 @@ export function CommandMenu() {
             },
             search: {
               mode: "read",
-              width: "fixed",
               query: undefined,
             },
           })
@@ -116,7 +115,6 @@ export function CommandMenu() {
             },
             search: {
               mode: "read",
-              width: "fixed",
               query: undefined,
             },
           })
@@ -227,7 +225,6 @@ export function CommandMenu() {
                       },
                       search: {
                         mode: "read",
-                        width: "fixed",
                         query: undefined,
                       },
                     }),
@@ -250,7 +247,6 @@ export function CommandMenu() {
                     },
                     search: {
                       mode: "read",
-                      width: "fixed",
                       query: undefined,
                     },
                   })
@@ -318,7 +314,6 @@ export function CommandMenu() {
                       },
                       search: {
                         mode: "read",
-                        width: "fixed",
                         query: undefined,
                       },
                     }),
@@ -361,7 +356,6 @@ export function CommandMenu() {
                     },
                     search: {
                       mode: "write",
-                      width: "fixed",
                       query: undefined,
                     },
                   })
