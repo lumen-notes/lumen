@@ -17,11 +17,14 @@ import {
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { createContext, useContext } from "react"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
-export function NavItems() {
+const SizeContext = createContext<"medium" | "large">("medium")
+
+export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
@@ -31,122 +34,130 @@ export function NavItems() {
   const weekString = toWeekString(today)
 
   return (
-    <div className="flex flex-col gap-2">
-      <ul className="flex flex-col gap-1">
-        <li>
-          <NavLink
-            to="/"
-            search={{ query: undefined }}
-            activeIcon={<NoteFillIcon16 />}
-            inactiveIcon={<NoteIcon16 />}
-          >
-            Notes
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/notes/$"
-            params={{ _splat: todayString }}
-            search={{
-              mode: hasDailyNote ? "read" : "write",
-              query: undefined,
-            }}
-            activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
-            inactiveIcon={<CalendarDateIcon16 date={today.getDate()} />}
-          >
-            Today
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/notes/$"
-            params={{ _splat: weekString }}
-            search={{
-              mode: hasWeeklyNote ? "read" : "write",
-              query: undefined,
-            }}
-            activeIcon={<CalendarFillIcon16 />}
-            inactiveIcon={<CalendarIcon16 />}
-          >
-            This week
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/tags"
-            search={{ query: undefined }}
-            activeIcon={<TagFillIcon16 />}
-            inactiveIcon={<TagIcon16 />}
-          >
-            Tags
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/settings"
-            search={{ query: undefined }}
-            activeIcon={<SettingsFillIcon16 />}
-            inactiveIcon={<SettingsIcon16 />}
-          >
-            Settings
-          </NavLink>
-        </li>
-      </ul>
-      {pinnedNotes.length > 0 ? (
-        <div className="flex flex-col gap-1">
-          <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-            Pinned
+    <SizeContext.Provider value={size}>
+      <div className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-1">
+          <li>
+            <NavLink
+              to="/"
+              search={{ query: undefined }}
+              activeIcon={<NoteFillIcon16 />}
+              icon={<NoteIcon16 />}
+            >
+              Notes
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/notes/$"
+              params={{ _splat: todayString }}
+              search={{
+                mode: hasDailyNote ? "read" : "write",
+                query: undefined,
+              }}
+              activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
+              icon={<CalendarDateIcon16 date={today.getDate()} />}
+            >
+              Today
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/notes/$"
+              params={{ _splat: weekString }}
+              search={{
+                mode: hasWeeklyNote ? "read" : "write",
+                query: undefined,
+              }}
+              activeIcon={<CalendarFillIcon16 />}
+              icon={<CalendarIcon16 />}
+            >
+              This week
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/tags"
+              search={{ query: undefined }}
+              activeIcon={<TagFillIcon16 />}
+              icon={<TagIcon16 />}
+            >
+              Tags
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/settings"
+              search={{ query: undefined }}
+              activeIcon={<SettingsFillIcon16 />}
+              icon={<SettingsIcon16 />}
+            >
+              Settings
+            </NavLink>
+          </li>
+        </ul>
+        {pinnedNotes.length > 0 ? (
+          <div className="flex flex-col gap-1">
+            <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
+              Pinned
+            </div>
+            <ul className="flex flex-col gap-1">
+              {pinnedNotes.map((note) => (
+                <li key={note.id}>
+                  <NavLink
+                    key={note.id}
+                    to={`/notes/$`}
+                    params={{ _splat: note.id }}
+                    search={{ mode: "read", query: undefined }}
+                    icon={<NoteFavicon note={note} />}
+                  >
+                    {note.displayName}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="flex flex-col gap-1">
-            {pinnedNotes.map((note) => (
-              <li key={note.id}>
-                <Link
-                  key={note.id}
-                  to={`/notes/$`}
-                  params={{ _splat: note.id }}
-                  search={{ mode: "read", query: undefined }}
-                  className="focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold coarse:h-10 coarse:gap-4 coarse:px-3"
-                >
-                  <div className="flex flex-shrink-0">
-                    <NoteFavicon note={note} />
-                  </div>
-                  <span className="truncate">{note.displayName}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </div>
+        ) : null}
+      </div>
+    </SizeContext.Provider>
   )
 }
 
 function NavLink({
   className,
   activeIcon,
-  inactiveIcon,
+  icon,
   children,
   ...props
 }: LinkComponentProps<"a"> & {
-  activeIcon: React.ReactNode
-  inactiveIcon: React.ReactNode
+  activeIcon?: React.ReactNode
+  icon: React.ReactNode
   children: React.ReactNode
 }) {
+  const size = useContext(SizeContext)
+
   return (
     <Link
       activeOptions={{ exact: true, includeSearch: false }}
       className={cx(
-        "focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
-        "coarse:h-10 coarse:gap-4 coarse:px-3",
+        "focus-ring flex items-center rounded hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
+        size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
         className,
       )}
       {...props}
     >
-      <span className="hidden [[aria-current=page]>&]:flex">{activeIcon}</span>
-      <span className="flex text-text-secondary [[aria-current=page]>&]:hidden">
-        {inactiveIcon}
+      {activeIcon ? (
+        <span className="hidden flex-shrink-0 [[aria-current=page]>&]:flex">{activeIcon}</span>
+      ) : null}
+      <span
+        className={cx(
+          "flex flex-shrink-0 text-text-secondary",
+          activeIcon && "[[aria-current=page]>&]:hidden",
+        )}
+      >
+        {icon}
       </span>
-      {children}
+      <span className="truncate">{children}</span>
     </Link>
   )
 }

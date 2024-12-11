@@ -25,7 +25,7 @@ export function NavBar() {
                 className="mx-auto mb-2 h-1 w-12 flex-shrink-0 rounded-full bg-border"
               />
               <Drawer.Title className="sr-only">Navigation</Drawer.Title>
-              <NavItems />
+              <NavItems size="large" />
             </div>
           </Drawer.Content>
         </Drawer.Portal>
