@@ -29,21 +29,6 @@ module.exports = {
     colors: {
       transparent: "transparent",
       current: "currentColor",
-      neutral: {
-        1: "var(--neutral-1)",
-        2: "var(--neutral-2)",
-        3: "var(--neutral-3)",
-        4: "var(--neutral-4)",
-        5: "var(--neutral-5)",
-        6: "var(--neutral-6)",
-        7: "var(--neutral-7)",
-        8: "var(--neutral-8)",
-        9: "var(--neutral-9)",
-        10: "var(--neutral-10)",
-        11: "var(--neutral-11)",
-        12: "var(--neutral-12)",
-        contrast: "var(--neutral-contrast)",
-      },
       text: {
         DEFAULT: "var(--color-text)",
         secondary: "var(--color-text-secondary)",
@@ -54,6 +39,7 @@ module.exports = {
       bg: {
         DEFAULT: "var(--color-bg)",
         inset: "var(--color-bg-inset)",
+        card: "var(--color-bg-card)",
         overlay: "var(--color-bg-overlay)",
         backdrop: "var(--color-bg-backdrop)",
         secondary: "var(--color-bg-secondary)",
@@ -71,11 +57,58 @@ module.exports = {
     },
     borderRadius: {
       none: "0",
-      xs: "0.1875rem", // 3px (base / 2)
-      sm: "0.375rem", // 6px (base)
-      md: "0.625rem", // 10px (base + 4px)
-      lg: "0.875rem", // 14px (base + 8px)
+      sm: "4px", // base - 2px
+      DEFAULT: "6px", // base
+      lg: "10px", // base + 4px
+      xl: "14px", // base + 8px
       full: "9999px",
+    },
+    spacing: {
+      0: "0px",
+      px: "1px",
+      0.5: "2px",
+      1: "4px",
+      1.5: "6px",
+      2: "8px",
+      2.5: "10px",
+      3: "12px",
+      4: "16px",
+      5: "20px",
+      6: "24px",
+      7: "28px",
+      8: "32px",
+      9: "36px",
+      10: "40px",
+      11: "44px",
+      12: "48px",
+      14: "56px",
+      16: "64px",
+      20: "80px",
+      24: "96px",
+      28: "112px",
+      32: "128px",
+      36: "144px",
+      40: "160px",
+      44: "176px",
+      48: "192px",
+      52: "208px",
+      56: "224px",
+      60: "240px",
+      64: "256px",
+      72: "288px",
+      80: "320px",
+      96: "384px",
+    },
+    lineHeight: {
+      none: "1",
+      3: "12px",
+      4: "16px",
+      5: "20px",
+      6: "24px",
+      7: "28px",
+      8: "32px",
+      9: "36px",
+      10: "40px",
     },
   },
   plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-animate")],

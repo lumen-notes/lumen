@@ -1,64 +1,54 @@
-import React from "react"
-import { flushSync } from "react-dom"
+import { Link, useNavigate } from "@tanstack/react-router"
+import React, { useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
-import { z } from "zod"
-import { useDebouncedValue } from "../hooks/debounced-value"
+import { useDebounce } from "use-debounce"
 import { parseQuery, useSearchNotes } from "../hooks/search"
-import { useSearchParam } from "../hooks/search-param"
-import { templateSchema } from "../schema"
-import { removeLeadingEmoji } from "../utils/emoji"
-import { isPinned } from "../utils/pin"
+import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CardsIcon16, CloseIcon12, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
-import { Link } from "./link"
+import { CloseIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
-import { NoteCard } from "./note-card"
 import { NoteFavicon } from "./note-favicon"
-import { usePanel, usePanelActions } from "./panels"
+import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 
-const viewTypeSchema = z.enum(["list", "cards"])
-
-type ViewType = z.infer<typeof viewTypeSchema>
-
 type NoteListProps = {
   baseQuery?: string
+  query: string
+  view: "grid" | "list"
+  onQueryChange: (query: string) => void
+  onViewChange: (view: "grid" | "list") => void
 }
-export function NoteList({ baseQuery = "" }: NoteListProps) {
+
+const initialVisibleNotes = 10
+
+export function NoteList({
+  baseQuery = "",
+  query,
+  view,
+  onQueryChange,
+  onViewChange,
+}: NoteListProps) {
   const searchNotes = useSearchNotes()
-  const { openPanel } = usePanelActions()
-  const panel = usePanel()
+  const navigate = useNavigate()
 
-  const [query, setQuery] = useSearchParam("query", {
-    validate: z.string().catch("").parse,
-    replace: true,
-  })
+  const [deferredQuery] = useDebounce(query, 150)
 
-  const [debouncedQuery] = useDebouncedValue(query, 200, { leading: true })
+  const searchResults = useMemo(() => {
+    return searchNotes(`${baseQuery} ${deferredQuery}`)
+  }, [searchNotes, baseQuery, deferredQuery])
 
-  const noteResults = React.useMemo(() => {
-    return searchNotes(`${baseQuery} ${debouncedQuery}`)
-  }, [searchNotes, baseQuery, debouncedQuery])
-
-  const [viewType, setViewType] = useSearchParam<ViewType>("view", {
-    validate: viewTypeSchema.catch("cards").parse,
-    replace: true,
-  })
-
-  // Only render the first 10 notes when the page loads
-  const [numVisibleNotes, setNumVisibleNotes] = React.useState(10)
+  const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
 
   const [bottomRef, bottomInView] = useInView()
 
   const loadMore = React.useCallback(() => {
-    setNumVisibleNotes((num) => Math.min(num + 10, noteResults.length))
-  }, [noteResults.length])
+    setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
+  }, [searchResults.length])
 
   React.useEffect(() => {
     if (bottomInView) {
@@ -72,7 +62,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    const tags = noteResults.flatMap((note) => note.tags)
+    const tags = searchResults.flatMap((note) => note.tags)
 
     for (const tag of tags) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
@@ -83,7 +73,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
     return (
       frequencyEntries
         // Filter out tags that every note has
-        .filter(([, frequency]) => frequency < noteResults.length)
+        .filter(([, frequency]) => frequency < searchResults.length)
         // Filter out parent tags if the all the childs tag has the same frequency
         .filter(([tag, frequency]) => {
           const childTags = frequencyEntries.filter(
@@ -98,7 +88,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           return b[1] - a[1]
         })
     )
-  }, [noteResults])
+  }, [searchResults])
 
   const qualifiers = React.useMemo(() => {
     return parseQuery(query).qualifiers
@@ -132,34 +122,34 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           <div className="flex flex-col gap-2">
             <div className="grid grid-cols-[1fr_auto_auto] gap-2">
               <SearchInput
-                placeholder={`Search ${pluralize(noteResults.length, "note")}…`}
+                placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
                 value={query}
                 onChange={(value) => {
-                  setQuery(value)
+                  onQueryChange(value)
 
                   // Reset the number of visible notes when the user starts typing
-                  setNumVisibleNotes(10)
+                  setNumVisibleNotes(initialVisibleNotes)
                 }}
               />
               <IconButton
-                aria-label={viewType === "cards" ? "List view" : "Card view"}
-                className="h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                onClick={() => setViewType(viewType === "cards" ? "list" : "cards")}
+                aria-label={view === "grid" ? "List view" : "Grid view"}
+                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
               >
-                {viewType === "cards" ? <ListIcon16 /> : <CardsIcon16 />}
+                {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
               </IconButton>
               <DiceButton
-                disabled={noteResults.length === 0}
+                disabled={searchResults.length === 0}
                 onClick={() => {
-                  const resultsCount = noteResults.length
+                  const resultsCount = searchResults.length
                   const randomIndex = Math.floor(Math.random() * resultsCount)
-                  openPanel?.(noteResults[randomIndex].id, panel?.index)
+                  navigate({ to: `/notes/${searchResults[randomIndex].id}` })
                 }}
               />
             </div>
-            {query ? (
+            {deferredQuery ? (
               <span className="text-sm text-text-secondary">
-                {pluralize(noteResults.length, "result")}
+                {pluralize(searchResults.length, "result")}
               </span>
             ) : null}
           </div>
@@ -184,12 +174,12 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                         query.slice(0, index) + query.slice(index + text.length).trimStart()
 
                       // Remove the tag qualifier from the query
-                      setQuery(newQuery.trim())
+                      onQueryChange(newQuery.trim())
 
                       // TODO: Move focus
                     }}
                   >
-                    {qualifier.exclude ? <span>not</span> : null}
+                    {qualifier.exclude ? <span className="italic">not</span> : null}
                     {qualifier.values.map((value, index) => (
                       <React.Fragment key={value}>
                         {index > 0 ? <span>or</span> : null}
@@ -206,12 +196,12 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                     onClick={(event) => {
                       const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
 
-                      flushSync(() => {
-                        setQuery(query ? `${query} ${qualifier}` : qualifier)
-                      })
+                      onQueryChange(query ? `${query} ${qualifier}` : qualifier)
 
                       // Move focus
-                      document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
+                      setTimeout(() => {
+                        document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
+                      })
                     }}
                   >
                     {tag}
@@ -221,7 +211,9 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                 {sortedTagFrequencies.length > numVisibleTags ? (
                   <DropdownMenu>
                     <DropdownMenu.Trigger asChild>
-                      <PillButton variant="dashed">Show more</PillButton>
+                      <PillButton variant="dashed" className="data-[state=open]:bg-bg-secondary">
+                        Show more
+                      </PillButton>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
                       {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
@@ -231,7 +223,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
                           trailingVisual={<span className="text-text-secondary">{frequency}</span>}
                           onClick={(event) => {
                             const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                            setQuery(query ? `${query} ${qualifier}` : qualifier)
+                            onQueryChange(query ? `${query} ${qualifier}` : qualifier)
                           }}
                         >
                           {tag}
@@ -243,40 +235,34 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
               </>
             ) : null}
           </div>
-          {viewType === "cards"
-            ? noteResults.slice(0, numVisibleNotes).map(({ id }) => <NoteCard key={id} id={id} />)
-            : null}
-          {viewType === "list" ? (
+          {view === "grid" ? (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
+              {searchResults.slice(0, numVisibleNotes).map(({ id }) => (
+                <NotePreviewCard key={id} id={id} />
+              ))}
+            </div>
+          ) : null}
+          {view === "list" ? (
             <ul>
-              {noteResults.slice(0, numVisibleNotes).map((note) => {
-                const parsedTemplate = templateSchema
-                  .omit({ body: true })
-                  .safeParse(note.frontmatter.template)
+              {searchResults.slice(0, numVisibleNotes).map((note) => {
                 return (
-                  // TODO: Move this into a NoteItem component
                   <li key={note.id}>
                     <Link
-                      // Used for focus management
-                      data-note-id={note.id}
-                      to={`/${note.id}`}
-                      className="focus-ring flex items-center rounded-md p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
-                      target="_blank"
+                      to="/notes/$"
+                      params={{ _splat: note.id }}
+                      search={{
+                        mode: "read",
+                        query: undefined,
+                        view: "grid",
+                      }}
+                      className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >
-                      <NoteFavicon note={note} className="mr-3" />
-                      {isPinned(note) ? (
+                      <NoteFavicon noteId={note.id} content={note.content} className="mr-3" />
+                      {checkIfPinned(note.content) ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}
                       <span className="truncate text-text-secondary">
-                        <span className="text-text">
-                          {parsedTemplate.success
-                            ? `${parsedTemplate.data.name} template`
-                            : removeLeadingEmoji(note.title) || note.id}
-                        </span>
-                        <span className="ml-2 ">
-                          {removeParentTags(note.tags)
-                            .map((tag) => `#${tag}`)
-                            .join(" ")}
-                        </span>
+                        <span className="text-text">{note.displayName}</span>
                       </span>
                     </Link>
                   </li>
@@ -286,7 +272,7 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
           ) : null}
         </div>
 
-        {noteResults.length > numVisibleNotes ? (
+        {searchResults.length > numVisibleNotes ? (
           <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
             Load more
           </Button>
@@ -297,23 +283,18 @@ export function NoteList({ baseQuery = "" }: NoteListProps) {
 }
 
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
-  const [angle, setAngle] = React.useState(0)
   const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 6) + 1)
-  const [isHovered, setIsHovered] = React.useState(false)
   return (
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-md bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
       onClick={() => {
-        setAngle((angle) => angle + 180)
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <Dice number={number} angle={isHovered ? angle + 90 : angle} />
+      <Dice number={number} className="group-hover/dice:-rotate-12" />
     </IconButton>
   )
 }

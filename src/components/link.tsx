@@ -1,5 +1,5 @@
 import React from "react"
-import { LinkProps, Link as RouterLink } from "react-router-dom"
+import { LinkProps, Link as RouterLink } from "@tanstack/react-router"
 
 export type LinkClickHandler = (
   props: LinkProps,

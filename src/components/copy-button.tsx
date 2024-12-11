@@ -11,6 +11,7 @@ export function CopyButton({ className, text }: { text: string; className?: stri
     <IconButton
       aria-label={copied ? "Copied" : "Copy"}
       className={className}
+      tooltipSide="left"
       onClick={() => {
         copy(text)
         setCopied(true)

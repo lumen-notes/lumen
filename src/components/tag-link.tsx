@@ -1,5 +1,5 @@
+import { Link } from "@tanstack/react-router"
 import React from "react"
-import { Link } from "./link"
 import { cx } from "../utils/cx"
 
 type TagLinkProps = {
@@ -17,11 +17,14 @@ export function TagLink({ name, className }: TagLinkProps) {
             {i > 0 && <span>/</span>}
             <Link
               className="link"
-              to={`/tags/${name
-                .split("/")
-                .slice(0, i + 1)
-                .join("/")}`}
-              target="_blank"
+              to={`/tags/$`}
+              params={{
+                _splat: name
+                  .split("/")
+                  .slice(0, i + 1)
+                  .join("/"),
+              }}
+              search={{ query: undefined, view: "grid" }}
             >
               {part}
             </Link>

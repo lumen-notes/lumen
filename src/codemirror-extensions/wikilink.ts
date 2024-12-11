@@ -1,7 +1,7 @@
 import { EditorState, Extension, Range, StateField } from "@codemirror/state"
 import { Decoration, DecorationSet, EditorView, WidgetType } from "@codemirror/view"
 
-function createWikilinkField(navigate: (to: string) => void) {
+function createWikilinkField(navigate: (id: string) => void) {
   return StateField.define<DecorationSet>({
     create(state) {
       return createDecorations(state, navigate)
@@ -19,7 +19,7 @@ function createWikilinkField(navigate: (to: string) => void) {
 
 const wikilinkRegex = /\[\[([^\]]+?)(?:\|([^\]]+))?\]\]/g
 
-function createDecorations(state: EditorState, navigate: (to: string) => void) {
+function createDecorations(state: EditorState, navigate: (id: string) => void) {
   const decorations: Range<Decoration>[] = []
   const { from, to } = state.selection.main
 
@@ -50,7 +50,7 @@ class WikilinkWidget extends WidgetType {
   constructor(
     private id: string,
     private text: string,
-    private navigate: (to: string) => void,
+    private navigate: (id: string) => void,
     private startPos: number,
     private endPos: number,
   ) {
@@ -89,6 +89,6 @@ class WikilinkWidget extends WidgetType {
   }
 }
 
-export function wikilinkExtension(navigate: (to: string) => void): Extension {
+export function wikilinkExtension(navigate: (id: string) => void): Extension {
   return createWikilinkField(navigate)
 }

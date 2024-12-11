@@ -10,7 +10,7 @@ export function Switch({ className, ...props }: RadixSwitch.SwitchProps) {
       )}
       {...props}
     >
-      <RadixSwitch.Thumb className="block h-3 w-3 translate-x-0.5 rounded-full bg-bg shadow-md transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[14px] coarse:h-4 coarse:w-4" />
+      <RadixSwitch.Thumb className="block h-3 w-3 translate-x-0.5 rounded-full bg-bg-card transition-transform will-change-transform data-[state=checked]:translate-x-[14px] coarse:h-4 coarse:w-4" />
     </RadixSwitch.Root>
   )
 }

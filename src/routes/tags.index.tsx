@@ -1,53 +1,60 @@
+import { createFileRoute } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
-import React from "react"
-import { z } from "zod"
-import { IconButton } from "../components/icon-button"
-import { TagIcon16, TriangleRightIcon8 } from "../components/icons"
+import { useDeferredValue, useMemo } from "react"
+import { AppLayout } from "../components/app-layout"
+import { TagIcon16 } from "../components/icons"
 import { Link } from "../components/link"
-import { Panel } from "../components/panel"
-import { PanelProps } from "../components/panels"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
-import { useSearchParam } from "../hooks/search-param"
-import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
 
-export function TagsPanel({ id, onClose }: PanelProps) {
+type RouteSearch = {
+  query: string | undefined
+}
+
+export const Route = createFileRoute("/tags/")({
+  validateSearch: (search: Record<string, unknown>): RouteSearch => {
+    return {
+      query: typeof search.query === "string" ? search.query : undefined,
+    }
+  },
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  const { query } = Route.useSearch()
+  const navigate = Route.useNavigate()
+
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
   const tagSearcher = useAtomValue(tagSearcherAtom)
 
-  const [query, setQuery] = useSearchParam("query", {
-    validate: z.string().catch("").parse,
-    replace: true,
-  })
+  const deferredQuery = useDeferredValue(query)
 
-  const deferredQuery = React.useDeferredValue(query)
-
-  const searchResults = React.useMemo(() => {
+  const searchResults = useMemo(() => {
     return deferredQuery ? tagSearcher.search(deferredQuery) : sortedTagEntries
   }, [tagSearcher, deferredQuery, sortedTagEntries])
 
-  const tagTree = React.useMemo(() => buildTagTree(searchResults), [searchResults])
+  const tagTree = useMemo(() => buildTagTree(searchResults), [searchResults])
 
   return (
-    <Panel id={id} title="Tags" icon={<TagIcon16 />} onClose={onClose}>
-      <div className="flex flex-col gap-2 p-4">
+    <AppLayout title="Tags" icon={<TagIcon16 />}>
+      <div className="flex flex-col gap-4 p-4 pt-0">
         <div className="flex flex-col gap-2">
           <SearchInput
             placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
-            value={query}
-            onChange={setQuery}
+            value={query ?? ""}
+            onChange={(value) => navigate({ search: { query: value }, replace: true })}
           />
           {deferredQuery ? (
-            <span className="coarse:sm text-sm text-text-secondary">
+            <span className="text-sm text-text-secondary">
               {pluralize(searchResults.length, "result")}
             </span>
           ) : null}
         </div>
         <TagTree tree={tagTree} />
       </div>
-    </Panel>
+    </AppLayout>
   )
 }
 
@@ -95,7 +102,7 @@ function TagTree({ tree, path = [], depth = 0 }: TagTreeProps) {
   }
 
   return (
-    <ul>
+    <ul className="flex flex-col gap-3">
       {tree.map((node) => {
         return <TagTreeItem key={node.name} node={node} path={path} depth={depth} />
       })}
@@ -110,40 +117,34 @@ type TagTreeItemProps = {
 }
 
 function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
-  // TODO: Persist expanded state
-  const [isExpanded, setIsExpanded] = React.useState(true)
+  // const [isExpanded, setIsExpanded] = useState(true)
 
   return (
-    <li>
-      <div
-        className="inline-grid grid-cols-[1.5rem,1fr] items-center gap-2 coarse:grid-cols-[2rem,1fr]"
-        style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}
-      >
-        {node.children.length > 0 ? (
+    <li className="flex flex-col gap-3">
+      <div className="flex items-center gap-1" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
+        <PillButton asChild>
+          <Link to="/tags/$" params={{ _splat: [...path, node.name].join("/") }}>
+            {node.name}
+            <span className="text-text-secondary">{node.count}</span>
+          </Link>
+        </PillButton>
+        {/* {node.children.length > 0 ? (
           <IconButton
             aria-label={isExpanded ? "Collapse" : "Expand"}
+            className="h-6 w-6 rounded-full"
             onClick={() => setIsExpanded(!isExpanded)}
             disableTooltip
           >
-            <TriangleRightIcon8
+            <TriangleRightIcon12
               className={cx("transition-transform", isExpanded ? "rotate-90" : "rotate-0")}
             />
           </IconButton>
-        ) : (
-          <div className="grid place-items-center text-text-secondary">
-            <TagIcon16 />
-          </div>
-        )}
-        <span className="py-2 leading-4 ">
-          <PillButton asChild>
-            <Link to={`/tags/${[...path, node.name].join("/")}`} target="_blank">
-              {node.name}
-              <span className="text-text-secondary">{node.count}</span>
-            </Link>
-          </PillButton>
-        </span>
+        ) : null} */}
       </div>
-      <div hidden={!isExpanded}>
+      <div
+        //  hidden={!isExpanded}
+        className="empty:hidden"
+      >
         <TagTree
           key={node.name}
           tree={node.children}
