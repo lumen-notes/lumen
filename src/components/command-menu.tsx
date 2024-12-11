@@ -83,6 +83,7 @@ export function CommandMenu() {
             to: "/",
             search: {
               query: undefined,
+              view: "grid",
             },
           })
         },
@@ -99,6 +100,7 @@ export function CommandMenu() {
             search: {
               mode: "read",
               query: undefined,
+              view: "grid",
             },
           })
         },
@@ -115,6 +117,7 @@ export function CommandMenu() {
             search: {
               mode: "read",
               query: undefined,
+              view: "grid",
             },
           })
         },
@@ -225,6 +228,7 @@ export function CommandMenu() {
                       search: {
                         mode: "read",
                         query: undefined,
+                        view: "grid",
                       },
                     }),
                   )}
@@ -247,6 +251,7 @@ export function CommandMenu() {
                     search: {
                       mode: "read",
                       query: undefined,
+                      view: "grid",
                     },
                   })
                 })}
@@ -270,6 +275,7 @@ export function CommandMenu() {
                       },
                       search: {
                         query: undefined,
+                        view: "grid",
                       },
                     }),
                   )}
@@ -289,6 +295,7 @@ export function CommandMenu() {
                       },
                       search: {
                         query: undefined,
+                        view: "grid",
                       },
                     }),
                   )}
@@ -314,6 +321,7 @@ export function CommandMenu() {
                       search: {
                         mode: "read",
                         query: undefined,
+                        view: "grid",
                       },
                     }),
                   )}
@@ -328,6 +336,7 @@ export function CommandMenu() {
                       to: "/",
                       search: {
                         query: deferredQuery,
+                        view: "grid",
                       },
                     }),
                   )}
@@ -356,6 +365,7 @@ export function CommandMenu() {
                     search: {
                       mode: "write",
                       query: undefined,
+                      view: "grid",
                     },
                   })
                 })}

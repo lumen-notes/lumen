@@ -24,7 +24,7 @@ export function TagLink({ name, className }: TagLinkProps) {
                   .slice(0, i + 1)
                   .join("/"),
               }}
-              search={{ query: undefined }}
+              search={{ query: undefined, view: "grid" }}
             >
               {part}
             </Link>

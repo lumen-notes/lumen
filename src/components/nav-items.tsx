@@ -1,6 +1,7 @@
 import { Link, LinkComponentProps } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
+import { createContext, useContext } from "react"
 import { notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
@@ -17,7 +18,6 @@ import {
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
-import { createContext, useContext } from "react"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -40,7 +40,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           <li>
             <NavLink
               to="/"
-              search={{ query: undefined }}
+              search={{ query: undefined, view: "grid" }}
               activeIcon={<NoteFillIcon16 />}
               icon={<NoteIcon16 />}
             >
@@ -54,6 +54,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               search={{
                 mode: hasDailyNote ? "read" : "write",
                 query: undefined,
+                view: "grid",
               }}
               activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
               icon={<CalendarDateIcon16 date={today.getDate()} />}
@@ -68,6 +69,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               search={{
                 mode: hasWeeklyNote ? "read" : "write",
                 query: undefined,
+                view: "grid",
               }}
               activeIcon={<CalendarFillIcon16 />}
               icon={<CalendarIcon16 />}
@@ -108,7 +110,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                     key={note.id}
                     to={`/notes/$`}
                     params={{ _splat: note.id }}
-                    search={{ mode: "read", query: undefined }}
+                    search={{ mode: "read", query: undefined, view: "grid" }}
                     icon={<NoteFavicon note={note} />}
                   >
                     {note.displayName}

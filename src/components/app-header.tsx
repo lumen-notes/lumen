@@ -29,6 +29,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
         search: {
           mode: "write",
           query: undefined,
+          view: "grid",
         },
       })
     },
@@ -98,6 +99,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                     search: {
                       mode: "write",
                       query: undefined,
+                      view: "grid",
                     },
                   })
                 }}

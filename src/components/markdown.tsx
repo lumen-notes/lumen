@@ -103,7 +103,7 @@ export const Markdown = React.memo(
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
-                  <Link to="/" search={{ query: "has:template" }}>
+                  <Link to="/" search={{ query: "has:template", view: "grid" }}>
                     Template
                   </Link>
                 </PillButton>
@@ -432,6 +432,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
               search={{
                 mode: "read",
                 query: undefined,
+                view: "grid",
               }}
             >
               {formatDate(dateString, { excludeDayOfWeek: true })}
@@ -451,6 +452,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
               search={{
                 mode: "read",
                 query: undefined,
+                view: "grid",
               }}
             >
               {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
@@ -747,6 +749,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           search={{
             mode: "read",
             query: undefined,
+            view: "grid",
           }}
         >
           {isFirst && note && online ? (
@@ -804,6 +807,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
           search={{
             mode: "read",
             query: undefined,
+            view: "grid",
           }}
         >
           Source
@@ -834,6 +838,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
           search={{
             mode: hasDateNote ? "read" : "write",
             query: undefined,
+            view: "grid",
           }}
         >
           {text || formatDate(date)}
@@ -871,6 +876,7 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
           search={{
             mode: hasWeekNote ? "read" : "write",
             query: undefined,
+            view: "grid",
           }}
         >
           {text || formatWeek(week)}

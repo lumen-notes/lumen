@@ -69,8 +69,9 @@ export function Calendar({
                   to: "/notes/$",
                   params: { _splat: toDateString(today) },
                   search: {
-                    mode: searchParams.mode === "write" ? "write" : "read",
+                    mode: searchParams.mode ?? "read",
                     query: undefined,
+                    view: searchParams.view ?? "grid",
                   },
                 })
               }}
@@ -212,8 +213,9 @@ function CalendarItem({
         to="/notes/$"
         params={{ _splat: id }}
         search={{
-          mode: searchParams.mode === "write" ? "write" : "read",
+          mode: searchParams.mode ?? "read",
           query: undefined,
+          view: searchParams.view ?? "grid",
         }}
         aria-label={ariaLabel}
         className={cx(

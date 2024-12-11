@@ -8,12 +8,14 @@ import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
 type RouteSearch = {
   query: string | undefined
+  view: "grid" | "list"
 }
 
 export const Route = createFileRoute("/tags_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
+      view: search.view === "list" ? "list" : "grid",
     }
   },
   component: RouteComponent,
@@ -21,7 +23,7 @@ export const Route = createFileRoute("/tags_/$")({
 
 function RouteComponent() {
   const { _splat: tag } = Route.useParams()
-  const { query } = Route.useSearch()
+  const { query, view } = Route.useSearch()
   const navigate = Route.useNavigate()
   const renameTag = useRenameTag()
   const deleteTag = useDeleteTag()
@@ -49,7 +51,7 @@ function RouteComponent() {
                   navigate({
                     to: "/tags/$",
                     params: { _splat: newName },
-                    search: { query },
+                    search: { query, view },
                     replace: true,
                   })
                 }
@@ -86,7 +88,13 @@ function RouteComponent() {
           key={tag}
           baseQuery={`tag:${tag}`}
           query={query ?? ""}
-          onQueryChange={(query) => navigate({ search: { query }, replace: true })}
+          view={view}
+          onQueryChange={(query) =>
+            navigate({ search: (prev) => ({ ...prev, query }), replace: true })
+          }
+          onViewChange={(view) =>
+            navigate({ search: (prev) => ({ ...prev, view }), replace: true })
+          }
         />
       </div>
     </AppLayout>

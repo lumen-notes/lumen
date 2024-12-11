@@ -65,6 +65,7 @@ import { InsertTemplateDialog } from "../components/insert-template"
 type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
+  view: "grid" | "list"
 }
 
 export const Route = createFileRoute("/notes_/$")({
@@ -72,6 +73,7 @@ export const Route = createFileRoute("/notes_/$")({
     return {
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
+      view: search.view === "list" ? "list" : "grid",
     }
   },
   component: RouteComponent,
@@ -141,7 +143,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query } = Route.useSearch()
+  const { mode, query, view } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -470,7 +472,7 @@ function NotePage() {
                     deleteNote(noteId)
                     navigate({
                       to: "/",
-                      search: { query: undefined },
+                      search: { query: undefined, view: "grid" },
                       replace: true,
                     })
                   }}
@@ -532,8 +534,12 @@ function NotePage() {
                   <NoteList
                     baseQuery={`link:"${noteId}" -id:"${noteId}"`}
                     query={query ?? ""}
+                    view={view}
                     onQueryChange={(query) =>
                       navigate({ search: (prev) => ({ ...prev, query }), replace: true })
+                    }
+                    onViewChange={(view) =>
+                      navigate({ search: (prev) => ({ ...prev, view }), replace: true })
                     }
                   />
                 </LinkHighlightProvider>

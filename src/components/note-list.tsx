@@ -18,24 +18,28 @@ import { SearchInput } from "./search-input"
 type NoteListProps = {
   baseQuery?: string
   query: string
+  view: "grid" | "list"
   onQueryChange: (query: string) => void
+  onViewChange: (view: "grid" | "list") => void
 }
 
 const initialVisibleNotes = 10
 
-export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps) {
+export function NoteList({
+  baseQuery = "",
+  query,
+  view,
+  onQueryChange,
+  onViewChange,
+}: NoteListProps) {
   const searchNotes = useSearchNotes()
   const navigate = useNavigate()
-
-  // const [query, setQuery] = useState("")
 
   const deferredQuery = useDeferredValue(query)
 
   const searchResults = useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
-
-  const [layout, setLayout] = useState<"grid" | "list">("grid")
 
   const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
 
@@ -127,11 +131,11 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
                 }}
               />
               <IconButton
-                aria-label={layout === "grid" ? "List view" : "Grid view"}
+                aria-label={view === "grid" ? "List view" : "Grid view"}
                 className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
-                onClick={() => setLayout(layout === "grid" ? "list" : "grid")}
+                onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
               >
-                {layout === "grid" ? <ListIcon16 /> : <GridIcon16 />}
+                {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
               </IconButton>
               <DiceButton
                 disabled={searchResults.length === 0}
@@ -230,14 +234,14 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
               </>
             ) : null}
           </div>
-          {layout === "grid" ? (
+          {view === "grid" ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
               {searchResults.slice(0, numVisibleNotes).map(({ id }) => (
                 <NotePreviewCard key={id} id={id} />
               ))}
             </div>
           ) : null}
-          {layout === "list" ? (
+          {view === "list" ? (
             <ul>
               {searchResults.slice(0, numVisibleNotes).map((note) => {
                 return (
@@ -248,6 +252,7 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
                       search={{
                         mode: "read",
                         query: undefined,
+                        view: "grid",
                       }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >

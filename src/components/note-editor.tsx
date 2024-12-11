@@ -26,10 +26,10 @@ import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
 import { isSignedOutAtom, tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
+import { useEditorSettings } from "../hooks/editor-settings"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { useEditorSettings } from "../hooks/editor-settings"
 import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
@@ -143,7 +143,11 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           navigate({
             to: "/notes/$",
             params: { _splat: id },
-            search: { mode: "write", query: undefined },
+            search: {
+              mode: "write",
+              query: undefined,
+              view: "grid",
+            },
           }),
         ),
         syntaxHighlighting(syntaxHighlighter),
