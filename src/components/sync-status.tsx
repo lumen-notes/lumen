@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
-import { globalStateMachineAtom } from "../global-state"
+import { globalStateMachineAtom, isRepoClonedAtom } from "../global-state"
 import {
   CheckIcon12,
   CheckIcon8,
@@ -21,15 +21,13 @@ const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.error"),
 )
 
-const isClonedAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn.cloned"))
-
 export function SyncIconButton(props: Omit<IconButtonProps, "aria-label">) {
-  const isCloned = useAtomValue(isClonedAtom)
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const statusText = useSyncStatusText()
   const { online } = useNetworkState()
 
-  if (!isCloned) return null
+  if (!isRepoCloned) return null
 
   return (
     <IconButton

@@ -92,29 +92,31 @@ export function NavItems() {
           </NavLink>
         </li>
       </ul>
-      <div className="flex flex-col gap-1">
-        <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-          Pinned
+      {pinnedNotes.length > 0 ? (
+        <div className="flex flex-col gap-1">
+          <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
+            Pinned
+          </div>
+          <ul className="flex flex-col gap-1">
+            {pinnedNotes.map((note) => (
+              <li key={note.id}>
+                <Link
+                  key={note.id}
+                  to={`/notes/$`}
+                  params={{ _splat: note.id }}
+                  search={{ mode: "read", query: undefined }}
+                  className="focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold coarse:h-10 coarse:gap-4 coarse:px-3"
+                >
+                  <div className="flex flex-shrink-0">
+                    <NoteFavicon note={note} />
+                  </div>
+                  <span className="truncate">{note.displayName}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="flex flex-col gap-1">
-          {pinnedNotes.map((note) => (
-            <li key={note.id}>
-              <Link
-                key={note.id}
-                to={`/notes/$`}
-                params={{ _splat: note.id }}
-                search={{ mode: "read", query: undefined }}
-                className="focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold coarse:h-10 coarse:gap-4 coarse:px-3"
-              >
-                <div className="flex flex-shrink-0">
-                  <NoteFavicon note={note} />
-                </div>
-                <span className="truncate">{note.displayName}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      ) : null}
     </div>
   )
 }
@@ -132,7 +134,7 @@ function NavLink({
 }) {
   return (
     <Link
-      activeOptions={{ exact: true }}
+      activeOptions={{ exact: true, includeSearch: false }}
       className={cx(
         "focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
         "coarse:h-10 coarse:gap-4 coarse:px-3",

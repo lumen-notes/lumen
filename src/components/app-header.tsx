@@ -1,7 +1,7 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
-import { sidebarAtom } from "../global-state"
+import { isRepoClonedAtom, sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
@@ -16,6 +16,8 @@ export type AppHeaderProps = {
 export function AppHeader({ title, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
+
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
 
   useHotkeys(
@@ -76,7 +78,10 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
           {actions ? (
             <>
               <div className="flex items-center">{actions}</div>
-              <div role="separator" className="h-5 w-px bg-border-secondary" />
+              <div
+                role="separator"
+                className={cx("h-5 w-px bg-border-secondary", !isRepoCloned && "hidden sm:block")}
+              />
             </>
           ) : null}
           <div className="flex items-center empty:hidden">

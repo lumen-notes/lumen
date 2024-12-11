@@ -347,16 +347,16 @@ function NotePage() {
               Write
             </SegmentedControl.Segment>
           </SegmentedControl>
-          <IconButton
-            aria-label={mode === "read" ? "Write mode" : "Read mode"}
-            size="small"
-            shortcut={toggleModeShortcut}
-            className="@3xl/header:hidden"
-            onClick={toggleMode}
-          >
-            {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
-          </IconButton>
           <div className="flex items-center">
+            <IconButton
+              aria-label={mode === "read" ? "Write mode" : "Read mode"}
+              size="small"
+              shortcut={toggleModeShortcut}
+              className="@3xl/header:hidden"
+              onClick={toggleMode}
+            >
+              {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
+            </IconButton>
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" size="small" disableTooltip>
