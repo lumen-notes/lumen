@@ -104,7 +104,7 @@ export function NavItems() {
                 to={`/notes/$`}
                 params={{ _splat: note.id }}
                 search={{ mode: "read", query: undefined }}
-                className="focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10 coarse:gap-4 coarse:px-3"
+                className="focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold coarse:h-10 coarse:gap-4 coarse:px-3"
               >
                 <div className="flex flex-shrink-0">
                   <NoteFavicon note={note} />
@@ -134,7 +134,7 @@ function NavLink({
     <Link
       activeOptions={{ exact: true }}
       className={cx(
-        "focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
+        "focus-ring flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
         "coarse:h-10 coarse:gap-4 coarse:px-3",
         className,
       )}
