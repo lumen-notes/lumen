@@ -311,7 +311,7 @@ function NotePage() {
   return (
     <AppLayout
       title={
-        <span className="flex items-center gap-2 xl:justify-center">
+        <span className="flex items-center gap-2 @6xl/header:justify-center">
           {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
           <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
             <PageTitle noteId={noteId ?? ""} />
@@ -331,7 +331,7 @@ function NotePage() {
               {!note ? "Create" : "Save"}
             </Button>
           ) : null}
-          <SegmentedControl aria-label="Mode" size="small" className="hidden md:flex">
+          <SegmentedControl aria-label="Mode" size="small" className="hidden @3xl/header:flex">
             <SegmentedControl.Segment
               selected={mode === "read"}
               shortcut={mode !== "read" ? toggleModeShortcut : undefined}
@@ -351,7 +351,7 @@ function NotePage() {
             aria-label={mode === "read" ? "Write mode" : "Read mode"}
             size="small"
             shortcut={toggleModeShortcut}
-            className="md:hidden"
+            className="@3xl/header:hidden"
             onClick={toggleMode}
           >
             {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
