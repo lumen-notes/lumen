@@ -1,15 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
-import { useDeferredValue, useMemo, useState } from "react"
+import { useDeferredValue, useMemo } from "react"
 import { AppLayout } from "../components/app-layout"
+import { Link } from "../components/link"
+import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
 import { pluralize } from "../utils/pluralize"
-import { cx } from "../utils/cx"
-import { IconButton } from "../components/icon-button"
-import { TriangleRightIcon12 } from "../components/icons"
-import { Link } from "../components/link"
-import { PillButton } from "../components/pill-button"
 
 type RouteSearch = {
   query: string | undefined
@@ -119,7 +116,7 @@ type TagTreeItemProps = {
 }
 
 function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
-  const [isExpanded, setIsExpanded] = useState(true)
+  // const [isExpanded, setIsExpanded] = useState(true)
 
   return (
     <li className="flex flex-col gap-3">
@@ -130,7 +127,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             <span className="text-text-secondary">{node.count}</span>
           </Link>
         </PillButton>
-        {node.children.length > 0 ? (
+        {/* {node.children.length > 0 ? (
           <IconButton
             aria-label={isExpanded ? "Collapse" : "Expand"}
             className="h-6 w-6 rounded-full"
@@ -141,9 +138,12 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
               className={cx("transition-transform", isExpanded ? "rotate-90" : "rotate-0")}
             />
           </IconButton>
-        ) : null}
+        ) : null} */}
       </div>
-      <div hidden={!isExpanded} className="empty:hidden">
+      <div
+        //  hidden={!isExpanded}
+        className="empty:hidden"
+      >
         <TagTree
           key={node.name}
           tree={node.children}
