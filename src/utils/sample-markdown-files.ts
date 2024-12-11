@@ -4,7 +4,7 @@ export function getSampleMarkdownFiles() {
 pinned: true
 ---
 
-# Welcome to Lumen
+# 👋 Welcome to Lumen
 
 Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app for capturing and organizing your thoughts.
 
@@ -21,10 +21,9 @@ When you're ready to start writing notes, sign in with GitHub and choose a repos
 `,
     "markdown-syntax.md": `---
 tags: [docs]
-pinned: true
 ---
 
-# Markdown syntax
+# ✍️ Markdown syntax
 
 Lumen supports [GitHub Flavored Markdown](https://github.github.com/gfm) with the following syntax extensions.
 
@@ -50,7 +49,7 @@ tags: [<tag-name>]
 tags: [docs]
 ---
 
-# Properties
+# 📝 Properties
 
 You can add properties, in the form of key-value pairs ([YAML](https://yaml.org/)) enclosed within \`---\` delimiters, at the top of any note. We refer to this as your note's "frontmatter."
 
@@ -71,7 +70,7 @@ isbn: 978-1542866507
 tags: [docs]
 ---
 
-# Search syntax
+# 🔍 Search syntax
 
 Search your notes with Lumen's [GitHub-style](https://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests) search syntax. Here's how it works:
 
