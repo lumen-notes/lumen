@@ -385,9 +385,7 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
         <div className="grid h-4 w-4 place-items-center text-text-secondary">{icon}</div>
         <div className="flex-grow truncate">{children}</div>
         {description ? (
-          <span className="flex-shrink-0 text-text-secondary [[aria-selected]_&]:hidden">
-            {description}
-          </span>
+          <span className="flex-shrink-0 text-text-secondary">{description}</span>
         ) : null}
         <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline">
           ⏎
