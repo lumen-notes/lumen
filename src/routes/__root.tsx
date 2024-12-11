@@ -59,7 +59,7 @@ function RootComponent() {
       ) : null}
       <ScrollRestoration />
       <Outlet />
-      {/* <DevBar /> */}
+      <DevBar />
       <CommandMenu />
     </div>
   )
@@ -72,7 +72,7 @@ function DevBar() {
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-2 right-2 flex h-6 items-center rounded bg-bg">
+    <div className="fixed bottom-16 right-2 flex h-6 items-center rounded bg-bg sm:bottom-2">
       <div className="flex h-6 items-center gap-1.5 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         <span>{formatState(state.value)}</span>
         <span className="text-text-tertiary">·</span>

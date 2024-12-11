@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router"
-import React, { useDeferredValue, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
+import { useDebounce } from "use-debounce"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
@@ -14,7 +15,6 @@ import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
-import { useDebounce } from "use-debounce"
 
 type NoteListProps = {
   baseQuery?: string
