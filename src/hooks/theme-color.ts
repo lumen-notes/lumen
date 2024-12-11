@@ -1,6 +1,6 @@
 import React from "react"
 
-const themeColorVar = "--color-bg"
+export const THEME_COLOR_VAR = "--color-bg"
 
 /** Dyanmically change the theme color */
 export function useThemeColor() {
@@ -9,11 +9,11 @@ export function useThemeColor() {
       return
     }
 
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]')
+    const themeColorMetaTag = document.querySelector('meta[name="theme-color"]')
 
-    const themeColor = window.getComputedStyle(document.body).getPropertyValue(themeColorVar)
+    const themeColor = window.getComputedStyle(document.body).getPropertyValue(THEME_COLOR_VAR)
 
-    themeColorMeta?.setAttribute("content", themeColor)
+    themeColorMetaTag?.setAttribute("content", themeColor)
   }, [])
 
   React.useEffect(() => {

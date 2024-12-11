@@ -1,15 +1,16 @@
+import { useNavigate, useRouter } from "@tanstack/react-router"
 import { ComponentPropsWithoutRef, forwardRef } from "react"
-import { useRouter, useNavigate } from "@tanstack/react-router"
-import { ArrowLeftIcon24, ArrowRightIcon24, MenuIcon24, PlusIcon24 } from "./icons"
 import { Drawer } from "vaul"
+import { ArrowLeftIcon24, ArrowRightIcon24, MenuIcon24, PlusIcon24 } from "./icons"
 import { NavItems } from "./nav-items"
 
 export function NavBar() {
   const router = useRouter()
   const navigate = useNavigate()
+
   return (
     <div className="flex border-t border-border-secondary p-2">
-      <Drawer.Root shouldScaleBackground={false}>
+      <Drawer.Root shouldScaleBackground>
         <Drawer.Trigger asChild>
           <NavButton aria-label="Open menu">
             <MenuIcon24 />
@@ -17,7 +18,7 @@ export function NavBar() {
         </Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-[#00000066]" />
-          <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col rounded-t-lg bg-bg-overlay">
+          <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col rounded-t-xl bg-bg-overlay">
             <div className="flex-1 scroll-py-2 overflow-y-auto p-2">
               <div
                 aria-hidden

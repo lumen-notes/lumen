@@ -192,7 +192,7 @@ export function CommandMenu() {
         }
       }}
     >
-      <div className="card-3 overflow-hidden">
+      <div className="card-3 overflow-hidden !rounded-xl">
         <Command.Input placeholder="Search or jump to…" value={query} onValueChange={setQuery} />
         <Command.List>
           {filteredNavItems.length ? (
