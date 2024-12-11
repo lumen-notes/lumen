@@ -2,9 +2,8 @@ import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
 import * as Portal from "@radix-ui/react-portal"
 import React from "react"
 import { cx } from "../utils/cx"
-import { Card } from "./card"
-import { Keys } from "./keys"
 import { CheckIcon16 } from "./icons"
+import { Keys } from "./keys"
 
 const Root = RadixDropdownMenu.Root
 
@@ -15,31 +14,32 @@ type ContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
 }
 
 const Content = React.forwardRef<HTMLDivElement, ContentProps>(
-  ({ children, minWidth = "16rem", ...props }, ref) => (
+  ({ children, minWidth = 256, ...props }, ref) => (
     <Portal.Root>
-      <RadixDropdownMenu.Content ref={ref} asChild align="start" sideOffset={4} {...props}>
-        <Card
-          elevation={2}
-          className={cx(
-            "z-20 max-h-[48svh] scroll-py-1 overflow-auto rounded-md p-1 animate-in fade-in zoom-in-95 after:rounded-md",
-            // Set transform-origin for every combination of side and align
-            "data-[side=bottom]:data-[align=center]:origin-top",
-            "data-[side=bottom]:data-[align=end]:origin-top-right",
-            "data-[side=bottom]:data-[align=start]:origin-top-left",
-            "data-[side=left]:data-[align=center]:origin-right",
-            "data-[side=left]:data-[align=end]:origin-bottom-right",
-            "data-[side=left]:data-[align=start]:origin-top-right",
-            "data-[side=right]:data-[align=center]:origin-left",
-            "data-[side=right]:data-[align=end]:origin-bottom-left",
-            "data-[side=right]:data-[align=start]:origin-top-left",
-            "data-[side=top]:data-[align=center]:origin-bottom",
-            "data-[side=top]:data-[align=end]:origin-bottom-right",
-            "data-[side=top]:data-[align=start]:origin-bottom-left",
-          )}
-          style={{ minWidth }}
-        >
-          {children}
-        </Card>
+      <RadixDropdownMenu.Content
+        ref={ref}
+        align="start"
+        sideOffset={4}
+        {...props}
+        className={cx(
+          "card-2 place-items-strech z-20 grid overflow-hidden rounded-lg animate-in fade-in zoom-in-95",
+          // Set transform-origin for every combination of side and align
+          "data-[side=bottom]:data-[align=center]:origin-top",
+          "data-[side=bottom]:data-[align=end]:origin-top-right",
+          "data-[side=bottom]:data-[align=start]:origin-top-left",
+          "data-[side=left]:data-[align=center]:origin-right",
+          "data-[side=left]:data-[align=end]:origin-bottom-right",
+          "data-[side=left]:data-[align=start]:origin-top-right",
+          "data-[side=right]:data-[align=center]:origin-left",
+          "data-[side=right]:data-[align=end]:origin-bottom-left",
+          "data-[side=right]:data-[align=start]:origin-top-left",
+          "data-[side=top]:data-[align=center]:origin-bottom",
+          "data-[side=top]:data-[align=end]:origin-bottom-right",
+          "data-[side=top]:data-[align=start]:origin-bottom-left",
+        )}
+        style={{ minWidth }}
+      >
+        <div className="grid max-h-[48svh] scroll-py-1 overflow-auto p-1">{children}</div>
       </RadixDropdownMenu.Content>
     </Portal.Root>
   ),
@@ -84,9 +84,9 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         ) : null}
         {selected !== undefined ? (
           selected ? (
-            <CheckIcon16 className="-m-1 text-text-secondary" />
+            <CheckIcon16 className="text-text-secondary" />
           ) : (
-            <div className="-m-1 h-4 w-4" />
+            <div className="h-4 w-4" />
           )
         ) : null}
       </>
@@ -96,7 +96,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer items-center gap-5 rounded-sm px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:px-4",
+          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:gap-4 coarse:px-4",
           className,
         )}
         asChild={Boolean(href)}
@@ -109,7 +109,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
 )
 
 const Separator = () => {
-  return <RadixDropdownMenu.Separator className="m-1 h-px bg-border-secondary" />
+  return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary coarse:mx-4" />
 }
 
 export const DropdownMenu = Object.assign(Root, {

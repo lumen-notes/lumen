@@ -2,16 +2,15 @@ import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
 import { userEvent, within } from "@storybook/testing-library"
 import React from "react"
-import { Card } from "./card"
 import { Markdown, MarkdownProps } from "./markdown"
 
 export default {
   title: "Markdown",
   component: Markdown,
   render: (args: MarkdownProps) => (
-    <Card className="mx-auto max-w-2xl p-4">
+    <div className="card-1 mx-auto max-w-2xl p-4">
       <Markdown {...args} />
-    </Card>
+    </div>
   ),
 }
 
@@ -276,9 +275,9 @@ export const TaskList: StoryObj<typeof Markdown> = {
   },
   render: (args: MarkdownProps) => {
     return (
-      <Card className="mx-auto max-w-2xl p-4">
+      <div className="card-1 mx-auto max-w-2xl p-4">
         <MarkdownWithState>{args.children}</MarkdownWithState>
-      </Card>
+      </div>
     )
   },
   // TODO: Fix this test

@@ -25,7 +25,7 @@
 }
 
 [cmdk-group-heading] {
-  @apply px-3 py-2 leading-4 text-text-secondary;
+  @apply flex h-8 items-center px-3 text-sm text-text-secondary;
 }
 
 [cmdk-group]:not(:first-child) {
@@ -33,7 +33,7 @@
 }
 
 [cmdk-item] {
-  @apply cursor-default rounded-sm px-3 py-3 leading-4;
+  @apply cursor-default rounded px-3 py-3 leading-4;
 }
 
 [cmdk-item][aria-selected] {

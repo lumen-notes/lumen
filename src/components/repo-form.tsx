@@ -2,19 +2,19 @@ import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom } from "../global-state"
 import { GitHubRepository } from "../schema"
+import { cx } from "../utils/cx"
 import { Button } from "./button"
-import { Card } from "./card"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { RadioGroup } from "./radio-group"
 import { TextInput } from "./text-input"
-import { cx } from "../utils/cx"
 
 type RepoFormProps = {
+  className?: string
   onSubmit?: (repo: GitHubRepository) => void
   onCancel?: () => void
 }
 
-export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
+export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -101,47 +101,50 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
   }
 
   return (
-    <Card className="p-4">
-      <form
-        id="github-form"
-        className="flex flex-col gap-6 @container"
-        onSubmit={async (event) => {
-          event.preventDefault()
+    <form
+      id="github-form"
+      className={cx("flex flex-col gap-6 @container", className)}
+      onSubmit={async (event) => {
+        event.preventDefault()
 
-          const formData = new FormData(event.currentTarget)
-          const repoType = String(formData.get("repo-type"))
-          const owner = String(formData.get("repo-owner")).trim()
-          const name = String(formData.get("repo-name")).trim()
+        const formData = new FormData(event.currentTarget)
+        const repoType = String(formData.get("repo-type"))
+        const owner = String(formData.get("repo-owner")).trim()
+        const name = String(formData.get("repo-name")).trim()
 
-          if (repoType === "new") {
-            await createRepo({ owner, name })
-          } else {
-            await selectExistingRepo({ owner, name })
-          }
-        }}
+        if (repoType === "new") {
+          await createRepo({ owner, name })
+        } else {
+          await selectExistingRepo({ owner, name })
+        }
+      }}
+    >
+      <RadioGroup
+        value={repoType}
+        onValueChange={(value) => setRepoType(value as "new" | "existing")}
+        className="flex flex-col gap-3 coarse:gap-4"
+        name="repo-type"
       >
-        <RadioGroup
-          value={repoType}
-          onValueChange={(value) => setRepoType(value as "new" | "existing")}
-          className="flex flex-col gap-3 coarse:gap-4"
-          name="repo-type"
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroup.Item id="repo-existing" value="existing" />
-            <label htmlFor="repo-existing" className="leading-4">
-              Select an existing repository
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroup.Item id="repo-new" value="new" />
-            <label htmlFor="repo-new" className="leading-4">
-              Create a new repository
-            </label>
-          </div>
-        </RadioGroup>
-        <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="repo-existing" value="existing" />
+          <label htmlFor="repo-existing" className="leading-4">
+            Select an existing repository
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="repo-new" value="new" />
+          <label htmlFor="repo-new" className="leading-4">
+            Create a new repository
+          </label>
+        </div>
+      </RadioGroup>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-2">
           <div className="grid flex-grow gap-2">
-            <label htmlFor="repo-owner" className="justify-self-start leading-4">
+            <label
+              htmlFor="repo-owner"
+              className="justify-self-start text-sm leading-4 text-text-secondary"
+            >
               Repository owner
             </label>
             <TextInput
@@ -153,7 +156,10 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             />
           </div>
           <div className="grid flex-grow gap-2">
-            <label htmlFor="repo-name" className="justify-self-start leading-4">
+            <label
+              htmlFor="repo-name"
+              className="justify-self-start text-sm leading-4 text-text-secondary"
+            >
               Repository name
             </label>
             <TextInput
@@ -165,39 +171,37 @@ export function RepoForm({ onSubmit, onCancel }: RepoFormProps) {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-shrink-0 gap-2 sm:ml-auto">
-            {onCancel ? (
-              <Button className="w-full" onClick={onCancel}>
-                Cancel
-              </Button>
-            ) : null}
-            <Button
-              type="submit"
-              className="relative w-full flex-grow"
-              variant="primary"
-              disabled={isLoading}
-            >
-              <span className={cx({ invisible: isLoading })}>
-                {repoType === "new" ? "Create" : "Select"}
-              </span>
-              {isLoading ? (
-                <span className="absolute inset-0 grid place-items-center">
-                  <LoadingIcon16 />
-                </span>
-              ) : null}
-            </Button>
-          </div>
-          {error ? (
-            <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
-              <div className="grid h-6 flex-shrink-0 place-items-center">
-                <ErrorIcon16 />
-              </div>
-              <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
+        {error ? (
+          <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
+            <div className="grid h-6 flex-shrink-0 place-items-center">
+              <ErrorIcon16 />
             </div>
+            <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
+          </div>
+        ) : null}
+      </div>
+      <div className="flex gap-2 @lg:ml-auto">
+        {onCancel ? (
+          <Button className="w-full" onClick={onCancel}>
+            Cancel
+          </Button>
+        ) : null}
+        <Button
+          type="submit"
+          className="relative w-full flex-grow"
+          variant="primary"
+          disabled={isLoading}
+        >
+          <span className={cx({ invisible: isLoading })}>
+            {repoType === "new" ? "Create" : "Select"}
+          </span>
+          {isLoading ? (
+            <span className="absolute inset-0 grid place-items-center">
+              <LoadingIcon16 />
+            </span>
           ) : null}
-        </div>
-      </form>
-    </Card>
+        </Button>
+      </div>
+    </form>
   )
 }

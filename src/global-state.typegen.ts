@@ -73,7 +73,7 @@
 "resolveUser": "xstate.init";
 "writeFiles": "WRITE_FILES";
         };
-        matchesStates: "resolvingUser" | "signedIn" | "signedIn.cloned" | "signedIn.cloned.change" | "signedIn.cloned.change.deletingFile" | "signedIn.cloned.change.idle" | "signedIn.cloned.change.writingFiles" | "signedIn.cloned.sync" | "signedIn.cloned.sync.checkingStatus" | "signedIn.cloned.sync.error" | "signedIn.cloned.sync.pulling" | "signedIn.cloned.sync.pushing" | "signedIn.cloned.sync.success" | "signedIn.cloningRepo" | "signedIn.empty" | "signedIn.resolvingRepo" | "signedOut" | { "signedIn"?: "cloned" | "cloningRepo" | "empty" | "resolvingRepo" | { "cloned"?: "change" | "sync" | { "change"?: "deletingFile" | "idle" | "writingFiles";
+        matchesStates: "resolvingUser" | "signedIn" | "signedIn.cloned" | "signedIn.cloned.change" | "signedIn.cloned.change.deletingFile" | "signedIn.cloned.change.idle" | "signedIn.cloned.change.writingFiles" | "signedIn.cloned.sync" | "signedIn.cloned.sync.checkingStatus" | "signedIn.cloned.sync.error" | "signedIn.cloned.sync.pulling" | "signedIn.cloned.sync.pushing" | "signedIn.cloned.sync.success" | "signedIn.cloningRepo" | "signedIn.notCloned" | "signedIn.resolvingRepo" | "signedOut" | { "signedIn"?: "cloned" | "cloningRepo" | "notCloned" | "resolvingRepo" | { "cloned"?: "change" | "sync" | { "change"?: "deletingFile" | "idle" | "writingFiles";
 "sync"?: "checkingStatus" | "error" | "pulling" | "pushing" | "success"; }; }; };
         tags: never;
       }

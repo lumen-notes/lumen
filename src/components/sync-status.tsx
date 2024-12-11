@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useNetworkState } from "react-use"
 import { globalStateMachineAtom } from "../global-state"
@@ -6,10 +6,12 @@ import {
   CheckIcon12,
   CheckIcon8,
   CloseIcon12,
-  CloseIcon8,
+  XIcon8,
   OfflineIcon16,
   OfflineIcon24,
+  LoadingIcon12,
 } from "./icons"
+import { IconButton, IconButtonProps } from "./icon-button"
 
 const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.success"),
@@ -18,6 +20,31 @@ const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
 const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.error"),
 )
+
+const isClonedAtom = selectAtom(globalStateMachineAtom, (state) => state.matches("signedIn.cloned"))
+
+export function SyncIconButton(props: Omit<IconButtonProps, "aria-label">) {
+  const isCloned = useAtomValue(isClonedAtom)
+  const send = useSetAtom(globalStateMachineAtom)
+  const statusText = useSyncStatusText()
+  const { online } = useNetworkState()
+
+  if (!isCloned) return null
+
+  return (
+    <IconButton
+      aria-label={statusText}
+      disabled={!online}
+      {...props}
+      onClick={(event) => {
+        send({ type: "SYNC" })
+        props.onClick?.(event)
+      }}
+    >
+      <SyncStatusIcon size={16} />
+    </IconButton>
+  )
+}
 
 export function useSyncStatusText() {
   const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
@@ -77,10 +104,8 @@ function SuccessIcon24() {
 
 function PendingIcon16() {
   return (
-    <div className="rounded-full bg-[var(--yellow-11)] text-bg">
-      <svg className="animate-spin" viewBox="0 0 16" width="16" height="16" fill="currentColor">
-        <path d="M8 3a5 5 0 1 0 5 5h-1.5A3.5 3.5 0 1 1 8 4.5V3Z" />
-      </svg>
+    <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--yellow-11)] text-bg">
+      <LoadingIcon12 />
     </div>
   )
 }
@@ -98,7 +123,7 @@ function PendingIcon24() {
 function ErrorIcon16() {
   return (
     <div className="grid h-4 w-4 place-items-center rounded-full bg-[var(--red-11)] text-bg">
-      <CloseIcon8 />
+      <XIcon8 />
     </div>
   )
 }
