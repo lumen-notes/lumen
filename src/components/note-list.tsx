@@ -287,7 +287,6 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
 }
 
 function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick?: () => void }) {
-  const [angle, setAngle] = React.useState(0)
   const [number, setNumber] = React.useState(() => Math.floor(Math.random() * 6) + 1)
   return (
     <IconButton
@@ -295,12 +294,11 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
       aria-label="Roll the dice"
       className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
       onClick={() => {
-        setAngle((angle) => angle + 180)
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
       }}
     >
-      <Dice number={number} angle={angle} className="group-active/dice:-translate-y-1" />
+      <Dice number={number} className="group-hover/dice:-rotate-12" />
     </IconButton>
   )
 }

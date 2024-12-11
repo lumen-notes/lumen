@@ -188,7 +188,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
         ) : null}
         <Button
           type="submit"
-          className="relative w-full flex-grow active:scale-[98%]"
+          className="relative w-full flex-grow"
           variant="primary"
           disabled={isLoading}
         >

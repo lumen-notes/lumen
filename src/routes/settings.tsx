@@ -93,7 +93,7 @@ function GitHubSection() {
           ) : null}
           {isRepoCloned && !isEditingRepo && githubRepo ? (
             <div className="flex items-center justify-between gap-4">
-              <div className="flex w-0 flex-grow flex-col gap-1">
+              <div className="flex w-0 flex-grow flex-col items-start gap-1">
                 <span className="text-sm leading-4 text-text-secondary">Repository</span>
                 <a
                   href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}

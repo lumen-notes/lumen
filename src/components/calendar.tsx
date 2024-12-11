@@ -56,14 +56,12 @@ export function Calendar({
             <IconButton
               aria-label="Previous week"
               className="active:bg-bg-tertiary"
-              disablePressAnimation
               onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
             >
               <ChevronLeftIcon16 />
             </IconButton>
             <Button
               className="bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary"
-              disablePressAnimation
               onClick={() => {
                 const today = new Date()
                 setStartOfWeek(isMonday(today) ? today : previousMonday(today))
@@ -83,7 +81,6 @@ export function Calendar({
             <IconButton
               aria-label="Next week"
               className="active:bg-bg-tertiary"
-              disablePressAnimation
               onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
             >
               <ChevronRightIcon16 />

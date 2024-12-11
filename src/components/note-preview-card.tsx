@@ -62,7 +62,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   if (!note) return null
 
   return (
-    <div className="group relative transition-transform duration-100 [&:has(a:active)]:scale-[98%]">
+    <div className="group relative">
       <Link
         to="/notes/$"
         params={{ _splat: id }}

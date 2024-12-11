@@ -49,7 +49,6 @@ function Segment({ className, selected, ...props }: SegmentedControlSegmentProps
             : "bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary",
           className,
         )}
-        disablePressAnimation
         {...props}
       />
     </li>

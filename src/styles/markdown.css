@@ -79,6 +79,13 @@
   @apply pl-6;
 }
 
+@media (pointer: coarse) {
+  .markdown ul,
+  .markdown ol {
+    @apply pl-7;
+  }
+}
+
 .markdown ul ul,
 .markdown ul ol,
 .markdown ol ul,
