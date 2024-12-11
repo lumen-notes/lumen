@@ -43,13 +43,14 @@ function RootComponent() {
   return (
     <div
       className={cx(
-        "grid h-screen w-screen pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]",
+        "grid h-screen w-screen bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]",
         isSignedOut && "grid-rows-[auto_1fr_auto]",
       )}
+      data-vaul-drawer-wrapper=""
     >
       {isSignedOut ? (
         <div className="flex flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2">
-          <span className="text-text-secondary sm:px-2">
+          <span className="sm:px-2">
             Lumen is in <span className="italic">read-only</span> mode.
             <span className="hidden md:inline"> Sign in to start writing notes.</span>
           </span>

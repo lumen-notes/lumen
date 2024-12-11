@@ -184,7 +184,7 @@ export function CalendarFillIcon24({
         y={18}
         fontSize="10px"
         fill="currentColor"
-        className="font-mono font-semibold leading-none text-bg-inset"
+        className="font-mono font-semibold leading-none text-bg"
       >
         {children}
       </text>
