@@ -127,7 +127,7 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
                 }}
               />
               <IconButton
-                aria-label={layout === "grid" ? "View as list" : "View as grid"}
+                aria-label={layout === "grid" ? "List view" : "Grid view"}
                 className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
                 onClick={() => setLayout(layout === "grid" ? "list" : "grid")}
               >

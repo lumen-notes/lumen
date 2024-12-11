@@ -17,12 +17,13 @@ type Story = StoryObj<typeof NoteFavicon>
 const emptyNote: Note = {
   id: "1",
   content: "",
-  tags: [],
-  dates: [],
+  displayName: "1",
   frontmatter: {},
-  links: [],
   title: "",
   url: null,
+  links: [],
+  dates: [],
+  tags: [],
   openTasks: 0,
   backlinks: [],
 }

@@ -13,6 +13,7 @@ import {
 import { cx } from "../utils/cx"
 import { AppHeader, AppHeaderProps } from "./app-header"
 import { Sidebar } from "./sidebar"
+import { NavBar } from "./nav-bar"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -64,7 +65,11 @@ export function AppLayout({
 
   return (
     <div className="flex overflow-hidden">
-      {sidebar === "expanded" ? <Sidebar /> : null}
+      {sidebar === "expanded" ? (
+        <div className="hidden sm:grid">
+          <Sidebar />
+        </div>
+      ) : null}
       <div className="grid flex-grow grid-rows-[auto_1fr] overflow-hidden">
         <AppHeader
           {...props}
@@ -100,6 +105,9 @@ export function AppLayout({
           ) : null}
           {isRepoCloned || isSignedOut || disableGuard ? children : null}
         </main>
+        <div className="sm:hidden">
+          <NavBar />
+        </div>
       </div>
     </div>
   )

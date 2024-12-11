@@ -58,7 +58,7 @@ function RootComponent() {
       ) : null}
       <ScrollRestoration />
       <Outlet />
-      <DevBar />
+      {/* <DevBar /> */}
       <CommandMenu />
     </div>
   )
