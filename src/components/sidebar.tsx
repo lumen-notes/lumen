@@ -1,5 +1,4 @@
-import { Slot } from "@radix-ui/react-slot"
-import { Link, useRouter } from "@tanstack/react-router"
+import { Link, LinkComponentProps } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { notesAtom, sidebarAtom } from "../global-state"
@@ -43,54 +42,53 @@ export function Sidebar() {
         <SidebarFillIcon16 />
       </IconButton>
       <ul className="flex flex-col gap-1">
-        <NavLink pathname="/">
-          <Link to="/" search={{ query: undefined }}>
-            <NoteFillIcon16 data-active-icon />
-            <NoteIcon16 data-inactive-icon />
-            <span>Notes</span>
-          </Link>
+        <NavLink
+          to="/"
+          search={{ query: undefined }}
+          activeIcon={<NoteFillIcon16 />}
+          inactiveIcon={<NoteIcon16 />}
+        >
+          Notes
         </NavLink>
-        <NavLink pathname={`/notes/${todayString}`}>
-          <Link
-            to="/notes/$"
-            params={{ _splat: todayString }}
-            search={{
-              mode: hasDailyNote ? "read" : "write",
-              query: undefined,
-            }}
-          >
-            <CalendarDateFillIcon16 data-active-icon date={today.getDate()} />
-            <CalendarDateIcon16 data-inactive-icon date={today.getDate()} />
-            <span>Today</span>
-          </Link>
+        <NavLink
+          to="/notes/$"
+          params={{ _splat: todayString }}
+          search={{
+            mode: hasDailyNote ? "read" : "write",
+            query: undefined,
+          }}
+          activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
+          inactiveIcon={<CalendarDateIcon16 date={today.getDate()} />}
+        >
+          Today
         </NavLink>
-        <NavLink pathname={`/notes/${weekString}`}>
-          <Link
-            to="/notes/$"
-            params={{ _splat: weekString }}
-            search={{
-              mode: hasWeeklyNote ? "read" : "write",
-              query: undefined,
-            }}
-          >
-            <CalendarFillIcon16 data-active-icon />
-            <CalendarIcon16 data-inactive-icon />
-            <span>This week</span>
-          </Link>
+        <NavLink
+          to="/notes/$"
+          params={{ _splat: weekString }}
+          search={{
+            mode: hasWeeklyNote ? "read" : "write",
+            query: undefined,
+          }}
+          activeIcon={<CalendarFillIcon16 />}
+          inactiveIcon={<CalendarIcon16 />}
+        >
+          This week
         </NavLink>
-        <NavLink pathname="/tags">
-          <Link to="/tags" search={{ query: undefined }}>
-            <TagFillIcon16 data-active-icon />
-            <TagIcon16 data-inactive-icon />
-            <span>Tags</span>
-          </Link>
+        <NavLink
+          to="/tags"
+          search={{ query: undefined }}
+          activeIcon={<TagFillIcon16 />}
+          inactiveIcon={<TagIcon16 />}
+        >
+          Tags
         </NavLink>
-        <NavLink pathname="/settings">
-          <Link to="/settings">
-            <SettingsFillIcon16 data-active-icon />
-            <SettingsIcon16 data-inactive-icon />
-            <span>Settings</span>
-          </Link>
+        <NavLink
+          to="/settings"
+          search={{ query: undefined }}
+          activeIcon={<SettingsFillIcon16 />}
+          inactiveIcon={<SettingsIcon16 />}
+        >
+          Settings
         </NavLink>
       </ul>
     </div>
@@ -98,29 +96,29 @@ export function Sidebar() {
 }
 
 function NavLink({
-  pathname,
   className,
+  activeIcon,
+  inactiveIcon,
   children,
-}: {
-  pathname?: string
-  className?: string
+  ...props
+}: LinkComponentProps<"a"> & {
+  activeIcon: React.ReactNode
+  inactiveIcon: React.ReactNode
   children: React.ReactNode
 }) {
-  const router = useRouter()
-  const isActive = router.state.location.pathname === pathname
   return (
-    <Slot
-      aria-current={isActive ? "page" : undefined}
+    <Link
+      activeOptions={{ exact: true }}
+      activeProps={{ "aria-current": "page" }}
       className={cx(
-        "group/nav-link flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
-        // Show inactive icon when link is not active
-        "[&_[data-active-icon]]:hidden [&_[data-inactive-icon]]:block [&_[data-inactive-icon]]:text-text-secondary",
-        // Show active icon when link is active
-        "[&[aria-current=page]_[data-active-icon]]:block [&[aria-current=page]_[data-inactive-icon]]:hidden",
+        "flex h-8 items-center gap-3 rounded px-2 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
         className,
       )}
+      {...props}
     >
+      <span className="hidden [[aria-current=page]>&]:flex">{activeIcon}</span>
+      <span className="flex [[aria-current=page]>&]:hidden">{inactiveIcon}</span>
       {children}
-    </Slot>
+    </Link>
   )
 }
