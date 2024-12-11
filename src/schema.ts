@@ -10,6 +10,8 @@ export type Note = {
 
   // ↓ Parsed from the content
 
+  /** Depending on the content, either the title, id, or template name */
+  displayName: string
   /** The frontmatter of the markdown file */
   frontmatter: Record<string, unknown>
   /** If the markdown file contains an h1 (e.g. `# title`), we use that as the title */

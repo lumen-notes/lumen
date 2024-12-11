@@ -73,7 +73,10 @@ export function AppLayout({
         />
         <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
           {/* Invisible sentinel element that helps detect scroll position */}
-          <div ref={topSentinelRef} className="pointer-events-none absolute top-0 h-[1px] w-full" />
+          <div
+            ref={topSentinelRef}
+            className="pointer-events-none absolute inset-x-0 top-0 h-[1px]"
+          />
           {isRepoNotCloned && !disableGuard ? (
             <div className="flex h-full flex-col items-center p-4 pt-0 sm:justify-center sm:pb-10">
               <div className="mx-auto w-full max-w-lg">

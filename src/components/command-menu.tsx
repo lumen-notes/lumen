@@ -1,13 +1,14 @@
+import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
 import { useAtomValue } from "jotai"
-import { useCallback, useDeferredValue, useMemo, useState, useRef } from "react"
+import { useCallback, useDeferredValue, useMemo, useRef, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
-import { Note, templateSchema } from "../schema"
+import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
-import { removeLeadingEmoji } from "../utils/emoji"
 import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import {
@@ -21,8 +22,6 @@ import {
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
-import { useNavigate } from "@tanstack/react-router"
-import { useHotkeys } from "react-hotkeys-hook"
 
 export function CommandMenu() {
   const navigate = useNavigate()
@@ -407,7 +406,6 @@ function NoteItem({
   pinned: boolean
   onSelect: () => void
 }) {
-  const parsedTemplate = templateSchema.omit({ body: true }).safeParse(note.frontmatter.template)
   return (
     <CommandItem
       key={note.id}
@@ -417,11 +415,7 @@ function NoteItem({
     >
       <span className="flex items-center gap-2 truncate">
         {pinned ? <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" /> : null}
-        {parsedTemplate.success ? (
-          <span className="truncate">{parsedTemplate.data.name} template</span>
-        ) : (
-          <span className="truncate">{removeLeadingEmoji(note.title) || note.id}</span>
-        )}
+        <span className="truncate">{note.displayName}</span>
       </span>
     </CommandItem>
   )

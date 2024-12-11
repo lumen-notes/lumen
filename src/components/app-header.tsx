@@ -38,13 +38,8 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
   )
 
   return (
-    <div className="@container/header">
-      <header
-        className={cx(
-          "box-content flex h-10 items-center gap-2 px-2 @6xl/header:grid @6xl/header:grid-cols-3 coarse:h-14",
-          className,
-        )}
-      >
+    <div className={cx("@container/header", className)}>
+      <header className="flex h-10 items-center gap-2 px-2 @6xl/header:grid @6xl/header:grid-cols-3 coarse:h-14">
         <div className="hidden items-center empty:hidden sm:flex">
           {sidebar === "collapsed" ? (
             <IconButton

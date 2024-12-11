@@ -2,8 +2,6 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import React, { useDeferredValue, useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { parseQuery, useSearchNotes } from "../hooks/search"
-import { templateSchema } from "../schema"
-import { removeLeadingEmoji } from "../utils/emoji"
 import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { Button } from "./button"
@@ -240,11 +238,7 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
           {layout === "list" ? (
             <ul>
               {searchResults.slice(0, numVisibleNotes).map((note) => {
-                const parsedTemplate = templateSchema
-                  .omit({ body: true })
-                  .safeParse(note.frontmatter.template)
                 return (
-                  // TODO: Move this into a NoteItem component
                   <li key={note.id}>
                     <Link
                       to="/notes/$"
@@ -260,11 +254,7 @@ export function NoteList({ baseQuery = "", query, onQueryChange }: NoteListProps
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}
                       <span className="truncate text-text-secondary">
-                        <span className="text-text">
-                          {parsedTemplate.success
-                            ? `${parsedTemplate.data.name} template`
-                            : removeLeadingEmoji(note.title) || note.id}
-                        </span>
+                        <span className="text-text">{note.displayName}</span>
                       </span>
                     </Link>
                   </li>

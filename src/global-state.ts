@@ -31,6 +31,7 @@ import { checkIfPinned } from "./utils/pin"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
+import { removeLeadingEmoji } from "./utils/emoji"
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -565,7 +566,14 @@ export const notesAtom = atom((get) => {
   for (const filepath in markdownFiles) {
     const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
-    notes.set(id, { id, content, ...parseNote(content), backlinks: [] })
+    const parsedNote = parseNote(content)
+    const parsedTemplate = templateSchema
+      .omit({ body: true })
+      .safeParse(parsedNote.frontmatter?.template)
+    const displayName = parsedTemplate.success
+      ? `${parsedTemplate.data.name} template`
+      : removeLeadingEmoji(parsedNote.title) || id
+    notes.set(id, { id, content, displayName, ...parsedNote, backlinks: [] })
   }
 
   // Derive backlinks
@@ -587,7 +595,7 @@ export const notesAtom = atom((get) => {
 
 export const pinnedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].filter((note) => checkIfPinned(note.content))
+  return [...notes.values()].filter((note) => checkIfPinned(note.content)).reverse()
 })
 
 export const sortedNotesAtom = atom((get) => {
