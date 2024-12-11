@@ -1,11 +1,12 @@
 import { Link, Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
+import { selectAtom } from "jotai/utils"
 import { useEvent, useNetworkState } from "react-use"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
+import { ErrorIcon16 } from "../components/icons"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
-import { cx } from "../utils/cx"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -23,9 +24,12 @@ function NotFoundComponent() {
   )
 }
 
+const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
+
 function RootComponent() {
   useThemeColor()
   const isSignedOut = useAtomValue(isSignedOutAtom)
+  const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
 
@@ -42,14 +46,11 @@ function RootComponent() {
 
   return (
     <div
-      className={cx(
-        "grid h-screen w-screen bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]",
-        isSignedOut && "grid-rows-[auto_1fr_auto]",
-      )}
+      className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]"
       data-vaul-drawer-wrapper=""
     >
       {isSignedOut ? (
-        <div className="flex flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:m-0 sm:flex-row sm:items-center sm:p-2">
+        <div className="flex flex-shrink-0 flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:flex-row sm:items-center sm:p-2">
           <span className="sm:px-2">
             Lumen is in <span className="italic">read-only</span> mode.
             <span className="hidden md:inline"> Sign in to start writing notes.</span>
@@ -57,8 +58,18 @@ function RootComponent() {
           <SignInButton />
         </div>
       ) : null}
+      {error ? (
+        <div className="flex flex-shrink-0 items-start gap-2 border-b border-border-secondary px-4 py-2 text-text-danger">
+          <div className="grid h-6 flex-shrink-0 place-items-center">
+            <ErrorIcon16 />
+          </div>
+          <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
+        </div>
+      ) : null}
       <ScrollRestoration />
-      <Outlet />
+      <div className="grid flex-grow overflow-hidden">
+        <Outlet />
+      </div>
       <DevBar />
       <CommandMenu />
     </div>
