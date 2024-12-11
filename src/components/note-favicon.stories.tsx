@@ -26,8 +26,10 @@ export const IsTemplate: Story = {
     noteId: "1",
     content: `---
 template:
-  name: example
----`,
+  name: Example
+---
+
+# Example`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-template"),
 }
@@ -53,7 +55,9 @@ export const HasIsbn: Story = {
     noteId: "1",
     content: `---
 isbn: 9781542866507
----`,
+---
+
+# How to Take Smart Notes`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-isbn"),
 }
@@ -71,7 +75,9 @@ export const HasGithub: Story = {
     noteId: "1",
     content: `---
 github: colebemis
----`,
+---
+
+# Cole Bemis`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-github"),
 }
