@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useDeferredValue, useMemo } from "react"
 import { AppLayout } from "../components/app-layout"
+import { TagIcon16 } from "../components/icons"
 import { Link } from "../components/link"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
@@ -37,7 +38,7 @@ function RouteComponent() {
   const tagTree = useMemo(() => buildTagTree(searchResults), [searchResults])
 
   return (
-    <AppLayout title="Tags">
+    <AppLayout title="Tags" icon={<TagIcon16 />}>
       <div className="flex flex-col gap-4 p-4 pt-0">
         <div className="flex flex-col gap-2">
           <SearchInput

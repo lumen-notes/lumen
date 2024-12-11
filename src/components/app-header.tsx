@@ -9,11 +9,12 @@ import { SyncIconButton } from "./sync-status"
 
 export type AppHeaderProps = {
   title: React.ReactNode
+  icon: React.ReactNode
   className?: string
   actions?: React.ReactNode
 }
 
-export function AppHeader({ title, className, actions }: AppHeaderProps) {
+export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
 
@@ -42,7 +43,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
 
   return (
     <div className={cx("@container/header", className)}>
-      <header className="flex h-10 items-center gap-2 px-2 @6xl/header:grid @6xl/header:grid-cols-3 coarse:h-14">
+      <header className="flex h-10 items-center gap-2 px-2 coarse:h-14">
         <div className="hidden items-center empty:hidden sm:flex">
           {sidebar === "collapsed" ? (
             <IconButton
@@ -72,10 +73,11 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
             <ArrowRightIcon16 className="transition-transform group-active:translate-x-0.5" />
           </IconButton>
         </div>
-        <div className="col-start-2 w-0 flex-grow justify-self-center px-2 @6xl/header:w-full @6xl/header:text-center">
-          {title}
+        <div className="flex w-0 flex-grow items-center gap-3 px-2">
+          <div className="flex flex-shrink-0 text-text-secondary">{icon}</div>
+          <div className="truncate">{title}</div>
         </div>
-        <div className="col-start-3 flex items-center gap-2 justify-self-end">
+        <div className="flex items-center gap-2 justify-self-end">
           {actions ? (
             <>
               <div className="flex items-center">{actions}</div>

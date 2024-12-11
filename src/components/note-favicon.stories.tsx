@@ -1,7 +1,6 @@
 import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
 import { within } from "@storybook/testing-library"
-import { Note } from "../schema"
 import { NoteFavicon } from "./note-favicon"
 
 export default {
@@ -14,91 +13,65 @@ export default {
 
 type Story = StoryObj<typeof NoteFavicon>
 
-const emptyNote: Note = {
-  id: "1",
-  content: "",
-  displayName: "1",
-  frontmatter: {},
-  title: "",
-  url: null,
-  links: [],
-  dates: [],
-  tags: [],
-  openTasks: 0,
-  backlinks: [],
-}
-
 export const Default: Story = {
   args: {
-    note: emptyNote,
+    noteId: "1",
+    content: "",
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-default"),
 }
 
 export const IsTemplate: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      frontmatter: {
-        template: {
-          name: "example",
-        },
-      },
-    },
+    noteId: "1",
+    content: `---
+template:
+  name: example
+---`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-template"),
 }
 
 export const IsDailyNote: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      id: "2023-07-11",
-    },
+    noteId: "2023-07-11",
+    content: "",
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-daily"),
 }
 
 export const IsWeeklyNote: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      id: "2023-W07",
-    },
+    noteId: "2023-W07",
+    content: "",
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-weekly"),
 }
 
 export const HasIsbn: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      frontmatter: {
-        isbn: 9781542866507,
-      },
-    },
+    noteId: "1",
+    content: `---
+isbn: 9781542866507
+---`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-isbn"),
 }
 
 export const HasUrl: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      url: "https://google.com",
-    },
+    noteId: "1",
+    content: `# [Google](https://google.com)`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-url"),
 }
 
 export const HasGithub: Story = {
   args: {
-    note: {
-      ...emptyNote,
-      frontmatter: {
-        github: "colebemis",
-      },
-    },
+    noteId: "1",
+    content: `---
+github: colebemis
+---`,
   },
   play: async ({ canvasElement }) => expectFavicon(canvasElement, "favicon-github"),
 }

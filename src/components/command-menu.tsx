@@ -419,7 +419,7 @@ function NoteItem({
     <CommandItem
       key={note.id}
       value={note.id}
-      icon={<NoteFavicon note={note} />}
+      icon={<NoteFavicon noteId={note.id} content={note.content} />}
       onSelect={onSelect}
     >
       <span className="flex items-center gap-2 truncate">

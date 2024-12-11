@@ -7,6 +7,8 @@ import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
 import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
+import { useRegisterSW } from "virtual:pwa-register/react"
+import { Button } from "../components/button"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -44,6 +46,26 @@ function RootComponent() {
     send({ type: "SYNC" })
   })
 
+  // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(registration) {
+      console.log("SW registered: " + registration)
+
+      if (registration) {
+        // Check for updates every hour
+        setInterval(() => {
+          registration.update()
+        }, 60 * 60 * 1000)
+      }
+    },
+    onRegisterError(error) {
+      console.error("SW registration error", error)
+    },
+  })
+
   return (
     <div
       className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]"
@@ -71,6 +93,16 @@ function RootComponent() {
         <Outlet />
       </div>
       <DevBar />
+      {needRefresh ? (
+        <div className="card-2 absolute bottom-16 right-2 z-20 flex items-center justify-between gap-4 p-1 pl-4 sm:bottom-2">
+          <div className="flex items-center gap-3">
+            {/* Dot to draw attention */}
+            <div aria-hidden className="h-2 w-2 rounded-full bg-border-focus" />
+            New version available
+          </div>
+          <Button onClick={() => updateServiceWorker(true)}>Update</Button>
+        </div>
+      ) : null}
       <CommandMenu />
     </div>
   )
@@ -83,8 +115,8 @@ function DevBar() {
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-16 right-2 flex h-6 items-center rounded bg-bg sm:bottom-2">
-      <div className="flex h-6 items-center gap-1.5 rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
+    <div className="fixed bottom-16 left-2 flex h-6 items-center rounded bg-bg sm:bottom-2">
+      <div className="flex h-6 items-center gap-1.5 whitespace-nowrap rounded bg-bg-secondary px-2 font-mono text-sm text-text-secondary">
         <span>{formatState(state.value)}</span>
         <span className="text-text-tertiary">·</span>
         <CurrentBreakpoint />

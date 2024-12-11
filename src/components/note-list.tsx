@@ -257,7 +257,7 @@ export function NoteList({
                       }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >
-                      <NoteFavicon note={note} className="mr-3" />
+                      <NoteFavicon noteId={note.id} content={note.content} className="mr-3" />
                       {checkIfPinned(note.content) ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}

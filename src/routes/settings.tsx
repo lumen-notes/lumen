@@ -6,7 +6,7 @@ import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
 import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
-import { LoadingIcon16 } from "../components/icons"
+import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/settings")({
 
 function RouteComponent() {
   return (
-    <AppLayout title="Settings" disableGuard>
+    <AppLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
       <div className="p-4">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />

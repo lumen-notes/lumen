@@ -24,6 +24,7 @@ import {
   EyeIcon16,
   FullwidthIcon16,
   MoreIcon16,
+  NoteIcon16,
   PinFillIcon12,
   PinFillIcon16,
   PinIcon16,
@@ -31,10 +32,11 @@ import {
   TrashIcon16,
   UndoIcon16,
 } from "../components/icons"
-import { removeFrontmatterComments } from "../components/insert-template"
+import { InsertTemplateDialog, removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
+import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
 import { SegmentedControl } from "../components/segmented-control"
 import {
@@ -60,7 +62,6 @@ import {
 import { exportAsGist } from "../utils/export-as-gist"
 import { checkIfPinned, togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import { InsertTemplateDialog } from "../components/insert-template"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -117,7 +118,7 @@ function RouteComponent() {
   }
 
   return (
-    <AppLayout title={<PageTitle noteId={noteId ?? ""} />}>
+    <AppLayout title={<PageTitle noteId={noteId ?? ""} />} icon={<NoteIcon16 />}>
       <div>{/* TODO */}</div>
     </AppLayout>
   )
@@ -313,7 +314,7 @@ function NotePage() {
   return (
     <AppLayout
       title={
-        <span className="flex items-center gap-2 @6xl/header:justify-center">
+        <span className="flex items-center gap-2">
           {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
           <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
             <PageTitle noteId={noteId ?? ""} />
@@ -321,6 +322,7 @@ function NotePage() {
           {isDirty ? <DotIcon8 className="text-[var(--yellow-11)]" /> : null}
         </span>
       }
+      icon={<NoteFavicon noteId={noteId ?? ""} content={editorValue} />}
       actions={
         <div className="flex items-center gap-2">
           {!note || isDirty ? (

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { AppLayout } from "../components/app-layout"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { EditIcon16, MoreIcon16, TrashIcon16 } from "../components/icons"
+import { EditIcon16, MoreIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
 import { NoteList } from "../components/note-list"
 import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
@@ -30,7 +30,8 @@ function RouteComponent() {
 
   return (
     <AppLayout
-      title={`#${tag}`}
+      title={tag}
+      icon={<TagIcon16 />}
       actions={
         <DropdownMenu modal={false}>
           <DropdownMenu.Trigger asChild>
