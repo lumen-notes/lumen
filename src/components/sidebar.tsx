@@ -1,4 +1,11 @@
-import { Link, useSearch, useRouter, useNavigate } from "@tanstack/react-router"
+import { Slot } from "@radix-ui/react-slot"
+import { Link, useNavigate, useRouter, useSearch } from "@tanstack/react-router"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
+import { notesAtom } from "../global-state"
+import { cx } from "../utils/cx"
+import { toDateString, toWeekString } from "../utils/date"
+import { IconButton } from "./icon-button"
 import {
   CalendarDateFillIcon16,
   CalendarDateIcon16,
@@ -12,13 +19,6 @@ import {
   TagFillIcon16,
   TagIcon16,
 } from "./icons"
-import { Slot } from "@radix-ui/react-slot"
-import { cx } from "../utils/cx"
-import { toDateString, toWeekString } from "../utils/date"
-import { IconButton } from "./icon-button"
-import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
-import { notesAtom } from "../global-state"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -129,23 +129,30 @@ export function Sidebar() {
   )
 }
 
-function NavLink({ pathname, children }: { pathname: string; children: React.ReactNode }) {
+function NavLink({
+  pathname,
+  className,
+  children,
+}: {
+  pathname?: string
+  className?: string
+  children: React.ReactNode
+}) {
   const router = useRouter()
   const isActive = router.state.location.pathname === pathname
   return (
-    <li>
-      <Slot
-        aria-current={isActive ? "page" : undefined}
-        className={cx(
-          "group/nav-link flex h-8 items-center gap-3 rounded px-2 transition-colors duration-100 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
-          // Show inactive icon when link is not active
-          "[&_[data-active-icon]]:hidden [&_[data-inactive-icon]]:block [&_[data-inactive-icon]]:text-text-secondary",
-          // Show active icon when link is active
-          "[&[aria-current=page]_[data-active-icon]]:block [&[aria-current=page]_[data-inactive-icon]]:hidden",
-        )}
-      >
-        {children}
-      </Slot>
-    </li>
+    <Slot
+      aria-current={isActive ? "page" : undefined}
+      className={cx(
+        "group/nav-link flex h-8 items-center gap-3 rounded px-2 transition-colors duration-100 hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:font-semibold",
+        // Show inactive icon when link is not active
+        "[&_[data-active-icon]]:hidden [&_[data-inactive-icon]]:block [&_[data-inactive-icon]]:text-text-secondary",
+        // Show active icon when link is active
+        "[&[aria-current=page]_[data-active-icon]]:block [&[aria-current=page]_[data-inactive-icon]]:hidden",
+        className,
+      )}
+    >
+      {children}
+    </Slot>
   )
 }

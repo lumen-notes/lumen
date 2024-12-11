@@ -53,10 +53,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
             onClick={() => {
               navigate({
                 to: ".",
-                search: (prev) => ({
-                  ...prev,
-                  sidebar: "expanded",
-                }),
+                search: (prev) => ({ ...prev, sidebar: "expanded" }),
                 replace: true,
               })
             }}
@@ -106,7 +103,7 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
                   params: { _splat: `${Date.now()}` },
                   search: {
                     mode: "write",
-                    width: "fixed",
+                    width: searchParams.width === "fill" ? "fill" : "fixed",
                     query: undefined,
                     sidebar: searchParams.sidebar === "collapsed" ? "collapsed" : "expanded",
                   },
@@ -119,16 +116,5 @@ export function AppHeader({ title, className, actions }: AppHeaderProps) {
         </div>
       </div>
     </header>
-  )
-}
-
-function NavMenuLink({ children }: { children: React.ReactNode }) {
-  return (
-    <NavMenu.Link
-      asChild
-      className="focus-ring flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10 coarse:gap-4 coarse:px-4 [&>svg]:text-text-secondary"
-    >
-      {children}
-    </NavMenu.Link>
   )
 }
