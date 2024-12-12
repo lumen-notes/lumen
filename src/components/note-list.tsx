@@ -4,7 +4,7 @@ import { useInView } from "react-intersection-observer"
 import { useDebounce } from "use-debounce"
 import { parseQuery, useSearchNotes } from "../hooks/search"
 import { checkIfPinned } from "../utils/pin"
-import { pluralize } from "../utils/pluralize"
+import { formatNumber, pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
@@ -205,7 +205,7 @@ export function NoteList({
                     }}
                   >
                     {tag}
-                    <span className="text-text-secondary">{frequency}</span>
+                    <span className="text-text-secondary">{formatNumber(frequency)}</span>
                   </PillButton>
                 ))}
                 {sortedTagFrequencies.length > numVisibleTags ? (
