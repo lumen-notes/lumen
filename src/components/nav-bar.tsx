@@ -1,7 +1,7 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
 import { ComponentPropsWithoutRef, forwardRef } from "react"
 import { Drawer } from "vaul"
-import { ArrowLeftIcon24, ArrowRightIcon24, MenuIcon24, PlusIcon24 } from "./icons"
+import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 
 export function NavBar() {
@@ -13,7 +13,7 @@ export function NavBar() {
       <Drawer.Root shouldScaleBackground>
         <Drawer.Trigger asChild>
           <NavButton aria-label="Open menu">
-            <MenuIcon24 />
+            <MenuIcon16 />
           </NavButton>
         </Drawer.Trigger>
         <Drawer.Portal>
@@ -31,10 +31,10 @@ export function NavBar() {
         </Drawer.Portal>
       </Drawer.Root>
       <NavButton aria-label="Go back" onClick={() => router.history.back()}>
-        <ArrowLeftIcon24 />
+        <ArrowLeftIcon16 />
       </NavButton>
       <NavButton aria-label="Go forward" onClick={() => router.history.forward()}>
-        <ArrowRightIcon24 />
+        <ArrowRightIcon16 />
       </NavButton>
       <NavButton
         aria-label="New note"
@@ -50,7 +50,7 @@ export function NavBar() {
           })
         }
       >
-        <PlusIcon24 />
+        <PlusIcon16 />
       </NavButton>
     </div>
   )
@@ -62,9 +62,10 @@ const NavButton = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<"button
       <button
         {...props}
         ref={ref}
-        className="focus-ring grid h-10 w-full place-items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary"
+        className="focus-ring grid h-8 w-full place-items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10"
       />
     )
   },
 )
+
 NavButton.displayName = "NavButton"
