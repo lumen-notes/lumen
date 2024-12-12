@@ -9,7 +9,7 @@ import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { CloseIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
+import { XIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
@@ -186,7 +186,7 @@ export function NoteList({
                         <span key={value}>{value}</span>
                       </React.Fragment>
                     ))}
-                    <CloseIcon12 className="-mr-0.5" />
+                    <XIcon12 className="-mr-0.5" />
                   </PillButton>
                 ))}
                 {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
