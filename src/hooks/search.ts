@@ -223,7 +223,6 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
         })
         break
 
-      case "is":
       case "type":
         value = qualifier.values.includes(item.type)
         break

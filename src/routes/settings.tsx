@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useState } from "react"
 import { useNetworkState } from "react-use"
@@ -45,6 +45,7 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 }
 
 function GitHubSection() {
+  const navigate = useNavigate()
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isRepoNotCloned = useAtomValue(isRepoNotClonedAtom)
@@ -74,7 +75,13 @@ function GitHubSection() {
               <span className="truncate">{githubUser.login}</span>
             </span>
           </div>
-          <Button className="flex-shrink-0" onClick={signOut}>
+          <Button
+            className="flex-shrink-0"
+            onClick={() => {
+              signOut()
+              navigate({ to: "/", search: { query: undefined, view: "grid" } })
+            }}
+          >
             Sign out
           </Button>
         </div>

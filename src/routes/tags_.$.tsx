@@ -5,6 +5,7 @@ import { IconButton } from "../components/icon-button"
 import { EditIcon16, MoreIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
 import { NoteList } from "../components/note-list"
 import { useDeleteTag, useRenameTag } from "../hooks/tag"
+import { LinkHighlightProvider } from "../components/link-highlight-provider"
 
 type RouteSearch = {
   query: string | undefined
@@ -85,18 +86,20 @@ function RouteComponent() {
       }
     >
       <div className="p-4 pt-0">
-        <NoteList
-          key={tag}
-          baseQuery={`tag:${tag}`}
-          query={query ?? ""}
-          view={view}
-          onQueryChange={(query) =>
-            navigate({ search: (prev) => ({ ...prev, query }), replace: true })
-          }
-          onViewChange={(view) =>
-            navigate({ search: (prev) => ({ ...prev, view }), replace: true })
-          }
-        />
+        <LinkHighlightProvider href={`/tags/${tag}`}>
+          <NoteList
+            key={tag}
+            baseQuery={`tag:${tag}`}
+            query={query ?? ""}
+            view={view}
+            onQueryChange={(query) =>
+              navigate({ search: (prev) => ({ ...prev, query }), replace: true })
+            }
+            onViewChange={(view) =>
+              navigate({ search: (prev) => ({ ...prev, view }), replace: true })
+            }
+          />
+        </LinkHighlightProvider>
       </div>
     </AppLayout>
   )

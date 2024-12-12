@@ -103,7 +103,7 @@ export const Markdown = React.memo(
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
-                  <Link to="/" search={{ query: "has:template", view: "grid" }}>
+                  <Link to="/" search={{ query: "type:template", view: "grid" }}>
                     Template
                   </Link>
                 </PillButton>
@@ -754,7 +754,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
         >
           {isFirst && note && online ? (
             <NoteFavicon
-              note={note} 
+              note={note}
               content={note.content}
               className="mr-2 align-sub [h1>a>&]:align-baseline"
               defaultFavicon={null}
@@ -771,7 +771,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           className=" card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         >
           {note ? (
-            <NotePreview>{note.content}</NotePreview>
+            <NotePreview note={note} />
           ) : (
             <span className="flex items-center gap-2 p-4 text-text-danger">
               <ErrorIcon16 />

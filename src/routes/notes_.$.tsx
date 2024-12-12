@@ -320,7 +320,7 @@ function NotePage() {
           <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
             <PageTitle note={parsedNote} />
           </span>
-          {isDirty ? <DotIcon8 className="text-[var(--yellow-11)]" /> : null}
+          {isDirty ? <DotIcon8 className="text-[var(--amber-11)]" /> : null}
         </span>
       }
       icon={<NoteFavicon note={parsedNote} />}

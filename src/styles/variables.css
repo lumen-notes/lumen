@@ -46,7 +46,7 @@
   --color-bg-secondary: var(--neutral-a3);
   --color-bg-tertiary: var(--neutral-a4);
   --color-bg-code-block: var(--neutral-3);
-  --color-bg-highlight: var(--yellow-a3);
+  --color-bg-highlight: var(--yellow-a4);
   --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
@@ -56,7 +56,7 @@
   --color-border-focus: var(--cyan-9);
 
   /* Syntax colors */
-  --color-syntax-yellow: var(--yellow-11);
+  --color-syntax-yellow: var(--yellow11);
   --color-syntax-red: var(--red-11);
   --color-syntax-purple: var(--purple-11);
   --color-syntax-green: var(--green-11);

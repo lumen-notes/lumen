@@ -177,7 +177,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
       displayName = formatWeek(id)
       break
     case "template":
-      displayName = (frontmatter.template as Template).name
+      displayName = `${(frontmatter.template as Template).name} template`
       break
     case "note":
       // If there's a title, use it as thedisplay name after removing any leading emoji

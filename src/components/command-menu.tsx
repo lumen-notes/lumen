@@ -2,10 +2,11 @@ import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
 import { useAtomValue } from "jotai"
+import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
-import { pinnedNotesAtom, tagSearcherAtom } from "../global-state"
+import { notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
 import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
@@ -23,6 +24,9 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 
+const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
+const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
+
 export function CommandMenu() {
   const navigate = useNavigate()
 
@@ -30,6 +34,8 @@ export function CommandMenu() {
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
+  const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
+  const getHasWeeklyNote = useAtomCallback(useCallback((get) => get(hasWeeklyNoteAtom), []))
 
   // Refs
   const prevActiveElement = useRef<HTMLElement>()
@@ -98,7 +104,7 @@ export function CommandMenu() {
               _splat: toDateString(new Date()),
             },
             search: {
-              mode: "read",
+              mode: getHasDailyNote() ? "read" : "write",
               query: undefined,
               view: "grid",
             },
@@ -115,7 +121,7 @@ export function CommandMenu() {
               _splat: toWeekString(new Date()),
             },
             search: {
-              mode: "read",
+              mode: getHasWeeklyNote() ? "read" : "write",
               query: undefined,
               view: "grid",
             },

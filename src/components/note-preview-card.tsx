@@ -74,7 +74,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           isDropdownOpen && "ring-2 ring-border",
         )}
       >
-        <NotePreview>{note?.content ?? ""}</NotePreview>
+        <NotePreview note={note} />
       </Link>
       <div
         className={cx(
