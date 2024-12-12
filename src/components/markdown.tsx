@@ -754,7 +754,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
         >
           {isFirst && note && online ? (
             <NoteFavicon
-              noteId={id}
+              note={note} 
               content={note.content}
               className="mr-2 align-sub [h1>a>&]:align-baseline"
               defaultFavicon={null}

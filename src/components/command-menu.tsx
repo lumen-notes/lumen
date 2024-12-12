@@ -10,7 +10,6 @@ import { useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
-import { checkIfPinned } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import {
   CalendarDateIcon16,
@@ -219,7 +218,7 @@ export function CommandMenu() {
                   key={note.id}
                   note={note}
                   // Since they're all pinned, we don't need to show the pin icon
-                  pinned={false}
+                  hidePinIcon
                   onSelect={handleSelect(() =>
                     navigate({
                       to: "/notes/$",
@@ -312,7 +311,6 @@ export function CommandMenu() {
                 <NoteItem
                   key={note.id}
                   note={note}
-                  pinned={checkIfPinned(note.content)}
                   onSelect={handleSelect(() =>
                     navigate({
                       to: "/notes/$",
@@ -408,22 +406,24 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
 
 function NoteItem({
   note,
-  pinned,
+  hidePinIcon,
   onSelect,
 }: {
   note: Note
-  pinned: boolean
+  hidePinIcon?: boolean
   onSelect: () => void
 }) {
   return (
     <CommandItem
       key={note.id}
       value={note.id}
-      icon={<NoteFavicon noteId={note.id} content={note.content} />}
+      icon={<NoteFavicon note={note} />}
       onSelect={onSelect}
     >
       <span className="flex items-center gap-2 truncate">
-        {pinned ? <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" /> : null}
+        {!hidePinIcon && note.pinned ? (
+          <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
+        ) : null}
         <span className="truncate">{note.displayName}</span>
       </span>
     </CommandItem>

@@ -2,7 +2,7 @@ import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { selectAtom, atomWithStorage } from "jotai/utils"
+import { atomWithStorage, selectAtom } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
@@ -27,11 +27,9 @@ import {
   isRepoSynced,
 } from "./utils/git"
 import { parseNote } from "./utils/parse-note"
-import { checkIfPinned } from "./utils/pin"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
-import { removeLeadingEmoji } from "./utils/emoji"
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -566,14 +564,7 @@ export const notesAtom = atom((get) => {
   for (const filepath in markdownFiles) {
     const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
-    const parsedNote = parseNote(content)
-    const parsedTemplate = templateSchema
-      .omit({ body: true })
-      .safeParse(parsedNote.frontmatter?.template)
-    const displayName = parsedTemplate.success
-      ? `${parsedTemplate.data.name} template`
-      : removeLeadingEmoji(parsedNote.title) || id
-    notes.set(id, { id, content, displayName, ...parsedNote, backlinks: [] })
+    notes.set(id, parseNote(id, content))
   }
 
   // Derive backlinks
@@ -595,7 +586,7 @@ export const notesAtom = atom((get) => {
 
 export const pinnedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].filter((note) => checkIfPinned(note.content)).reverse()
+  return [...notes.values()].filter((note) => note.pinned).reverse()
 })
 
 export const sortedNotesAtom = atom((get) => {

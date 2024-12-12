@@ -113,7 +113,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                       to={`/notes/$`}
                       params={{ _splat: note.id }}
                       search={{ mode: "read", query: undefined, view: "grid" }}
-                      icon={<NoteFavicon noteId={note.id} content={note.content} />}
+                      icon={<NoteFavicon note={note} />}
                     >
                       {note.displayName}
                     </NavLink>

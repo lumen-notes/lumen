@@ -3,13 +3,12 @@ import React, { useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { useDebounce } from "use-debounce"
 import { parseQuery, useSearchNotes } from "../hooks/search"
-import { checkIfPinned } from "../utils/pin"
 import { formatNumber, pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { XIcon12, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16 } from "./icons"
+import { GridIcon16, ListIcon16, PinFillIcon12, TagIcon16, XIcon12 } from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
@@ -257,8 +256,8 @@ export function NoteList({
                       }}
                       className="focus-ring flex items-center rounded-lg p-3 leading-4 hover:bg-bg-secondary coarse:p-4"
                     >
-                      <NoteFavicon noteId={note.id} content={note.content} className="mr-3" />
-                      {checkIfPinned(note.content) ? (
+                      <NoteFavicon note={note} className="mr-3" />
+                      {note.pinned ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}
                       <span className="truncate text-text-secondary">

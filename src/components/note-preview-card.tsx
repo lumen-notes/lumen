@@ -13,7 +13,7 @@ import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
 import { cx } from "../utils/cx"
 import { exportAsGist } from "../utils/export-as-gist"
-import { checkIfPinned, togglePin } from "../utils/pin"
+import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -53,7 +53,6 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
-  const isPinned = checkIfPinned(note?.content ?? "")
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
@@ -80,11 +79,11 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
       <div
         className={cx(
           "absolute right-1.5 top-1.5 rounded bg-bg-card opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 coarse:opacity-100",
-          isPinned && "!opacity-100",
+          note.pinned && "!opacity-100",
         )}
       >
         <IconButton
-          aria-label={isPinned ? "Unpin" : "Pin"}
+          aria-label={note.pinned ? "Unpin" : "Pin"}
           tooltipSide="left"
           disabled={isSignedOut}
           onClick={() => {
@@ -92,7 +91,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             saveNote({ id, content: togglePin(note.content) })
           }}
         >
-          {isPinned ? <PinFillIcon16 className=" text-[var(--orange-11)]" /> : <PinIcon16 />}
+          {note.pinned ? <PinFillIcon16 className=" text-[var(--orange-11)]" /> : <PinIcon16 />}
         </IconButton>
       </div>
       {note ? (

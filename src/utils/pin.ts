@@ -1,10 +1,3 @@
-import { parseFrontmatter } from "./parse-frontmatter"
-
-export function checkIfPinned(content: string): boolean {
-  const { frontmatter } = parseFrontmatter(content)
-  return frontmatter?.pinned === true
-}
-
 export function togglePin(content: string): string {
   // Define a regular expression to match the frontmatter block
   const frontmatterRegex = /^---\n([\s\S]*?)\n---/

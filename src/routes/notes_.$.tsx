@@ -60,7 +60,8 @@ import {
   isValidWeekString,
 } from "../utils/date"
 import { exportAsGist } from "../utils/export-as-gist"
-import { checkIfPinned, togglePin } from "../utils/pin"
+import { parseNote } from "../utils/parse-note"
+import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 
 type RouteSearch = {
@@ -84,28 +85,28 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned"),
 )
 
-function PageTitle({ noteId }: { noteId: string }) {
-  if (isValidDateString(noteId)) {
+function PageTitle({ note }: { note: Note }) {
+  if (note.type === "daily") {
     return (
       <span>
-        <span>{noteId}.md</span>
+        <span>{note.displayName}</span>
         <span className="mx-2 text-text-secondary">·</span>
-        <span className="text-text-secondary">{formatDateDistance(noteId)}</span>
+        <span className="text-text-secondary">{formatDateDistance(note.id)}</span>
       </span>
     )
   }
 
-  if (isValidWeekString(noteId)) {
+  if (note.type === "weekly") {
     return (
       <span>
-        <span>{noteId}.md</span>
+        <span>{note.displayName}</span>
         <span className="mx-2 text-text-secondary">·</span>
-        <span className="text-text-secondary">{formatWeekDistance(noteId)}</span>
+        <span className="text-text-secondary">{formatWeekDistance(note.id)}</span>
       </span>
     )
   }
 
-  return `${noteId}.md`
+  return note.displayName
 }
 
 function RouteComponent() {
@@ -118,7 +119,7 @@ function RouteComponent() {
   }
 
   return (
-    <AppLayout title={<PageTitle noteId={noteId ?? ""} />} icon={<NoteIcon16 />}>
+    <AppLayout title={`${noteId}.md`} icon={<NoteIcon16 />}>
       <div>{/* TODO */}</div>
     </AppLayout>
   )
@@ -177,8 +178,8 @@ function NotePage() {
         ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
         : "",
   })
-  const isPinned = useMemo(() => checkIfPinned(editorValue), [editorValue])
   const [editorSettings] = useEditorSettings()
+  const parsedNote = useMemo(() => parseNote(noteId ?? "", editorValue), [noteId, editorValue])
 
   // Layout
   const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
@@ -315,14 +316,14 @@ function NotePage() {
     <AppLayout
       title={
         <span className="flex items-center gap-2">
-          {isPinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
+          {parsedNote.pinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
           <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
-            <PageTitle noteId={noteId ?? ""} />
+            <PageTitle note={parsedNote} />
           </span>
           {isDirty ? <DotIcon8 className="text-[var(--yellow-11)]" /> : null}
         </span>
       }
-      icon={<NoteFavicon noteId={noteId ?? ""} content={editorValue} />}
+      icon={<NoteFavicon note={parsedNote} />}
       actions={
         <div className="flex items-center gap-2">
           {!note || isDirty ? (
@@ -379,13 +380,17 @@ function NotePage() {
                 ) : null}
                 <DropdownMenu.Item
                   icon={
-                    isPinned ? <PinFillIcon16 className="text-[var(--orange-11)]" /> : <PinIcon16 />
+                    parsedNote.pinned ? (
+                      <PinFillIcon16 className="text-[var(--orange-11)]" />
+                    ) : (
+                      <PinIcon16 />
+                    )
                   }
                   onSelect={() => {
                     setEditorValue(togglePin(editorValue))
                   }}
                 >
-                  {isPinned ? "Unpin" : "Pin"}
+                  {parsedNote.pinned ? "Unpin" : "Pin"}
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 {containerWidth > 800 && (
