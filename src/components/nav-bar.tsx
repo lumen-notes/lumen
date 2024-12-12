@@ -22,7 +22,7 @@ export function NavBar() {
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-[#00000066]" />
           <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col rounded-t-xl bg-bg-overlay">
-            <div className="flex-1 scroll-py-2 overflow-y-auto p-2">
+            <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-2">
               <div
                 aria-hidden
                 className="mx-auto mb-2 h-1 w-12 flex-shrink-0 rounded-full bg-border"

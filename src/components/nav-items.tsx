@@ -1,15 +1,17 @@
 import { Link, LinkComponentProps } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { createContext, useContext } from "react"
+import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import {
+  BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
   CalendarFillIcon16,
   CalendarIcon16,
+  MessageIcon16,
   NoteFillIcon16,
   NoteIcon16,
   SettingsFillIcon16,
@@ -35,91 +37,109 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
 
   return (
     <SizeContext.Provider value={size}>
-      <div className="flex flex-col gap-2">
-        <ul className="flex flex-col gap-1">
-          <li>
-            <NavLink
-              to="/"
-              search={{ query: undefined, view: "grid" }}
-              activeIcon={<NoteFillIcon16 />}
-              icon={<NoteIcon16 />}
-            >
-              Notes
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/notes/$"
-              params={{ _splat: todayString }}
-              search={{
-                mode: hasDailyNote ? "read" : "write",
-                query: undefined,
-                view: "grid",
-              }}
-              activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
-              icon={<CalendarDateIcon16 date={today.getDate()} />}
-            >
-              Today
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/notes/$"
-              params={{ _splat: weekString }}
-              search={{
-                mode: hasWeeklyNote ? "read" : "write",
-                query: undefined,
-                view: "grid",
-              }}
-              activeIcon={<CalendarFillIcon16 />}
-              icon={<CalendarIcon16 />}
-            >
-              This week
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/tags"
-              search={{ query: undefined }}
-              activeIcon={<TagFillIcon16 />}
-              icon={<TagIcon16 />}
-            >
-              Tags
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/settings"
-              search={{ query: undefined }}
-              activeIcon={<SettingsFillIcon16 />}
-              icon={<SettingsIcon16 />}
-            >
-              Settings
-            </NavLink>
-          </li>
-        </ul>
-        {pinnedNotes.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-              Pinned
+      <div className="flex flex-grow flex-col justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-1">
+            <li>
+              <NavLink
+                to="/"
+                search={{ query: undefined, view: "grid" }}
+                activeIcon={<NoteFillIcon16 />}
+                icon={<NoteIcon16 />}
+              >
+                Notes
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/notes/$"
+                params={{ _splat: todayString }}
+                search={{
+                  mode: hasDailyNote ? "read" : "write",
+                  query: undefined,
+                  view: "grid",
+                }}
+                activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
+                icon={<CalendarDateIcon16 date={today.getDate()} />}
+              >
+                Today
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/notes/$"
+                params={{ _splat: weekString }}
+                search={{
+                  mode: hasWeeklyNote ? "read" : "write",
+                  query: undefined,
+                  view: "grid",
+                }}
+                activeIcon={<CalendarFillIcon16 />}
+                icon={<CalendarIcon16 />}
+              >
+                This week
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/tags"
+                search={{ query: undefined }}
+                activeIcon={<TagFillIcon16 />}
+                icon={<TagIcon16 />}
+              >
+                Tags
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/settings"
+                search={{ query: undefined }}
+                activeIcon={<SettingsFillIcon16 />}
+                icon={<SettingsIcon16 />}
+              >
+                Settings
+              </NavLink>
+            </li>
+          </ul>
+          {pinnedNotes.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
+                Pinned
+              </div>
+              <ul className="flex flex-col gap-1">
+                {pinnedNotes.map((note) => (
+                  <li key={note.id}>
+                    <NavLink
+                      key={note.id}
+                      to={`/notes/$`}
+                      params={{ _splat: note.id }}
+                      search={{ mode: "read", query: undefined, view: "grid" }}
+                      icon={<NoteFavicon noteId={note.id} content={note.content} />}
+                    >
+                      {note.displayName}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="flex flex-col gap-1">
-              {pinnedNotes.map((note) => (
-                <li key={note.id}>
-                  <NavLink
-                    key={note.id}
-                    to={`/notes/$`}
-                    params={{ _splat: note.id }}
-                    search={{ mode: "read", query: undefined, view: "grid" }}
-                    icon={<NoteFavicon noteId={note.id} content={note.content} />}
-                  >
-                    {note.displayName}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
+        <div className="flex flex-col gap-1">
+          {/* <ExternalLink
+            href="https://uselumen.com"
+            icon={<BookIcon16 />}
+            className="mt-auto text-text-secondary"
+          >
+            Docs
+          </ExternalLink> */}
+          <ExternalLink
+            href="https://github.com/lumen-notes/lumen/issues/new"
+            icon={<MessageIcon16 />}
+            className="mt-auto text-text-secondary"
+          >
+            Send feedback
+          </ExternalLink>
+        </div>
       </div>
     </SizeContext.Provider>
   )
@@ -161,5 +181,32 @@ function NavLink({
       </span>
       <span className="truncate">{children}</span>
     </Link>
+  )
+}
+
+function ExternalLink({
+  className,
+  icon,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<"a"> & {
+  icon: React.ReactNode
+}) {
+  const size = useContext(SizeContext)
+
+  return (
+    <a
+      className={cx(
+        "focus-ring flex items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary",
+        size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
+        className,
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
+      <span className={cx("flex flex-shrink-0")}>{icon}</span>
+      <span className="truncate">{children}</span>
+    </a>
   )
 }

@@ -9,6 +9,8 @@ import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { Button } from "../components/button"
+import { useHotkeys } from "react-hotkeys-hook"
+import { useState } from "react"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -66,6 +68,15 @@ function RootComponent() {
     },
   })
 
+  const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
+
+  useHotkeys("ctrl+`", () => setIsDevBarEnabled((prev) => !prev), {
+    enabled: import.meta.env.DEV,
+    preventDefault: true,
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
+
   return (
     <div
       className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]"
@@ -92,7 +103,7 @@ function RootComponent() {
       <div className="grid flex-grow overflow-hidden">
         <Outlet />
       </div>
-      <DevBar hidden />
+      <DevBar enabled={isDevBarEnabled} />
       {needRefresh ? (
         <div className="card-2 absolute bottom-16 right-2 z-20 flex items-center justify-between gap-4 p-1 pl-4 sm:bottom-2">
           <div className="flex items-center gap-3">
@@ -109,10 +120,10 @@ function RootComponent() {
 }
 
 // Shows the current state of the global state machine for debugging purposes
-function DevBar({ hidden = false }: { hidden?: boolean }) {
+function DevBar({ enabled = false }: { enabled?: boolean }) {
   const state = useAtomValue(globalStateMachineAtom)
 
-  if (!import.meta.env.DEV || hidden) return null
+  if (!import.meta.env.DEV || !enabled) return null
 
   return (
     <div className="fixed bottom-16 left-2 flex h-6 items-center rounded bg-bg sm:bottom-2">
