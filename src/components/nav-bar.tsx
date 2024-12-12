@@ -62,7 +62,7 @@ const NavButton = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<"button
       <button
         {...props}
         ref={ref}
-        className="focus-ring grid h-8 w-full place-items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10"
+        className="focus-ring grid h-6 w-full place-items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10"
       />
     )
   },
