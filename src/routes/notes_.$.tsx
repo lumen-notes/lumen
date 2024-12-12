@@ -328,6 +328,7 @@ function NotePage() {
           {!note || isDirty ? (
             <Button
               disabled={isSignedOut}
+              variant="primary"
               size="small"
               shortcut={["⌘", "S"]}
               onClick={() => handleSave(editorValue)}
