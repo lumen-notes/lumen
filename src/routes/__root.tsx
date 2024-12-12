@@ -92,7 +92,7 @@ function RootComponent() {
       <div className="grid flex-grow overflow-hidden">
         <Outlet />
       </div>
-      <DevBar />
+      <DevBar hidden />
       {needRefresh ? (
         <div className="card-2 absolute bottom-16 right-2 z-20 flex items-center justify-between gap-4 p-1 pl-4 sm:bottom-2">
           <div className="flex items-center gap-3">
@@ -109,10 +109,10 @@ function RootComponent() {
 }
 
 // Shows the current state of the global state machine for debugging purposes
-function DevBar() {
+function DevBar({ hidden = false }: { hidden?: boolean }) {
   const state = useAtomValue(globalStateMachineAtom)
 
-  if (!import.meta.env.DEV) return null
+  if (!import.meta.env.DEV || hidden) return null
 
   return (
     <div className="fixed bottom-16 left-2 flex h-6 items-center rounded bg-bg sm:bottom-2">
