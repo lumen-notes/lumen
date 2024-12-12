@@ -40,24 +40,14 @@ export const All = {
   ),
 }
 
-export const Calendar: StoryObj<{ size: "16" | "24"; date: number }> = {
+export const Calendar: StoryObj<{ date: number }> = {
   render: (args) => {
-    switch (args.size) {
-      case "16":
-        return <icons.CalendarDateIcon16 date={args.date} />
-      case "24":
-        return <icons.CalendarIcon24>{args.date}</icons.CalendarIcon24>
-    }
+    return <icons.CalendarDateIcon16 date={args.date} />
   },
   args: {
-    size: "16",
     date: 1,
   },
   argTypes: {
-    size: {
-      options: ["16", "24"],
-      control: { type: "radio" },
-    },
     date: {
       control: { type: "number" },
     },

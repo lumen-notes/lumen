@@ -6,7 +6,6 @@ import { notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import {
-  BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
   CalendarFillIcon16,

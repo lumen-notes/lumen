@@ -1,11 +1,11 @@
 import { IconButton, IconButtonProps } from "./icon-button"
 
 import { useNavigate, useRouter } from "@tanstack/react-router"
-import { ComponentPropsWithoutRef, forwardRef } from "react"
+import { forwardRef } from "react"
 import { Drawer } from "vaul"
+import { cx } from "../utils/cx"
 import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
-import { cx } from "../utils/cx"
 
 export function NavBar() {
   const router = useRouter()

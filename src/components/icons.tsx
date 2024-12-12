@@ -28,40 +28,6 @@ export function MoreIcon16(props: IconProps) {
   )
 }
 
-export function MoreIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <circle cx="4" cy="12" r="2" />
-      <circle cx="12" cy="12" r="2" />
-      <circle cx="20" cy="12" r="2" />
-    </Icon>
-  )
-}
-
-export function NoteIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M4 4.5h16A1.5 1.5 0 0 1 21.5 6v12a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V6A1.5 1.5 0 0 1 4 4.5ZM1 6a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V6Zm6 3h10v1.5H7V9Zm0 4h7v1.5H7V13Z"
-      />
-    </Icon>
-  )
-}
-
-export function NoteFillIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M3.5 3C2.11929 3 1 4.11929 1 5.5V18.5C1 19.8807 2.11929 21 3.5 21H20.5C21.8807 21 23 19.8807 23 18.5V5.5C23 4.11929 21.8807 3 20.5 3H3.5ZM7 9H17V10.5H7V9ZM7 13H14V14.5H7V13Z"
-      />
-    </Icon>
-  )
-}
-
 export function NoteIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
@@ -98,30 +64,6 @@ export function NoteTemplateIcon16(props: IconProps) {
   )
 }
 
-export function TagIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M20.5 5v6.757a1.5 1.5 0 0 1-.44 1.061l-8 8a1.5 1.5 0 0 1-2.12 0l-6.758-6.757a1.5 1.5 0 0 1 0-2.122l8-8a1.5 1.5 0 0 1 1.06-.439H19A1.5 1.5 0 0 1 20.5 5Zm1.5 6.757V5a3 3 0 0 0-3-3h-6.757a3 3 0 0 0-2.122.879l-8 8a3 3 0 0 0 0 4.242L8.88 21.88a3 3 0 0 0 4.242 0l8-8A3 3 0 0 0 22 11.757ZM15.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
-      />
-    </Icon>
-  )
-}
-
-export function TagFillIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M22 5v6.757a3 3 0 0 1-.879 2.122l-8 8a3 3 0 0 1-4.242 0L2.12 15.12a3 3 0 0 1 0-4.242l8-8A3 3 0 0 1 12.243 2H19a3 3 0 0 1 3 3Zm-6.5 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
-      />
-    </Icon>
-  )
-}
-
 export function TagIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
@@ -142,52 +84,6 @@ export function TagFillIcon16(props: IconProps) {
         clipRule="evenodd"
         d="M6.95712 0.732233C7.42596 0.263392 8.06184 0 8.72488 0H13.5C14.8807 0 16 1.11929 16 2.5V7.27513C16 7.93817 15.7366 8.57405 15.2678 9.04289L9.26778 15.0429C8.29147 16.0192 6.70855 16.0192 5.73224 15.0429L0.957116 10.2678C-0.0191951 9.29146 -0.0191922 7.70854 0.957118 6.73223L6.95712 0.732233ZM11 6C11.5523 6 12 5.55228 12 5C12 4.44772 11.5523 4 11 4C10.4477 4 10 4.44772 10 5C10 5.55228 10.4477 6 11 6Z"
       />
-    </Icon>
-  )
-}
-
-export function CalendarIcon24({ children }: IconProps & { children?: number | string }) {
-  return (
-    <Icon size={24}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M5 3.5h14A1.5 1.5 0 0 1 20.5 5v14a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V5A1.5 1.5 0 0 1 5 3.5ZM2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5Zm16 2H6v1.5h12V7Z"
-      />
-      <text
-        textAnchor="middle"
-        x={12}
-        y={18}
-        fontSize="10px"
-        className="font-mono font-semibold leading-none"
-      >
-        {children}
-      </text>
-    </Icon>
-  )
-}
-
-export function CalendarFillIcon24({
-  children,
-  ...props
-}: IconProps & { children?: number | string }) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M5 2C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H19C20.6569 22 22 20.6569 22 19V5C22 3.34315 20.6569 2 19 2H5ZM18 7H6V8.5H18V7Z"
-      />
-      <text
-        textAnchor="middle"
-        x={12}
-        y={18}
-        fontSize="10px"
-        fill="currentColor"
-        className="font-mono font-semibold leading-none text-bg"
-      >
-        {children}
-      </text>
     </Icon>
   )
 }
@@ -312,18 +208,6 @@ export function PlusIcon16(props: IconProps) {
   )
 }
 
-export function PlusIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M11.75 3C12.1642 3 12.5 3.33579 12.5 3.75V11H19.75C20.1642 11 20.5 11.3358 20.5 11.75C20.5 12.1642 20.1642 12.5 19.75 12.5H12.5V19.75C12.5 20.1642 12.1642 20.5 11.75 20.5C11.3358 20.5 11 20.1642 11 19.75V12.5H3.75C3.33579 12.5 3 12.1642 3 11.75C3 11.3358 3.33579 11 3.75 11H11V3.75C11 3.33579 11.3358 3 11.75 3Z"
-      />
-    </Icon>
-  )
-}
-
 export function MinusIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
@@ -343,25 +227,8 @@ export function ArrowLeftIcon16(props: IconProps) {
     </Icon>
   )
 }
-
-export function ArrowLeftIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.2803 4.21967C10.5732 4.51256 10.5732 4.98744 10.2803 5.28033L4.56066 11H21.25C21.6642 11 22 11.3358 22 11.75C22 12.1642 21.6642 12.5 21.25 12.5H4.56066L10.2803 18.2197C10.5732 18.5126 10.5732 18.9874 10.2803 19.2803C9.98744 19.5732 9.51256 19.5732 9.21967 19.2803L2.21967 12.2803C1.92678 11.9874 1.92678 11.5126 2.21967 11.2197L9.21967 4.21967C9.51256 3.92678 9.98744 3.92678 10.2803 4.21967Z"
-      />
-    </Icon>
-  )
-}
-
 export function ArrowRightIcon16(props: IconProps) {
   return <ArrowLeftIcon16 {...props} className={cx("-scale-x-100", props.className)} />
-}
-
-export function ArrowRightIcon24(props: IconProps) {
-  return <ArrowLeftIcon24 {...props} className={cx("-scale-x-100", props.className)} />
 }
 
 export function ChevronLeftIcon16(props: IconProps) {
@@ -404,56 +271,15 @@ export function PaperclipIcon16(props: IconProps) {
   )
 }
 
-export function FileIcon24() {
+export function FileIcon16(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M13.757 1a3 3 0 0 1 2.122.879L20.12 6.12A3 3 0 0 1 21 8.243V20a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h7.757ZM4.5 20V4A1.5 1.5 0 0 1 6 2.5h7v5.75c0 .414.336.75.75.75h5.75v11a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20ZM19.303 7.5a1.503 1.503 0 0 0-.242-.318l-4.243-4.243a1.498 1.498 0 0 0-.318-.242V7.5h4.803Z"
+        d="M3.5 2.5C3.5 1.94772 3.94772 1.5 4.5 1.5H8V5.5C8 6.32843 8.67157 7 9.5 7H13.5V13.5C13.5 14.0523 13.0523 14.5 12.5 14.5H4.5C3.94772 14.5 3.5 14.0523 3.5 13.5V2.5ZM12.9393 5.5L9.5 2.06066V5.5H12.9393ZM4.5 0C3.11929 0 2 1.11929 2 2.5V13.5C2 14.8807 3.11929 16 4.5 16H12.5C13.8807 16 15 14.8807 15 13.5V6.47487C15 5.81183 14.7366 5.17595 14.2678 4.70711L10.2929 0.732232C9.82405 0.263391 9.18817 0 8.52513 0H4.5Z"
       />
-    </svg>
-  )
-}
-
-export function FileIcon16() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M2 2a2 2 0 0 1 2-2h4.672a2 2 0 0 1 1.414.586l4.328 4.328A2 2 0 0 1 15 6.328V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2Zm11.5 5H9.25C8.56 7 8 6.44 8 5.75V1.5H4a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7Zm-.621-1.5L9.5 2.121V5.5h3.379Z" />
-    </svg>
-  )
-}
-
-export function ComposeIcon24() {
-  return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="m23.146 3.086-1.232-1.232a2 2 0 0 0-2.828 0l-8.408 8.407c-.22.22-.385.487-.483.782l-1.09 3.272c-.326.976.604 1.906 1.581 1.58l3.271-1.09a2 2 0 0 0 .782-.483l8.407-8.408a2 2 0 0 0 0-2.828Zm-11.407 8.236 8.407-8.408a.5.5 0 0 1 .708 0l1.232 1.232a.5.5 0 0 1 0 .708l-8.408 8.407a.5.5 0 0 1-.195.121l-2.797.932.933-2.797a.498.498 0 0 1 .12-.195Z" />
-      <path d="M4 3h8v1.5H4A1.5 1.5 0 0 0 2.5 6v12A1.5 1.5 0 0 0 4 19.5h16a1.5 1.5 0 0 0 1.5-1.5v-6H23v6a3 3 0 0 1-3 3H4a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" />
-    </svg>
-  )
-}
-
-export function GraphIcon24() {
-  return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M13.556 9.686A3.987 3.987 0 0 1 12 10a3.987 3.987 0 0 1-1.556-.314l-3.64 5.46a4 4 0 1 1-1.247-.833l3.64-5.46a4 4 0 1 1 5.607 0l3.64 5.46a4 4 0 1 1-1.247.833l-3.641-5.46ZM14.5 6a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM4 20.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM22.5 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"
-      />
-    </svg>
-  )
-}
-
-export function GraphFillIcon24() {
-  return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M13.556 9.686A3.987 3.987 0 0 1 12 10a3.987 3.987 0 0 1-1.556-.314l-3.64 5.46a4 4 0 1 1-1.247-.833l3.64-5.46a4 4 0 1 1 5.607 0l3.64 5.46a4 4 0 1 1-1.247.833l-3.641-5.46Z"
-      />
-    </svg>
+    </Icon>
   )
 }
 
@@ -516,11 +342,15 @@ export function ErrorIcon16(props: IconProps) {
   )
 }
 
-export function ClearIcon16() {
+export function ClearIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm2.47-11.53 1.06 1.06L9.06 8l2.47 2.47-1.06 1.06L8 9.06l-2.47 2.47-1.06-1.06L6.94 8 4.47 5.53l1.06-1.06L8 6.94l2.47-2.47Z" />
-    </svg>
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16ZM5.78033 4.71967C5.48744 4.42678 5.01256 4.42678 4.71967 4.71967C4.42678 5.01256 4.42678 5.48744 4.71967 5.78033L6.93934 8L4.71967 10.2197C4.42678 10.5126 4.42678 10.9874 4.71967 11.2803C5.01256 11.5732 5.48744 11.5732 5.78033 11.2803L8 9.06066L10.2197 11.2803C10.5126 11.5732 10.9874 11.5732 11.2803 11.2803C11.5732 10.9874 11.5732 10.5126 11.2803 10.2197L9.06066 8L11.2803 5.78033C11.5732 5.48744 11.5732 5.01256 11.2803 4.71967C10.9874 4.42678 10.5126 4.42678 10.2197 4.71967L8 6.93934L5.78033 4.71967Z"
+      />
+    </Icon>
   )
 }
 
@@ -548,29 +378,15 @@ export function SettingsFillIcon16(props: IconProps) {
   )
 }
 
-export function SettingsIcon24() {
+export function PhoneIcon16(props: IconProps) {
   return (
-    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M22 7.5h-9.325a3.751 3.751 0 0 1-7.35 0H2V6h3.325a3.751 3.751 0 0 1 7.35 0H22v1.5Zm-13-3A2.25 2.25 0 1 0 9 9a2.25 2.25 0 0 0 0-4.5ZM22 17.5V16h-3.325a3.751 3.751 0 0 0-7.35 0H2v1.5h9.325a3.751 3.751 0 0 0 7.35 0H22Zm-7-3a2.25 2.25 0 1 1 0 4.5 2.25 2.25 0 0 1 0-4.5Z" />
-    </svg>
-  )
-}
-
-export function InfoIcon16() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM8.25 7H6.5v1.5h1v2h-.961V12H10v-1.5H9V7.75A.75.75 0 0 0 8.25 7Z" />
-      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm0-1.5a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" />
-    </svg>
-  )
-}
-
-export function PhoneIcon16() {
-  return (
-    // The phone icon expands beyond the 16x16 viewBox, so we need to use overflow-visible
-    <svg className="h-4 w-4 overflow-visible" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M3.334-.345A1.95 1.95 0 0 1 5.75.669l1.66 3.558L5.77 5.868c.937 2.102 2.26 3.426 4.363 4.363l1.641-1.641 3.558 1.66a1.95 1.95 0 0 1 1.014 2.416l-.727 2.059c-.427 1.21-1.666 2.013-2.988 1.75-3.574-.709-6.503-2.169-8.72-4.385C1.694 9.873.234 6.944-.476 3.37-.738 2.047.064.808 1.275.381l2.059-.727Zm1.057 1.649a.45.45 0 0 0-.558-.235l-2.059.727c-.568.2-.883.753-.778 1.281C1.658 6.415 3 9.058 4.97 11.03c1.97 1.97 4.614 3.313 7.951 3.975.53.105 1.081-.21 1.282-.778l.726-2.06a.45.45 0 0 0-.234-.557l-2.605-1.216L10.486 12l-.46-.184c-2.902-1.161-4.68-2.94-5.841-5.842l-.184-.459L5.607 3.91 4.39 1.304Z" />
-    </svg>
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2.86361 -0.178915C4.07688 -0.607125 5.41703 -0.0445612 5.96112 1.12135L6.66977 2.63987C7.11433 3.59251 6.91543 4.7215 6.17208 5.46485L5.76858 5.86835C6.70566 7.97003 8.02997 9.29434 10.1316 10.2314L10.5351 9.82792C11.2785 9.08457 12.4075 8.88567 13.3601 9.33023L14.8787 10.0389C16.0446 10.583 16.6071 11.9231 16.1789 13.1364L15.551 14.9154C15.1623 16.0169 14.0359 16.7427 12.8349 16.5153C9.16761 15.8212 6.16921 14.3485 3.91035 12.0896C1.6515 9.83079 0.178791 6.83239 -0.515335 3.16514C-0.742662 1.96411 -0.016909 0.83774 1.08463 0.44896L2.86361 -0.178915ZM4.60185 1.75567C4.38421 1.28931 3.84815 1.06429 3.36284 1.23557L1.58386 1.86345C1.12896 2.024 0.878864 2.46545 0.958497 2.88618C1.60744 6.31474 2.96321 9.02118 4.97101 11.029C6.97882 13.0368 9.68526 14.3926 13.1138 15.0415C13.5345 15.1211 13.976 14.871 14.1366 14.4161L14.7644 12.6372C14.9357 12.1519 14.7107 11.6158 14.2443 11.3982L12.7258 10.6895C12.3447 10.5117 11.8931 10.5912 11.5958 10.8886L10.8354 11.649C10.6233 11.8611 10.3051 11.9264 10.0265 11.815C7.12411 10.654 5.34598 8.87589 4.185 5.97345C4.07358 5.69489 4.13888 5.37673 4.35103 5.16458L5.11142 4.40419C5.40876 4.10685 5.48832 3.65526 5.31049 3.2742L4.60185 1.75567Z"
+      />
+    </Icon>
   )
 }
 
@@ -594,11 +410,15 @@ export function GlobeIcon16() {
   )
 }
 
-export function MailIcon16() {
+export function MailIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3Zm2-.5a.498.498 0 0 0-.298.098L8 7.546l6.297-4.948A.497.497 0 0 0 14 2.5H2Zm-.5 1.847V13a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V4.347l-5.728 4.5a1.25 1.25 0 0 1-1.544 0L1.5 4.347Z" />
-    </svg>
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2.5 1C1.11929 1 0 2.11929 0 3.5V12.5C0 13.8807 1.11929 15 2.5 15H13.5C14.8807 15 16 13.8807 16 12.5V3.5C16 2.11929 14.8807 1 13.5 1H2.5ZM1.86601 2.72662C2.03856 2.585 2.25935 2.5 2.5 2.5H13.5C13.7406 2.5 13.9614 2.585 14.134 2.72662L8 7.54619L1.86601 2.72662ZM1.5 4.34667V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V4.34667L8.92673 8.72567C8.38281 9.15303 7.61718 9.15303 7.07327 8.72567L1.5 4.34667Z"
+      />
+    </Icon>
   )
 }
 
@@ -610,28 +430,11 @@ export function MapIcon16() {
   )
 }
 
-export function QueryIcon16() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="M10.818 12.879a3.75 3.75 0 1 1 1.06-1.06l3.152 3.15-1.06 1.061-3.152-3.151ZM11 9.75a2.25 2.25 0 1 0-4.5 0 2.25 2.25 0 0 0 4.5 0Z" />
-      <path d="M1.95 2A1.95 1.95 0 0 0 0 3.95v8.6a1.95 1.95 0 0 0 1.95 1.95H4.5V13H1.95a.45.45 0 0 1-.45-.45v-8.6a.45.45 0 0 1 .45-.45h12.1a.45.45 0 0 1 .45.45V12H16V3.95A1.95 1.95 0 0 0 14.05 2H1.95Z" />
-    </svg>
-  )
-}
-
 export function LinkIcon16() {
   return (
     <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="m8.836 4.336 1.25-1.25a2 2 0 1 1 2.828 2.828l-2.5 2.5a2 2 0 0 1-2.828 0l-1.06 1.06a3.5 3.5 0 0 0 4.949 0l2.5-2.5a3.5 3.5 0 0 0-4.95-4.949l-1.25 1.25 1.06 1.06Z" />
       <path d="m7.164 11.664-1.25 1.25a2 2 0 0 1-2.828-2.828l2.5-2.5a2 2 0 0 1 2.828 0l1.06-1.06a3.5 3.5 0 0 0-4.949 0l-2.5 2.5a3.5 3.5 0 1 0 4.95 4.949l1.25-1.25-1.06-1.06Z" />
-    </svg>
-  )
-}
-
-export function UnlinkIcon16() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
-      <path d="m10.086 3.086-1.75 1.75-1.06-1.06 1.75-1.75a3.5 3.5 0 0 1 4.949 4.949l-1.75 1.75-1.06-1.06 1.75-1.75a2 2 0 1 0-2.83-2.83ZM5.914 12.914l1.75-1.75 1.061 1.06-1.75 1.75a3.5 3.5 0 1 1-4.95-4.949l1.75-1.75 1.06 1.06-1.75 1.75a2 2 0 1 0 2.83 2.83ZM1.47 2.53l12 12 1.06-1.06-12-12-1.06 1.06Z" />
     </svg>
   )
 }
@@ -655,18 +458,6 @@ export function MenuIcon16(props: IconProps) {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M1.75 2C1.33579 2 1 2.33579 1 2.75C1 3.16421 1.33579 3.5 1.75 3.5H14.25C14.6642 3.5 15 3.16421 15 2.75C15 2.33579 14.6642 2 14.25 2H1.75ZM1 7.75C1 7.33579 1.33579 7 1.75 7H14.25C14.6642 7 15 7.33579 15 7.75C15 8.16421 14.6642 8.5 14.25 8.5H1.75C1.33579 8.5 1 8.16421 1 7.75ZM1 12.75C1 12.3358 1.33579 12 1.75 12H14.25C14.6642 12 15 12.3358 15 12.75C15 13.1642 14.6642 13.5 14.25 13.5H1.75C1.33579 13.5 1 13.1642 1 12.75Z"
-      />
-    </Icon>
-  )
-}
-
-export function MenuIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M2 4.75C2 4.33579 2.33579 4 2.75 4H21.25C21.6642 4 22 4.33579 22 4.75C22 5.16421 21.6642 5.5 21.25 5.5H2.75C2.33579 5.5 2 5.16421 2 4.75ZM2 11.75C2 11.3358 2.33579 11 2.75 11H21.25C21.6642 11 22 11.3358 22 11.75C22 12.1642 21.6642 12.5 21.25 12.5H2.75C2.33579 12.5 2 12.1642 2 11.75ZM2 18.75C2 18.3358 2.33579 18 2.75 18H21.25C21.6642 18 22 18.3358 22 18.75C22 19.1642 21.6642 19.5 21.25 19.5H2.75C2.33579 19.5 2 19.1642 2 18.75Z"
       />
     </Icon>
   )
@@ -792,14 +583,6 @@ export function SidebarFillIcon16(props: IconProps) {
   )
 }
 
-export function SidebarIcon24(props: IconProps) {
-  return (
-    <Icon size={24} {...props}>
-      <path d="M1.879 3.879A3 3 0 0 0 1 6v12a3 3 0 0 0 3 3h16a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H4a3 3 0 0 0-2.121.879ZM8 4.5v15H4A1.5 1.5 0 0 1 2.5 18V6A1.5 1.5 0 0 1 4 4.5h4Zm1.5 0H20A1.5 1.5 0 0 1 21.5 6v12a1.5 1.5 0 0 1-1.5 1.5H9.5v-15Z" />
-    </Icon>
-  )
-}
-
 export function GridIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
@@ -821,14 +604,6 @@ export function OfflineIcon16(props: IconProps) {
   )
 }
 
-export function OfflineIcon24({ className }: { className?: string }) {
-  return (
-    <svg className={cx("h-6 w-6", className)} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="m18.454 20.514-4.56-4.846a4.5 4.5 0 0 0-5.076.9l-1.06-1.06a6 6 0 0 1 4.33-1.757l-2.512-2.67a8.957 8.957 0 0 0-3.94 2.305l-1.06-1.06a10.459 10.459 0 0 1 3.86-2.455L6.24 7.537a13.477 13.477 0 0 0-3.786 2.667l-1.06-1.06a14.99 14.99 0 0 1 3.77-2.75l-2.71-2.88 1.092-1.028 16 17-1.092 1.028ZM13.502 10.876l-1.53-1.626a10.468 10.468 0 0 1 7.452 3.076l-1.06 1.06a8.96 8.96 0 0 0-4.862-2.51ZM9.388 6.504 8.196 5.238c4.983-1.301 10.505 0 14.41 3.906l-1.06 1.06a13.486 13.486 0 0 0-12.158-3.7ZM12 18a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
-    </svg>
-  )
-}
-
 export function MaximizeIcon16({ className }: { className?: string }) {
   return (
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
@@ -842,14 +617,6 @@ export function MinimizeIcon16({ className }: { className?: string }) {
     <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
       <path d="M9 7h6V5.5h-3.44l4-4L14.5.44l-4 4V1H9v6ZM7 9H1v1.5h3.44l-4 4 1.06 1.06 4-4V15H7V9Z" />
     </svg>
-  )
-}
-
-export function GlassesIcon16(props: IconProps) {
-  return (
-    <Icon size={16} {...props}>
-      <path d="M3 2.5A1.5 1.5 0 0 0 1.5 4v3.627A3.501 3.501 0 0 1 6.92 9.75h2.16a3.501 3.501 0 0 1 5.42-2.123V4A1.5 1.5 0 0 0 13 2.5V1a3 3 0 0 1 3 3v6.5a3.5 3.5 0 0 1-6.92.75H6.92A3.501 3.501 0 0 1 0 10.5V4a3 3 0 0 1 3-3v1.5Zm11.5 8a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-11 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-    </Icon>
   )
 }
 
