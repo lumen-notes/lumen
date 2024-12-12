@@ -1,8 +1,11 @@
+import { IconButton, IconButtonProps } from "./icon-button"
+
 import { useNavigate, useRouter } from "@tanstack/react-router"
 import { ComponentPropsWithoutRef, forwardRef } from "react"
 import { Drawer } from "vaul"
 import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
+import { cx } from "../utils/cx"
 
 export function NavBar() {
   const router = useRouter()
@@ -38,6 +41,7 @@ export function NavBar() {
       </NavButton>
       <NavButton
         aria-label="New note"
+        shortcut={["⌘", "⇧", "O"]}
         onClick={() =>
           navigate({
             to: "/notes/$",
@@ -56,16 +60,16 @@ export function NavBar() {
   )
 }
 
-const NavButton = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<"button">>(
-  (props, ref) => {
-    return (
-      <button
-        {...props}
-        ref={ref}
-        className="focus-ring grid h-6 w-full place-items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary coarse:h-10"
-      />
-    )
-  },
-)
+const NavButton = forwardRef<HTMLButtonElement, IconButtonProps>(({ className, ...props }, ref) => {
+  return (
+    <IconButton
+      ref={ref}
+      size="small"
+      tooltipSide="top"
+      className={cx("!w-full", className)}
+      {...props}
+    />
+  )
+})
 
 NavButton.displayName = "NavButton"
