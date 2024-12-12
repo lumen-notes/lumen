@@ -162,6 +162,7 @@ function NavLink({
       activeOptions={{ exact: true, includeSearch: false }}
       className={cx(
         "focus-ring flex items-center rounded hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
+        "coarse:h-10 coarse:gap-4 coarse:px-3",
         size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
         className,
       )}
@@ -197,6 +198,7 @@ function ExternalLink({
     <a
       className={cx(
         "focus-ring flex items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary",
+        "coarse:h-10 coarse:gap-4 coarse:px-3",
         size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
         className,
       )}
