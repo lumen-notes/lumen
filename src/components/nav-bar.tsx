@@ -65,7 +65,7 @@ const NavButton = forwardRef<HTMLButtonElement, IconButtonProps>(({ className, .
     <IconButton
       ref={ref}
       size="small"
-      tooltipSide="top"
+      disableTooltip
       className={cx("!w-full", className)}
       {...props}
     />
