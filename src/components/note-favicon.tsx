@@ -16,7 +16,6 @@ const _defaultFavicon = <NoteIcon16 data-testid="favicon-default" />
 
 export const NoteFavicon = React.memo(
   ({ note, className, defaultFavicon = _defaultFavicon, ...props }: NoteFaviconProps) => {
-    console.log("NoteFavicon", note)
     const { online } = useNetworkState()
 
     let icon = defaultFavicon
