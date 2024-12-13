@@ -29,7 +29,7 @@ import { removeLeadingEmoji } from "./emoji"
  */
 export const parseNote = memoize((id: NoteId, content: string): Note => {
   let type: NoteType = "note"
-  let displayName = "Untitled note"
+  let displayName = ""
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
@@ -171,22 +171,28 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
 
   switch (type) {
     case "daily":
-      displayName = formatDate(id)
+      // Fallback to the formatted date if there's no title
+      displayName = title ? removeLeadingEmoji(title) : formatDate(id)
       break
     case "weekly":
-      displayName = formatWeek(id)
+      // Fallback to the formatted week if there's no title
+      displayName = title ? removeLeadingEmoji(title) : formatWeek(id)
       break
     case "template":
       displayName = `${(frontmatter.template as Template).name} template`
       break
     case "note":
-      // If there's a title, use it as thedisplay name after removing any leading emoji
+      // If there's a title, use it as the display name
       if (title) {
         displayName = removeLeadingEmoji(title)
       }
       // If there's no title but the ID contains non-numeric characters, use that as the display name
       else if (!/^\d+$/.test(id)) {
         displayName = id
+      }
+      // We consider notes with numeric IDs to untitled
+      else {
+        displayName = "Untitled note"
       }
       break
   }

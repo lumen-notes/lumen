@@ -223,7 +223,9 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
         })
         break
 
+      case "is":
       case "type":
+        // Match if the item's type is in the qualifier's values
         value = qualifier.values.includes(item.type)
         break
 

@@ -143,7 +143,7 @@ export const Markdown = React.memo(
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2 empty:hidden">
+                <div className="flex flex-col gap-4 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
                   {frontmatter && !hideFrontmatter && !isObjectEmpty(frontmatter) ? (
                     <Frontmatter frontmatter={frontmatter} />
@@ -261,7 +261,10 @@ function Frontmatter({
         })
         .map(([key, value]) => {
           return (
-            <div key={key} className="grid gap-1 py-2 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]">
+            <div
+              key={key}
+              className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
+            >
               <h3 className="text-sm/4 text-text-secondary @[24rem]:text-base/6">
                 {formatFrontmatterKey(key)}
               </h3>
@@ -585,7 +588,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
     return (
       <Tooltip>
         <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
-        <Tooltip.Content className="flex items-center gap-2">
+        <Tooltip.Content side="bottom" className="flex items-center gap-2">
           {props.href ? <WebsiteFavicon url={props.href} className="align-sub" /> : null}
           <span className="inline-block max-w-[40vw] truncate leading-4">
             {props.href
@@ -768,7 +771,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           side="bottom"
           sideOffset={4}
           align="start"
-          className=" card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
         >
           {note ? (
             <NotePreview note={note} />
@@ -825,9 +828,7 @@ type DateLinkProps = {
 }
 
 function DateLink({ date, text, className }: DateLinkProps) {
-  const hasDateNote = useAtomValue(
-    useMemo(() => selectAtom(notesAtom, (notes) => notes.has(date)), [date]),
-  )
+  const note = useNoteById(date)
 
   return (
     <HoverCard.Root>
@@ -837,7 +838,7 @@ function DateLink({ date, text, className }: DateLinkProps) {
           to="/notes/$"
           params={{ _splat: date }}
           search={{
-            mode: hasDateNote ? "read" : "write",
+            mode: note ? "read" : "write",
             query: undefined,
             view: "grid",
           }}
@@ -846,10 +847,18 @@ function DateLink({ date, text, className }: DateLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="top" sideOffset={4} asChild>
-          <div className="card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2">
-            {formatDateDistance(date)}
-          </div>
+        <HoverCard.Content
+          side="bottom"
+          sideOffset={4}
+          className="card-2 z-20  animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+        >
+          {note ? (
+            <div className="w-96">
+              <NotePreview note={note} />
+            </div>
+          ) : (
+            <div className="p-2 leading-none text-text-secondary">{formatDateDistance(date)}</div>
+          )}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>

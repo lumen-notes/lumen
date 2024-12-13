@@ -1,7 +1,9 @@
 import { useMemo } from "react"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
+import { formatDateDistance, formatWeekDistance } from "../utils/date"
 import { removeParentTags } from "../utils/remove-parent-tags"
+import { CalendarDateIcon16, CalendarIcon16 } from "./icons"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
 
@@ -17,9 +19,29 @@ export function NotePreview({ note }: { note: Note }) {
   return (
     <div
       {...{ inert: "" }}
-      className="grid aspect-[5/3] w-full grid-rows-[1fr_auto] gap-1.5 overflow-hidden p-3 [contain:layout_paint]"
+      className="flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-3 [contain:layout_paint]"
     >
-      <div className="overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_75%,transparent_100%)] [&_*::-webkit-scrollbar]:hidden">
+      {note.type === "daily" && !note.title ? (
+        <div className="flex h-6 items-center gap-3 px-1">
+          <CalendarDateIcon16
+            date={new Date(note.id).getUTCDate()}
+            className="text-text-secondary"
+          />
+          <div className="flex items-baseline gap-2">
+            <span className=" font-semibold">{note.displayName}</span>
+            <span className="text-sm text-text-secondary">{formatDateDistance(note.id)}</span>
+          </div>
+        </div>
+      ) : note.type === "weekly" && !note.title ? (
+        <div className="flex h-6 items-center gap-3 px-1">
+          <CalendarIcon16 className="text-text-secondary" />
+          <div className="flex items-baseline gap-2">
+            <span className=" font-semibold">{note.displayName}</span>
+            <span className="text-sm text-text-secondary">{formatWeekDistance(note.id)}</span>
+          </div>
+        </div>
+      ) : null}
+      <div className="flex-grow overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_75%,transparent_100%)] [&_*::-webkit-scrollbar]:hidden">
         <div className="w-[125%] origin-top-left scale-[80%]">
           <Markdown hideFrontmatter>{note.content}</Markdown>
         </div>
