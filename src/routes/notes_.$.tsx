@@ -494,7 +494,17 @@ function NotePage() {
       }
     >
       <InsertTemplateDialog />
-      <div ref={containerRef}>
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      <div
+        ref={containerRef}
+        onMouseDown={(event) => {
+          // Double click to edit
+          if (mode === "read" && event.detail > 1) {
+            event.preventDefault()
+            switchToWriting()
+          }
+        }}
+      >
         <div className="p-4">
           <div
             className={cx(
@@ -503,17 +513,7 @@ function NotePage() {
             )}
           >
             {isDailyNote || isWeeklyNote ? <Calendar activeNoteId={noteId ?? ""} /> : null}
-            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-            <div
-              hidden={mode !== "read"}
-              onMouseDown={(event) => {
-                // Double click to edit
-                if (event.detail > 1) {
-                  event.preventDefault()
-                  switchToWriting()
-                }
-              }}
-            >
+            <div hidden={mode !== "read"}>
               {editorValue ? (
                 <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
               ) : (
