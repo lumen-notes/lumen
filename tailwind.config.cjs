@@ -12,6 +12,7 @@ module.exports = {
         "2x": { raw: "(min-resolution: 192dpi)" },
       },
       fontWeight: {
+        normal: "450",
         semibold: "550",
         bold: "650",
       },
