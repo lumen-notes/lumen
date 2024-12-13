@@ -515,6 +515,8 @@ function NotePage() {
             <IconButton
               aria-label={mode === "read" ? "Write mode" : "Read mode"}
               shortcut={toggleModeShortcut}
+              tooltipSide="top"
+              tooltipAlign="end"
               onClick={toggleMode}
               className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
             >
