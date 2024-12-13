@@ -26,7 +26,7 @@ export function useSyncStatusText() {
   }
 
   if (isSyncError) {
-    return "Sync error"
+    return <span className="text-text-danger">Sync error</span>
   }
 
   return "Syncing…"
