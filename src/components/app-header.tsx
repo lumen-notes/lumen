@@ -9,7 +9,7 @@ import { SyncIconButton } from "./sync-status"
 
 export type AppHeaderProps = {
   title: React.ReactNode
-  icon: React.ReactNode
+  icon?: React.ReactNode
   className?: string
   actions?: React.ReactNode
 }
@@ -74,7 +74,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           </IconButton>
         </div>
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
-          <div className="flex flex-shrink-0 text-text-secondary">{icon}</div>
+          {icon ? <div className="flex flex-shrink-0 text-text-secondary">{icon}</div> : null}
           <div className="truncate">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
