@@ -184,6 +184,9 @@ function NotePage() {
     (value: string) => {
       if (isSignedOut || !noteId) return
 
+      // New notes shouldn't be saved if the editor is empty
+      if (!note && !value) return
+
       // Only save if the content has changed
       if (value !== note?.content) {
         saveNote({ id: noteId, content: value })
@@ -325,7 +328,7 @@ function NotePage() {
       icon={shouldShowPageTitle ? <NoteFavicon note={parsedNote} /> : null}
       actions={
         <div className="flex items-center gap-2">
-          {!note || isDirty ? (
+          {(!note && editorValue) || isDirty ? (
             <Button
               disabled={isSignedOut}
               variant="primary"
@@ -334,7 +337,7 @@ function NotePage() {
               onClick={() => handleSave(editorValue)}
               className="hidden sm:flex"
             >
-              {!note ? "Create" : "Save"}
+              Save
             </Button>
           ) : null}
           <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
@@ -498,7 +501,7 @@ function NotePage() {
       >
         <div {...topSentinelProps} />
         <div className="fixed bottom-10 right-0 z-10 flex gap-2 p-3 sm:hidden coarse:bottom-14">
-          {!note || isDirty ? (
+          {(!note && editorValue) || isDirty ? (
             <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-sm">
               <Button
                 disabled={isSignedOut}
@@ -507,7 +510,7 @@ function NotePage() {
                 onClick={() => handleSave(editorValue)}
                 className="h-10 rounded-lg coarse:h-12"
               >
-                {!note ? "Create" : "Save"}
+                Save
               </Button>
             </div>
           ) : null}

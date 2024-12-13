@@ -12,7 +12,7 @@ type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
   defaultFavicon?: React.ReactNode
 }
 
-const _defaultFavicon = <NoteIcon16 data-testid="favicon-default" />
+const _defaultFavicon = <NoteIcon16 data-testid="favicon-default" className="h-full w-full" />
 
 export const NoteFavicon = React.memo(
   ({ note, className, defaultFavicon = _defaultFavicon, ...props }: NoteFaviconProps) => {
@@ -90,7 +90,10 @@ export const NoteFavicon = React.memo(
 
     return (
       <span
-        className={cx("inline-grid h-4 w-4 place-items-center text-text-secondary", className)}
+        className={cx(
+          "inline-grid h-4 w-4 flex-shrink-0 place-items-center text-text-secondary",
+          className,
+        )}
         {...props}
       >
         {icon}
