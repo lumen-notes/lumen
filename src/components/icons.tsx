@@ -10,7 +10,12 @@ function Icon({ size, className, ...props }: IconProps & { size: number }) {
       viewBox={`0 0 ${size} ${size}`}
       fill="currentColor"
       aria-hidden
-      className={cx("flex-shrink-0 overflow-visible", className)}
+      className={cx(
+        "flex-shrink-0 overflow-visible",
+        // 16px icons scale to 20px on touch devices
+        size === 16 && "size-icon",
+        className,
+      )}
       {...props}
     />
   )
@@ -433,11 +438,11 @@ export function MessageIcon16(props: IconProps) {
   )
 }
 
-export function GlobeIcon16() {
+export function GlobeIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16Zm2.001-1.814c1.032-1.636 1.607-3.522 1.726-5.436h2.73a6.507 6.507 0 0 1-4.456 5.436Zm-4.002 0A6.506 6.506 0 0 1 1.543 8.75h2.73c.12 1.914.694 3.8 1.726 5.436ZM5.777 8.75h4.446c-.145 2.046-.886 4.047-2.223 5.64-1.337-1.593-2.078-3.594-2.223-5.64Zm4.446-1.5H5.777C5.922 5.204 6.663 3.203 8 1.61c1.337 1.593 2.078 3.594 2.223 5.64Zm1.504 0c-.12-1.914-.694-3.8-1.726-5.436a6.507 6.507 0 0 1 4.456 5.436h-2.73ZM5.999 1.814C4.967 3.45 4.392 5.336 4.273 7.25h-2.73a6.507 6.507 0 0 1 4.456-5.436Z" />
-    </svg>
+    </Icon>
   )
 }
 
@@ -453,20 +458,20 @@ export function MailIcon16(props: IconProps) {
   )
 }
 
-export function MapIcon16() {
+export function MapIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M5.744.142A1.25 1.25 0 0 0 4.712.18L1.078 1.998A1.95 1.95 0 0 0 0 3.742V14.44c0 .93.978 1.534 1.809 1.118l3.472-1.736 4.975 2.035c.334.137.71.123 1.032-.039l3.634-1.817A1.95 1.95 0 0 0 16 12.258V1.56A1.25 1.25 0 0 0 14.191.441l-3.472 1.736L5.744.142ZM4.5 1.964v10.572l-3 1.5V3.742a.45.45 0 0 1 .249-.403L4.5 1.964ZM6 12.496V1.867l4 1.637v10.629l-4-1.636Zm5.5-9.032 3-1.5v10.294a.45.45 0 0 1-.249.403L11.5 14.037V3.463Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function LinkIcon16() {
+export function LinkIcon16(props: IconProps) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="m8.836 4.336 1.25-1.25a2 2 0 1 1 2.828 2.828l-2.5 2.5a2 2 0 0 1-2.828 0l-1.06 1.06a3.5 3.5 0 0 0 4.949 0l2.5-2.5a3.5 3.5 0 0 0-4.95-4.949l-1.25 1.25 1.06 1.06Z" />
       <path d="m7.164 11.664-1.25 1.25a2 2 0 0 1-2.828-2.828l2.5-2.5a2 2 0 0 1 2.828 0l1.06-1.06a3.5 3.5 0 0 0-4.949 0l-2.5 2.5a3.5 3.5 0 1 0 4.95 4.949l1.25-1.25-1.06-1.06Z" />
-    </svg>
+    </Icon>
   )
 }
 
@@ -654,19 +659,19 @@ export function OfflineIcon16(props: IconProps) {
   )
 }
 
-export function MaximizeIcon16({ className }: { className?: string }) {
+export function MaximizeIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M7 15H1V9h1.5v3.44l4-4L7.56 9.5l-4 4H7V15ZM9 1h6v6h-1.5V3.56l-4 4L8.44 6.5l4-4H9V1Z" />
-    </svg>
+    </Icon>
   )
 }
 
-export function MinimizeIcon16({ className }: { className?: string }) {
+export function MinimizeIcon16(props: IconProps) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <Icon size={16} {...props}>
       <path d="M9 7h6V5.5h-3.44l4-4L14.5.44l-4 4V1H9v6ZM7 9H1v1.5h3.44l-4 4 1.06 1.06 4-4V15H7V9Z" />
-    </svg>
+    </Icon>
   )
 }
 
@@ -802,7 +807,7 @@ export function SignOutIcon16(props: IconProps) {
 export function GitHubIcon16({ className }: { className?: string }) {
   return (
     <svg
-      className={cx("h-4 w-4", className)}
+      className={cx("size-icon", className)}
       viewBox="0 0 16 16"
       fill="var(--color-text)"
       aria-hidden
@@ -814,7 +819,7 @@ export function GitHubIcon16({ className }: { className?: string }) {
 
 export function TwitterIcon16({ className }: { className?: string }) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" fill="#1d9bf0" aria-hidden>
+    <svg className={cx("size-icon", className)} viewBox="0 0 16 16" fill="#1d9bf0" aria-hidden>
       <path d="M15.969 3.047a6.666 6.666 0 0 1-1.884.516 3.305 3.305 0 0 0 1.442-1.815c-.634.37-1.336.64-2.084.79a3.28 3.28 0 0 0-5.59 2.987 9.292 9.292 0 0 1-6.76-3.417c-.294.5-.447 1.07-.444 1.65 0 1.14.58 2.142 1.459 2.73a3.27 3.27 0 0 1-1.485-.41v.04a3.282 3.282 0 0 0 2.63 3.218 3.33 3.33 0 0 1-1.474.057 3.29 3.29 0 0 0 3.069 2.278A6.578 6.578 0 0 1 .78 13.074c-.26 0-.52-.015-.78-.045a9.33 9.33 0 0 0 5.038 1.473c6.035 0 9.332-4.997 9.332-9.323 0-.14 0-.28-.01-.42A6.623 6.623 0 0 0 16 3.06l-.031-.013Z" />
     </svg>
   )
@@ -822,7 +827,7 @@ export function TwitterIcon16({ className }: { className?: string }) {
 
 export function YouTubeIcon16({ className }: { className?: string }) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" aria-hidden>
+    <svg className={cx("size-icon", className)} viewBox="0 0 16 16" aria-hidden>
       <path
         d="M15.665 4.124A2.01 2.01 0 0 0 14.251 2.7C13.003 2.363 8 2.363 8 2.363s-5.003 0-6.251.337A2.011 2.011 0 0 0 .335 4.124C0 5.38 0 8 0 8s0 2.62.335 3.876A2.01 2.01 0 0 0 1.749 13.3c1.248.337 6.251.337 6.251.337s5.003 0 6.251-.337a2.009 2.009 0 0 0 1.415-1.424C16 10.62 16 8 16 8s0-2.62-.335-3.876Z"
         fill="#ff0000"
@@ -834,7 +839,7 @@ export function YouTubeIcon16({ className }: { className?: string }) {
 
 export function InstagramIcon16({ className }: { className?: string }) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" aria-hidden>
+    <svg className={cx("size-icon", className)} viewBox="0 0 16 16" aria-hidden>
       <defs>
         <linearGradient id="myGradient" x1="0%" y1="100%" x2="100%" y2="0%">
           <stop offset="-10.92%" stopColor="#FFD522" />
@@ -852,7 +857,7 @@ export function InstagramIcon16({ className }: { className?: string }) {
 
 export function BlueskyIcon16({ className }: { className?: string }) {
   return (
-    <svg className={cx("h-4 w-4", className)} viewBox="0 0 16 16" aria-hidden>
+    <svg className={cx("size-icon", className)} viewBox="0 0 16 16" aria-hidden>
       <path
         d="M8 7.2C7.27533 5.79066 5.30267 3.16466 3.468 1.87C1.71067 0.629332 1.04067 0.843998 0.601333 1.04333C0.0926667 1.272 0 2.05333 0 2.512C0 2.972 0.252 6.27866 0.416 6.83133C0.959333 8.65533 2.89133 9.27133 4.67133 9.074C4.762 9.06066 4.85467 9.048 4.948 9.03666C4.856 9.05133 4.764 9.06333 4.67133 9.074C2.06333 9.46066 -0.253333 10.4107 2.78467 13.7927C6.12667 17.2527 7.36467 13.0507 8 10.9207C8.63533 13.0507 9.36667 17.1013 13.1553 13.7927C16 10.9207 13.9367 9.46066 11.3287 9.074C11.2362 9.06376 11.1439 9.05132 11.052 9.03666C11.1453 9.048 11.238 9.06066 11.3287 9.074C13.1087 9.272 15.0407 8.65533 15.584 6.83133C15.748 6.27933 16 2.97133 16 2.51266C16 2.05266 15.9073 1.272 15.3987 1.042C14.9593 0.843332 14.2893 0.628665 12.532 1.86866C10.6973 3.16533 8.72467 5.79133 8 7.2Z"
         fill="#0285FF"

@@ -15,6 +15,7 @@ module.exports = {
         normal: "var(--font-weight-normal)",
         bold: "var(--font-weight-bold)",
       },
+      size: {},
     },
     fontFamily: {
       body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],
@@ -99,6 +100,7 @@ module.exports = {
       72: "288px",
       80: "320px",
       96: "384px",
+      icon: "var(--icon-size)",
     },
     lineHeight: {
       none: "1",

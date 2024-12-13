@@ -256,10 +256,7 @@ export function NoteList({
                       }}
                       className="focus-ring flex h-10 items-center rounded-lg px-3 leading-4 hover:bg-bg-secondary coarse:h-12 coarse:p-4"
                     >
-                      <NoteFavicon
-                        note={note}
-                        className="mr-3 h-4 w-4 coarse:mr-4 coarse:h-5 coarse:w-5"
-                      />
+                      <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
                       ) : null}

@@ -19,7 +19,7 @@ export function SearchInput({
   return (
     <div className="relative">
       <div className="absolute inset-y-0 left-0 grid aspect-square place-items-center text-text-secondary">
-        <SearchIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+        <SearchIcon16 />
       </div>
       <input
         ref={ref}

@@ -78,6 +78,9 @@
   --border-radius-lg: 12px; /* base + 4px */
   --border-radius-xl: 16px; /* base + 8px */
   --border-radius-full: 9999px;
+
+  /* Icons */
+  --icon-size: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,7 +104,6 @@
   }
 }
 
-/* Adjust font sizes and weights for touch devices */
 @media (pointer: coarse) {
   :root {
     /* Font sizes */
@@ -113,5 +115,8 @@
     /* Font weights */
     --font-weight-normal: 450;
     --font-weight-bold: 600;
+
+    /* Icons */
+    --icon-size: 20px;
   }
 }

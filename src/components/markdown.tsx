@@ -138,7 +138,7 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar login={frontmatter.github} size={64} className="h-16 w-16" />
+                  <GitHubAvatar login={frontmatter.github} size={64} className="size-16" />
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
@@ -338,7 +338,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <GitHubIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <GitHubIcon16 />
           <a
             className="link link-external"
             href={`https://github.com/${value}`}
@@ -354,7 +354,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <TwitterIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <TwitterIcon16 />
           <a
             className="link link-external"
             href={`https://twitter.com/${value}`}
@@ -370,7 +370,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <BlueskyIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <BlueskyIcon16 />
           <a
             className="link link-external"
             href={`https://bsky.app/profile/${value}`}
@@ -386,7 +386,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <YouTubeIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <YouTubeIcon16 />
           <a
             className="link link-external"
             href={`https://youtube.com/@${value}`}
@@ -402,7 +402,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <InstagramIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <InstagramIcon16 />
           <a
             className="link link-external"
             href={`https://instagram.com/${value}`}
@@ -582,10 +582,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       )}
     >
       {isFirst && online ? (
-        <WebsiteFavicon
-          url={props.href ?? ""}
-          className="mr-2 h-4 w-4 align-sub coarse:h-5 coarse:w-5 [h1>a>&]:align-baseline"
-        />
+        <WebsiteFavicon url={props.href ?? ""} className="mr-2 align-sub [h1>a>&]:align-baseline" />
       ) : null}
       {children}
     </a>
@@ -767,7 +764,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
             <NoteFavicon
               note={note}
               content={note.content}
-              className="mr-2 h-4 w-4 align-sub coarse:h-5 coarse:w-5 [h1>a>&]:align-baseline"
+              className="mr-2 align-sub [h1>a>&]:align-baseline"
               defaultFavicon={null}
             />
           ) : null}

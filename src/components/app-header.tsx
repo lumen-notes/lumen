@@ -73,9 +73,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
         </div>
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
           {icon ? (
-            <div className="flex h-4 w-4 flex-shrink-0 text-text-secondary coarse:h-5 coarse:w-5 [&>*]:h-full [&>*]:w-full">
-              {icon}
-            </div>
+            <div className="flex size-icon flex-shrink-0 text-text-secondary">{icon}</div>
           ) : null}
           <div className="truncate font-bold">{title}</div>
         </div>

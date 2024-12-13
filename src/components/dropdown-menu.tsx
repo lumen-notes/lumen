@@ -69,10 +69,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         >
           {icon ? (
             <div
-              className={cx(
-                "flex h-4 w-4 text-text-secondary coarse:h-5 coarse:w-5 [&_svg]:h-full [&_svg]:w-full",
-                variant === "danger" && "text-text-danger",
-              )}
+              className={cx("flex text-text-secondary", variant === "danger" && "text-text-danger")}
             >
               {icon}
             </div>

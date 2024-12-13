@@ -38,33 +38,6 @@ export function SignInButton(props: ButtonProps) {
   )
 }
 
-export function SignedInUser() {
-  const githubUser = useAtomValue(githubUserAtom)
-  const signOut = useSignOut()
-  const { online } = useNetworkState()
-
-  if (!githubUser) {
-    return <div className="w-full text-center text-text-secondary">You're not signed in.</div>
-  }
-
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-col gap-1 coarse:gap-2">
-        <span className="text-sm leading-3 text-text-secondary">Account</span>
-        <span className="leading-5">
-          {online ? (
-            <GitHubAvatar login={githubUser.login} size={16} className="mr-1 align-middle" />
-          ) : null}
-          {githubUser.login}
-        </span>
-      </div>
-      <Button className="flex-shrink-0" onClick={signOut}>
-        Sign out
-      </Button>
-    </div>
-  )
-}
-
 export function useSignOut() {
   const send = useSetAtom(globalStateMachineAtom)
 
