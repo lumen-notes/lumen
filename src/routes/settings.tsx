@@ -38,7 +38,7 @@ function RouteComponent() {
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-lg font-semibold leading-4">{title}</h3>
+      <h3 className="text-lg font-bold leading-4">{title}</h3>
       <div className="card-1 p-4">{children}</div>
     </div>
   )

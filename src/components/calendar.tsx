@@ -49,7 +49,7 @@ export function Calendar({
       <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden pb-2", className)}>
         <div className="flex items-center justify-between">
           <span className="text-lg">
-            <span className="font-semibold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
+            <span className="font-bold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
             <span>{startOfWeek.getFullYear()}</span>
           </span>
           <div className="flex gap-px rounded bg-bg-secondary">
@@ -223,7 +223,7 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-semibold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] before:w-full before:bg-text before:content-['']",
+            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] before:w-full before:bg-text before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&

@@ -1,7 +1,6 @@
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
-import { CalendarDateIcon16, CalendarIcon16 } from "./icons"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
 
@@ -17,7 +16,7 @@ export function NotePreview({ note }: { note: Note }) {
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className="mb-1 flex items-baseline gap-2.5">
-          <span className="truncate font-semibold">{note.displayName}</span>
+          <span className="truncate font-bold">{note.displayName}</span>
           <span className="truncate text-sm text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
           </span>

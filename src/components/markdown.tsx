@@ -100,7 +100,7 @@ export const Markdown = React.memo(
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
+                <h1 className="text-xl font-bold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
                   <Link to="/" search={{ query: "type:template", view: "grid" }}>
                     Template

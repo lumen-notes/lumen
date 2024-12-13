@@ -77,7 +77,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
               {icon}
             </div>
           ) : null}
-          <div className="truncate font-semibold">{title}</div>
+          <div className="truncate font-bold">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
           {actions ? (

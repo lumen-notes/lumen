@@ -13,8 +13,7 @@ module.exports = {
       },
       fontWeight: {
         normal: "450",
-        semibold: "550",
-        bold: "650",
+        bold: "600",
       },
     },
     fontFamily: {

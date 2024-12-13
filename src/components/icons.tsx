@@ -102,7 +102,7 @@ export function CalendarDateIcon16({ date, ...props }: IconProps & { date?: numb
         y={12.5}
         fontSize="7.5px"
         fill="currentColor"
-        className="font-mono font-bold leading-none"
+        className="font-mono leading-none [font-weight:650]"
       >
         {date}
       </text>
@@ -124,7 +124,7 @@ export function CalendarDateFillIcon16({ date, ...props }: IconProps & { date?: 
         y={12.5}
         fontSize="7.5px"
         fill="currentColor"
-        className="font-mono font-bold leading-none text-bg"
+        className="font-mono leading-none text-bg [font-weight:650]"
       >
         {date}
       </text>

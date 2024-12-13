@@ -96,7 +96,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .nav-item[aria-current] {
-  @apply bg-bg-secondary font-semibold;
+  @apply bg-bg-secondary font-bold;
 }
 
 .nav-item[data-size="large"] {

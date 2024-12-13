@@ -23,7 +23,7 @@
 }
 
 .markdown strong {
-  @apply font-semibold;
+  @apply font-bold;
 }
 
 .markdown h1,
@@ -33,7 +33,7 @@
 .markdown h5,
 .markdown h6,
 .markdown th {
-  @apply font-semibold;
+  @apply font-bold;
 }
 
 .markdown h1 {

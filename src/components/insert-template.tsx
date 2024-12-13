@@ -83,9 +83,7 @@ export function InsertTemplateDialog() {
         <Dialog.Content className="card-3 fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]">
           <div className="grid gap-6 p-4">
             <div className="flex items-center justify-between">
-              <Dialog.Title className="text-lg font-semibold leading-4">
-                {template.name}
-              </Dialog.Title>
+              <Dialog.Title className="text-lg font-bold leading-4">{template.name}</Dialog.Title>
               <Dialog.Close asChild>
                 <IconButton aria-label="Close" className="-m-2" disableTooltip>
                   <XIcon16 />
