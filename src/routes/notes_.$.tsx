@@ -20,8 +20,8 @@ import {
   CopyIcon16,
   DotIcon8,
   EditIcon16,
-  ExternalLinkIcon16,
   EyeIcon16,
+  FileIcon16,
   FullwidthIcon16,
   MoreIcon16,
   NoteIcon16,
@@ -420,13 +420,13 @@ function NotePage() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  icon={<ExternalLinkIcon16 />}
+                  icon={<FileIcon16 />}
                   href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
                   disabled={isSignedOut || !note}
                 >
-                  Open in GitHub
+                  Open file in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
