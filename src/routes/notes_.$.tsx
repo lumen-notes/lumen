@@ -25,7 +25,6 @@ import {
   FullwidthIcon16,
   MoreIcon16,
   NoteIcon16,
-  PinFillIcon12,
   PinFillIcon16,
   PinIcon16,
   ShareIcon16,
@@ -49,6 +48,7 @@ import {
   widthAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
+import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { GitHubRepository, Note, NoteId, Template } from "../schema"
@@ -312,18 +312,25 @@ function NotePage() {
     })
   }, [getHandleSave, getEditorValue, getSwitchToReading, getIsDirty])
 
+  const { isScrolled, topSentinelProps } = useIsScrolled()
+
+  const shouldShowPageTitle =
+    parsedNote.displayName !== "Untitled note" && (isScrolled || !parsedNote.title)
+
   return (
     <AppLayout
       title={
         <span className="flex items-center gap-2">
-          {parsedNote.pinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null}
-          <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
-            <PageTitle note={parsedNote} />
-          </span>
+          {/* {parsedNote.pinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null} */}
+          {shouldShowPageTitle ? (
+            <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
+              <PageTitle note={parsedNote} />
+            </span>
+          ) : null}
           {isDirty ? <DotIcon8 className="text-[var(--amber-11)]" /> : null}
         </span>
       }
-      icon={<NoteFavicon note={parsedNote} />}
+      icon={shouldShowPageTitle ? <NoteFavicon note={parsedNote} /> : null}
       actions={
         <div className="flex items-center gap-2">
           {!note || isDirty ? (
@@ -505,6 +512,7 @@ function NotePage() {
           }
         }}
       >
+        <div {...topSentinelProps} />
         <div className="p-4">
           <div
             className={cx(

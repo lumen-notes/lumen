@@ -1,5 +1,4 @@
 import { useAtomValue } from "jotai"
-import { useEffect, useRef, useState } from "react"
 import { LoadingIcon16 } from "../components/icons"
 import { RepoForm } from "../components/repo-form"
 import {
@@ -10,10 +9,11 @@ import {
   isSignedOutAtom,
   sidebarAtom,
 } from "../global-state"
+import { useIsScrolled } from "../hooks/is-scrolled"
 import { cx } from "../utils/cx"
 import { AppHeader, AppHeaderProps } from "./app-header"
-import { Sidebar } from "./sidebar"
 import { NavBar } from "./nav-bar"
+import { Sidebar } from "./sidebar"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -35,33 +35,7 @@ export function AppLayout({
   const githubRepo = useAtomValue(githubRepoAtom)
   const sidebar = useAtomValue(sidebarAtom)
 
-  const [isScrolled, setIsScrolled] = useState(false)
-  const scrollContainerRef = useRef<HTMLElement>(null)
-  // Reference to an invisible element at the top of the content
-  // Used to detect when content is scrolled
-  const topSentinelRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const sentinel = topSentinelRef.current
-    if (!sentinel) return
-
-    // Create an IntersectionObserver that watches when our sentinel element
-    // enters or leaves the viewport
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // When sentinel is visible (intersecting), we're at the top (not scrolled)
-        // When it's not visible, we've scrolled down
-        setIsScrolled(!entry.isIntersecting)
-      },
-      {
-        // Only trigger when sentinel is fully visible/hidden
-        threshold: 1.0,
-      },
-    )
-
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [])
+  const { isScrolled, topSentinelProps } = useIsScrolled()
 
   return (
     <div className="flex overflow-hidden">
@@ -76,12 +50,8 @@ export function AppLayout({
           actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
           className={cx("border-b", isScrolled ? "border-border-secondary" : "border-transparent")}
         />
-        <main ref={scrollContainerRef} className="relative overflow-auto [scrollbar-gutter:stable]">
-          {/* Invisible sentinel element that helps detect scroll position */}
-          <div
-            ref={topSentinelRef}
-            className="pointer-events-none absolute inset-x-0 top-0 h-[1px]"
-          />
+        <main className="relative overflow-auto [scrollbar-gutter:stable]">
+          <div {...topSentinelProps} />
           {isRepoNotCloned && !disableGuard ? (
             <div className="flex h-full flex-col items-center">
               <div className="mx-auto w-full max-w-lg p-4">
