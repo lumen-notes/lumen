@@ -24,7 +24,7 @@ export const NoteFavicon = React.memo(
     const leadingEmoji = getLeadingEmoji(note.title)
     if (leadingEmoji) {
       icon = (
-        <svg className="h-4 w-4 overflow-visible" viewBox="0 0 16 16">
+        <svg className="h-full w-full overflow-visible" viewBox="0 0 16 16">
           <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize={14}>
             {leadingEmoji}
           </text>
@@ -35,23 +35,34 @@ export const NoteFavicon = React.memo(
     // Daily note
     if (note.type === "daily") {
       icon = (
-        <CalendarDateIcon16 data-testid="favicon-daily" date={new Date(note.id).getUTCDate()} />
+        <CalendarDateIcon16
+          data-testid="favicon-daily"
+          className="h-full w-full"
+          date={new Date(note.id).getUTCDate()}
+        />
       )
     }
 
     // Weekly note
     if (note.type === "weekly") {
-      icon = <CalendarIcon16 data-testid="favicon-weekly" />
+      icon = <CalendarIcon16 className="h-full w-full" data-testid="favicon-weekly" />
     }
 
     // GitHub
     if (typeof note.frontmatter.github === "string" && online) {
-      icon = <GitHubAvatar data-testid="favicon-github" login={note.frontmatter.github} size={16} />
+      icon = (
+        <GitHubAvatar
+          data-testid="favicon-github"
+          className="h-full w-full"
+          login={note.frontmatter.github}
+          size={16}
+        />
+      )
     }
 
     // URL
     if (note.url && online) {
-      icon = <WebsiteFavicon data-testid="favicon-url" url={note.url} />
+      icon = <WebsiteFavicon className="h-full w-full" data-testid="favicon-url" url={note.url} />
     }
 
     // Book
@@ -59,7 +70,7 @@ export const NoteFavicon = React.memo(
       icon = (
         <div
           data-testid="favicon-isbn"
-          className="focus-ring inline-block aspect-[3/4] h-4 rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
+          className="focus-ring inline-block aspect-[3/4] h-full rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
           style={{
             backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg)`,
           }}
@@ -70,7 +81,7 @@ export const NoteFavicon = React.memo(
 
     // Template
     if (note.type === "template") {
-      icon = <NoteTemplateIcon16 data-testid="favicon-template" />
+      icon = <NoteTemplateIcon16 className="h-full w-full" data-testid="favicon-template" />
     }
 
     if (!icon) {

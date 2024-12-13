@@ -16,16 +16,18 @@ export function NotePreview({ note }: { note: Note }) {
       className="flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-3 [contain:layout_paint]"
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
-        <div className="flex h-6 items-center gap-3 pl-1 pr-8 coarse:pr-10">
-          {note.type === "daily" ? (
-            <CalendarDateIcon16
-              date={new Date(note.id).getUTCDate()}
-              className="text-text-secondary"
-            />
-          ) : (
-            <CalendarIcon16 className="text-text-secondary" />
-          )}
-          <div className="flex w-0 flex-grow items-baseline gap-3">
+        <div className="flex h-6 items-center gap-2.5 pr-8 coarse:pr-10">
+          <div className="grid h-5 w-5 place-items-center">
+            {note.type === "daily" ? (
+              <CalendarDateIcon16
+                date={new Date(note.id).getUTCDate()}
+                className="h-4 w-4 text-text-secondary coarse:h-5 coarse:w-5"
+              />
+            ) : (
+              <CalendarIcon16 className="h-4 w-4 text-text-secondary coarse:h-5 coarse:w-5" />
+            )}
+          </div>
+          <div className="flex w-0 flex-grow items-baseline gap-2.5">
             <span className="truncate font-semibold">{note.displayName}</span>
             <span className="truncate text-sm text-text-secondary">
               {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}

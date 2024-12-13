@@ -42,7 +42,7 @@
   --color-bg-inset: var(--neutral-2);
   --color-bg-card: white;
   --color-bg-overlay: white;
-  --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+  --color-bg-backdrop: hsla(0 0% 99% / 0.65); /* var(--color-bg-inset) at 65% opacity */
   --color-bg-secondary: var(--neutral-a3);
   --color-bg-tertiary: var(--neutral-a4);
   --color-bg-code-block: var(--neutral-3);
@@ -66,6 +66,13 @@
   --font-size-base: 14px;
   --font-size-lg: 16px;
   --font-size-xl: 18px;
+
+  /* Border radii */
+  --border-radius-sm: 6px; /* base - 2px */
+  --border-radius-base: 8px; /* base */
+  --border-radius-lg: 12px; /* base + 4px */
+  --border-radius-xl: 16px; /* base + 8px */
+  --border-radius-full: 9999px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -75,7 +82,7 @@
     --color-bg-inset: black;
     --color-bg-card: var(--neutral-2);
     --color-bg-overlay: var(--neutral-3);
-    --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+    --color-bg-backdrop: hsla(0 0% 7% / 0.65); /* var(--color-bg-inset) at 65% opacity */
 
     /* Border colors */
     --color-border-focus: var(--cyan-11);

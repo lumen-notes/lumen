@@ -39,7 +39,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         )}
         style={{ minWidth }}
       >
-        <div className="grid max-h-[48svh] scroll-py-1 overflow-auto p-1">{children}</div>
+        <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
       </RadixDropdownMenu.Content>
     </Portal.Root>
   ),
@@ -63,13 +63,16 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <>
         <div
           className={cx(
-            "flex flex-grow items-center gap-3 coarse:gap-4",
+            "flex flex-grow items-center gap-3 ",
             variant === "danger" && "text-text-danger",
           )}
         >
           {icon ? (
             <div
-              className={cx("flex text-text-secondary", variant === "danger" && "text-text-danger")}
+              className={cx(
+                "flex h-4 w-4 text-text-secondary coarse:h-5 coarse:w-5 [&_svg]:h-full [&_svg]:w-full",
+                variant === "danger" && "text-text-danger",
+              )}
             >
               {icon}
             </div>
@@ -96,7 +99,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10 coarse:gap-4 coarse:px-4",
+          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10",
           className,
         )}
         asChild={Boolean(href)}
@@ -109,7 +112,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
 )
 
 const Separator = () => {
-  return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary coarse:mx-4" />
+  return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary" />
 }
 
 export const DropdownMenu = Object.assign(Root, {

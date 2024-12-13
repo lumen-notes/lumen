@@ -14,8 +14,6 @@ export function GitHubAvatar({ login, size = 32, className, style, ...props }: G
         className,
       )}
       style={{
-        width: size,
-        height: size,
         backgroundImage: `url(https://github.com/${login}.png?size=${size * 2})`,
         ...style,
       }}

@@ -86,22 +86,14 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
 )
 
 function PageTitle({ note }: { note: Note }) {
-  if (note.type === "daily") {
+  if (note.type === "daily" || note.type === "weekly") {
     return (
       <span>
         <span>{note.displayName}</span>
-        <span className="mx-2 text-text-secondary">·</span>
-        <span className="text-text-secondary">{formatDateDistance(note.id)}</span>
-      </span>
-    )
-  }
-
-  if (note.type === "weekly") {
-    return (
-      <span>
-        <span>{note.displayName}</span>
-        <span className="mx-2 text-text-secondary">·</span>
-        <span className="text-text-secondary">{formatWeekDistance(note.id)}</span>
+        <span className="mx-2 font-normal text-text-secondary">·</span>
+        <span className="font-normal text-text-secondary">
+          {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
+        </span>
       </span>
     )
   }
@@ -323,7 +315,7 @@ function NotePage() {
         <span className="flex items-center gap-2">
           {/* {parsedNote.pinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null} */}
           {shouldShowPageTitle ? (
-            <span className={cx("truncate", !note ? "italic text-text-secondary" : "")}>
+            <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
               <PageTitle note={parsedNote} />
             </span>
           ) : null}
@@ -340,11 +332,12 @@ function NotePage() {
               size="small"
               shortcut={["⌘", "S"]}
               onClick={() => handleSave(editorValue)}
+              className="hidden sm:flex"
             >
               {!note ? "Create" : "Save"}
             </Button>
           ) : null}
-          <SegmentedControl aria-label="Mode" size="small" className="hidden @3xl/header:flex">
+          <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
             <SegmentedControl.Segment
               selected={mode === "read"}
               shortcut={mode !== "read" ? toggleModeShortcut : undefined}
@@ -361,15 +354,6 @@ function NotePage() {
             </SegmentedControl.Segment>
           </SegmentedControl>
           <div className="flex items-center">
-            <IconButton
-              aria-label={mode === "read" ? "Write mode" : "Read mode"}
-              size="small"
-              shortcut={toggleModeShortcut}
-              className="@3xl/header:hidden"
-              onClick={toggleMode}
-            >
-              {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
-            </IconButton>
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" size="small" disableTooltip>
@@ -513,6 +497,31 @@ function NotePage() {
         }}
       >
         <div {...topSentinelProps} />
+        <div className="fixed bottom-10 right-0 z-10 flex gap-2 p-3 sm:hidden coarse:bottom-14">
+          {!note || isDirty ? (
+            <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-sm">
+              <Button
+                disabled={isSignedOut}
+                variant="primary"
+                shortcut={["⌘", "S"]}
+                onClick={() => handleSave(editorValue)}
+                className="h-10 rounded-lg coarse:h-12 coarse:px-4"
+              >
+                {!note ? "Create" : "Save"}
+              </Button>
+            </div>
+          ) : null}
+          <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-sm">
+            <IconButton
+              aria-label={mode === "read" ? "Write mode" : "Read mode"}
+              shortcut={toggleModeShortcut}
+              onClick={toggleMode}
+              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+            >
+              {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
+            </IconButton>
+          </div>
+        </div>
         <div className="p-4">
           <div
             className={cx(

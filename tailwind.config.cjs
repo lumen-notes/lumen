@@ -57,11 +57,11 @@ module.exports = {
     },
     borderRadius: {
       none: "0",
-      sm: "4px", // base - 2px
-      DEFAULT: "6px", // base
-      lg: "10px", // base + 4px
-      xl: "14px", // base + 8px
-      full: "9999px",
+      sm: "var(--border-radius-sm)",
+      DEFAULT: "var(--border-radius-base)",
+      lg: "var(--border-radius-lg)",
+      xl: "var(--border-radius-xl)",
+      full: "var(--border-radius-full)",
     },
     spacing: {
       0: "0px",

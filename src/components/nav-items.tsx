@@ -132,7 +132,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
         <div className="flex flex-col gap-1">
           {!online ? (
             <div className="nav-item text-text-secondary" data-size={size}>
-              <OfflineIcon16 />
+              <OfflineIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
               Offline
             </div>
           ) : null}
@@ -142,7 +142,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               data-size={size}
               onClick={() => send({ type: "SYNC" })}
             >
-              <SyncStatusIcon />
+              <SyncStatusIcon className="h-4 w-4 coarse:h-5 coarse:w-5" />
               {syncText}
             </button>
           ) : null}
@@ -186,11 +186,13 @@ function NavLink({
       {...props}
     >
       {activeIcon ? (
-        <span className="hidden flex-shrink-0 [[aria-current=page]>&]:flex">{activeIcon}</span>
+        <span className="hidden h-4 w-4 flex-shrink-0 coarse:h-5 coarse:w-5 [&>*]:h-full [&>*]:w-full [[aria-current=page]>&]:flex">
+          {activeIcon}
+        </span>
       ) : null}
       <span
         className={cx(
-          "flex flex-shrink-0 text-text-secondary",
+          "flex h-4 w-4 flex-shrink-0 text-text-secondary coarse:h-5 coarse:w-5 [&>*]:h-full [&>*]:w-full",
           activeIcon && "[[aria-current=page]>&]:hidden",
         )}
       >
@@ -219,7 +221,11 @@ function ExternalLink({
       rel="noopener noreferrer"
       {...props}
     >
-      <span className={cx("flex flex-shrink-0")}>{icon}</span>
+      <span
+        className={cx("flex h-4 w-4 flex-shrink-0 coarse:h-5 coarse:w-5 [&>*]:h-full [&>*]:w-full")}
+      >
+        {icon}
+      </span>
       <span className="truncate">{children}</span>
     </a>
   )
