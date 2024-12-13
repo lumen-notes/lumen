@@ -68,6 +68,10 @@
   --font-size-lg: 16px;
   --font-size-xl: 18px;
 
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-bold: 550;
+
   /* Border radii */
   --border-radius-sm: 6px; /* base - 2px */
   --border-radius-base: 8px; /* base */
@@ -97,7 +101,7 @@
   }
 }
 
-/* Adjust font sizes for touch devices */
+/* Adjust font sizes and weights for touch devices */
 @media (pointer: coarse) {
   :root {
     /* Font sizes */
@@ -105,5 +109,9 @@
     --font-size-base: 15px;
     --font-size-lg: 18px;
     --font-size-xl: 20px;
+
+    /* Font weights */
+    --font-weight-normal: 450;
+    --font-weight-bold: 600;
   }
 }
