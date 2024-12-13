@@ -151,6 +151,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               id="repo-owner"
               name="repo-owner"
               spellCheck={false}
+              autoCapitalize="off"
               defaultValue={githubRepo?.owner ?? githubUser?.login}
               required
             />
@@ -166,6 +167,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               id="repo-name"
               name="repo-name"
               spellCheck={false}
+              autoCapitalize="off"
               defaultValue={githubRepo?.name}
               required
             />

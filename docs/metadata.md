@@ -29,6 +29,7 @@ Frontmatter can contain any valid YAML key-value pairs. However, there are a few
 | `birthday`  | Birthday (`YYYY-MM-DD` or `MM-DD`) | Displays time until the next birthday.                                                                                                  |
 | `github`    | GitHub username                    | Adds a link to the GitHub profile.                                                                                                      |
 | `twitter`   | Twitter username                   | Adds a link to the Twitter profile.                                                                                                     |
+| `bluesky`   | Bluesky username                   | Adds a link to the Bluesky profile.                                                                                                     |
 | `youtube`   | YouTube username                   | Adds a link to the YouTube channel.                                                                                                     |
 | `instagram` | Instagram username                 | Adds a link to the Instagram profile.                                                                                                   |
 | `isbn`      | Book ISBN-10 or ISBN-13            | Adds an image of the book cover and an [Open Library](https://openlibrary.org/) link to the top of the note.                            |

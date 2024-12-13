@@ -40,6 +40,7 @@ import { CopyButton } from "./copy-button"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  BlueskyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
@@ -295,7 +296,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <div className="flex items-center gap-2">
           <div className="text-text-secondary">
-            <PhoneIcon16 />
+            <PhoneIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           </div>
           <a className="link" href={`tel:${value}`}>
             {value}
@@ -308,7 +309,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <div className="flex items-center gap-2">
           <div className="text-text-secondary">
-            <MailIcon16 />
+            <MailIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           </div>
           <a className="link" href={`mailto:${value}`}>
             {value}
@@ -349,7 +350,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <GitHubIcon16 />
+          <GitHubIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           <a
             className="link link-external"
             href={`https://github.com/${value}`}
@@ -365,10 +366,26 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <TwitterIcon16 />
+          <TwitterIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           <a
             className="link link-external"
             href={`https://twitter.com/${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "bluesky":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <BlueskyIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
+          <a
+            className="link link-external"
+            href={`https://bsky.app/profile/${value}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -381,7 +398,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <YouTubeIcon16 />
+          <YouTubeIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           <a
             className="link link-external"
             href={`https://youtube.com/@${value}`}
@@ -397,7 +414,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       if (typeof value !== "string") break
       return (
         <div className="flex items-center gap-2">
-          <InstagramIcon16 />
+          <InstagramIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
           <a
             className="link link-external"
             href={`https://instagram.com/${value}`}
@@ -577,7 +594,10 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       )}
     >
       {isFirst && online ? (
-        <WebsiteFavicon url={props.href ?? ""} className="mr-2 align-sub [h1>a>&]:align-baseline" />
+        <WebsiteFavicon
+          url={props.href ?? ""}
+          className="mr-2 h-4 w-4 align-sub coarse:h-5 coarse:w-5 [h1>a>&]:align-baseline"
+        />
       ) : null}
       {children}
     </a>
@@ -759,7 +779,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
             <NoteFavicon
               note={note}
               content={note.content}
-              className="mr-2 align-sub [h1>a>&]:align-baseline"
+              className="mr-2 h-4 w-4 align-sub coarse:h-5 coarse:w-5 [h1>a>&]:align-baseline"
               defaultFavicon={null}
             />
           ) : null}

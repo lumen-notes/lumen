@@ -25,7 +25,7 @@ export function NavBar() {
             <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-2 pb-[max(env(safe-area-inset-bottom),8px)] pt-1.5">
               <div
                 aria-hidden
-                className="mx-auto mb-1.5 h-1.5 w-10 flex-shrink-0 rounded-full bg-border"
+                className="mx-auto mb-1.5 h-1 w-10 flex-shrink-0 rounded-full bg-border"
               />
               <Drawer.Title className="sr-only">Navigation</Drawer.Title>
               <NavItems size="large" />
