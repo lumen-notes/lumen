@@ -21,6 +21,14 @@ export function SyncIconButton(props: Omit<IconButtonProps, "aria-label">) {
 
   if (!isRepoCloned) return null
 
+  if (!online) {
+    return (
+      <div className="grid h-6 w-8 place-items-center text-text-secondary coarse:h-10 coarse:w-10">
+        <OfflineIcon16 />
+      </div>
+    )
+  }
+
   return (
     <IconButton
       aria-label={statusText}
@@ -39,11 +47,6 @@ export function SyncIconButton(props: Omit<IconButtonProps, "aria-label">) {
 export function useSyncStatusText() {
   const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
   const isSyncError = useAtomValue(isSyncErrorAtom)
-  const { online } = useNetworkState()
-
-  if (!online) {
-    return "Offline"
-  }
 
   if (isSyncSuccess) {
     return "Synced"
@@ -59,11 +62,6 @@ export function useSyncStatusText() {
 export function SyncStatusIcon() {
   const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
   const isSyncError = useAtomValue(isSyncErrorAtom)
-  const { online } = useNetworkState()
-
-  if (!online) {
-    return <OfflineIcon16 />
-  }
 
   if (isSyncSuccess) {
     return <SuccessIcon16 />
