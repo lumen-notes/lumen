@@ -489,26 +489,26 @@ function NotePage() {
       floatingActions={
         <div className="flex gap-2 sm:hidden">
           {(!note && editorValue) || isDirty ? (
-            <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-md">
+            <div className="flex rounded-full bg-bg-backdrop backdrop-blur-md">
               <Button
                 disabled={isSignedOut}
                 variant="primary"
                 shortcut={["⌘", "S"]}
                 onClick={() => handleSave(editorValue)}
-                className="h-10 rounded-lg coarse:h-12"
+                className="h-12 rounded-full px-5 coarse:h-14 coarse:px-6"
               >
                 Save
               </Button>
             </div>
           ) : null}
-          <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-md">
+          <div className="flex rounded-full bg-bg-backdrop backdrop-blur-md">
             <IconButton
               aria-label={mode === "read" ? "Write mode" : "Read mode"}
               shortcut={toggleModeShortcut}
               tooltipSide="top"
               tooltipAlign="end"
               onClick={toggleMode}
-              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+              className="h-12 w-12 rounded-full bg-bg-tertiary hover:bg-bg-tertiary coarse:h-14 coarse:w-14"
             >
               {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
             </IconButton>
