@@ -250,7 +250,7 @@ function Frontmatter({
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className={cx("@container", className)}>
+    <div className={cx("@container empty:hidden", className)}>
       {Object.entries(frontmatter)
         .filter(([key, value]) => {
           // Skip `pinned` frontmatter key
