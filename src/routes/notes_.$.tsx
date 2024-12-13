@@ -505,7 +505,7 @@ function NotePage() {
                 variant="primary"
                 shortcut={["⌘", "S"]}
                 onClick={() => handleSave(editorValue)}
-                className="h-10 rounded-lg coarse:h-12 coarse:px-4"
+                className="h-10 rounded-lg coarse:h-12"
               >
                 {!note ? "Create" : "Save"}
               </Button>
