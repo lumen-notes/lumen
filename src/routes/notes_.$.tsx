@@ -486,21 +486,8 @@ function NotePage() {
           </div>
         </div>
       }
-    >
-      <InsertTemplateDialog />
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        ref={containerRef}
-        onMouseDown={(event) => {
-          // Double click to edit
-          if (mode === "read" && event.detail > 1) {
-            event.preventDefault()
-            switchToWriting()
-          }
-        }}
-      >
-        <div {...topSentinelProps} />
-        <div className="fixed bottom-10 right-0 z-10 flex gap-2 p-3 sm:hidden coarse:bottom-14">
+      floatingActions={
+        <div className="flex gap-2 sm:hidden">
           {(!note && editorValue) || isDirty ? (
             <div className="flex rounded-lg bg-bg-backdrop backdrop-blur-sm">
               <Button
@@ -527,6 +514,21 @@ function NotePage() {
             </IconButton>
           </div>
         </div>
+      }
+    >
+      <InsertTemplateDialog />
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      <div
+        ref={containerRef}
+        onMouseDown={(event) => {
+          // Double click to edit
+          if (mode === "read" && event.detail > 1) {
+            event.preventDefault()
+            switchToWriting()
+          }
+        }}
+      >
+        <div {...topSentinelProps} />
         <div className="p-4">
           <div
             className={cx(
