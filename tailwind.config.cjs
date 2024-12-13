@@ -42,6 +42,7 @@ module.exports = {
         card: "var(--color-bg-card)",
         overlay: "var(--color-bg-overlay)",
         backdrop: "var(--color-bg-backdrop)",
+        "overlay-backdrop": "var(--color-bg-overlay-backdrop)",
         secondary: "var(--color-bg-secondary)",
         tertiary: "var(--color-bg-tertiary)",
         "code-block": "var(--color-bg-code-block)",

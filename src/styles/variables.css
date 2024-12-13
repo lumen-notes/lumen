@@ -42,7 +42,8 @@
   --color-bg-inset: var(--neutral-2);
   --color-bg-card: white;
   --color-bg-overlay: white;
-  --color-bg-backdrop: hsla(0 0% 99% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+  --color-bg-backdrop: #fcfcfccc;
+  --color-bg-overlay-backdrop: #ffffffcc;
   --color-bg-secondary: var(--neutral-a3);
   --color-bg-tertiary: var(--neutral-a4);
   --color-bg-code-block: var(--neutral-3);
@@ -82,7 +83,8 @@
     --color-bg-inset: black;
     --color-bg-card: var(--neutral-2);
     --color-bg-overlay: var(--neutral-3);
-    --color-bg-backdrop: hsla(0 0% 7% / 0.65); /* var(--color-bg-inset) at 65% opacity */
+    --color-bg-backdrop: #111111cc;
+    --color-bg-overlay-backdrop: #222222cc;
 
     /* Border colors */
     --color-border-focus: var(--cyan-11);

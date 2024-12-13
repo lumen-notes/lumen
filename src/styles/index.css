@@ -78,11 +78,11 @@ body:has([data-resizing="true"]) * {
 }
 
 .card-2 {
-  @apply card bg-bg-overlay shadow-lg;
+  @apply card bg-bg-overlay-backdrop shadow-lg backdrop-blur-lg;
 }
 
 .card-3 {
-  @apply card bg-bg-overlay shadow-2xl;
+  @apply card bg-bg-overlay-backdrop shadow-2xl backdrop-blur-xl;
 }
 
 /* Nav item */
