@@ -139,7 +139,7 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar login={frontmatter.github} size={64} />
+                  <GitHubAvatar login={frontmatter.github} size={64} className="h-16 w-16" />
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
@@ -771,7 +771,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           side="bottom"
           sideOffset={4}
           align="start"
-          className="card-2 z-20 w-96 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          className="card-2 z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
         >
           {note ? (
             <NotePreview note={note} />
@@ -850,7 +850,8 @@ function DateLink({ date, text, className }: DateLinkProps) {
         <HoverCard.Content
           side="bottom"
           sideOffset={4}
-          className="card-2 z-20  animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          align={note ? "start" : "center"}
+          className="card-2 z-20 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
         >
           {note ? (
             <div className="w-96">
