@@ -214,7 +214,7 @@ export function NoteList({
                         Show more
                       </PillButton>
                     </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
+                    <DropdownMenu.Content width={300}>
                       {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
                         <DropdownMenu.Item
                           key={tag}

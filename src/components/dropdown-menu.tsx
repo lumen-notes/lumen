@@ -10,11 +10,11 @@ const Root = RadixDropdownMenu.Root
 const Trigger = RadixDropdownMenu.Trigger
 
 type ContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
-  minWidth?: number | string
+  width?: number | string
 }
 
 const Content = React.forwardRef<HTMLDivElement, ContentProps>(
-  ({ children, minWidth = 256, ...props }, ref) => (
+  ({ children, width = 256, className, ...props }, ref) => (
     <Portal.Root>
       <RadixDropdownMenu.Content
         ref={ref}
@@ -36,8 +36,9 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
           "data-[side=top]:data-[align=center]:origin-bottom",
           "data-[side=top]:data-[align=end]:origin-bottom-right",
           "data-[side=top]:data-[align=start]:origin-bottom-left",
+          className,
         )}
-        style={{ minWidth }}
+        style={{ width: width }}
       >
         <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
       </RadixDropdownMenu.Content>
@@ -63,7 +64,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <>
         <div
           className={cx(
-            "flex flex-grow items-center gap-3 ",
+            "flex w-0 flex-grow items-center gap-3",
             variant === "danger" && "text-text-danger",
           )}
         >
@@ -74,7 +75,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
               {icon}
             </div>
           ) : null}
-          <span>{children}</span>
+          <span className="truncate">{children}</span>
         </div>
         {trailingVisual}
         {shortcut ? (
