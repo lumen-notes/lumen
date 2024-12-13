@@ -1,8 +1,6 @@
-import { useMemo } from "react"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import { CalendarDateIcon16, CalendarIcon16 } from "./icons"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
@@ -11,10 +9,6 @@ const NUM_VISIBLE_TAGS = 4
 
 export function NotePreview({ note }: { note: Note }) {
   const highlightedHrefs = useLinkHighlight()
-
-  const filteredTags = useMemo(() => {
-    return removeParentTags(note.tags)
-  }, [note.tags])
 
   return (
     <div
@@ -47,12 +41,12 @@ export function NotePreview({ note }: { note: Note }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-1.5 pr-10 coarse:pr-12">
-        {filteredTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
+        {note.tags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
           <div
             key={tag}
             className={cx(
               "flex h-5 items-center rounded-full px-1.5 text-sm",
-              highlightedHrefs.some((href) => `/tags/${tag}`.startsWith(href))
+              highlightedHrefs.includes(`/tags/${tag}`)
                 ? "bg-bg-highlight text-text-highlight"
                 : "bg-bg-secondary text-text-secondary",
             )}
@@ -60,9 +54,9 @@ export function NotePreview({ note }: { note: Note }) {
             {tag}
           </div>
         ))}
-        {filteredTags.length > NUM_VISIBLE_TAGS ? (
+        {note.tags.length > NUM_VISIBLE_TAGS ? (
           <div className="flex h-5 items-center rounded-full bg-bg-secondary px-1.5 text-sm text-text-secondary">
-            +{filteredTags.length - NUM_VISIBLE_TAGS}
+            +{note.tags.length - NUM_VISIBLE_TAGS}
           </div>
         ) : null}
       </div>
