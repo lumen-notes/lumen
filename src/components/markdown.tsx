@@ -44,8 +44,6 @@ import {
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
-  MailIcon16,
-  PhoneIcon16,
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
@@ -294,27 +292,17 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     case "phone":
       if (typeof value !== "string") break
       return (
-        <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <PhoneIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
-          </div>
-          <a className="link" href={`tel:${value}`}>
-            {value}
-          </a>
-        </div>
+        <a className="link" href={`tel:${value}`}>
+          {value}
+        </a>
       )
 
     case "email":
       if (typeof value !== "string") break
       return (
-        <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <MailIcon16 className="h-4 w-4 coarse:h-5 coarse:w-5" />
-          </div>
-          <a className="link" href={`mailto:${value}`}>
-            {value}
-          </a>
-        </div>
+        <a className="link" href={`mailto:${value}`}>
+          {value}
+        </a>
       )
 
     case "address":
@@ -336,7 +324,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <div>
           <a
-            className="link link-external "
+            className="link link-external"
             href={`https://openlibrary.org/isbn/${value}`}
             target="_blank"
             rel="noopener noreferrer"
