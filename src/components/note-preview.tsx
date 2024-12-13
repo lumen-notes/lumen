@@ -1,12 +1,19 @@
+import { useMemo } from "react"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
 
+const NUM_VISIBLE_TAGS = 4
+
 export function NotePreview({ note }: { note: Note }) {
   const highlightedHrefs = useLinkHighlight()
-  console.log(highlightedHrefs)
+
+  const filteredTags = useMemo(() => {
+    return removeParentTags(note.tags)
+  }, [note.tags])
+
   return (
     <div
       {...{ inert: "" }}
@@ -18,7 +25,7 @@ export function NotePreview({ note }: { note: Note }) {
         </div>
       </div>
       <div className="flex flex-wrap gap-1.5 pr-10 coarse:pr-12">
-        {removeParentTags(note.tags).map((tag) => (
+        {filteredTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
           <div
             key={tag}
             className={cx(
@@ -31,6 +38,11 @@ export function NotePreview({ note }: { note: Note }) {
             {tag}
           </div>
         ))}
+        {filteredTags.length > NUM_VISIBLE_TAGS ? (
+          <div className="flex h-5 items-center rounded-full bg-bg-secondary px-1.5 text-sm text-text-secondary">
+            +{filteredTags.length - NUM_VISIBLE_TAGS}
+          </div>
+        ) : null}
       </div>
     </div>
   )

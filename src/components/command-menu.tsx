@@ -295,13 +295,9 @@ export function CommandMenu() {
                   icon={<SearchIcon16 />}
                   onSelect={handleSelect(() =>
                     navigate({
-                      to: "/tags/$",
-                      params: {
-                        _splat: deferredQuery,
-                      },
+                      to: "/tags",
                       search: {
-                        query: undefined,
-                        view: "grid",
+                        query: deferredQuery,
                       },
                     }),
                   )}
