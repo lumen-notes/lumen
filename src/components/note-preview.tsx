@@ -15,23 +15,21 @@ export function NotePreview({ note }: { note: Note }) {
       {...{ inert: "" }}
       className="flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-3 [contain:layout_paint]"
     >
-      {note.type === "daily" && !note.title ? (
-        <div className="flex h-6 items-center gap-3 px-1">
-          <CalendarDateIcon16
-            date={new Date(note.id).getUTCDate()}
-            className="text-text-secondary"
-          />
-          <div className="flex items-baseline gap-2">
-            <span className=" font-semibold">{note.displayName}</span>
-            <span className="text-sm text-text-secondary">{formatDateDistance(note.id)}</span>
-          </div>
-        </div>
-      ) : note.type === "weekly" && !note.title ? (
-        <div className="flex h-6 items-center gap-3 px-1">
-          <CalendarIcon16 className="text-text-secondary" />
-          <div className="flex items-baseline gap-2">
-            <span className=" font-semibold">{note.displayName}</span>
-            <span className="text-sm text-text-secondary">{formatWeekDistance(note.id)}</span>
+      {(note.type === "daily" || note.type === "weekly") && !note.title ? (
+        <div className="flex h-6 items-center gap-3 pl-1 pr-8 coarse:pr-10">
+          {note.type === "daily" ? (
+            <CalendarDateIcon16
+              date={new Date(note.id).getUTCDate()}
+              className="text-text-secondary"
+            />
+          ) : (
+            <CalendarIcon16 className="text-text-secondary" />
+          )}
+          <div className="flex w-0 flex-grow items-baseline gap-3">
+            <span className="truncate font-semibold">{note.displayName}</span>
+            <span className="truncate text-sm text-text-secondary">
+              {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
+            </span>
           </div>
         </div>
       ) : null}
