@@ -1,8 +1,8 @@
 import { Link, LinkComponentProps } from "@tanstack/react-router"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
-import { notesAtom, pinnedNotesAtom } from "../global-state"
+import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import {
@@ -13,12 +13,15 @@ import {
   MessageIcon16,
   NoteFillIcon16,
   NoteIcon16,
+  OfflineIcon16,
   SettingsFillIcon16,
   SettingsIcon16,
   TagFillIcon16,
   TagIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
+import { useNetworkState } from "react-use"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -29,6 +32,9 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
+  const syncText = useSyncStatusText()
+  const send = useSetAtom(globalStateMachineAtom)
+  const { online } = useNetworkState()
 
   const today = new Date()
   const todayString = toDateString(today)
@@ -36,7 +42,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
 
   return (
     <SizeContext.Provider value={size}>
-      <div className="flex flex-grow flex-col justify-between gap-4">
+      <div className="flex flex-grow flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
           <ul className="flex flex-col gap-1">
             <li>
@@ -124,6 +130,22 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           ) : null}
         </div>
         <div className="flex flex-col gap-1">
+          {!online ? (
+            <div className="nav-item text-text-secondary" data-size={size}>
+              <OfflineIcon16 />
+              Offline
+            </div>
+          ) : null}
+          {syncText ? (
+            <button
+              className="nav-item text-text-secondary"
+              data-size={size}
+              onClick={() => send({ type: "SYNC" })}
+            >
+              <SyncStatusIcon />
+              {syncText}
+            </button>
+          ) : null}
           {/* <ExternalLink
             href="https://uselumen.com"
             icon={<BookIcon16 />}
@@ -134,7 +156,6 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           <ExternalLink
             href="https://github.com/lumen-notes/lumen/issues/new"
             icon={<MessageIcon16 />}
-            className="mt-auto text-text-secondary"
           >
             Send feedback
           </ExternalLink>
@@ -160,12 +181,8 @@ function NavLink({
   return (
     <Link
       activeOptions={{ exact: true, includeSearch: false }}
-      className={cx(
-        "focus-ring flex items-center rounded hover:bg-bg-secondary active:bg-bg-tertiary aria-[current]:bg-bg-secondary aria-[current]:font-semibold",
-        "coarse:h-10 coarse:gap-4 coarse:px-3",
-        size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
-        className,
-      )}
+      data-size={size}
+      className={cx("nav-item", className)}
       {...props}
     >
       {activeIcon ? (
@@ -196,12 +213,8 @@ function ExternalLink({
 
   return (
     <a
-      className={cx(
-        "focus-ring flex items-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary",
-        "coarse:h-10 coarse:gap-4 coarse:px-3",
-        size === "large" ? "h-10 gap-4 px-3" : "h-8 gap-3 px-2",
-        className,
-      )}
+      className={cx("nav-item text-text-secondary", className)}
+      data-size={size}
       target="_blank"
       rel="noopener noreferrer"
       {...props}

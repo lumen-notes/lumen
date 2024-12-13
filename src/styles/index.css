@@ -41,14 +41,12 @@ body:has([data-resizing="true"]) * {
   pointer-events: none;
 }
 
-.container {
-  @apply mx-auto w-full max-w-[42rem];
-}
-
 /* Focus styles for buttons, inputs, etc. */
 .focus-ring {
   @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
 }
+
+/* Link */
 
 .link {
   @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
@@ -69,6 +67,8 @@ body:has([data-resizing="true"]) * {
   margin-left: 2px;
 }
 
+/* Card */
+
 .card {
   @apply rounded-lg ring-1 ring-border-secondary dark:ring-inset;
 }
@@ -83,4 +83,22 @@ body:has([data-resizing="true"]) * {
 
 .card-3 {
   @apply card bg-bg-overlay shadow-2xl;
+}
+
+/* Nav item */
+
+.nav-item {
+  @apply flex h-8 items-center gap-3 rounded px-2;
+}
+
+.nav-item:is(a, button) {
+  @apply focus-ring hover:bg-bg-secondary active:bg-bg-tertiary;
+}
+
+.nav-item[aria-current] {
+  @apply bg-bg-secondary font-semibold;
+}
+
+.nav-item[data-size="large"] {
+  @apply h-10 gap-4 px-3;
 }

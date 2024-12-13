@@ -1,11 +1,10 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
-import { isRepoClonedAtom, sidebarAtom } from "../global-state"
+import { sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
-import { SyncIconButton } from "./sync-status"
 
 export type AppHeaderProps = {
   title: React.ReactNode
@@ -18,7 +17,6 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
 
-  const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
 
   useHotkeys(
@@ -83,32 +81,29 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
               <div className="flex items-center">{actions}</div>
               <div
                 role="separator"
-                className={cx("h-5 w-px bg-border-secondary", !isRepoCloned && "hidden sm:block")}
+                className={cx("hidden h-5 w-px bg-border-secondary sm:block")}
               />
             </>
           ) : null}
-          <div className="flex items-center empty:hidden">
-            <SyncIconButton size="small" />
-            <div className="hidden sm:flex">
-              <IconButton
-                aria-label="New note"
-                shortcut={["⌘", "⇧", "O"]}
-                size="small"
-                onClick={() => {
-                  navigate({
-                    to: "/notes/$",
-                    params: { _splat: `${Date.now()}` },
-                    search: {
-                      mode: "write",
-                      query: undefined,
-                      view: "grid",
-                    },
-                  })
-                }}
-              >
-                <PlusIcon16 />
-              </IconButton>
-            </div>
+          <div className="hidden items-center sm:flex">
+            <IconButton
+              aria-label="New note"
+              shortcut={["⌘", "⇧", "O"]}
+              size="small"
+              onClick={() => {
+                navigate({
+                  to: "/notes/$",
+                  params: { _splat: `${Date.now()}` },
+                  search: {
+                    mode: "write",
+                    query: undefined,
+                    view: "grid",
+                  },
+                })
+              }}
+            >
+              <PlusIcon16 />
+            </IconButton>
           </div>
         </div>
       </header>
