@@ -23,7 +23,7 @@
 }
 
 .markdown strong {
-  @apply font-semibold;
+  @apply font-bold;
 }
 
 .markdown h1,
@@ -33,7 +33,7 @@
 .markdown h5,
 .markdown h6,
 .markdown th {
-  @apply font-semibold;
+  @apply font-bold;
 }
 
 .markdown h1 {
@@ -45,11 +45,11 @@
 }
 
 .markdown pre {
-  @apply overflow-auto rounded-sm bg-bg-code-block p-3;
+  @apply overflow-auto rounded bg-bg-code-block p-3;
 }
 
 .markdown code {
-  @apply rounded-xs bg-bg-secondary px-1;
+  @apply rounded-sm bg-bg-secondary px-1;
 }
 
 .markdown pre > code {
@@ -77,6 +77,13 @@
 .markdown ul,
 .markdown ol {
   @apply pl-6;
+}
+
+@media (pointer: coarse) {
+  .markdown ul,
+  .markdown ol {
+    @apply pl-7;
+  }
 }
 
 .markdown ul ul,
@@ -130,7 +137,7 @@
 }
 
 .markdown img {
-  @apply overflow-hidden rounded-sm;
+  @apply overflow-hidden rounded;
 }
 
 .markdown .katex-html {

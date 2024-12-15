@@ -2,7 +2,7 @@ import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { selectAtom } from "jotai/utils"
+import { atomWithStorage, selectAtom } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
@@ -27,7 +27,6 @@ import {
   isRepoSynced,
 } from "./utils/git"
 import { parseNote } from "./utils/parse-note"
-import { isPinned } from "./utils/pin"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
@@ -61,7 +60,7 @@ type Event =
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m1gBraWSBV4AUQAMnuAMJ0n46vcABTunZB3tA7MWmOOnITiOilmcwq8-dFwd8zh8hKsbLvwFprhqUjoBQIhFmghqsOwzrcLwK61pB0Gwc23RtkoHYekCd49j6CCfjYtgSjiLgLPC5jCtEdiBvYDEJmEn58pYoGXOhNpQSwWHFvg5SVNUdSNGaYGrrmuB8TB9q6C20i4X0+GaIR3asg+iA2Modi4Hs0LJnKrgxDGbh6XYjFWco9iCg4XGqjm1oydBkD7kep7nleN4EUywzEVpCB2c+EqxOY76fsKvgypEC5LNEIQLqxXgOeB0myZAMkABZYFQxoQCgYAMAA6jqbx0nuPwAGJvEeLy3hp4IkR+uDKKkTh-q40pQlFCrWDZ5iWZYEoch+6REjWTnri5RoQNluUwOwBVFQAIoee4VdVtV7g1-maaYiAtYB9gylK5htYBlhRXK07JMGg5ddC5ipVJzkZXNUg5XluAAO74KCVBVWQhWwAhxrIaak0QbxrkfV9i1-QDUBAyDimunh6i+V2e1NYF0LKK1DHStEuxyjYsxRcOkSzNEC6cjpoqcRNaFTRhs3zd9iPyIDwNwKUQmlqJFbiVD6WwxzCP-dzyO87AaPKe6al+SyuMHaRcZBuZCofnscZxJTjHU0s4SxD+bXjeckk8TNtwS2wEBgIV0so0VzCISaqFW6zMPs59C3247YDO7z8u9Irno472rgEwxcUmQs9hRYi-WxolUSbN4Q4vdb7127gDtOyILv88JZZiVWEncd7NuZX730F0HRchzhYeqRHKu9rGEQbM4veWOO3hJ-2IQ2bMSwKhsbgW8qXvQzXc2wIEFBSFcDxSFIcCgy8ACaXzHrtHckTK1gfiTfLzmEY50UEoQHORukj74djeGRGbM7PYvs4vy+4CWjA73vA+941YBlascKEH42pOFHF+G+4w+TkS6jYQaSRYzSmztXXO38V7aAeCgFAIgwZIU4JDFmc8sFLxwXgghVBQ7tkxkrbGh9ArBgJimJwqRwE8mvmsRYURxQLnmEORYWsMHkPFtgqo1DCF-zLsLCuos3oSMoVI-BIg6EYyAQFNW0JEGWRlIxeYsYFTCkSr3IMI8OoJD5FiMRn9baSNwWoqgDAtH7XZLGcUcRkhtXMgGZEpjUzkWQR4BKoUGKKnflXcRX8VG4NgFlQhbtwYkM9tE+xmVHEPASeolu9C3GqzGJYRKrV4TJEAvyRYtNTGOGnCkSyUp3ARn7nYpRsSf7xMSS42RQtKzVjIRkhecTsldKgBolSDD27AI8XpXwPgSZjgcNKGwpjZS4GflKPYYQSaDWcK06aFCOkjMIQUqOjh9L2AmAscKUQrCmNcFsXYkYfyk1TBKfZbMHEqM+mAKQXARAvFkHIbJRCPaV0cjEr5P8fl-IBUC2Q2Txnh3UpHEiSwYQ-lpsNaU4R6amPJnpRY-4rm+HsB8n2UKV4wv+VQQFwLQbJOIShcFaU2mUuyr8mlUA6UIrlnkzRbhGFEXcYgcesIIwOFSMY3uQo4HtUebEQRT8hxuHJfPK43ysqcrhfSkugtyx9JZa9A5yjoVathbS+FiL+UTNOSRGIBNe6ChlGxVwV05WoPFFfaYuwtbQjVYcql5quU8pBQA-eWNhWFMhKkKYgorCDjjHMaINTjitQTEkE4SQJjPSVBQNADt4BAhJFM7RYxfRTwiHfHSmw7JSgSsKX004FhJFssGQawZyZv0tpcBsHQxClpFQgDW84lh7HThMBUsC1jIO2AmPYopDjHGGvsx4shB3RqCgqcUyR+4PwTQseiVb5hwm1hMSt5KN29grTiTEyIa3ZpxAkWVaxOR6SsDKVwU9kRQk-Gqvt8k0BXpIk2tw+lP2HFpvTKMk5IywnmOe9wyRFi5p7RC6Sm5txrGVtMxAvd4wfjmAkWYP5LAprgciGOs4jj9x8MUgNmFAPAcCig1qU5UjvnMuTd1ax4gRH5ANewNkHApSiehtlkBmNq19DYci1anCPvrdGOBvgIyRB0g4YaJxHB7LE6yk1vt4ZgCk+Ww2OwNneE7QmZTaw9jk0xAzSzkZfABgY4Z-2S1ComcQHsTESQYgKkskcVB10NhTF0iTeU74lhudtnXSWSMXZFpw2WvDniUw6XcH1UaE4VMOD0vECLLmEh-r08az5tcjP50DsHLzKLmE6MmPFSM8wFjmXcFFX9Rt5xoPhDFsrOdTVSG8wgf0BN5O1qJQkGzoRvDkT2B1Mx6KmZof0xVoZP9YBrw3rAZLTDcPDrkyElEiVL7DVMXfVqcwUzmRflOWLmSVF-xG9YYaqmwpRCOHEfwcDn7bpCcJ2MHhOSidW+Vilj2jnOKgC93wQZgwTASOTBc525XzDAxAqUBwf0rZnukiTG2qE5KoC9uIsJzIMWGtCQ4h65XIi2Bs2Tg0hy48UQZ9l1KdW8pG2ddZJlTaUd5PipYmIcRQh0kz+IGQMhAA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m0UNCyADC6FurwAogAZA-buk-HUHgAKd07IO9oHZi0xx05CcR0UszmFXn7ouDvjOHyEqxsu-AWmuGpSHuIhFmghqsOwzrcLwK61lBMH2roLbSG2Sgdh6QL3j2PoIF+Ni2BKOIuAs8LmMK0R2IG9iMQmYRfnylhgZc6E2tBLCwQ6pT4OUlTVHUjRmuBq65rg-EUIJ2HdHhfQEZoRHdqyj6IDYyh2LgezQsmcquDEMZuPpdhMdZyj2IKDjcaqObWnJe6QIeJ5nhe163oRTLDCR2kIPZL4SrE5gfl+wq+DKkQLks0QhAubFeI5EGyfJkByQAFlgVDGhAKBgAwADqOpvHSB4-AAYm8J4vHemngqRn64MoqROP+rjSlC0UKtYtnmFZlgShyn7pESNbOeurlGhAOV5TA7CFcVAAix4HpVNV1QejUBVppiIK1QH2DKUrmO1QGWNFcrTskwaDt10LmGlMkuZl81SLl+W4AA7vgoJUNVZBFbACHGshppTZBfFuZ931Lf9gNQMDoM4a6+HqH5Xb7c1QXQsobWMdK0S7HKNizNFw6RLM0QLpyumilxk1odNGFzQtP1I-IQMg3AwmiWWElVlJPFs7DHNfYtbDcyIqNwOjKnuup-ksnjh1kXGQYWQqn57HGcRU0xNNLOEsS-u1E3nNJvGzbcnNLRAYBFTzKN8+DSGcFDrMw3bWVSz9Tsu3LfOK70yuerjvauITjHxaZCz2NFiIDbGSVRJs3hDq9tsfQ7bBB2ArvywLpbiRWknQxlcP57ghfF6Hynh2pkdq72sYRBszjd5Y47eMn-YhLZsxLAqGxuFbyo2+LfvzbAgQUFIVwPFIUhwGDLwAJpfNue1t6RMrWJ+pN8vOYRjvRQShAcFF6UPvh2N45EZiz0++3n8+L7gJaMFvO97w+DWAY2rHChJ+dqThRzfivuMPkFFuo2CGkkWM0oc4zw-gvJe2gHgoBQCID2JpUJv2rhzT+WCcF4KoGHdsWMVY433kFYMhMUxOFSKAnkl81iLCiOKBc8whyLB1mg9+NcyFVAofgn+QsK4iyru9URmDxG4JENQzGADAoa2hPAqyMomLzFjAqYUSVu5BiHp1BIfIsTCJIfbMR2DlFUAYOog67JYzijiMkdqFkAzIiMamCiiCPCJTCoxRUr8xYiNIYo7BsBsr4OYIhQhosnKRNsdEh4sSVFNxoc49WYxLBJTavCZIQF+SLDpkYxw04UhWSlO4CMvdrHyKiV-GJcTHFSPLpWasPsbFZTsRk9pUBVGqVoa3QBrj9K+B8KTMcDhpQ2CMbKXAj8pR7DCKTIazgmkzQwa0wZ+DcnR0cAZewEwFgRSiFYIxrgti7EjL+MmqYJQ7PZmkr+X0wBSC4CIF4sg5AZIIZDIhES+lz0UZ875vz-myAySMiOGko6kSWDCX8dMRrSnCAzIxFN9KLAAuc3w9hXkS3eUvSFPyqB-IBWDBJEMvYgpSWCq4ELspfMpVAalsLYDwo7G4OhxEXGIFHrCCMDhUgGO7kKGBHU7mxD4Q-IcbgSWzxZR8tlUKqUwsBZ08s3TknpWaWSnK7LoU0t5WMxFDCNYxEJt3QUMp2KuGujK5B4oL7TF2DraEKq9nko1RyrlgK-672xoKvJkJUhTEFFYQccY5jREqccNqCYkgnCSBMF6SpNxO3gECEk4yNFjF9BPCIN9dKbHslKRKwpfTTgWEkMcMR-wosjK9BsHQxCFqFQgLW84lh7AzhMBU0C1iIO2AmPYopDjHBGjsx4shu0RuCgqcUyRe531jQsBiZb5hwl1hMUtJKl29hLTiTEyIK0ZpxAkaVaxOT6SsB4CmJSn2pXCUylyHasJoBPaROtbgDIym7mPBmUZJyRlhPMQ97hkiLCzdbUFLlNw7jhn+-Gq6jjJn3UxK5EHY7jiGuTQdyqP2Gt2ZhJsuh0NANXUOREqQPwWQpi6tY8QIj8kGvYWyDh32Ic-RRuaNHi02AouWpw17q3Rhgb4CMkRGYWV-I-CKfGp5IcE-bAOMBhN+mNjsVZ3hgyM2k2sPYFNMSM3agqZMRLfU1y0wVIqOn1jTmKTEBUVkjjIJuhsKYelSbyg-EsOzksEYywBg3UGzmowgN0u4fqY0JwyYcPpeI-nfARU-Nssjb0NP+zC3XZ2RcQ5OatRMxArhAMJUjPMBYFl3DRShNYKIVl06m2JiFslzn-SE3E5W-FCQTOhG8BRPYTgZSgODBMTr-TFGwBXmvWAebVbld7WJwJKIkrnxGkYm+bU5gpgsk-KcM3wVfx-s55rXrpgJhaxsBrMDH6rsCTx2MHhOSqbkXls75CHFQEu74IMU34gRh8L3Th18fADjgQcZE-JTtqvIZkqgl24iwgsoxEa0JDjbplciLYqzRNDSHMzfj5G3mzfVaarVNLnPnRWaZc2yIlWJplSiTEOIoS6SJ-EDIGQgA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -142,10 +141,10 @@ function createGlobalStateMachine() {
                   target: "cloned",
                   actions: ["setGitHubRepo", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
-                onError: "empty",
+                onError: "notCloned",
               },
             },
-            empty: {
+            notCloned: {
               on: {
                 SELECT_REPO: "cloningRepo",
               },
@@ -159,7 +158,7 @@ function createGlobalStateMachine() {
                   actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
-                  target: "empty",
+                  target: "notCloned",
                   actions: ["clearGitHubRepo", "setError"],
                 },
               },
@@ -522,7 +521,19 @@ async function getMarkdownFilesFromFs(dir: string) {
 
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
-export const isReadOnlyAtom = selectAtom(globalStateMachineAtom, (state) =>
+export const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.notCloned"),
+)
+
+export const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloningRepo"),
+)
+
+export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
+  state.matches("signedIn.cloned"),
+)
+
+export const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedOut"),
 )
 
@@ -553,7 +564,7 @@ export const notesAtom = atom((get) => {
   for (const filepath in markdownFiles) {
     const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
-    notes.set(id, { id, content, ...parseNote(content), backlinks: [] })
+    notes.set(id, parseNote(id, content))
   }
 
   // Derive backlinks
@@ -575,7 +586,7 @@ export const notesAtom = atom((get) => {
 
 export const pinnedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].filter(isPinned)
+  return [...notes.values()].filter((note) => note.pinned).reverse()
 })
 
 export const sortedNotesAtom = atom((get) => {
@@ -693,3 +704,19 @@ export const templatesAtom = atom((get) => {
 
   return templates
 })
+
+export const dailyTemplateAtom = selectAtom(templatesAtom, (templates) =>
+  Object.values(templates).find((t) => t.name.match(/^daily$/i)),
+)
+
+export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
+  Object.values(templates).find((t) => t.name.match(/^weekly$/i)),
+)
+
+// -----------------------------------------------------------------------------
+// Layout
+// -----------------------------------------------------------------------------
+
+export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
+
+export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")

@@ -164,7 +164,9 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
         break
 
       case "tasks":
-        value = qualifier.values.some((value) => isInRange(item.openTasks, value))
+        value = qualifier.values.some((value) =>
+          isInRange(item.tasks.filter((task) => !task.completed).length, value),
+        )
         break
 
       case "no":
@@ -174,8 +176,6 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "backlinks":
               if (!("backlinks" in item)) return true
               return item.backlinks.length === 0
-            case "tasks":
-              return item.openTasks === 0
             case "tag":
             case "tags":
               return item.tags.length === 0
@@ -185,6 +185,11 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "link":
             case "links":
               return item.links.length === 0
+            case "task":
+            case "tasks":
+              return item.tasks.filter((task) => !task.completed).length === 0
+            case "title":
+              return !item.title
             default:
               return !(value in frontmatter)
           }
@@ -207,12 +212,21 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
             case "link":
             case "links":
               return item.links.length === 0
+            case "task":
             case "tasks":
-              return item.openTasks === 0
+              return item.tasks.filter((task) => !task.completed).length === 0
+            case "title":
+              return !item.title
             default:
               return !(value in frontmatter)
           }
         })
+        break
+
+      case "is":
+      case "type":
+        // Match if the item's type is in the qualifier's values
+        value = qualifier.values.includes(item.type)
         break
 
       default:

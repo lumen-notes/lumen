@@ -2,6 +2,13 @@ import { z } from "zod"
 
 export type NoteId = string
 
+export type NoteType = "note" | "daily" | "weekly" | "template"
+
+export type Task = {
+  completed: boolean
+  text: string
+}
+
 export type Note = {
   /** The markdown file path without the extension (e.g. `foo/bar.md` → `foo/bar`) */
   id: NoteId
@@ -10,18 +17,24 @@ export type Note = {
 
   // ↓ Parsed from the content
 
+  /** The type of the note */
+  type: NoteType
+  /** Depending on the type, either the title, template name, or the date */
+  displayName: string
   /** The frontmatter of the markdown file */
   frontmatter: Record<string, unknown>
   /** If the markdown file contains an h1 (e.g. `# title`), we use that as the title */
   title: string
   /** If the title contains a link (e.g. `# [title](url)`), we use that as the url */
   url: string | null
+  /** If the note is pinned */
+  pinned: boolean
   /** The ids of all notes that are linked to from this note */
   links: NoteId[]
   dates: string[]
   tags: string[]
-  /** How many open tasks (`- [ ]`) the note has */
-  openTasks: number
+  /** The tasks in the note (e.g. `- [ ] Do laundry` → `{ completed: false, text: "Do laundry" }`) */
+  tasks: Task[]
 
   // ↓ Derived from links
 

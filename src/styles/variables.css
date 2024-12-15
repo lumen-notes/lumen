@@ -16,60 +16,84 @@
   --neutral-10: var(--sand-10);
   --neutral-11: var(--sand-11);
   --neutral-12: var(--sand-12);
+  --neutral-a1: var(--sand-a1);
+  --neutral-a2: var(--sand-a2);
+  --neutral-a3: var(--sand-a3);
+  --neutral-a4: var(--sand-a4);
+  --neutral-a5: var(--sand-a5);
+  --neutral-a6: var(--sand-a6);
+  --neutral-a7: var(--sand-a7);
+  --neutral-a8: var(--sand-a8);
+  --neutral-a9: var(--sand-a9);
+  --neutral-a10: var(--sand-a10);
+  --neutral-a11: var(--sand-a11);
+  --neutral-a12: var(--sand-a12);
   --neutral-contrast: #fff;
 
   /* Text colors */
-  --color-text: var(--sand-12);
-  --color-text-secondary: var(--sand-11);
-  --color-text-tertiary: var(--sand-10);
+  --color-text: var(--neutral-12);
+  --color-text-secondary: var(--neutral-11);
+  --color-text-tertiary: var(--neutral-10);
   --color-text-highlight: var(--yellow-a12);
   --color-text-danger: var(--red-11);
 
   /* Background colors */
-  --color-bg: white;
-  --color-bg-inset: var(--sand-2);
+  --color-bg: var(--neutral-1);
+  --color-bg-inset: var(--neutral-2);
+  --color-bg-card: white;
   --color-bg-overlay: white;
-  --color-bg-backdrop: hsla(0 0% 98% / 0.65); /* var(--color-bg-inset) at 65% opacity */
-  --color-bg-secondary: var(--sand-a3);
-  --color-bg-tertiary: var(--sand-a4);
-  --color-bg-code-block: var(--sand-2);
-  --color-bg-highlight: var(--yellow-a3);
+  --color-bg-backdrop: #fcfcfccc;
+  --color-bg-overlay-backdrop: #ffffffcc;
+  --color-bg-secondary: var(--neutral-a3);
+  --color-bg-tertiary: var(--neutral-a4);
+  --color-bg-code-block: var(--neutral-3);
+  --color-bg-highlight: var(--yellow-a4);
   --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
-  --color-border: var(--sand-a8);
-  --color-border-secondary: var(--sand-a4);
-  --color-border-table: var(--sand-7);
+  --color-border: var(--neutral-a8);
+  --color-border-secondary: var(--neutral-a5);
+  --color-border-table: var(--neutral-7);
   --color-border-focus: var(--cyan-9);
 
   /* Syntax colors */
-  --color-syntax-yellow: var(--yellow-11);
+  --color-syntax-yellow: var(--yellow11);
   --color-syntax-red: var(--red-11);
   --color-syntax-purple: var(--purple-11);
   --color-syntax-green: var(--green-11);
 
   /* Font sizes */
-  --font-size-sm: 0.75rem; /* 12px */
-  --font-size-base: 0.875rem; /* 14px */
-  --font-size-lg: 1rem; /* 16px */
-  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-bold: 550;
+
+  /* Border radii */
+  --border-radius-sm: 6px; /* base - 2px */
+  --border-radius-base: 8px; /* base */
+  --border-radius-lg: 12px; /* base + 4px */
+  --border-radius-xl: 16px; /* base + 8px */
+  --border-radius-full: 9999px;
+
+  /* Icons */
+  --icon-size: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     /* Background colors */
-    --color-bg: var(--sand-2);
+    --color-bg: var(--neutral-1);
     --color-bg-inset: black;
-    --color-bg-overlay: var(--sand-3);
-    --color-bg-backdrop: hsla(60 0% 0% / 0.65); /* var(--color-bg-inset) at 65% opacity */
-    --color-bg-secondary: var(--sand-a4);
-    --color-bg-tertiary: var(--sand-a5);
-    --color-bg-code-block: var(--sand-4);
-    --color-bg-highlight: var(--yellow-a4);
-    --color-bg-selection: var(--cyan-a5);
+    --color-bg-card: var(--neutral-2);
+    --color-bg-overlay: var(--neutral-3);
+    --color-bg-backdrop: #111111cc;
+    --color-bg-overlay-backdrop: #222222cc;
 
     /* Border colors */
-    --color-border-secondary: var(--sand-a5);
     --color-border-focus: var(--cyan-11);
 
     /* Syntax colors */
@@ -80,13 +104,19 @@
   }
 }
 
-/* Adjust font sizes for touch devices */
 @media (pointer: coarse) {
   :root {
     /* Font sizes */
-    --font-size-sm: 0.8125rem; /* 13px */
-    --font-size-base: 0.9375rem; /* 15px */
-    --font-size-lg: 1.125rem; /* 18px */
-    --font-size-xl: 1.25rem; /* 20px */
+    --font-size-sm: 13px;
+    --font-size-base: 15px;
+    --font-size-lg: 18px;
+    --font-size-xl: 20px;
+
+    /* Font weights */
+    --font-weight-normal: 450;
+    --font-weight-bold: 600;
+
+    /* Icons */
+    --icon-size: 20px;
   }
 }

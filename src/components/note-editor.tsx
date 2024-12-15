@@ -16,6 +16,7 @@ import { useAtomCallback } from "jotai/utils"
 // import * as emoji from "node-emoji"
 import { tags } from "@lezer/highlight"
 import { vim } from "@replit/codemirror-vim"
+import { useNavigate } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
@@ -23,17 +24,16 @@ import { indentedLineWrapExtension } from "../codemirror-extensions/indented-lin
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
-import { isReadOnlyAtom, tagsAtom, templatesAtom } from "../global-state"
+import { isSignedOutAtom, tagsAtom, templatesAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
+import { useEditorSettings } from "../hooks/editor-settings"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { getEditorSettings } from "../utils/editor-settings"
 import { removeLeadingEmoji } from "../utils/emoji"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
-import { usePanelLinkClickHandler } from "./panels"
 
 type NoteEditorProps = {
   className?: string
@@ -101,7 +101,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     {
       className,
       defaultValue = "",
-      placeholder = "Write a note…",
+      placeholder = "Write something…",
       autoFocus = false,
       onChange,
       onStateChange,
@@ -112,8 +112,8 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   ) => {
     const attachFile = useAttachFile()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
-    const editorSettings = getEditorSettings()
-    const handleLinkClick = usePanelLinkClickHandler()
+    const [editorSettings] = useEditorSettings()
+    const navigate = useNavigate()
 
     // Completions
     const noteCompletion = useNoteCompletion()
@@ -139,7 +139,17 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
-        wikilinkExtension((to) => handleLinkClick({ to, target: "_blank" })),
+        wikilinkExtension((id) =>
+          navigate({
+            to: "/notes/$",
+            params: { _splat: id },
+            search: {
+              mode: "write",
+              query: undefined,
+              view: "grid",
+            },
+          }),
+        ),
         syntaxHighlighting(syntaxHighlighter),
       ]
 
@@ -156,7 +166,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       tagPropertyCompletion,
       tagSyntaxCompletion,
       templateCompletion,
-      handleLinkClick,
+      navigate,
     ])
 
     return (
@@ -331,7 +341,7 @@ function useTagPropertyCompletion() {
 function useNoteCompletion() {
   const saveNote = useSaveNote()
   const searchNotes = useStableSearchNotes()
-  const isReadOnly = useAtomValue(isReadOnlyAtom)
+  const isSignedOut = useAtomValue(isSignedOutAtom)
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -391,7 +401,7 @@ function useNoteCompletion() {
         }
       })
 
-      if (query && !isReadOnly) {
+      if (query && !isSignedOut) {
         options.push(createNewNoteOption)
       }
 
@@ -401,7 +411,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, saveNote, isReadOnly],
+    [searchNotes, saveNote, isSignedOut],
   )
 
   return noteCompletion

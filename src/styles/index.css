@@ -10,7 +10,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-bg-inset font-body text-base text-text;
+  @apply bg-bg font-body text-base font-normal text-text;
 }
 
 ::selection {
@@ -19,7 +19,7 @@ body {
 
 /* .docs-story is the container for storybook stories on docs pages */
 .docs-story {
-  @apply bg-bg-inset;
+  @apply bg-bg;
 }
 
 body,
@@ -41,17 +41,15 @@ body:has([data-resizing="true"]) * {
   pointer-events: none;
 }
 
-.container {
-  @apply mx-auto w-full max-w-[42rem];
-}
-
 /* Focus styles for buttons, inputs, etc. */
 .focus-ring {
   @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
 }
 
+/* Link */
+
 .link {
-  @apply focus-ring rounded-xs underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
+  @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
 }
 
 .link:hover {
@@ -69,6 +67,38 @@ body:has([data-resizing="true"]) * {
   margin-left: 2px;
 }
 
-.filepath {
-  @apply font-mono tracking-wide;
+/* Card */
+
+.card {
+  @apply rounded-lg border-0 ring-1 ring-border-secondary 2x:ring-[0.5px] dark:ring-inset;
+}
+
+.card-1 {
+  @apply card bg-bg-card shadow;
+}
+
+.card-2 {
+  @apply card bg-bg-overlay-backdrop shadow-lg backdrop-blur-lg;
+}
+
+.card-3 {
+  @apply card bg-bg-overlay-backdrop shadow-2xl backdrop-blur-xl;
+}
+
+/* Nav item */
+
+.nav-item {
+  @apply flex h-8 items-center gap-3 rounded px-2 coarse:h-10 coarse:gap-4 coarse:px-3;
+}
+
+.nav-item:is(a, button) {
+  @apply focus-ring hover:bg-bg-secondary active:bg-bg-tertiary;
+}
+
+.nav-item[aria-current] {
+  @apply bg-bg-secondary font-bold;
+}
+
+.nav-item[data-size="large"] {
+  @apply h-10 gap-4 px-3;
 }

@@ -17,6 +17,10 @@ export function parseFrontmatter(markdown: string): {
     const [, frontmatterYaml, content] = match
     const frontmatter = yaml.parse(frontmatterYaml)
 
+    if (!frontmatter) {
+      return { frontmatter: {}, content: markdown }
+    }
+
     return { frontmatter, content: content.trimStart() }
   } catch (error) {
     console.error("Error parsing frontmatter", error)

@@ -23,7 +23,7 @@ export const All = {
     <div className="flex flex-col gap-8 p-8">
       {Object.entries(iconsBySize).map(([size, icons]) => (
         <div key={size} className="flex flex-col gap-4">
-          <h3 className="text-base font-semibold">
+          <h3 className="text-base font-bold">
             {size}&times;{size}
           </h3>
           <div className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-4">
@@ -40,26 +40,16 @@ export const All = {
   ),
 }
 
-export const Calendar: StoryObj<{ size: "16" | "24"; children: string }> = {
+export const Calendar: StoryObj<{ date: number }> = {
   render: (args) => {
-    switch (args.size) {
-      case "16":
-        return <icons.CalendarIcon16>{args.children}</icons.CalendarIcon16>
-      case "24":
-        return <icons.CalendarIcon24>{args.children}</icons.CalendarIcon24>
-    }
+    return <icons.CalendarDateIcon16 date={args.date} />
   },
   args: {
-    size: "16",
-    children: "1",
+    date: 1,
   },
   argTypes: {
-    size: {
-      options: ["16", "24"],
-      control: { type: "radio" },
-    },
-    children: {
-      control: { type: "text" },
+    date: {
+      control: { type: "number" },
     },
   },
   parameters: {

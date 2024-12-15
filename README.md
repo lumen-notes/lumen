@@ -5,9 +5,7 @@ Lumen is a simple note-taking app for better thinking.
 [**Open Lumen →**](https://app.uselumen.com)
 
 > [!WARNING] 
-> Work in progress. Expect breaking changes. Follow [@lumen_notes](https://twitter.com/lumen_notes) on Twitter for updates.
-
-![Screenshot](https://github.com/lumen-notes/lumen/assets/4608155/6e52c46b-59f4-46c6-987d-65abee003b8a)
+> Work in progress. Expect breaking changes. Follow [@uselumen.com](https://bsky.app/profile/uselumen.com) on Bluesky for updates.
 
 Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 

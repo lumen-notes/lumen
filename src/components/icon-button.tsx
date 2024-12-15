@@ -4,11 +4,12 @@ import { cx } from "../utils/cx"
 import { Keys } from "./keys"
 import { Tooltip } from "./tooltip"
 
-type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
+export type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   "aria-label": string // Required for accessibility
   size?: "small" | "medium"
   shortcut?: string[]
   tooltipSide?: TooltipContentProps["side"]
+  tooltipAlign?: TooltipContentProps["align"]
   disableTooltip?: boolean
 }
 
@@ -20,6 +21,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       shortcut,
       size = "medium",
       tooltipSide = "bottom",
+      tooltipAlign = "center",
       disableTooltip = false,
       ...props
     },
@@ -32,9 +34,10 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ref={ref}
             type="button"
             className={cx(
-              "focus-ring inline-flex items-center justify-center rounded-sm text-text-secondary transition-all duration-100 hover:bg-bg-secondary active:scale-95 disabled:pointer-events-none disabled:opacity-50",
-              size === "small" && "px-2 py-1 coarse:py-2",
-              size === "medium" && "p-2 coarse:p-3",
+              "focus-ring inline-flex select-none items-center justify-center rounded text-text-secondary hover:bg-bg-secondary active:bg-bg-tertiary disabled:pointer-events-none disabled:opacity-50 data-[state=open]:bg-bg-secondary",
+              "coarse:h-10 coarse:w-10",
+              size === "small" && "h-6 w-8",
+              size === "medium" && "h-8 w-8",
               className,
             )}
             {...props}
@@ -42,11 +45,11 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             {children}
           </button>
         </Tooltip.Trigger>
-        <Tooltip.Content side={tooltipSide}>
-          <div className="flex items-center gap-3">
+        <Tooltip.Content side={tooltipSide} align={tooltipAlign}>
+          <div className="flex items-center gap-1.5">
             <span>{props["aria-label"]}</span>
             {shortcut ? (
-              <div className="flex coarse:hidden">
+              <div className="flex text-text-secondary coarse:hidden">
                 <Keys keys={shortcut} />
               </div>
             ) : null}

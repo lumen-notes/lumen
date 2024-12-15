@@ -1,9 +1,3 @@
-import { Note } from "../schema"
-
-export function isPinned(note: Note | undefined): boolean {
-  return note?.frontmatter.pinned === true
-}
-
 export function togglePin(content: string): string {
   // Define a regular expression to match the frontmatter block
   const frontmatterRegex = /^---\n([\s\S]*?)\n---/

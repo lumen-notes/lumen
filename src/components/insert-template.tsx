@@ -1,15 +1,14 @@
 import { EditorView } from "@codemirror/view"
 import * as Dialog from "@radix-ui/react-dialog"
+import { sentenceCase } from "change-case"
 import ejs from "ejs"
 import { atom, useAtom, useSetAtom } from "jotai"
-import React from "react"
-import { sentenceCase } from "change-case"
+import React, { useCallback } from "react"
 import { Template } from "../schema"
 import { toDateString } from "../utils/date"
 import { Button } from "./button"
-import { Card } from "./card"
 import { IconButton } from "./icon-button"
-import { CloseIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
+import { XIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
 
 // Template pending insertion into editor because it requires user input
@@ -18,9 +17,10 @@ const pendingTemplateAtom = atom<{ template: Template; editor: EditorView } | nu
 export function useInsertTemplate() {
   const setPendingTemplate = useSetAtom(pendingTemplateAtom)
 
-  const insertTemplate = React.useCallback(
+  const insertTemplate = useCallback(
     (template: Template, editor: EditorView) => {
       if (template.inputs) {
+        console.log("insertTemplate", template, editor)
         // If template has inputs, open dialog
         setPendingTemplate({ template, editor })
       } else {
@@ -80,28 +80,25 @@ export function InsertTemplateDialog() {
   return (
     <Dialog.Root open onOpenChange={handleClose}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-20 bg-bg-backdrop" />
-        <Dialog.Content asChild>
-          <Card
-            elevation={3}
-            className="fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]"
-          >
-            <div className="grid gap-5 p-4">
-              <div className="flex items-center justify-between">
-                <Dialog.Title className="text-lg font-semibold leading-4">
-                  {template.name}
-                </Dialog.Title>
-                <Dialog.Close asChild>
-                  <IconButton aria-label="Close" className="-m-2" disableTooltip>
-                    <CloseIcon16 />
-                  </IconButton>
-                </Dialog.Close>
-              </div>
-              <form className="grid gap-4" onSubmit={handleSubmit}>
+        <Dialog.Content className="card-3 fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]">
+          <div className="grid gap-6 p-4">
+            <div className="flex items-center justify-between">
+              <Dialog.Title className="text-lg font-bold leading-4">{template.name}</Dialog.Title>
+              <Dialog.Close asChild>
+                <IconButton aria-label="Close" className="-m-2" disableTooltip>
+                  <XIcon16 />
+                </IconButton>
+              </Dialog.Close>
+            </div>
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-4">
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
                     <div key={name} className="grid gap-2">
-                      <label htmlFor={name} className="justify-self-start leading-4">
+                      <label
+                        htmlFor={name}
+                        className="justify-self-start text-sm leading-4 text-text-secondary"
+                      >
                         {formatLabel(name)}
                         {required ? <span className="ml-1 text-text-secondary">*</span> : null}
                       </label>
@@ -118,20 +115,20 @@ export function InsertTemplateDialog() {
                     </div>
                   ),
                 )}
-                <Button type="submit" variant="primary" className="mt-2" disabled={isLoading}>
-                  {isLoading ? <LoadingIcon16 /> : "Insert"}
-                </Button>
-                {error ? (
-                  <div className="flex items-start gap-2 text-text-danger">
-                    <div className="grid h-5 flex-shrink-0 place-items-center">
-                      <ErrorIcon16 />
-                    </div>
-                    <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
+              </div>
+              <Button type="submit" variant="primary" disabled={isLoading}>
+                {isLoading ? <LoadingIcon16 /> : "Insert"}
+              </Button>
+              {error ? (
+                <div className="flex items-start gap-2 text-text-danger">
+                  <div className="grid h-5 flex-shrink-0 place-items-center">
+                    <ErrorIcon16 />
                   </div>
-                ) : null}
-              </form>
-            </div>
-          </Card>
+                  <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
+                </div>
+              ) : null}
+            </form>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

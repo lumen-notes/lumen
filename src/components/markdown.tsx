@@ -1,15 +1,18 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
+import { Link } from "@tanstack/react-router"
+import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
-import qs from "qs"
-import React from "react"
+import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
+import React, { useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
-import { sentenceCase } from "change-case"
 import { z } from "zod"
+import { notesAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -32,22 +35,20 @@ import {
 } from "../utils/date"
 import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { Card } from "./card"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  BlueskyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
-  MailIcon16,
-  PhoneIcon16,
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
-import { Link } from "./link"
 import { NoteFavicon } from "./note-favicon"
+import { NotePreview } from "./note-preview"
 import { PillButton } from "./pill-button"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
@@ -83,7 +84,7 @@ export const Markdown = React.memo(
       [content],
     )
 
-    const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter.template)
+    const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter?.template)
 
     const contextValue = React.useMemo(
       () => ({
@@ -99,9 +100,11 @@ export const Markdown = React.memo(
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-semibold leading-5">{parsedTemplate.data.name}</h1>
+                <h1 className="text-xl font-bold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
-                  <Link to={`/?${qs.stringify({ q: "has:template" })}`}>Template</Link>
+                  <Link to="/" search={{ query: "type:template", view: "grid" }}>
+                    Template
+                  </Link>
                 </PillButton>
               </div>
               {/* TODO: Display more input metadata (type, description, etc.) */}
@@ -111,14 +114,14 @@ export const Markdown = React.memo(
                   <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
                     {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
                       <div key={name}>
-                        <code className="rounded-xs bg-bg-secondary px-1">{name}</code>
+                        <code className="rounded-sm bg-bg-secondary px-1">{name}</code>
                       </div>
                     ))}
                   </div>
                 </div>
               ) : null}
               {/* Render template as a code block */}
-              <pre className="overflow-auto rounded-sm bg-bg-code-block p-3">
+              <pre className="overflow-auto rounded bg-bg-code-block p-3">
                 <TemplateSyntaxHighlighter>
                   {removeTemplateFrontmatter(children)}
                 </TemplateSyntaxHighlighter>
@@ -135,13 +138,13 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar login={frontmatter.github} />
+                  <GitHubAvatar login={frontmatter.github} size={64} className="!size-16" />
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2 empty:hidden">
+                <div className="flex flex-col gap-4 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {!hideFrontmatter && !isObjectEmpty(frontmatter) ? (
+                  {frontmatter && !hideFrontmatter && !isObjectEmpty(frontmatter) ? (
                     <Frontmatter frontmatter={frontmatter} />
                   ) : null}
                 </div>
@@ -223,7 +226,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="focus-ring inline-block aspect-[2/3] h-14 rounded-xs bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
+      className="focus-ring inline-block aspect-[2/3] h-20 rounded-sm bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md 2x:ring-[0.5px]"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -246,7 +249,7 @@ function Frontmatter({
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
-    <div className={cx("@container", className)}>
+    <div className={cx("@container empty:hidden", className)}>
       {Object.entries(frontmatter)
         .filter(([key, value]) => {
           // Skip `pinned` frontmatter key
@@ -257,7 +260,10 @@ function Frontmatter({
         })
         .map(([key, value]) => {
           return (
-            <div key={key} className="grid gap-1 py-2 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]">
+            <div
+              key={key}
+              className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
+            >
               <h3 className="text-sm/4 text-text-secondary @[24rem]:text-base/6">
                 {formatFrontmatterKey(key)}
               </h3>
@@ -286,27 +292,17 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
     case "phone":
       if (typeof value !== "string") break
       return (
-        <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <PhoneIcon16 />
-          </div>
-          <a className="link" href={`tel:${value}`}>
-            {value}
-          </a>
-        </div>
+        <a className="link" href={`tel:${value}`}>
+          {value}
+        </a>
       )
 
     case "email":
       if (typeof value !== "string") break
       return (
-        <div className="flex items-center gap-2">
-          <div className="text-text-secondary">
-            <MailIcon16 />
-          </div>
-          <a className="link" href={`mailto:${value}`}>
-            {value}
-          </a>
-        </div>
+        <a className="link" href={`mailto:${value}`}>
+          {value}
+        </a>
       )
 
     case "address":
@@ -328,7 +324,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <div>
           <a
-            className="link link-external "
+            className="link link-external"
             href={`https://openlibrary.org/isbn/${value}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -362,6 +358,22 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <a
             className="link link-external"
             href={`https://twitter.com/${value}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {value}
+          </a>
+        </div>
+      )
+
+    case "bluesky":
+      if (typeof value !== "string") break
+      return (
+        <div className="flex items-center gap-2">
+          <BlueskyIcon16 />
+          <a
+            className="link link-external"
+            href={`https://bsky.app/profile/${value}`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -421,7 +433,16 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
       return (
         <span>
           {dateString ? (
-            <Link className="link" to={`/${dateString}`} target="_blank">
+            <Link
+              className="link"
+              to="/notes/$"
+              params={{ _splat: dateString }}
+              search={{
+                mode: "read",
+                query: undefined,
+                view: "grid",
+              }}
+            >
               {formatDate(dateString, { excludeDayOfWeek: true })}
             </Link>
           ) : (
@@ -432,7 +453,16 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
           <span className="text-text-secondary">
             {" · "}
             {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
-            <Link className="link" to={`/${nextBirthdayString}`} target="_blank">
+            <Link
+              className="link"
+              to="/notes/$"
+              params={{ _splat: nextBirthdayString }}
+              search={{
+                mode: "read",
+                query: undefined,
+                view: "grid",
+              }}
+            >
               {formatDateDistance(toDateStringUtc(nextBirthday)).toLowerCase()}
             </Link>{" "}
             {isBirthdayToday ? "🎂" : null}
@@ -514,13 +544,18 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
     return (
-      <Link to={`/file?${qs.stringify({ path: props.href })}`} target="_blank">
+      <Link
+        to="/file"
+        search={{
+          path: props.href,
+        }}
+      >
         {props.children}
       </Link>
     )
   }
 
-  // Render relative links with React Router
+  // Render relative links with client-side routing
   if (props.href?.startsWith("/")) {
     return <Link to={props.href}>{props.children}</Link>
   }
@@ -558,9 +593,14 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
     return (
       <Tooltip>
         <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
-        <Tooltip.Content>
-          {props.href ? <WebsiteFavicon url={props.href} className="mr-2 align-sub" /> : null}
-          {props.href?.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+        <Tooltip.Content side="bottom" className="flex items-center gap-2">
+          {props.href ? <WebsiteFavicon url={props.href} className="align-sub" /> : null}
+          <span className="inline-block max-w-[40vw] truncate leading-4">
+            {props.href
+              ?.replace(/^https?:\/\//, "")
+              .replace(/^www\./, "")
+              .replace(/\/$/, "")}
+          </span>
         </Tooltip.Content>
       </Tooltip>
     )
@@ -574,8 +614,10 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
   if (props.src?.startsWith("/")) {
     return (
       <Link
-        to={`/file?${qs.stringify({ path: props.src })}`}
-        target="_blank"
+        to="/file"
+        search={{
+          path: props.src,
+        }}
         className="block w-fit !no-underline"
       >
         <FilePreview path={props.src} alt={props.alt} />
@@ -606,7 +648,7 @@ function Code({ className, inline, children }: CodeProps) {
   return (
     <div className="relative">
       <pre className="!pe-12">
-        <div className="absolute end-2 top-2 rounded-sm bg-bg-code-block">
+        <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1">
           <CopyButton text={children.toString()} />
         </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
@@ -708,10 +750,20 @@ function NoteLink({ id, text }: NoteLinkProps) {
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link ref={ref} to={`/${id}`} target="_blank">
+        <Link
+          ref={ref}
+          to="/notes/$"
+          params={{ _splat: id }}
+          search={{
+            mode: "read",
+            query: undefined,
+            view: "grid",
+          }}
+        >
           {isFirst && note && online ? (
             <NoteFavicon
               note={note}
+              content={note.content}
               className="mr-2 align-sub [h1>a>&]:align-baseline"
               defaultFavicon={null}
             />
@@ -720,20 +772,20 @@ function NoteLink({ id, text }: NoteLinkProps) {
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="right" sideOffset={4} asChild>
-          <Card
-            className="z-20 max-h-[48svh] w-96 overflow-auto p-4 animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
-            {note ? (
-              <Markdown>{note.content}</Markdown>
-            ) : (
-              <span className="flex items-center gap-2 text-text-danger">
-                <ErrorIcon16 />
-                File not found
-              </span>
-            )}
-          </Card>
+        <HoverCard.Content
+          side="bottom"
+          sideOffset={4}
+          align="start"
+          className="card-2 z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
+        >
+          {note ? (
+            <NotePreview note={note} />
+          ) : (
+            <span className="flex items-center gap-2 p-4 text-text-danger">
+              <ErrorIcon16 />
+              Note not found
+            </span>
+          )}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
@@ -758,7 +810,15 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </span>
       )}
       <div className="mt-2 text-sm text-text-secondary">
-        <Link to={`/${id}`} target="_blank">
+        <Link
+          to="/notes/$"
+          params={{ _splat: id }}
+          search={{
+            mode: "read",
+            query: undefined,
+            view: "grid",
+          }}
+        >
           Source
         </Link>
       </div>
@@ -773,21 +833,38 @@ type DateLinkProps = {
 }
 
 function DateLink({ date, text, className }: DateLinkProps) {
+  const note = useNoteById(date)
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${date}`} target="_blank">
+        <Link
+          className={className}
+          to="/notes/$"
+          params={{ _splat: date }}
+          search={{
+            mode: note ? "read" : "write",
+            query: undefined,
+            view: "grid",
+          }}
+        >
           {text || formatDate(date)}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="top" sideOffset={4} asChild>
-          <Card
-            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
-            {formatDateDistance(date)}
-          </Card>
+        <HoverCard.Content
+          side="bottom"
+          sideOffset={4}
+          align={note ? "start" : "center"}
+          className="card-2 z-20 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
+        >
+          {note ? (
+            <div className="w-96">
+              <NotePreview note={note} />
+            </div>
+          ) : (
+            <div className="p-2 leading-none text-text-secondary">{formatDateDistance(date)}</div>
+          )}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
@@ -801,21 +878,33 @@ type WeekLinkProps = {
 }
 
 function WeekLink({ week, text, className }: WeekLinkProps) {
+  const hasWeekNote = useAtomValue(
+    useMemo(() => selectAtom(notesAtom, (notes) => notes.has(week)), [week]),
+  )
+
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
-        <Link className={className} to={`/${week}`}>
+        <Link
+          className={className}
+          to="/notes/$"
+          params={{ _splat: week }}
+          search={{
+            mode: hasWeekNote ? "read" : "write",
+            query: undefined,
+            view: "grid",
+          }}
+        >
           {text || formatWeek(week)}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
-        <HoverCard.Content side="top" sideOffset={4} asChild>
-          <Card
-            className="z-20 rounded-md p-2 leading-none text-text animate-in fade-in after:rounded-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            elevation={2}
-          >
-            {formatWeekDistance(week)}
-          </Card>
+        <HoverCard.Content
+          side="top"
+          sideOffset={4}
+          className="card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+        >
+          {formatWeekDistance(week)}
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>

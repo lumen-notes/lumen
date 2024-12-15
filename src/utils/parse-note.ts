@@ -9,9 +9,17 @@ import { z } from "zod"
 import { embed, embedFromMarkdown } from "../remark-plugins/embed"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
-import { NoteId } from "../schema"
-import { getNextBirthday, isValidDateString, toDateStringUtc } from "./date"
+import { Note, NoteId, NoteType, Task, Template, templateSchema } from "../schema"
+import {
+  formatDate,
+  formatWeek,
+  getNextBirthday,
+  isValidDateString,
+  isValidWeekString,
+  toDateStringUtc,
+} from "./date"
 import { parseFrontmatter } from "./parse-frontmatter"
+import { removeLeadingEmoji } from "./emoji"
 
 /**
  * Extract metadata from a note.
@@ -19,15 +27,17 @@ import { parseFrontmatter } from "./parse-frontmatter"
  * We memoize this function because it's called a lot and it's expensive.
  * We're intentionally sacrificing memory usage for runtime performance.
  */
-export const parseNote = memoize((text: string) => {
+export const parseNote = memoize((id: NoteId, content: string): Note => {
+  let type: NoteType = "note"
+  let displayName = ""
   let title = ""
   let url: string | null = null
   const tags = new Set<string>()
   const dates = new Set<string>()
   const links = new Set<NoteId>()
-  let openTasks = 0
+  const tasks: Task[] = []
 
-  const { frontmatter, content } = parseFrontmatter(text)
+  const { frontmatter, content: contentWithoutFrontmatter } = parseFrontmatter(content)
 
   function visitNode(node: Node) {
     switch (node.type) {
@@ -69,8 +79,11 @@ export const parseNote = memoize((text: string) => {
       }
 
       case "listItem": {
-        if (node.checked === false) {
-          openTasks++
+        if (typeof node.checked === "boolean") {
+          tasks.push({
+            completed: node.checked === true,
+            text: toString(node),
+          })
         }
         break
       }
@@ -89,7 +102,7 @@ export const parseNote = memoize((text: string) => {
   ]
 
   const contentMdast = fromMarkdown(
-    content,
+    contentWithoutFrontmatter,
     // @ts-ignore TODO: Fix types
     { extensions, mdastExtensions },
   )
@@ -97,7 +110,7 @@ export const parseNote = memoize((text: string) => {
   visit(contentMdast, visitNode)
 
   // Parse frontmatter as markdown to find things like wikilinks and tags
-  const frontmatterString = text.slice(0, text.length - content.length)
+  const frontmatterString = content.slice(0, content.length - contentWithoutFrontmatter.length)
   const frontmatterMdast = fromMarkdown(
     frontmatterString,
     // @ts-ignore TODO: Fix types
@@ -147,13 +160,56 @@ export const parseNote = memoize((text: string) => {
     )
   }
 
+  // Determine the type of the note
+  if (isValidDateString(id)) {
+    type = "daily"
+  } else if (isValidWeekString(id)) {
+    type = "weekly"
+  } else if (templateSchema.omit({ body: true }).safeParse(frontmatter.template).success) {
+    type = "template"
+  }
+
+  switch (type) {
+    case "daily":
+      // Fallback to the formatted date if there's no title
+      displayName = title ? removeLeadingEmoji(title) : formatDate(id)
+      break
+    case "weekly":
+      // Fallback to the formatted week if there's no title
+      displayName = title ? removeLeadingEmoji(title) : formatWeek(id)
+      break
+    case "template":
+      displayName = `${(frontmatter.template as Template).name} template`
+      break
+    case "note":
+      // If there's a title, use it as the display name
+      if (title) {
+        displayName = removeLeadingEmoji(title)
+      }
+      // If there's no title but the ID contains non-numeric characters, use that as the display name
+      else if (!/^\d+$/.test(id)) {
+        displayName = id
+      }
+      // We consider notes with numeric IDs to untitled
+      else {
+        displayName = "Untitled note"
+      }
+      break
+  }
+
   return {
+    id,
+    content,
+    type,
+    displayName,
     frontmatter,
     title,
     url,
+    pinned: frontmatter.pinned === true,
     dates: Array.from(dates),
     links: Array.from(links),
     tags: Array.from(tags),
-    openTasks,
+    tasks,
+    backlinks: [],
   }
 })
