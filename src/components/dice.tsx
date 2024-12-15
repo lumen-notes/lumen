@@ -26,9 +26,8 @@ export function Dice({
     >
       <svg
         viewBox="0 0 16 16"
-        width="16"
-        height="16"
         fill="currentColor"
+        className="size-icon"
         // className="dark:[filter:drop-shadow(calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border))]"
       >
         {number === 1 && <circle cx="8" cy="8" r="1" />}
