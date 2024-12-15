@@ -25,13 +25,7 @@ export const NoteFavicon = React.memo(
     if (leadingEmoji) {
       icon = (
         <svg className="size-icon overflow-visible" viewBox="0 0 16 16">
-          <text
-            x="50%"
-            y="50%"
-            dominantBaseline="central"
-            textAnchor="middle"
-            className="text-base"
-          >
+          <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="text-sm">
             {leadingEmoji}
           </text>
         </svg>
@@ -86,7 +80,7 @@ export const NoteFavicon = React.memo(
     return (
       <span
         className={cx(
-          "inline-grid flex-shrink-0 place-items-center text-text-secondary",
+          "inline-grid size-icon flex-shrink-0 place-items-center text-text-secondary",
           className,
         )}
         {...props}

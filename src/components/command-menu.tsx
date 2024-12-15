@@ -150,7 +150,7 @@ export function CommandMenu() {
         },
       },
     ]
-  }, [navigate])
+  }, [navigate, getHasDailyNote, getHasWeeklyNote])
 
   const filteredNavItems = useMemo(() => {
     return navItems.filter((item) => {

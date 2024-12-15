@@ -1,9 +1,7 @@
-import { useAtomValue, useSetAtom } from "jotai"
-import { useNetworkState } from "react-use"
+import { useSetAtom } from "jotai"
 import urlcat from "urlcat"
-import { githubUserAtom, globalStateMachineAtom } from "../global-state"
+import { globalStateMachineAtom } from "../global-state"
 import { Button, ButtonProps } from "./button"
-import { GitHubAvatar } from "./github-avatar"
 
 export function SignInButton(props: ButtonProps) {
   const send = useSetAtom(globalStateMachineAtom)

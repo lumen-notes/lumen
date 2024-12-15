@@ -14,7 +14,7 @@ export function removeLeadingEmoji(str: string): string {
   const leadingEmoji = getLeadingEmoji(str)
 
   if (leadingEmoji) {
-    return str.slice(leadingEmoji.length)
+    return str.slice(leadingEmoji.length).trim()
   }
 
   return str

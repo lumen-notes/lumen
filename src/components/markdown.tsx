@@ -138,7 +138,7 @@ export const Markdown = React.memo(
               {typeof frontmatter?.github === "string" && online ? (
                 // If the note has a GitHub username, show the GitHub avatar
                 <div className="mb-3 inline-flex">
-                  <GitHubAvatar login={frontmatter.github} size={64} className="size-16" />
+                  <GitHubAvatar login={frontmatter.github} size={64} className="!size-16" />
                 </div>
               ) : null}
               <div className="flex flex-col gap-4">
