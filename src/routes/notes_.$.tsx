@@ -48,6 +48,7 @@ import {
   widthAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
+import { useGetter } from "../hooks/getter"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -118,14 +119,6 @@ function RouteComponent() {
 }
 
 const toggleModeShortcut = ["⌥", "⇥"]
-
-function useGetter<T>(value: T) {
-  const valueRef = useRef(value)
-  useEffect(() => {
-    valueRef.current = value
-  }, [value])
-  return useCallback(() => valueRef.current, [])
-}
 
 function renderTemplate(template: Template, args: Record<string, unknown> = {}) {
   let text = ejs.render(template.body, args)
