@@ -88,7 +88,7 @@ body:has([data-resizing="true"]) * {
 /* Nav item */
 
 .nav-item {
-  @apply flex h-8 items-center gap-3 rounded px-2;
+  @apply flex h-8 items-center gap-3 rounded px-2 coarse:h-10 coarse:gap-4 coarse:px-3;
 }
 
 .nav-item:is(a, button) {
