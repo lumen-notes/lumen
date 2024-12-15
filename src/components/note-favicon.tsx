@@ -59,7 +59,7 @@ export const NoteFavicon = React.memo(
       icon = (
         <div
           data-testid="favicon-isbn"
-          className="focus-ring inline-block aspect-[3/4] h-icon rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
+          className="focus-ring inline-block aspect-[3/4] h-icon rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary 2x:ring-[0.5px]"
           style={{
             backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg)`,
           }}
