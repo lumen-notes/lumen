@@ -1,4 +1,5 @@
 import React from "react"
+import { useGetter } from "../hooks/getter"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ClearIcon16, SearchIcon16 } from "./icons"
@@ -17,25 +18,26 @@ export function SearchInput({
   ...props
 }: SearchInputProps) {
   const ref = React.useRef<HTMLInputElement>(null)
-  const [inputValue, setInputValue] = React.useState(value || "");
+  const [inputValue, setInputValue] = React.useState(value || "")
+  const getInputValue = useGetter(inputValue)
 
   React.useEffect(() => {
-    if (value !== inputValue) {
-      setInputValue(value || "");
+    if (value !== getInputValue()) {
+      setInputValue(value || "")
     }
-  }, [value]);
+  }, [value, getInputValue])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    onChange?.(newValue);
-  };
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newValue = event.target.value
+    setInputValue(newValue)
+    onChange?.(newValue)
+  }
 
-  const clearInput = () => {
-    setInputValue("");
-    onChange?.("");
-    ref.current?.focus();
-  };
+  function clearInput() {
+    setInputValue("")
+    onChange?.("")
+    ref.current?.focus()
+  }
 
   return (
     <div className="relative">
@@ -67,11 +69,7 @@ export function SearchInput({
           aria-hidden
           className="absolute inset-y-0 right-0 grid aspect-square place-items-center"
         >
-          <IconButton
-            aria-label="Clear"
-            tabIndex={-1}
-            onClick={clearInput}
-          >
+          <IconButton aria-label="Clear" tabIndex={-1} onClick={clearInput}>
             <ClearIcon16 />
           </IconButton>
         </div>
