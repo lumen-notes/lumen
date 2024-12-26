@@ -70,7 +70,7 @@ body:has([data-resizing="true"]) * {
 /* Card */
 
 .card {
-  @apply rounded-lg border-0 ring-1 ring-border-secondary 2x:ring-[0.5px] dark:ring-inset;
+  @apply rounded-lg border-0 ring-1 ring-border-secondary dark:ring-inset;
 }
 
 .card-1 {

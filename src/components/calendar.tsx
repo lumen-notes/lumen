@@ -238,7 +238,7 @@ function CalendarItem({
           <span className="hidden @[3rem]:inline">{name}</span>
           <span
             className={cx(
-              isToday && "-mx-1 -my-[0.125rem] rounded px-1 py-[0.125rem]",
+              isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
               // Outline the current day
               isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
               // Make outline bolder if current day is active
