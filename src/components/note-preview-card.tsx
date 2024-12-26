@@ -19,7 +19,7 @@ import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
-  FileIcon16,
+  ExternalLinkIcon16,
   MoreIcon16,
   PinFillIcon16,
   PinIcon16,
@@ -116,13 +116,13 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
-                icon={<FileIcon16 />}
+                icon={<ExternalLinkIcon16 />}
                 href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                 target="_blank"
                 rel="noopener noreferrer"
                 disabled={isSignedOut}
               >
-                Open file in GitHub
+                Open in GitHub
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
