@@ -30,9 +30,6 @@ import { useEditorSettings } from "../hooks/editor-settings"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance } from "../utils/date"
-import { removeLeadingEmoji } from "../utils/emoji"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
-import { removeParentTags } from "../utils/remove-parent-tags"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
@@ -378,19 +375,11 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map((note): Completion => {
-        const { content } = parseFrontmatter(note?.content || "")
-
         return {
-          label: note?.title || note.id,
-          detail: removeParentTags(note.tags)
-            .map((tag) => `#${tag}`)
-            .join(" "),
-          info: content,
+          label: note.displayName,
           apply: (view, completion, from, to) => {
             // Insert link to note
-            const text = `[[${note.id}${
-              note?.title ? `|${removeLeadingEmoji(note.title).trim()}` : ""
-            }]]`
+            const text = `[[${note.id}|${note.displayName}]]`
 
             const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
             view.dispatch({
