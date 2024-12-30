@@ -47,6 +47,9 @@ function createDecorations(state: EditorState, navigate: (id: string) => void) {
 }
 
 class WikilinkWidget extends WidgetType {
+  private span: HTMLSpanElement | null = null
+  private clickHandler: ((event: MouseEvent) => void) | null = null
+
   constructor(
     private id: string,
     private text: string,
@@ -58,22 +61,11 @@ class WikilinkWidget extends WidgetType {
   }
 
   toDOM(view: EditorView) {
-    const span = document.createElement("span")
-    span.textContent = this.text || this.id
-    span.className = "cm-wikilink"
+    this.span = document.createElement("span")
+    this.span.textContent = this.text || this.id
+    this.span.className = "cm-wikilink"
 
-    function updateClass(event: KeyboardEvent) {
-      if (event.ctrlKey || event.metaKey) {
-        span.classList.add("cm-wikilink-enabled")
-      } else {
-        span.classList.remove("cm-wikilink-enabled")
-      }
-    }
-
-    window.addEventListener("keydown", updateClass)
-    window.addEventListener("keyup", updateClass)
-
-    span.addEventListener("click", (event) => {
+    this.clickHandler = (event: MouseEvent) => {
       event.preventDefault()
       if (event.ctrlKey || event.metaKey) {
         this.navigate(this.id)
@@ -83,9 +75,18 @@ class WikilinkWidget extends WidgetType {
           scrollIntoView: true,
         })
       }
-    })
+    }
 
-    return span
+    this.span.addEventListener("click", this.clickHandler)
+    return this.span
+  }
+
+  destroy() {
+    if (this.span && this.clickHandler) {
+      this.span.removeEventListener("click", this.clickHandler)
+      this.span = null
+      this.clickHandler = null
+    }
   }
 }
 

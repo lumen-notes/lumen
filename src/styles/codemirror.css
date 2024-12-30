@@ -107,14 +107,14 @@
   @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5;
 }
 
-.cm-editor .cm-wikilink:not(.cm-wikilink-enabled):hover {
+.cm-editor .cm-wikilink:hover {
   @apply ring-1 ring-inset ring-border-secondary;
 }
 
-.cm-editor .cm-wikilink-enabled {
-  @apply underline decoration-dotted decoration-1 underline-offset-[3px];
+.cm-wikilinks-enabled .cm-editor .cm-wikilink {
+  @apply underline decoration-dotted decoration-1 underline-offset-[3px] ring-0;
 }
 
-.cm-editor .cm-wikilink-enabled:hover {
-  @apply cursor-pointer decoration-solid;
+.cm-wikilinks-enabled .cm-editor .cm-wikilink:hover {
+  @apply cursor-pointer decoration-solid ring-0;
 }

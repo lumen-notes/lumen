@@ -530,13 +530,15 @@ function NotePage() {
             )}
           >
             {isDailyNote || isWeeklyNote ? <Calendar activeNoteId={noteId ?? ""} /> : null}
-            <div hidden={mode !== "read"}>
-              {editorValue ? (
-                <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
-              ) : (
-                <span className="italic text-text-secondary">Empty note</span>
-              )}
-            </div>
+            {mode === "read" && (
+              <div>
+                {editorValue ? (
+                  <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
+                ) : (
+                  <span className="italic text-text-secondary">Empty note</span>
+                )}
+              </div>
+            )}
             <div hidden={mode !== "write"}>
               <NoteEditor
                 ref={editorRef}

@@ -31,6 +31,7 @@ import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { useInsertTemplate } from "./insert-template"
+import { cx } from "../utils/cx"
 
 type NoteEditorProps = {
   className?: string
@@ -108,9 +109,35 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     ref,
   ) => {
     const attachFile = useAttachFile()
-    const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
     const [editorSettings] = useEditorSettings()
     const navigate = useNavigate()
+    const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
+    const [isCommandKeyPressed, setIsCommandKeyPressed] = React.useState(false)
+
+    // Add global key listeners to track command/ctrl key state
+    // This enables visual feedback when users can interact with wikilinks
+    React.useEffect(() => {
+      function handleKeyDown(event: KeyboardEvent) {
+        if (event.metaKey || event.ctrlKey) {
+          setIsCommandKeyPressed(true)
+        }
+      }
+
+      function handleKeyUp(event: KeyboardEvent) {
+        if (!event.metaKey && !event.ctrlKey) {
+          setIsCommandKeyPressed(false)
+        }
+      }
+
+      window.addEventListener("keydown", handleKeyDown)
+      window.addEventListener("keyup", handleKeyUp)
+
+      // Clean up event listeners on unmount to prevent memory leaks
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown)
+        window.removeEventListener("keyup", handleKeyUp)
+      }
+    }, [])
 
     // Completions
     const noteCompletion = useNoteCompletion()
@@ -141,7 +168,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
             to: "/notes/$",
             params: { _splat: id },
             search: {
-              mode: "write",
+              mode: "read",
               query: undefined,
               view: "grid",
             },
@@ -169,7 +196,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     return (
       <CodeMirror
         ref={ref}
-        className={className}
+        className={cx(className, isCommandKeyPressed && "cm-wikilinks-enabled")}
         editable={!disabled}
         placeholder={placeholder}
         value={defaultValue}
