@@ -615,7 +615,13 @@ export const sortedNotesAtom = atom((get) => {
 export const noteSearcherAtom = atom((get) => {
   const sortedNotes = get(sortedNotesAtom)
   return new Searcher(sortedNotes, {
-    keySelector: (note) => [note.title, note.content, note.id],
+    keySelector: (note) => [
+      note.title,
+      note.displayName,
+      note.content,
+      note.id,
+      note.linkAlias || "",
+    ],
     threshold: 0.8,
   })
 })

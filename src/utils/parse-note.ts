@@ -205,6 +205,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
     frontmatter,
     title,
     url,
+    linkAlias: typeof frontmatter._link_alias === "string" ? frontmatter._link_alias : null,
     pinned: frontmatter.pinned === true,
     dates: Array.from(dates),
     links: Array.from(links),

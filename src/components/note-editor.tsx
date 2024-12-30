@@ -378,8 +378,10 @@ function useNoteCompletion() {
         return {
           label: note.displayName,
           apply: (view, completion, from, to) => {
+            console.log(note)
             // Insert link to note
-            const text = `[[${note.id}|${note.displayName}]]`
+            const linkText = note.linkAlias || note.displayName
+            const text = `[[${note.id}|${linkText}]]`
 
             const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
             view.dispatch({
