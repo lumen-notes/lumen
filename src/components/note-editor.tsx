@@ -402,12 +402,12 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map((note): Completion => {
+        const linkText = note.linkAlias || note.displayName
         return {
           label: note.displayName,
+          detail: linkText !== note.displayName ? linkText : undefined,
           apply: (view, completion, from, to) => {
-            console.log(note)
             // Insert link to note
-            const linkText = note.linkAlias || note.displayName
             const text = `[[${note.id}|${linkText}]]`
 
             const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
