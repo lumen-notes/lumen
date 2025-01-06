@@ -113,13 +113,14 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               </div>
               <ul className="flex flex-col gap-1">
                 {pinnedNotes.map((note) => (
-                  <li key={note.id}>
+                  <li key={note.id} className="flex">
                     <NavLink
                       key={note.id}
                       to={`/notes/$`}
                       params={{ _splat: note.id }}
                       search={{ mode: "read", query: undefined, view: "grid" }}
                       icon={<NoteFavicon note={note} />}
+                      className="w-0 flex-1"
                     >
                       {note.displayName}
                     </NavLink>
