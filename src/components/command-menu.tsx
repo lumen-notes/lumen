@@ -50,14 +50,14 @@ export function CommandMenu() {
   const openMenu = useCallback(() => {
     prevActiveElement.current = document.activeElement as HTMLElement
     setIsOpen(true)
-  }, [])
+  }, [setIsOpen])
 
   const closeMenu = useCallback(() => {
     setIsOpen(false)
     setTimeout(() => {
       prevActiveElement.current?.focus()
     })
-  }, [])
+  }, [setIsOpen])
 
   const toggleMenu = useCallback(() => {
     if (isOpen) {
@@ -67,13 +67,16 @@ export function CommandMenu() {
     }
   }, [isOpen, openMenu, closeMenu])
 
-  const handleSelect = useCallback((callback: () => void) => {
-    return () => {
-      setIsOpen(false)
-      setQuery("")
-      callback()
-    }
-  }, [])
+  const handleSelect = useCallback(
+    (callback: () => void) => {
+      return () => {
+        setIsOpen(false)
+        setQuery("")
+        callback()
+      }
+    },
+    [setIsOpen],
+  )
 
   useHotkeys("mod+k", toggleMenu, {
     preventDefault: true,
