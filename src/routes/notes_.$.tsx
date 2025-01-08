@@ -40,6 +40,7 @@ import { NoteList } from "../components/note-list"
 import { SegmentedControl } from "../components/segmented-control"
 import {
   dailyTemplateAtom,
+  fontAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -140,6 +141,7 @@ function NotePage() {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const [width, setWidth] = useAtom(widthAtom)
+  const [font, setFont] = useAtom(fontAtom)
 
   // Note data
   const note = useNoteById(noteId)
@@ -405,6 +407,38 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 )}
+                {mode === "read" ? (
+                  <>
+                    <DropdownMenu.Item
+                      icon={
+                        <div className="relative size-4">
+                          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            Aa
+                          </span>
+                        </div>
+                      }
+                      selected={font === "sans-serif"}
+                      onSelect={() => setFont("sans-serif")}
+                    >
+                      Sans-serif
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      className="font-serif"
+                      icon={
+                        <div className="relative size-4">
+                          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-serif">
+                            Aa
+                          </span>
+                        </div>
+                      }
+                      selected={font === "serif"}
+                      onSelect={() => setFont("serif")}
+                    >
+                      Serif
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
+                ) : null}
                 <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>
                   Copy markdown
                 </DropdownMenu.Item>

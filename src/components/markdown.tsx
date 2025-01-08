@@ -12,7 +12,7 @@ import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
-import { notesAtom } from "../global-state"
+import { fontAtom, notesAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -71,6 +71,7 @@ const MarkdownContext = React.createContext<{
 export const Markdown = React.memo(
   ({ children, hideFrontmatter = false, onChange }: MarkdownProps) => {
     const { online } = useNetworkState()
+    const font = useAtomValue(fontAtom)
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
     // Split the content into title and body so we can display
@@ -96,7 +97,7 @@ export const Markdown = React.memo(
 
     return (
       <MarkdownContext.Provider value={contextValue}>
-        <div>
+        <div className={cx(font === "serif" && "font-serif")}>
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -450,8 +451,8 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
               {MONTH_NAMES[month].slice(0, 3)} {day}
             </span>
           )}
+          <span className="mx-2 text-text-secondary">·</span>
           <span className="text-text-secondary">
-            {" · "}
             {nextAge ? `${withSuffix(nextAge)} birthday` : "Birthday"} is{" "}
             <Link
               className="link"

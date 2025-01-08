@@ -83,13 +83,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
             <Keys keys={shortcut} />
           </div>
         ) : null}
-        {selected !== undefined ? (
-          selected ? (
-            <CheckIcon16 className="text-text-secondary" />
-          ) : (
-            <div className="h-4 w-4" />
-          )
-        ) : null}
+        {selected !== undefined ? selected ? <CheckIcon16 /> : <div className="h-4 w-4" /> : null}
       </>
     )
 

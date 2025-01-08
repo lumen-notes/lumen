@@ -1,3 +1,5 @@
+import "@fontsource-variable/literata/wght-italic.css"
+import "@fontsource-variable/literata/wght.css"
 import * as Tooltip from "@radix-ui/react-tooltip"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import "@total-typescript/ts-reset"

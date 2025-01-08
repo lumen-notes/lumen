@@ -720,9 +720,11 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 )
 
 // -----------------------------------------------------------------------------
-// Layout
+// Appearance
 // -----------------------------------------------------------------------------
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
 export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
+
+export const fontAtom = atomWithStorage<"sans-serif" | "serif">("content-font", "sans-serif")
