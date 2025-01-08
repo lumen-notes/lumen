@@ -123,6 +123,7 @@ export function NoteList({
               <SearchInput
                 placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
                 value={query}
+                autoCapitalize="off"
                 onChange={(value) => {
                   onQueryChange(value)
 
