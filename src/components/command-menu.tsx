@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
-import { useAtomValue } from "jotai"
+import { atom, useAtom, useAtomValue } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -24,6 +24,8 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 
+export const isCommandMenuOpenAtom = atom(false)
+
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
@@ -36,12 +38,12 @@ export function CommandMenu() {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
   const getHasWeeklyNote = useAtomCallback(useCallback((get) => get(hasWeeklyNoteAtom), []))
+  const [isOpen, setIsOpen] = useAtom(isCommandMenuOpenAtom)
 
   // Refs
   const prevActiveElement = useRef<HTMLElement>()
 
   // Local state
-  const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [deferredQuery] = useDebounce(query, 150)
 

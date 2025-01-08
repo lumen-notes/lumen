@@ -1,21 +1,24 @@
 import { IconButton, IconButtonProps } from "./icon-button"
 
 import { useNavigate, useRouter } from "@tanstack/react-router"
+import { useSetAtom } from "jotai"
 import { forwardRef } from "react"
 import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
-import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16 } from "./icons"
+import { isCommandMenuOpenAtom } from "./command-menu"
+import { ArrowLeftIcon16, ArrowRightIcon16, CommandIcon16, MenuIcon16, PlusIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 
 export function NavBar() {
   const router = useRouter()
   const navigate = useNavigate()
+  const setIsCommandMenuOpen = useSetAtom(isCommandMenuOpenAtom)
 
   return (
     <div className="flex border-t border-border-secondary p-2">
       <Drawer.Root shouldScaleBackground={false}>
         <Drawer.Trigger asChild>
-          <NavButton aria-label="Open menu">
+          <NavButton aria-label="Open navigation menu">
             <MenuIcon16 />
           </NavButton>
         </Drawer.Trigger>
@@ -38,6 +41,9 @@ export function NavBar() {
       </NavButton>
       <NavButton aria-label="Go forward" onClick={() => router.history.forward()}>
         <ArrowRightIcon16 />
+      </NavButton>
+      <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
+        <CommandIcon16 />
       </NavButton>
       <NavButton
         aria-label="New note"

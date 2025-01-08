@@ -15,7 +15,7 @@
 }
 
 [cmdk-list] {
-  @apply max-h-[min(400px,50vh)] overflow-y-auto overflow-x-hidden;
+  @apply max-h-[min(400px,45vh)] overflow-y-auto overflow-x-hidden;
   scroll-padding-block-start: 8px;
   scroll-padding-block-end: 8px;
 }
