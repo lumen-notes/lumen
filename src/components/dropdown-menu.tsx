@@ -75,7 +75,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
               {icon}
             </div>
           ) : null}
-          <span className="truncate">{children}</span>
+          <span className="flex-grow truncate">{children}</span>
         </div>
         {trailingVisual}
         {shortcut ? (

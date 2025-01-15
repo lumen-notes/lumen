@@ -417,7 +417,7 @@ function NotePage() {
                           </span>
                         </div>
                       }
-                      selected={font === "sans-serif"}
+                      selected={font !== "serif"}
                       onSelect={() => setFont("sans-serif")}
                     >
                       Sans-serif
