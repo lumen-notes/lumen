@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
@@ -8,6 +9,30 @@ const NUM_VISIBLE_TAGS = 4
 
 export function NotePreview({ note }: { note: Note }) {
   const highlightedHrefs = useLinkHighlight()
+
+  const frontmatterTags = useMemo(() => {
+    const tagsArray =
+      Array.isArray(note.frontmatter?.tags) &&
+      note.frontmatter.tags.every((tag) => typeof tag === "string")
+        ? note.frontmatter.tags
+        : []
+
+    const frontmatterTags = new Set<string>()
+
+    // Expand nested tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
+    tagsArray.forEach((tag) =>
+      tag.split("/").forEach((_, index) => {
+        frontmatterTags.add(
+          tag
+            .split("/")
+            .slice(0, index + 1)
+            .join("/"),
+        )
+      }),
+    )
+
+    return Array.from(frontmatterTags)
+  }, [note.frontmatter?.tags])
 
   return (
     <div
@@ -27,23 +52,23 @@ export function NotePreview({ note }: { note: Note }) {
           <Markdown hideFrontmatter>{note.content}</Markdown>
         </div>
       </div>
-      <div className="flex flex-wrap gap-1.5 pr-10 empty:hidden coarse:pr-12">
-        {note.tags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
+      <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
+        {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
           <div
             key={tag}
             className={cx(
-              "flex h-5 items-center rounded-full px-1.5 text-sm",
+              "-mx-[3px] flex items-center rounded-sm px-[3px] text-sm",
               highlightedHrefs.includes(`/tags/${tag}`)
                 ? "bg-bg-highlight text-text-highlight"
-                : "bg-bg-secondary text-text-secondary",
+                : "text-text-secondary",
             )}
           >
-            {tag}
+            #{tag}
           </div>
         ))}
-        {note.tags.length > NUM_VISIBLE_TAGS ? (
-          <div className="flex h-5 items-center rounded-full bg-bg-secondary px-1.5 text-sm text-text-secondary">
-            +{note.tags.length - NUM_VISIBLE_TAGS}
+        {frontmatterTags.length > NUM_VISIBLE_TAGS ? (
+          <div className="flex  items-center rounded-full text-sm text-text-secondary">
+            +{frontmatterTags.length - NUM_VISIBLE_TAGS}
           </div>
         ) : null}
       </div>

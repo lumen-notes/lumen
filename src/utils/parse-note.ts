@@ -147,7 +147,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
   const parsedTags = tagsSchema.safeParse(frontmatter.tags)
 
   if (parsedTags.success) {
-    // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
+    // Expand nested tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
     parsedTags.data.forEach((tag) =>
       tag.split("/").forEach((_, index) => {
         tags.add(
