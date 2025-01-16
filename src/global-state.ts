@@ -727,4 +727,4 @@ export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", 
 
 export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
 
-export const fontAtom = atomWithStorage<"sans-serif" | "serif">("font", "sans-serif")
+export const fontAtom = atomWithStorage<"sans" | "serif">("font", "sans")

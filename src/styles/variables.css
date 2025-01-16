@@ -62,6 +62,12 @@
   --color-syntax-purple: var(--purple-11);
   --color-syntax-green: var(--green-11);
 
+  /* Font families */
+  --font-family-sans: "iA Writer Quattro", system-ui, sans-serif;
+  --font-family-mono: "iA Writer Mono", monospace;
+  --font-family-serif: "Literata Variable", Georgia, serif;
+  --font-family-content: var(--font-family-sans);
+
   /* Font sizes */
   --font-size-sm: 12px;
   --font-size-base: 14px;

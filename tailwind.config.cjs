@@ -18,9 +18,10 @@ module.exports = {
       size: {},
     },
     fontFamily: {
-      body: ['"iA Writer Quattro"', "system-ui", "sans-serif"],
-      mono: ['"iA Writer Mono"', "monospace"],
-      serif: ['"Literata Variable"', "Georgia", "serif"],
+      sans: "var(--font-family-sans)",
+      mono: "var(--font-family-mono)",
+      serif: "var(--font-family-serif)",
+      content: "var(--font-family-content)",
     },
     fontSize: {
       sm: "var(--font-size-sm)",

@@ -36,7 +36,7 @@ function Day({ date }: { date: string }) {
           query: undefined,
           view: "grid",
         }}
-        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 italic text-text-secondary hover:border-border"
+        className="focus-ring aspect-[5/3] rounded-lg border border-dashed border-border-secondary bg-bg-card p-3 font-content italic text-text-secondary hover:border-border"
       >
         {dayName}
       </Link>

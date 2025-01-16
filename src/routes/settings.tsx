@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useState } from "react"
 import { useNetworkState } from "react-use"
 import { AppLayout } from "../components/app-layout"
@@ -10,6 +10,7 @@ import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
+  fontAtom,
   githubRepoAtom,
   githubUserAtom,
   isCloningRepoAtom,
@@ -17,6 +18,7 @@ import {
   isRepoNotClonedAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
+import { RadioGroup } from "../components/radio-group"
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -29,6 +31,7 @@ function RouteComponent() {
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
           <EditorSection />
+          <AppearanceSection />
         </div>
       </div>
     </AppLayout>
@@ -38,7 +41,7 @@ function RouteComponent() {
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-lg font-bold leading-4">{title}</h3>
+      <h3 className="font-content text-lg font-bold leading-4">{title}</h3>
       <div className="card-1 p-4">{children}</div>
     </div>
   )
@@ -124,6 +127,7 @@ function GitHubSection() {
 
 function EditorSection() {
   const [editorSettings, setEditorSettings] = useEditorSettings()
+
   return (
     <SettingsSection title="Editor">
       <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
@@ -151,6 +155,41 @@ function EditorSection() {
           />
           <label htmlFor="fold-gutter">Fold gutter</label>
         </div>
+      </div>
+    </SettingsSection>
+  )
+}
+
+function AppearanceSection() {
+  const [font, setFont] = useAtom(fontAtom)
+
+  return (
+    <SettingsSection title="Appearance">
+      <div className="grid gap-3 coarse:gap-4">
+        <span id="font-label" className="text-sm leading-4 text-text-secondary">
+          Font
+        </span>
+        <RadioGroup
+          aria-labelledby="font-label"
+          value={font}
+          defaultValue="sans"
+          onValueChange={(value) => setFont(value as "sans" | "serif")}
+          className="flex flex-col gap-3 coarse:gap-4"
+          name="font"
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="font-sans" value="sans" />
+            <label htmlFor="font-sans" className="font-sans leading-4">
+              Sans-serif
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="font-serif" value="serif" />
+            <label htmlFor="font-serif" className="font-serif leading-4">
+              Serif
+            </label>
+          </div>
+        </RadioGroup>
       </div>
     </SettingsSection>
   )

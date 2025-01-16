@@ -48,7 +48,7 @@ export function Calendar({
     <div className="border-b border-border-secondary">
       <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden pb-2", className)}>
         <div className="flex items-center justify-between">
-          <span className="text-lg">
+          <span className="font-content text-lg">
             <span className="font-bold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
             <span>{startOfWeek.getFullYear()}</span>
           </span>

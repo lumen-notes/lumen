@@ -1,5 +1,3 @@
-import { useAtomValue } from "jotai"
-import { fontAtom } from "../global-state"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
@@ -10,7 +8,6 @@ const NUM_VISIBLE_TAGS = 4
 
 export function NotePreview({ note }: { note: Note }) {
   const highlightedHrefs = useLinkHighlight()
-  const font = useAtomValue(fontAtom)
 
   return (
     <div
@@ -18,7 +15,7 @@ export function NotePreview({ note }: { note: Note }) {
       className="flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-3 [contain:layout_paint]"
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
-        <div className={cx("mb-1 flex items-baseline gap-2.5", font === "serif" && "font-serif")}>
+        <div className={cx("mb-1 flex items-baseline gap-2.5 font-content")}>
           <span className="truncate font-bold">{note.displayName}</span>
           <span className="truncate text-sm italic text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}

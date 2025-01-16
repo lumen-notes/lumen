@@ -12,7 +12,7 @@ import rehypeKatex from "rehype-katex"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
-import { fontAtom, notesAtom } from "../global-state"
+import { notesAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -71,7 +71,6 @@ const MarkdownContext = React.createContext<{
 export const Markdown = React.memo(
   ({ children, hideFrontmatter = false, onChange }: MarkdownProps) => {
     const { online } = useNetworkState()
-    const font = useAtomValue(fontAtom)
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
 
     // Split the content into title and body so we can display
@@ -97,7 +96,7 @@ export const Markdown = React.memo(
 
     return (
       <MarkdownContext.Provider value={contextValue}>
-        <div className={cx(font === "serif" && "font-serif")}>
+        <div className="font-content">
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-2">

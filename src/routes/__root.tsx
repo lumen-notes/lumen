@@ -5,12 +5,12 @@ import { useEvent, useNetworkState } from "react-use"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
-import { globalStateMachineAtom, isSignedOutAtom } from "../global-state"
+import { fontAtom, globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { Button } from "../components/button"
 import { useHotkeys } from "react-hotkeys-hook"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -34,6 +34,7 @@ function RootComponent() {
   useThemeColor()
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
+  const font = useAtomValue(fontAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
 
@@ -76,6 +77,13 @@ function RootComponent() {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--font-family-content",
+      font === "serif" ? "var(--font-family-serif)" : "var(--font-family-sans)",
+    )
+  }, [font])
 
   return (
     <div
