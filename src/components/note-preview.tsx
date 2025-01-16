@@ -14,7 +14,7 @@ export function NotePreview({ note }: { note: Note }) {
     const tagsArray =
       Array.isArray(note.frontmatter?.tags) &&
       note.frontmatter.tags.every((tag) => typeof tag === "string")
-        ? note.frontmatter.tags
+        ? (note.frontmatter.tags as string[])
         : []
 
     const frontmatterTags = new Set<string>()
