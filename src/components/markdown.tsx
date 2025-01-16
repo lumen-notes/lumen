@@ -110,7 +110,7 @@ export const Markdown = React.memo(
               {/* TODO: Display more input metadata (type, description, etc.) */}
               {parsedTemplate.data.inputs ? (
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm text-text-secondary">Inputs</span>
+                  <span className="font-sans text-sm text-text-secondary">Inputs</span>
                   <div className="flex flex-row flex-wrap gap-x-2 gap-y-1">
                     {Object.entries(parsedTemplate.data.inputs).map(([name]) => (
                       <div key={name}>
