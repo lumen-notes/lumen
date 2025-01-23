@@ -109,6 +109,14 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
 
   visit(contentMdast, visitNode)
 
+  // If no title was found from H1, try to use first line of content
+  if (!title && contentWithoutFrontmatter.trim()) {
+    const firstLine = contentWithoutFrontmatter.split('\n')[0].trim()
+    if (firstLine) {
+      title = firstLine
+    }
+  }
+
   // Parse frontmatter as markdown to find things like wikilinks and tags
   const frontmatterString = content.slice(0, content.length - contentWithoutFrontmatter.length)
   const frontmatterMdast = fromMarkdown(
@@ -186,11 +194,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
       if (title) {
         displayName = removeLeadingEmoji(title)
       }
-      // If there's no title but the ID contains non-numeric characters, use that as the display name
-      else if (!/^\d+$/.test(id)) {
-        displayName = id
-      }
-      // We consider notes with numeric IDs to untitled
+      // If there's no title but the content is not empty, use "Untitled note"
       else {
         displayName = "Untitled note"
       }

@@ -2,7 +2,7 @@ import { Link, LinkComponentProps } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
-import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
+import { globalStateMachineAtom, notesAtom, pinnedNotesAtom, sortedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import {
@@ -30,6 +30,7 @@ const SizeContext = createContext<"medium" | "large">("medium")
 
 export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
+  const recentNotes = useAtomValue(sortedNotesAtom).slice(0, 5) // Get 5 most recent notes
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
   const syncText = useSyncStatusText()
@@ -113,6 +114,29 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               </div>
               <ul className="flex flex-col gap-1">
                 {pinnedNotes.map((note) => (
+                  <li key={note.id} className="flex">
+                    <NavLink
+                      key={note.id}
+                      to={`/notes/$`}
+                      params={{ _splat: note.id }}
+                      search={{ mode: "read", query: undefined, view: "grid" }}
+                      icon={<NoteFavicon note={note} />}
+                      className="w-0 flex-1"
+                    >
+                      {note.displayName}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {recentNotes.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
+                Recents
+              </div>
+              <ul className="flex flex-col gap-1">
+                {recentNotes.map((note) => (
                   <li key={note.id} className="flex">
                     <NavLink
                       key={note.id}
