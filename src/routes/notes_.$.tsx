@@ -522,7 +522,7 @@ function NotePage() {
         }}
       >
         <div {...topSentinelProps} />
-        <div className="p-4">
+        <div className={cx("p-4", (isDailyNote || isWeeklyNote) && "pt-2")}>
           <div
             className={cx(
               "flex flex-col gap-8 pb-[50vh]",
