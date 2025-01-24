@@ -190,9 +190,16 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
       else if (!/^\d+$/.test(id)) {
         displayName = id
       }
-      // We consider notes with numeric IDs to untitled
+      // For untitled notes with numeric IDs, we use the first 8 words as the title
       else {
-        displayName = "Untitled note"
+        // Get clean text content without markdown syntax and split into words
+        const words = toString(contentMdast).trim().split(/\s+/)
+        const preview = words.slice(0, 8).join(" ")
+        displayName = preview.length > 0 ? preview : "Empty note"
+        // Add ellipsis if content was truncated
+        if (words.length > 8) {
+          displayName += "…"
+        }
       }
       break
   }
