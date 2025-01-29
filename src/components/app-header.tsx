@@ -44,13 +44,37 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
       <header className="flex h-10 items-center gap-2 px-2 coarse:h-14">
         <div className="hidden items-center empty:hidden sm:flex">
           {sidebar === "collapsed" ? (
-            <IconButton
-              aria-label="Expand sidebar"
-              size="small"
-              onClick={() => setSidebar("expanded")}
-            >
-              <SidebarIcon16 />
-            </IconButton>
+            <>
+              <IconButton
+                aria-label="Expand sidebar"
+                size="small"
+                onClick={() => setSidebar("expanded")}
+              >
+                <SidebarIcon16 />
+              </IconButton>
+              <IconButton
+                aria-label="New note"
+                shortcut={["⌘", "⇧", "O"]}
+                size="small"
+                onClick={() => {
+                  navigate({
+                    to: "/notes/$",
+                    params: { _splat: `${Date.now()}` },
+                    search: {
+                      mode: "write",
+                      query: undefined,
+                      view: "grid",
+                    },
+                  })
+                }}
+              >
+                <PlusIcon16 />
+              </IconButton>
+              <div
+                role="separator"
+                className={cx("mx-2 hidden h-5 w-px bg-border-secondary sm:block")}
+              />
+            </>
           ) : null}
           <IconButton
             aria-label="Go back"
@@ -78,35 +102,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           <div className="truncate font-content font-bold">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
-          {actions ? (
-            <>
-              <div className="flex items-center">{actions}</div>
-              <div
-                role="separator"
-                className={cx("hidden h-5 w-px bg-border-secondary sm:block")}
-              />
-            </>
-          ) : null}
-          <div className="hidden items-center sm:flex">
-            <IconButton
-              aria-label="New note"
-              shortcut={["⌘", "⇧", "O"]}
-              size="small"
-              onClick={() => {
-                navigate({
-                  to: "/notes/$",
-                  params: { _splat: `${Date.now()}` },
-                  search: {
-                    mode: "write",
-                    query: undefined,
-                    view: "grid",
-                  },
-                })
-              }}
-            >
-              <PlusIcon16 />
-            </IconButton>
-          </div>
+          {actions ? <div className="flex items-center">{actions}</div> : null}
         </div>
       </header>
     </div>
