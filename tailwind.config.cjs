@@ -10,6 +10,7 @@ module.exports = {
         coarse: { raw: "(pointer: coarse)" },
         fine: { raw: "(pointer: fine)" },
         "2x": { raw: "(min-resolution: 192dpi)" },
+        print: { raw: "print" },
       },
       fontWeight: {
         normal: "var(--font-weight-normal)",

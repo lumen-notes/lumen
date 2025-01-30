@@ -226,15 +226,16 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="focus-ring inline-block aspect-[2/3] h-20 rounded-sm bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary transition-[box-shadow] hover:shadow-md"
+      className="inline-block rounded-sm bg-bg-secondary shadow-sm transition-[box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
-      style={{
-        backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg)`,
-      }}
     >
-      <span className="sr-only">Book cover</span>
+      <img
+        src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`}
+        alt="Book cover"
+        className="aspect-[2/3] h-20 rounded-sm"
+      />
     </a>
   )
 }
@@ -647,8 +648,8 @@ function Code({ className, inline, children }: CodeProps) {
 
   return (
     <div className="relative">
-      <pre className="!pe-12">
-        <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1">
+      <pre className="!pe-12 print:whitespace-pre-wrap">
+        <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1 print:hidden">
           <CopyButton text={children.toString()} />
         </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
@@ -776,7 +777,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           side="bottom"
           sideOffset={4}
           align="start"
-          className="card-2 z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
+          className="card-2 z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
         >
           {note ? (
             <NotePreview note={note} />

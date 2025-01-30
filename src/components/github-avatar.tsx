@@ -5,18 +5,13 @@ type GitHubAvatarProps = React.ComponentPropsWithoutRef<"div"> & {
   size?: number
 }
 
-export function GitHubAvatar({ login, size = 32, className, style, ...props }: GitHubAvatarProps) {
+export function GitHubAvatar({ login, size = 32, className, ...props }: GitHubAvatarProps) {
   return (
-    <div
+    <img
       aria-hidden
-      className={cx(
-        "inline-block size-icon flex-shrink-0 rounded-full bg-[white] bg-cover ring-1 ring-inset ring-border-secondary",
-        className,
-      )}
-      style={{
-        backgroundImage: `url(https://github.com/${login}.png?size=${size * 2})`,
-        ...style,
-      }}
+      alt=""
+      src={`https://github.com/${login}.png?size=${size * 2}`}
+      className={cx("inline-block size-icon flex-shrink-0 !rounded-full bg-[white]", className)}
       {...props}
     />
   )

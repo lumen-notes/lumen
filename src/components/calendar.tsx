@@ -45,8 +45,8 @@ export function Calendar({
   )
 
   return (
-    <div className="border-b border-border-secondary">
-      <div className={cx("-mb-px flex flex-col gap-2 overflow-hidden pb-2", className)}>
+    <div className={cx("border-b border-border-secondary", className)}>
+      <div className="-mb-px flex flex-col gap-2 overflow-hidden pb-2">
         <div className="flex items-center justify-between">
           <span className="font-content text-lg">
             <span className="font-bold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}

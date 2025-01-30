@@ -87,7 +87,7 @@ function RootComponent() {
 
   return (
     <div
-      className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] [@supports(height:100svh)]:h-[100svh]"
+      className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] print:h-auto [@supports(height:100svh)]:h-[100svh]"
       data-vaul-drawer-wrapper=""
     >
       {isSignedOut ? (
@@ -108,7 +108,7 @@ function RootComponent() {
         </div>
       ) : null}
       <ScrollRestoration />
-      <div className="grid flex-grow overflow-hidden">
+      <div className="grid flex-grow overflow-hidden print:overflow-visible">
         <Outlet />
       </div>
       <DevBar enabled={isDevBarEnabled} />

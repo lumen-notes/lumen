@@ -71,7 +71,10 @@ export function isValidUnixTimestamp(value: string): boolean {
  */
 export function formatDate(
   dateString: string,
-  { excludeDayOfWeek = false }: { excludeDayOfWeek?: boolean } = {},
+  {
+    excludeDayOfWeek = false,
+    alwaysIncludeYear = false,
+  }: { excludeDayOfWeek?: boolean; alwaysIncludeYear?: boolean } = {},
 ) {
   const date = new Date(dateString)
   const currentYear = new Date().getUTCFullYear()
@@ -86,8 +89,8 @@ export function formatDate(
     formattedDate = `${dayOfWeek}, ${formattedDate}`
   }
 
-  // Only show the year if it's not the current year
-  if (year !== currentYear) {
+  // Only show the year if it's not the current year or alwaysIncludeYear is true
+  if (year !== currentYear || alwaysIncludeYear) {
     formattedDate += `, ${year}`
   }
 

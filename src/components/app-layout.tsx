@@ -42,7 +42,7 @@ export function AppLayout({
   return (
     <div className="flex overflow-hidden">
       {sidebar === "expanded" ? (
-        <div className="hidden sm:grid">
+        <div className="hidden sm:grid print:hidden">
           <Sidebar />
         </div>
       ) : null}
@@ -50,7 +50,10 @@ export function AppLayout({
         <AppHeader
           {...props}
           actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
-          className={cx("border-b", isScrolled ? "border-border-secondary" : "border-transparent")}
+          className={cx(
+            "border-b print:hidden",
+            isScrolled ? "border-border-secondary" : "border-transparent",
+          )}
         />
         <div className="relative grid overflow-hidden">
           <main className="relative isolate overflow-auto [scrollbar-gutter:stable]">

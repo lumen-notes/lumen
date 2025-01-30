@@ -57,12 +57,11 @@ export const NoteFavicon = React.memo(
     // Book
     if (note.frontmatter.isbn && online) {
       icon = (
-        <div
+        <img
           data-testid="favicon-isbn"
-          className="focus-ring inline-block aspect-[3/4] h-icon rounded-[2px] bg-bg-secondary bg-cover bg-center shadow-sm ring-1 ring-inset ring-border-secondary"
-          style={{
-            backgroundImage: `url(https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg)`,
-          }}
+          className="inline-block aspect-[3/4] h-icon !rounded-[2px] bg-bg-secondary"
+          src={`https://covers.openlibrary.org/b/isbn/${note.frontmatter.isbn}-S.jpg`}
+          alt=""
           aria-hidden
         />
       )

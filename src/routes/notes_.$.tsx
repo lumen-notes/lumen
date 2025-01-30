@@ -57,7 +57,9 @@ import { useSearchNotes } from "../hooks/search"
 import { GitHubRepository, Note, NoteId, Template } from "../schema"
 import { cx } from "../utils/cx"
 import {
+  formatDate,
   formatDateDistance,
+  formatWeek,
   formatWeekDistance,
   isValidDateString,
   isValidWeekString,
@@ -550,9 +552,22 @@ function NotePage() {
               width === "fixed" && "mx-auto max-w-3xl",
             )}
           >
-            {isDailyNote || isWeeklyNote ? <Calendar activeNoteId={noteId ?? ""} /> : null}
+            {isDailyNote || isWeeklyNote ? (
+              <Calendar className="print:hidden" activeNoteId={noteId ?? ""} />
+            ) : null}
             {mode === "read" && (
               <div>
+                {
+                  // When printing a daily or weekly note without a title,
+                  // insert the date or week number as the title
+                  (isDailyNote || isWeeklyNote) && !note?.title ? (
+                    <h1 className="mb-4 hidden font-content text-xl font-bold leading-5 print:block">
+                      {isDailyNote
+                        ? formatDate(noteId ?? "", { alwaysIncludeYear: true })
+                        : formatWeek(noteId ?? "")}
+                    </h1>
+                  ) : null
+                }
                 {editorValue ? (
                   <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
                 ) : (
@@ -596,13 +611,13 @@ function NotePage() {
               />
             </div>
             {isWeeklyNote ? (
-              <Details>
+              <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteId ?? ""} />
               </Details>
             ) : null}
             {backlinks.length > 0 ? (
-              <Details>
+              <Details className="print:hidden">
                 <Details.Summary>Backlinks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
                   <NoteList
