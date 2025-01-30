@@ -87,7 +87,7 @@ function RootComponent() {
 
   return (
     <div
-      className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] print:h-auto [@supports(height:100svh)]:h-[100svh]"
+      className="flex h-screen w-screen flex-col bg-bg pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] print:h-auto print:w-full [@supports(height:100svh)]:h-[100svh]"
       data-vaul-drawer-wrapper=""
     >
       {isSignedOut ? (

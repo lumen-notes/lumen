@@ -28,6 +28,7 @@ import {
   PaperclipIcon16,
   PinFillIcon16,
   PinIcon16,
+  PrinterIcon16,
   ShareIcon16,
   TrashIcon16,
   UndoIcon16,
@@ -464,6 +465,9 @@ function NotePage() {
                   }}
                 >
                   Export as Gist
+                </DropdownMenu.Item>
+                <DropdownMenu.Item icon={<PrinterIcon16 />} onSelect={() => window.print()}>
+                  Print
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
