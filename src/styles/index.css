@@ -10,7 +10,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-bg font-sans text-base font-normal text-text;
+  @apply bg-bg font-sans text-base font-normal text-text print:bg-[white];
 }
 
 ::selection {

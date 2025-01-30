@@ -85,7 +85,7 @@ export function AppLayout({
             <div className="absolute bottom-3 right-3">{floatingActions}</div>
           ) : null}
         </div>
-        <div className="sm:hidden">
+        <div className="sm:hidden print:hidden">
           <NavBar />
         </div>
       </div>

@@ -507,7 +507,7 @@ function NotePage() {
         </div>
       }
       floatingActions={
-        <div className="flex gap-2 sm:hidden">
+        <div className="flex gap-2 sm:hidden print:hidden">
           {(!note && editorValue) || isDirty ? (
             <div className="flex rounded-full bg-bg-backdrop backdrop-blur-md transition-transform has-[button:active]:scale-110">
               <Button
