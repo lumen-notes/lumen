@@ -167,6 +167,7 @@ function NotePage() {
   })
   const [editorSettings] = useEditorSettings()
   const parsedNote = useMemo(() => parseNote(noteId ?? "", editorValue), [noteId, editorValue])
+  const [isDraggingFile, setIsDraggingFile] = useState(false)
 
   // Layout
   const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
@@ -559,7 +560,33 @@ function NotePage() {
                 )}
               </div>
             )}
-            <div hidden={mode !== "write"}>
+            <div
+              hidden={mode !== "write"}
+              className={cx(
+                isDraggingFile &&
+                  "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
+              )}
+              onDragOver={(event) => {
+                // Show visual feedback when dragging files
+                if (event.dataTransfer.types.includes("Files")) {
+                  event.preventDefault()
+                  event.dataTransfer.dropEffect = "copy"
+                  setIsDraggingFile(true)
+                }
+              }}
+              onDragLeave={() => {
+                setIsDraggingFile(false)
+              }}
+              onDrop={(event) => {
+                // Handle dropped files
+                if (event.dataTransfer.files.length > 0) {
+                  event.preventDefault()
+                  const file = event.dataTransfer.files[0]
+                  attachFile(file, editorRef.current?.view)
+                }
+                setIsDraggingFile(false)
+              }}
+            >
               <NoteEditor
                 ref={editorRef}
                 defaultValue={editorValue}
