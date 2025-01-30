@@ -25,6 +25,7 @@ import {
   FullwidthIcon16,
   MoreIcon16,
   NoteIcon16,
+  PaperclipIcon16,
   PinFillIcon16,
   PinIcon16,
   ShareIcon16,
@@ -47,6 +48,7 @@ import {
   weeklyTemplateAtom,
   widthAtom,
 } from "../global-state"
+import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useGetter } from "../hooks/getter"
 import { useIsScrolled } from "../hooks/is-scrolled"
@@ -172,6 +174,7 @@ function NotePage() {
   // Actions
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
+  const attachFile = useAttachFile()
 
   const handleSave = useCallback(
     (value: string) => {
@@ -332,6 +335,7 @@ function NotePage() {
               Save
             </Button>
           ) : null}
+
           <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
             <SegmentedControl.Segment
               selected={mode === "read"}
@@ -349,6 +353,23 @@ function NotePage() {
             </SegmentedControl.Segment>
           </SegmentedControl>
           <div className="flex items-center">
+            <IconButton
+              aria-label="Attach file"
+              size="small"
+              onClick={() => {
+                const input = document.createElement("input")
+                input.type = "file"
+                input.onchange = (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0]
+                  if (file) {
+                    attachFile(file, editorRef.current?.view)
+                  }
+                }
+                input.click()
+              }}
+            >
+              <PaperclipIcon16 />
+            </IconButton>
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" size="small" disableTooltip>
