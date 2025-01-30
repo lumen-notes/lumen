@@ -22,7 +22,7 @@ const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         sideOffset={4}
         {...props}
         className={cx(
-          "card-2 place-items-strech z-20 grid overflow-hidden rounded-lg animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95",
+          "card-2 place-items-strech z-20 grid overflow-hidden rounded-lg animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 print:hidden",
           // Set transform-origin for every combination of side and align
           "data-[side=bottom]:data-[align=center]:origin-top",
           "data-[side=bottom]:data-[align=end]:origin-top-right",
