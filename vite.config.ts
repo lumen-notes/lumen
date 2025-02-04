@@ -24,7 +24,7 @@ export default defineConfig({
         name: "Lumen",
         short_name: "Lumen",
         description: "A simple note-taking app for better thinking",
-        theme_color: "#ffffff",
+        theme_color: "#000000",
         icons: [
           {
             src: "icon-1024.png",
