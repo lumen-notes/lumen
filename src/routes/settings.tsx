@@ -149,7 +149,7 @@ function ThemeSection() {
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="theme-eink" value="eink" />
           <label htmlFor="theme-eink" className="leading-4">
-            E-ink (experimental)
+            E-ink
           </label>
         </div>
       </RadioGroup>
