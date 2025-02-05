@@ -104,7 +104,7 @@
 }
 
 .cm-editor .cm-wikilink {
-  @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5;
+  @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5 eink:outline-dotted eink:outline-1 eink:outline-offset-[-1px];
 }
 
 .cm-editor .cm-wikilink:hover {
