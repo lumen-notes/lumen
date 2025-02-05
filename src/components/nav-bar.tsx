@@ -23,8 +23,8 @@ export function NavBar() {
           </NavButton>
         </Drawer.Trigger>
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-gradient-to-t from-[#000000] to-[#00000000]" />
-          <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col rounded-t-xl bg-bg-overlay">
+          <Drawer.Overlay className="fixed inset-0 bg-gradient-to-t from-[#000000] to-[#00000000] eink:bg-none" />
+          <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay eink:ring-2 eink:ring-border">
             <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-2 pb-[max(env(safe-area-inset-bottom),8px)] pt-1.5">
               <div
                 aria-hidden
