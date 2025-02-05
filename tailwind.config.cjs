@@ -41,7 +41,10 @@ module.exports = {
         secondary: "var(--color-text-secondary)",
         tertiary: "var(--color-text-tertiary)",
         highlight: "var(--color-text-highlight)",
+        success: "var(--color-text-success)",
         danger: "var(--color-text-danger)",
+        pending: "var(--color-text-pending)",
+        pinned: "var(--color-text-pinned)",
       },
       bg: {
         DEFAULT: "var(--color-bg)",

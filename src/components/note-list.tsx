@@ -259,7 +259,7 @@ export function NoteList({
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
-                        <PinFillIcon12 className="mr-2 flex-shrink-0 text-[var(--orange-11)]" />
+                        <PinFillIcon12 className="text-text-pinned mr-2 flex-shrink-0" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text">{note.displayName}</span>

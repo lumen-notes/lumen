@@ -315,13 +315,12 @@ function NotePage() {
     <AppLayout
       title={
         <span className="flex items-center gap-2">
-          {/* {parsedNote.pinned ? <PinFillIcon12 className="text-[var(--orange-11)]" /> : null} */}
           {shouldShowPageTitle ? (
             <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
               <PageTitle note={parsedNote} />
             </span>
           ) : null}
-          {isDirty ? <DotIcon8 className="text-[var(--amber-11)] eink:text-text" /> : null}
+          {isDirty ? <DotIcon8 className="text-text-pending" /> : null}
         </span>
       }
       icon={shouldShowPageTitle ? <NoteFavicon note={parsedNote} /> : null}
@@ -392,7 +391,7 @@ function NotePage() {
                 <DropdownMenu.Item
                   icon={
                     parsedNote.pinned ? (
-                      <PinFillIcon16 className="text-[var(--orange-11)] eink:text-text" />
+                      <PinFillIcon16 className="text-text-pinned" />
                     ) : (
                       <PinIcon16 />
                     )

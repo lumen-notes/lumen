@@ -436,7 +436,7 @@ function NoteItem({
     >
       <span className="flex items-center gap-2 truncate">
         {!hidePinIcon && note.pinned ? (
-          <PinFillIcon12 className="flex-shrink-0 text-[var(--orange-11)]" />
+          <PinFillIcon12 className="text-text-pinned flex-shrink-0" />
         ) : null}
         <span className="truncate">{note.displayName}</span>
       </span>
