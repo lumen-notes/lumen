@@ -41,12 +41,12 @@ export function SyncStatusIcon({ className }: { className?: string }) {
   if (!isRepoCloned || !online) return null
 
   if (isSyncSuccess) {
-    return <CheckFillIcon16 className={cx("text-[var(--green-11)]", className)} />
+    return <CheckFillIcon16 className={cx("text-[var(--green-11)] eink:text-text", className)} />
   }
 
   if (isSyncError) {
-    return <ErrorFillIcon16 className={cx("text-[var(--red-11)]", className)} />
+    return <ErrorFillIcon16 className={cx("text-[var(--red-11)] eink:text-text", className)} />
   }
 
-  return <LoadingFillIcon16 className={cx("text-[var(--yellow-11)]", className)} />
+  return <LoadingFillIcon16 className={cx("text-[var(--yellow-11)] eink:text-text", className)} />
 }
