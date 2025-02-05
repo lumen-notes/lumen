@@ -5,7 +5,7 @@ import { useEvent, useNetworkState } from "react-use"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
-import { fontAtom, globalStateMachineAtom, isSignedOutAtom } from "../global-state"
+import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { Button } from "../components/button"
@@ -34,7 +34,6 @@ function RootComponent() {
   useThemeColor()
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
-  const font = useAtomValue(fontAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
 
@@ -78,6 +77,12 @@ function RootComponent() {
     enableOnContentEditable: true,
   })
 
+  const theme = useAtomValue(themeAtom)
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme)
+  }, [theme])
+
+  const font = useAtomValue(fontAtom)
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--font-family-content",

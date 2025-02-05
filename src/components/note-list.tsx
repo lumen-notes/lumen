@@ -133,7 +133,7 @@ export function NoteList({
               />
               <IconButton
                 aria-label={view === "grid" ? "List view" : "Grid view"}
-                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border coarse:h-12 coarse:w-12"
                 onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
               >
                 {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
@@ -288,7 +288,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border coarse:h-12 coarse:w-12"
       onClick={() => {
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()

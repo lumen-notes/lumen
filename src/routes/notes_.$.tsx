@@ -321,7 +321,7 @@ function NotePage() {
               <PageTitle note={parsedNote} />
             </span>
           ) : null}
-          {isDirty ? <DotIcon8 className="text-[var(--amber-11)]" /> : null}
+          {isDirty ? <DotIcon8 className="text-[var(--amber-11)] eink:text-text" /> : null}
         </span>
       }
       icon={shouldShowPageTitle ? <NoteFavicon note={parsedNote} /> : null}
@@ -392,7 +392,7 @@ function NotePage() {
                 <DropdownMenu.Item
                   icon={
                     parsedNote.pinned ? (
-                      <PinFillIcon16 className="text-[var(--orange-11)]" />
+                      <PinFillIcon16 className="text-[var(--orange-11)] eink:text-text" />
                     ) : (
                       <PinIcon16 />
                     )
@@ -528,7 +528,7 @@ function NotePage() {
               tooltipSide="top"
               tooltipAlign="end"
               onClick={toggleMode}
-              className="h-12 w-12 rounded-full bg-bg-tertiary hover:bg-bg-tertiary coarse:h-14 coarse:w-14"
+              className="h-12 w-12 rounded-full bg-bg-tertiary hover:bg-bg-tertiary eink:bg-text eink:text-bg coarse:h-14 coarse:w-14"
             >
               {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
             </IconButton>

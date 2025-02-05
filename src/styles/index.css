@@ -14,6 +14,7 @@ body {
 }
 
 ::selection {
+  color: var(--color-text-selection);
   background: var(--color-bg-selection);
 }
 
@@ -75,14 +76,17 @@ body:has([data-resizing="true"]) * {
 
 .card-1 {
   @apply card bg-bg-card shadow;
+  @apply eink:shadow-none;
 }
 
 .card-2 {
   @apply card bg-bg-overlay-backdrop shadow-lg backdrop-blur-lg;
+  @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
 }
 
 .card-3 {
   @apply card bg-bg-overlay-backdrop shadow-2xl backdrop-blur-xl;
+  @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
 }
 
 /* Nav item */
@@ -97,6 +101,7 @@ body:has([data-resizing="true"]) * {
 
 .nav-item[aria-current] {
   @apply bg-bg-secondary font-bold;
+  @apply eink:bg-text eink:text-bg;
 }
 
 .nav-item[data-size="large"] {

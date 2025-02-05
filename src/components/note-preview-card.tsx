@@ -91,7 +91,11 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             saveNote({ id, content: togglePin(note.content) })
           }}
         >
-          {note.pinned ? <PinFillIcon16 className=" text-[var(--orange-11)]" /> : <PinIcon16 />}
+          {note.pinned ? (
+            <PinFillIcon16 className=" text-[var(--orange-11)] eink:text-text" />
+          ) : (
+            <PinIcon16 />
+          )}
         </IconButton>
       </div>
       {note ? (

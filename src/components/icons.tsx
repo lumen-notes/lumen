@@ -118,21 +118,25 @@ export function CalendarDateIcon16({ date, ...props }: IconProps & { date?: numb
 export function CalendarDateFillIcon16({ date, ...props }: IconProps & { date?: number }) {
   return (
     <Icon size={16} {...props}>
+      <mask id="calendar-mask">
+        <rect width="16" height="16" fill="white" />
+        <text
+          textAnchor="middle"
+          x={8}
+          y={12.5}
+          fontSize="7.5px"
+          fill="black"
+          className="font-mono leading-none [font-weight:650]"
+        >
+          {date}
+        </text>
+      </mask>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M0 2.5C0 1.11929 1.11929 0 2.5 0H13.5C14.8807 0 16 1.11929 16 2.5V13.5C16 14.8807 14.8807 16 13.5 16H2.5C1.11929 16 0 14.8807 0 13.5V2.5ZM2.75 3C2.33579 3 2 3.33579 2 3.75C2 4.16421 2.33579 4.5 2.75 4.5H13.25C13.6642 4.5 14 4.16421 14 3.75C14 3.33579 13.6642 3 13.25 3H2.75Z"
+        mask="url(#calendar-mask)"
       />
-      <text
-        textAnchor="middle"
-        x={8}
-        y={12.5}
-        fontSize="7.5px"
-        fill="currentColor"
-        className="font-mono leading-none text-bg [font-weight:650]"
-      >
-        {date}
-      </text>
     </Icon>
   )
 }

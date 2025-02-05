@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const plugin = require("tailwindcss/plugin")
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -117,5 +120,11 @@ module.exports = {
       10: "40px",
     },
   },
-  plugins: [require("@tailwindcss/container-queries"), require("tailwindcss-animate")],
+  plugins: [
+    require("@tailwindcss/container-queries"),
+    require("tailwindcss-animate"),
+    plugin(function ({ addVariant }) {
+      addVariant("eink", '[data-theme="eink"] &')
+    }),
+  ],
 }

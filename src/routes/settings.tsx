@@ -16,6 +16,7 @@ import {
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
+  themeAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { RadioGroup } from "../components/radio-group"
@@ -30,8 +31,9 @@ function RouteComponent() {
       <div className="p-4">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
+          <ThemeSection />
+          <FontSection />
           <EditorSection />
-          <AppearanceSection />
         </div>
       </div>
     </AppLayout>
@@ -125,6 +127,66 @@ function GitHubSection() {
   )
 }
 
+function ThemeSection() {
+  const [theme, setTheme] = useAtom(themeAtom)
+
+  return (
+    <SettingsSection title="Theme">
+      <RadioGroup
+        aria-labelledby="theme-label"
+        value={theme}
+        defaultValue="default"
+        onValueChange={(value) => setTheme(value as "default" | "eink")}
+        className="flex flex-col gap-3 coarse:gap-4"
+        name="theme"
+      >
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="theme-default" value="default" />
+          <label htmlFor="theme-default" className="leading-4">
+            Default
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="theme-eink" value="eink" />
+          <label htmlFor="theme-eink" className="leading-4">
+            E-ink (experimental)
+          </label>
+        </div>
+      </RadioGroup>
+    </SettingsSection>
+  )
+}
+
+function FontSection() {
+  const [font, setFont] = useAtom(fontAtom)
+
+  return (
+    <SettingsSection title="Font">
+      <RadioGroup
+        aria-labelledby="font-label"
+        value={font}
+        defaultValue="sans"
+        onValueChange={(value) => setFont(value as "sans" | "serif")}
+        className="flex flex-col gap-3 coarse:gap-4"
+        name="font"
+      >
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="font-sans" value="sans" />
+          <label htmlFor="font-sans" className="font-sans leading-4">
+            Sans-serif
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="font-serif" value="serif" />
+          <label htmlFor="font-serif" className="font-serif leading-4">
+            Serif
+          </label>
+        </div>
+      </RadioGroup>
+    </SettingsSection>
+  )
+}
+
 function EditorSection() {
   const [editorSettings, setEditorSettings] = useEditorSettings()
 
@@ -155,41 +217,6 @@ function EditorSection() {
           />
           <label htmlFor="fold-gutter">Fold gutter</label>
         </div>
-      </div>
-    </SettingsSection>
-  )
-}
-
-function AppearanceSection() {
-  const [font, setFont] = useAtom(fontAtom)
-
-  return (
-    <SettingsSection title="Appearance">
-      <div className="grid gap-3 coarse:gap-4">
-        <span id="font-label" className="text-sm leading-4 text-text-secondary">
-          Font
-        </span>
-        <RadioGroup
-          aria-labelledby="font-label"
-          value={font}
-          defaultValue="sans"
-          onValueChange={(value) => setFont(value as "sans" | "serif")}
-          className="flex flex-col gap-3 coarse:gap-4"
-          name="font"
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroup.Item id="font-sans" value="sans" />
-            <label htmlFor="font-sans" className="font-sans leading-4">
-              Sans-serif
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroup.Item id="font-serif" value="serif" />
-            <label htmlFor="font-serif" className="font-serif leading-4">
-              Serif
-            </label>
-          </div>
-        </RadioGroup>
       </div>
     </SettingsSection>
   )
