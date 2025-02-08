@@ -21,7 +21,6 @@ import {
   DotIcon8,
   EditIcon16,
   ExternalLinkIcon16,
-  EyeIcon16,
   FullwidthIcon16,
   MoreIcon16,
   NoteIcon16,
@@ -69,6 +68,7 @@ import { exportAsGist } from "../utils/export-as-gist"
 import { parseNote } from "../utils/parse-note"
 import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
+import * as RadixSwitch from "@radix-ui/react-switch"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -506,32 +506,36 @@ function NotePage() {
         </div>
       }
       floatingActions={
-        <div className="flex gap-2 sm:hidden print:hidden">
+        <div className="card-2 flex gap-2 !rounded-full p-2 sm:hidden print:hidden">
           {(!note && editorValue) || isDirty ? (
-            <div className="flex rounded-full bg-bg-backdrop backdrop-blur-md transition-transform has-[button:active]:scale-110">
-              <Button
-                disabled={isSignedOut}
-                variant="primary"
-                shortcut={["⌘", "S"]}
-                onClick={() => handleSave(editorValue)}
-                className="h-12 rounded-full px-5  coarse:h-14 coarse:px-6"
-              >
-                Save
-              </Button>
-            </div>
-          ) : null}
-          <div className="flex rounded-full bg-bg-backdrop backdrop-blur-md transition-transform has-[button:active]:scale-110">
-            <IconButton
-              aria-label={mode === "read" ? "Write mode" : "Read mode"}
-              shortcut={toggleModeShortcut}
-              tooltipSide="top"
-              tooltipAlign="end"
-              onClick={toggleMode}
-              className="h-12 w-12 rounded-full bg-bg-tertiary hover:bg-bg-tertiary eink:bg-text eink:text-bg coarse:h-14 coarse:w-14"
+            <Button
+              disabled={isSignedOut}
+              variant="primary"
+              shortcut={["⌘", "S"]}
+              onClick={() => handleSave(editorValue)}
+              className="!h-12 rounded-full !px-6"
             >
-              {mode === "read" ? <EditIcon16 /> : <EyeIcon16 />}
-            </IconButton>
-          </div>
+              Save
+            </Button>
+          ) : null}
+          <RadixSwitch.Root
+            checked={mode === "write"}
+            onCheckedChange={(checked) => {
+              if (checked) {
+                switchToWriting()
+              } else {
+                switchToReading()
+              }
+            }}
+            className={cx(
+              "relative h-12 w-[72px] cursor-pointer rounded-full bg-bg-secondary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:hover:bg-bg-tertiary",
+              "eink:data-[state=unchecked]:bg-bg eink:data-[state=unchecked]:ring-1 eink:data-[state=unchecked]:ring-inset eink:data-[state=unchecked]:ring-border",
+            )}
+          >
+            <RadixSwitch.Thumb className="pointer-events-none grid h-12 w-12 translate-x-0 place-items-center rounded-full border border-border bg-bg-overlay text-text-secondary transition-transform will-change-transform data-[state=checked]:translate-x-[24px] data-[state=checked]:border-border-focus">
+              <EditIcon16 />
+            </RadixSwitch.Thumb>
+          </RadixSwitch.Root>
         </div>
       }
     >
