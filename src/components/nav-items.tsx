@@ -119,7 +119,9 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                       to={`/notes/$`}
                       params={{ _splat: note.id }}
                       search={{ mode: "read", query: undefined, view: "grid" }}
-                      icon={<NoteFavicon note={note} />}
+                      icon={
+                        <NoteFavicon note={note} className="eink:[[aria-current=page]_&]:text-bg" />
+                      }
                       className="w-0 flex-1"
                     >
                       {note.displayName}
