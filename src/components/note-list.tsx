@@ -133,7 +133,7 @@ export function NoteList({
               />
               <IconButton
                 aria-label={view === "grid" ? "List view" : "Grid view"}
-                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border coarse:h-12 coarse:w-12"
+                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
                 onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
               >
                 {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
@@ -259,7 +259,7 @@ export function NoteList({
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
-                        <PinFillIcon12 className="text-text-pinned mr-2 flex-shrink-0" />
+                        <PinFillIcon12 className="mr-2 flex-shrink-0 text-text-pinned" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text">{note.displayName}</span>
@@ -288,7 +288,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
       onClick={() => {
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
