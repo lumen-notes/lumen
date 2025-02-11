@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as VoiceModeImport } from './routes/voice-mode'
 import { Route as SettingsImport } from './routes/settings'
 import { Route as FileImport } from './routes/file'
 import { Route as IndexImport } from './routes/index'
@@ -20,6 +21,12 @@ import { Route as TagsSplatImport } from './routes/tags_.$'
 import { Route as NotesSplatImport } from './routes/notes_.$'
 
 // Create/Update Routes
+
+const VoiceModeRoute = VoiceModeImport.update({
+  id: '/voice-mode',
+  path: '/voice-mode',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SettingsRoute = SettingsImport.update({
   id: '/settings',
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsImport
       parentRoute: typeof rootRoute
     }
+    '/voice-mode': {
+      id: '/voice-mode'
+      path: '/voice-mode'
+      fullPath: '/voice-mode'
+      preLoaderRoute: typeof VoiceModeImport
+      parentRoute: typeof rootRoute
+    }
     '/notes_/$': {
       id: '/notes_/$'
       path: '/notes/$'
@@ -125,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
+  '/voice-mode': typeof VoiceModeRoute
   '/notes/$': typeof NotesSplatRoute
   '/tags/$': typeof TagsSplatRoute
   '/notes': typeof NotesIndexRoute
@@ -135,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
+  '/voice-mode': typeof VoiceModeRoute
   '/notes/$': typeof NotesSplatRoute
   '/tags/$': typeof TagsSplatRoute
   '/notes': typeof NotesIndexRoute
@@ -146,6 +162,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
+  '/voice-mode': typeof VoiceModeRoute
   '/notes_/$': typeof NotesSplatRoute
   '/tags_/$': typeof TagsSplatRoute
   '/notes/': typeof NotesIndexRoute
@@ -158,17 +175,27 @@ export interface FileRouteTypes {
     | '/'
     | '/file'
     | '/settings'
+    | '/voice-mode'
     | '/notes/$'
     | '/tags/$'
     | '/notes'
     | '/tags'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/file' | '/settings' | '/notes/$' | '/tags/$' | '/notes' | '/tags'
+  to:
+    | '/'
+    | '/file'
+    | '/settings'
+    | '/voice-mode'
+    | '/notes/$'
+    | '/tags/$'
+    | '/notes'
+    | '/tags'
   id:
     | '__root__'
     | '/'
     | '/file'
     | '/settings'
+    | '/voice-mode'
     | '/notes_/$'
     | '/tags_/$'
     | '/notes/'
@@ -180,6 +207,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FileRoute: typeof FileRoute
   SettingsRoute: typeof SettingsRoute
+  VoiceModeRoute: typeof VoiceModeRoute
   NotesSplatRoute: typeof NotesSplatRoute
   TagsSplatRoute: typeof TagsSplatRoute
   NotesIndexRoute: typeof NotesIndexRoute
@@ -190,6 +218,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FileRoute: FileRoute,
   SettingsRoute: SettingsRoute,
+  VoiceModeRoute: VoiceModeRoute,
   NotesSplatRoute: NotesSplatRoute,
   TagsSplatRoute: TagsSplatRoute,
   NotesIndexRoute: NotesIndexRoute,
@@ -209,6 +238,7 @@ export const routeTree = rootRoute
         "/",
         "/file",
         "/settings",
+        "/voice-mode",
         "/notes_/$",
         "/tags_/$",
         "/notes/",
@@ -223,6 +253,9 @@ export const routeTree = rootRoute
     },
     "/settings": {
       "filePath": "settings.tsx"
+    },
+    "/voice-mode": {
+      "filePath": "voice-mode.tsx"
     },
     "/notes_/$": {
       "filePath": "notes_.$.tsx"
