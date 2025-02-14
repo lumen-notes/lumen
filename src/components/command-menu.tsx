@@ -403,7 +403,7 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="flex items-center gap-3">
-        <div className="grid h-4 w-4 place-items-center text-text-secondary eink:[[aria-selected]_&]:text-bg">
+        <div className="grid h-4 w-4 place-items-center text-text-secondary eink:[[aria-selected]_&]:text-bg eink:[[aria-selected]_&_svg]:text-bg">
           {icon}
         </div>
         <div className="flex-grow truncate">{children}</div>
@@ -436,7 +436,7 @@ function NoteItem({
     >
       <span className="flex items-center gap-2 truncate">
         {!hidePinIcon && note.pinned ? (
-          <PinFillIcon12 className="text-text-pinned flex-shrink-0" />
+          <PinFillIcon12 className="flex-shrink-0 text-text-pinned" />
         ) : null}
         <span className="truncate">{note.displayName}</span>
       </span>

@@ -112,7 +112,7 @@
 }
 
 .cm-wikilinks-enabled .cm-editor .cm-wikilink {
-  @apply underline decoration-dotted decoration-1 underline-offset-[3px] ring-0;
+  @apply underline decoration-dotted decoration-1 underline-offset-[3px] ring-0 eink:outline-0;
 }
 
 .cm-wikilinks-enabled .cm-editor .cm-wikilink:hover {
