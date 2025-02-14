@@ -148,7 +148,7 @@ function createVoiceConversationStateMachine() {
           // Validate OpenAI key before proceeding
           const isValidKey = await validateOpenAIKey(openaiKey)
           if (!isValidKey) {
-            alert("Invalid OpenAI API key. Update your key in Settings.")
+            alert("Invalid OpenAI API key. Update your OpenAI key in Settings and try again.")
             throw new Error("Invalid OpenAI API key")
           }
 
