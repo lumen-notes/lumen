@@ -1,32 +1,32 @@
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import { assign, createMachine } from "xstate"
-import { Button } from "../components/button"
+import { OPENAI_KEY_KEY } from "../global-state"
+import { IconButton } from "./icon-button"
+import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
 
-const voiceModeStateMachineAtom = atomWithMachine(createVoiceModeStateMachine)
+export const voiceModeStateMachineAtom = atomWithMachine(createVoiceModeStateMachine)
 
-export function VoiceMode() {
+export function VoiceModeButton() {
   const [voiceModeState, send] = useAtom(voiceModeStateMachineAtom)
 
   return (
-    <div>
-      {voiceModeState.matches("inactive") && (
-        <Button size="small" onClick={() => send("START")}>
-          Start
-        </Button>
-      )}
-      {voiceModeState.matches("starting") && (
-        <Button size="small" disabled>
-          Starting…
-        </Button>
-      )}
-      {voiceModeState.matches("active") && (
-        <Button size="small" onClick={() => send("STOP")}>
-          Stop
-        </Button>
-      )}
-      <pre>{JSON.stringify(voiceModeState.value, null, 2)}</pre>
-    </div>
+    <IconButton
+      size="small"
+      aria-label={voiceModeState.matches("inactive") ? "Start conversation" : "End conversation"}
+      aria-pressed={!voiceModeState.matches("inactive")}
+      disabled={voiceModeState.matches("starting")}
+      className="aria-pressed:bg-[var(--green-9)] aria-pressed:text-[#fff] eink:aria-pressed:bg-text eink:aria-pressed:text-bg"
+      onClick={() => {
+        if (voiceModeState.matches("inactive")) {
+          send("START")
+        } else {
+          send("STOP")
+        }
+      }}
+    >
+      {voiceModeState.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
+    </IconButton>
   )
 }
 
@@ -129,9 +129,8 @@ function createVoiceModeStateMachine() {
         },
       },
       services: {
-        start: async (context) => {
-          // TODO: Get an ephemeral key from your server
-          const EPHEMERAL_API_KEY = import.meta.env.VITE_OPENAI_API_KEY
+        start: async () => {
+          const openaiKey = localStorage.getItem(OPENAI_KEY_KEY)
 
           // Create a peer connection
           const peerConnection = new RTCPeerConnection()
@@ -163,7 +162,7 @@ function createVoiceModeStateMachine() {
             method: "POST",
             body: connectionOffer.sdp,
             headers: {
-              Authorization: `Bearer ${EPHEMERAL_API_KEY}`,
+              Authorization: `Bearer ${openaiKey}`,
               "Content-Type": "application/sdp",
             },
           })

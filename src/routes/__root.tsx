@@ -1,16 +1,17 @@
 import { Link, Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
+import { useEffect, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { useEvent, useNetworkState } from "react-use"
+import { useRegisterSW } from "virtual:pwa-register/react"
+import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
+import { voiceModeStateMachineAtom } from "../components/voice-mode"
 import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
-import { useRegisterSW } from "virtual:pwa-register/react"
-import { Button } from "../components/button"
-import { useHotkeys } from "react-hotkeys-hook"
-import { useEffect, useState } from "react"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -32,6 +33,7 @@ const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.er
 
 function RootComponent() {
   useThemeColor()
+  useAtom(voiceModeStateMachineAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)

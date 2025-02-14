@@ -16,10 +16,12 @@ import {
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
+  openaiKeyAtom,
   themeAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { RadioGroup } from "../components/radio-group"
+import { TextInput } from "../components/text-input"
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -34,6 +36,7 @@ function RouteComponent() {
           <ThemeSection />
           <FontSection />
           <EditorSection />
+          <AISection />
         </div>
       </div>
     </AppLayout>
@@ -217,6 +220,31 @@ function EditorSection() {
           />
           <label htmlFor="fold-gutter">Fold gutter</label>
         </div>
+      </div>
+    </SettingsSection>
+  )
+}
+
+function AISection() {
+  const [openaiKey, setOpenaiKey] = useAtom(openaiKeyAtom)
+
+  return (
+    <SettingsSection title="AI">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="openai-key"
+          className="justify-self-start text-sm leading-4 text-text-secondary"
+        >
+          OpenAI key
+        </label>
+        <TextInput
+          id="openai-key"
+          name="openai-key"
+          type="password"
+          value={openaiKey}
+          onChange={(event) => setOpenaiKey(event.target.value)}
+          placeholder="sk…"
+        />
       </div>
     </SettingsSection>
   )

@@ -5,13 +5,12 @@ export function Switch({ className, ...props }: RadixSwitch.SwitchProps) {
   return (
     <RadixSwitch.Root
       className={cx(
-        "relative h-4 w-7 cursor-pointer rounded-full bg-border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:hover:bg-text-tertiary coarse:h-5 coarse:w-8",
-        "eink:data-[state=unchecked]:bg-bg eink:data-[state=unchecked]:ring-1 eink:data-[state=unchecked]:ring-inset eink:data-[state=unchecked]:ring-border",
+        "relative h-4 cursor-pointer rounded-full bg-bg-secondary pr-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-tertiary coarse:h-5",
         className,
       )}
       {...props}
     >
-      <RadixSwitch.Thumb className="block h-3 w-3 translate-x-0.5 rounded-full bg-bg-card transition-transform will-change-transform data-[state=checked]:translate-x-[14px] coarse:h-4 coarse:w-4 eink:[[data-state=unchecked]_&]:bg-text" />
+      <RadixSwitch.Thumb className="block h-4 w-4 translate-x-0 rounded-full border border-border bg-bg-overlay transition-transform will-change-transform data-[state=checked]:translate-x-3 data-[state=checked]:border-border-focus coarse:h-5 coarse:w-5" />
     </RadixSwitch.Root>
   )
 }

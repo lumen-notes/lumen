@@ -5,6 +5,7 @@ import { sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
+import { VoiceModeButton } from "./voice-mode"
 
 export type AppHeaderProps = {
   title: React.ReactNode
@@ -70,10 +71,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
               >
                 <PlusIcon16 />
               </IconButton>
-              <div
-                role="separator"
-                className={cx("mx-2 hidden h-5 w-px bg-border-secondary sm:block")}
-              />
+              <div role="separator" className="mx-2 h-5 w-px bg-border-secondary" />
             </>
           ) : null}
           <IconButton
@@ -102,7 +100,13 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           <div className="truncate font-content font-bold">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
-          {actions ? <div className="flex items-center">{actions}</div> : null}
+          {actions ? (
+            <>
+              <div className="flex items-center">{actions}</div>
+              <div role="separator" className="h-5 w-px bg-border-secondary" />
+            </>
+          ) : null}
+          <VoiceModeButton />
         </div>
       </header>
     </div>

@@ -730,3 +730,11 @@ export const fontAtom = atomWithStorage<"sans" | "serif">("font", "sans")
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
 export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
+
+// -----------------------------------------------------------------------------
+// AI
+// -----------------------------------------------------------------------------
+
+export const OPENAI_KEY_KEY = "openai_key"
+
+export const openaiKeyAtom = atomWithStorage<string>(OPENAI_KEY_KEY, "")
