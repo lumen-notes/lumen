@@ -1,11 +1,11 @@
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
+import { useEvent, useNetworkState } from "react-use"
 import { assign, createMachine } from "xstate"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
+import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { IconButton } from "./icon-button"
 import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
-import { useEvent } from "react-use"
-import { useNetworkState } from "react-use"
 
 export const voiceConversationStateMachineAtom = atomWithMachine(
   createVoiceConversationStateMachine,
@@ -204,17 +204,4 @@ function createVoiceConversationStateMachine() {
       },
     },
   )
-}
-
-async function validateOpenAIKey(key: string) {
-  try {
-    const response = await fetch("https://api.openai.com/v1/models", {
-      headers: {
-        Authorization: `Bearer ${key}`,
-      },
-    })
-    return response.status === 200
-  } catch (error) {
-    return false
-  }
 }

@@ -7,22 +7,22 @@ import { Button } from "../components/button"
 import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
+import { OpenAIKeyInput } from "../components/openai-key-input"
+import { RadioGroup } from "../components/radio-group"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
   fontAtom,
   githubRepoAtom,
   githubUserAtom,
+  hasOpenAIKeyAtom,
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
-  openaiKeyAtom,
   themeAtom,
   voiceConversationsEnabledAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
-import { RadioGroup } from "../components/radio-group"
-import { TextInput } from "../components/text-input"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/settings")({
@@ -226,7 +226,7 @@ function EditorSection() {
 }
 
 function AISection() {
-  const [openaiKey, setOpenaiKey] = useAtom(openaiKeyAtom)
+  const hasOpenAIKey = useAtomValue(hasOpenAIKeyAtom)
   const [voiceConversationsEnabled, setVoiceConversationsEnabled] = useAtom(
     voiceConversationsEnabledAtom,
   )
@@ -234,33 +234,18 @@ function AISection() {
   return (
     <SettingsSection title="AI">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="openai-key"
-            className="justify-self-start text-sm leading-4 text-text-secondary"
-          >
-            OpenAI key
-          </label>
-          <TextInput
-            id="openai-key"
-            name="openai-key"
-            type="password"
-            value={openaiKey}
-            onChange={(event) => setOpenaiKey(event.target.value)}
-            placeholder="sk…"
-          />
-        </div>
+        <OpenAIKeyInput />
         <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
           <div className="flex items-center gap-3 coarse:gap-4">
             <Switch
               id="voice-conversations"
-              disabled={!openaiKey}
-              checked={Boolean(openaiKey) && voiceConversationsEnabled}
+              disabled={!hasOpenAIKey}
+              checked={hasOpenAIKey && voiceConversationsEnabled}
               onCheckedChange={(checked) => setVoiceConversationsEnabled(checked)}
             />
             <label
               htmlFor="voice-conversations"
-              className={cx(!openaiKey && "cursor-not-allowed text-text-secondary")}
+              className={cx(!hasOpenAIKey && "cursor-not-allowed text-text-secondary")}
             >
               Voice conversations <span className="text-sm italic text-text-secondary">(beta)</span>
             </label>
