@@ -1,11 +1,11 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
-import { sidebarAtom } from "../global-state"
+import { openaiKeyAtom, sidebarAtom, voiceConversationsEnabledAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
-import { VoiceModeButton } from "./voice-mode"
+import { VoiceConversationButton } from "./voice-conversation"
 
 export type AppHeaderProps = {
   title: React.ReactNode
@@ -17,8 +17,9 @@ export type AppHeaderProps = {
 export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
-
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
+  const openaiKey = useAtomValue(openaiKeyAtom)
+  const voiceConversationsEnabled = useAtomValue(voiceConversationsEnabledAtom)
 
   useHotkeys(
     "mod+shift+o",
@@ -100,13 +101,11 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           <div className="truncate font-content font-bold">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
-          {actions ? (
-            <>
-              <div className="flex items-center">{actions}</div>
-              <div role="separator" className="h-5 w-px bg-border-secondary" />
-            </>
+          {actions ? <div className="flex items-center">{actions}</div> : null}
+          {actions && openaiKey && voiceConversationsEnabled ? (
+            <div role="separator" className="h-5 w-px bg-border-secondary" />
           ) : null}
-          <VoiceModeButton />
+          {openaiKey && voiceConversationsEnabled ? <VoiceConversationButton /> : null}
         </div>
       </header>
     </div>

@@ -9,7 +9,7 @@ import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
-import { voiceModeStateMachineAtom } from "../components/voice-mode"
+import { voiceConversationStateMachineAtom } from "../components/voice-conversation"
 import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 
@@ -33,7 +33,7 @@ const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.er
 
 function RootComponent() {
   useThemeColor()
-  useAtom(voiceModeStateMachineAtom)
+  useAtom(voiceConversationStateMachineAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
@@ -42,12 +42,12 @@ function RootComponent() {
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
     if (document.visibilityState === "visible" && online) {
-      send({ type: "SYNC" })
+      send("SYNC")
     }
   })
 
   useEvent("online", () => {
-    send({ type: "SYNC" })
+    send("SYNC")
   })
 
   // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update

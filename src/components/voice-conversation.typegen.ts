@@ -4,10 +4,11 @@
   export interface Typegen0 {
         '@@xstate/typegen': true;
         internalEvents: {
-          "xstate.init": { type: "xstate.init" };
+          "error.platform.voiceConversation.starting:invocation[0]": { type: "error.platform.voiceConversation.starting:invocation[0]"; data: unknown };
+"xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
-          "start": "done.invoke.voiceMode.starting:invocation[0]";
+          "start": "done.invoke.voiceConversation.starting:invocation[0]";
         };
         missingImplementations: {
           actions: never;
@@ -16,7 +17,7 @@
           services: never;
         };
         eventsCausingActions: {
-          "stop": "STOP";
+          "stop": "STOP" | "error.platform.voiceConversation.starting:invocation[0]";
         };
         eventsCausingDelays: {
           

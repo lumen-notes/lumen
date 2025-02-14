@@ -5,7 +5,8 @@ export function Switch({ className, ...props }: RadixSwitch.SwitchProps) {
   return (
     <RadixSwitch.Root
       className={cx(
-        "relative h-4 cursor-pointer rounded-full bg-bg-secondary pr-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-tertiary coarse:h-5",
+        "relative h-4 cursor-pointer rounded-full bg-bg-secondary pr-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary enabled:data-[state=unchecked]:hover:bg-bg-tertiary coarse:h-5",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}

@@ -1,53 +1,62 @@
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import { assign, createMachine } from "xstate"
-import { OPENAI_KEY_KEY } from "../global-state"
+import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { IconButton } from "./icon-button"
 import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
+import { useEvent } from "react-use"
+import { useNetworkState } from "react-use"
 
-export const voiceModeStateMachineAtom = atomWithMachine(createVoiceModeStateMachine)
+export const voiceConversationStateMachineAtom = atomWithMachine(
+  createVoiceConversationStateMachine,
+)
 
-export function VoiceModeButton() {
-  const [voiceModeState, send] = useAtom(voiceModeStateMachineAtom)
+export function VoiceConversationButton() {
+  const [state, send] = useAtom(voiceConversationStateMachineAtom)
+  const { online } = useNetworkState()
+
+  useEvent("offline", () => {
+    send("STOP")
+  })
 
   return (
     <IconButton
       size="small"
-      aria-label={voiceModeState.matches("inactive") ? "Start conversation" : "End conversation"}
-      aria-pressed={!voiceModeState.matches("inactive")}
-      disabled={voiceModeState.matches("starting")}
-      className="aria-pressed:bg-[var(--green-9)] aria-pressed:text-[#fff] eink:aria-pressed:bg-text eink:aria-pressed:text-bg"
+      aria-label={state.matches("inactive") ? "Start conversation" : "End conversation"}
+      aria-pressed={!state.matches("inactive")}
+      disabled={state.matches("starting") || !online}
+      className="aria-pressed:!bg-[var(--green-9)] aria-pressed:!text-[#fff] eink:aria-pressed:!bg-text eink:aria-pressed:!text-bg"
       onClick={() => {
-        if (voiceModeState.matches("inactive")) {
+        if (state.matches("inactive")) {
           send("START")
         } else {
           send("STOP")
         }
       }}
     >
-      {voiceModeState.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
+      {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
     </IconButton>
   )
 }
 
-type VoiceModeEvent = { type: "START" } | { type: "STOP" }
+type VoiceConversationEvent = { type: "START" } | { type: "STOP" }
 
-type VoiceModeContext = {
+type VoiceConversationContext = {
   peerConnection: RTCPeerConnection | null
   dataChannel: RTCDataChannel | null
   microphoneStream: MediaStream | null
   audioElement: HTMLAudioElement | null
 }
 
-function createVoiceModeStateMachine() {
+function createVoiceConversationStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5QDcD2BLAxmAsqiYAdOgHYCGmALusmAMQBKAogOICSAygCpMMD6AeQCCbPkwBqTAHJc+AYSEAZRQCEhcgNIBtAAwBdRKAAOqWOmqoShkAA9EAFgBMAGhABPRAE57hAKwB2ewA2HX8ADnsAZnswnUiwgF8E1zQsXHwiUgpqWjpuIQYuXQMkEBMzCytSuwRosMIwoP8ARn9opub7Xx1fVw9ayMjCIO8ooN9PMObPHWaklIxsPAJCWEoyACdqEig6CEtMkjQAayJUpYzV9a3SKARSNEwySuLi63LzdEtrGqDHZsI-x0nkijiCYUcnj+fUQkWajkBrUaUN8sUcTnmIHO6RW2Ro9G4AgACm9Sh9Kj9YTEGh02sEWl0ejCEM0gkFCFDwi0QujwlFMdjlkQ8bRiBAADb0ACqHF4fA4RKYTDkAAl5VwCjwACKk4ymT7faqIMKTQjTXyOfy+XxBSIoyLM+w6HR+MKDSI6RzoxyxML+AWLHHCqj4sWSuhCDgcTgamTyxXKtX5QpMHX6d76ilGhAm+rmy3W2325mghHozwVgJ-RyRC32ANpIWEEVEACusDAGw4RjAZGOtzoMrlCqVqvVxMVaZKeoqXyqoBqzUi-n8hFrIOXkTZoS9zOavgBzqPOginSdXQbF1xIdFZFgZjWZBIlG7vf7O0Hsv4I8T6s1qd1MpMznSkWWXVd10GNpt38Xd3EQS1PAad04U8Vpok8MFLyDZsb2Fe90EfZ9Xz7AdI2jfI4x-MdCSJSdAPJEDs1zM1PAtK0bTtcYHXghBLQBQIKwrTo3VgpJkhAEgMngUpBQyDNZ0NBdEAAWiCZkVJrDkhJ03SQWwpssjwhSDXnWxECXJC3UcWYKyaN17HCPcoUIT0VxXT1plCOYJLklZHxuHYTKzZSEGCF0RgtWJmmmQIIRLZoItGJxrUmIJ9wMy4W2CpjQsCAFItBZ0oU8cIwmZW0-GPHQnB3T1oky68ckyCUwBypTzIQcIkMKmzgRGMq9z+Px7B0iFUu8Rrg2awh207Ej3ygdqzMXP4fF8eJSqtQJuk9ZkfQRN1BgmZopmKzwptwma7wfdZiJ7UigrJYCOsXU6kOXUbgjY1FnXU3ifRdFDUPQ0asPEoA */
-      id: "voiceMode",
-      tsTypes: {} as import("./voice-mode.typegen").Typegen0,
+      /** @xstate-layout N4IgpgJg5mDOIC5QDcD2BLAxmAsqiYAdOgHYCGmALusmAMQDKAKgIIBKTA2gAwC6ioAA6pY6aqhICQAD0QBGAKwAOQgCZuAZjmqALDqUaF3AJzGANCACeiXQHZCx2wDYFxnc7mKXCgL4+LaFi4+ESwlGQATtQkUHQQEkSkaADWRIHYeASEYZHRUAhJqJhk4iQ8vOVSwqKlUrIIOhrchApOuk7cHfrc3EoW1giqqk6EtkbccjoKOtz6Q34BGBkhhBTUtIxMAPIACpVIINVi6BJ1iDptLcYaTo62hrbaGv2ISnItPROmPUpOTs5+fwgEgheAHdLBAhVETHU4HeoAWicLwQCIUDlMmKxWI0CxAEMyiXIVBoYGhNROknh51UKM8zSapg0hluilsYzxBJWOSipCg5NhVNA9VUtmamm0RgUYtUxiU7JRQx0Dmcrkc0yMbicnKWkKIa1JAtq1IQrWMhE6dlu3FsSmMbTp2kIShM1xZxjZth0gJ8QA */
+      id: "voiceConversation",
+      tsTypes: {} as import("./voice-conversation.typegen").Typegen0,
       schema: {} as {
-        events: VoiceModeEvent
-        context: VoiceModeContext
+        events: VoiceConversationEvent
+        context: VoiceConversationContext
         services: {
           start: {
             data: {
@@ -85,6 +94,10 @@ function createVoiceModeStateMachine() {
                   audioElement: event.data.audioElement,
                 }
               }),
+            },
+            onError: {
+              target: "inactive",
+              actions: "stop",
             },
           },
         },
@@ -130,7 +143,14 @@ function createVoiceModeStateMachine() {
       },
       services: {
         start: async () => {
-          const openaiKey = JSON.parse(localStorage.getItem(OPENAI_KEY_KEY) ?? "''")
+          const openaiKey = String(JSON.parse(localStorage.getItem(OPENAI_KEY_STORAGE_KEY) ?? "''"))
+
+          // Validate OpenAI key before proceeding
+          const isValidKey = await validateOpenAIKey(openaiKey)
+          if (!isValidKey) {
+            alert("Invalid OpenAI API key. Update your key in Settings.")
+            throw new Error("Invalid OpenAI API key")
+          }
 
           // Create a peer connection
           const peerConnection = new RTCPeerConnection()
@@ -184,4 +204,17 @@ function createVoiceModeStateMachine() {
       },
     },
   )
+}
+
+async function validateOpenAIKey(key: string) {
+  try {
+    const response = await fetch("https://api.openai.com/v1/models", {
+      headers: {
+        Authorization: `Bearer ${key}`,
+      },
+    })
+    return response.status === 200
+  } catch (error) {
+    return false
+  }
 }

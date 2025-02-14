@@ -15,9 +15,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type="button"
         className={cx(
-          "focus-ring inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded leading-4 disabled:pointer-events-none disabled:opacity-50",
+          "focus-ring inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded leading-4",
+          "disabled:cursor-not-allowed disabled:opacity-50",
           "coarse:h-10 coarse:px-4",
-          variant === "secondary" && "bg-bg-secondary hover:bg-bg-tertiary",
+          variant === "secondary" && "bg-bg-secondary enabled:hover:bg-bg-tertiary",
           variant === "primary" && "bg-text font-bold text-bg [&_*]:text-bg",
           size === "small" && "h-6 px-2",
           size === "medium" && "h-8 px-3",
