@@ -16,10 +16,14 @@ import {
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
+  openaiKeyAtom,
   themeAtom,
+  voiceConversationsEnabledAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { RadioGroup } from "../components/radio-group"
+import { TextInput } from "../components/text-input"
+import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/settings")({
   component: RouteComponent,
@@ -34,6 +38,7 @@ function RouteComponent() {
           <ThemeSection />
           <FontSection />
           <EditorSection />
+          <AISection />
         </div>
       </div>
     </AppLayout>
@@ -71,57 +76,55 @@ function GitHubSection() {
 
   return (
     <SettingsSection title="GitHub">
-      <div className="">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex w-0 flex-grow flex-col gap-1">
-            <span className="text-sm leading-4 text-text-secondary">Account</span>
-            <span className="flex items-center gap-2 leading-4">
-              {online ? <GitHubAvatar login={githubUser.login} /> : null}
-              <span className="truncate">{githubUser.login}</span>
-            </span>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex w-0 flex-grow flex-col gap-1">
+          <span className="text-sm leading-4 text-text-secondary">Account</span>
+          <span className="flex items-center gap-2 leading-4">
+            {online ? <GitHubAvatar login={githubUser.login} /> : null}
+            <span className="truncate">{githubUser.login}</span>
+          </span>
+        </div>
+        <Button
+          className="flex-shrink-0"
+          onClick={() => {
+            signOut()
+            navigate({ to: "/", search: { query: undefined, view: "grid" } })
+          }}
+        >
+          Sign out
+        </Button>
+      </div>
+      <div className="mt-4 border-t border-border-secondary pt-4 empty:hidden">
+        {isRepoNotCloned || isEditingRepo ? (
+          <RepoForm
+            onSubmit={() => setIsEditingRepo(false)}
+            onCancel={!isRepoNotCloned ? () => setIsEditingRepo(false) : undefined}
+          />
+        ) : null}
+        {isCloningRepo && githubRepo ? (
+          <div className="flex items-center gap-2 leading-4 text-text-secondary">
+            <LoadingIcon16 />
+            Cloning {githubRepo.owner}/{githubRepo.name}…
           </div>
-          <Button
-            className="flex-shrink-0"
-            onClick={() => {
-              signOut()
-              navigate({ to: "/", search: { query: undefined, view: "grid" } })
-            }}
-          >
-            Sign out
-          </Button>
-        </div>
-        <div className="mt-4 border-t border-border-secondary pt-4 empty:hidden">
-          {isRepoNotCloned || isEditingRepo ? (
-            <RepoForm
-              onSubmit={() => setIsEditingRepo(false)}
-              onCancel={!isRepoNotCloned ? () => setIsEditingRepo(false) : undefined}
-            />
-          ) : null}
-          {isCloningRepo && githubRepo ? (
-            <div className="flex items-center gap-2 leading-4 text-text-secondary">
-              <LoadingIcon16 />
-              Cloning {githubRepo.owner}/{githubRepo.name}…
+        ) : null}
+        {isRepoCloned && !isEditingRepo && githubRepo ? (
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex w-0 flex-grow flex-col items-start gap-1">
+              <span className="text-sm leading-4 text-text-secondary">Repository</span>
+              <a
+                href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
+                className="link link-external leading-5"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {githubRepo.owner}/{githubRepo.name}
+              </a>
             </div>
-          ) : null}
-          {isRepoCloned && !isEditingRepo && githubRepo ? (
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex w-0 flex-grow flex-col items-start gap-1">
-                <span className="text-sm leading-4 text-text-secondary">Repository</span>
-                <a
-                  href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
-                  className="link link-external leading-5"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {githubRepo.owner}/{githubRepo.name}
-                </a>
-              </div>
-              <Button className="flex-shrink-0" onClick={() => setIsEditingRepo(true)}>
-                Change
-              </Button>
-            </div>
-          ) : null}
-        </div>
+            <Button className="flex-shrink-0" onClick={() => setIsEditingRepo(true)}>
+              Change
+            </Button>
+          </div>
+        ) : null}
       </div>
     </SettingsSection>
   )
@@ -216,6 +219,52 @@ function EditorSection() {
             onCheckedChange={(checked) => setEditorSettings({ foldGutter: checked })}
           />
           <label htmlFor="fold-gutter">Fold gutter</label>
+        </div>
+      </div>
+    </SettingsSection>
+  )
+}
+
+function AISection() {
+  const [openaiKey, setOpenaiKey] = useAtom(openaiKeyAtom)
+  const [voiceConversationsEnabled, setVoiceConversationsEnabled] = useAtom(
+    voiceConversationsEnabledAtom,
+  )
+
+  return (
+    <SettingsSection title="AI">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <label
+            htmlFor="openai-key"
+            className="justify-self-start text-sm leading-4 text-text-secondary"
+          >
+            OpenAI key
+          </label>
+          <TextInput
+            id="openai-key"
+            name="openai-key"
+            type="password"
+            value={openaiKey}
+            onChange={(event) => setOpenaiKey(event.target.value)}
+            placeholder="sk…"
+          />
+        </div>
+        <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
+          <div className="flex items-center gap-3 coarse:gap-4">
+            <Switch
+              id="voice-conversations"
+              disabled={!openaiKey}
+              checked={Boolean(openaiKey) && voiceConversationsEnabled}
+              onCheckedChange={(checked) => setVoiceConversationsEnabled(checked)}
+            />
+            <label
+              htmlFor="voice-conversations"
+              className={cx(!openaiKey && "cursor-not-allowed text-text-secondary")}
+            >
+              Voice conversations <span className="text-sm italic text-text-secondary">(beta)</span>
+            </label>
+          </div>
         </div>
       </div>
     </SettingsSection>

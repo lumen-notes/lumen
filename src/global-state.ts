@@ -32,15 +32,11 @@ import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"
 
 // -----------------------------------------------------------------------------
-// Constants
-// -----------------------------------------------------------------------------
-
-const GITHUB_USER_KEY = "github_user"
-const MARKDOWN_FILES_KEY = "markdown_files"
-
-// -----------------------------------------------------------------------------
 // State machine
 // -----------------------------------------------------------------------------
+
+const GITHUB_USER_STORAGE_KEY = "github_user"
+const MARKDOWN_FILES_STORAGE_KEY = "markdown_files"
 
 type Context = {
   githubUser: GitHubUser | null
@@ -289,7 +285,10 @@ function createGlobalStateMachine() {
 
           if (token && login && name && email) {
             // Save user metadata to localStorage
-            localStorage.setItem(GITHUB_USER_KEY, JSON.stringify({ token, login, name, email }))
+            localStorage.setItem(
+              GITHUB_USER_STORAGE_KEY,
+              JSON.stringify({ token, login, name, email }),
+            )
 
             const searchParams = new URLSearchParams(window.location.search)
 
@@ -309,7 +308,7 @@ function createGlobalStateMachine() {
           }
 
           // Next, check localStorage for user metadata
-          const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_KEY) ?? "null")
+          const githubUser = JSON.parse(localStorage.getItem(GITHUB_USER_STORAGE_KEY) ?? "null")
           return { githubUser: githubUserSchema.parse(githubUser) }
         },
         resolveRepo: async () => {
@@ -406,7 +405,7 @@ function createGlobalStateMachine() {
           githubUser: null,
         }),
         clearGitHubUserLocalStorage: () => {
-          localStorage.removeItem(GITHUB_USER_KEY)
+          localStorage.removeItem(GITHUB_USER_STORAGE_KEY)
         },
         setGitHubRepo: assign({
           githubRepo: (_, event) => {
@@ -431,7 +430,7 @@ function createGlobalStateMachine() {
           markdownFiles: getSampleMarkdownFiles(),
         }),
         setMarkdownFilesLocalStorage: (_, event) => {
-          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(event.data.markdownFiles))
+          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(event.data.markdownFiles))
         },
         mergeMarkdownFiles: assign({
           markdownFiles: (context, event) => ({
@@ -441,7 +440,7 @@ function createGlobalStateMachine() {
         }),
         mergeMarkdownFilesLocalStorage: (context, event) => {
           localStorage.setItem(
-            MARKDOWN_FILES_KEY,
+            MARKDOWN_FILES_STORAGE_KEY,
             JSON.stringify({
               ...context.markdownFiles,
               ...event.markdownFiles,
@@ -456,13 +455,13 @@ function createGlobalStateMachine() {
         }),
         deleteMarkdownFileLocalStorage: (context, event) => {
           const { [event.filepath]: _, ...markdownFiles } = context.markdownFiles
-          localStorage.setItem(MARKDOWN_FILES_KEY, JSON.stringify(markdownFiles))
+          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(markdownFiles))
         },
         clearMarkdownFiles: assign({
           markdownFiles: {},
         }),
         clearMarkdownFilesLocalStorage: () => {
-          localStorage.removeItem(MARKDOWN_FILES_KEY)
+          localStorage.removeItem(MARKDOWN_FILES_STORAGE_KEY)
         },
         setError: assign({
           // TODO: Remove `as Error`
@@ -478,7 +477,7 @@ function createGlobalStateMachine() {
 
 /** Get cached markdown files from local storage */
 function getMarkdownFilesFromLocalStorage() {
-  const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_KEY) ?? "null")
+  const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_STORAGE_KEY) ?? "null")
   if (!markdownFiles) return null
   const parsedMarkdownFiles = z.record(z.string()).safeParse(markdownFiles)
   return parsedMarkdownFiles.success ? parsedMarkdownFiles.data : null
@@ -730,3 +729,16 @@ export const fontAtom = atomWithStorage<"sans" | "serif">("font", "sans")
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
 export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
+
+// -----------------------------------------------------------------------------
+// AI
+// -----------------------------------------------------------------------------
+
+export const OPENAI_KEY_STORAGE_KEY = "openai_key"
+
+export const openaiKeyAtom = atomWithStorage<string>(OPENAI_KEY_STORAGE_KEY, "")
+
+export const voiceConversationsEnabledAtom = atomWithStorage<boolean>(
+  "voice_conversations_enabled",
+  false,
+)

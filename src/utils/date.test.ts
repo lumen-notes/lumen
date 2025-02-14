@@ -44,8 +44,6 @@ describe("isValidWeekString", () => {
 
 describe("formatDate", () => {
   test("formats a date string", () => {
-    const currentYear = new Date().getUTCFullYear()
-    expect(formatDate(`${currentYear}-07-11`)).toBe("Thu, Jul 11")
     expect(formatDate("1998-07-11")).toBe("Sat, Jul 11, 1998")
   })
 

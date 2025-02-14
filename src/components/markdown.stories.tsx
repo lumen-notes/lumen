@@ -238,7 +238,7 @@ export const Book: StoryObj<typeof Markdown> = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    expect(await canvas.findByText("Book cover")).toBeTruthy()
+    expect(await canvas.findByAltText("Book cover")).toBeTruthy()
     expect(await canvas.findByRole("link", { name: isbn })).toBeTruthy()
   },
 }
