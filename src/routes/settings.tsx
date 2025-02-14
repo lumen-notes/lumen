@@ -32,7 +32,7 @@ export const Route = createFileRoute("/settings")({
 function RouteComponent() {
   return (
     <AppLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
-      <div className="p-4 pb-8">
+      <div className="p-4 pb-8 md:pb-14">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
           <ThemeSection />
