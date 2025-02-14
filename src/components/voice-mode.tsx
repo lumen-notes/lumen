@@ -7,28 +7,47 @@ const voiceModeStateMachineAtom = atomWithMachine(createVoiceModeStateMachine)
 
 export function VoiceMode() {
   const [voiceModeState, send] = useAtom(voiceModeStateMachineAtom)
+
   return (
     <div>
-      <Button onClick={() => send("START")}>Start</Button>
-      <Button onClick={() => send("STOP")}>Stop</Button>
+      {voiceModeState.matches("inactive") && (
+        <Button size="small" onClick={() => send("START")}>
+          Start
+        </Button>
+      )}
+      {voiceModeState.matches("starting") && (
+        <Button size="small" disabled>
+          Starting…
+        </Button>
+      )}
+      {voiceModeState.matches("active") && (
+        <Button size="small" onClick={() => send("STOP")}>
+          Stop
+        </Button>
+      )}
       <pre>{JSON.stringify(voiceModeState.value, null, 2)}</pre>
-      <pre>{JSON.stringify(voiceModeState.context, null, 2)}</pre>
     </div>
   )
+}
+
+type VoiceModeEvent = { type: "START" } | { type: "STOP" }
+
+type VoiceModeContext = {
+  peerConnection: RTCPeerConnection | null
+  dataChannel: RTCDataChannel | null
+  microphoneStream: MediaStream | null
+  audioElement: HTMLAudioElement | null
 }
 
 function createVoiceModeStateMachine() {
   return createMachine(
     {
+      /** @xstate-layout N4IgpgJg5mDOIC5QDcD2BLAxmAsqiYAdOgHYCGmALusmAMQBKAogOICSAygCpMMD6AeQCCbPkwBqTAHJc+AYSEAZRQCEhcgNIBtAAwBdRKAAOqWOmqoShkAA9EAFgBMAGhABPRAE57hAKwB2ewA2HX8ADnsAZnswnUiwgF8E1zQsXHwiUgpqWjpuIQYuXQMkEBMzCytSuwRosMIwoP8ARn9opub7Xx1fVw9ayMjCIO8ooN9PMObPHWaklIxsPAJCWEoyACdqEig6CEtMkjQAayJUpYzV9a3SKARSNEwySuLi63LzdEtrGqDHZsI-x0nkijiCYUcnj+fUQkWajkBrUaUN8sUcTnmIHO6RW2Ro9G4AgACm9Sh9Kj9YTEGh02sEWl0ejCEM0gkFCFDwi0QujwlFMdjlkQ8bRiBAADb0ACqHF4fA4RKYTDkAAl5VwCjwACKk4ymT7faqIMKTQjTXyOfy+XxBSIoyLM+w6HR+MKDSI6RzoxyxML+AWLHHCqj4sWSuhCDgcTgamTyxXKtX5QpMHX6d76ilGhAm+rmy3W2325mghHozwVgJ-RyRC32ANpIWEEVEACusDAGw4RjAZGOtzoMrlCqVqvVxMVaZKeoqXyqoBqzUi-n8hFrIOXkTZoS9zOavgBzqPOginSdXQbF1xIdFZFgZjWZBIlG7vf7O0Hsv4I8T6s1qd1MpMznSkWWXVd10GNpt38Xd3EQS1PAad04U8Vpok8MFLyDZsb2Fe90EfZ9Xz7AdI2jfI4x-MdCSJSdAPJEDs1zM1PAtK0bTtcYHXghBLQBQIKwrTo3VgpJkhAEgMngUpBQyDNZ0NBdEAAWiCZkVJrDkhJ03SQWwpssjwhSDXnWxECXJC3UcWYKyaN17HCPcoUIT0VxXT1plCOYJLklZHxuHYTKzZSEGCF0RgtWJmmmQIIRLZoItGJxrUmIJ9wMy4W2CpjQsCAFItBZ0oU8cIwmZW0-GPHQnB3T1oky68ckyCUwBypTzIQcIkMKmzgRGMq9z+Px7B0iFUu8Rrg2awh207Ej3ygdqzMXP4fF8eJSqtQJuk9ZkfQRN1BgmZopmKzwptwma7wfdZiJ7UigrJYCOsXU6kOXUbgjY1FnXU3ifRdFDUPQ0asPEoA */
       id: "voiceMode",
       tsTypes: {} as import("./voice-mode.typegen").Typegen0,
       schema: {} as {
-        context: {
-          peerConnection: RTCPeerConnection | null
-          dataChannel: RTCDataChannel | null
-          microphoneStream: MediaStream | null
-          audioElement: HTMLAudioElement | null
-        }
+        events: VoiceModeEvent
+        context: VoiceModeContext
         services: {
           start: {
             data: {
@@ -40,15 +59,15 @@ function createVoiceModeStateMachine() {
           }
         }
       },
-      initial: "idle",
       context: {
         peerConnection: null,
         dataChannel: null,
         microphoneStream: null,
         audioElement: null,
       },
+      initial: "inactive",
       states: {
-        idle: {
+        inactive: {
           on: {
             START: "starting",
           },
@@ -57,15 +76,22 @@ function createVoiceModeStateMachine() {
           invoke: {
             src: "start",
             onDone: {
-              target: "listening",
-              actions: "setContext",
+              target: "active",
+              actions: assign((context, event) => {
+                return {
+                  peerConnection: event.data.peerConnection,
+                  dataChannel: event.data.dataChannel,
+                  microphoneStream: event.data.microphoneStream,
+                  audioElement: event.data.audioElement,
+                }
+              }),
             },
           },
         },
-        listening: {
+        active: {
           on: {
             STOP: {
-              target: "idle",
+              target: "inactive",
               actions: "stop",
             },
           },
@@ -74,14 +100,6 @@ function createVoiceModeStateMachine() {
     },
     {
       actions: {
-        setContext: assign((_, event) => {
-          return {
-            peerConnection: event.data.peerConnection,
-            dataChannel: event.data.dataChannel,
-            microphoneStream: event.data.microphoneStream,
-            audioElement: event.data.audioElement,
-          }
-        }),
         stop: (context) => {
           // Close the WebRTC peer connection if it exists
           if (context.peerConnection) {
@@ -111,7 +129,7 @@ function createVoiceModeStateMachine() {
         },
       },
       services: {
-        start: async () => {
+        start: async (context) => {
           // TODO: Get an ephemeral key from your server
           const EPHEMERAL_API_KEY = import.meta.env.VITE_OPENAI_API_KEY
 
@@ -131,8 +149,7 @@ function createVoiceModeStateMachine() {
 
           // Set up data channel for sending and receiving events
           const dataChannel = peerConnection.createDataChannel("oai-events")
-          dataChannel.addEventListener("message", (event) => {
-            // Realtime server events appear here!
+          dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
             console.log(JSON.parse(event.data))
           })
 

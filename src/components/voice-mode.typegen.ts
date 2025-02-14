@@ -4,8 +4,7 @@
   export interface Typegen0 {
         '@@xstate/typegen': true;
         internalEvents: {
-          "done.invoke.voiceMode.starting:invocation[0]": { type: "done.invoke.voiceMode.starting:invocation[0]"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
-"xstate.init": { type: "xstate.init" };
+          "xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
           "start": "done.invoke.voiceMode.starting:invocation[0]";
@@ -17,8 +16,7 @@
           services: never;
         };
         eventsCausingActions: {
-          "setContext": "done.invoke.voiceMode.starting:invocation[0]";
-"stop": "STOP";
+          "stop": "STOP";
         };
         eventsCausingDelays: {
           
@@ -29,7 +27,7 @@
         eventsCausingServices: {
           "start": "START";
         };
-        matchesStates: "idle" | "listening" | "starting";
+        matchesStates: "active" | "inactive" | "starting";
         tags: never;
       }
   
