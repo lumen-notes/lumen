@@ -130,7 +130,7 @@ function createVoiceModeStateMachine() {
       },
       services: {
         start: async () => {
-          const openaiKey = localStorage.getItem(OPENAI_KEY_KEY)
+          const openaiKey = JSON.parse(localStorage.getItem(OPENAI_KEY_KEY) ?? "''")
 
           // Create a peer connection
           const peerConnection = new RTCPeerConnection()
