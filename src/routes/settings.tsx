@@ -247,7 +247,7 @@ function AISection() {
               htmlFor="voice-conversations"
               className={cx(!hasOpenAIKey && "cursor-not-allowed text-text-secondary")}
             >
-              Voice conversations <span className="text-sm italic text-text-secondary">(beta)</span>
+              Voice conversations <span className="italic text-text-secondary">(beta)</span>
             </label>
           </div>
         </div>
