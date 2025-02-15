@@ -27,7 +27,7 @@
           "isEmpty": "CHANGE" | "done.invoke.openaiKeyValidation.initializing:invocation[0]";
         };
         eventsCausingServices: {
-          "initialize": "xstate.init";
+          "initialize": "RESET" | "xstate.init";
 "validate": "CHANGE" | "done.invoke.openaiKeyValidation.initializing:invocation[0]";
         };
         matchesStates: "empty" | "initializing" | "invalid" | "valid" | "validating";

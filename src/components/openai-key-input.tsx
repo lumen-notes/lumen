@@ -1,6 +1,6 @@
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { useNetworkState } from "react-use"
+import { useEvent, useNetworkState } from "react-use"
 import { createMachine } from "xstate"
 import { OPENAI_KEY_STORAGE_KEY, openaiKeyAtom } from "../global-state"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
@@ -14,10 +14,7 @@ const openaiKeyValidationMachineAtom = atomWithMachine(() =>
       id: "openaiKeyValidation",
       tsTypes: {} as import("./openai-key-input.typegen").Typegen0,
       schema: {} as {
-        events: {
-          type: "CHANGE"
-          openaiKey: string
-        }
+        events: { type: "CHANGE"; openaiKey: string } | { type: "RESET" }
         services: {
           initialize: {
             data: {
@@ -30,6 +27,9 @@ const openaiKeyValidationMachineAtom = atomWithMachine(() =>
         }
       },
       initial: "initializing",
+      on: {
+        RESET: "initializing",
+      },
       states: {
         initializing: {
           invoke: {
@@ -93,6 +93,10 @@ export function OpenAIKeyInput() {
   const [openaiKey, setOpenaiKey] = useAtom(openaiKeyAtom)
   const [validationState, send] = useAtom(openaiKeyValidationMachineAtom)
   const { online } = useNetworkState()
+
+  useEvent("online", () => {
+    send("RESET")
+  })
 
   return (
     <div className="flex flex-col gap-2">
