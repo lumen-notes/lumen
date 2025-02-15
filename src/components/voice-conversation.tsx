@@ -51,7 +51,6 @@ type VoiceConversationContext = {
 function createVoiceConversationStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5QDcD2BLAxmAsqiYAdOgHYCGmALusmAMQDKAKgIIBKTA2gAwC6ioAA6pY6aqhICQAD0QBGAKwAOQgCZuAZjmqALDqUaF3AJzGANCACeiXQHZCx2wDYFxnc7mKXCgL4+LaFi4+ESwlGQATtQkUHQQEkSkaADWRIHYeASEYZHRUAhJqJhk4iQ8vOVSwqKlUrIIOhrchApOuk7cHfrc3EoW1giqqk6EtkbccjoKOtz6Q34BGBkhhBTUtIxMAPIACpVIINVi6BJ1iDptLcYaTo62hrbaGv2ISnItPROmPUpOTs5+fwgEgheAHdLBAhVETHU4HeoAWicLwQCIUDlMmKxWI0CxAEMyiXIVBoYGhNROknh51UKM8zSapg0hluilsYzxBJWOSipCg5NhVNA9VUtmamm0RgUYtUxiU7JRQx0Dmcrkc0yMbicnKWkKIa1JAtq1IQrWMhE6dlu3FsSmMbTp2kIShM1xZxjZth0gJ8QA */
       id: "voiceConversation",
       tsTypes: {} as import("./voice-conversation.typegen").Typegen0,
       schema: {} as {

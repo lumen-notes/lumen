@@ -11,7 +11,6 @@ import { cx } from "../utils/cx"
 const openaiKeyValidationMachineAtom = atomWithMachine(() =>
   createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5QHsAOYB2BDAlgaTAE8A1LAGxwiwBcdkMA6HDHW8nAL2agGIJ6wTDADdkAa0FpMuAiXZVa9IaxzsuGKAmaiAxjToYA2gAYAuidOJQqZLBX0rIAB6IATK4DMDDwBYPAdgBWABoQQkQARlcATgBfWNCpbHwiUgoFA2U2CnVefgxBbXFJdGTZNMp9JWYVNW4tEWQ9RSMzQwjLJBAbOxbHFwR3L18AkLDEAA4IhkD4xNKZVPkqxjAAW1RqQh4AYQAJAEEAOQBxAFELRx77DH7EQKiGaJiANgmg0PCEH2NohgjAsYgcCQcYPHMQElFnJ0isGOtNtt9sdzu1OtZbDc7gh-AEGK4wVExl8fC8fP9AaDQeCEpCFikYZUWgxhMtaBo+AIhKIJAwoQyKhklKzYezNEVmgYLJcutc+l0BhNPAwlYTXMTEP4IhMKRD+eU2ZkRUzuDwwAAnc3Ic0MVBkGgAM2taz59INoqNho0DV0K2lZiumPloEVrnJL0CL3VnzcPh16r1bqWHuqInku0OpwuAdlQYM2KG3j8H3GCA8L38M0T0gFhtTxogGZRFw6gd6+YVbmVIxLJO11bKyZNwvTyKzMox7YcncG3eLGu+byrtP1Q6FjAbTfHrdzU9uM8LPYXgWigSe8VpGGQEDgjlXjPXbaxM4AtC8YwgX2foj-ov5oj8EyBK4-gTD+A7QoKcI1NknDcE+wbOIgPiuB+0TGPiswrkmD5wgiWwIR2Ib3EE3jGEB0SjB+pLhpSVLAjS8w1u6w4bl6UCEdOxEIBExgEv8ZLGFGC4vC8GHqlqKFAZJMQQbWKaMNo8icfu3ERNqDDkSeVGluWZ5YUxg64cyDYqdiEQeBhFbar29zRDqcQXkAA */
       id: "openaiKeyValidation",
       tsTypes: {} as import("./openai-key-input.typegen").Typegen0,
       schema: {} as {
