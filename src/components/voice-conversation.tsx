@@ -1,8 +1,13 @@
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { useEvent, useNetworkState } from "react-use"
+import React from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { useNetworkState } from "react-use"
+import { useDebouncedCallback } from "use-debounce"
 import { assign, createMachine } from "xstate"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
+import { useMousePosition } from "../hooks/mouse-position"
+import { cx } from "../utils/cx"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { IconButton } from "./icon-button"
 import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
@@ -12,28 +17,114 @@ export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversat
 export function VoiceConversationButton() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
+  const mousePosition = useMousePosition()
+  const [isInputVisible, setIsInputVisible] = React.useState(false)
+  const inputRef = React.useRef<HTMLDivElement>(null)
 
-  useEvent("offline", () => {
-    send("STOP")
-  })
+  useHotkeys(
+    "/",
+    () => {
+      setIsInputVisible(true)
+      setTimeout(() => inputRef.current?.focus())
+    },
+    {
+      enabled: state.matches("active"),
+      preventDefault: true,
+    },
+  )
+
+  React.useEffect(() => {
+    function handleOffline() {
+      send("STOP")
+    }
+    window.addEventListener("offline", handleOffline)
+    return () => window.removeEventListener("offline", handleOffline)
+  }, [send])
+
+  const sendText = useDebouncedCallback((text: string) => {
+    if (!text) {
+      return
+    }
+
+    const dataChannel = state.context.dataChannel
+    if (!dataChannel) {
+      return
+    }
+
+    // TODO: Add support for interrupting the response
+    // https://community.openai.com/t/interrupt-realtime-audio-with-text-message-webrtc/1068797/3
+
+    // Send the user's message
+    dataChannel.send(
+      JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "message",
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text,
+            },
+          ],
+        },
+      }),
+    )
+
+    // Create a new response
+    dataChannel.send(JSON.stringify({ type: "response.create" }))
+  }, 1000)
 
   return (
-    <IconButton
-      size="small"
-      aria-label={state.matches("inactive") ? "Start conversation" : "End conversation"}
-      aria-pressed={!state.matches("inactive")}
-      disabled={state.matches("starting") || !online}
-      className="aria-pressed:!bg-[var(--green-9)] aria-pressed:!text-[#fff] eink:aria-pressed:!bg-text eink:aria-pressed:!text-bg"
-      onClick={() => {
-        if (state.matches("inactive")) {
-          send("START")
-        } else {
-          send("STOP")
-        }
-      }}
-    >
-      {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
-    </IconButton>
+    <>
+      <IconButton
+        size="small"
+        aria-label={state.matches("inactive") ? "Start conversation" : "End conversation"}
+        aria-pressed={!state.matches("inactive")}
+        disabled={state.matches("starting") || !online}
+        className="aria-pressed:!bg-[var(--green-9)] aria-pressed:!text-[#fff] eink:aria-pressed:!bg-text eink:aria-pressed:!text-bg"
+        onClick={() => {
+          if (state.matches("inactive")) {
+            send("START")
+          } else {
+            send("STOP")
+          }
+        }}
+      >
+        {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
+      </IconButton>
+      {state.matches("active") && isInputVisible && mousePosition.x && mousePosition.y ? (
+        <div
+          ref={inputRef}
+          role="textbox"
+          contentEditable
+          tabIndex={0}
+          spellCheck={false}
+          className={cx(
+            "fixed z-20 max-w-xs rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] shadow-[0_0_32px_-6px_var(--cyan-9)] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
+            "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
+          )}
+          style={{
+            top: mousePosition.y,
+            left: mousePosition.x,
+            transform: "translate(16px, 16px)",
+          }}
+          data-placeholder="Say something…"
+          onInput={(event) => {
+            const text = (event.target as HTMLDivElement).textContent || ""
+            sendText(text)
+          }}
+          onBlur={() => {
+            setIsInputVisible(false)
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              setIsInputVisible(false)
+            }
+          }}
+        />
+      ) : null}
+    </>
   )
 }
 
