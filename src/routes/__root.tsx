@@ -9,7 +9,7 @@ import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
-import { voiceConversationStateMachineAtom } from "../components/voice-conversation"
+import { voiceConversationMachineAtom } from "../components/voice-conversation"
 import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 
@@ -33,7 +33,7 @@ const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.er
 
 function RootComponent() {
   useThemeColor()
-  useAtom(voiceConversationStateMachineAtom)
+  useAtom(voiceConversationMachineAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)

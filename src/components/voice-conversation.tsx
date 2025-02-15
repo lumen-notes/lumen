@@ -7,12 +7,10 @@ import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { IconButton } from "./icon-button"
 import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
 
-export const voiceConversationStateMachineAtom = atomWithMachine(
-  createVoiceConversationStateMachine,
-)
+export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversationMachine)
 
 export function VoiceConversationButton() {
-  const [state, send] = useAtom(voiceConversationStateMachineAtom)
+  const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
 
   useEvent("offline", () => {
@@ -48,7 +46,7 @@ type VoiceConversationContext = {
   audioElement: HTMLAudioElement | null
 }
 
-function createVoiceConversationStateMachine() {
+function createVoiceConversationMachine() {
   return createMachine(
     {
       id: "voiceConversation",
