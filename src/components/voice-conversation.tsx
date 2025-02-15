@@ -1,3 +1,4 @@
+import * as Portal from "@radix-ui/react-portal"
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import React from "react"
@@ -94,35 +95,37 @@ export function VoiceConversationButton() {
         {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
       </IconButton>
       {state.matches("active") && isInputVisible && mousePosition.x && mousePosition.y ? (
-        <div
-          ref={inputRef}
-          role="textbox"
-          contentEditable
-          tabIndex={0}
-          spellCheck={false}
-          className={cx(
-            "fixed z-20 max-w-xs rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] shadow-[0_0_32px_-6px_var(--cyan-9)] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
-            "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
-          )}
-          style={{
-            top: mousePosition.y,
-            left: mousePosition.x,
-            transform: "translate(16px, 16px)",
-          }}
-          data-placeholder="Say something…"
-          onInput={(event) => {
-            const text = (event.target as HTMLDivElement).textContent || ""
-            sendText(text)
-          }}
-          onBlur={() => {
-            setIsInputVisible(false)
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
+        <Portal.Root>
+          <div
+            ref={inputRef}
+            role="textbox"
+            contentEditable
+            tabIndex={0}
+            spellCheck={false}
+            className={cx(
+              "fixed z-30 max-w-xs rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
+              "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
+            )}
+            style={{
+              top: mousePosition.y,
+              left: mousePosition.x,
+              transform: "translate(16px, 16px)",
+            }}
+            data-placeholder="Say something…"
+            onInput={(event) => {
+              const text = (event.target as HTMLDivElement).textContent || ""
+              sendText(text)
+            }}
+            onBlur={() => {
               setIsInputVisible(false)
-            }
-          }}
-        />
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setIsInputVisible(false)
+              }
+            }}
+          />
+        </Portal.Root>
       ) : null}
     </>
   )
