@@ -6,7 +6,6 @@ import { OPENAI_KEY_STORAGE_KEY, openaiKeyAtom } from "../global-state"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { CheckIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
-import { cx } from "../utils/cx"
 
 const openaiKeyValidationMachineAtom = atomWithMachine(() =>
   createMachine(
@@ -99,12 +98,10 @@ export function OpenAIKeyInput() {
   })
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between leading-4 ">
-        <label htmlFor="openai-key" className="justify-self-start text-sm text-text-secondary">
-          OpenAI key
-        </label>
-      </div>
+    <div className="flex flex-col gap-3">
+      <label htmlFor="openai-key" className="justify-self-start leading-4">
+        OpenAI key
+      </label>
       <TextInput
         id="openai-key"
         name="openai-key"
@@ -115,15 +112,13 @@ export function OpenAIKeyInput() {
           send({ type: "CHANGE", openaiKey: event.target.value })
         }}
         placeholder="sk…"
-        className={cx(
-          validationState.matches("invalid") && "border-text-danger focus:outline-text-danger",
-        )}
+        invalid={online && validationState.matches("invalid")}
       />
       {online ? (
         <>
           {validationState.matches("valid") ? (
             <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
-              <CheckIcon16 />
+              <CheckIcon16 className="text-text-success" />
               Valid key
             </span>
           ) : null}

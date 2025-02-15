@@ -145,13 +145,13 @@ function ThemeSection() {
       >
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="theme-default" value="default" />
-          <label htmlFor="theme-default" className="leading-4">
+          <label htmlFor="theme-default" className="select-none leading-4">
             Default
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="theme-eink" value="eink" />
-          <label htmlFor="theme-eink" className="leading-4">
+          <label htmlFor="theme-eink" className="select-none leading-4">
             E-ink
           </label>
         </div>
@@ -175,13 +175,13 @@ function FontSection() {
       >
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-sans" value="sans" />
-          <label htmlFor="font-sans" className="font-sans leading-4">
+          <label htmlFor="font-sans" className="select-none font-sans leading-4">
             Sans-serif
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-serif" value="serif" />
-          <label htmlFor="font-serif" className="font-serif leading-4">
+          <label htmlFor="font-serif" className="select-none font-serif leading-4">
             Serif
           </label>
         </div>
@@ -196,29 +196,35 @@ function EditorSection() {
   return (
     <SettingsSection title="Editor">
       <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-        <div className="flex items-center gap-3 coarse:gap-4">
+        <div className="flex items-center gap-3">
           <Switch
             id="vim-mode"
             defaultChecked={editorSettings.vimMode}
             onCheckedChange={(checked) => setEditorSettings({ vimMode: checked })}
           />
-          <label htmlFor="vim-mode">Vim mode</label>
+          <label htmlFor="vim-mode" className="select-none">
+            Vim mode
+          </label>
         </div>
-        <div className="flex items-center gap-3 coarse:gap-4">
+        <div className="flex items-center gap-3">
           <Switch
             id="line-numbers"
             defaultChecked={editorSettings.lineNumbers}
             onCheckedChange={(checked) => setEditorSettings({ lineNumbers: checked })}
           />
-          <label htmlFor="line-numbers">Line numbers</label>
+          <label htmlFor="line-numbers" className="select-none">
+            Line numbers
+          </label>
         </div>
-        <div className="flex items-center gap-3 coarse:gap-4">
+        <div className="flex items-center gap-3">
           <Switch
             id="fold-gutter"
             defaultChecked={editorSettings.foldGutter}
             onCheckedChange={(checked) => setEditorSettings({ foldGutter: checked })}
           />
-          <label htmlFor="fold-gutter">Fold gutter</label>
+          <label htmlFor="fold-gutter" className="select-none">
+            Fold gutter
+          </label>
         </div>
       </div>
     </SettingsSection>
@@ -235,8 +241,9 @@ function AISection() {
     <SettingsSection title="AI">
       <div className="flex flex-col gap-4">
         <OpenAIKeyInput />
+        <div role="separator" className="h-px bg-border-secondary" />
         <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-          <div className="flex items-center gap-3 coarse:gap-4">
+          <div className="flex items-center gap-3">
             <Switch
               id="voice-conversations"
               disabled={!hasOpenAIKey}
@@ -245,7 +252,10 @@ function AISection() {
             />
             <label
               htmlFor="voice-conversations"
-              className={cx(!hasOpenAIKey && "cursor-not-allowed text-text-secondary")}
+              className={cx(
+                "select-none",
+                !hasOpenAIKey && "cursor-not-allowed text-text-secondary",
+              )}
             >
               Voice conversations <span className="italic text-text-secondary">(beta)</span>
             </label>

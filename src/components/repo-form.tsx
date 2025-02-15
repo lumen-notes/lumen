@@ -127,24 +127,21 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
       >
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="repo-existing" value="existing" />
-          <label htmlFor="repo-existing" className="leading-4">
+          <label htmlFor="repo-existing" className="select-none leading-4">
             Select an existing repository
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="repo-new" value="new" />
-          <label htmlFor="repo-new" className="leading-4">
+          <label htmlFor="repo-new" className="select-none leading-4">
             Create a new repository
           </label>
         </div>
       </RadioGroup>
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-2">
-          <div className="grid flex-grow gap-2">
-            <label
-              htmlFor="repo-owner"
-              className="justify-self-start text-sm leading-4 text-text-secondary"
-            >
+      <div className="flex flex-col gap-4 @lg:gap-3">
+        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-3">
+          <div className="grid flex-grow gap-3">
+            <label htmlFor="repo-owner" className="justify-self-start leading-4">
               Repository owner
             </label>
             <TextInput
@@ -154,13 +151,12 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               autoCapitalize="off"
               defaultValue={githubRepo?.owner ?? githubUser?.login}
               required
+              invalid={Boolean(error)}
+              onChange={() => setError(null)}
             />
           </div>
-          <div className="grid flex-grow gap-2">
-            <label
-              htmlFor="repo-name"
-              className="justify-self-start text-sm leading-4 text-text-secondary"
-            >
+          <div className="grid flex-grow gap-3">
+            <label htmlFor="repo-name" className="justify-self-start leading-4">
               Repository name
             </label>
             <TextInput
@@ -170,19 +166,21 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               autoCapitalize="off"
               defaultValue={githubRepo?.name}
               required
+              invalid={Boolean(error)}
+              onChange={() => setError(null)}
             />
           </div>
         </div>
         {error ? (
           <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
-            <div className="grid h-6 flex-shrink-0 place-items-center">
+            <div className="grid h-5 flex-shrink-0 place-items-center">
               <ErrorIcon16 />
             </div>
-            <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
+            <pre className="whitespace-pre-wrap font-mono text-sm leading-5">{error.message}</pre>
           </div>
         ) : null}
       </div>
-      <div className="flex gap-2 @lg:ml-auto">
+      <div className="flex gap-3 @lg:ml-auto">
         {onCancel ? (
           <Button className="w-full" onClick={onCancel}>
             Cancel
