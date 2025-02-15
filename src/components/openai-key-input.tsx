@@ -117,8 +117,8 @@ export function OpenAIKeyInput() {
       {online ? (
         <>
           {validationState.matches("valid") ? (
-            <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
-              <CheckIcon16 className="text-text-success" />
+            <span className="flex items-center gap-2 font-mono text-sm text-text-success">
+              <CheckIcon16 />
               Valid key
             </span>
           ) : null}
