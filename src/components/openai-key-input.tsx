@@ -6,6 +6,7 @@ import { OPENAI_KEY_STORAGE_KEY, openaiKeyAtom } from "../global-state"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { CheckIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
+import { cx } from "../utils/cx"
 
 const openaiKeyValidationMachineAtom = atomWithMachine(() =>
   createMachine(
@@ -111,11 +112,14 @@ export function OpenAIKeyInput() {
           send({ type: "CHANGE", openaiKey: event.target.value })
         }}
         placeholder="sk…"
+        className={cx(
+          validationState.matches("invalid") && "border-text-danger focus:outline-text-danger",
+        )}
       />
       {online ? (
         <>
           {validationState.matches("valid") ? (
-            <span className="flex items-center gap-2 font-mono text-sm text-text-success">
+            <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
               <CheckIcon16 />
               Valid
             </span>
