@@ -124,19 +124,19 @@ export function OpenAIKeyInput() {
           {validationState.matches("valid") ? (
             <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
               <CheckIcon16 />
-              Valid
+              Valid key
             </span>
           ) : null}
           {validationState.matches("invalid") ? (
             <span className="flex items-center gap-2 font-mono text-sm text-text-danger">
               <ErrorIcon16 />
-              Invalid
+              Invalid key
             </span>
           ) : null}
           {validationState.matches("validating") ? (
             <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
               <LoadingIcon16 />
-              Validating…
+              Validating key…
             </span>
           ) : null}
         </>
