@@ -189,6 +189,18 @@ export function HeadphonesFillIcon16(props: IconProps) {
   )
 }
 
+export function MicFillIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 0C6.34315 0 5 1.34315 5 3V7.5C5 9.15685 6.34315 10.5 8 10.5C9.65685 10.5 11 9.15685 11 7.5V3C11 1.34315 9.65685 0 8 0ZM3.5 6.75C3.5 6.33579 3.16421 6 2.75 6C2.33579 6 2 6.33579 2 6.75V7.5C2 10.5597 4.29027 13.0845 7.25 13.4536V15.25C7.25 15.6642 7.58579 16 8 16C8.41421 16 8.75 15.6642 8.75 15.25V13.4536C11.7097 13.0845 14 10.5597 14 7.5V6.75C14 6.33579 13.6642 6 13.25 6C12.8358 6 12.5 6.33579 12.5 6.75V7.5C12.5 9.98528 10.4853 12 8 12C5.51472 12 3.5 9.98528 3.5 7.5V6.75Z"
+      />
+    </Icon>
+  )
+}
+
 export function SearchIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>

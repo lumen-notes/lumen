@@ -11,7 +11,7 @@ import { useMousePosition } from "../hooks/mouse-position"
 import { cx } from "../utils/cx"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { IconButton } from "./icon-button"
-import { HeadphonesFillIcon16, HeadphonesIcon16 } from "./icons"
+import { HeadphonesIcon16, MicFillIcon16 } from "./icons"
 
 export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversationMachine)
 
@@ -42,7 +42,7 @@ export function VoiceConversationButton() {
         }
       }}
     >
-      {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
+      {state.matches("inactive") ? <HeadphonesIcon16 /> : <MicFillIcon16 />}
     </IconButton>
   )
 }
