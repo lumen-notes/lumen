@@ -17,7 +17,8 @@
           services: never;
         };
         eventsCausingActions: {
-          "stop": "STOP" | "error.platform.voiceConversation.starting:invocation[0]";
+          "sendText": "SEND_TEXT";
+"stop": "STOP" | "error.platform.voiceConversation.starting:invocation[0]";
         };
         eventsCausingDelays: {
           

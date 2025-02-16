@@ -257,7 +257,7 @@ function AISection() {
                 !hasOpenAIKey && "cursor-not-allowed text-text-secondary",
               )}
             >
-              Voice conversations <span className="italic text-text-secondary">(beta)</span>
+              Voice conversations <span className="italic text-text-secondary">(alpha)</span>
             </label>
           </div>
         </div>

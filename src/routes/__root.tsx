@@ -9,7 +9,10 @@ import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
-import { voiceConversationMachineAtom } from "../components/voice-conversation"
+import {
+  FloatingConversationInput,
+  voiceConversationMachineAtom,
+} from "../components/voice-conversation"
 import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 
@@ -118,6 +121,7 @@ function RootComponent() {
       <div className="grid flex-grow overflow-hidden print:overflow-visible">
         <Outlet />
       </div>
+      <FloatingConversationInput />
       <DevBar enabled={isDevBarEnabled} />
       {needRefresh ? (
         <div className="card-2 absolute bottom-16 right-2 z-20 flex items-center justify-between gap-4 p-1 pl-4 sm:bottom-2">

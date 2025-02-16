@@ -18,9 +18,44 @@ export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversat
 export function VoiceConversationButton() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
+
+  React.useEffect(() => {
+    function handleOffline() {
+      send("STOP")
+    }
+    window.addEventListener("offline", handleOffline)
+    return () => window.removeEventListener("offline", handleOffline)
+  }, [send])
+
+  return (
+    <IconButton
+      size="small"
+      aria-label={state.matches("inactive") ? "Start conversation" : "End conversation"}
+      aria-pressed={!state.matches("inactive")}
+      disabled={state.matches("starting") || !online}
+      className="aria-pressed:!bg-[var(--green-9)] aria-pressed:!text-[#fff] eink:aria-pressed:!bg-text eink:aria-pressed:!text-bg"
+      onClick={() => {
+        if (state.matches("inactive")) {
+          send("START")
+        } else {
+          send("STOP")
+        }
+      }}
+    >
+      {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
+    </IconButton>
+  )
+}
+
+export function FloatingConversationInput() {
+  const [state, send] = useAtom(voiceConversationMachineAtom)
   const mousePosition = useMousePosition()
-  const [isInputVisible, setIsInputVisible] = React.useState(false)
   const inputRef = React.useRef<HTMLDivElement>(null)
+  const [isInputVisible, setIsInputVisible] = React.useState(false)
+
+  const debouncedSendText = useDebouncedCallback((text: string) => {
+    send({ type: "SEND_TEXT", text })
+  }, 1000)
 
   useHotkeys(
     "/",
@@ -34,104 +69,48 @@ export function VoiceConversationButton() {
     },
   )
 
-  React.useEffect(() => {
-    function handleOffline() {
-      send("STOP")
-    }
-    window.addEventListener("offline", handleOffline)
-    return () => window.removeEventListener("offline", handleOffline)
-  }, [send])
-
-  const sendText = useDebouncedCallback((text: string) => {
-    if (!text) {
-      return
-    }
-
-    const dataChannel = state.context.dataChannel
-    if (!dataChannel) {
-      return
-    }
-
-    // TODO: Add support for interrupting the response
-    // https://community.openai.com/t/interrupt-realtime-audio-with-text-message-webrtc/1068797/3
-
-    // Send the user's message
-    dataChannel.send(
-      JSON.stringify({
-        type: "conversation.item.create",
-        item: {
-          type: "message",
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text,
-            },
-          ],
-        },
-      }),
-    )
-
-    // Create a new response
-    dataChannel.send(JSON.stringify({ type: "response.create" }))
-  }, 1000)
-
-  return (
-    <>
-      <IconButton
-        size="small"
-        aria-label={state.matches("inactive") ? "Start conversation" : "End conversation"}
-        aria-pressed={!state.matches("inactive")}
-        disabled={state.matches("starting") || !online}
-        className="aria-pressed:!bg-[var(--green-9)] aria-pressed:!text-[#fff] eink:aria-pressed:!bg-text eink:aria-pressed:!text-bg"
-        onClick={() => {
-          if (state.matches("inactive")) {
-            send("START")
-          } else {
-            send("STOP")
-          }
-        }}
-      >
-        {state.matches("inactive") ? <HeadphonesIcon16 /> : <HeadphonesFillIcon16 />}
-      </IconButton>
-      {state.matches("active") && isInputVisible && mousePosition.x && mousePosition.y ? (
-        <Portal.Root>
-          <div
-            ref={inputRef}
-            role="textbox"
-            contentEditable
-            tabIndex={0}
-            spellCheck={false}
-            className={cx(
-              "fixed z-30 max-w-xs rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
-              "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
-            )}
-            style={{
-              top: mousePosition.y,
-              left: mousePosition.x,
-              transform: "translate(16px, 16px)",
-            }}
-            data-placeholder="Say something…"
-            onInput={(event) => {
-              const text = (event.target as HTMLDivElement).textContent || ""
-              sendText(text)
-            }}
-            onBlur={() => {
+  if (state.matches("active") && isInputVisible && mousePosition.x && mousePosition.y) {
+    return (
+      <Portal.Root>
+        <div
+          ref={inputRef}
+          role="textbox"
+          contentEditable
+          tabIndex={0}
+          spellCheck={false}
+          className={cx(
+            "fixed z-30 max-w-xs translate-x-4 translate-y-4 rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
+            "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
+          )}
+          style={{
+            top: mousePosition.y,
+            left: mousePosition.x,
+          }}
+          data-placeholder="Say something…"
+          onInput={(event) => {
+            const text = (event.target as HTMLDivElement).textContent || ""
+            debouncedSendText(text)
+          }}
+          onBlur={() => {
+            setIsInputVisible(false)
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
               setIsInputVisible(false)
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                setIsInputVisible(false)
-              }
-            }}
-          />
-        </Portal.Root>
-      ) : null}
-    </>
-  )
+            }
+          }}
+        />
+      </Portal.Root>
+    )
+  }
+
+  return null
 }
 
-type VoiceConversationEvent = { type: "START" } | { type: "STOP" }
+type VoiceConversationEvent =
+  | { type: "START" }
+  | { type: "STOP" }
+  | { type: "SEND_TEXT"; text: string }
 
 type VoiceConversationContext = {
   peerConnection: RTCPeerConnection | null
@@ -194,6 +173,9 @@ function createVoiceConversationMachine() {
         },
         active: {
           on: {
+            SEND_TEXT: {
+              actions: "sendText",
+            },
             STOP: {
               target: "inactive",
               actions: "stop",
@@ -204,6 +186,37 @@ function createVoiceConversationMachine() {
     },
     {
       actions: {
+        sendText: (context, event) => {
+          // Don't send empty messages
+          if (!event.text) {
+            return
+          }
+
+          const dataChannel = context.dataChannel
+          if (!dataChannel) {
+            return
+          }
+
+          // Send the user's message
+          dataChannel.send(
+            JSON.stringify({
+              type: "conversation.item.create",
+              item: {
+                type: "message",
+                role: "user",
+                content: [
+                  {
+                    type: "input_text",
+                    text: event.text,
+                  },
+                ],
+              },
+            }),
+          )
+
+          // Ask the model to respond
+          dataChannel.send(JSON.stringify({ type: "response.create" }))
+        },
         stop: (context) => {
           // Close the WebRTC peer connection if it exists
           if (context.peerConnection) {
