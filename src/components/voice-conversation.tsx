@@ -17,6 +17,7 @@ import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { IconButton } from "./icon-button"
 import {
   HeadphonesIcon16,
+  LoadingIcon16,
   MicFillIcon16,
   MicIcon16,
   MicMuteFillIcon16,
@@ -66,57 +67,57 @@ export function VoiceConversationButton() {
     return () => window.removeEventListener("offline", handleOffline)
   }, [send])
 
-  if (state.matches("inactive")) {
+  if (state.matches("active.ready")) {
     return (
-      <IconButton
-        size="small"
-        aria-label="Start conversation with AI"
-        disabled={!online}
-        onClick={() => send("START")}
-      >
-        <HeadphonesIcon16 />
-      </IconButton>
+      <DropdownMenu>
+        <DropdownMenu.Trigger asChild>
+          <IconButton
+            size="small"
+            aria-label="Conversation actions"
+            disableTooltip
+            className={cx(
+              "!text-[#fff] eink:!bg-text eink:!text-bg",
+              state.matches("active.ready.muted") ? "!bg-[var(--red-9)]" : "!bg-[var(--green-9)]",
+            )}
+            disabled={state.matches("active.initializing")}
+          >
+            <div className="flex items-center gap-1">
+              {state.matches("active.ready.muted") ? <MicMuteFillIcon16 /> : <MicFillIcon16 />}
+              <TriangleDownIcon8 />
+            </div>
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end">
+          <DropdownMenu.Item
+            icon={state.matches("active.ready.muted") ? <MicIcon16 /> : <MicMuteIcon16 />}
+            onSelect={() => {
+              if (state.matches("active.ready.muted")) {
+                send("UNMUTE_MICROPHONE")
+              } else {
+                send("MUTE_MICROPHONE")
+              }
+            }}
+          >
+            {state.matches("active.ready.muted") ? "Unmute microphone" : "Mute microphone"}
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item icon={<XIcon16 />} variant="danger" onSelect={() => send("END")}>
+            End conversation
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu>
     )
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenu.Trigger asChild>
-        <IconButton
-          size="small"
-          aria-label="Conversation actions"
-          disableTooltip
-          className={cx(
-            "!text-[#fff] eink:!bg-text eink:!text-bg",
-            state.matches("active.ready.muted") ? "!bg-[var(--red-9)]" : "!bg-[var(--green-9)]",
-          )}
-          disabled={state.matches("active.initializing")}
-        >
-          <div className="flex items-center gap-1">
-            {state.matches("active.ready.muted") ? <MicMuteFillIcon16 /> : <MicFillIcon16 />}
-            <TriangleDownIcon8 />
-          </div>
-        </IconButton>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="end">
-        <DropdownMenu.Item
-          icon={state.matches("active.ready.muted") ? <MicIcon16 /> : <MicMuteIcon16 />}
-          onSelect={() => {
-            if (state.matches("active.ready.muted")) {
-              send("UNMUTE_MICROPHONE")
-            } else {
-              send("MUTE_MICROPHONE")
-            }
-          }}
-        >
-          {state.matches("active.ready.muted") ? "Unmute microphone" : "Mute microphone"}
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Item icon={<XIcon16 />} variant="danger" onSelect={() => send("END")}>
-          End conversation
-        </DropdownMenu.Item>
-      </DropdownMenu.Content>
-    </DropdownMenu>
+    <IconButton
+      size="small"
+      aria-label="Start conversation with AI"
+      disabled={!online || state.matches("active.initializing")}
+      onClick={() => send("START")}
+    >
+      {state.matches("active.initializing") ? <LoadingIcon16 /> : <HeadphonesIcon16 />}
+    </IconButton>
   )
 }
 
