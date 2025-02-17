@@ -1,6 +1,7 @@
 import * as Portal from "@radix-ui/react-portal"
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
+import type { RealtimeServerEvent } from "openai/resources/beta/realtime/realtime"
 import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
@@ -18,6 +19,30 @@ export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversat
 export function VoiceConversationButton() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
+
+  React.useEffect(() => {
+    function handleServerEvent(serverEvent: RealtimeServerEvent) {
+      if (serverEvent.type === "response.done") {
+        const functionCalls =
+          serverEvent.response.output?.filter((output) => output.type === "function_call") ?? []
+
+        // Handle function calls
+        for (const functionCall of functionCalls) {
+          switch (functionCall.name) {
+            case "end_conversation": {
+              send("STOP")
+              break
+            }
+          }
+        }
+      }
+    }
+
+    send({
+      type: "REGISTER_SERVER_EVENT_CALLBACK",
+      serverEventCallback: handleServerEvent,
+    })
+  }, [send])
 
   React.useEffect(() => {
     function handleOffline() {
@@ -108,6 +133,10 @@ export function FloatingConversationInput() {
 }
 
 type VoiceConversationEvent =
+  | {
+      type: "REGISTER_SERVER_EVENT_CALLBACK"
+      serverEventCallback: (serverEvent: RealtimeServerEvent) => void
+    }
   | { type: "START" }
   | { type: "STOP" }
   | { type: "SEND_TEXT"; text: string }
@@ -117,6 +146,7 @@ type VoiceConversationContext = {
   dataChannel: RTCDataChannel | null
   microphoneStream: MediaStream | null
   audioElement: HTMLAudioElement | null
+  serverEventCallback: (serverEvent: RealtimeServerEvent) => void
 }
 
 function createVoiceConversationMachine() {
@@ -143,11 +173,19 @@ function createVoiceConversationMachine() {
         dataChannel: null,
         microphoneStream: null,
         audioElement: null,
+        serverEventCallback: () => {},
       },
       initial: "inactive",
       states: {
         inactive: {
           on: {
+            REGISTER_SERVER_EVENT_CALLBACK: {
+              actions: assign((context, event) => {
+                return {
+                  serverEventCallback: event.serverEventCallback,
+                }
+              }),
+            },
             START: "starting",
           },
         },
@@ -246,7 +284,7 @@ function createVoiceConversationMachine() {
         },
       },
       services: {
-        start: async () => {
+        start: async (context) => {
           const openaiKey = String(JSON.parse(localStorage.getItem(OPENAI_KEY_STORAGE_KEY) ?? "''"))
 
           // Validate OpenAI key before proceeding
@@ -273,7 +311,28 @@ function createVoiceConversationMachine() {
           // Set up data channel for sending and receiving events
           const dataChannel = peerConnection.createDataChannel("oai-events")
           dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
-            console.log(JSON.parse(event.data))
+            const serverEvent = JSON.parse(event.data) as RealtimeServerEvent
+            console.log(serverEvent)
+
+            // Initialize the session
+            if (serverEvent.type === "session.created") {
+              dataChannel.send(
+                JSON.stringify({
+                  type: "session.update",
+                  session: {
+                    tools: [
+                      {
+                        type: "function",
+                        name: "end_conversation",
+                        description: "End the conversation",
+                      },
+                    ],
+                  },
+                }),
+              )
+            }
+
+            context.serverEventCallback(serverEvent)
           })
 
           // Start the session using the Session Description Protocol (SDP)
@@ -281,7 +340,7 @@ function createVoiceConversationMachine() {
           await peerConnection.setLocalDescription(connectionOffer)
 
           const baseUrl = "https://api.openai.com/v1/realtime"
-          const model = "gpt-4o-mini-realtime-preview-2024-12-17"
+          const model = "gpt-4o-realtime-preview-2024-12-17"
           const sdpResponse = await fetch(`${baseUrl}?model=${model}`, {
             method: "POST",
             body: connectionOffer.sdp,
