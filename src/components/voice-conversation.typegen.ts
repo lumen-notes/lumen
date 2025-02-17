@@ -4,11 +4,10 @@
   export interface Typegen0 {
         '@@xstate/typegen': true;
         internalEvents: {
-          "error.platform.voiceConversation.starting:invocation[0]": { type: "error.platform.voiceConversation.starting:invocation[0]"; data: unknown };
-"xstate.init": { type: "xstate.init" };
+          "xstate.init": { type: "xstate.init" };
         };
         invokeSrcNameMap: {
-          "start": "done.invoke.voiceConversation.starting:invocation[0]";
+          "session": "done.invoke.voiceConversation.active:invocation[0]";
         };
         missingImplementations: {
           actions: never;
@@ -17,8 +16,10 @@
           services: never;
         };
         eventsCausingActions: {
-          "sendText": "SEND_TEXT";
-"stop": "STOP" | "error.platform.voiceConversation.starting:invocation[0]";
+          "alertError": "ERROR";
+"muteMicrophone": "MUTE_MICROPHONE";
+"sendText": "SEND_TEXT";
+"unmuteMicrophone": "UNMUTE_MICROPHONE";
         };
         eventsCausingDelays: {
           
@@ -27,9 +28,9 @@
           
         };
         eventsCausingServices: {
-          "start": "START";
+          "session": "START";
         };
-        matchesStates: "active" | "inactive" | "starting";
+        matchesStates: "active" | "active.initializing" | "active.ready" | "active.ready.muted" | "active.ready.unmuted" | "inactive" | { "active"?: "initializing" | "ready" | { "ready"?: "muted" | "unmuted"; }; };
         tags: never;
       }
   
