@@ -442,6 +442,7 @@ function createVoiceConversationMachine() {
                 message:
                   "Invalid OpenAI API key. Update your OpenAI key in Settings and try again.",
               })
+              return
             }
 
             // Create a peer connection
@@ -457,10 +458,18 @@ function createVoiceConversationMachine() {
             }
 
             // Add local audio track for microphone input in the browser
-            microphoneStream = await navigator.mediaDevices.getUserMedia({
-              audio: true,
-            })
-            peerConnection.addTrack(microphoneStream.getTracks()[0])
+            try {
+              microphoneStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+              })
+              peerConnection.addTrack(microphoneStream.getTracks()[0])
+            } catch (error) {
+              sendBack({
+                type: "ERROR",
+                message: "Microphone access denied.",
+              })
+              return
+            }
 
             // Set up data channel for sending and receiving events
             dataChannel = peerConnection.createDataChannel("oai-events")
