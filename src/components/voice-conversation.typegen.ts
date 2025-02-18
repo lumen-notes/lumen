@@ -16,8 +16,11 @@
           services: never;
         };
         eventsCausingActions: {
-          "alertError": "ERROR";
+          "addTools": "ADD_TOOLS";
+"alertError": "ERROR";
+"executeToolCalls": "TOOL_CALLS";
 "muteMicrophone": "MUTE_MICROPHONE";
+"removeTools": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";
 "unmuteMicrophone": "UNMUTE_MICROPHONE";
         };

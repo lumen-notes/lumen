@@ -2,18 +2,21 @@ import * as Portal from "@radix-ui/react-portal"
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
 import type {
-  RealtimeServerEvent,
   RealtimeClientEvent,
+  RealtimeServerEvent,
 } from "openai/resources/beta/realtime/realtime"
 import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import { useDebouncedCallback } from "use-debounce"
 import { assign, createMachine } from "xstate"
+import { z, ZodSchema } from "zod"
+import { zodToJsonSchema } from "zod-to-json-schema"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
 import { cx } from "../utils/cx"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
+import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
   HeadphonesIcon16,
@@ -25,8 +28,6 @@ import {
   TriangleDownIcon8,
   XIcon16,
 } from "./icons"
-import { ZodSchema } from "zod"
-import { DropdownMenu } from "./dropdown-menu"
 
 export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversationMachine)
 
@@ -34,37 +35,44 @@ export function VoiceConversationButton() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
 
-  // React.useEffect(() => {
-  //   function handleServerEvent(serverEvent: RealtimeServerEvent) {
-  //     if (serverEvent.type === "response.done") {
-  //       const functionCalls =
-  //         serverEvent.response.output?.filter((output) => output.type === "function_call") ?? []
+  React.useEffect(() => {
+    const tools = [
+      {
+        name: "mute_microphone",
+        description: "Mute the user's microphone",
+        parameters: z.object({}),
+        execute: async () => {
+          send("MUTE_MICROPHONE")
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "end_conversation",
+        description: "End the conversation",
+        parameters: z.object({}),
+        execute: async () => {
+          send("END")
+        },
+      } satisfies Tool<Record<string, never>>,
+    ]
 
-  //       // Handle function calls
-  //       for (const functionCall of functionCalls) {
-  //         switch (functionCall.name) {
-  //           case "end_conversation": {
-  //             send("STOP")
-  //             break
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
+    send({ type: "ADD_TOOLS", tools })
 
-  //   send({
-  //     type: "REGISTER_SERVER_EVENT_CALLBACK",
-  //     serverEventCallback: handleServerEvent,
-  //   })
-  // }, [send])
+    return () => {
+      send({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
+    }
+  }, [send])
 
   // Stop the conversation when the user goes offline
   React.useEffect(() => {
     function handleOffline() {
       send("END")
     }
+
     window.addEventListener("offline", handleOffline)
-    return () => window.removeEventListener("offline", handleOffline)
+
+    return () => {
+      window.removeEventListener("offline", handleOffline)
+    }
   }, [send])
 
   if (state.matches("active.ready")) {
@@ -185,17 +193,17 @@ type Tool<T> = {
   name: string
   description: string
   parameters: ZodSchema<T>
-  execute: (parameters: T) => Promise<void>
+  execute: (args: T) => Promise<void>
 }
 
 type VoiceConversationEvent =
   | {
-      type: "ADD_TOOL"
-      tool: Tool<unknown>
+      type: "ADD_TOOLS"
+      tools: Array<Tool<unknown>>
     }
   | {
-      type: "REMOVE_TOOL"
-      toolName: string
+      type: "REMOVE_TOOLS"
+      toolNames: Array<string>
     }
   | {
       type: "START"
@@ -211,6 +219,13 @@ type VoiceConversationEvent =
   | {
       type: "SEND_TEXT"
       text: string
+    }
+  | {
+      type: "TOOL_CALLS"
+      toolCalls: Array<{
+        name: string
+        args: string
+      }>
     }
   | {
       type: "MUTE_MICROPHONE"
@@ -247,6 +262,12 @@ function createVoiceConversationMachine() {
       states: {
         inactive: {
           on: {
+            ADD_TOOLS: {
+              actions: "addTools",
+            },
+            REMOVE_TOOLS: {
+              actions: "removeTools",
+            },
             START: "active",
           },
         },
@@ -281,6 +302,9 @@ function createVoiceConversationMachine() {
                 SEND_TEXT: {
                   actions: "sendText",
                 },
+                TOOL_CALLS: {
+                  actions: "executeToolCalls",
+                },
               },
               initial: "unmuted",
               states: {
@@ -308,6 +332,21 @@ function createVoiceConversationMachine() {
     },
     {
       actions: {
+        addTools: assign({
+          tools: (context, event) => context.tools.concat(event.tools),
+        }),
+        removeTools: assign({
+          tools: (context, event) =>
+            context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
+        }),
+        executeToolCalls: (context, event) => {
+          for (const toolCall of event.toolCalls) {
+            const tool = context.tools.find((tool) => tool.name === toolCall.name)
+            if (tool) {
+              tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+            }
+          }
+        },
         sendText: (context, event) => {
           // Don't send empty messages
           if (!event.text) {
@@ -405,6 +444,37 @@ function createVoiceConversationMachine() {
                     microphoneStream,
                     sendClientEvent,
                   })
+
+                  // Add tools to session
+                  sendClientEvent({
+                    type: "session.update",
+                    session: {
+                      tools: context.tools.map((tool) => ({
+                        type: "function",
+                        name: tool.name,
+                        description: tool.description,
+                        parameters: zodToJsonSchema(tool.parameters),
+                      })),
+                    },
+                  })
+                  break
+                }
+
+                case "response.done": {
+                  const toolCalls =
+                    serverEvent.response.output?.filter(
+                      (output) => output.type === "function_call",
+                    ) ?? []
+
+                  if (toolCalls.length > 0) {
+                    sendBack({
+                      type: "TOOL_CALLS",
+                      toolCalls: toolCalls.map((toolCall) => ({
+                        name: toolCall.name ?? "",
+                        args: toolCall.arguments ?? "",
+                      })),
+                    })
+                  }
                   break
                 }
               }
