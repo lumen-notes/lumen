@@ -29,6 +29,13 @@ import {
   XIcon16,
 } from "./icons"
 
+export type Tool<T> = {
+  name: string
+  description: string
+  parameters: ZodSchema<T>
+  execute: (args: T) => Promise<string | void>
+}
+
 export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversationMachine)
 
 export function VoiceConversationButton() {
@@ -43,6 +50,14 @@ export function VoiceConversationButton() {
         parameters: z.object({}),
         execute: async () => {
           send("MUTE_MICROPHONE")
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "unmute_microphone",
+        description: "Unmute the user's microphone",
+        parameters: z.object({}),
+        execute: async () => {
+          send("UNMUTE_MICROPHONE")
         },
       } satisfies Tool<Record<string, never>>,
       {
@@ -189,17 +204,11 @@ export function FloatingConversationInput() {
   return null
 }
 
-type Tool<T> = {
-  name: string
-  description: string
-  parameters: ZodSchema<T>
-  execute: (args: T) => Promise<void>
-}
-
 type VoiceConversationEvent =
   | {
       type: "ADD_TOOLS"
-      tools: Array<Tool<unknown>>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tools: Array<Tool<any>>
     }
   | {
       type: "REMOVE_TOOLS"
@@ -223,6 +232,7 @@ type VoiceConversationEvent =
   | {
       type: "TOOL_CALLS"
       toolCalls: Array<{
+        callId: string
         name: string
         args: string
       }>
@@ -248,6 +258,7 @@ const systemInstructions = `
 - You are an AI assistant integrated into a note-taking app called Lumen.
 - You serve as a thought partner and writing assistant.
 - Notes are written in GitHub Flavored Markdown and support frontmatter.
+- When writing notes on behalf of the user, match their writing style and voice by picking up clues from how they speak. The notes should sound natural when read aloud by them.
 - Your knowledge cutoff is 2023-10.
 - Act like a human, but remember that you aren't a human and that you can't do human things in the real world.
 - Your voice and personality should be warm and engaging, with a lively and playful tone.
@@ -352,11 +363,23 @@ function createVoiceConversationMachine() {
           tools: (context, event) =>
             context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
         }),
-        executeToolCalls: (context, event) => {
+        executeToolCalls: async (context, event) => {
           for (const toolCall of event.toolCalls) {
             const tool = context.tools.find((tool) => tool.name === toolCall.name)
-            if (tool) {
-              tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+            if (!tool) return
+
+            const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+            if (output) {
+              context.sendClientEvent({
+                type: "conversation.item.create",
+                item: {
+                  type: "function_call_output",
+                  call_id: toolCall.callId,
+                  output,
+                },
+              })
+
+              context.sendClientEvent({ type: "response.create" })
             }
           }
         },
@@ -484,6 +507,7 @@ function createVoiceConversationMachine() {
                     sendBack({
                       type: "TOOL_CALLS",
                       toolCalls: toolCalls.map((toolCall) => ({
+                        callId: toolCall.call_id ?? "",
                         name: toolCall.name ?? "",
                         args: toolCall.arguments ?? "",
                       })),

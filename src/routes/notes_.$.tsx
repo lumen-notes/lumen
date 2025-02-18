@@ -5,7 +5,7 @@ import copy from "copy-to-clipboard"
 import ejs from "ejs"
 import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import useResizeObserver from "use-resize-observer"
 import { AppLayout } from "../components/app-layout"
@@ -69,6 +69,8 @@ import { parseNote } from "../utils/parse-note"
 import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import * as RadixSwitch from "@radix-ui/react-switch"
+import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
+import { z } from "zod"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -149,7 +151,7 @@ function NotePage() {
   // Note data
   const note = useNoteById(noteId)
   const searchNotes = useSearchNotes()
-  const backlinks = useMemo(
+  const backlinks = React.useMemo(
     () => searchNotes(`link:"${noteId}" -id:"${noteId}"`),
     [noteId, searchNotes],
   )
@@ -157,7 +159,7 @@ function NotePage() {
   const isWeeklyNote = isValidWeekString(noteId ?? "")
 
   // Editor state
-  const editorRef = useRef<ReactCodeMirrorRef>(null)
+  const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const { editorValue, setEditorValue, isDirty, discardChanges, clearDraft } = useEditorValue({
     noteId: noteId ?? "",
     note,
@@ -169,8 +171,11 @@ function NotePage() {
         : "",
   })
   const [editorSettings] = useEditorSettings()
-  const parsedNote = useMemo(() => parseNote(noteId ?? "", editorValue), [noteId, editorValue])
-  const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const parsedNote = React.useMemo(
+    () => parseNote(noteId ?? "", editorValue),
+    [noteId, editorValue],
+  )
+  const [isDraggingFile, setIsDraggingFile] = React.useState(false)
 
   // Layout
   const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
@@ -180,7 +185,7 @@ function NotePage() {
   const deleteNote = useDeleteNote()
   const attachFile = useAttachFile()
 
-  const handleSave = useCallback(
+  const handleSave = React.useCallback(
     (value: string) => {
       if (isSignedOut || !noteId) return
 
@@ -197,24 +202,91 @@ function NotePage() {
     [isSignedOut, noteId, note, saveNote, clearDraft],
   )
 
-  const switchToWriting = useCallback(() => {
+  const switchToWriting = React.useCallback(() => {
     navigate({ search: (prev) => ({ ...prev, mode: "write" }), replace: true })
     setTimeout(() => {
       editorRef.current?.view?.focus()
     })
   }, [navigate])
 
-  const switchToReading = useCallback(() => {
+  const switchToReading = React.useCallback(() => {
     navigate({ search: (prev) => ({ ...prev, mode: "read" }), replace: true })
   }, [navigate])
 
-  const toggleMode = useCallback(() => {
+  const toggleMode = React.useCallback(() => {
     if (mode === "read") {
       switchToWriting()
     } else {
       switchToReading()
     }
   }, [mode, switchToWriting, switchToReading])
+
+  // Getters
+  // These getters allow us to access the latest values of these variables inside callbacks and effects
+  // without having to include them in dependency arrays, which could cause unnecessary re-renders.
+  const getNote = useGetter(note)
+  const getHandleSave = useGetter(handleSave)
+  const getEditorValue = useGetter(editorValue)
+  const getSetEditorValue = useGetter(setEditorValue)
+  const getSwitchToReading = useGetter(switchToReading)
+  const getIsDirty = useGetter(isDirty)
+
+  // Voice conversation tools
+  const [, send] = useAtom(voiceConversationMachineAtom)
+  React.useEffect(() => {
+    const tools = [
+      {
+        name: "read_current_note",
+        description: "Read the content of the current note",
+        parameters: z.object({}),
+        execute: async () => {
+          const note = getNote()
+
+          if (!note) {
+            return JSON.stringify({
+              error: "Note not found",
+            })
+          }
+
+          return JSON.stringify({
+            path: `${note.id}.md`,
+            content: note.content,
+          })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "edit_current_note",
+        description: "Edit the content of the current note",
+        parameters: z.object({
+          content: z.string(),
+        }),
+        execute: async ({ content }) => {
+          const setEditorValue = getSetEditorValue()
+          setEditorValue(content)
+
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<{ content: string }>,
+      {
+        name: "save_current_note",
+        description: "Save the current note",
+        parameters: z.object({}),
+        execute: async () => {
+          const handleSave = getHandleSave()
+          const editorValue = getEditorValue()
+          handleSave(editorValue)
+
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+    ]
+
+    send({ type: "ADD_TOOLS", tools })
+
+    return () => {
+      send({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
+    }
+  }, [send, getNote, getSetEditorValue, getHandleSave, getEditorValue])
 
   // Keyboard shortcuts
   useHotkeys(
@@ -266,10 +338,6 @@ function NotePage() {
   )
 
   // Vim commands
-  const getHandleSave = useGetter(handleSave)
-  const getEditorValue = useGetter(editorValue)
-  const getSwitchToReading = useGetter(switchToReading)
-  const getIsDirty = useGetter(isDirty)
 
   useEffect(() => {
     // :w - Save
