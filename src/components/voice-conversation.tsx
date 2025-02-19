@@ -23,7 +23,6 @@ import {
   LoadingIcon16,
   MicFillIcon16,
   MicIcon16,
-  MicMuteFillIcon16,
   MicMuteIcon16,
   TriangleDownIcon8,
   XIcon16,
@@ -110,9 +109,11 @@ export function VoiceConversationButton() {
             >
               <div className="flex items-center gap-1">
                 {state.matches("active.ready.mic.muted") ? (
-                  <MicMuteFillIcon16 />
-                ) : (
+                  <MicMuteIcon16 />
+                ) : state.matches("active.ready.user.speaking") ? (
                   <MicFillIcon16 />
+                ) : (
+                  <MicIcon16 />
                 )}
                 <TriangleDownIcon8 />
               </div>
@@ -235,10 +236,16 @@ type VoiceConversationEvent =
       sendClientEvent: (clientEvent: RealtimeClientEvent) => void
     }
   | {
-      type: "RESPONSE_CREATED"
+      type: "SPEECH_STARTED"
     }
   | {
-      type: "RESPONSE_DONE"
+      type: "SPEECH_STOPPED"
+    }
+  | {
+      type: "RESPONSE_STARTED"
+    }
+  | {
+      type: "RESPONSE_STOPPED"
     }
   | {
       type: "SEND_TEXT"
@@ -347,17 +354,32 @@ function createVoiceConversationMachine() {
               },
               type: "parallel",
               states: {
+                user: {
+                  initial: "idle",
+                  states: {
+                    idle: {
+                      on: {
+                        SPEECH_STARTED: "speaking",
+                      },
+                    },
+                    speaking: {
+                      on: {
+                        SPEECH_STOPPED: "idle",
+                      },
+                    },
+                  },
+                },
                 assistant: {
                   initial: "listening",
                   states: {
                     listening: {
                       on: {
-                        RESPONSE_CREATED: "responding",
+                        RESPONSE_STARTED: "responding",
                       },
                     },
                     responding: {
                       on: {
-                        RESPONSE_DONE: "listening",
+                        RESPONSE_STOPPED: "listening",
                       },
                     },
                   },
@@ -513,6 +535,8 @@ function createVoiceConversationMachine() {
               dataChannel?.send(JSON.stringify(clientEvent))
             }
 
+            let hasOutputAudioBuffer = false
+
             dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
               const serverEvent = JSON.parse(event.data) as RealtimeServerEvent
               console.log(serverEvent.type)
@@ -541,17 +565,54 @@ function createVoiceConversationMachine() {
                   break
                 }
 
-                case "response.created": {
+                case "input_audio_buffer.speech_started": {
                   sendBack({
-                    type: "RESPONSE_CREATED",
+                    type: "SPEECH_STARTED",
                   })
                   break
                 }
 
-                case "response.done": {
+                case "input_audio_buffer.speech_stopped": {
                   sendBack({
-                    type: "RESPONSE_DONE",
+                    type: "SPEECH_STOPPED",
                   })
+                  break
+                }
+
+                case "response.created": {
+                  sendBack({
+                    type: "RESPONSE_STARTED",
+                  })
+                  break
+                }
+
+                // @ts-expect-error This event is not documented
+                case "output_audio_buffer.started": {
+                  hasOutputAudioBuffer = true
+                  break
+                }
+
+                // @ts-expect-error This event is not documented
+                case "output_audio_buffer.stopped": {
+                  if (hasOutputAudioBuffer) {
+                    hasOutputAudioBuffer = false
+                    sendBack({
+                      type: "RESPONSE_STOPPED",
+                    })
+                  }
+                  break
+                }
+
+                case "response.done": {
+                  // If an output audio buffer has started, the 'response.done' event
+                  // might fire before the audio output has actually finished.
+                  // In that case, we wait for the 'output_audio_buffer.stopped' event
+                  // to mark the true end of the response.
+                  if (!hasOutputAudioBuffer) {
+                    sendBack({
+                      type: "RESPONSE_STOPPED",
+                    })
+                  }
 
                   const toolCalls =
                     serverEvent.response.output?.filter(

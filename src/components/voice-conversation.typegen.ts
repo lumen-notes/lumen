@@ -33,8 +33,9 @@
         eventsCausingServices: {
           "session": "START";
         };
-        matchesStates: "active" | "active.initializing" | "active.ready" | "active.ready.assistant" | "active.ready.assistant.listening" | "active.ready.assistant.responding" | "active.ready.mic" | "active.ready.mic.muted" | "active.ready.mic.unmuted" | "inactive" | { "active"?: "initializing" | "ready" | { "ready"?: "assistant" | "mic" | { "assistant"?: "listening" | "responding";
-"mic"?: "muted" | "unmuted"; }; }; };
+        matchesStates: "active" | "active.initializing" | "active.ready" | "active.ready.assistant" | "active.ready.assistant.listening" | "active.ready.assistant.responding" | "active.ready.mic" | "active.ready.mic.muted" | "active.ready.mic.unmuted" | "active.ready.user" | "active.ready.user.idle" | "active.ready.user.speaking" | "inactive" | { "active"?: "initializing" | "ready" | { "ready"?: "assistant" | "mic" | "user" | { "assistant"?: "listening" | "responding";
+"mic"?: "muted" | "unmuted";
+"user"?: "idle" | "speaking"; }; }; };
         tags: never;
       }
   

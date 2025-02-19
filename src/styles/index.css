@@ -123,5 +123,5 @@ body:has([data-resizing="true"]) * {
 }
 
 .spin-stroke {
-  animation: spin-stroke 1s linear infinite;
+  animation: spin-stroke 1.5s linear infinite;
 }

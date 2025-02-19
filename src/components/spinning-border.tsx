@@ -16,7 +16,7 @@ export function SpinningBorder({ children, enabled = false }: SpinningBorderProp
   const strokeLength = 36
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative flex">
       {enabled ? (
         <svg
           className="pointer-events-none absolute -inset-0.5 z-10 h-[calc(100%+4px)] w-[calc(100%+4px)] overflow-visible text-border"
