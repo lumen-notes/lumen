@@ -308,10 +308,10 @@ function createVoiceConversationMachine() {
         inactive: {
           on: {
             ADD_TOOLS: {
-              actions: "addTools",
+              actions: "addToolsToContext",
             },
             REMOVE_TOOLS: {
-              actions: "removeTools",
+              actions: "removeToolsFromContext",
             },
             START: "active",
           },
@@ -334,6 +334,12 @@ function createVoiceConversationMachine() {
           states: {
             initializing: {
               on: {
+                ADD_TOOLS: {
+                  actions: "addToolsToContext",
+                },
+                REMOVE_TOOLS: {
+                  actions: "removeToolsFromContext",
+                },
                 SESSION_CREATED: {
                   target: "ready",
                   actions: assign({
@@ -344,9 +350,16 @@ function createVoiceConversationMachine() {
               },
             },
             ready: {
+              entry: "updateSessionWithTools",
               on: {
                 SEND_TEXT: {
                   actions: "sendText",
+                },
+                ADD_TOOLS: {
+                  actions: ["addToolsToContext", "updateSessionWithTools"],
+                },
+                REMOVE_TOOLS: {
+                  actions: ["removeToolsFromContext", "updateSessionWithTools"],
                 },
                 TOOL_CALLS: {
                   actions: "executeToolCalls",
@@ -413,13 +426,26 @@ function createVoiceConversationMachine() {
     },
     {
       actions: {
-        addTools: assign({
+        addToolsToContext: assign({
           tools: (context, event) => context.tools.concat(event.tools),
         }),
-        removeTools: assign({
+        removeToolsFromContext: assign({
           tools: (context, event) =>
             context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
         }),
+        updateSessionWithTools: (context, event) => {
+          context.sendClientEvent({
+            type: "session.update",
+            session: {
+              tools: context.tools.map((tool) => ({
+                type: "function",
+                name: tool.name,
+                description: tool.description,
+                parameters: zodToJsonSchema(tool.parameters),
+              })),
+            },
+          })
+        },
         executeToolCalls: async (context, event) => {
           for (const toolCall of event.toolCalls) {
             const tool = context.tools.find((tool) => tool.name === toolCall.name)
@@ -549,17 +575,11 @@ function createVoiceConversationMachine() {
                     sendClientEvent,
                   })
 
-                  // Initialize the session with system instructions and tools
+                  // Initialize the session with system instructions
                   sendClientEvent({
                     type: "session.update",
                     session: {
                       instructions: systemInstructions,
-                      tools: context.tools.map((tool) => ({
-                        type: "function",
-                        name: tool.name,
-                        description: tool.description,
-                        parameters: zodToJsonSchema(tool.parameters),
-                      })),
                     },
                   })
                   break

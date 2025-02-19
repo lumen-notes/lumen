@@ -16,13 +16,14 @@
           services: never;
         };
         eventsCausingActions: {
-          "addTools": "ADD_TOOLS";
+          "addToolsToContext": "ADD_TOOLS";
 "alertError": "ERROR";
 "executeToolCalls": "TOOL_CALLS";
 "muteMicrophone": "MUTE_MIC";
-"removeTools": "REMOVE_TOOLS";
+"removeToolsFromContext": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";
 "unmuteMicrophone": "UNMUTE_MIC";
+"updateSessionWithTools": "ADD_TOOLS" | "REMOVE_TOOLS" | "SESSION_CREATED";
         };
         eventsCausingDelays: {
           
