@@ -342,10 +342,13 @@ function createVoiceConversationMachine() {
                 },
                 SESSION_CREATED: {
                   target: "ready",
-                  actions: assign({
-                    microphoneStream: (context, event) => event.microphoneStream,
-                    sendClientEvent: (context, event) => event.sendClientEvent,
-                  }),
+                  actions: [
+                    assign({
+                      microphoneStream: (context, event) => event.microphoneStream,
+                      sendClientEvent: (context, event) => event.sendClientEvent,
+                    }),
+                    "playReadySound",
+                  ],
                 },
               },
             },
@@ -426,6 +429,24 @@ function createVoiceConversationMachine() {
     },
     {
       actions: {
+        playReadySound: () => {
+          const audioContext = new AudioContext()
+          const oscillator = audioContext.createOscillator()
+          const gainNode = audioContext.createGain()
+
+          oscillator.connect(gainNode)
+          gainNode.connect(audioContext.destination)
+
+          // Configure sound
+          oscillator.type = "sine"
+          oscillator.frequency.setValueAtTime(880, audioContext.currentTime) // A5 note
+          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+
+          // Play sound
+          oscillator.start()
+          oscillator.stop(audioContext.currentTime + 0.3)
+        },
         addToolsToContext: assign({
           tools: (context, event) => context.tools.concat(event.tools),
         }),
@@ -499,6 +520,7 @@ function createVoiceConversationMachine() {
             track.enabled = true
           })
         },
+
         alertError: (context, event) => {
           alert(event.message)
         },
