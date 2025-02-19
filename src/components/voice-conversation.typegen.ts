@@ -20,6 +20,7 @@
 "alertError": "ERROR";
 "executeToolCalls": "TOOL_CALLS";
 "muteMicrophone": "MUTE_MIC";
+"playEndSound": "END";
 "playReadySound": "SESSION_CREATED";
 "removeToolsFromContext": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";

@@ -324,6 +324,7 @@ function createVoiceConversationMachine() {
           on: {
             END: {
               target: "inactive",
+              actions: "playEndSound",
             },
             ERROR: {
               target: "inactive",
@@ -431,21 +432,77 @@ function createVoiceConversationMachine() {
       actions: {
         playReadySound: () => {
           const audioContext = new AudioContext()
-          const oscillator = audioContext.createOscillator()
-          const gainNode = audioContext.createGain()
+          const currentTime = audioContext.currentTime
 
-          oscillator.connect(gainNode)
-          gainNode.connect(audioContext.destination)
+          // Create a master gain node for overall volume control
+          const masterGain = audioContext.createGain()
+          masterGain.gain.setValueAtTime(0.15, currentTime)
+          masterGain.connect(audioContext.destination)
 
-          // Configure sound
-          oscillator.type = "sine"
-          oscillator.frequency.setValueAtTime(880, audioContext.currentTime) // A5 note
-          gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
-          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+          // First note: G4 (392 Hz) with a softer sine wave
+          const oscillator1 = audioContext.createOscillator()
+          const gainNode1 = audioContext.createGain()
+          oscillator1.connect(gainNode1)
+          gainNode1.connect(masterGain)
 
-          // Play sound
-          oscillator.start()
-          oscillator.stop(audioContext.currentTime + 0.3)
+          oscillator1.type = "sine"
+          oscillator1.frequency.setValueAtTime(392, currentTime)
+          gainNode1.gain.setValueAtTime(0, currentTime)
+          gainNode1.gain.linearRampToValueAtTime(1, currentTime + 0.02)
+          gainNode1.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1)
+          oscillator1.start(currentTime)
+          oscillator1.stop(currentTime + 0.1)
+
+          // Second note: B4 (494 Hz) with a gentle triangle wave for warmth
+          const oscillator2 = audioContext.createOscillator()
+          const gainNode2 = audioContext.createGain()
+          oscillator2.connect(gainNode2)
+          gainNode2.connect(masterGain)
+
+          oscillator2.type = "triangle"
+          oscillator2.frequency.setValueAtTime(494, currentTime + 0.05)
+          gainNode2.gain.setValueAtTime(0, currentTime + 0.05)
+          gainNode2.gain.linearRampToValueAtTime(0.8, currentTime + 0.07)
+          gainNode2.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.15)
+          oscillator2.start(currentTime + 0.05)
+          oscillator2.stop(currentTime + 0.15)
+        },
+        playEndSound: () => {
+          const audioContext = new AudioContext()
+          const currentTime = audioContext.currentTime
+
+          // Create a master gain node for overall volume control
+          const masterGain = audioContext.createGain()
+          masterGain.gain.setValueAtTime(0.15, currentTime)
+          masterGain.connect(audioContext.destination)
+
+          // First note: B4 (494 Hz) with a gentle triangle wave
+          const oscillator1 = audioContext.createOscillator()
+          const gainNode1 = audioContext.createGain()
+          oscillator1.connect(gainNode1)
+          gainNode1.connect(masterGain)
+
+          oscillator1.type = "triangle"
+          oscillator1.frequency.setValueAtTime(494, currentTime)
+          gainNode1.gain.setValueAtTime(0, currentTime)
+          gainNode1.gain.linearRampToValueAtTime(0.8, currentTime + 0.02)
+          gainNode1.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1)
+          oscillator1.start(currentTime)
+          oscillator1.stop(currentTime + 0.1)
+
+          // Second note: G4 (392 Hz) with a softer sine wave
+          const oscillator2 = audioContext.createOscillator()
+          const gainNode2 = audioContext.createGain()
+          oscillator2.connect(gainNode2)
+          gainNode2.connect(masterGain)
+
+          oscillator2.type = "sine"
+          oscillator2.frequency.setValueAtTime(392, currentTime + 0.05)
+          gainNode2.gain.setValueAtTime(0, currentTime + 0.05)
+          gainNode2.gain.linearRampToValueAtTime(1, currentTime + 0.07)
+          gainNode2.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.15)
+          oscillator2.start(currentTime + 0.05)
+          oscillator2.stop(currentTime + 0.15)
         },
         addToolsToContext: assign({
           tools: (context, event) => context.tools.concat(event.tools),
