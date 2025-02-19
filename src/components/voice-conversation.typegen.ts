@@ -16,15 +16,18 @@
           services: never;
         };
         eventsCausingActions: {
-          "addToolsToContext": "ADD_TOOLS";
+          "addInstructionsToContext": "ADD_INSTRUCTIONS";
+"addToolsToContext": "ADD_TOOLS";
 "alertError": "ERROR";
 "executeToolCalls": "TOOL_CALLS";
 "muteMicrophone": "MUTE_MIC";
 "playEndSound": "END";
 "playReadySound": "SESSION_CREATED";
+"removeInstructionsFromContext": "REMOVE_INSTRUCTIONS";
 "removeToolsFromContext": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";
 "unmuteMicrophone": "UNMUTE_MIC";
+"updateSessionWithInstructions": "ADD_INSTRUCTIONS" | "REMOVE_INSTRUCTIONS" | "SESSION_CREATED";
 "updateSessionWithTools": "ADD_TOOLS" | "REMOVE_TOOLS" | "SESSION_CREATED";
         };
         eventsCausingDelays: {

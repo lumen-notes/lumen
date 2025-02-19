@@ -216,6 +216,14 @@ export function FloatingConversationInput() {
 
 type VoiceConversationEvent =
   | {
+      type: "ADD_INSTRUCTIONS"
+      instructions: Array<{ id: string; content: string }>
+    }
+  | {
+      type: "REMOVE_INSTRUCTIONS"
+      instructionIds: Array<string>
+    }
+  | {
       type: "ADD_TOOLS"
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tools: Array<Tool<any>>
@@ -271,6 +279,7 @@ type VoiceConversationEvent =
     }
 
 type VoiceConversationContext = {
+  instructions: Array<{ id: string; content: string }>
   tools: Array<Tool<unknown>>
   microphoneStream: MediaStream | undefined
   sendClientEvent: (clientEvent: RealtimeClientEvent) => void
@@ -299,6 +308,12 @@ function createVoiceConversationMachine() {
         context: VoiceConversationContext
       },
       context: {
+        instructions: [
+          {
+            id: "system",
+            content: systemInstructions,
+          },
+        ],
         tools: [],
         microphoneStream: undefined,
         sendClientEvent: () => {},
@@ -307,6 +322,12 @@ function createVoiceConversationMachine() {
       states: {
         inactive: {
           on: {
+            ADD_INSTRUCTIONS: {
+              actions: "addInstructionsToContext",
+            },
+            REMOVE_INSTRUCTIONS: {
+              actions: "removeInstructionsFromContext",
+            },
             ADD_TOOLS: {
               actions: "addToolsToContext",
             },
@@ -335,6 +356,12 @@ function createVoiceConversationMachine() {
           states: {
             initializing: {
               on: {
+                ADD_INSTRUCTIONS: {
+                  actions: "addInstructionsToContext",
+                },
+                REMOVE_INSTRUCTIONS: {
+                  actions: "removeInstructionsFromContext",
+                },
                 ADD_TOOLS: {
                   actions: "addToolsToContext",
                 },
@@ -354,10 +381,16 @@ function createVoiceConversationMachine() {
               },
             },
             ready: {
-              entry: "updateSessionWithTools",
+              entry: ["updateSessionWithInstructions", "updateSessionWithTools"],
               on: {
                 SEND_TEXT: {
                   actions: "sendText",
+                },
+                ADD_INSTRUCTIONS: {
+                  actions: ["addInstructionsToContext", "updateSessionWithInstructions"],
+                },
+                REMOVE_INSTRUCTIONS: {
+                  actions: ["removeInstructionsFromContext", "updateSessionWithInstructions"],
                 },
                 ADD_TOOLS: {
                   actions: ["addToolsToContext", "updateSessionWithTools"],
@@ -430,6 +463,97 @@ function createVoiceConversationMachine() {
     },
     {
       actions: {
+        addInstructionsToContext: assign({
+          instructions: (context, event) => context.instructions.concat(event.instructions),
+        }),
+        removeInstructionsFromContext: assign({
+          instructions: (context, event) =>
+            context.instructions.filter(({ id }) => !event.instructionIds.includes(id)),
+        }),
+        addToolsToContext: assign({
+          tools: (context, event) => context.tools.concat(event.tools),
+        }),
+        removeToolsFromContext: assign({
+          tools: (context, event) =>
+            context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
+        }),
+        updateSessionWithInstructions: (context, event) => {
+          context.sendClientEvent({
+            type: "session.update",
+            session: {
+              instructions: context.instructions.map(({ content }) => content).join("\n\n"),
+            },
+          })
+        },
+        updateSessionWithTools: (context, event) => {
+          context.sendClientEvent({
+            type: "session.update",
+            session: {
+              tools: context.tools.map((tool) => ({
+                type: "function",
+                name: tool.name,
+                description: tool.description,
+                parameters: zodToJsonSchema(tool.parameters),
+              })),
+            },
+          })
+        },
+        executeToolCalls: async (context, event) => {
+          for (const toolCall of event.toolCalls) {
+            const tool = context.tools.find((tool) => tool.name === toolCall.name)
+            if (!tool) return
+
+            const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+            if (output) {
+              context.sendClientEvent({
+                type: "conversation.item.create",
+                item: {
+                  type: "function_call_output",
+                  call_id: toolCall.callId,
+                  output,
+                },
+              })
+
+              context.sendClientEvent({ type: "response.create" })
+            }
+          }
+        },
+        sendText: (context, event) => {
+          // Don't send empty messages
+          if (!event.text) {
+            return
+          }
+
+          context.sendClientEvent({
+            type: "conversation.item.create",
+            item: {
+              type: "message",
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: event.text,
+                },
+              ],
+            },
+          })
+
+          // Ask the model to respond
+          context.sendClientEvent({ type: "response.create" })
+        },
+        muteMicrophone: (context) => {
+          context.microphoneStream?.getTracks().forEach((track) => {
+            track.enabled = false
+          })
+        },
+        unmuteMicrophone: (context) => {
+          context.microphoneStream?.getTracks().forEach((track) => {
+            track.enabled = true
+          })
+        },
+        alertError: (context, event) => {
+          alert(event.message)
+        },
         playReadySound: () => {
           const audioContext = new AudioContext()
           const currentTime = audioContext.currentTime
@@ -504,83 +628,6 @@ function createVoiceConversationMachine() {
           oscillator2.start(currentTime + 0.05)
           oscillator2.stop(currentTime + 0.15)
         },
-        addToolsToContext: assign({
-          tools: (context, event) => context.tools.concat(event.tools),
-        }),
-        removeToolsFromContext: assign({
-          tools: (context, event) =>
-            context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
-        }),
-        updateSessionWithTools: (context, event) => {
-          context.sendClientEvent({
-            type: "session.update",
-            session: {
-              tools: context.tools.map((tool) => ({
-                type: "function",
-                name: tool.name,
-                description: tool.description,
-                parameters: zodToJsonSchema(tool.parameters),
-              })),
-            },
-          })
-        },
-        executeToolCalls: async (context, event) => {
-          for (const toolCall of event.toolCalls) {
-            const tool = context.tools.find((tool) => tool.name === toolCall.name)
-            if (!tool) return
-
-            const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
-            if (output) {
-              context.sendClientEvent({
-                type: "conversation.item.create",
-                item: {
-                  type: "function_call_output",
-                  call_id: toolCall.callId,
-                  output,
-                },
-              })
-
-              context.sendClientEvent({ type: "response.create" })
-            }
-          }
-        },
-        sendText: (context, event) => {
-          // Don't send empty messages
-          if (!event.text) {
-            return
-          }
-
-          context.sendClientEvent({
-            type: "conversation.item.create",
-            item: {
-              type: "message",
-              role: "user",
-              content: [
-                {
-                  type: "input_text",
-                  text: event.text,
-                },
-              ],
-            },
-          })
-
-          // Ask the model to respond
-          context.sendClientEvent({ type: "response.create" })
-        },
-        muteMicrophone: (context) => {
-          context.microphoneStream?.getTracks().forEach((track) => {
-            track.enabled = false
-          })
-        },
-        unmuteMicrophone: (context) => {
-          context.microphoneStream?.getTracks().forEach((track) => {
-            track.enabled = true
-          })
-        },
-
-        alertError: (context, event) => {
-          alert(event.message)
-        },
       },
       services: {
         session: (context, event) => (sendBack, onRecieve) => {
@@ -644,7 +691,7 @@ function createVoiceConversationMachine() {
 
             dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
               const serverEvent = JSON.parse(event.data) as RealtimeServerEvent
-              console.log(serverEvent.type)
+              console.log(serverEvent)
 
               switch (serverEvent.type) {
                 case "session.created": {
@@ -652,14 +699,6 @@ function createVoiceConversationMachine() {
                     type: "SESSION_CREATED",
                     microphoneStream,
                     sendClientEvent,
-                  })
-
-                  // Initialize the session with system instructions
-                  sendClientEvent({
-                    type: "session.update",
-                    session: {
-                      instructions: systemInstructions,
-                    },
                   })
                   break
                 }
