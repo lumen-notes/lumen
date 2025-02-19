@@ -23,7 +23,7 @@ export function SpinningBorder({ children, enabled = false }: SpinningBorderProp
           style={{ "--perimeter": `${perimeter}px` } as React.CSSProperties}
         >
           <rect
-            className="spin-stroke"
+            className="spin-stroke coarse:hidden"
             x="0"
             y="0"
             width="100%"
@@ -33,6 +33,20 @@ export function SpinningBorder({ children, enabled = false }: SpinningBorderProp
             strokeWidth="2"
             strokeLinecap="round"
             rx="8"
+            strokeDasharray={`${strokeLength} ${perimeter - strokeLength}`}
+          />
+          {/* Increase corner radius for coarse pointer devices */}
+          <rect
+            className="spin-stroke hidden coarse:block"
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            rx="10"
             strokeDasharray={`${strokeLength} ${perimeter - strokeLength}`}
           />
         </svg>
