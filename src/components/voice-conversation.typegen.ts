@@ -19,10 +19,10 @@
           "addTools": "ADD_TOOLS";
 "alertError": "ERROR";
 "executeToolCalls": "TOOL_CALLS";
-"muteMicrophone": "MUTE_MICROPHONE";
+"muteMicrophone": "MUTE_MIC";
 "removeTools": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";
-"unmuteMicrophone": "UNMUTE_MICROPHONE";
+"unmuteMicrophone": "UNMUTE_MIC";
         };
         eventsCausingDelays: {
           
@@ -33,7 +33,8 @@
         eventsCausingServices: {
           "session": "START";
         };
-        matchesStates: "active" | "active.initializing" | "active.ready" | "active.ready.muted" | "active.ready.unmuted" | "inactive" | { "active"?: "initializing" | "ready" | { "ready"?: "muted" | "unmuted"; }; };
+        matchesStates: "active" | "active.initializing" | "active.ready" | "active.ready.assistant" | "active.ready.assistant.listening" | "active.ready.assistant.responding" | "active.ready.mic" | "active.ready.mic.muted" | "active.ready.mic.unmuted" | "inactive" | { "active"?: "initializing" | "ready" | { "ready"?: "assistant" | "mic" | { "assistant"?: "listening" | "responding";
+"mic"?: "muted" | "unmuted"; }; }; };
         tags: never;
       }
   

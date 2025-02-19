@@ -28,6 +28,7 @@ import {
   TriangleDownIcon8,
   XIcon16,
 } from "./icons"
+import { SpinningBorder } from "./spinning-border"
 
 export type Tool<T> = {
   name: string
@@ -49,7 +50,7 @@ export function VoiceConversationButton() {
         description: "Mute the user's microphone",
         parameters: z.object({}),
         execute: async () => {
-          send("MUTE_MICROPHONE")
+          send("MUTE_MIC")
         },
       } satisfies Tool<Record<string, never>>,
       {
@@ -57,7 +58,7 @@ export function VoiceConversationButton() {
         description: "Unmute the user's microphone",
         parameters: z.object({}),
         execute: async () => {
-          send("UNMUTE_MICROPHONE")
+          send("UNMUTE_MIC")
         },
       } satisfies Tool<Record<string, never>>,
       {
@@ -92,43 +93,51 @@ export function VoiceConversationButton() {
 
   if (state.matches("active.ready")) {
     return (
-      <DropdownMenu>
-        <DropdownMenu.Trigger asChild>
-          <IconButton
-            size="small"
-            aria-label="Conversation actions"
-            disableTooltip
-            className={cx(
-              "!text-[#fff] eink:!bg-text eink:!text-bg",
-              state.matches("active.ready.muted") ? "!bg-[var(--red-9)]" : "!bg-[var(--green-9)]",
-            )}
-            disabled={state.matches("active.initializing")}
-          >
-            <div className="flex items-center gap-1">
-              {state.matches("active.ready.muted") ? <MicMuteFillIcon16 /> : <MicFillIcon16 />}
-              <TriangleDownIcon8 />
-            </div>
-          </IconButton>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content align="end">
-          <DropdownMenu.Item
-            icon={state.matches("active.ready.muted") ? <MicIcon16 /> : <MicMuteIcon16 />}
-            onSelect={() => {
-              if (state.matches("active.ready.muted")) {
-                send("UNMUTE_MICROPHONE")
-              } else {
-                send("MUTE_MICROPHONE")
-              }
-            }}
-          >
-            {state.matches("active.ready.muted") ? "Unmute microphone" : "Mute microphone"}
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item icon={<XIcon16 />} variant="danger" onSelect={() => send("END")}>
-            End conversation
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
+      <SpinningBorder enabled={state.matches("active.ready.assistant.responding")}>
+        <DropdownMenu>
+          <DropdownMenu.Trigger asChild>
+            <IconButton
+              size="small"
+              aria-label="Conversation actions"
+              disableTooltip
+              className={cx(
+                "!text-[#fff] eink:!bg-text eink:!text-bg",
+                state.matches("active.ready.mic.muted")
+                  ? "!bg-[var(--red-9)]"
+                  : "!bg-[var(--green-9)]",
+              )}
+              disabled={state.matches("active.initializing")}
+            >
+              <div className="flex items-center gap-1">
+                {state.matches("active.ready.mic.muted") ? (
+                  <MicMuteFillIcon16 />
+                ) : (
+                  <MicFillIcon16 />
+                )}
+                <TriangleDownIcon8 />
+              </div>
+            </IconButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item
+              icon={state.matches("active.ready.mic.muted") ? <MicIcon16 /> : <MicMuteIcon16 />}
+              onSelect={() => {
+                if (state.matches("active.ready.mic.muted")) {
+                  send("UNMUTE_MIC")
+                } else {
+                  send("MUTE_MIC")
+                }
+              }}
+            >
+              {state.matches("active.ready.mic.muted") ? "Unmute microphone" : "Mute microphone"}
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item icon={<XIcon16 />} variant="danger" onSelect={() => send("END")}>
+              End conversation
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      </SpinningBorder>
     )
   }
 
@@ -226,6 +235,12 @@ type VoiceConversationEvent =
       sendClientEvent: (clientEvent: RealtimeClientEvent) => void
     }
   | {
+      type: "RESPONSE_CREATED"
+    }
+  | {
+      type: "RESPONSE_DONE"
+    }
+  | {
       type: "SEND_TEXT"
       text: string
     }
@@ -238,10 +253,10 @@ type VoiceConversationEvent =
       }>
     }
   | {
-      type: "MUTE_MICROPHONE"
+      type: "MUTE_MIC"
     }
   | {
-      type: "UNMUTE_MICROPHONE"
+      type: "UNMUTE_MIC"
     }
   | {
       type: "ERROR"
@@ -330,21 +345,41 @@ function createVoiceConversationMachine() {
                   actions: "executeToolCalls",
                 },
               },
-              initial: "unmuted",
+              type: "parallel",
               states: {
-                unmuted: {
-                  on: {
-                    MUTE_MICROPHONE: {
-                      target: "muted",
-                      actions: "muteMicrophone",
+                assistant: {
+                  initial: "listening",
+                  states: {
+                    listening: {
+                      on: {
+                        RESPONSE_CREATED: "responding",
+                      },
+                    },
+                    responding: {
+                      on: {
+                        RESPONSE_DONE: "listening",
+                      },
                     },
                   },
                 },
-                muted: {
-                  on: {
-                    UNMUTE_MICROPHONE: {
-                      target: "unmuted",
-                      actions: "unmuteMicrophone",
+                mic: {
+                  initial: "unmuted",
+                  states: {
+                    unmuted: {
+                      on: {
+                        MUTE_MIC: {
+                          target: "muted",
+                          actions: "muteMicrophone",
+                        },
+                      },
+                    },
+                    muted: {
+                      on: {
+                        UNMUTE_MIC: {
+                          target: "unmuted",
+                          actions: "unmuteMicrophone",
+                        },
+                      },
                     },
                   },
                 },
@@ -480,7 +515,7 @@ function createVoiceConversationMachine() {
 
             dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
               const serverEvent = JSON.parse(event.data) as RealtimeServerEvent
-              console.log(serverEvent)
+              console.log(serverEvent.type)
 
               switch (serverEvent.type) {
                 case "session.created": {
@@ -506,7 +541,18 @@ function createVoiceConversationMachine() {
                   break
                 }
 
+                case "response.created": {
+                  sendBack({
+                    type: "RESPONSE_CREATED",
+                  })
+                  break
+                }
+
                 case "response.done": {
+                  sendBack({
+                    type: "RESPONSE_DONE",
+                  })
+
                   const toolCalls =
                     serverEvent.response.output?.filter(
                       (output) => output.type === "function_call",

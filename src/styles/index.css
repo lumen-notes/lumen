@@ -110,3 +110,18 @@ body:has([data-resizing="true"]) * {
 .nav-item[data-size="large"] {
   @apply h-10 gap-4 px-3;
 }
+
+/* Spinning stroke */
+
+@keyframes spin-stroke {
+  to {
+    stroke-dashoffset: var(--perimeter);
+  }
+  from {
+    stroke-dashoffset: 0;
+  }
+}
+
+.spin-stroke {
+  animation: spin-stroke 1s linear infinite;
+}
