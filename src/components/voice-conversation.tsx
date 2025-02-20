@@ -33,8 +33,6 @@ import { toast } from "./toast"
 export type Tool<T> = {
   name: string
   description: string
-  successMessage: string
-  icon: React.ReactNode
   parameters: ZodSchema<T>
   execute: (args: T) => Promise<string | void>
 }
@@ -469,12 +467,11 @@ function createVoiceConversationMachine() {
             const tool = context.tools.find((tool) => tool.name === toolCall.name)
             if (!tool) return
 
-            const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+            if (import.meta.env.DEV) {
+              toast({ message: <span className="font-mono">{tool.name}</span> })
+            }
 
-            toast({
-              message: tool.successMessage,
-              icon: tool.icon,
-            })
+            const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
 
             if (output) {
               context.sendClientEvent({

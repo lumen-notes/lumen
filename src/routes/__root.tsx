@@ -16,15 +16,7 @@ import { z } from "zod"
 import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
-import {
-  CopyIcon16,
-  ErrorIcon16,
-  MicIcon16,
-  MicMuteIcon16,
-  NoteTemplateIcon16,
-  PlusIcon16,
-  XIcon16,
-} from "../components/icons"
+import { ErrorIcon16 } from "../components/icons"
 import {
   FloatingConversationInput,
   Tool,
@@ -105,8 +97,6 @@ function RootComponent() {
         name: "create_note",
         description:
           "Create an empty note. To add content, first create an empty note, then edit it separately.",
-        successMessage: "Created note",
-        icon: <PlusIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           await navigate({
@@ -124,8 +114,6 @@ function RootComponent() {
       {
         name: "get_templates",
         description: "Get a list of the user's templates",
-        successMessage: "Checked templates",
-        icon: <NoteTemplateIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           const templates = getTemplates()
@@ -135,8 +123,6 @@ function RootComponent() {
       {
         name: "read_clipboard_text",
         description: "Read the text from the user's clipboard",
-        successMessage: "Read clipboard text",
-        icon: <CopyIcon16 />, // TODO: Create a clipboard icon
         parameters: z.object({}),
         execute: async () => {
           const clipboardText = await navigator.clipboard.readText()
@@ -146,8 +132,6 @@ function RootComponent() {
       {
         name: "mute_microphone",
         description: "Mute the user's microphone",
-        successMessage: "Muted microphone",
-        icon: <MicMuteIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("MUTE_MIC")
@@ -157,8 +141,6 @@ function RootComponent() {
       {
         name: "unmute_microphone",
         description: "Unmute the user's microphone",
-        successMessage: "Unmuted microphone",
-        icon: <MicIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("UNMUTE_MIC")
@@ -168,8 +150,6 @@ function RootComponent() {
       {
         name: "end_conversation",
         description: "End the conversation",
-        successMessage: "Ended conversation",
-        icon: <XIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("END")

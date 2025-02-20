@@ -1,3 +1,4 @@
+import * as RadixSwitch from "@radix-ui/react-switch"
 import { Vim } from "@replit/codemirror-vim"
 import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
@@ -8,6 +9,7 @@ import { selectAtom } from "jotai/utils"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import useResizeObserver from "use-resize-observer"
+import { z } from "zod"
 import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
 import { Calendar } from "../components/calendar"
@@ -17,12 +19,10 @@ import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
   CenteredIcon16,
-  CheckIcon16,
   CopyIcon16,
   DotIcon8,
   EditIcon16,
   ExternalLinkIcon16,
-  EyeIcon16,
   FullwidthIcon16,
   MoreIcon16,
   NoteIcon16,
@@ -41,6 +41,7 @@ import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
 import { SegmentedControl } from "../components/segmented-control"
+import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
   dailyTemplateAtom,
   githubRepoAtom,
@@ -70,9 +71,6 @@ import { exportAsGist } from "../utils/export-as-gist"
 import { parseNote } from "../utils/parse-note"
 import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
-import * as RadixSwitch from "@radix-ui/react-switch"
-import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
-import { z } from "zod"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -240,8 +238,6 @@ function NotePage() {
       {
         name: "read_current_note",
         description: "Read the content of the current note",
-        successMessage: "Read note",
-        icon: <EyeIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           const note = getNote()
@@ -261,8 +257,6 @@ function NotePage() {
       {
         name: "edit_current_note",
         description: "Edit the content of the current note",
-        successMessage: "Edited note",
-        icon: <EditIcon16 />,
         parameters: z.object({
           content: z.string(),
         }),
@@ -276,8 +270,6 @@ function NotePage() {
       {
         name: "save_current_note",
         description: "Save the current note",
-        successMessage: "Saved note",
-        icon: <CheckIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           const handleSave = getHandleSave()

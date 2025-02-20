@@ -1,4 +1,4 @@
-import { EditIcon16, NoteIcon16, TrashIcon16 } from "./icons"
+import { CheckIcon16, NoteIcon16 } from "./icons"
 import { Toast } from "./toast"
 
 export default {
@@ -11,20 +11,18 @@ export default {
 
 export const Default = {
   args: {
-    icon: <EditIcon16 />,
-    children: "Edited note",
+    children: "This is a toast message",
   },
 }
 
-export const CustomIconColor = {
+export const WithIcon = {
   args: {
-    icon: <TrashIcon16 className="text-text-danger" />,
-    children: "Deleted note",
-    variant: "danger",
+    icon: <CheckIcon16 />,
+    children: "Copied to clipboard",
   },
 }
 
-export const LongMessage = {
+export const WithLongMessage = {
   args: {
     icon: <NoteIcon16 />,
     children:
