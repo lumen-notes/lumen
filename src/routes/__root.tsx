@@ -6,8 +6,8 @@ import {
   useNavigate,
 } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
-import { selectAtom } from "jotai/utils"
-import { useEffect, useState } from "react"
+import { selectAtom, useAtomCallback } from "jotai/utils"
+import { useCallback, useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useEvent, useNetworkState } from "react-use"
 import { Toaster } from "sonner"
@@ -22,7 +22,13 @@ import {
   Tool,
   voiceConversationMachineAtom,
 } from "../components/voice-conversation"
-import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
+import {
+  fontAtom,
+  globalStateMachineAtom,
+  isSignedOutAtom,
+  templatesAtom,
+  themeAtom,
+} from "../global-state"
 import { useThemeColor } from "../hooks/theme-color"
 
 export const Route = createRootRoute({
@@ -48,6 +54,7 @@ function RootComponent() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
+  const getTemplates = useAtomCallback(useCallback((get) => get(templatesAtom), []))
   const navigate = useNavigate()
   const { online } = useNetworkState()
 
@@ -105,6 +112,15 @@ function RootComponent() {
         },
       } satisfies Tool<Record<string, never>>,
       {
+        name: "get_templates",
+        description: "Get a list of the user's templates",
+        parameters: z.object({}),
+        execute: async () => {
+          const templates = getTemplates()
+          return JSON.stringify({ templates })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
         name: "mute_microphone",
         description: "Mute the user's microphone",
         parameters: z.object({}),
@@ -134,7 +150,7 @@ function RootComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [sendVoiceConversation, navigate])
+  }, [sendVoiceConversation, navigate, getTemplates])
 
   // Toggle dev bar with ctrl+`
   const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
