@@ -20,7 +20,7 @@ import {
   isRepoClonedAtom,
   isRepoNotClonedAtom,
   themeAtom,
-  voiceConversationsEnabledAtom,
+  voiceAssistantEnabledAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { cx } from "../utils/cx"
@@ -233,9 +233,7 @@ function EditorSection() {
 
 function AISection() {
   const hasOpenAIKey = useAtomValue(hasOpenAIKeyAtom)
-  const [voiceConversationsEnabled, setVoiceConversationsEnabled] = useAtom(
-    voiceConversationsEnabledAtom,
-  )
+  const [voiceAssistantEnabled, setVoiceAssistantEnabled] = useAtom(voiceAssistantEnabledAtom)
 
   return (
     <SettingsSection title="AI">
@@ -245,19 +243,19 @@ function AISection() {
         <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
           <div className="flex items-center gap-3">
             <Switch
-              id="voice-conversations"
+              id="voice-assistant"
               disabled={!hasOpenAIKey}
-              checked={hasOpenAIKey && voiceConversationsEnabled}
-              onCheckedChange={(checked) => setVoiceConversationsEnabled(checked)}
+              checked={hasOpenAIKey && voiceAssistantEnabled}
+              onCheckedChange={(checked) => setVoiceAssistantEnabled(checked)}
             />
             <label
-              htmlFor="voice-conversations"
+              htmlFor="voice-assistant"
               className={cx(
                 "select-none",
                 !hasOpenAIKey && "cursor-not-allowed text-text-secondary",
               )}
             >
-              Voice conversations <span className="italic text-text-secondary">(alpha)</span>
+              Voice assistant <span className="italic text-text-secondary">(alpha)</span>
             </label>
           </div>
         </div>

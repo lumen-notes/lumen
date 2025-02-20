@@ -740,7 +740,4 @@ export const openaiKeyAtom = atomWithStorage<string>(OPENAI_KEY_STORAGE_KEY, "")
 
 export const hasOpenAIKeyAtom = selectAtom(openaiKeyAtom, (key) => key !== "")
 
-export const voiceConversationsEnabledAtom = atomWithStorage<boolean>(
-  "voice_conversations_enabled",
-  false,
-)
+export const voiceAssistantEnabledAtom = atomWithStorage<boolean>("voice_assistant_enabled", false)
