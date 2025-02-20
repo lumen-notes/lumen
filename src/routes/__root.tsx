@@ -121,6 +121,15 @@ function RootComponent() {
         },
       } satisfies Tool<Record<string, never>>,
       {
+        name: "read_clipboard_text",
+        description: "Read the text from the user's clipboard",
+        parameters: z.object({}),
+        execute: async () => {
+          const clipboardText = await navigator.clipboard.readText()
+          return JSON.stringify({ clipboardText })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
         name: "mute_microphone",
         description: "Mute the user's microphone",
         parameters: z.object({}),
