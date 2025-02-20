@@ -33,6 +33,8 @@ import { toast } from "./toast"
 export type Tool<T> = {
   name: string
   description: string
+  successMessage: string
+  icon: React.ReactNode
   parameters: ZodSchema<T>
   execute: (args: T) => Promise<string | void>
 }
@@ -467,11 +469,13 @@ function createVoiceConversationMachine() {
             const tool = context.tools.find((tool) => tool.name === toolCall.name)
             if (!tool) return
 
-            if (import.meta.env.DEV) {
-              toast(<span className="font-mono">{tool.name}</span>)
-            }
-
             const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
+
+            toast({
+              message: tool.successMessage,
+              icon: tool.icon,
+            })
+
             if (output) {
               context.sendClientEvent({
                 type: "conversation.item.create",
@@ -655,7 +659,7 @@ function createVoiceConversationMachine() {
               dataChannel?.send(JSON.stringify(clientEvent))
             }
 
-            let hasOutputAudioBuffer = false
+            // let hasOutputAudioBuffer = false
 
             dataChannel.addEventListener("message", (event: MessageEvent<string>) => {
               const serverEvent = JSON.parse(event.data) as RealtimeServerEvent
@@ -692,33 +696,31 @@ function createVoiceConversationMachine() {
                   break
                 }
 
-                // @ts-expect-error This event is not documented
-                case "output_audio_buffer.started": {
-                  hasOutputAudioBuffer = true
-                  break
-                }
+                // case "output_audio_buffer.started": {
+                //   hasOutputAudioBuffer = true
+                //   break
+                // }
 
-                // @ts-expect-error This event is not documented
-                case "output_audio_buffer.stopped": {
-                  if (hasOutputAudioBuffer) {
-                    hasOutputAudioBuffer = false
-                    sendBack({
-                      type: "RESPONSE_STOPPED",
-                    })
-                  }
-                  break
-                }
+                // case "output_audio_buffer.stopped": {
+                //   if (hasOutputAudioBuffer) {
+                //     hasOutputAudioBuffer = false
+                //     sendBack({
+                //       type: "RESPONSE_STOPPED",
+                //     })
+                //   }
+                //   break
+                // }
 
                 case "response.done": {
                   // If an output audio buffer has started, the 'response.done' event
                   // might fire before the audio output has actually finished.
                   // In that case, we wait for the 'output_audio_buffer.stopped' event
                   // to mark the true end of the response.
-                  if (!hasOutputAudioBuffer) {
-                    sendBack({
-                      type: "RESPONSE_STOPPED",
-                    })
-                  }
+                  // if (!hasOutputAudioBuffer) {
+                  sendBack({
+                    type: "RESPONSE_STOPPED",
+                  })
+                  // }
 
                   const toolCalls =
                     serverEvent.response.output?.filter(

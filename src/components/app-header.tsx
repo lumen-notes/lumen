@@ -43,7 +43,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
 
   return (
     <div className={cx("@container/header", className)}>
-      <header className="flex h-10 items-center gap-2 px-2 coarse:h-14">
+      <header className="flex h-[var(--height-app-header)] items-center gap-2 px-2">
         <div className="hidden items-center empty:hidden sm:flex">
           {sidebar === "collapsed" ? (
             <>

@@ -15,53 +15,55 @@ export function NavBar() {
   const setIsCommandMenuOpen = useSetAtom(isCommandMenuOpenAtom)
 
   return (
-    <div className="flex border-t border-border-secondary p-2">
-      <Drawer.Root shouldScaleBackground={false}>
-        <Drawer.Trigger asChild>
-          <NavButton aria-label="Open navigation menu">
-            <MenuIcon16 />
-          </NavButton>
-        </Drawer.Trigger>
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-gradient-to-t from-[#000000] to-[#00000000] eink:bg-none" />
-          <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay eink:ring-2 eink:ring-border">
-            <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-2 pb-[max(env(safe-area-inset-bottom),8px)]">
-              <div
-                aria-hidden
-                className="mx-auto mb-2 h-1 w-10 flex-shrink-0 rounded-full bg-border"
-              />
-              <Drawer.Title className="sr-only">Navigation</Drawer.Title>
-              <NavItems size="large" />
-            </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
-      <NavButton aria-label="Go back" onClick={() => router.history.back()}>
-        <ArrowLeftIcon16 />
-      </NavButton>
-      <NavButton aria-label="Go forward" onClick={() => router.history.forward()}>
-        <ArrowRightIcon16 />
-      </NavButton>
-      <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
-        <CommandIcon16 />
-      </NavButton>
-      <NavButton
-        aria-label="New note"
-        shortcut={["⌘", "⇧", "O"]}
-        onClick={() =>
-          navigate({
-            to: "/notes/$",
-            params: { _splat: `${Date.now()}` },
-            search: {
-              mode: "write",
-              query: undefined,
-              view: "grid",
-            },
-          })
-        }
-      >
-        <PlusIcon16 />
-      </NavButton>
+    <div className="border-t border-border-secondary">
+      <div className="flex h-[var(--height-nav-bar)] items-stretch  p-2 [&>button]:h-full">
+        <Drawer.Root shouldScaleBackground={false}>
+          <Drawer.Trigger asChild>
+            <NavButton aria-label="Open navigation menu">
+              <MenuIcon16 />
+            </NavButton>
+          </Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-gradient-to-t from-[#000000] to-[#00000000] eink:bg-none" />
+            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay eink:ring-2 eink:ring-border">
+              <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-2 pb-[max(env(safe-area-inset-bottom),8px)]">
+                <div
+                  aria-hidden
+                  className="mx-auto mb-2 h-1 w-10 flex-shrink-0 rounded-full bg-border"
+                />
+                <Drawer.Title className="sr-only">Navigation</Drawer.Title>
+                <NavItems size="large" />
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+        <NavButton aria-label="Go back" onClick={() => router.history.back()}>
+          <ArrowLeftIcon16 />
+        </NavButton>
+        <NavButton aria-label="Go forward" onClick={() => router.history.forward()}>
+          <ArrowRightIcon16 />
+        </NavButton>
+        <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
+          <CommandIcon16 />
+        </NavButton>
+        <NavButton
+          aria-label="New note"
+          shortcut={["⌘", "⇧", "O"]}
+          onClick={() =>
+            navigate({
+              to: "/notes/$",
+              params: { _splat: `${Date.now()}` },
+              search: {
+                mode: "write",
+                query: undefined,
+                view: "grid",
+              },
+            })
+          }
+        >
+          <PlusIcon16 />
+        </NavButton>
+      </div>
     </div>
   )
 }

@@ -91,6 +91,10 @@
 
   /* Icons */
   --icon-size: 16px;
+
+  /* Heights */
+  --height-app-header: 40px;
+  --height-nav-bar: 40px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -133,8 +137,9 @@
     --border-radius-xl: 16px; /* base + 8px */
     --border-radius-full: 9999px;
 
-    /* Icons */
-    /* --icon-size: 20px; */
+    /* Heights */
+    --height-app-header: 56px;
+    --height-nav-bar: 56px;
   }
 }
 

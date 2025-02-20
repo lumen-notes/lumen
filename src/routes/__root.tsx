@@ -16,7 +16,15 @@ import { z } from "zod"
 import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
-import { ErrorIcon16 } from "../components/icons"
+import {
+  CopyIcon16,
+  ErrorIcon16,
+  MicIcon16,
+  MicMuteIcon16,
+  NoteTemplateIcon16,
+  PlusIcon16,
+  XIcon16,
+} from "../components/icons"
 import {
   FloatingConversationInput,
   Tool,
@@ -97,6 +105,8 @@ function RootComponent() {
         name: "create_note",
         description:
           "Create an empty note. To add content, first create an empty note, then edit it separately.",
+        successMessage: "Created note",
+        icon: <PlusIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           await navigate({
@@ -114,6 +124,8 @@ function RootComponent() {
       {
         name: "get_templates",
         description: "Get a list of the user's templates",
+        successMessage: "Checked templates",
+        icon: <NoteTemplateIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           const templates = getTemplates()
@@ -123,6 +135,8 @@ function RootComponent() {
       {
         name: "read_clipboard_text",
         description: "Read the text from the user's clipboard",
+        successMessage: "Read clipboard text",
+        icon: <CopyIcon16 />, // TODO: Create a clipboard icon
         parameters: z.object({}),
         execute: async () => {
           const clipboardText = await navigator.clipboard.readText()
@@ -132,22 +146,30 @@ function RootComponent() {
       {
         name: "mute_microphone",
         description: "Mute the user's microphone",
+        successMessage: "Muted microphone",
+        icon: <MicMuteIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("MUTE_MIC")
+          return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
       {
         name: "unmute_microphone",
         description: "Unmute the user's microphone",
+        successMessage: "Unmuted microphone",
+        icon: <MicIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("UNMUTE_MIC")
+          return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
       {
         name: "end_conversation",
         description: "End the conversation",
+        successMessage: "Ended conversation",
+        icon: <XIcon16 />,
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("END")
@@ -213,7 +235,7 @@ function RootComponent() {
       </div>
       <FloatingConversationInput />
       {needRefresh ? (
-        <div className="card-3 absolute bottom-12 right-2 z-20 flex items-center justify-between gap-4 !rounded-xl p-2 pl-4 sm:bottom-2 coarse:bottom-16 coarse:sm:bottom-2">
+        <div className="card-3 absolute bottom-[calc(var(--height-nav-bar)+12px)] left-3 right-3 z-20 flex items-center justify-between gap-4 !rounded-xl p-2 pl-4 sm:bottom-3 sm:left-[unset]">
           <div className="flex items-center gap-3">
             {/* Dot to draw attention */}
             <div aria-hidden className="h-2 w-2 rounded-full bg-border-focus" />
@@ -223,7 +245,12 @@ function RootComponent() {
         </div>
       ) : null}
       <CommandMenu />
-      <Toaster />
+      <Toaster
+        position="top-right"
+        offset={{ left: "12px", right: "12px", top: "calc(var(--height-app-header) + 12px)" }}
+        mobileOffset={{ left: "12px", right: "12px", top: "calc(var(--height-app-header) + 12px)" }}
+        toastOptions={{ duration: 2000 }}
+      />
       <DevBar enabled={isDevBarEnabled} />
     </div>
   )
