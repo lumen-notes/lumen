@@ -1,16 +1,24 @@
-import { Link, Outlet, ScrollRestoration, createRootRoute } from "@tanstack/react-router"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import {
+  Link,
+  Outlet,
+  ScrollRestoration,
+  createRootRoute,
+  useNavigate,
+} from "@tanstack/react-router"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useEvent, useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
+import { z } from "zod"
 import { Button } from "../components/button"
 import { CommandMenu } from "../components/command-menu"
 import { SignInButton } from "../components/github-auth"
 import { ErrorIcon16 } from "../components/icons"
 import {
   FloatingConversationInput,
+  Tool,
   voiceConversationMachineAtom,
 } from "../components/voice-conversation"
 import { fontAtom, globalStateMachineAtom, isSignedOutAtom, themeAtom } from "../global-state"
@@ -36,10 +44,10 @@ const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.er
 
 function RootComponent() {
   useThemeColor()
-  useAtom(voiceConversationMachineAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
+  const navigate = useNavigate()
   const { online } = useNetworkState()
 
   // Sync when the app becomes visible again
@@ -73,8 +81,62 @@ function RootComponent() {
     },
   })
 
-  const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
+  // Add voice conversation tools
+  const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
+  useEffect(() => {
+    const tools = [
+      {
+        name: "create_note",
+        description:
+          "Create an empty note. To add content, first create an empty note, then edit it separately.",
+        parameters: z.object({}),
+        execute: async () => {
+          await navigate({
+            to: "/notes/$",
+            params: { _splat: `${Date.now()}` },
+            search: {
+              mode: "write",
+              query: undefined,
+              view: "grid",
+            },
+          })
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "mute_microphone",
+        description: "Mute the user's microphone",
+        parameters: z.object({}),
+        execute: async () => {
+          sendVoiceConversation("MUTE_MIC")
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "unmute_microphone",
+        description: "Unmute the user's microphone",
+        parameters: z.object({}),
+        execute: async () => {
+          sendVoiceConversation("UNMUTE_MIC")
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "end_conversation",
+        description: "End the conversation",
+        parameters: z.object({}),
+        execute: async () => {
+          sendVoiceConversation("END")
+        },
+      } satisfies Tool<Record<string, never>>,
+    ]
 
+    sendVoiceConversation({ type: "ADD_TOOLS", tools })
+    return () => {
+      sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
+    }
+  }, [sendVoiceConversation, navigate])
+
+  // Toggle dev bar with ctrl+`
+  const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
   useHotkeys("ctrl+`", () => setIsDevBarEnabled((prev) => !prev), {
     enabled: import.meta.env.DEV,
     preventDefault: true,
@@ -82,11 +144,13 @@ function RootComponent() {
     enableOnContentEditable: true,
   })
 
+  // Set the theme
   const theme = useAtomValue(themeAtom)
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme)
   }, [theme])
 
+  // Set the font
   const font = useAtomValue(fontAtom)
   useEffect(() => {
     document.documentElement.style.setProperty(

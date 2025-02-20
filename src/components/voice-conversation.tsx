@@ -10,7 +10,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import { useDebouncedCallback } from "use-debounce"
 import { assign, createMachine } from "xstate"
-import { z, ZodSchema } from "zod"
+import { ZodSchema } from "zod"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
@@ -42,41 +42,6 @@ export function VoiceConversationButton() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
 
-  React.useEffect(() => {
-    const tools = [
-      {
-        name: "mute_microphone",
-        description: "Mute the user's microphone",
-        parameters: z.object({}),
-        execute: async () => {
-          send("MUTE_MIC")
-        },
-      } satisfies Tool<Record<string, never>>,
-      {
-        name: "unmute_microphone",
-        description: "Unmute the user's microphone",
-        parameters: z.object({}),
-        execute: async () => {
-          send("UNMUTE_MIC")
-        },
-      } satisfies Tool<Record<string, never>>,
-      {
-        name: "end_conversation",
-        description: "End the conversation",
-        parameters: z.object({}),
-        execute: async () => {
-          send("END")
-        },
-      } satisfies Tool<Record<string, never>>,
-    ]
-
-    send({ type: "ADD_TOOLS", tools })
-
-    return () => {
-      send({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
-    }
-  }, [send])
-
   // Stop the conversation when the user goes offline
   React.useEffect(() => {
     function handleOffline() {
@@ -84,10 +49,7 @@ export function VoiceConversationButton() {
     }
 
     window.addEventListener("offline", handleOffline)
-
-    return () => {
-      window.removeEventListener("offline", handleOffline)
-    }
+    return () => window.removeEventListener("offline", handleOffline)
   }, [send])
 
   if (state.matches("active.ready")) {
@@ -289,6 +251,7 @@ const systemInstructions = `
 - You are an AI assistant integrated into a note-taking app called Lumen.
 - You serve as a thought partner and writing assistant.
 - Notes are written in GitHub Flavored Markdown and support frontmatter.
+- Note titles should be written as a level 1 heading using markdown syntax (e.g. "# Title"). Do not use frontmatter for titles.
 - When writing notes on behalf of the user, match their writing style and voice by picking up clues from how they speak. The notes should sound natural when read aloud by them.
 - Your knowledge cutoff is 2023-10.
 - Act like a human, but remember that you aren't a human and that you can't do human things in the real world.
