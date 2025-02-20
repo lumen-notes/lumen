@@ -28,6 +28,7 @@ import {
   XIcon16,
 } from "./icons"
 import { SpinningBorder } from "./spinning-border"
+import { toast } from "./toast"
 
 export type Tool<T> = {
   name: string
@@ -465,6 +466,10 @@ function createVoiceConversationMachine() {
           for (const toolCall of event.toolCalls) {
             const tool = context.tools.find((tool) => tool.name === toolCall.name)
             if (!tool) return
+
+            if (import.meta.env.DEV) {
+              toast(<span className="font-mono">{tool.name}</span>)
+            }
 
             const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
             if (output) {

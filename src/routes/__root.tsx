@@ -10,6 +10,7 @@ import { selectAtom } from "jotai/utils"
 import { useEffect, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useEvent, useNetworkState } from "react-use"
+import { Toaster } from "sonner"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { z } from "zod"
 import { Button } from "../components/button"
@@ -186,7 +187,6 @@ function RootComponent() {
         <Outlet />
       </div>
       <FloatingConversationInput />
-      <DevBar enabled={isDevBarEnabled} />
       {needRefresh ? (
         <div className="card-2 absolute bottom-12 right-2 z-20 flex items-center justify-between gap-4 !rounded-xl p-2 pl-4 sm:bottom-2 coarse:bottom-16 coarse:sm:bottom-2">
           <div className="flex items-center gap-3">
@@ -198,6 +198,8 @@ function RootComponent() {
         </div>
       ) : null}
       <CommandMenu />
+      <Toaster />
+      <DevBar enabled={isDevBarEnabled} />
     </div>
   )
 }
