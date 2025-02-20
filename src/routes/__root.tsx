@@ -188,7 +188,7 @@ function RootComponent() {
       <FloatingConversationInput />
       <DevBar enabled={isDevBarEnabled} />
       {needRefresh ? (
-        <div className="card-2 absolute bottom-16 right-2 z-20 flex items-center justify-between gap-4 p-1 pl-4 sm:bottom-2">
+        <div className="card-2 absolute bottom-12 right-2 z-20 flex items-center justify-between gap-4 !rounded-xl p-2 pl-4 sm:bottom-2 coarse:bottom-16 coarse:sm:bottom-2">
           <div className="flex items-center gap-3">
             {/* Dot to draw attention */}
             <div aria-hidden className="h-2 w-2 rounded-full bg-border-focus" />
