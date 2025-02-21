@@ -155,15 +155,6 @@ function RootComponent() {
         },
       } satisfies Tool<{ noteId: string }>,
       {
-        name: "go_home",
-        description: "Navigate to the home page, which shows a list of all the user's notes",
-        parameters: z.object({}),
-        execute: async () => {
-          navigate({ to: "/", search: { query: undefined, view: "grid" } })
-          return JSON.stringify({ success: true })
-        },
-      } satisfies Tool<Record<string, never>>,
-      {
         name: "get_templates",
         description: "Get a list of the user's templates.",
         parameters: z.object({}),
