@@ -122,11 +122,11 @@ function RootComponent() {
         description: "Search through all of the user's notes.",
         parameters: z.object({
           query: z.string().describe("The search query to find relevant notes"),
-          maxResults: z.number().describe("The maximum number of results to return"),
         }),
-        execute: async ({ query, maxResults = 5 }) => {
+        execute: async ({ query }) => {
           const searchNotes = getSearchNotes()
           const results = searchNotes(query)
+          const maxResults = 5
           return JSON.stringify({
             results: results.slice(0, maxResults).map((note) => ({
               note_id: note.id,
@@ -134,7 +134,7 @@ function RootComponent() {
             })),
           })
         },
-      } satisfies Tool<{ query: string; maxResults: number }>,
+      } satisfies Tool<{ query: string }>,
       {
         name: "go_to_note",
         description: "Navigate to an existing note using its ID.",
