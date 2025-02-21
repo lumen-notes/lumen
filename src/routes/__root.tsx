@@ -225,12 +225,7 @@ function RootComponent() {
         </div>
       ) : null}
       <CommandMenu />
-      <Toaster
-        position="top-right"
-        offset={{ left: "12px", right: "12px", top: "calc(var(--height-app-header) + 12px)" }}
-        mobileOffset={{ left: "12px", right: "12px", top: "calc(var(--height-app-header) + 12px)" }}
-        toastOptions={{ duration: 2000 }}
-      />
+      <Toaster toastOptions={{ duration: 2000 }} />
       <DevBar enabled={isDevBarEnabled} />
     </div>
   )
