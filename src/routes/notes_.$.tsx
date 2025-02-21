@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import ejs from "ejs"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -224,7 +224,6 @@ function NotePage() {
   // Getters
   // These getters allow us to access the latest values of these variables inside callbacks and effects
   // without having to include them in dependency arrays, which could cause unnecessary re-renders.
-  const getNote = useGetter(note)
   const getHandleSave = useGetter(handleSave)
   const getEditorValue = useGetter(editorValue)
   const getSetEditorValue = useGetter(setEditorValue)
@@ -232,7 +231,7 @@ function NotePage() {
   const getIsDirty = useGetter(isDirty)
 
   // Voice conversation tools
-  const [, send] = useAtom(voiceConversationMachineAtom)
+  const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
   React.useEffect(() => {
     const tools = [
       {
@@ -240,17 +239,10 @@ function NotePage() {
         description: "Read the content of the current note",
         parameters: z.object({}),
         execute: async () => {
-          const note = getNote()
-
-          if (!note) {
-            return JSON.stringify({
-              error: "Note not found",
-            })
-          }
-
+          const editorValue = getEditorValue()
           return JSON.stringify({
-            path: `${note.id}.md`,
-            content: note.content,
+            path: `${noteId}.md`,
+            content: editorValue,
           })
         },
       } satisfies Tool<Record<string, never>>,
@@ -269,7 +261,7 @@ function NotePage() {
       } satisfies Tool<{ content: string }>,
       {
         name: "save_current_note",
-        description: "Save the current note",
+        description: "Save the current note.",
         parameters: z.object({}),
         execute: async () => {
           const handleSave = getHandleSave()
@@ -281,12 +273,12 @@ function NotePage() {
       } satisfies Tool<Record<string, never>>,
     ]
 
-    send({ type: "ADD_TOOLS", tools })
+    sendVoiceConversation({ type: "ADD_TOOLS", tools })
 
     return () => {
-      send({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
+      sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [send, getNote, getSetEditorValue, getHandleSave, getEditorValue])
+  }, [sendVoiceConversation, noteId, getSetEditorValue, getHandleSave, getEditorValue])
 
   // Keyboard shortcuts
   useHotkeys(

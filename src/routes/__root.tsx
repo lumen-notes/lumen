@@ -113,7 +113,7 @@ function RootComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "get_templates",
-        description: "Get a list of the user's templates",
+        description: "Get a list of the user's templates.",
         parameters: z.object({}),
         execute: async () => {
           const templates = getTemplates()
@@ -122,7 +122,7 @@ function RootComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "read_clipboard_text",
-        description: "Read the text from the user's clipboard",
+        description: "Read the text from the user's clipboard.",
         parameters: z.object({}),
         execute: async () => {
           const clipboardText = await navigator.clipboard.readText()
@@ -131,7 +131,7 @@ function RootComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "mute_microphone",
-        description: "Mute the user's microphone",
+        description: "Mute the user's microphone.",
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("MUTE_MIC")
@@ -140,7 +140,7 @@ function RootComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "unmute_microphone",
-        description: "Unmute the user's microphone",
+        description: "Unmute the user's microphone.",
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("UNMUTE_MIC")
@@ -149,7 +149,7 @@ function RootComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "end_conversation",
-        description: "End the conversation",
+        description: "End the conversation.",
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("END")
