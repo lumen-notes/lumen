@@ -4,7 +4,6 @@ import {
   ScrollRestoration,
   createRootRoute,
   useNavigate,
-  useRouter,
 } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
@@ -27,6 +26,7 @@ import {
   fontAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
+  tagsAtom,
   templatesAtom,
   themeAtom,
 } from "../global-state"
@@ -57,12 +57,12 @@ function RootComponent() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
-  const getTemplates = useAtomCallback(useCallback((get) => get(templatesAtom), []))
-  const navigate = useNavigate()
-  const router = useRouter()
-  const { online } = useNetworkState()
   const searchNotes = useSearchNotes()
   const getSearchNotes = useGetter(searchNotes)
+  const getTemplates = useAtomCallback(useCallback((get) => get(templatesAtom), []))
+  const getTags = useAtomCallback(useCallback((get) => get(tagsAtom), []))
+  const navigate = useNavigate()
+  const { online } = useNetworkState()
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
@@ -164,32 +164,21 @@ function RootComponent() {
         },
       } satisfies Tool<Record<string, never>>,
       {
-        name: "go_back",
-        description:
-          "Navigate back to the previous page in the user's browser history, like clicking the browser's back button.",
-        parameters: z.object({}),
-        execute: async () => {
-          router.history.back()
-          return JSON.stringify({ success: true })
-        },
-      } satisfies Tool<Record<string, never>>,
-      {
-        name: "go_forward",
-        description:
-          "Navigate forward to the next page in the user's browser history, like clicking the browser's forward button.",
-        parameters: z.object({}),
-        execute: async () => {
-          router.history.forward()
-          return JSON.stringify({ success: true })
-        },
-      } satisfies Tool<Record<string, never>>,
-      {
         name: "get_templates",
         description: "Get a list of the user's templates.",
         parameters: z.object({}),
         execute: async () => {
           const templates = getTemplates()
           return JSON.stringify({ templates })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "get_tags",
+        description: "Get a list of the user's tags.",
+        parameters: z.object({}),
+        execute: async () => {
+          const tags = getTags()
+          return JSON.stringify({ tags: Object.keys(tags) })
         },
       } satisfies Tool<Record<string, never>>,
       {
@@ -233,7 +222,7 @@ function RootComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [sendVoiceConversation, navigate, getTemplates, router, getSearchNotes])
+  }, [navigate, getSearchNotes, getTemplates, getTags, sendVoiceConversation])
 
   // Toggle dev bar with ctrl+`
   const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
