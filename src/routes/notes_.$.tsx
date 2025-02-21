@@ -224,7 +224,10 @@ function NotePage() {
   // Getters
   // These getters allow us to access the latest values of these variables inside callbacks and effects
   // without having to include them in dependency arrays, which could cause unnecessary re-renders.
+  const getNote = useGetter(note)
+  const getGithubRepo = useGetter(githubRepo)
   const getHandleSave = useGetter(handleSave)
+  const getDeleteNote = useGetter(deleteNote)
   const getEditorValue = useGetter(editorValue)
   const getSetEditorValue = useGetter(setEditorValue)
   const getSwitchToReading = useGetter(switchToReading)
@@ -273,6 +276,37 @@ function NotePage() {
         },
       } satisfies Tool<Record<string, never>>,
       {
+        name: "delete_current_note",
+        description: "Delete the current note. This action is irreversible.",
+        parameters: z.object({}),
+        execute: async () => {
+          if (!noteId) return
+
+          // Ask the user to confirm before deleting a note
+          if (!window.confirm("Are you sure you want to delete this note?")) {
+            return JSON.stringify({ error: "Operation cancelled by user" })
+          }
+
+          const githubRepo = getGithubRepo()
+          localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+
+          const note = getNote()
+          if (note) {
+            const deleteNote = getDeleteNote()
+            deleteNote(note.id)
+          }
+
+          // Go home
+          await navigate({
+            to: "/",
+            search: { query: undefined, view: "grid" },
+            replace: true,
+          })
+
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
         name: "show_preview",
         description:
           "Switch the view to show the rendered markdown preview of the current note. This only affects how the note is displayed.",
@@ -304,13 +338,17 @@ function NotePage() {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
   }, [
-    sendVoiceConversation,
-    noteId,
-    getSetEditorValue,
-    getHandleSave,
+    getDeleteNote,
     getEditorValue,
+    getGithubRepo,
+    getHandleSave,
+    getNote,
+    getSetEditorValue,
     getSwitchToReading,
     getSwitchToWriting,
+    navigate,
+    noteId,
+    sendVoiceConversation,
   ])
 
   // Keyboard shortcuts
@@ -583,7 +621,13 @@ function NotePage() {
                       return
                     }
 
-                    deleteNote(noteId)
+                    localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+
+                    if (note) {
+                      deleteNote(note.id)
+                    }
+
+                    // Go home
                     navigate({
                       to: "/",
                       search: { query: undefined, view: "grid" },
