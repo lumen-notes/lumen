@@ -30,6 +30,8 @@ import {
   templatesAtom,
   themeAtom,
 } from "../global-state"
+import { useGetter } from "../hooks/getter"
+import { useSearchNotes } from "../hooks/search"
 import { useThemeColor } from "../hooks/theme-color"
 
 export const Route = createRootRoute({
@@ -59,6 +61,8 @@ function RootComponent() {
   const navigate = useNavigate()
   const router = useRouter()
   const { online } = useNetworkState()
+  const searchNotes = useSearchNotes()
+  const getSearchNotes = useGetter(searchNotes)
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
@@ -114,6 +118,24 @@ function RootComponent() {
         },
       } satisfies Tool<Record<string, never>>,
       {
+        name: "search_notes",
+        description: "Search through all of the user's notes.",
+        parameters: z.object({
+          query: z.string().describe("The search query to find relevant notes"),
+          maxResults: z.number().describe("The maximum number of results to return"),
+        }),
+        execute: async ({ query, maxResults = 5 }) => {
+          const searchNotes = getSearchNotes()
+          const results = searchNotes(query)
+          return JSON.stringify({
+            results: results.slice(0, maxResults).map((note) => ({
+              note_id: note.id,
+              content: note.content,
+            })),
+          })
+        },
+      } satisfies Tool<{ query: string; maxResults: number }>,
+      {
         name: "go_to_note",
         description: "Navigate to an existing note using its ID.",
         parameters: z.object({
@@ -133,9 +155,18 @@ function RootComponent() {
         },
       } satisfies Tool<{ noteId: string }>,
       {
+        name: "go_home",
+        description: "Navigate to the home page, which shows a list of all the user's notes",
+        parameters: z.object({}),
+        execute: async () => {
+          navigate({ to: "/", search: { query: undefined, view: "grid" } })
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
         name: "go_back",
         description:
-          "Navigate back to the previous page in history, like clicking the back button in a browser.",
+          "Navigate back to the previous page in the user's browser history, like clicking the browser's back button.",
         parameters: z.object({}),
         execute: async () => {
           router.history.back()
@@ -145,7 +176,7 @@ function RootComponent() {
       {
         name: "go_forward",
         description:
-          "Navigate forward to the next page in history, like clicking the forward button in a browser.",
+          "Navigate forward to the next page in the user's browser history, like clicking the browser's forward button.",
         parameters: z.object({}),
         execute: async () => {
           router.history.forward()
@@ -202,7 +233,7 @@ function RootComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [sendVoiceConversation, navigate, getTemplates, router])
+  }, [sendVoiceConversation, navigate, getTemplates, router, getSearchNotes])
 
   // Toggle dev bar with ctrl+`
   const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)

@@ -241,7 +241,7 @@ function NotePage() {
         execute: async () => {
           const editorValue = getEditorValue()
           return JSON.stringify({
-            path: `${noteId}.md`,
+            note_id: noteId,
             content: editorValue,
           })
         },

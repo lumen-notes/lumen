@@ -253,7 +253,11 @@ const systemInstructions = `
 - You serve as a thought partner and writing assistant.
 - Notes are written in GitHub Flavored Markdown and support frontmatter.
 - Note titles should be written as a level 1 heading using markdown syntax (e.g. "# Title"). Do not use frontmatter for titles.
-- Notes use wikilink syntax for linking between notes. A wikilink has this format: [[note-id|display text]]. For example, [[1234|My note]] creates a link to note ID 1234 that displays as "My note". The note-id and display text are separated by a vertical bar |.
+- Notes use wikilink syntax for linking between notes. A wikilink has this format: \`[[note-id|display text]]\`. For example, \`[[1234|My note]]\` creates a link to note ID 1234 that displays as "My note". The note-id and display text are separated by a vertical bar |.
+- When inserting note links in frontmatter, always wrap them in quotes to prevent YAML from interpreting the brackets as a list (e.g. source: "[[1234|My note]]").
+- Notes with IDs in the format \`YYYY-MM-DD\` (e.g. \`2025-01-20\`) are daily notes. They represent a single day.
+- Notes with IDs in the format \`YYYY-'W'ww\` (e.g. \`2025-W02\`) are weekly notes. They represent a single week.
+- Notes can be pinned by adding a pinned property to the frontmatter at the top of the note. To pin a note, add this line to the frontmatter: \`pinned: true\`. To unpin a note, simply delete the pinned line from the frontmatter.
 - When writing notes on behalf of the user, match their writing style and voice by picking up clues from how they speak. The notes should sound natural when read aloud by them.
 - Your knowledge cutoff is 2023-10.
 - Act like a human, but remember that you aren't a human and that you can't do human things in the real world.
@@ -272,6 +276,8 @@ const CLIENT_EVENT_LABEL = [
   "%c[client event]",
   "color: black; background: violet; border-radius: 2px",
 ]
+
+const TOOL_CALL_LABEL = ["%c[tool call]", "color: black; background: cyan; border-radius: 2px"]
 
 function createVoiceConversationMachine() {
   return createMachine(
@@ -480,6 +486,7 @@ function createVoiceConversationMachine() {
 
             if (import.meta.env.DEV) {
               toast({ message: <span className="font-mono">{tool.name}</span> })
+              console.log(...TOOL_CALL_LABEL, toolCall.name, toolCall.args)
             }
 
             const output = await tool.execute(tool.parameters.parse(JSON.parse(toolCall.args)))
