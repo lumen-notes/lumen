@@ -112,6 +112,25 @@ function RootComponent() {
         },
       } satisfies Tool<Record<string, never>>,
       {
+        name: "go_to_note",
+        description: "Navigate to an existing note using its ID.",
+        parameters: z.object({
+          noteId: z.string().describe("The ID of the note to navigate to"),
+        }),
+        execute: async ({ noteId }) => {
+          await navigate({
+            to: "/notes/$",
+            params: { _splat: noteId },
+            search: {
+              mode: "write",
+              query: undefined,
+              view: "grid",
+            },
+          })
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<{ noteId: string }>,
+      {
         name: "get_templates",
         description: "Get a list of the user's templates.",
         parameters: z.object({}),
