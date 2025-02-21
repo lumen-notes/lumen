@@ -53,7 +53,7 @@ import {
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
-import { useGetter } from "../hooks/getter"
+import { useValueRef } from "../hooks/value-ref"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -221,18 +221,18 @@ function NotePage() {
     }
   }, [mode, switchToWriting, switchToReading])
 
-  // Getters
-  // These getters allow us to access the latest values of these variables inside callbacks and effects
+  // Value refs
+  // These refs allow us to access the latest values of these variables inside callbacks and effects
   // without having to include them in dependency arrays, which could cause unnecessary re-renders.
-  const getNote = useGetter(note)
-  const getGithubRepo = useGetter(githubRepo)
-  const getHandleSave = useGetter(handleSave)
-  const getDeleteNote = useGetter(deleteNote)
-  const getEditorValue = useGetter(editorValue)
-  const getSetEditorValue = useGetter(setEditorValue)
-  const getSwitchToReading = useGetter(switchToReading)
-  const getSwitchToWriting = useGetter(switchToWriting)
-  const getIsDirty = useGetter(isDirty)
+  const noteRef = useValueRef(note)
+  const githubRepoRef = useValueRef(githubRepo)
+  const handleSaveRef = useValueRef(handleSave)
+  const deleteNoteRef = useValueRef(deleteNote)
+  const editorValueRef = useValueRef(editorValue)
+  const setEditorValueRef = useValueRef(setEditorValue)
+  const switchToReadingRef = useValueRef(switchToReading)
+  const switchToWritingRef = useValueRef(switchToWriting)
+  const isDirtyRef = useValueRef(isDirty)
 
   // Voice conversation tools
   const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
@@ -243,10 +243,9 @@ function NotePage() {
         description: "Read the content of the current note",
         parameters: z.object({}),
         execute: async () => {
-          const editorValue = getEditorValue()
           return JSON.stringify({
             note_id: noteId,
-            content: editorValue,
+            content: editorValueRef.current,
           })
         },
       } satisfies Tool<Record<string, never>>,
@@ -257,8 +256,7 @@ function NotePage() {
           content: z.string(),
         }),
         execute: async ({ content }) => {
-          const setEditorValue = getSetEditorValue()
-          setEditorValue(content)
+          setEditorValueRef.current(content)
 
           return JSON.stringify({ success: true })
         },
@@ -268,9 +266,7 @@ function NotePage() {
         description: "Save the current note.",
         parameters: z.object({}),
         execute: async () => {
-          const handleSave = getHandleSave()
-          const editorValue = getEditorValue()
-          handleSave(editorValue)
+          handleSaveRef.current(editorValueRef.current)
 
           return JSON.stringify({ success: true })
         },
@@ -287,13 +283,10 @@ function NotePage() {
             return JSON.stringify({ error: "Operation cancelled by user" })
           }
 
-          const githubRepo = getGithubRepo()
-          localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+          localStorage.removeItem(getNoteStorageKey({ githubRepo: githubRepoRef.current, noteId }))
 
-          const note = getNote()
-          if (note) {
-            const deleteNote = getDeleteNote()
-            deleteNote(note.id)
+          if (noteRef.current) {
+            deleteNoteRef.current(noteRef.current.id)
           }
 
           // Go home
@@ -312,8 +305,7 @@ function NotePage() {
           "Switch the view to show the rendered markdown preview of the current note. This only affects how the note is displayed.",
         parameters: z.object({}),
         execute: async () => {
-          const switchToReading = getSwitchToReading()
-          switchToReading()
+          switchToReadingRef.current()
 
           return JSON.stringify({ success: true })
         },
@@ -324,8 +316,7 @@ function NotePage() {
           "Switch the view to show the raw markdown source of the current note. This only affects how the note is displayed.",
         parameters: z.object({}),
         execute: async () => {
-          const switchToWriting = getSwitchToWriting()
-          switchToWriting()
+          switchToWritingRef.current()
 
           return JSON.stringify({ success: true })
         },
@@ -338,14 +329,14 @@ function NotePage() {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
   }, [
-    getDeleteNote,
-    getEditorValue,
-    getGithubRepo,
-    getHandleSave,
-    getNote,
-    getSetEditorValue,
-    getSwitchToReading,
-    getSwitchToWriting,
+    deleteNoteRef,
+    editorValueRef,
+    githubRepoRef,
+    handleSaveRef,
+    noteRef,
+    setEditorValueRef,
+    switchToReadingRef,
+    switchToWritingRef,
     navigate,
     noteId,
     sendVoiceConversation,
@@ -405,38 +396,28 @@ function NotePage() {
   useEffect(() => {
     // :w - Save
     Vim.defineEx("w", "w", () => {
-      const handleSave = getHandleSave()
-      const editorValue = getEditorValue()
-      handleSave(editorValue)
+      handleSaveRef.current(editorValueRef.current)
     })
 
     // :x - Save and switch to read mode
     Vim.defineEx("x", "x", () => {
-      const handleSave = getHandleSave()
-      const editorValue = getEditorValue()
-      const switchToReading = getSwitchToReading()
-      handleSave(editorValue)
-      switchToReading()
+      handleSaveRef.current(editorValueRef.current)
+      switchToReadingRef.current()
     })
 
     // :wq - Save and switch to read mode
     Vim.defineEx("wq", "wq", () => {
-      const handleSave = getHandleSave()
-      const editorValue = getEditorValue()
-      const switchToReading = getSwitchToReading()
-      handleSave(editorValue)
-      switchToReading()
+      handleSaveRef.current(editorValueRef.current)
+      switchToReadingRef.current()
     })
 
     // :q - Switch to read mode if there are no changes
     Vim.defineEx("q", "q", () => {
-      const isDirty = getIsDirty()
-      const switchToReading = getSwitchToReading()
-      if (!isDirty) {
-        switchToReading()
+      if (!isDirtyRef.current) {
+        switchToReadingRef.current()
       }
     })
-  }, [getHandleSave, getEditorValue, getSwitchToReading, getIsDirty])
+  }, [handleSaveRef, editorValueRef, switchToReadingRef, isDirtyRef])
 
   const { isScrolled, topSentinelProps } = useIsScrolled()
 

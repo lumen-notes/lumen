@@ -30,7 +30,7 @@ import {
   templatesAtom,
   themeAtom,
 } from "../global-state"
-import { useGetter } from "../hooks/getter"
+import { useValueRef } from "../hooks/value-ref"
 import { useSearchNotes } from "../hooks/search"
 import { useThemeColor } from "../hooks/theme-color"
 
@@ -58,7 +58,7 @@ function RootComponent() {
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const searchNotes = useSearchNotes()
-  const getSearchNotes = useGetter(searchNotes)
+  const searchNotesRef = useValueRef(searchNotes)
   const getTemplates = useAtomCallback(useCallback((get) => get(templatesAtom), []))
   const getTags = useAtomCallback(useCallback((get) => get(tagsAtom), []))
   const navigate = useNavigate()
@@ -124,8 +124,7 @@ function RootComponent() {
           query: z.string().describe("The search query to find relevant notes"),
         }),
         execute: async ({ query }) => {
-          const searchNotes = getSearchNotes()
-          const results = searchNotes(query)
+          const results = searchNotesRef.current(query)
           const maxResults = 5
           return JSON.stringify({
             results: results.slice(0, maxResults).map((note) => ({
@@ -213,7 +212,7 @@ function RootComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [navigate, getSearchNotes, getTemplates, getTags, sendVoiceConversation])
+  }, [navigate, searchNotesRef, getTemplates, getTags, sendVoiceConversation])
 
   // Toggle dev bar with ctrl+`
   const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)

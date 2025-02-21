@@ -1,5 +1,5 @@
 import React from "react"
-import { useGetter } from "../hooks/getter"
+import { useValueRef } from "../hooks/value-ref"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ClearIcon16, SearchIcon16 } from "./icons"
@@ -19,13 +19,13 @@ export function SearchInput({
 }: SearchInputProps) {
   const ref = React.useRef<HTMLInputElement>(null)
   const [inputValue, setInputValue] = React.useState(value || "")
-  const getInputValue = useGetter(inputValue)
+  const inputValueRef = useValueRef(inputValue)
 
   React.useEffect(() => {
-    if (value !== getInputValue()) {
+    if (value !== inputValueRef.current) {
       setInputValue(value || "")
     }
-  }, [value, getInputValue])
+  }, [value, inputValueRef])
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const newValue = event.target.value
