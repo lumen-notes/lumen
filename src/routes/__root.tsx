@@ -4,6 +4,7 @@ import {
   ScrollRestoration,
   createRootRoute,
   useNavigate,
+  useRouter,
 } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
@@ -56,6 +57,7 @@ function RootComponent() {
   const send = useSetAtom(globalStateMachineAtom)
   const getTemplates = useAtomCallback(useCallback((get) => get(templatesAtom), []))
   const navigate = useNavigate()
+  const router = useRouter()
   const { online } = useNetworkState()
 
   // Sync when the app becomes visible again
@@ -122,7 +124,7 @@ function RootComponent() {
             to: "/notes/$",
             params: { _splat: noteId },
             search: {
-              mode: "write",
+              mode: "read",
               query: undefined,
               view: "grid",
             },
@@ -130,6 +132,26 @@ function RootComponent() {
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<{ noteId: string }>,
+      {
+        name: "go_back",
+        description:
+          "Navigate back to the previous page in history, like clicking the back button in a browser.",
+        parameters: z.object({}),
+        execute: async () => {
+          router.history.back()
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "go_forward",
+        description:
+          "Navigate forward to the next page in history, like clicking the forward button in a browser.",
+        parameters: z.object({}),
+        execute: async () => {
+          router.history.forward()
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
       {
         name: "get_templates",
         description: "Get a list of the user's templates.",
@@ -180,7 +202,7 @@ function RootComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [sendVoiceConversation, navigate, getTemplates])
+  }, [sendVoiceConversation, navigate, getTemplates, router])
 
   // Toggle dev bar with ctrl+`
   const [isDevBarEnabled, setIsDevBarEnabled] = useState(false)
