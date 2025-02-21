@@ -603,7 +603,7 @@ function NotePage() {
                 <DropdownMenu.Item
                   variant="danger"
                   icon={<TrashIcon16 />}
-                  disabled={isSignedOut || !note}
+                  disabled={isSignedOut}
                   onSelect={() => {
                     if (!noteId) return
 
