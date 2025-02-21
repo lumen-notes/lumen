@@ -228,6 +228,7 @@ function NotePage() {
   const getEditorValue = useGetter(editorValue)
   const getSetEditorValue = useGetter(setEditorValue)
   const getSwitchToReading = useGetter(switchToReading)
+  const getSwitchToWriting = useGetter(switchToWriting)
   const getIsDirty = useGetter(isDirty)
 
   // Voice conversation tools
@@ -271,6 +272,30 @@ function NotePage() {
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
+      {
+        name: "show_preview",
+        description:
+          "Switch the view to show the rendered markdown preview of the current note. This only affects how the note is displayed.",
+        parameters: z.object({}),
+        execute: async () => {
+          const switchToReading = getSwitchToReading()
+          switchToReading()
+
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
+        name: "show_source",
+        description:
+          "Switch the view to show the raw markdown source of the current note. This only affects how the note is displayed.",
+        parameters: z.object({}),
+        execute: async () => {
+          const switchToWriting = getSwitchToWriting()
+          switchToWriting()
+
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<Record<string, never>>,
     ]
 
     sendVoiceConversation({ type: "ADD_TOOLS", tools })
@@ -278,7 +303,15 @@ function NotePage() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [sendVoiceConversation, noteId, getSetEditorValue, getHandleSave, getEditorValue])
+  }, [
+    sendVoiceConversation,
+    noteId,
+    getSetEditorValue,
+    getHandleSave,
+    getEditorValue,
+    getSwitchToReading,
+    getSwitchToWriting,
+  ])
 
   // Keyboard shortcuts
   useHotkeys(
