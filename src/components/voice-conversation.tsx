@@ -234,7 +234,6 @@ type VoiceConversationEvent =
     }
 
 type VoiceConversationContext = {
-  instructions: Array<{ id: string; content: string }>
   tools: Array<Tool<unknown>>
   microphoneStream: MediaStream | undefined
   sendClientEvent: (clientEvent: RealtimeClientEvent) => void
@@ -286,12 +285,6 @@ function createVoiceConversationMachine() {
         context: VoiceConversationContext
       },
       context: {
-        instructions: [
-          {
-            id: "system",
-            content: systemInstructions,
-          },
-        ],
         tools: [],
         microphoneStream: undefined,
         sendClientEvent: () => {},
