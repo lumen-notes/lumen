@@ -1,12 +1,12 @@
 export function getSampleMarkdownFiles() {
   return {
-    [`README.md`]: `---
+    "README.md": `---
 pinned: true
 ---
 
 # 👋 Welcome to Lumen
 
-Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app for capturing and organizing your thoughts.
+This is Lumen, a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app for capturing and organizing your thoughts.
 
 Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
