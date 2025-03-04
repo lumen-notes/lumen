@@ -487,6 +487,14 @@ function NotePage() {
             >
               <PaperclipIcon16 />
             </IconButton>
+            <IconButton
+              aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
+              onClick={() => {
+                setEditorValue(togglePin(editorValue))
+              }}
+            >
+              {parsedNote?.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
+            </IconButton>
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
                 <IconButton aria-label="More actions" size="small" disableTooltip>
@@ -502,21 +510,6 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-                <DropdownMenu.Item
-                  icon={
-                    parsedNote.pinned ? (
-                      <PinFillIcon16 className="text-text-pinned" />
-                    ) : (
-                      <PinIcon16 />
-                    )
-                  }
-                  onSelect={() => {
-                    setEditorValue(togglePin(editorValue))
-                  }}
-                >
-                  {parsedNote.pinned ? "Unpin" : "Pin"}
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Item
