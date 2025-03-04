@@ -91,7 +91,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 leading-4 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10",
+          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-secondary focus:outline-none active:bg-bg-tertiary data-[disabled]:cursor-default data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10",
           className,
         )}
         asChild={Boolean(href)}

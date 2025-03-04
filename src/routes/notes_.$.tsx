@@ -544,7 +544,7 @@ function NotePage() {
                 )}
                 <DropdownMenu.Item
                   className="font-sans"
-                  icon={<span className="font-sans">Aa</span>}
+                  icon={<span className="font-sans font-bold">Aa</span>}
                   selected={font === "sans"}
                   onSelect={() => setFont("sans")}
                 >
@@ -552,7 +552,7 @@ function NotePage() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-serif"
-                  icon={<span className="font-serif">Aa</span>}
+                  icon={<span className="font-serif font-bold">Aa</span>}
                   selected={font === "serif"}
                   onSelect={() => setFont("serif")}
                 >
@@ -560,7 +560,7 @@ function NotePage() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-handwriting"
-                  icon={<span className="font-handwriting">Aa</span>}
+                  icon={<span className="font-handwriting font-bold">Aa</span>}
                   selected={font === "handwriting"}
                   onSelect={() => setFont("handwriting")}
                 >
