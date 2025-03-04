@@ -39,7 +39,7 @@ function RouteComponent() {
           <FontSection />
           <EditorSection />
           <AISection />
-          <p className="font-handwriting text-text-secondary text-center italic mt-2">
+          <p className="font-handwriting text-text-secondary text-center mt-2">
             Made by{" "}
             <a
               className="link"
