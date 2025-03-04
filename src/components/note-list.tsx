@@ -262,7 +262,7 @@ export function NoteList({
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-text-pinned" />
                       ) : null}
                       <span className="truncate text-text-secondary">
-                        <span className="text-text">{note.displayName}</span>
+                        <span className="text-text font-content">{note.displayName}</span>
                       </span>
                     </Link>
                   </li>
