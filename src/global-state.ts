@@ -724,7 +724,7 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 
 export const themeAtom = atomWithStorage<"default" | "eink">("theme", "default")
 
-export const fontAtom = atomWithStorage<"sans" | "serif">("font", "sans")
+export const fontAtom = atomWithStorage<"sans" | "serif" | "handwriting">("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 

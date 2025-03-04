@@ -185,6 +185,12 @@ function FontSection() {
             Serif
           </label>
         </div>
+        <div className="flex items-center gap-2">
+          <RadioGroup.Item id="font-handwriting" value="handwriting" />
+          <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
+            Handwriting
+          </label>
+        </div>
       </RadioGroup>
     </SettingsSection>
   )

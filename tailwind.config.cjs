@@ -25,6 +25,7 @@ module.exports = {
       sans: "var(--font-family-sans)",
       mono: "var(--font-family-mono)",
       serif: "var(--font-family-serif)",
+      handwriting: "var(--font-family-handwriting)",
       content: "var(--font-family-content)",
     },
     fontSize: {

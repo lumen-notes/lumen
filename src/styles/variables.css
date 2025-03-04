@@ -70,7 +70,11 @@
   --font-family-sans: "iA Writer Quattro", system-ui, sans-serif;
   --font-family-mono: "iA Writer Mono", monospace;
   --font-family-serif: "Literata Variable", Georgia, serif;
+  --font-family-handwriting: "Shantell Sans Variable", system-ui, sans-serif;
   --font-family-content: var(--font-family-sans);
+
+  /* Only applies to the handwriting font (Shantell Sans) */
+  font-variation-settings: "INFM" 75;
 
   /* Font sizes */
   --font-size-sm: 12px;

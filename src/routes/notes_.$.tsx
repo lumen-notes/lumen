@@ -44,6 +44,7 @@ import { SegmentedControl } from "../components/segmented-control"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
   dailyTemplateAtom,
+  fontAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -147,6 +148,7 @@ function NotePage() {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const [width, setWidth] = useAtom(widthAtom)
+  const [font, setFont] = useAtom(fontAtom)
 
   // Note data
   const note = useNoteById(noteId)
@@ -167,8 +169,8 @@ function NotePage() {
       isDailyNote && dailyTemplate
         ? renderTemplate(dailyTemplate, { date: noteId ?? "" })
         : isWeeklyNote && weeklyTemplate
-        ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
-        : "",
+          ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
+          : "",
   })
   const [editorSettings] = useEditorSettings()
   const parsedNote = React.useMemo(
@@ -540,6 +542,31 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 )}
+                <DropdownMenu.Item
+                  className="font-sans"
+                  icon={<span className="font-sans">Aa</span>}
+                  selected={font === "sans"}
+                  onSelect={() => setFont("sans")}
+                >
+                  Sans-serif
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="font-serif"
+                  icon={<span className="font-serif">Aa</span>}
+                  selected={font === "serif"}
+                  onSelect={() => setFont("serif")}
+                >
+                  Serif
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className="font-handwriting"
+                  icon={<span className="font-handwriting">Aa</span>}
+                  selected={font === "handwriting"}
+                  onSelect={() => setFont("handwriting")}
+                >
+                  Handwriting
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
                 <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>
                   Copy markdown
                 </DropdownMenu.Item>

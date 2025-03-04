@@ -85,9 +85,12 @@ function RootComponent() {
 
       if (registration) {
         // Check for updates every hour
-        setInterval(() => {
-          registration.update()
-        }, 60 * 60 * 1000)
+        setInterval(
+          () => {
+            registration.update()
+          },
+          60 * 60 * 1000,
+        )
       }
     },
     onRegisterError(error) {
@@ -234,7 +237,7 @@ function RootComponent() {
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--font-family-content",
-      font === "serif" ? "var(--font-family-serif)" : "var(--font-family-sans)",
+      `var(--font-family-${font})`,
     )
   }, [font])
 
