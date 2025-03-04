@@ -39,6 +39,26 @@ function RouteComponent() {
           <FontSection />
           <EditorSection />
           <AISection />
+          <p className="font-handwriting text-text-secondary text-center italic mt-2">
+            Made by{" "}
+            <a
+              className="link"
+              href="https://github.com/colebemis"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Cole Bemis
+            </a>{" "}
+            and{" "}
+            <a
+              className="link whitespace-nowrap"
+              href="https://github.com/lumen-notes/lumen/graphs/contributors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              the open source community
+            </a>
+          </p>
         </div>
       </div>
     </AppLayout>
