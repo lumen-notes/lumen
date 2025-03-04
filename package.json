@@ -29,6 +29,8 @@
     "@codemirror/view": "^6.34.2",
     "@fontsource-variable/literata": "^5.1.1",
     "@fontsource-variable/shantell-sans": "^5.2.5",
+    "@fontsource/monaspace-radon": "^5.2.5",
+    "@fontsource/monaspace-xenon": "^5.2.5",
     "@isomorphic-git/cors-proxy": "^2.7.1",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "@lezer/highlight": "^1.2.0",
