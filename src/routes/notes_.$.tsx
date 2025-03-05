@@ -537,27 +537,27 @@ function NotePage() {
                 )}
                 <DropdownMenu.Item
                   className="font-sans"
-                  icon={<span className="font-sans font-bold">Aa</span>}
+                  icon={<span className="font-sans">Aa</span>}
                   selected={font === "sans"}
                   onSelect={() => setFont("sans")}
                 >
-                  Sans-serif
+                  Simple
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-serif"
-                  icon={<span className="font-serif font-bold">Aa</span>}
+                  icon={<span className="font-serif">Aa</span>}
                   selected={font === "serif"}
                   onSelect={() => setFont("serif")}
                 >
-                  Serif
+                  Bookish
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-handwriting"
-                  icon={<span className="font-handwriting font-bold">Aa</span>}
+                  icon={<span className="font-handwriting">Aa</span>}
                   selected={font === "handwriting"}
                   onSelect={() => setFont("handwriting")}
                 >
-                  Handwriting
+                  Scribbled
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>

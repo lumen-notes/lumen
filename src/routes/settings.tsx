@@ -196,19 +196,19 @@ function FontSection() {
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-sans" value="sans" />
           <label htmlFor="font-sans" className="select-none font-sans leading-4">
-            Sans-serif
+            Simple
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-serif" value="serif" />
           <label htmlFor="font-serif" className="select-none font-serif leading-4">
-            Serif
+            Bookish
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-handwriting" value="handwriting" />
           <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
-            Handwriting
+            Scribbled
           </label>
         </div>
       </RadioGroup>
