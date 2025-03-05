@@ -55,7 +55,12 @@ export function VoiceConversationButton() {
 
   if (state.matches("active.ready")) {
     return (
-      <SpinningBorder enabled={state.matches("active.ready.assistant.responding")}>
+      <SpinningBorder
+        enabled={
+          state.matches("active.ready.assistant.thinking") ||
+          state.matches("active.ready.assistant.speaking")
+        }
+      >
         <DropdownMenu>
           <DropdownMenu.Trigger asChild>
             <IconButton
@@ -199,16 +204,22 @@ type VoiceConversationEvent =
       sendClientEvent: (clientEvent: RealtimeClientEvent) => void
     }
   | {
-      type: "SPEECH_STARTED"
+      type: "USER_SPEECH_STARTED"
     }
   | {
-      type: "SPEECH_STOPPED"
+      type: "USER_SPEECH_STOPPED"
     }
   | {
-      type: "RESPONSE_STARTED"
+      type: "ASSISTANT_THINKING_STARTED"
     }
   | {
-      type: "RESPONSE_STOPPED"
+      type: "ASSISTANT_THINKING_STOPPED"
+    }
+  | {
+      type: "ASSISTANT_SPEECH_STARTED"
+    }
+  | {
+      type: "ASSISTANT_SPEECH_STOPPED"
     }
   | {
       type: "SEND_TEXT"
@@ -362,12 +373,12 @@ function createVoiceConversationMachine() {
                   states: {
                     idle: {
                       on: {
-                        SPEECH_STARTED: "speaking",
+                        USER_SPEECH_STARTED: "speaking",
                       },
                     },
                     speaking: {
                       on: {
-                        SPEECH_STOPPED: "idle",
+                        USER_SPEECH_STOPPED: "idle",
                       },
                     },
                   },
@@ -377,12 +388,20 @@ function createVoiceConversationMachine() {
                   states: {
                     listening: {
                       on: {
-                        RESPONSE_STARTED: "responding",
+                        ASSISTANT_THINKING_STARTED: "thinking",
                       },
                     },
-                    responding: {
+                    thinking: {
                       on: {
-                        RESPONSE_STOPPED: "listening",
+                        USER_SPEECH_STARTED: "listening",
+                        ASSISTANT_THINKING_STOPPED: "listening",
+                        ASSISTANT_SPEECH_STARTED: "speaking",
+                      },
+                    },
+                    speaking: {
+                      on: {
+                        USER_SPEECH_STARTED: "listening",
+                        ASSISTANT_SPEECH_STOPPED: "listening",
                       },
                     },
                   },
@@ -665,51 +684,34 @@ function createVoiceConversationMachine() {
                 }
 
                 case "input_audio_buffer.speech_started": {
-                  sendBack({
-                    type: "SPEECH_STARTED",
-                  })
+                  sendBack("USER_SPEECH_STARTED")
                   break
                 }
 
                 case "input_audio_buffer.speech_stopped": {
-                  sendBack({
-                    type: "SPEECH_STOPPED",
-                  })
+                  sendBack("USER_SPEECH_STOPPED")
                   break
                 }
 
                 case "response.created": {
-                  sendBack({
-                    type: "RESPONSE_STARTED",
-                  })
+                  sendBack("ASSISTANT_THINKING_STARTED")
                   break
                 }
 
-                // case "output_audio_buffer.started": {
-                //   hasOutputAudioBuffer = true
-                //   break
-                // }
+                // @ts-expect-error This event is not documented
+                case "output_audio_buffer.started": {
+                  sendBack("ASSISTANT_SPEECH_STARTED")
+                  break
+                }
 
-                // case "output_audio_buffer.stopped": {
-                //   if (hasOutputAudioBuffer) {
-                //     hasOutputAudioBuffer = false
-                //     sendBack({
-                //       type: "RESPONSE_STOPPED",
-                //     })
-                //   }
-                //   break
-                // }
+                // @ts-expect-error This event is not documented
+                case "output_audio_buffer.stopped": {
+                  sendBack("ASSISTANT_SPEECH_STOPPED")
+                  break
+                }
 
                 case "response.done": {
-                  // If an output audio buffer has started, the 'response.done' event
-                  // might fire before the audio output has actually finished.
-                  // In that case, we wait for the 'output_audio_buffer.stopped' event
-                  // to mark the true end of the response.
-                  // if (!hasOutputAudioBuffer) {
-                  sendBack({
-                    type: "RESPONSE_STOPPED",
-                  })
-                  // }
+                  sendBack("ASSISTANT_THINKING_STOPPED")
 
                   const toolCalls =
                     serverEvent.response.output?.filter(
