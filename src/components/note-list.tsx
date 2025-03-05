@@ -255,7 +255,7 @@ export function NoteList({
                         query: undefined,
                         view: "grid",
                       }}
-                      className="focus-ring flex h-10 items-center rounded-lg px-3 leading-4 hover:bg-bg-secondary coarse:h-12 coarse:p-4"
+                      className="focus-ring flex h-10 items-center rounded-lg px-3 hover:bg-bg-secondary coarse:h-12 coarse:p-4"
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
