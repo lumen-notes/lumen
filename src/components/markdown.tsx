@@ -77,8 +77,8 @@ export const Markdown = React.memo(
     const filteredFrontmatter = React.useMemo(() => {
       return Object.fromEntries(
         Object.entries(frontmatter).filter(([key, value]) => {
-          // Skip `pinned` frontmatter key
-          if (key === "pinned") return false
+          // Skip reserved frontmatter keys
+          if (["pinned", "share_id"].includes(key)) return false
 
           // Filter out empty values
           return Boolean(value)
@@ -180,20 +180,20 @@ export const Markdown = React.memo(
                     </Details>
                   ) : null}
                 </div>
-                {body ? (
-                  <div
-                    style={
-                      fontSize === "large"
-                        ? ({
-                            "--font-size-base": "16px",
-                            "--font-size-sm": "14px",
-                          } as React.CSSProperties)
-                        : undefined
-                    }
-                  >
-                    <MarkdownContent>{body}</MarkdownContent>
-                  </div>
-                ) : null}
+                <div
+                  style={
+                    fontSize === "large"
+                      ? ({
+                          "--font-size-base": "16px",
+                          "--font-size-sm": "14px",
+                        } as React.CSSProperties)
+                      : undefined
+                  }
+                >
+                  <MarkdownContent className={cx(!body && "text-text-secondary")}>
+                    {body || "_Empty note_"}
+                  </MarkdownContent>
+                </div>
               </div>
             </>
           )}

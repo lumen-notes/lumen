@@ -24,6 +24,7 @@ import {
   EditIcon16,
   ExternalLinkIcon16,
   FullwidthIcon16,
+  GlobeIcon16,
   MoreIcon16,
   NoteIcon16,
   PaperclipIcon16,
@@ -40,6 +41,7 @@ import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
+import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
@@ -54,10 +56,10 @@ import {
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
-import { useValueRef } from "../hooks/value-ref"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
+import { useValueRef } from "../hooks/value-ref"
 import { GitHubRepository, Note, NoteId, Template } from "../schema"
 import { cx } from "../utils/cx"
 import {
@@ -699,26 +701,35 @@ function NotePage() {
             {isDailyNote || isWeeklyNote ? (
               <Calendar className="print:hidden" activeNoteId={noteId ?? ""} />
             ) : null}
+
             {mode === "read" && (
               <div>
+                {parsedNote?.frontmatter?.share_id ? (
+                  <div className="mb-5 text-text-secondary">
+                    <PillButton className="pl-1" asChild>
+                      <a
+                        href={`/share/${parsedNote.frontmatter.share_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <GlobeIcon16 />
+                        Published
+                      </a>
+                    </PillButton>
+                  </div>
+                ) : null}
                 {
                   // When printing a daily or weekly note without a title,
                   // insert the date or week number as the title
                   (isDailyNote || isWeeklyNote) && !note?.title ? (
-                    <h1 className="mb-4 hidden font-content text-xl font-bold leading-5 print:block">
+                    <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
                       {isDailyNote
                         ? formatDate(noteId ?? "", { alwaysIncludeYear: true })
                         : formatWeek(noteId ?? "")}
                     </h1>
                   ) : null
                 }
-                {editorValue ? (
-                  <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
-                ) : (
-                  <span className="font-content italic text-text-secondary text-[16px]">
-                    Empty note
-                  </span>
-                )}
+                <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
               </div>
             )}
             <div
