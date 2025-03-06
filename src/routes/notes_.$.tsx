@@ -570,15 +570,6 @@ function NotePage() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
-                  icon={<ExternalLinkIcon16 />}
-                  href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  disabled={isSignedOut || !note}
-                >
-                  Open in GitHub
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
                   icon={<ShareIcon16 />}
                   disabled={isSignedOut || !note}
                   onSelect={async () => {
@@ -597,7 +588,16 @@ function NotePage() {
                     window.open(url, "_blank")
                   }}
                 >
-                  Export as Gist
+                  Share
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ExternalLinkIcon16 />}
+                  href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  disabled={isSignedOut || !note}
+                >
+                  Open in GitHub
                 </DropdownMenu.Item>
                 <DropdownMenu.Item icon={<PrinterIcon16 />} onSelect={() => window.print()}>
                   Print
@@ -705,7 +705,7 @@ function NotePage() {
             {mode === "read" && (
               <div>
                 {parsedNote?.frontmatter?.share_id ? (
-                  <div className="mb-5">
+                  <div className="mb-5 print:hidden">
                     <PillButton className="pl-1 coarse:pl-2" asChild>
                       <a
                         href={`/share/${parsedNote.frontmatter.share_id}`}
