@@ -57,43 +57,36 @@ function RouteComponent() {
   }, [gist.description, note?.title, note?.content])
 
   return (
-    <div className="overflow-auto [scrollbar-gutter:stable]">
-      <div className="p-4 md:p-16">
-        <div className="max-w-3xl mx-auto flex flex-col gap-5">
-          <div className="flex items-center gap-2 truncate">
-            <span className="inline-flex items-center gap-2 flex-shrink-0 truncate text-text-secondary">
-              <img
-                src={gist.owner?.avatar_url}
-                alt=""
-                aria-hidden
-                className="size-4 rounded-full"
-              />
-              <span>{gist.owner?.login}</span>
-            </span>
-            {gist.updated_at ? (
-              <>
-                <span className="text-text-secondary">·</span>
-                <span className="text-text-secondary truncate">
-                  Updated{" "}
-                  {formatDistance(new Date(gist.updated_at), new Date(), {
-                    addSuffix: true,
-                  })}
-                </span>
-              </>
-            ) : null}
-          </div>
-          <Markdown hideFrontmatter>{content}</Markdown>
-          <div className="text-text-secondary mt-5 print:hidden">
-            Published with{" "}
-            <a
-              href="https://uselumen.com"
-              className="link link-external"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Lumen
-            </a>
-          </div>
+    <div className="p-4 md:p-16">
+      <div className="max-w-3xl mx-auto flex flex-col gap-5">
+        <div className="flex items-center gap-2 truncate">
+          <span className="inline-flex items-center gap-2 flex-shrink-0 truncate text-text-secondary">
+            <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-4 rounded-full" />
+            <span>{gist.owner?.login}</span>
+          </span>
+          {gist.updated_at ? (
+            <>
+              <span className="text-text-secondary">·</span>
+              <span className="text-text-secondary truncate">
+                Updated{" "}
+                {formatDistance(new Date(gist.updated_at), new Date(), {
+                  addSuffix: true,
+                })}
+              </span>
+            </>
+          ) : null}
+        </div>
+        <Markdown hideFrontmatter>{content}</Markdown>
+        <div className="text-text-secondary mt-5 print:hidden">
+          Published with{" "}
+          <a
+            href="https://uselumen.com"
+            className="link link-external"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Lumen
+          </a>
         </div>
       </div>
     </div>

@@ -25,7 +25,7 @@ import {
 import { useEditorSettings } from "../hooks/editor-settings"
 import { cx } from "../utils/cx"
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_appRoot/settings")({
   component: RouteComponent,
 })
 

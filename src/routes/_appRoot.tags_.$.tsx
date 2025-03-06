@@ -12,7 +12,7 @@ type RouteSearch = {
   view: "grid" | "list"
 }
 
-export const Route = createFileRoute("/tags_/$")({
+export const Route = createFileRoute("/_appRoot/tags_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
@@ -75,7 +75,11 @@ function RouteComponent() {
                   )
                 ) {
                   deleteTag(tag)
-                  navigate({ to: "/tags", search: { query: undefined }, replace: true })
+                  navigate({
+                    to: "/tags",
+                    search: { query: undefined },
+                    replace: true,
+                  })
                 }
               }}
             >
@@ -93,7 +97,10 @@ function RouteComponent() {
             query={query ?? ""}
             view={view}
             onQueryChange={(query) =>
-              navigate({ search: (prev) => ({ ...prev, query }), replace: true })
+              navigate({
+                search: (prev) => ({ ...prev, query }),
+                replace: true,
+              })
             }
             onViewChange={(view) =>
               navigate({ search: (prev) => ({ ...prev, view }), replace: true })

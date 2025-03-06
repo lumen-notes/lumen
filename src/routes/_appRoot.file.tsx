@@ -7,7 +7,7 @@ type RouteSearch = {
   path: string
 }
 
-export const Route = createFileRoute("/file")({
+export const Route = createFileRoute("/_appRoot/file")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       path: String(search.path ?? ""),

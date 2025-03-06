@@ -8,7 +8,7 @@ type RouteSearch = {
   view: "grid" | "list"
 }
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_appRoot/")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,

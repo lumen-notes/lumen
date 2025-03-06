@@ -81,7 +81,7 @@ type RouteSearch = {
   view: "grid" | "list"
 }
 
-export const Route = createFileRoute("/notes_/$")({
+export const Route = createFileRoute("/_appRoot/notes_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       mode: search.mode === "write" ? "write" : "read",
@@ -330,7 +330,10 @@ function NotePage() {
     sendVoiceConversation({ type: "ADD_TOOLS", tools })
 
     return () => {
-      sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
+      sendVoiceConversation({
+        type: "REMOVE_TOOLS",
+        toolNames: tools.map((tool) => tool.name),
+      })
     }
   }, [
     deleteNoteRef,
@@ -782,10 +785,16 @@ function NotePage() {
                     query={query ?? ""}
                     view={view}
                     onQueryChange={(query) =>
-                      navigate({ search: (prev) => ({ ...prev, query }), replace: true })
+                      navigate({
+                        search: (prev) => ({ ...prev, query }),
+                        replace: true,
+                      })
                     }
                     onViewChange={(view) =>
-                      navigate({ search: (prev) => ({ ...prev, view }), replace: true })
+                      navigate({
+                        search: (prev) => ({ ...prev, view }),
+                        replace: true,
+                      })
                     }
                   />
                 </LinkHighlightProvider>

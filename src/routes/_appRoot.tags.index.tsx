@@ -13,7 +13,7 @@ type RouteSearch = {
   query: string | undefined
 }
 
-export const Route = createFileRoute("/tags/")({
+export const Route = createFileRoute("/_appRoot/tags/")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
