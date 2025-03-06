@@ -33,11 +33,11 @@
 .markdown h5,
 .markdown h6,
 .markdown th {
-  @apply font-bold;
+  @apply font-bold leading-[1.4];
 }
 
 .markdown h1 {
-  @apply text-xl coarse:!leading-7;
+  @apply text-xl;
 }
 
 .markdown h2 {

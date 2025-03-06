@@ -83,7 +83,7 @@
   --font-size-sm: 12px;
   --font-size-base: 14px;
   --font-size-lg: 16px;
-  --font-size-xl: 18px;
+  --font-size-xl: 20px;
 
   /* Font weights */
   --font-weight-normal: 400;
@@ -131,7 +131,7 @@
     --font-size-sm: 13px;
     --font-size-base: 15px;
     --font-size-lg: 18px;
-    --font-size-xl: 20px;
+    --font-size-xl: 22px;
 
     /* Font weights */
     --font-weight-normal: 450;

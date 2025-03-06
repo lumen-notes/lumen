@@ -38,13 +38,13 @@ export function NotePreview({ note, className }: { note: Note; className?: strin
     <div
       {...{ inert: "" }}
       className={cx(
-        "flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-3 [contain:layout_paint]",
+        "flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-4 [contain:layout_paint]",
         className,
       )}
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className={cx("mb-1 flex items-baseline gap-2.5 font-content")}>
-          <span className="truncate font-bold">{note.displayName}</span>
+          <span className="truncate font-bold text-lg">{note.displayName}</span>
           <span className="truncate text-sm italic text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
           </span>
