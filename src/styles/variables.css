@@ -190,3 +190,45 @@
     --color-bg: #000;
   }
 }
+
+/* Print styles */
+
+@media print {
+  :root {
+    /* Text colors */
+    --color-text: #000;
+    --color-text-secondary: var(--color-text);
+    --color-text-tertiary: var(--color-text);
+    --color-text-highlight: var(--color-bg);
+    --color-text-selection: var(--color-bg);
+    --color-text-success: var(--color-text);
+    --color-text-danger: var(--color-text);
+    --color-text-pending: var(--color-text);
+    --color-text-pinned: var(--color-text);
+
+    /* Background colors */
+    --color-bg: #fff;
+    --color-bg-inset: var(--color-bg);
+    --color-bg-card: var(--color-bg);
+    --color-bg-overlay: var(--color-bg);
+    --color-bg-backdrop: var(--color-bg);
+    --color-bg-overlay-backdrop: var(--color-bg);
+    --color-bg-secondary: var(--color-bg);
+    --color-bg-tertiary: var(--color-bg);
+    --color-bg-code-block: var(--color-bg);
+    --color-bg-highlight: var(--color-text);
+    --color-bg-selection: var(--color-text);
+
+    /* Border colors */
+    --color-border: var(--color-text);
+    --color-border-secondary: var(--color-text);
+    --color-border-table: var(--color-text);
+    --color-border-focus: var(--color-text);
+
+    /* Syntax colors */
+    --color-syntax-yellow: var(--color-text);
+    --color-syntax-red: var(--color-text);
+    --color-syntax-purple: var(--color-text);
+    --color-syntax-green: var(--color-text);
+  }
+}

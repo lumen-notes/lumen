@@ -1,5 +1,7 @@
 import { request } from "@octokit/request"
 import { createFileRoute } from "@tanstack/react-router"
+import { formatDistance } from "date-fns"
+import React from "react"
 import { Markdown } from "../components/markdown"
 import { parseNote } from "../utils/parse-note"
 
@@ -42,12 +44,56 @@ export const Route = createFileRoute("/share/$shareId")({
 })
 
 function RouteComponent() {
-  const { note } = Route.useLoaderData()
+  const { gist, note } = Route.useLoaderData()
+
+  const content = React.useMemo(() => {
+    let content = note?.content ?? ""
+
+    // If there's no title, and there's a description, we use the description as the title
+    if (!note?.title && gist.description) {
+      content = `# ${gist.description}\n\n${content}`
+    }
+    return content
+  }, [gist.description, note?.title, note?.content])
+
   return (
     <div className="overflow-auto [scrollbar-gutter:stable]">
-      <div className="px-4 md:px-14 pt-14 pb-[30vh]">
-        <div className="max-w-3xl mx-auto">
-          <Markdown hideFrontmatter>{note?.content ?? ""}</Markdown>
+      <div className="p-4 md:p-16">
+        <div className="max-w-3xl mx-auto flex flex-col gap-5">
+          <div className="text-text-secondary flex items-center gap-2 truncate">
+            <span className="inline-flex items-center gap-2 flex-shrink-0 truncate">
+              <img
+                src={gist.owner?.avatar_url}
+                alt=""
+                aria-hidden
+                className="size-4 rounded-full"
+              />
+              <span>{gist.owner?.login}</span>
+            </span>
+            {gist.updated_at ? (
+              <>
+                <span>·</span>
+                <span className="text-text-secondary truncate">
+                  Updated{" "}
+                  {formatDistance(new Date(gist.updated_at), new Date(), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </>
+            ) : null}
+          </div>
+          <Markdown hideFrontmatter>{content}</Markdown>
+          <div className="text-text-secondary mt-5 print:hidden">
+            Published with{" "}
+            <a
+              href="https://uselumen.com"
+              className="link link-external"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Lumen
+            </a>
+          </div>
         </div>
       </div>
     </div>
