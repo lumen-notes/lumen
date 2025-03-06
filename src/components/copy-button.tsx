@@ -23,7 +23,7 @@ export function CopyButton({ className, text }: { text: string; className?: stri
         timeoutRef.current = window.setTimeout(() => setCopied(false), 1000)
       }}
     >
-      {copied ? <CheckIcon16 className="text-text-success" /> : <CopyIcon16 />}
+      {copied ? <CheckIcon16 /> : <CopyIcon16 />}
     </IconButton>
   )
 }
