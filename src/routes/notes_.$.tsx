@@ -712,7 +712,7 @@ function NotePage() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <GlobeIcon16 className="text-text-secondary" />
+                        <GlobeIcon16 className="text-border-focus" />
                         Published
                       </a>
                     </PillButton>

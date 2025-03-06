@@ -61,7 +61,7 @@ export function NotePreview({ note, className }: { note: Note; className?: strin
       <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
         {note?.frontmatter?.share_id ? (
           <div className="flex items-center self-stretch">
-            <GlobeIcon16 className="text-text-secondary" />
+            <GlobeIcon16 className="text-border-focus" />
           </div>
         ) : null}
         {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (

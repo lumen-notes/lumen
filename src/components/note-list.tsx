@@ -262,7 +262,7 @@ export function NoteList({
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-text-pinned" />
                       ) : null}
                       {note?.frontmatter?.share_id ? (
-                        <GlobeIcon16 className="mr-2 flex-shrink-0 text-text-secondary" />
+                        <GlobeIcon16 className="mr-2 flex-shrink-0 text-border-focus" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text font-content">{note.displayName}</span>

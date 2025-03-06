@@ -15,6 +15,7 @@ import { pluralize } from "../utils/pluralize"
 import {
   CalendarDateIcon16,
   CalendarIcon16,
+  GlobeIcon16,
   NoteIcon16,
   PinFillIcon12,
   PlusIcon16,
@@ -437,6 +438,9 @@ function NoteItem({
       <span className="flex items-center gap-2 truncate">
         {!hidePinIcon && note.pinned ? (
           <PinFillIcon12 className="flex-shrink-0 text-text-pinned" />
+        ) : null}
+        {note?.frontmatter?.share_id ? (
+          <GlobeIcon16 className="flex-shrink-0 text-border-focus" />
         ) : null}
         <span className="truncate">{note.displayName}</span>
       </span>
