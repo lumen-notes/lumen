@@ -404,9 +404,7 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="flex items-center gap-3">
-        <div className="grid h-4 w-4 place-items-center text-text-secondary eink:[[aria-selected]_&]:text-bg eink:[[aria-selected]_&_svg]:text-bg">
-          {icon}
-        </div>
+        <div className="grid h-4 w-4 place-items-center text-text-secondary">{icon}</div>
         <div className="flex-grow truncate">{children}</div>
         {description ? (
           <span className="flex-shrink-0 text-text-secondary">{description}</span>

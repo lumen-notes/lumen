@@ -38,5 +38,5 @@
 
 [cmdk-item][aria-selected] {
   @apply bg-bg-secondary;
-  @apply eink:bg-text eink:text-bg;
+  @apply eink:bg-text eink:text-bg eink:[&_svg]:text-bg;
 }
