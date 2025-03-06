@@ -180,6 +180,7 @@ export const Markdown = React.memo(
                   ) : null}
                 </div>
                 <div
+                  className="empty:hidden"
                   style={
                     fontSize === "large"
                       ? ({
@@ -189,9 +190,19 @@ export const Markdown = React.memo(
                       : undefined
                   }
                 >
-                  <MarkdownContent className={cx(!body && "text-text-secondary")}>
-                    {body || "_Empty note_"}
-                  </MarkdownContent>
+                  {
+                    // If there's no body and no frontmatter, show a placeholder
+                    !body &&
+                    (!filteredFrontmatter ||
+                      hideFrontmatter ||
+                      isObjectEmpty(filteredFrontmatter)) ? (
+                      <MarkdownContent className="text-text-secondary">
+                        _Empty note_
+                      </MarkdownContent>
+                    ) : body ? (
+                      <MarkdownContent>{body}</MarkdownContent>
+                    ) : null
+                  }
                 </div>
               </div>
             </>
