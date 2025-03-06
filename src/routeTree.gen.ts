@@ -17,6 +17,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as TagsIndexImport } from './routes/tags.index'
 import { Route as NotesIndexImport } from './routes/notes.index'
 import { Route as TagsSplatImport } from './routes/tags_.$'
+import { Route as ShareShareIdImport } from './routes/share.$shareId'
 import { Route as NotesSplatImport } from './routes/notes_.$'
 
 // Create/Update Routes
@@ -54,6 +55,12 @@ const NotesIndexRoute = NotesIndexImport.update({
 const TagsSplatRoute = TagsSplatImport.update({
   id: '/tags_/$',
   path: '/tags/$',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ShareShareIdRoute = ShareShareIdImport.update({
+  id: '/share/$shareId',
+  path: '/share/$shareId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesSplatImport
       parentRoute: typeof rootRoute
     }
+    '/share/$shareId': {
+      id: '/share/$shareId'
+      path: '/share/$shareId'
+      fullPath: '/share/$shareId'
+      preLoaderRoute: typeof ShareShareIdImport
+      parentRoute: typeof rootRoute
+    }
     '/tags_/$': {
       id: '/tags_/$'
       path: '/tags/$'
@@ -126,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
   '/notes/$': typeof NotesSplatRoute
+  '/share/$shareId': typeof ShareShareIdRoute
   '/tags/$': typeof TagsSplatRoute
   '/notes': typeof NotesIndexRoute
   '/tags': typeof TagsIndexRoute
@@ -136,6 +151,7 @@ export interface FileRoutesByTo {
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
   '/notes/$': typeof NotesSplatRoute
+  '/share/$shareId': typeof ShareShareIdRoute
   '/tags/$': typeof TagsSplatRoute
   '/notes': typeof NotesIndexRoute
   '/tags': typeof TagsIndexRoute
@@ -147,6 +163,7 @@ export interface FileRoutesById {
   '/file': typeof FileRoute
   '/settings': typeof SettingsRoute
   '/notes_/$': typeof NotesSplatRoute
+  '/share/$shareId': typeof ShareShareIdRoute
   '/tags_/$': typeof TagsSplatRoute
   '/notes/': typeof NotesIndexRoute
   '/tags/': typeof TagsIndexRoute
@@ -159,17 +176,27 @@ export interface FileRouteTypes {
     | '/file'
     | '/settings'
     | '/notes/$'
+    | '/share/$shareId'
     | '/tags/$'
     | '/notes'
     | '/tags'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/file' | '/settings' | '/notes/$' | '/tags/$' | '/notes' | '/tags'
+  to:
+    | '/'
+    | '/file'
+    | '/settings'
+    | '/notes/$'
+    | '/share/$shareId'
+    | '/tags/$'
+    | '/notes'
+    | '/tags'
   id:
     | '__root__'
     | '/'
     | '/file'
     | '/settings'
     | '/notes_/$'
+    | '/share/$shareId'
     | '/tags_/$'
     | '/notes/'
     | '/tags/'
@@ -181,6 +208,7 @@ export interface RootRouteChildren {
   FileRoute: typeof FileRoute
   SettingsRoute: typeof SettingsRoute
   NotesSplatRoute: typeof NotesSplatRoute
+  ShareShareIdRoute: typeof ShareShareIdRoute
   TagsSplatRoute: typeof TagsSplatRoute
   NotesIndexRoute: typeof NotesIndexRoute
   TagsIndexRoute: typeof TagsIndexRoute
@@ -191,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   FileRoute: FileRoute,
   SettingsRoute: SettingsRoute,
   NotesSplatRoute: NotesSplatRoute,
+  ShareShareIdRoute: ShareShareIdRoute,
   TagsSplatRoute: TagsSplatRoute,
   NotesIndexRoute: NotesIndexRoute,
   TagsIndexRoute: TagsIndexRoute,
@@ -210,6 +239,7 @@ export const routeTree = rootRoute
         "/file",
         "/settings",
         "/notes_/$",
+        "/share/$shareId",
         "/tags_/$",
         "/notes/",
         "/tags/"
@@ -226,6 +256,9 @@ export const routeTree = rootRoute
     },
     "/notes_/$": {
       "filePath": "notes_.$.tsx"
+    },
+    "/share/$shareId": {
+      "filePath": "share.$shareId.tsx"
     },
     "/tags_/$": {
       "filePath": "tags_.$.tsx"
