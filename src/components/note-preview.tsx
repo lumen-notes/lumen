@@ -4,6 +4,7 @@ import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
+import { GlobeIcon16 } from "./icons"
 
 const NUM_VISIBLE_TAGS = 4
 
@@ -58,6 +59,11 @@ export function NotePreview({ note, className }: { note: Note; className?: strin
         </div>
       </div>
       <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
+        {note?.frontmatter?.share_id ? (
+          <div className="flex items-center self-stretch">
+            <GlobeIcon16 className="text-text-secondary" />
+          </div>
+        ) : null}
         {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
           <div
             key={tag}

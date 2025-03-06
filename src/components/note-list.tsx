@@ -8,7 +8,7 @@ import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { GridIcon16, ListIcon16, PinFillIcon12, TagIcon16, XIcon12 } from "./icons"
+import { GlobeIcon16, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16, XIcon12 } from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
@@ -260,6 +260,9 @@ export function NoteList({
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
                         <PinFillIcon12 className="mr-2 flex-shrink-0 text-text-pinned" />
+                      ) : null}
+                      {note?.frontmatter?.share_id ? (
+                        <GlobeIcon16 className="mr-2 flex-shrink-0 text-text-secondary" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text font-content">{note.displayName}</span>
