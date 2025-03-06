@@ -191,11 +191,12 @@ export const Markdown = React.memo(
                   }
                 >
                   {
-                    // If there's no body and no frontmatter, show a placeholder
+                    // If there's no title, no body, and no frontmatter, show a placeholder
+                    !title &&
                     !body &&
                     (!filteredFrontmatter ||
-                      hideFrontmatter ||
-                      isObjectEmpty(filteredFrontmatter)) ? (
+                      isObjectEmpty(filteredFrontmatter) ||
+                      hideFrontmatter) ? (
                       <MarkdownContent className="text-text-secondary">
                         _Empty note_
                       </MarkdownContent>
