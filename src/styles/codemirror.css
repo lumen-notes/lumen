@@ -1,5 +1,5 @@
 .cm-editor {
-  @apply w-full cursor-text font-mono;
+  @apply w-full cursor-text font-mono text-[15px];
 }
 
 .cm-editor.cm-editor.cm-focused {
@@ -22,7 +22,7 @@
 }
 
 .cm-editor .cm-scroller {
-  @apply leading-6;
+  @apply leading-[1.75];
   font-family: unset;
   overflow: hidden;
 }

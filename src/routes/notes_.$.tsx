@@ -689,10 +689,10 @@ function NotePage() {
         }}
       >
         <div {...topSentinelProps} />
-        <div className={cx("p-4", (isDailyNote || isWeeklyNote) && "pt-2")}>
+        <div className="p-4 lg:p-8">
           <div
             className={cx(
-              "flex flex-col gap-8 pb-[50vh]",
+              "flex flex-col gap-10 pb-[50vh]",
               width === "fixed" && "mx-auto max-w-3xl",
             )}
           >
@@ -715,7 +715,9 @@ function NotePage() {
                 {editorValue ? (
                   <Markdown onChange={setEditorValue}>{editorValue}</Markdown>
                 ) : (
-                  <span className="font-content italic text-text-secondary">Empty note</span>
+                  <span className="font-content italic text-text-secondary text-[16px]">
+                    Empty note
+                  </span>
                 )}
               </div>
             )}

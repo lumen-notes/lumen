@@ -21,7 +21,7 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-4 flex cursor-pointer list-none self-start rounded p-4  outline-none [&::-webkit-details-marker]:hidden",
+        "group/summary -m-4 font-sans font-bold inline-flex cursor-pointer list-none self-start rounded p-4  outline-none [&::-webkit-details-marker]:hidden",
         className,
       )}
     >

@@ -44,14 +44,16 @@ export function NotePreview({ note, className }: { note: Note; className?: strin
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className={cx("mb-1 flex items-baseline gap-2.5 font-content")}>
-          <span className="truncate font-bold text-lg">{note.displayName}</span>
+          <span className="truncate font-bold text-[calc(var(--font-size-xl)*0.66)]">
+            {note.displayName}
+          </span>
           <span className="truncate text-sm italic text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
           </span>
         </div>
       ) : null}
       <div className="flex-grow overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_75%,transparent_100%)] [&_*::-webkit-scrollbar]:hidden">
-        <div className="w-[125%] origin-top-left scale-[80%]">
+        <div className="w-[152%] origin-top-left scale-[66%]">
           <Markdown hideFrontmatter>{note.content}</Markdown>
         </div>
       </div>

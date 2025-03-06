@@ -203,10 +203,10 @@ function RootComponent() {
       "--font-family-content",
       `var(--font-family-${font})`,
     )
-    document.documentElement.style.setProperty(
-      "--font-family-mono",
-      `var(--font-family-${font}-mono)`,
-    )
+    // document.documentElement.style.setProperty(
+    //   "--font-family-mono",
+    //   `var(--font-family-${font}-mono)`,
+    // )
   }, [font])
 
   return (

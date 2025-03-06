@@ -37,6 +37,7 @@ import { parseFrontmatter } from "../utils/parse-frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
+import { Details } from "./details"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
@@ -58,6 +59,7 @@ import { WebsiteFavicon } from "./website-favicon"
 export type MarkdownProps = {
   children: string
   hideFrontmatter?: boolean
+  fontSize?: "small" | "large"
   onChange?: (value: string) => void
 }
 
@@ -69,9 +71,20 @@ const MarkdownContext = React.createContext<{
 })
 
 export const Markdown = React.memo(
-  ({ children, hideFrontmatter = false, onChange }: MarkdownProps) => {
+  ({ children, hideFrontmatter = false, fontSize = "large", onChange }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
+    const filteredFrontmatter = React.useMemo(() => {
+      return Object.fromEntries(
+        Object.entries(frontmatter).filter(([key, value]) => {
+          // Skip `pinned` frontmatter key
+          if (key === "pinned") return false
+
+          // Filter out empty values
+          return Boolean(value)
+        }),
+      )
+    }, [frontmatter])
 
     // Split the content into title and body so we can display
     // the frontmatter below the title but above the body.
@@ -98,7 +111,7 @@ export const Markdown = React.memo(
       <MarkdownContext.Provider value={contextValue}>
         <div className="font-content">
           {parsedTemplate.success ? (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-bold leading-5">{parsedTemplate.data.name}</h1>
                 <PillButton variant="dashed" asChild>
@@ -121,11 +134,23 @@ export const Markdown = React.memo(
                 </div>
               ) : null}
               {/* Render template as a code block */}
-              <pre className="overflow-auto rounded bg-bg-code-block p-3">
-                <TemplateSyntaxHighlighter>
-                  {removeTemplateFrontmatter(children)}
-                </TemplateSyntaxHighlighter>
-              </pre>
+              <div
+                className="markdown"
+                style={
+                  fontSize === "large"
+                    ? ({
+                        "--font-size-base": "16px",
+                        "--font-size-sm": "14px",
+                      } as React.CSSProperties)
+                    : undefined
+                }
+              >
+                <pre>
+                  <TemplateSyntaxHighlighter>
+                    {removeTemplateFrontmatter(children)}
+                  </TemplateSyntaxHighlighter>
+                </pre>
+              </div>
             </div>
           ) : (
             <>
@@ -141,14 +166,34 @@ export const Markdown = React.memo(
                   <GitHubAvatar login={frontmatter.github} size={64} className="!size-16" />
                 </div>
               ) : null}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-4 empty:hidden">
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-5 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {frontmatter && !hideFrontmatter && !isObjectEmpty(frontmatter) ? (
-                    <Frontmatter frontmatter={frontmatter} />
+                  {filteredFrontmatter &&
+                  !hideFrontmatter &&
+                  !isObjectEmpty(filteredFrontmatter) ? (
+                    <Details>
+                      <Details.Summary>Properties</Details.Summary>
+                      <div className="pl-6">
+                        <Frontmatter frontmatter={filteredFrontmatter} />
+                      </div>
+                    </Details>
                   ) : null}
                 </div>
-                {body ? <MarkdownContent>{body}</MarkdownContent> : null}
+                {body ? (
+                  <div
+                    style={
+                      fontSize === "large"
+                        ? ({
+                            "--font-size-base": "16px",
+                            "--font-size-sm": "14px",
+                          } as React.CSSProperties)
+                        : undefined
+                    }
+                  >
+                    <MarkdownContent>{body}</MarkdownContent>
+                  </div>
+                ) : null}
               </div>
             </>
           )}
@@ -251,27 +296,19 @@ function Frontmatter({
 
   return (
     <div className={cx("@container empty:hidden", className)}>
-      {Object.entries(frontmatter)
-        .filter(([key, value]) => {
-          // Skip `pinned` frontmatter key
-          if (key === "pinned" && value === true) return false
-
-          // Filter out empty values
-          return Boolean(value)
-        })
-        .map(([key, value]) => {
-          return (
-            <div
-              key={key}
-              className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
-            >
-              <h3 className="font-sans text-sm/4 text-text-secondary @[24rem]:text-base/6">
-                {formatFrontmatterKey(key)}
-              </h3>
-              <FrontmatterValue entry={[key, value]} />
-            </div>
-          )
-        })}
+      {Object.entries(frontmatter).map(([key, value]) => {
+        return (
+          <div
+            key={key}
+            className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
+          >
+            <h3 className="font-sans text-sm/4 text-text-secondary @[24rem]:text-base/6">
+              {formatFrontmatterKey(key)}
+            </h3>
+            <FrontmatterValue entry={[key, value]} />
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -489,7 +526,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
 
   // If value is a string, render it as markdown
   if (typeof value === "string") {
-    return <Markdown>{value}</Markdown>
+    return <Markdown fontSize="small">{value}</Markdown>
   }
 
   // If value is a date, render it as a link to the date page
@@ -504,7 +541,7 @@ function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] })
 
   // If value is a list of strings or numbers, render it as a markdown list
   if (Array.isArray(value) && value.every((v) => typeof v === "string" || typeof v === "number")) {
-    return <Markdown>{value.map((v) => `- ${v}`).join("\n")}</Markdown>
+    return <Markdown fontSize="small">{value.map((v) => `- ${v}`).join("\n")}</Markdown>
   }
 
   return <code>{JSON.stringify(value)}</code>
@@ -777,7 +814,7 @@ function NoteLink({ id, text }: NoteLinkProps) {
           side="bottom"
           sideOffset={4}
           align="start"
-          className="card-2 z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
+          className="card-2 !rounded-[calc(var(--border-radius-base)+6px)] z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
         >
           {note ? (
             <NotePreview note={note} />
@@ -801,7 +838,7 @@ function NoteEmbed({ id }: NoteEmbedProps) {
   const note = useNoteById(id)
 
   return (
-    <div className="relative pl-4 before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
+    <div className="relative pl-[calc(var(--font-size-base)*1.25)] before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
       {note ? (
         <Markdown hideFrontmatter>{note.content}</Markdown>
       ) : (

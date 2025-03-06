@@ -70,9 +70,9 @@
   --font-family-sans: "iA Writer Quattro", system-ui, sans-serif;
   --font-family-sans-mono: "iA Writer Mono", monospace;
   --font-family-serif: "Literata Variable", Georgia, serif;
-  --font-family-serif-mono: "Monaspace Xenon", "iA Writer Mono", monospace;
+  /* --font-family-serif-mono: "Monaspace Xenon", "iA Writer Mono", monospace; */
   --font-family-handwriting: "Shantell Sans Variable", system-ui, sans-serif;
-  --font-family-handwriting-mono: "Monaspace Radon", "iA Writer Mono", monospace;
+  /* --font-family-handwriting-mono: "Monaspace Radon", "iA Writer Mono", monospace; */
   --font-family-content: var(--font-family-sans);
   --font-family-mono: var(--font-family-sans-mono);
 
@@ -82,18 +82,18 @@
   /* Font sizes */
   --font-size-sm: 12px;
   --font-size-base: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 20px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
 
   /* Font weights */
   --font-weight-normal: 400;
-  --font-weight-bold: 550;
+  --font-weight-bold: 600;
 
   /* Border radii */
-  --border-radius-sm: 4px; /* base - 2px */
-  --border-radius-base: 6px; /* base */
-  --border-radius-lg: 10px; /* base + 4px */
-  --border-radius-xl: 14px; /* base + 8px */
+  --border-radius-base: 6px;
+  --border-radius-sm: calc(var(--border-radius-base) - 2px);
+  --border-radius-lg: calc(var(--border-radius-base) + 4px);
+  --border-radius-xl: calc(var(--border-radius-base) + 8px);
   --border-radius-full: 9999px;
 
   /* Icons */
@@ -130,19 +130,13 @@
     /* Font sizes */
     --font-size-sm: 13px;
     --font-size-base: 15px;
-    --font-size-lg: 18px;
-    --font-size-xl: 22px;
 
     /* Font weights */
     --font-weight-normal: 450;
-    --font-weight-bold: 600;
+    --font-weight-bold: 650;
 
     /* Border radii */
-    --border-radius-sm: 6px; /* base - 2px */
-    --border-radius-base: 8px; /* base */
-    --border-radius-lg: 12px; /* base + 4px */
-    --border-radius-xl: 16px; /* base + 8px */
-    --border-radius-full: 9999px;
+    --border-radius-base: 8px;
 
     /* Heights */
     --height-app-header: 56px;
