@@ -705,14 +705,14 @@ function NotePage() {
             {mode === "read" && (
               <div>
                 {parsedNote?.frontmatter?.share_id ? (
-                  <div className="mb-5 text-text-secondary">
-                    <PillButton className="pl-1" asChild>
+                  <div className="mb-5">
+                    <PillButton className="pl-1 coarse:pl-2" asChild>
                       <a
                         href={`/share/${parsedNote.frontmatter.share_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <GlobeIcon16 />
+                        <GlobeIcon16 className="text-text-secondary" />
                         Published
                       </a>
                     </PillButton>

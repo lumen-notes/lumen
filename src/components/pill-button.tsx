@@ -17,7 +17,7 @@ export const PillButton = React.forwardRef<HTMLButtonElement, PillButtonProps>(
         ref={ref}
         className={cx(
           "inline-flex h-6 items-center gap-1.5 rounded-full border bg-clip-border px-2 font-sans focus-visible:border-solid focus-visible:border-border-focus focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-border-focus",
-          "coarse:h-8 coarse:px-3",
+          "coarse:h-8 coarse:px-3 coarse:gap-2",
           variant === "dashed" &&
             "border-dashed border-border bg-transparent text-text-secondary hover:bg-bg-secondary",
           variant === "secondary" &&
