@@ -50,7 +50,8 @@
   overflow: auto;
   border-radius: var(--border-radius-base);
   background-color: var(--color-bg-code-block);
-  padding: var(--font-size-base);
+  padding-inline: var(--font-size-base);
+  padding-block: calc(var(--font-size-base) * 0.75);
 }
 
 .markdown code {
