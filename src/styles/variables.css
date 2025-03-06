@@ -92,8 +92,8 @@
   /* Border radii */
   --border-radius-sm: 4px; /* base - 2px */
   --border-radius-base: 6px; /* base */
-  --border-radius-lg: 8px; /* base + 4px */
-  --border-radius-xl: 12px; /* base + 8px */
+  --border-radius-lg: 10px; /* base + 4px */
+  --border-radius-xl: 14px; /* base + 8px */
   --border-radius-full: 9999px;
 
   /* Icons */
