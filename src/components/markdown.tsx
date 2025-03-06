@@ -1,6 +1,5 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { Link } from "@tanstack/react-router"
-import { sentenceCase } from "change-case"
 import { isToday } from "date-fns"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
@@ -302,7 +301,7 @@ function Frontmatter({
             key={key}
             className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
           >
-            <h3 className="font-sans text-sm/4 text-text-secondary @[24rem]:text-base/6">
+            <h3 className="font-mono text-sm/4 text-text-secondary @[24rem]:text-base/6">
               {formatFrontmatterKey(key)}
             </h3>
             <FrontmatterValue entry={[key, value]} />
@@ -314,14 +313,15 @@ function Frontmatter({
 }
 
 function formatFrontmatterKey(key: string) {
-  switch (key) {
-    case "isbn":
-      return "ISBN"
-    case "github":
-      return "GitHub"
-    default:
-      return sentenceCase(key)
-  }
+  // switch (key) {
+  //   case "isbn":
+  //     return "ISBN"
+  //   case "github":
+  //     return "GitHub"
+  //   default:
+  //     return sentenceCase(key)
+  // }
+  return key
 }
 
 function FrontmatterValue({ entry: [key, value] }: { entry: [string, unknown] }) {
