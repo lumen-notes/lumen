@@ -8,29 +8,36 @@ export const Route = createFileRoute("/share/$shareId")({
   loader: async ({ params }) => {
     const shareId = params.shareId
 
-    const { data } = await request("GET /gists/{gist_id}", {
+    const { data: gist } = await request("GET /gists/{gist_id}", {
       gist_id: shareId,
     })
 
-    if (!data.files) {
-      return { note: null }
+    if (!gist.files) {
+      return {
+        gist,
+        note: null,
+      }
     }
 
     // We need to locate a markdown file within the gist to display as the note content
     // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
-    const readmeFile = Object.values(data.files).find(
+    const readmeFile = Object.values(gist.files).find(
       (file) => file?.filename?.toLowerCase() === "readme.md",
     )
     const markdownFile =
-      readmeFile || Object.values(data.files).find((file) => file?.type === "text/markdown")
+      readmeFile || Object.values(gist.files).find((file) => file?.type === "text/markdown")
 
     if (!markdownFile) {
-      return { note: null }
+      return {
+        gist,
+        note: null,
+      }
     }
 
-    const note = parseNote(shareId, markdownFile.content ?? "")
-
-    return { note }
+    return {
+      gist,
+      note: parseNote(shareId, markdownFile.content ?? ""),
+    }
   },
 })
 
