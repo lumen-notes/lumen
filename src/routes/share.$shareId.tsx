@@ -60,8 +60,8 @@ function RouteComponent() {
     <div className="overflow-auto [scrollbar-gutter:stable]">
       <div className="p-4 md:p-16">
         <div className="max-w-3xl mx-auto flex flex-col gap-5">
-          <div className="text-text-secondary flex items-center gap-2 truncate">
-            <span className="inline-flex items-center gap-2 flex-shrink-0 truncate">
+          <div className="flex items-center gap-2 truncate">
+            <span className="inline-flex items-center gap-2 flex-shrink-0 truncate text-text-secondary">
               <img
                 src={gist.owner?.avatar_url}
                 alt=""
@@ -72,7 +72,7 @@ function RouteComponent() {
             </span>
             {gist.updated_at ? (
               <>
-                <span>·</span>
+                <span className="text-text-secondary">·</span>
                 <span className="text-text-secondary truncate">
                   Updated{" "}
                   {formatDistance(new Date(gist.updated_at), new Date(), {
