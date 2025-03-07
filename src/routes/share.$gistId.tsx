@@ -61,20 +61,27 @@ function RouteComponent() {
       <div className="max-w-3xl mx-auto flex flex-col gap-5">
         <div className="flex items-center gap-2 truncate">
           <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-4 rounded-full" />
-          <div className="flex items-baseline gap-2 truncate">
-            <span>{gist.owner?.login}</span>
+          <span className="truncate">
+            <a
+              href={`https://github.com/${gist.owner?.login}`}
+              className="link"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {gist.owner?.login}
+            </a>
             {gist.updated_at ? (
               <>
-                <span className="text-text-secondary text-sm">·</span>
-                <span className="text-text-secondary truncate text-sm">
-                  Updated{" "}
+                {" "}
+                <span className="text-text-secondary truncate">
+                  updated{" "}
                   {formatDistance(new Date(gist.updated_at), new Date(), {
                     addSuffix: true,
                   })}
                 </span>
               </>
             ) : null}
-          </div>
+          </span>
         </div>
         <Markdown hideFrontmatter>{content}</Markdown>
         <div className="text-text-secondary mt-5 print:hidden text-sm">
