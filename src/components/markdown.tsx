@@ -77,7 +77,7 @@ export const Markdown = React.memo(
       return Object.fromEntries(
         Object.entries(frontmatter).filter(([key, value]) => {
           // Skip reserved frontmatter keys
-          if (["pinned", "share_id"].includes(key)) return false
+          if (["pinned", "gist_id"].includes(key)) return false
 
           // Filter out empty values
           return Boolean(value)
