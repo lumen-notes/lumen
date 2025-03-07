@@ -437,7 +437,7 @@ function NoteItem({
         {!hidePinIcon && note.pinned ? (
           <PinFillIcon12 className="flex-shrink-0 text-text-pinned" />
         ) : null}
-        {note?.frontmatter?.share_id ? (
+        {note?.frontmatter?.gist_id ? (
           <GlobeIcon16 className="flex-shrink-0 text-border-focus" />
         ) : null}
         <span className="truncate">{note.displayName}</span>

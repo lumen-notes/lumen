@@ -707,11 +707,11 @@ function NotePage() {
 
             {mode === "read" && (
               <div>
-                {parsedNote?.frontmatter?.share_id ? (
+                {parsedNote?.frontmatter?.gist_id ? (
                   <div className="mb-5 print:hidden">
                     <PillButton className="pl-1 coarse:pl-2" asChild>
                       <a
-                        href={`/share/${parsedNote.frontmatter.share_id}`}
+                        href={`/share/${parsedNote.frontmatter.gist_id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >

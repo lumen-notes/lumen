@@ -5,13 +5,13 @@ import React from "react"
 import { Markdown } from "../components/markdown"
 import { parseNote } from "../utils/parse-note"
 
-export const Route = createFileRoute("/share/$shareId")({
+export const Route = createFileRoute("/share/$gistId")({
   component: RouteComponent,
   loader: async ({ params }) => {
-    const shareId = params.shareId
+    const gistId = params.gistId
 
     const { data: gist } = await request("GET /gists/{gist_id}", {
-      gist_id: shareId,
+      gist_id: gistId,
     })
 
     if (!gist.files) {
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/share/$shareId")({
 
     return {
       gist,
-      note: parseNote(shareId, markdownFile.content ?? ""),
+      note: parseNote(gistId, markdownFile.content ?? ""),
     }
   },
 })
@@ -57,34 +57,29 @@ function RouteComponent() {
   }, [gist.description, note?.title, note?.content])
 
   return (
-    <div className="p-4 md:p-16">
+    <div className="p-5 md:p-16">
       <div className="max-w-3xl mx-auto flex flex-col gap-5">
         <div className="flex items-center gap-2 truncate">
-          <span className="inline-flex items-center gap-2 flex-shrink-0 truncate text-text-secondary">
-            <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-4 rounded-full" />
+          <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-4 rounded-full" />
+          <div className="flex items-baseline gap-2 truncate">
             <span>{gist.owner?.login}</span>
-          </span>
-          {gist.updated_at ? (
-            <>
-              <span className="text-text-secondary">·</span>
-              <span className="text-text-secondary truncate">
-                Updated{" "}
-                {formatDistance(new Date(gist.updated_at), new Date(), {
-                  addSuffix: true,
-                })}
-              </span>
-            </>
-          ) : null}
+            {gist.updated_at ? (
+              <>
+                <span className="text-text-secondary text-sm">·</span>
+                <span className="text-text-secondary truncate text-sm">
+                  Updated{" "}
+                  {formatDistance(new Date(gist.updated_at), new Date(), {
+                    addSuffix: true,
+                  })}
+                </span>
+              </>
+            ) : null}
+          </div>
         </div>
         <Markdown hideFrontmatter>{content}</Markdown>
-        <div className="text-text-secondary mt-5 print:hidden">
+        <div className="text-text-secondary mt-5 print:hidden text-sm">
           Published with{" "}
-          <a
-            href="https://uselumen.com"
-            className="link link-external"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          <a href="https://uselumen.com" className="link" target="_blank" rel="noreferrer noopener">
             Lumen
           </a>
         </div>

@@ -259,10 +259,10 @@ export function NoteList({
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
-                        <PinFillIcon12 className="mr-2 flex-shrink-0 text-text-pinned" />
+                        <PinFillIcon12 className="mr-2 coarse:mr-3 flex-shrink-0 text-text-pinned" />
                       ) : null}
-                      {note?.frontmatter?.share_id ? (
-                        <GlobeIcon16 className="mr-2 flex-shrink-0 text-border-focus" />
+                      {note?.frontmatter?.gist_id ? (
+                        <GlobeIcon16 className="mr-2 coarse:mr-3 flex-shrink-0 text-border-focus" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text font-content">{note.displayName}</span>

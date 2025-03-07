@@ -133,7 +133,7 @@ function GitHubSection() {
               <span className="text-sm leading-4 text-text-secondary">Repository</span>
               <a
                 href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
-                className="link link-external leading-5"
+                className="link leading-5"
                 target="_blank"
                 rel="noopener noreferrer"
               >
