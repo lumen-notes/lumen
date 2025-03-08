@@ -1,7 +1,6 @@
 /// <reference lib="deno.ns" />
 
 import type { Config, Context } from "https://edge.netlify.com"
-import { isbot } from "npm:isbot"
 
 type File = {
   filename?: string
@@ -17,9 +16,8 @@ type File = {
  * For regular users, it passes the request through to the normal application flow.
  */
 export default async (request: Request, context: Context) => {
-  const isBot = isbot(request.headers.get("user-agent"))
-
-  if (!isBot) {
+  // Pass through for regular users
+  if (!isBot(request.headers.get("user-agent"))) {
     return await context.next()
   }
 
@@ -67,6 +65,31 @@ export default async (request: Request, context: Context) => {
   } catch (_error) {
     return await context.next()
   }
+}
+
+/**
+ * Detects if a user agent string belongs to a bot by checking
+ * for common social media crawlers and bot identifiers
+ */
+function isBot(userAgent: string | null): boolean {
+  if (!userAgent) return false
+
+  const botPatterns = [
+    "bot",
+    "spider",
+    "crawler",
+    "facebookexternalhit",
+    "twitterbot",
+    "whatsapp",
+    "telegram",
+    "discord",
+    "slackbot",
+    "linkedinbot",
+    "googlebot",
+  ]
+
+  const lowerUserAgent = userAgent.toLowerCase()
+  return botPatterns.some((pattern) => lowerUserAgent.includes(pattern))
 }
 
 function getNoteContent(gist: { files: Record<string, File> }) {
