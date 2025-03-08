@@ -66,7 +66,7 @@ export function AppLayout({
                   <div className="mx-auto w-full max-w-lg p-4 pb-8 md:pb-14">
                     <div className="card-1 flex flex-col gap-6 p-4">
                       <div className="flex flex-col gap-2">
-                        <h1 className="font-content text-lg font-bold">Choose a repository</h1>
+                        <h1 className="text-lg font-bold">Choose a repository</h1>
                         <p className="text-pretty text-text-secondary">
                           Store your notes as markdown files in a GitHub repository of your choice.
                         </p>

@@ -3,19 +3,13 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import {
-  githubRepoAtom,
-  githubUserAtom,
-  globalStateMachineAtom,
-  isSignedOutAtom,
-} from "../global-state"
+import { githubRepoAtom, globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
 import { cx } from "../utils/cx"
-import { exportAsGist } from "../utils/export-as-gist"
-import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 import { DropdownMenu } from "./dropdown-menu"
+import { updateFrontmatter } from "../utils/frontmatter"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
@@ -27,6 +21,7 @@ import {
   TrashIcon16,
 } from "./icons"
 import { NotePreview } from "./note-preview"
+import { ShareDialog } from "./share-dialog"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -50,12 +45,12 @@ export function NotePreviewCard(props: NoteCardProps) {
 
 const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const note = useNoteById(id)
-  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+  const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false)
 
   if (!note) return null
 
@@ -88,7 +83,13 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           disabled={isSignedOut}
           onClick={() => {
             if (isSignedOut) return
-            saveNote({ id, content: togglePin(note.content) })
+            saveNote({
+              id,
+              content: updateFrontmatter({
+                content: note.content,
+                properties: { pinned: note.pinned ? null : true },
+              }),
+            })
           }}
         >
           {note.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
@@ -116,6 +117,13 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
+                icon={<ShareIcon16 />}
+                disabled={isSignedOut}
+                onSelect={() => setIsShareDialogOpen(true)}
+              >
+                Share
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
                 icon={<ExternalLinkIcon16 />}
                 href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${id}.md`}
                 target="_blank"
@@ -123,25 +131,6 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                 disabled={isSignedOut}
               >
                 Open in GitHub
-              </DropdownMenu.Item>
-              <DropdownMenu.Item
-                icon={<ShareIcon16 />}
-                disabled={isSignedOut}
-                onSelect={async () => {
-                  const url = await exportAsGist({
-                    githubToken: githubUser?.token ?? "",
-                    noteId: id,
-                    note,
-                  })
-
-                  // Copy Gist URL to clipboard
-                  copy(url)
-
-                  // Open Gist in new tab
-                  window.open(url, "_blank")
-                }}
-              >
-                Export as Gist
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
@@ -169,6 +158,29 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
+          <ShareDialog
+            open={isShareDialogOpen}
+            note={note}
+            onPublish={(gistId) => {
+              saveNote({
+                id,
+                content: updateFrontmatter({
+                  content: note.content,
+                  properties: { gist_id: gistId },
+                }),
+              })
+            }}
+            onUnpublish={() => {
+              saveNote({
+                id,
+                content: updateFrontmatter({
+                  content: note.content,
+                  properties: { gist_id: null },
+                }),
+              })
+            }}
+            onOpenChange={setIsShareDialogOpen}
+          />
         </div>
       ) : null}
     </div>

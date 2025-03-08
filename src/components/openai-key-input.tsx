@@ -98,8 +98,8 @@ export function OpenAIKeyInput() {
   })
 
   return (
-    <div className="flex flex-col gap-3">
-      <label htmlFor="openai-key" className="justify-self-start leading-4">
+    <div className="flex flex-col gap-2">
+      <label htmlFor="openai-key" className="justify-self-start leading-[1.25]">
         OpenAI key
       </label>
       <TextInput

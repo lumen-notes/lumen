@@ -16,6 +16,9 @@ export const Route = createFileRoute("/_appRoot/")({
     }
   },
   component: RouteComponent,
+  head: () => ({
+    meta: [{ title: "Notes · Lumen" }],
+  }),
 })
 
 function RouteComponent() {

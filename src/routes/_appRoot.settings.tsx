@@ -27,6 +27,9 @@ import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
   component: RouteComponent,
+  head: () => ({
+    meta: [{ title: "Settings · Lumen" }],
+  }),
 })
 
 function RouteComponent() {
@@ -67,8 +70,8 @@ function RouteComponent() {
 
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="font-content text-lg font-bold leading-4">{title}</h3>
+    <div className="flex flex-col gap-3">
+      <h3 className="font-bold leading-4">{title}</h3>
       <div className="card-1 p-4">{children}</div>
     </div>
   )
@@ -196,19 +199,19 @@ function FontSection() {
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-sans" value="sans" />
           <label htmlFor="font-sans" className="select-none font-sans leading-4">
-            Simple
+            Sans serif
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-serif" value="serif" />
           <label htmlFor="font-serif" className="select-none font-serif leading-4">
-            Bookish
+            Serif
           </label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroup.Item id="font-handwriting" value="handwriting" />
           <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
-            Scribbled
+            Handwriting
           </label>
         </div>
       </RadioGroup>

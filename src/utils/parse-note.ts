@@ -187,7 +187,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
         displayName = removeLeadingEmoji(title)
       }
       // If there's no title but the ID contains non-numeric characters, use that as the display name
-      else if (!/^\d+$/.test(id)) {
+      else if (id && !/^\d+$/.test(id)) {
         displayName = id
       }
       // For untitled notes with numeric IDs, we use the first 8 words as the title

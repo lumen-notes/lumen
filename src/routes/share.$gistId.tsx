@@ -10,35 +10,43 @@ export const Route = createFileRoute("/share/$gistId")({
   loader: async ({ params }) => {
     const gistId = params.gistId
 
-    const { data: gist } = await request("GET /gists/{gist_id}", {
-      gist_id: gistId,
-    })
+    try {
+      const { data: gist } = await request("GET /gists/{gist_id}", {
+        gist_id: gistId,
+      })
 
-    if (!gist.files) {
+      if (!gist.files) {
+        throw new Error("No files found in gist")
+      }
+
+      // We need to locate a markdown file within the gist to display as the note content
+      // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
+      const readmeFile = Object.values(gist.files).find(
+        (file) => file?.filename?.toLowerCase() === "readme.md",
+      )
+      const markdownFile =
+        readmeFile || Object.values(gist.files).find((file) => file?.type === "text/markdown")
+
+      if (!markdownFile) {
+        throw new Error("No markdown file found in gist")
+      }
+
       return {
         gist,
+        note: parseNote("", markdownFile.content ?? ""),
+      }
+    } catch (error) {
+      console.error(error)
+      return {
+        gist: null,
         note: null,
       }
     }
-
-    // We need to locate a markdown file within the gist to display as the note content
-    // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
-    const readmeFile = Object.values(gist.files).find(
-      (file) => file?.filename?.toLowerCase() === "readme.md",
-    )
-    const markdownFile =
-      readmeFile || Object.values(gist.files).find((file) => file?.type === "text/markdown")
-
-    if (!markdownFile) {
-      return {
-        gist,
-        note: null,
-      }
-    }
-
+  },
+  head: ({ loaderData }) => {
+    const { gist, note } = loaderData
     return {
-      gist,
-      note: parseNote(gistId, markdownFile.content ?? ""),
+      meta: [{ title: note?.title || gist?.description || note?.displayName || "Lumen" }],
     }
   },
 })
@@ -50,11 +58,19 @@ function RouteComponent() {
     let content = note?.content ?? ""
 
     // If there's no title, and there's a description, we use the description as the title
-    if (!note?.title && gist.description) {
+    if (!note?.title && gist?.description) {
       content = `# ${gist.description}\n\n${content}`
     }
     return content
-  }, [gist.description, note?.title, note?.content])
+  }, [gist?.description, note?.title, note?.content])
+
+  if (!gist || !note) {
+    return (
+      <div className="w-full h-[100svh] grid place-content-center text-text-secondary">
+        Note not found
+      </div>
+    )
+  }
 
   return (
     <div className="p-5 md:p-16">
@@ -83,7 +99,12 @@ function RouteComponent() {
             ) : null}
           </span>
         </div>
-        <Markdown hideFrontmatter>{content}</Markdown>
+        <div
+          className="flex flex-col gap-2"
+          style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
+        >
+          <Markdown hideFrontmatter>{content}</Markdown>
+        </div>
         <div className="text-text-secondary mt-5 print:hidden text-sm">
           Published with{" "}
           <a href="https://uselumen.com" className="link" target="_blank" rel="noreferrer noopener">

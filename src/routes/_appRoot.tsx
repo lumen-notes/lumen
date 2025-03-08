@@ -204,8 +204,6 @@ function RouteComponent() {
       parent = parent.parentElement
     }
 
-    console.log(parents)
-
     // Apply classes to all parent elements
     parents.forEach((element) => {
       element.classList.add("overflow-hidden", "overscroll-none", "print:overflow-visible")

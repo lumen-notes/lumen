@@ -43,12 +43,12 @@ import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
+import { ShareDialog } from "../components/share-dialog"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
   dailyTemplateAtom,
   fontAtom,
   githubRepoAtom,
-  githubUserAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
   weeklyTemplateAtom,
@@ -70,9 +70,8 @@ import {
   isValidDateString,
   isValidWeekString,
 } from "../utils/date"
-import { exportAsGist } from "../utils/export-as-gist"
+import { updateFrontmatter } from "../utils/frontmatter"
 import { parseNote } from "../utils/parse-note"
-import { togglePin } from "../utils/pin"
 import { pluralize } from "../utils/pluralize"
 
 type RouteSearch = {
@@ -99,7 +98,7 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
 function PageTitle({ note }: { note: Note }) {
   if (note.type === "daily" || note.type === "weekly") {
     return (
-      <span>
+      <span className="font-content">
         <span>{note.displayName}</span>
         <span className="mx-2 font-normal text-text-secondary">·</span>
         <span className="font-normal text-text-secondary">
@@ -109,7 +108,7 @@ function PageTitle({ note }: { note: Note }) {
     )
   }
 
-  return note.displayName
+  return <span className="font-content">{note.displayName}</span>
 }
 
 function RouteComponent() {
@@ -144,7 +143,6 @@ function NotePage() {
   const navigate = Route.useNavigate()
 
   // Global state
-  const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
@@ -183,6 +181,7 @@ function NotePage() {
 
   // Layout
   const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
+  const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false)
 
   // Actions
   const saveNote = useSaveNote()
@@ -495,7 +494,12 @@ function NotePage() {
             <IconButton
               aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
               onClick={() => {
-                setEditorValue(togglePin(editorValue))
+                setEditorValue(
+                  updateFrontmatter({
+                    content: editorValue,
+                    properties: { pinned: parsedNote?.pinned ? null : true },
+                  }),
+                )
               }}
             >
               {parsedNote?.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
@@ -546,7 +550,7 @@ function NotePage() {
                   selected={font === "sans"}
                   onSelect={() => setFont("sans")}
                 >
-                  Simple
+                  Sans serif
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-serif"
@@ -554,7 +558,7 @@ function NotePage() {
                   selected={font === "serif"}
                   onSelect={() => setFont("serif")}
                 >
-                  Bookish
+                  Serif
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
                   className="font-handwriting"
@@ -562,7 +566,7 @@ function NotePage() {
                   selected={font === "handwriting"}
                   onSelect={() => setFont("handwriting")}
                 >
-                  Scribbled
+                  Handwriting
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>
@@ -575,21 +579,22 @@ function NotePage() {
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
                   disabled={isSignedOut || !note}
-                  onSelect={async () => {
-                    if (!note) return
+                  onSelect={() => setIsShareDialogOpen(true)}
+                  // onSelect={async () => {
+                  //   if (!note) return
 
-                    const url = await exportAsGist({
-                      githubToken: githubUser?.token ?? "",
-                      noteId: note.id,
-                      note,
-                    })
+                  //   const url = await exportAsGist({
+                  //     githubToken: githubUser?.token ?? "",
+                  //     noteId: note.id,
+                  //     note,
+                  //   })
 
-                    // Copy Gist URL to clipboard
-                    copy(url)
+                  //   // Copy Gist URL to clipboard
+                  //   copy(url)
 
-                    // Open Gist in new tab
-                    window.open(url, "_blank")
-                  }}
+                  //   // Open Gist in new tab
+                  //   window.open(url, "_blank")
+                  // }}
                 >
                   Share
                 </DropdownMenu.Item>
@@ -645,6 +650,28 @@ function NotePage() {
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
+            <ShareDialog
+              note={parsedNote}
+              onPublish={(gistId) => {
+                const content = updateFrontmatter({
+                  content: editorValue,
+                  properties: { gist_id: gistId },
+                })
+                setEditorValue(content)
+                handleSave(content)
+              }}
+              onUnpublish={() => {
+                const content = updateFrontmatter({
+                  content: editorValue,
+                  properties: { gist_id: null },
+                })
+                setEditorValue(content)
+                handleSave(content)
+                setIsShareDialogOpen(false)
+              }}
+              open={isShareDialogOpen}
+              onOpenChange={setIsShareDialogOpen}
+            />
           </div>
         </div>
       }
@@ -709,15 +736,12 @@ function NotePage() {
               <div>
                 {parsedNote?.frontmatter?.gist_id ? (
                   <div className="mb-5 print:hidden">
-                    <PillButton className="pl-1 coarse:pl-2" asChild>
-                      <a
-                        href={`/share/${parsedNote.frontmatter.gist_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <GlobeIcon16 className="text-border-focus" />
-                        Published
-                      </a>
+                    <PillButton
+                      className="pl-1 coarse:pl-2"
+                      onClick={() => setIsShareDialogOpen(true)}
+                    >
+                      <GlobeIcon16 className="text-border-focus" />
+                      Published
                     </PillButton>
                   </div>
                 ) : null}

@@ -1,8 +1,11 @@
 import { useAtomValue, useSetAtom } from "jotai"
-import { selectAtom } from "jotai/utils"
+import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { globalStateMachineAtom, notesAtom } from "../global-state"
+import { githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
 import { Note, NoteId } from "../schema"
+import { parseNote } from "../utils/parse-note"
+import { parseFrontmatter } from "../utils/frontmatter"
+import { deleteGist, updateGist } from "../utils/gist"
 
 export function useNoteById(id: NoteId | undefined) {
   const noteAtom = React.useMemo(
@@ -15,15 +18,26 @@ export function useNoteById(id: NoteId | undefined) {
 
 export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
+  const githubUser = useAtomValue(githubUserAtom)
 
   const saveNote = React.useCallback(
-    ({ id, content }: Pick<Note, "id" | "content">) => {
+    async ({ id, content }: Pick<Note, "id" | "content">) => {
       send({
         type: "WRITE_FILES",
         markdownFiles: { [`${id}.md`]: content },
       })
+
+      // If the note has a gist ID, update the gist
+      const { frontmatter } = parseFrontmatter(content)
+      if (typeof frontmatter.gist_id === "string" && githubUser?.token) {
+        await updateGist({
+          githubToken: githubUser.token,
+          gistId: frontmatter.gist_id,
+          note: parseNote(id ?? "", content),
+        })
+      }
     },
-    [send],
+    [send, githubUser],
   )
 
   return saveNote
@@ -31,12 +45,28 @@ export function useSaveNote() {
 
 export function useDeleteNote() {
   const send = useSetAtom(globalStateMachineAtom)
+  const githubUser = useAtomValue(githubUserAtom)
+  const getNoteById = useAtomCallback(
+    React.useCallback((get, set, id: NoteId) => {
+      const notes = get(notesAtom)
+      return notes.get(id)
+    }, []),
+  )
 
   const deleteNote = React.useCallback(
-    (id: NoteId) => {
+    async (id: NoteId) => {
+      // If the note has a gist ID, delete the gist
+      const note = getNoteById(id)
+      if (typeof note?.frontmatter.gist_id === "string" && githubUser?.token) {
+        await deleteGist({
+          githubToken: githubUser.token,
+          gistId: note.frontmatter.gist_id,
+        })
+      }
+
       send({ type: "DELETE_FILE", filepath: `${id}.md` })
     },
-    [send],
+    [send, githubUser, getNoteById],
   )
 
   return deleteNote

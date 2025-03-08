@@ -265,7 +265,7 @@ export function NoteList({
                         <GlobeIcon16 className="mr-2 coarse:mr-3 flex-shrink-0 text-border-focus" />
                       ) : null}
                       <span className="truncate text-text-secondary">
-                        <span className="text-text font-content">{note.displayName}</span>
+                        <span className="text-text">{note.displayName}</span>
                       </span>
                     </Link>
                   </li>

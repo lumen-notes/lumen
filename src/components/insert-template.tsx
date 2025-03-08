@@ -80,10 +80,10 @@ export function InsertTemplateDialog() {
   return (
     <Dialog.Root open onOpenChange={handleClose}>
       <Dialog.Portal>
-        <Dialog.Content className="card-3 fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]">
-          <div className="grid gap-6 p-4">
-            <div className="flex items-center justify-between">
-              <Dialog.Title className="text-lg font-bold leading-4">{template.name}</Dialog.Title>
+        <Dialog.Content className="card-3 fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh] !rounded-xl">
+          <div className="grid gap-4 p-4">
+            <div className="flex items-center justify-between h-4">
+              <Dialog.Title className="font-bold">{template.name}</Dialog.Title>
               <Dialog.Close asChild>
                 <IconButton aria-label="Close" className="-m-2" disableTooltip>
                   <XIcon16 />
@@ -95,10 +95,7 @@ export function InsertTemplateDialog() {
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
                     <div key={name} className="grid gap-2">
-                      <label
-                        htmlFor={name}
-                        className="justify-self-start text-sm leading-4 text-text-secondary"
-                      >
+                      <label htmlFor={name} className="justify-self-start leading-[1.25]">
                         {formatLabel(name)}
                         {required ? <span className="ml-1 text-text-secondary">*</span> : null}
                       </label>

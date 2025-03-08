@@ -1,8 +1,11 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router"
+import { HeadContent, Link, Outlet, createRootRoute } from "@tanstack/react-router"
 
 export const Route = createRootRoute({
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
+  head: () => ({
+    meta: [{ title: "Lumen" }],
+  }),
 })
 
 function NotFoundComponent() {
@@ -17,5 +20,10 @@ function NotFoundComponent() {
 }
 
 function RootComponent() {
-  return <Outlet />
+  return (
+    <>
+      <HeadContent />
+      <Outlet />
+    </>
+  )
 }

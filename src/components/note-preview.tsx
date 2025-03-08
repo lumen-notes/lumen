@@ -8,7 +8,13 @@ import { GlobeIcon16 } from "./icons"
 
 const NUM_VISIBLE_TAGS = 4
 
-export function NotePreview({ note, className }: { note: Note; className?: string }) {
+type NotePreviewProps = {
+  note: Note
+  className?: string
+  hideProperties?: boolean
+}
+
+export function NotePreview({ note, className, hideProperties }: NotePreviewProps) {
   const highlightedHrefs = useLinkHighlight()
 
   const frontmatterTags = useMemo(() => {
@@ -58,31 +64,33 @@ export function NotePreview({ note, className }: { note: Note; className?: strin
           <Markdown hideFrontmatter>{note.content}</Markdown>
         </div>
       </div>
-      <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
-        {note?.frontmatter?.gist_id ? (
-          <div className="flex items-center self-stretch">
-            <GlobeIcon16 className="text-border-focus" />
-          </div>
-        ) : null}
-        {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
-          <div
-            key={tag}
-            className={cx(
-              "-mx-[3px] flex items-center rounded-sm px-[3px] text-sm",
-              highlightedHrefs.includes(`/tags/${tag}`)
-                ? "bg-bg-highlight text-text-highlight"
-                : "text-text-secondary",
-            )}
-          >
-            #{tag}
-          </div>
-        ))}
-        {frontmatterTags.length > NUM_VISIBLE_TAGS ? (
-          <div className="flex  items-center rounded-full text-sm text-text-secondary">
-            +{frontmatterTags.length - NUM_VISIBLE_TAGS}
-          </div>
-        ) : null}
-      </div>
+      {!hideProperties ? (
+        <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
+          {note?.frontmatter?.gist_id ? (
+            <div className="flex items-center self-stretch">
+              <GlobeIcon16 className="text-border-focus" />
+            </div>
+          ) : null}
+          {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
+            <div
+              key={tag}
+              className={cx(
+                "-mx-[3px] flex items-center rounded-sm px-[3px] text-sm",
+                highlightedHrefs.includes(`/tags/${tag}`)
+                  ? "bg-bg-highlight text-text-highlight"
+                  : "text-text-secondary",
+              )}
+            >
+              #{tag}
+            </div>
+          ))}
+          {frontmatterTags.length > NUM_VISIBLE_TAGS ? (
+            <div className="flex  items-center rounded-full text-sm text-text-secondary">
+              +{frontmatterTags.length - NUM_VISIBLE_TAGS}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

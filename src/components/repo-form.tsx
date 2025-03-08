@@ -143,8 +143,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
       </RadioGroup>
       <div className="flex flex-col gap-4 @lg:gap-3">
         <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-3">
-          <div className="grid flex-grow gap-3">
-            <label htmlFor="repo-owner" className="justify-self-start leading-4">
+          <div className="grid flex-grow gap-2">
+            <label htmlFor="repo-owner" className="justify-self-start leading-[1.25]">
               Repository owner
             </label>
             <TextInput
@@ -158,8 +158,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               onChange={() => setError(null)}
             />
           </div>
-          <div className="grid flex-grow gap-3">
-            <label htmlFor="repo-name" className="justify-self-start leading-4">
+          <div className="grid flex-grow gap-2">
+            <label htmlFor="repo-name" className="justify-self-start leading-[1.25]">
               Repository name
             </label>
             <TextInput
