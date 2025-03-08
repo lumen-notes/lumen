@@ -33,9 +33,9 @@ export default async (request: Request, context: Context) => {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = noteTitle || gist.description || "Shared note"
+    const pageTitle = noteTitle || gist.description || "Untitled"
     const pageDescription = "Shared note"
-
+    const siteName = gist?.owner?.login || "Lumen"
     const html = `<!doctype html>
 <html>
   <head>
@@ -46,6 +46,7 @@ export default async (request: Request, context: Context) => {
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
     <meta property="og:url" content="${url.href}" />
+    <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
