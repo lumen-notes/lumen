@@ -2,12 +2,6 @@
 
 import type { Config, Context } from "https://edge.netlify.com"
 
-type File = {
-  filename?: string
-  type?: string
-  content?: string
-}
-
 /**
  * This edge function enhances social media sharing for shared notes.
  * It detects when a bot (like social media crawlers) accesses a shared note URL,
@@ -90,6 +84,12 @@ function isBot(userAgent: string | null): boolean {
 
   const lowerUserAgent = userAgent.toLowerCase()
   return botPatterns.some((pattern) => lowerUserAgent.includes(pattern))
+}
+
+type File = {
+  filename?: string
+  type?: string
+  content?: string
 }
 
 function getNoteContent(gist: { files: Record<string, File> }) {

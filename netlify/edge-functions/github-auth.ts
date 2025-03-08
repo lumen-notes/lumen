@@ -3,6 +3,7 @@
 import type { Config } from "https://edge.netlify.com"
 
 // Reference: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+
 export default async (request: Request) => {
   try {
     const url = new URL(request.url)
@@ -69,11 +70,17 @@ async function getUser(token: string) {
     throw new Error("Error getting user's emails")
   }
 
-  const emails = (await emailResponse.json()) as Array<{ email: string; primary: boolean; visibility: string }>
+  const emails = (await emailResponse.json()) as Array<{
+    email: string
+    primary: boolean
+    visibility: string
+  }>
   const primaryEmail = emails.find((email) => email.visibility !== "private")
 
   if (!primaryEmail) {
-    throw new Error("No public email found. Check your email settings in https://github.com/settings/emails")
+    throw new Error(
+      "No public email found. Check your email settings in https://github.com/settings/emails",
+    )
   }
 
   return { login, name, email: primaryEmail.email }
