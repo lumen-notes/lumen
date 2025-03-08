@@ -1,25 +1,25 @@
-import { createFileRoute, Outlet, ScrollRestoration, useNavigate } from "@tanstack/react-router"
-import { Toaster } from "sonner"
-import { ErrorIcon16 } from "../components/icons"
-import { DevBar } from "../components/dev-bar"
-import { CommandMenu } from "../components/command-menu"
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { useNetworkState, useEvent } from "react-use"
+import { useEvent, useNetworkState } from "react-use"
+import { Toaster } from "sonner"
 import { z } from "zod"
+import { CommandMenu } from "../components/command-menu"
+import { DevBar } from "../components/dev-bar"
+import { ErrorIcon16 } from "../components/icons"
 import { UpdateNotification } from "../components/update-notification"
 import {
-  voiceConversationMachineAtom,
-  Tool,
   FloatingConversationInput,
+  Tool,
+  voiceConversationMachineAtom,
 } from "../components/voice-conversation"
 import {
-  globalStateMachineAtom,
-  templatesAtom,
-  tagsAtom,
-  themeAtom,
   fontAtom,
+  globalStateMachineAtom,
+  tagsAtom,
+  templatesAtom,
+  themeAtom,
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
@@ -228,7 +228,6 @@ function RouteComponent() {
       <div className="grid flex-grow overflow-hidden print:overflow-visible">
         <Outlet />
       </div>
-      <ScrollRestoration />
       <FloatingConversationInput />
       <UpdateNotification />
       <CommandMenu />
