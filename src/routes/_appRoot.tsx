@@ -26,6 +26,14 @@ import { useValueRef } from "../hooks/value-ref"
 
 export const Route = createFileRoute("/_appRoot")({
   component: RouteComponent,
+  head: () => ({
+    links: [
+      {
+        rel: "icon",
+        href: `/favicon-${import.meta.env.MODE}.svg`,
+      },
+    ],
+  }),
 })
 
 const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)

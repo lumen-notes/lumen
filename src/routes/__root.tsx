@@ -7,12 +7,6 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
   head: () => ({
     meta: [{ title: "Lumen" }],
-    links: [
-      {
-        rel: "icon",
-        href: `/favicon-${import.meta.env.MODE}.svg`,
-      },
-    ],
   }),
 })
 
