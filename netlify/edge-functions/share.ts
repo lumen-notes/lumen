@@ -22,7 +22,16 @@ export default async (request: Request, context: Context) => {
     const response = await fetch(`https://api.github.com/gists/${gistId}`)
 
     if (!response.ok) {
-      throw new Error("Not found")
+      const html = `<!doctype html>
+<html>
+  <head>
+    <title>Note not found</title>
+  </head>
+  <body>
+    <h1>Note not found</h1>
+  </body>
+</html>`
+      return new Response(html, { headers: { "Content-Type": "text/html" } })
     }
 
     const gist = await response.json()
@@ -59,7 +68,8 @@ export default async (request: Request, context: Context) => {
     return new Response(html, {
       headers: { "Content-Type": "text/html" },
     })
-  } catch (_error) {
+  } catch (error) {
+    console.error(error)
     return await context.next()
   }
 }
