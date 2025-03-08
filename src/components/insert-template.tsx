@@ -85,7 +85,11 @@ export function InsertTemplateDialog() {
             <div className="flex items-center justify-between h-4">
               <Dialog.Title className="font-bold">{template.name}</Dialog.Title>
               <Dialog.Close asChild>
-                <IconButton aria-label="Close" className="-m-2" disableTooltip>
+                <IconButton
+                  aria-label="Close"
+                  className="-m-2 coarse:-m-3 coarse:rounded-lg"
+                  disableTooltip
+                >
                   <XIcon16 />
                 </IconButton>
               </Dialog.Close>
