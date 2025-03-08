@@ -22,7 +22,6 @@ import {
   fontAtom,
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search"
-import { useThemeColor } from "../hooks/theme-color"
 import { useValueRef } from "../hooks/value-ref"
 
 export const Route = createFileRoute("/_appRoot")({
@@ -32,7 +31,6 @@ export const Route = createFileRoute("/_appRoot")({
 const errorAtom = selectAtom(globalStateMachineAtom, (state) => state.context.error)
 
 function RouteComponent() {
-  useThemeColor()
   const error = useAtomValue(errorAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const searchNotes = useSearchNotes()
@@ -186,10 +184,6 @@ function RouteComponent() {
       "--font-family-content",
       `var(--font-family-${font})`,
     )
-    // document.documentElement.style.setProperty(
-    //   "--font-family-mono",
-    //   `var(--font-family-${font}-mono)`,
-    // )
   }, [font])
 
   // Apply overflow classes to parent elements

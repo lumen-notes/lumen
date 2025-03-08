@@ -1,9 +1,13 @@
+import { useAtomValue } from "jotai"
 import React from "react"
+import { themeAtom } from "../global-state"
 
 export const THEME_COLOR_VAR = "--color-bg"
 
 /** Dyanmically change the theme color */
 export function useThemeColor() {
+  const theme = useAtomValue(themeAtom)
+
   const setThemeColor = React.useCallback(() => {
     if (typeof window === "undefined") {
       return
@@ -18,7 +22,7 @@ export function useThemeColor() {
 
   React.useEffect(() => {
     // Set initial theme color
-    setThemeColor()
+    setTimeout(setThemeColor)
 
     // Update theme color when the user changes their theme preference
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)")
@@ -27,5 +31,5 @@ export function useThemeColor() {
     return () => {
       prefersDark.removeEventListener("change", setThemeColor)
     }
-  }, [setThemeColor])
+  }, [setThemeColor, theme])
 }

@@ -68,13 +68,10 @@
 
   /* Font families */
   --font-family-sans: "iA Writer Quattro", system-ui, sans-serif;
-  --font-family-sans-mono: "iA Writer Mono", monospace;
   --font-family-serif: "Literata Variable", Georgia, serif;
-  /* --font-family-serif-mono: "Monaspace Xenon", "iA Writer Mono", monospace; */
   --font-family-handwriting: "Shantell Sans Variable", system-ui, sans-serif;
-  /* --font-family-handwriting-mono: "Monaspace Radon", "iA Writer Mono", monospace; */
   --font-family-content: var(--font-family-sans);
-  --font-family-mono: var(--font-family-sans-mono);
+  --font-family-mono: "iA Writer Mono", monospace;
 
   /* Only applies to the handwriting font (Shantell Sans) */
   font-variation-settings: "INFM" 75;

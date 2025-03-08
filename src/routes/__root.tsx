@@ -1,4 +1,5 @@
 import { HeadContent, Link, Outlet, createRootRoute } from "@tanstack/react-router"
+import { useThemeColor } from "../hooks/theme-color"
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -20,6 +21,8 @@ function NotFoundComponent() {
 }
 
 function RootComponent() {
+  useThemeColor()
+
   return (
     <>
       <HeadContent />
