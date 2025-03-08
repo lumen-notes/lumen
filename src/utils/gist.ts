@@ -3,6 +3,7 @@ import { fromMarkdown } from "mdast-util-from-markdown"
 import { visit } from "unist-util-visit"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { Note } from "../schema"
+import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "./date"
 
 export async function createGist({ githubToken, note }: { githubToken: string; note: Note }) {
   const filename = `${note.id}.md`
@@ -95,7 +96,18 @@ function transformMarkdown(content: string): string {
     if (!node.position) return
 
     // Get the text to replace the wikilink with
-    const text = node.data.text || node.data.id
+    let text = node.data.text
+    if (!text) {
+      if (isValidDateString(node.data.id)) {
+        // If ID is a valid date, format the date
+        text = formatDate(node.data.id, { alwaysIncludeYear: true })
+      } else if (isValidWeekString(node.data.id)) {
+        // If ID is a valid week, format the week
+        text = formatWeek(node.data.id)
+      } else {
+        text = node.data.id
+      }
+    }
 
     // Add the replacement to our list
     replacements.push({
