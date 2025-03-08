@@ -675,8 +675,7 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
     )
   }
 
-  // eslint-disable-next-line jsx-a11y/alt-text
-  return <img {...props} />
+  return <img src={props.src} alt={props.alt} />
 }
 
 function Code({ className, inline, children }: CodeProps) {
