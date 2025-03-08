@@ -1,11 +1,11 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
+import { githubRepoAtom, githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
 import { Note, NoteId } from "../schema"
-import { parseNote } from "../utils/parse-note"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
+import { parseNote } from "../utils/parse-note"
 
 export function useNoteById(id: NoteId | undefined) {
   const noteAtom = React.useMemo(
@@ -19,6 +19,7 @@ export function useNoteById(id: NoteId | undefined) {
 export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
@@ -29,15 +30,16 @@ export function useSaveNote() {
 
       // If the note has a gist ID, update the gist
       const { frontmatter } = parseFrontmatter(content)
-      if (typeof frontmatter.gist_id === "string" && githubUser) {
+      if (typeof frontmatter.gist_id === "string" && githubUser && githubRepo) {
         await updateGist({
           gistId: frontmatter.gist_id,
           note: parseNote(id ?? "", content),
           githubUser,
+          githubRepo,
         })
       }
     },
-    [send, githubUser],
+    [send, githubUser, githubRepo],
   )
 
   return saveNote
