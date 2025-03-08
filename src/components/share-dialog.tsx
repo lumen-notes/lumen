@@ -105,7 +105,7 @@ export function ShareDialog({
                       </a>
                     </IconButton>
                   </div>
-                  <span className="text-text-secondary text-sm">
+                  <span className="text-text-secondary text-sm text-pretty">
                     Anyone with this link can view this note.
                   </span>
                 </div>
@@ -142,7 +142,7 @@ export function ShareDialog({
                 <Button variant="primary" onClick={handlePublish} disabled={isPublishing}>
                   {isPublishing ? <LoadingIcon16 /> : "Publish note"}
                 </Button>
-                <span className="text-text-secondary text-sm text-center">
+                <span className="text-text-secondary text-sm text-center text-pretty">
                   Anyone with the link will be able to view this note.
                 </span>
               </div>
