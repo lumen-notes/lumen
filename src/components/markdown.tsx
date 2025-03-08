@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
+import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
@@ -230,7 +231,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkTag,
         [remarkMath, { singleDollarTextMath: false }],
       ]}
-      rehypePlugins={[rehypeKatex]}
+      rehypePlugins={[rehypeKatex, rehypeRaw]}
       remarkRehypeOptions={{
         handlers: {
           // TODO: Improve type-safety of `node`
