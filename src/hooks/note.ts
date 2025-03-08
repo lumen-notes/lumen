@@ -29,11 +29,11 @@ export function useSaveNote() {
 
       // If the note has a gist ID, update the gist
       const { frontmatter } = parseFrontmatter(content)
-      if (typeof frontmatter.gist_id === "string" && githubUser?.token) {
+      if (typeof frontmatter.gist_id === "string" && githubUser) {
         await updateGist({
-          githubToken: githubUser.token,
           gistId: frontmatter.gist_id,
           note: parseNote(id ?? "", content),
+          githubUser,
         })
       }
     },

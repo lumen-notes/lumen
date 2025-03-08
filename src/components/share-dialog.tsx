@@ -35,10 +35,10 @@ export function ShareDialog({
   const timeoutRef = React.useRef<number | null>(null)
 
   const handlePublish = React.useCallback(async () => {
-    if (!githubUser?.token) return
+    if (!githubUser) return
 
     setIsPublishing(true)
-    const gist = await createGist({ githubToken: githubUser.token, note })
+    const gist = await createGist({ note, githubUser })
     setIsPublishing(false)
 
     // TODO: Handle error
