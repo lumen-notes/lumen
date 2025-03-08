@@ -9,6 +9,7 @@ import { Markdown } from "../components/markdown"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { parseNote } from "../utils/parse-note"
+import { getLeadingEmoji, removeLeadingEmoji } from "../utils/emoji"
 
 export const Route = createFileRoute("/share/$gistId")({
   component: RouteComponent,
@@ -53,8 +54,16 @@ export const Route = createFileRoute("/share/$gistId")({
   },
   head: ({ loaderData }) => {
     const { gist, note } = loaderData
+    const title = note?.title || gist?.description || note?.displayName || "Lumen"
+    const emoji = getLeadingEmoji(title) || "📄"
     return {
-      meta: [{ title: note?.title || gist?.description || note?.displayName || "Lumen" }],
+      meta: [{ title: removeLeadingEmoji(title) }],
+      links: [
+        {
+          rel: "icon",
+          href: `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${emoji}</text></svg>`,
+        },
+      ],
     }
   },
 })

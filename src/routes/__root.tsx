@@ -1,11 +1,18 @@
 import { HeadContent, Link, Outlet, createRootRoute } from "@tanstack/react-router"
 import { useThemeColor } from "../hooks/theme-color"
+import { createPortal } from "react-dom"
 
 export const Route = createRootRoute({
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   head: () => ({
     meta: [{ title: "Lumen" }],
+    links: [
+      {
+        rel: "icon",
+        href: `/favicon-${import.meta.env.MODE}.svg`,
+      },
+    ],
   }),
 })
 
@@ -25,7 +32,7 @@ function RootComponent() {
 
   return (
     <>
-      <HeadContent />
+      {createPortal(<HeadContent />, document.querySelector("head")!)}
       <Outlet />
     </>
   )
