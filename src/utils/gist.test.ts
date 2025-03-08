@@ -45,20 +45,27 @@ describe("transformUploadUrls", () => {
   it("should transform image URLs from uploads directory", () => {
     const input = `Here's an image: ![Alt text](/uploads/image.png)`
     const expected = `Here's an image: ![Alt text](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png)`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
 
-    expect(transformUploadUrls({ content: input, gistId, gistOwner })).toBe(expected)
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
   })
 
   it("should transform link URLs from uploads directory", () => {
     const input = `Here's a link: [Click here](/uploads/document.pdf)`
     const expected = `Here's a link: [Click here](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/document.pdf)`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
 
-    expect(transformUploadUrls({ content: input, gistId, gistOwner })).toBe(expected)
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/document.pdf"])
   })
 
   it("should not transform URLs not in uploads directory", () => {
     const input = "![image](https://example.com/image.png) and [link](https://example.com)"
-    expect(transformUploadUrls({ content: input, gistId, gistOwner })).toBe(input)
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(input)
+    expect(result.uploadPaths).toEqual([])
   })
 
   it("should handle multiple uploads in the same content", () => {
@@ -76,13 +83,28 @@ Some text
 More text
 ![Second](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/second.jpg)`
 
-    expect(transformUploadUrls({ content: input, gistId, gistOwner })).toBe(expected)
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual([
+      "/uploads/first.png",
+      "/uploads/doc.pdf",
+      "/uploads/second.jpg",
+    ])
   })
 
   it("should preserve alt text and link text", () => {
     const input = `![Custom Alt](/uploads/image.png) and [Custom Text](/uploads/file.pdf)`
     const expected = `![Custom Alt](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png) and [Custom Text](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/file.pdf)`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
 
-    expect(transformUploadUrls({ content: input, gistId, gistOwner })).toBe(expected)
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png", "/uploads/file.pdf"])
+  })
+
+  it("should return a list of unique upload paths", () => {
+    const input = `![First](/uploads/image.png) and [Document](/uploads/image.png)`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
   })
 })
