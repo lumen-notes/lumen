@@ -1,4 +1,7 @@
 import { request } from "@octokit/request"
+import { fromMarkdown } from "mdast-util-from-markdown"
+import { visit } from "unist-util-visit"
+import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { Note } from "../schema"
 
 export async function createGist({ githubToken, note }: { githubToken: string; note: Note }) {
@@ -12,7 +15,7 @@ export async function createGist({ githubToken, note }: { githubToken: string; n
       public: false,
       files: {
         [filename]: {
-          content: note.content,
+          content: transformMarkdown(note.content),
         },
       },
     })
@@ -43,7 +46,7 @@ export async function updateGist({
       gist_id: gistId,
       files: {
         [filename]: {
-          content: note.content,
+          content: transformMarkdown(note.content),
         },
       },
     })
@@ -69,4 +72,47 @@ export async function deleteGist({ githubToken, gistId }: { githubToken: string;
     console.error("Failed to delete gist:", error)
     return false
   }
+}
+
+/**
+ * Transforms markdown content by replacing wikilinks with their text representation
+ *
+ * "[[1234]]" → "1234"
+ * "[[1234|My note]]" → "My note"
+ */
+function transformMarkdown(content: string): string {
+  // Parse the markdown content with wikilink support
+  const mdast = fromMarkdown(content, {
+    extensions: [wikilink()],
+    mdastExtensions: [wikilinkFromMarkdown()],
+  })
+
+  // Keep track of replacements to make
+  const replacements: Array<{ start: number; end: number; text: string }> = []
+
+  // Visit all wikilink nodes
+  visit(mdast, "wikilink", (node) => {
+    if (!node.position) return
+
+    // Get the text to replace the wikilink with
+    const text = node.data.text || node.data.id
+
+    // Add the replacement to our list
+    replacements.push({
+      start: node.position.start.offset!,
+      end: node.position.end.offset!,
+      text,
+    })
+  })
+
+  // Apply replacements in reverse order to not affect other replacement positions
+  replacements.sort((a, b) => b.start - a.start)
+
+  // Make the replacements
+  let result = content
+  for (const { start, end, text } of replacements) {
+    result = result.slice(0, start) + text + result.slice(end)
+  }
+
+  return result
 }
