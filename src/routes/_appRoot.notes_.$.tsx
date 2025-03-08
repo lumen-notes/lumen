@@ -493,6 +493,7 @@ function NotePage() {
             </IconButton>
             <IconButton
               aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
+              size="small"
               onClick={() => {
                 setEditorValue(
                   updateFrontmatter({
