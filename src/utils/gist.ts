@@ -41,9 +41,13 @@ export async function updateGist({
   const filename = `${note.id}.md`
 
   try {
-    // We only transform upload URLs during update (not create) because the gistId
-    // doesn't exist during creation, and uploads need the gistId to generate
-    // proper GitHub raw content URLs
+    // We transform upload URLs only during gist updates (not during initial creation)
+    // because the gistId is required to generate proper GitHub raw content URLs, and
+    // this ID doesn't exist until after the gist has been created
+    // proper GitHub raw content URLs.
+    //
+    // Note: updateGist() is always called immediately after createGist() since we
+    // add the gist_id to the note's frontmatter after the gist is created.
     const transformedContent = transformUploadUrls({
       content: stripWikilinks(note.content),
       gistId,
