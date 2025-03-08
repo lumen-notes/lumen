@@ -19,7 +19,7 @@ export const Route = createFileRoute("/share/$gistId")({
         throw new Error("No files found in gist")
       }
 
-      // We need to locate a markdown file within the gist to display as the note content
+      // We need to locate a markdown file within the gist to use as the note content
       // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
       const readmeFile = Object.values(gist.files).find(
         (file) => file?.filename?.toLowerCase() === "readme.md",
