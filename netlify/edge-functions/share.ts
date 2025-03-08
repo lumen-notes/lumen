@@ -34,7 +34,6 @@ export default async (request: Request, context: Context) => {
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
     const pageTitle = noteTitle || gist.description || "Shared note"
-    const pageImageUrl = gist.owner?.avatar_url
 
     const html = `<!doctype html>
 <html>
@@ -46,7 +45,6 @@ export default async (request: Request, context: Context) => {
     <meta property="og:url" content="${url.href}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
-    ${pageImageUrl ? `<meta property="og:image" content="${pageImageUrl}" /><meta name="twitter:image" content="${pageImageUrl}" />` : ""}
   </head>
   <body>
     <pre>${noteContent}</pre>
