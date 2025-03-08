@@ -41,7 +41,7 @@ export default async (request: Request, context: Context) => {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = noteTitle || gist.description || "Lumen"
+    const pageTitle = noteTitle || gist.description || "Shared note"
     const pageImageUrl = gist.owner?.avatar_url
 
     const html = `<!doctype html>
