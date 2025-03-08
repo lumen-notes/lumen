@@ -34,17 +34,21 @@ export default async (request: Request, context: Context) => {
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
     const pageTitle = noteTitle || gist.description || "Shared note"
+    const pageDescription = "Shared note"
 
     const html = `<!doctype html>
 <html>
   <head>
     <title>${pageTitle}</title>
     <meta charset="utf-8" />
+    <meta name="description" content="${pageDescription}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
+    <meta property="og:description" content="${pageDescription}" />
     <meta property="og:url" content="${url.href}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
+    <meta name="twitter:description" content="${pageDescription}" />
   </head>
   <body>
     <pre>${noteContent}</pre>
