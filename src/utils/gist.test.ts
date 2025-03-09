@@ -60,6 +60,51 @@ describe("transformUploadUrls", () => {
     expect(result.uploadPaths).toEqual(["/uploads/document.pdf"])
   })
 
+  it("should transform HTML img tags from uploads directory", () => {
+    const input = `Here's an HTML image: <img src="/uploads/image.png" alt="Alt text" />`
+    const expected = `Here's an HTML image: <img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png" alt="Alt text" />`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
+  })
+
+  it("should transform non-self-closing HTML img tags", () => {
+    const input = `Here's an HTML image: <img src="/uploads/image.png" alt="Alt text">`
+    const expected = `Here's an HTML image: <img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png" alt="Alt text" />`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
+  })
+
+  it("should preserve HTML img attributes", () => {
+    const input = `<img src="/uploads/image.png" alt="Alt text" width="100" height="100" class="my-class" />`
+    const expected = `<img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png" alt="Alt text" width="100" height="100" class="my-class" />`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
+  })
+
+  it("should handle HTML img tags without alt attribute", () => {
+    const input = `<img src="/uploads/image.png" width="100" />`
+    const expected = `<img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png" width="100" />`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
+  })
+
+  it("should handle non-self-closing HTML img tags without attributes", () => {
+    const input = `<img src="/uploads/image.png">`
+    const expected = `<img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/image.png" />`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toBe(expected)
+    expect(result.uploadPaths).toEqual(["/uploads/image.png"])
+  })
+
   it("should not transform URLs not in uploads directory", () => {
     const input = "![image](https://example.com/image.png) and [link](https://example.com)"
     const result = transformUploadUrls({ content: input, gistId, gistOwner })
@@ -74,14 +119,18 @@ describe("transformUploadUrls", () => {
 Some text
 [Document](/uploads/doc.pdf)
 More text
-![Second](/uploads/second.jpg)`
+![Second](/uploads/second.jpg)
+<img src="/uploads/third.png" alt="Third" />
+<img src="/uploads/fourth.png" alt="Fourth">`
 
     const expected = `
 ![First](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/first.png)
 Some text
 [Document](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/doc.pdf)
 More text
-![Second](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/second.jpg)`
+![Second](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/second.jpg)
+<img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/third.png" alt="Third" />
+<img src="https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/fourth.png" alt="Fourth" />`
 
     const result = transformUploadUrls({ content: input, gistId, gistOwner })
 
@@ -90,6 +139,8 @@ More text
       "/uploads/first.png",
       "/uploads/doc.pdf",
       "/uploads/second.jpg",
+      "/uploads/third.png",
+      "/uploads/fourth.png",
     ])
   })
 
@@ -103,7 +154,7 @@ More text
   })
 
   it("should return a list of unique upload paths", () => {
-    const input = `![First](/uploads/image.png) and [Document](/uploads/image.png)`
+    const input = `![First](/uploads/image.png) and [Document](/uploads/image.png) and <img src="/uploads/image.png" />`
     const result = transformUploadUrls({ content: input, gistId, gistOwner })
     expect(result.uploadPaths).toEqual(["/uploads/image.png"])
   })

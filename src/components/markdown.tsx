@@ -669,14 +669,16 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
         search={{
           path: props.src,
         }}
-        className="block w-fit !no-underline"
+        className={cx("block w-fit !no-underline", props.className)}
+        style={props.style}
       >
-        <FilePreview path={props.src} alt={props.alt} />
+        <FilePreview path={props.src} alt={props.alt} width={props.width} height={props.height} />
       </Link>
     )
   }
 
-  return <img src={props.src} alt={props.alt} />
+  // eslint-disable-next-line jsx-a11y/alt-text
+  return <img {...props} />
 }
 
 function Code({ className, inline, children }: CodeProps) {

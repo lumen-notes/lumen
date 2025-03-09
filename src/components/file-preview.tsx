@@ -11,9 +11,11 @@ export const fileCache = new Map<string, { file: File; url: string }>()
 type FilePreviewProps = {
   path: string
   alt?: string
+  width?: number | string
+  height?: number | string
 }
 
-export function FilePreview({ path, alt = "" }: FilePreviewProps) {
+export function FilePreview({ path, alt = "", width, height }: FilePreviewProps) {
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const cachedFile = fileCache.get(path)
@@ -71,14 +73,14 @@ export function FilePreview({ path, alt = "" }: FilePreviewProps) {
 
   // Image
   if (file.type.startsWith("image/")) {
-    return <img src={url} alt={alt} />
+    return <img src={url} alt={alt} width={width} height={height} />
   }
 
   // Video
   if (file.type.startsWith("video/")) {
     return (
       // eslint-disable-next-line jsx-a11y/media-has-caption
-      <video controls>
+      <video controls width={width} height={height}>
         <source src={url} type={file.type} />
       </video>
     )

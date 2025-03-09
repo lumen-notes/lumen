@@ -261,6 +261,26 @@ export function transformUploadUrls({
     result = result.slice(0, start) + text + result.slice(end)
   }
 
+  // Transform HTML img tags
+  const imgRegex = /<img([^>]+)src=["'](?<url>\/uploads\/[^"']+)["']([^>]*)>/g
+  result = result.replace(imgRegex, (match, beforeSrc, url, afterSrc) => {
+    // Transform the URL to a gist raw URL
+    const fileName = url.split("/").pop()
+    const newUrl = `https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/${fileName}`
+
+    // Add the path to the uploadPaths set
+    uploadPaths.add(url)
+
+    // Get all attributes (before and after src)
+    const attrs = (beforeSrc + " " + afterSrc)
+      .replace(/\s+/g, " ")
+      .replace(/\s*\/?\s*$/, "")
+      .trim()
+
+    // Reconstruct the img tag
+    return `<img src="${newUrl}"${attrs ? ` ${attrs}` : ""} />`
+  })
+
   return {
     content: result,
     uploadPaths: Array.from(uploadPaths),
