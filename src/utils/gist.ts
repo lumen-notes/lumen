@@ -53,6 +53,13 @@ export async function updateGist({
   const gistDir = `/tmp/gist-${gistId}`
 
   try {
+    // Transform upload URLs and get the list of referenced files
+    const { content: transformedContent, uploadPaths } = transformUploadUrls({
+      content: stripWikilinks(note.content),
+      gistId,
+      gistOwner: githubUser.login,
+    })
+
     // Clone the gist repository
     await git.clone({
       fs: gistFs,
@@ -68,12 +75,18 @@ export async function updateGist({
       }),
     })
 
-    // Transform upload URLs and get the list of files to upload
-    const { content: transformedContent, uploadPaths } = transformUploadUrls({
-      content: stripWikilinks(note.content),
-      gistId,
-      gistOwner: githubUser.login,
-    })
+    // Delete all existing files and stage deletions
+    const existingFiles = await gistFs.promises.readdir(gistDir)
+    for (const file of existingFiles) {
+      // Skip .git directory
+      if (file === ".git") continue
+      await gistFs.promises.unlink(`${gistDir}/${file}`)
+      await git.remove({
+        fs: gistFs,
+        dir: gistDir,
+        filepath: file,
+      })
+    }
 
     // Write the main note content
     await gistFs.promises.writeFile(`${gistDir}/${filename}`, transformedContent)
@@ -105,7 +118,7 @@ export async function updateGist({
       }
     }
 
-    // Stage all changes
+    // Stage all new and modified files
     await git.add({
       fs: gistFs,
       dir: gistDir,
