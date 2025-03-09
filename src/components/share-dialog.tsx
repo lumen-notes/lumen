@@ -8,7 +8,7 @@ import { CheckIcon16, ExternalLinkIcon16, LoadingIcon16, XIcon16 } from "./icons
 import { TextInput } from "./text-input"
 import { useAtomValue } from "jotai"
 import { githubUserAtom } from "../global-state"
-import { createGist, deleteGist } from "../utils/gist"
+import { createGist, deleteGist, stripWikilinks } from "../utils/gist"
 import { NotePreview } from "./note-preview"
 
 type ShareDialogProps = {
@@ -33,6 +33,12 @@ export function ShareDialog({
   const [isUnpublishing, setIsUnpublishing] = React.useState(false)
   const [linkCopied, setLinkCopied] = React.useState(false)
   const timeoutRef = React.useRef<number | null>(null)
+
+  const strippedNote = React.useMemo(() => {
+    // Strip wikilinks from the note content so the note preview
+    // matches the published note (we strip wikilinks when publishing)
+    return { ...note, content: stripWikilinks(note.content) }
+  }, [note])
 
   const handlePublish = React.useCallback(async () => {
     if (!githubUser) return
@@ -81,7 +87,7 @@ export function ShareDialog({
               className="card-1 !bg-bg-overlay"
               style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
             >
-              <NotePreview note={note} hideProperties />
+              <NotePreview note={strippedNote} hideProperties />
             </div>
             {gistId ? (
               <>
