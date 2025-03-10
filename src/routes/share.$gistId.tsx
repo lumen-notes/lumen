@@ -8,7 +8,7 @@ import { EditIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
-import { parseNote } from "../utils/markdown"
+import { parseNote } from "../utils/parse-note"
 import { getLeadingEmoji, removeLeadingEmoji } from "../utils/emoji"
 
 export const Route = createFileRoute("/share/$gistId")({

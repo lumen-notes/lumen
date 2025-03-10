@@ -2,7 +2,7 @@ import { expect } from "@storybook/jest"
 import { StoryObj } from "@storybook/react"
 import { within } from "@storybook/testing-library"
 import { NoteFavicon } from "./note-favicon"
-import { parseNote } from "../utils/markdown"
+import { parseNote } from "../utils/parse-note"
 
 export default {
   title: "NoteFavicon",
