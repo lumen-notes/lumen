@@ -82,18 +82,33 @@ function updateDecorations(oldDecorations: DecorationSet, tr: Transaction): Deco
 
 /** Returns a line decoration for indented line wrapping. */
 function getLineDecoration(line: Line) {
-  const isListItem = /^\s*[-*]\s/.test(line.text)
+  // First try to match list items (numbered or bulleted)
+  const listItemMatch = line.text.match(/^(\s*)([-*]|\d+[.)])\s/)
 
-  if (!isListItem) return null
+  if (listItemMatch) {
+    const [_, leadingSpaces, marker] = listItemMatch
+    const numLeadingSpaces = leadingSpaces.length
+    const markerWidth = marker.length + 1 // +1 for the space after the marker
+    const indent = numLeadingSpaces + markerWidth
+    return Decoration.line({
+      attributes: {
+        style: `margin-left: ${indent}ch; text-indent: -${indent}ch;`,
+      },
+    })
+  }
 
-  const numLeadingSpaces = line.text.match(/^ */)?.[0]?.length ?? 0
-  const indent = numLeadingSpaces + 2 // Add 2 for the bullet point and space
+  // Then check for plain indented text (2 or more spaces)
+  const indentMatch = line.text.match(/^(\s{2,})/)
+  if (indentMatch) {
+    const indent = indentMatch[1].length
+    return Decoration.line({
+      attributes: {
+        style: `margin-left: ${indent}ch; text-indent: -${indent}ch;`,
+      },
+    })
+  }
 
-  return Decoration.line({
-    attributes: {
-      style: `margin-left: ${indent}ch; text-indent: -${indent}ch;`,
-    },
-  })
+  return null
 }
 
 export function indentedLineWrapExtension(): Extension {
