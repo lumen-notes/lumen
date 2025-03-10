@@ -2,15 +2,12 @@ import LightningFS from "@isomorphic-git/lightning-fs"
 import { request } from "@octokit/request"
 import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
-import { Image, Link, Text } from "mdast"
-import { fromMarkdown } from "mdast-util-from-markdown"
-import { visit } from "unist-util-visit"
-import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { GitHubRepository, GitHubUser, Note } from "../schema"
-import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "./date"
 import { readFile } from "./fs"
 import { REPO_DIR } from "./git"
 import { isTrackedWithGitLfs, resolveGitLfsPointer } from "./git-lfs"
+import { stripWikilinks } from "./strip-wikilinks"
+import { transformUploadUrls } from "./transform-upload-urls"
 
 export async function createGist({ note, githubUser }: { note: Note; githubUser: GitHubUser }) {
   const filename = `${note.id}.md`
@@ -168,134 +165,5 @@ export async function deleteGist({ githubToken, gistId }: { githubToken: string;
   } catch (error) {
     console.error("Failed to delete gist:", error)
     return false
-  }
-}
-
-/**
- * Replaces wikilinks with their text representation
- *
- * "[[1234]]" → "1234"
- * "[[1234|My note]]" → "My note"
- */
-export function stripWikilinks(content: string): string {
-  // Parse the markdown content with wikilink support
-  const mdast = fromMarkdown(content, {
-    extensions: [wikilink()],
-    mdastExtensions: [wikilinkFromMarkdown()],
-  })
-
-  // Keep track of replacements to make
-  const replacements: Array<{ start: number; end: number; text: string }> = []
-
-  // Visit all wikilink nodes
-  visit(mdast, "wikilink", (node) => {
-    if (!node.position) return
-
-    // Get the text to replace the wikilink with
-    let text = node.data.text
-    if (!text) {
-      if (isValidDateString(node.data.id)) {
-        // If ID is a valid date, format the date
-        text = formatDate(node.data.id, { alwaysIncludeYear: true })
-      } else if (isValidWeekString(node.data.id)) {
-        // If ID is a valid week, format the week
-        text = formatWeek(node.data.id)
-      } else {
-        text = node.data.id
-      }
-    }
-
-    // Add the replacement to our list
-    replacements.push({
-      start: node.position.start.offset!,
-      end: node.position.end.offset!,
-      text,
-    })
-  })
-
-  // Apply replacements in reverse order to not affect other replacement positions
-  replacements.sort((a, b) => b.start - a.start)
-
-  // Make the replacements
-  let result = content
-  for (const { start, end, text } of replacements) {
-    result = result.slice(0, start) + text + result.slice(end)
-  }
-
-  return result
-}
-
-/**
- * Transforms URLs in markdown content that point to /uploads/* to gist raw URLs
- * and returns a list of unique file paths that need to be uploaded
- */
-export function transformUploadUrls({
-  content,
-  gistId,
-  gistOwner,
-}: {
-  content: string
-  gistId: string
-  gistOwner: string
-}): { content: string; uploadPaths: string[] } {
-  const mdast = fromMarkdown(content)
-  const replacements: Array<{ start: number; end: number; text: string }> = []
-  const uploadPaths = new Set<string>()
-
-  // Visit all link and image nodes
-  visit(mdast, (node) => {
-    if (node.type !== "link" && node.type !== "image") return
-    if (!node.position || !node.url.startsWith("/uploads/")) return
-
-    // Transform the URL to a gist raw URL
-    const fileName = node.url.split("/").pop()
-    const newUrl = `https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/${fileName}`
-
-    // Add the path to the uploadPaths set
-    uploadPaths.add(node.url)
-
-    // Add the replacement to our list
-    replacements.push({
-      start: node.position.start.offset!,
-      end: node.position.end.offset!,
-      text:
-        node.type === "image"
-          ? `![${(node as Image).alt || ""}](${newUrl})`
-          : `[${((node as Link).children[0] as Text)?.value || ""}](${newUrl})`,
-    })
-  })
-
-  // Apply replacements in reverse order to not affect other replacement positions
-  replacements.sort((a, b) => b.start - a.start)
-
-  // Make the replacements
-  let result = content
-  for (const { start, end, text } of replacements) {
-    result = result.slice(0, start) + text + result.slice(end)
-  }
-
-  // Transform HTML img tags
-  const imgRegex = /<img([^>]+)src=["'](?<url>\/uploads\/[^"']+)["']([^>]*)>/g
-  result = result.replace(imgRegex, (match, beforeSrc, url, afterSrc) => {
-    // Transform the URL to a gist raw URL
-    const fileName = url.split("/").pop()
-    const newUrl = `https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/${fileName}`
-
-    // Add the path to the uploadPaths set
-    uploadPaths.add(url)
-
-    // Get all attributes (before and after src)
-    const attrs = (beforeSrc + " " + afterSrc)
-      .replace(/\s+/g, " ")
-      .replace(/\s*\/?\s*$/, "")
-      .trim()
-
-    // Reconstruct the img tag
-    return `<img src="${newUrl}"${attrs ? ` ${attrs}` : ""} />`
-  })
-
-  return {
-    content: result,
-    uploadPaths: Array.from(uploadPaths),
   }
 }
