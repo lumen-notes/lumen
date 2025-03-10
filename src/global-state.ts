@@ -26,7 +26,7 @@ import {
   gitRemove,
   isRepoSynced,
 } from "./utils/git"
-import { parseNote } from "./utils/parse-note"
+import { parseNote } from "./utils/markdown"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
 import { startTimer } from "./utils/timer"

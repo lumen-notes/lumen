@@ -71,7 +71,7 @@ import {
   isValidWeekString,
 } from "../utils/date"
 import { updateFrontmatter } from "../utils/frontmatter"
-import { parseNote } from "../utils/parse-note"
+import { parseNote } from "../utils/markdown"
 import { pluralize } from "../utils/pluralize"
 
 type RouteSearch = {

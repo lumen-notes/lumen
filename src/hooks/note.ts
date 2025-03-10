@@ -5,7 +5,7 @@ import { githubRepoAtom, githubUserAtom, globalStateMachineAtom, notesAtom } fro
 import { Note, NoteId } from "../schema"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
-import { parseNote } from "../utils/parse-note"
+import { parseNote } from "../utils/markdown"
 
 export function useNoteById(id: NoteId | undefined) {
   const noteAtom = React.useMemo(
