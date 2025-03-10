@@ -225,8 +225,14 @@ export function testQualifiers(qualifiers: Qualifier[], item: Note) {
 
       case "is":
       case "type":
-        // Match if the item's type is in the qualifier's values
-        value = qualifier.values.includes(item.type)
+        if (qualifier.values.includes("published")) {
+          // Match if the item has a `gist_id` property (which means it's published)
+          value =
+            typeof item.frontmatter.gist_id === "string" && item.frontmatter.gist_id.length > 0
+        } else {
+          // Match if the item's type is in the qualifier's values
+          value = qualifier.values.includes(item.type)
+        }
         break
 
       default:
