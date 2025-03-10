@@ -8,7 +8,8 @@ import { CheckIcon16, ExternalLinkIcon16, LoadingIcon16, XIcon16 } from "./icons
 import { TextInput } from "./text-input"
 import { useAtomValue } from "jotai"
 import { githubUserAtom } from "../global-state"
-import { createGist, deleteGist, stripWikilinks } from "../utils/gist"
+import { createGist, deleteGist } from "../utils/gist"
+import { stripWikilinks } from "../utils/strip-wikilinks"
 import { NotePreview } from "./note-preview"
 
 type ShareDialogProps = {

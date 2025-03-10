@@ -33,7 +33,7 @@ import {
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
-import { parseFrontmatter } from "../utils/parse-frontmatter"
+import { parseFrontmatter } from "../utils/frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"

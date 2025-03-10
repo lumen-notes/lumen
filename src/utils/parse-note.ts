@@ -18,7 +18,7 @@ import {
   isValidWeekString,
   toDateStringUtc,
 } from "./date"
-import { parseFrontmatter } from "./parse-frontmatter"
+import { parseFrontmatter } from "./frontmatter"
 import { removeLeadingEmoji } from "./emoji"
 
 /**
