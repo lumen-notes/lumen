@@ -495,12 +495,12 @@ function NotePage() {
               aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
               size="small"
               onClick={() => {
-                setEditorValue(
-                  updateFrontmatter({
-                    content: editorValue,
-                    properties: { pinned: parsedNote?.pinned ? null : true },
-                  }),
-                )
+                const newContent = updateFrontmatter({
+                  content: editorValue,
+                  properties: { pinned: parsedNote?.pinned ? null : true },
+                })
+                setEditorValue(newContent)
+                handleSave(newContent)
               }}
             >
               {parsedNote?.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
@@ -581,21 +581,6 @@ function NotePage() {
                   icon={<ShareIcon16 />}
                   disabled={isSignedOut || !note}
                   onSelect={() => setIsShareDialogOpen(true)}
-                  // onSelect={async () => {
-                  //   if (!note) return
-
-                  //   const url = await exportAsGist({
-                  //     githubToken: githubUser?.token ?? "",
-                  //     noteId: note.id,
-                  //     note,
-                  //   })
-
-                  //   // Copy Gist URL to clipboard
-                  //   copy(url)
-
-                  //   // Open Gist in new tab
-                  //   window.open(url, "_blank")
-                  // }}
                 >
                   Share
                 </DropdownMenu.Item>
@@ -654,20 +639,20 @@ function NotePage() {
             <ShareDialog
               note={parsedNote}
               onPublish={(gistId) => {
-                const content = updateFrontmatter({
+                const newContent = updateFrontmatter({
                   content: editorValue,
                   properties: { gist_id: gistId },
                 })
-                setEditorValue(content)
-                handleSave(content)
+                setEditorValue(newContent)
+                handleSave(newContent)
               }}
               onUnpublish={() => {
-                const content = updateFrontmatter({
+                const newContent = updateFrontmatter({
                   content: editorValue,
                   properties: { gist_id: null },
                 })
-                setEditorValue(content)
-                handleSave(content)
+                setEditorValue(newContent)
+                handleSave(newContent)
                 setIsShareDialogOpen(false)
               }}
               open={isShareDialogOpen}
