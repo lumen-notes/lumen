@@ -96,7 +96,7 @@ function RouteComponent() {
       <div className="max-w-3xl mx-auto flex flex-col gap-5">
         <div className="flex items-center gap-2 justify-between h-8 coarse:h-10 print:hidden">
           <div className="flex items-center gap-2 truncate">
-            <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-4 rounded-full" />
+            <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-5 rounded-full" />
             <span className="truncate">
               <a
                 href={`https://github.com/${gist.owner?.login}`}
