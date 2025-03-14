@@ -57,6 +57,9 @@ export function ShareDialog({
   const handleUnpublish = React.useCallback(async () => {
     if (!githubUser?.token || !gistId) return
 
+    const confirmed = window.confirm("Are you sure you want to unpublish this note?")
+    if (!confirmed) return
+
     setIsUnpublishing(true)
     const success = await deleteGist({ githubToken: githubUser.token, gistId })
     setIsUnpublishing(false)
@@ -118,7 +121,11 @@ export function ShareDialog({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <Button variant="secondary" onClick={handleUnpublish} disabled={isUnpublishing}>
-                    {isUnpublishing ? <LoadingIcon16 /> : "Unpublish"}
+                    {isUnpublishing ? (
+                      <LoadingIcon16 />
+                    ) : (
+                      <span className="text-text-danger">Unpublish</span>
+                    )}
                   </Button>
                   <Button
                     variant="primary"
