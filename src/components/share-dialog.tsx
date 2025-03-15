@@ -11,6 +11,7 @@ import { githubUserAtom } from "../global-state"
 import { createGist, deleteGist } from "../utils/gist"
 import { stripWikilinks } from "../utils/strip-wikilinks"
 import { NotePreview } from "./note-preview"
+import { FormControl } from "./form-control"
 
 type ShareDialogProps = {
   open: boolean
@@ -29,7 +30,7 @@ export function ShareDialog({
 }: ShareDialogProps) {
   const githubUser = useAtomValue(githubUserAtom)
   const gistId = note.frontmatter.gist_id as string | undefined
-  const shareUrl = gistId ? `${window.location.origin}/share/${gistId}` : ""
+  const shareLink = gistId ? `${window.location.origin}/share/${gistId}` : ""
   const [isPublishing, setIsPublishing] = React.useState(false)
   const [isUnpublishing, setIsUnpublishing] = React.useState(false)
   const [linkCopied, setLinkCopied] = React.useState(false)
@@ -95,14 +96,19 @@ export function ShareDialog({
             </div>
             {gistId ? (
               <>
-                <div className="flex flex-col gap-2">
+                <FormControl
+                  htmlFor="share-url"
+                  label="Share link"
+                  visuallyHideLabel
+                  description="Anyone with this link can view this note."
+                >
                   <div className="relative">
                     <TextInput
-                      id="share-url"
-                      name="share-url"
+                      id="share-link"
+                      name="share-link"
                       type="text"
                       readOnly
-                      value={shareUrl}
+                      value={shareLink}
                       className="pr-8 coarse:pr-10"
                     />
                     <IconButton
@@ -110,15 +116,12 @@ export function ShareDialog({
                       className="absolute right-0 top-0"
                       asChild
                     >
-                      <a href={shareUrl} target="_blank" rel="noreferrer noopener">
+                      <a href={shareLink} target="_blank" rel="noreferrer noopener">
                         <ExternalLinkIcon16 />
                       </a>
                     </IconButton>
                   </div>
-                  <span className="text-text-secondary text-sm text-pretty">
-                    Anyone with this link can view this note.
-                  </span>
-                </div>
+                </FormControl>
                 <div className="grid grid-cols-2 gap-3">
                   <Button variant="secondary" onClick={handleUnpublish} disabled={isUnpublishing}>
                     {isUnpublishing ? (
@@ -130,7 +133,7 @@ export function ShareDialog({
                   <Button
                     variant="primary"
                     onClick={() => {
-                      copy(shareUrl)
+                      copy(shareLink)
                       setLinkCopied(true)
 
                       if (timeoutRef.current) {

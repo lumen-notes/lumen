@@ -7,6 +7,7 @@ import { Button } from "./button"
 import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { RadioGroup } from "./radio-group"
 import { TextInput } from "./text-input"
+import { FormControl } from "./form-control"
 
 type RepoFormProps = {
   className?: string
@@ -143,10 +144,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
       </RadioGroup>
       <div className="flex flex-col gap-4 @lg:gap-3">
         <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-3">
-          <div className="grid flex-grow gap-2">
-            <label htmlFor="repo-owner" className="justify-self-start leading-[1.25]">
-              Repository owner
-            </label>
+          <FormControl htmlFor="repo-owner" label="Repository owner">
             <TextInput
               id="repo-owner"
               name="repo-owner"
@@ -157,11 +155,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               invalid={Boolean(error)}
               onChange={() => setError(null)}
             />
-          </div>
-          <div className="grid flex-grow gap-2">
-            <label htmlFor="repo-name" className="justify-self-start leading-[1.25]">
-              Repository name
-            </label>
+          </FormControl>
+          <FormControl htmlFor="repo-name" label="Repository name">
             <TextInput
               id="repo-name"
               name="repo-name"
@@ -172,7 +167,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
               invalid={Boolean(error)}
               onChange={() => setError(null)}
             />
-          </div>
+          </FormControl>
         </div>
         {error ? (
           <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">

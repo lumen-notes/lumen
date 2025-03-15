@@ -6,6 +6,7 @@ import { OPENAI_KEY_STORAGE_KEY, openaiKeyAtom } from "../global-state"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { CheckIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
+import { FormControl } from "./form-control"
 
 const openaiKeyValidationMachineAtom = atomWithMachine(() =>
   createMachine(
@@ -13,7 +14,7 @@ const openaiKeyValidationMachineAtom = atomWithMachine(() =>
       id: "openaiKeyValidation",
       tsTypes: {} as import("./openai-key-input.typegen").Typegen0,
       schema: {} as {
-        events: { type: "CHANGE"; openaiKey: string } | { type: "RESET" }
+        events: { type: "CHANGE"; openaiKey: string } | { type: "RESTART" }
         services: {
           initialize: {
             data: {
@@ -27,7 +28,7 @@ const openaiKeyValidationMachineAtom = atomWithMachine(() =>
       },
       initial: "initializing",
       on: {
-        RESET: "initializing",
+        RESTART: "initializing",
       },
       states: {
         initializing: {
@@ -94,14 +95,38 @@ export function OpenAIKeyInput() {
   const { online } = useNetworkState()
 
   useEvent("online", () => {
-    send("RESET")
+    send("RESTART")
   })
 
   return (
-    <div className="flex flex-col gap-2">
-      <label htmlFor="openai-key" className="justify-self-start leading-[1.25]">
-        OpenAI key
-      </label>
+    <FormControl
+      htmlFor="openai-key"
+      label="OpenAI key"
+      description={
+        online ? (
+          <>
+            {validationState.matches("valid") ? (
+              <span className="flex items-center gap-2 font-mono text-sm text-text-success">
+                <CheckIcon16 />
+                Valid key
+              </span>
+            ) : null}
+            {validationState.matches("invalid") ? (
+              <span className="flex items-center gap-2 font-mono text-sm text-text-danger">
+                <ErrorIcon16 />
+                Invalid key
+              </span>
+            ) : null}
+            {validationState.matches("validating") ? (
+              <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
+                <LoadingIcon16 />
+                Validating key…
+              </span>
+            ) : null}
+          </>
+        ) : null
+      }
+    >
       <TextInput
         id="openai-key"
         name="openai-key"
@@ -114,28 +139,6 @@ export function OpenAIKeyInput() {
         placeholder="sk…"
         invalid={online && validationState.matches("invalid")}
       />
-      {online ? (
-        <>
-          {validationState.matches("valid") ? (
-            <span className="flex items-center gap-2 font-mono text-sm text-text-success">
-              <CheckIcon16 />
-              Valid key
-            </span>
-          ) : null}
-          {validationState.matches("invalid") ? (
-            <span className="flex items-center gap-2 font-mono text-sm text-text-danger">
-              <ErrorIcon16 />
-              Invalid key
-            </span>
-          ) : null}
-          {validationState.matches("validating") ? (
-            <span className="flex items-center gap-2 font-mono text-sm text-text-secondary">
-              <LoadingIcon16 />
-              Validating key…
-            </span>
-          ) : null}
-        </>
-      ) : null}
-    </div>
+    </FormControl>
   )
 }

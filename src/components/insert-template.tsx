@@ -7,8 +7,9 @@ import React, { useCallback } from "react"
 import { Template } from "../schema"
 import { toDateString } from "../utils/date"
 import { Button } from "./button"
+import { FormControl } from "./form-control"
 import { IconButton } from "./icon-button"
-import { XIcon16, ErrorIcon16, LoadingIcon16 } from "./icons"
+import { ErrorIcon16, LoadingIcon16, XIcon16 } from "./icons"
 import { TextInput } from "./text-input"
 
 // Template pending insertion into editor because it requires user input
@@ -98,11 +99,12 @@ export function InsertTemplateDialog() {
               <div className="flex flex-col gap-4">
                 {Object.entries(template.inputs ?? {}).map(
                   ([name, { required, default: defaultValue }], index) => (
-                    <div key={name} className="grid gap-2">
-                      <label htmlFor={name} className="justify-self-start leading-[1.25]">
-                        {formatLabel(name)}
-                        {required ? <span className="ml-1 text-text-secondary">*</span> : null}
-                      </label>
+                    <FormControl
+                      key={name}
+                      htmlFor={name}
+                      label={formatLabel(name)}
+                      required={required}
+                    >
                       <TextInput
                         id={name}
                         name={name}
@@ -113,7 +115,7 @@ export function InsertTemplateDialog() {
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={index === 0}
                       />
-                    </div>
+                    </FormControl>
                   ),
                 )}
               </div>
