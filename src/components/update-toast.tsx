@@ -1,7 +1,7 @@
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { Button } from "./button"
 
-export function UpdateNotification() {
+export function UpdateToast() {
   // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
   const {
     needRefresh: [needRefresh],
@@ -29,6 +29,11 @@ export function UpdateNotification() {
     return null
   }
 
+  return <_UpdateToast onUpdate={() => updateServiceWorker(true)} />
+}
+
+// UI-only component for rendering in Storybook
+export function _UpdateToast({ onUpdate }: { onUpdate: () => void }) {
   return (
     <div className="card-3 absolute bottom-[calc(var(--height-nav-bar)+12px)] left-3 right-3 z-20 flex items-center justify-between gap-4 !rounded-xl p-2 pl-4 sm:bottom-3 sm:left-[unset]">
       <div className="flex items-center gap-3">
@@ -36,7 +41,7 @@ export function UpdateNotification() {
         <div aria-hidden className="h-2 w-2 rounded-full bg-border-focus" />
         New version available
       </div>
-      <Button onClick={() => updateServiceWorker(true)}>Update</Button>
+      <Button onClick={onUpdate}>Update</Button>
     </div>
   )
 }

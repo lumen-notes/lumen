@@ -8,7 +8,7 @@ import { z } from "zod"
 import { CommandMenu } from "../components/command-menu"
 import { DevBar } from "../components/dev-bar"
 import { ErrorIcon16 } from "../components/icons"
-import { UpdateNotification } from "../components/update-notification"
+import { UpdateToast } from "../components/update-toast"
 import {
   FloatingConversationInput,
   Tool,
@@ -237,7 +237,7 @@ function RouteComponent() {
         <Outlet />
       </div>
       <FloatingConversationInput />
-      <UpdateNotification />
+      <UpdateToast />
       <CommandMenu />
       <Toaster toastOptions={{ duration: 2000 }} />
       <DevBar />
