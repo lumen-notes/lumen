@@ -4,7 +4,7 @@ import React from "react"
 import { Note } from "../schema"
 import { Button } from "./button"
 import { IconButton } from "./icon-button"
-import { CheckIcon16, ExternalLinkIcon16, LoadingIcon16, XIcon16 } from "./icons"
+import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16, XIcon16 } from "./icons"
 import { TextInput } from "./text-input"
 import { useAtomValue } from "jotai"
 import { githubUserAtom } from "../global-state"
@@ -149,7 +149,10 @@ export function ShareDialog({
                         Link copied
                       </>
                     ) : (
-                      "Copy link"
+                      <>
+                        <LinkIcon16 />
+                        Copy link
+                      </>
                     )}
                   </Button>
                 </div>
