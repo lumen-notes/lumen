@@ -1,4 +1,3 @@
-import * as Dialog from "@radix-ui/react-dialog"
 import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
@@ -8,9 +7,10 @@ import { Note } from "../schema"
 import { createGist, deleteGist } from "../utils/gist"
 import { stripWikilinks } from "../utils/strip-wikilinks"
 import { Button } from "./button"
+import { Dialog } from "./dialog"
 import { FormControl } from "./form-control"
 import { IconButton } from "./icon-button"
-import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16, XIcon16 } from "./icons"
+import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16 } from "./icons"
 import { NotePreview } from "./note-preview"
 import { TextInput } from "./text-input"
 
@@ -74,112 +74,94 @@ export function ShareDialog({
   }, [githubUser, gistId, onUnpublish])
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Content className="card-3 !rounded-xl fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh]">
-          <div className="grid gap-4 p-4">
-            <div className="flex items-center justify-between h-4">
-              <Dialog.Title className="font-bold">Share</Dialog.Title>
-              <Dialog.Close asChild>
-                <IconButton
-                  aria-label="Close"
-                  className="-m-2 coarse:-m-3 coarse:rounded-lg"
-                  disableTooltip
-                >
-                  <XIcon16 />
-                </IconButton>
-              </Dialog.Close>
-            </div>
-            <div
-              className="card-1 !bg-bg-overlay"
-              style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
-            >
-              <NotePreview note={strippedNote} hideProperties />
-            </div>
-            {gistId ? (
-              <>
-                <FormControl
-                  htmlFor="share-url"
-                  label="Share link"
-                  visuallyHideLabel
-                  description="Anyone with this link can view this note."
-                >
-                  <div className="relative">
-                    <TextInput
-                      id="share-link"
-                      name="share-link"
-                      type="text"
-                      readOnly
-                      value={shareLink}
-                      className="pr-8 coarse:pr-10"
-                    />
-                    <IconButton
-                      aria-label="Open in new tab"
-                      className="absolute right-0 top-0"
-                      asChild
-                    >
-                      <a href={shareLink} target="_blank" rel="noreferrer noopener">
-                        <ExternalLinkIcon16 />
-                      </a>
-                    </IconButton>
-                  </div>
-                </FormControl>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="secondary"
-                    onClick={handleUnpublish}
-                    disabled={isUnpublishing || !online}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog.Content title="Share">
+        <div className="grid gap-4">
+          <div
+            className="card-1 !bg-bg-overlay"
+            style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
+          >
+            <NotePreview note={strippedNote} hideProperties />
+          </div>
+          {gistId ? (
+            <>
+              <FormControl
+                htmlFor="share-url"
+                label="Share link"
+                visuallyHideLabel
+                description="Anyone with this link can view this note."
+              >
+                <div className="relative">
+                  <TextInput
+                    id="share-link"
+                    name="share-link"
+                    type="text"
+                    readOnly
+                    value={shareLink}
+                    className="pr-8 coarse:pr-10"
+                  />
+                  <IconButton
+                    aria-label="Open in new tab"
+                    className="absolute right-0 top-0"
+                    asChild
                   >
-                    {isUnpublishing ? (
-                      <LoadingIcon16 />
-                    ) : (
-                      <span className="text-text-danger">Unpublish</span>
-                    )}
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      copy(shareLink)
-                      setLinkCopied(true)
-
-                      if (timeoutRef.current) {
-                        window.clearTimeout(timeoutRef.current)
-                      }
-
-                      timeoutRef.current = window.setTimeout(() => setLinkCopied(false), 1000)
-                    }}
-                  >
-                    {linkCopied ? (
-                      <>
-                        <CheckIcon16 />
-                        Link copied
-                      </>
-                    ) : (
-                      <>
-                        <LinkIcon16 />
-                        Copy link
-                      </>
-                    )}
-                  </Button>
+                    <a href={shareLink} target="_blank" rel="noreferrer noopener">
+                      <ExternalLinkIcon16 />
+                    </a>
+                  </IconButton>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col gap-2">
+              </FormControl>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="secondary"
+                  onClick={handleUnpublish}
+                  disabled={isUnpublishing || !online}
+                >
+                  {isUnpublishing ? (
+                    <LoadingIcon16 />
+                  ) : (
+                    <span className="text-text-danger">Unpublish</span>
+                  )}
+                </Button>
                 <Button
                   variant="primary"
-                  onClick={handlePublish}
-                  disabled={isPublishing || !online}
+                  onClick={() => {
+                    copy(shareLink)
+                    setLinkCopied(true)
+
+                    if (timeoutRef.current) {
+                      window.clearTimeout(timeoutRef.current)
+                    }
+
+                    timeoutRef.current = window.setTimeout(() => setLinkCopied(false), 1000)
+                  }}
                 >
-                  {isPublishing ? <LoadingIcon16 /> : "Publish note"}
+                  {linkCopied ? (
+                    <>
+                      <CheckIcon16 />
+                      Link copied
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon16 />
+                      Copy link
+                    </>
+                  )}
                 </Button>
-                <span className="text-text-secondary text-sm text-center text-pretty">
-                  Anyone with the link will be able to view this note.
-                </span>
               </div>
-            )}
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+            </>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Button variant="primary" onClick={handlePublish} disabled={isPublishing || !online}>
+                {isPublishing ? <LoadingIcon16 /> : "Publish note"}
+              </Button>
+              <span className="text-text-secondary text-sm text-center text-pretty">
+                Anyone with the link will be able to view this note.
+              </span>
+            </div>
+          )}
+        </div>
+      </Dialog.Content>
+    </Dialog>
   )
 }

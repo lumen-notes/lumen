@@ -9,11 +9,11 @@ const Root = RadixDropdownMenu.Root
 
 const Trigger = RadixDropdownMenu.Trigger
 
-type ContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
+type DropdownMenuContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
   width?: number | string
 }
 
-const Content = React.forwardRef<HTMLDivElement, ContentProps>(
+const Content = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
   ({ children, width = 256, className, ...props }, ref) => (
     <Portal.Root>
       <RadixDropdownMenu.Content

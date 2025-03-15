@@ -1,5 +1,4 @@
 import { EditorView } from "@codemirror/view"
-import * as Dialog from "@radix-ui/react-dialog"
 import { sentenceCase } from "change-case"
 import ejs from "ejs"
 import { atom, useAtom, useSetAtom } from "jotai"
@@ -7,9 +6,9 @@ import React, { useCallback } from "react"
 import { Template } from "../schema"
 import { toDateString } from "../utils/date"
 import { Button } from "./button"
+import { Dialog } from "./dialog"
 import { FormControl } from "./form-control"
-import { IconButton } from "./icon-button"
-import { ErrorIcon16, LoadingIcon16, XIcon16 } from "./icons"
+import { ErrorIcon16, LoadingIcon16 } from "./icons"
 import { TextInput } from "./text-input"
 
 // Template pending insertion into editor because it requires user input
@@ -79,62 +78,48 @@ export function InsertTemplateDialog() {
   const { template } = pendingTemplate
 
   return (
-    <Dialog.Root open onOpenChange={handleClose}>
-      <Dialog.Portal>
-        <Dialog.Content className="card-3 fixed left-1/2 top-2 z-20 max-h-[85vh] w-[calc(100vw_-_1rem)] max-w-md -translate-x-1/2 overflow-auto focus:outline-none sm:top-[10vh] !rounded-xl">
-          <div className="grid gap-4 p-4">
-            <div className="flex items-center justify-between h-4">
-              <Dialog.Title className="font-bold">{template.name}</Dialog.Title>
-              <Dialog.Close asChild>
-                <IconButton
-                  aria-label="Close"
-                  className="-m-2 coarse:-m-3 coarse:rounded-lg"
-                  disableTooltip
-                >
-                  <XIcon16 />
-                </IconButton>
-              </Dialog.Close>
-            </div>
-            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-4">
-                {Object.entries(template.inputs ?? {}).map(
-                  ([name, { required, default: defaultValue }], index) => (
-                    <FormControl
-                      key={name}
-                      htmlFor={name}
-                      label={formatLabel(name)}
+    <Dialog open onOpenChange={handleClose}>
+      <Dialog.Content title={template.name}>
+        <div className="grid gap-4">
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-4">
+              {Object.entries(template.inputs ?? {}).map(
+                ([name, { required, default: defaultValue }], index) => (
+                  <FormControl
+                    key={name}
+                    htmlFor={name}
+                    label={formatLabel(name)}
+                    required={required}
+                  >
+                    <TextInput
+                      id={name}
+                      name={name}
+                      type="text"
                       required={required}
-                    >
-                      <TextInput
-                        id={name}
-                        name={name}
-                        type="text"
-                        required={required}
-                        defaultValue={defaultValue}
-                        // Focus first input instead of close button
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={index === 0}
-                      />
-                    </FormControl>
-                  ),
-                )}
-              </div>
-              <Button type="submit" variant="primary" disabled={isLoading}>
-                {isLoading ? <LoadingIcon16 /> : "Insert"}
-              </Button>
-              {error ? (
-                <div className="flex items-start gap-2 text-text-danger">
-                  <div className="grid h-5 flex-shrink-0 place-items-center">
-                    <ErrorIcon16 />
-                  </div>
-                  <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
+                      defaultValue={defaultValue}
+                      // Focus first input instead of close button
+                      // eslint-disable-next-line jsx-a11y/no-autofocus
+                      autoFocus={index === 0}
+                    />
+                  </FormControl>
+                ),
+              )}
+            </div>
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? <LoadingIcon16 /> : "Insert"}
+            </Button>
+            {error ? (
+              <div className="flex items-start gap-2 text-text-danger">
+                <div className="grid h-5 flex-shrink-0 place-items-center">
+                  <ErrorIcon16 />
                 </div>
-              ) : null}
-            </form>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+                <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>
+              </div>
+            ) : null}
+          </form>
+        </div>
+      </Dialog.Content>
+    </Dialog>
   )
 }
 
