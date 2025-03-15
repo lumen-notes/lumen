@@ -522,31 +522,7 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-                {containerWidth > 800 && (
-                  <>
-                    <DropdownMenu.Item
-                      icon={<CenteredIcon16 />}
-                      selected={width === "fixed"}
-                      onSelect={() => {
-                        setWidth("fixed")
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Centered content
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<FullwidthIcon16 />}
-                      selected={width === "fill"}
-                      onSelect={() => {
-                        setWidth("fill")
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Fullwidth content
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                  </>
-                )}
+
                 <DropdownMenu.Item
                   className="font-sans"
                   icon={<span className="font-sans">Aa</span>}
@@ -572,6 +548,31 @@ function NotePage() {
                   Handwriting
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
+                {containerWidth > 800 && (
+                  <>
+                    <DropdownMenu.Item
+                      icon={<CenteredIcon16 />}
+                      selected={width === "fixed"}
+                      onSelect={() => {
+                        setWidth("fixed")
+                        editorRef.current?.view?.focus()
+                      }}
+                    >
+                      Centered content
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      icon={<FullwidthIcon16 />}
+                      selected={width === "fill"}
+                      onSelect={() => {
+                        setWidth("fill")
+                        editorRef.current?.view?.focus()
+                      }}
+                    >
+                      Fullwidth content
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
+                )}
                 <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>
                   Copy markdown
                 </DropdownMenu.Item>
