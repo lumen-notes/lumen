@@ -1,9 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useDeferredValue, useMemo } from "react"
 import { AppLayout } from "../components/app-layout"
 import { TagIcon16 } from "../components/icons"
-import { Link } from "../components/link"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
@@ -126,7 +125,14 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
     <li className="flex flex-col gap-3">
       <div className="flex items-center gap-1" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
         <PillButton asChild>
-          <Link to="/tags/$" params={{ _splat: [...path, node.name].join("/") }}>
+          <Link
+            to="/tags/$"
+            params={{ _splat: [...path, node.name].join("/") }}
+            search={{
+              query: undefined,
+              view: "grid",
+            }}
+          >
             {node.name}
             <span className="text-text-secondary">{node.count}</span>
           </Link>
