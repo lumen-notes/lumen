@@ -1,17 +1,18 @@
 import * as Dialog from "@radix-ui/react-dialog"
 import copy from "copy-to-clipboard"
-import React from "react"
-import { Note } from "../schema"
-import { Button } from "./button"
-import { IconButton } from "./icon-button"
-import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16, XIcon16 } from "./icons"
-import { TextInput } from "./text-input"
 import { useAtomValue } from "jotai"
+import React from "react"
+import { useNetworkState } from "react-use"
 import { githubUserAtom } from "../global-state"
+import { Note } from "../schema"
 import { createGist, deleteGist } from "../utils/gist"
 import { stripWikilinks } from "../utils/strip-wikilinks"
-import { NotePreview } from "./note-preview"
+import { Button } from "./button"
 import { FormControl } from "./form-control"
+import { IconButton } from "./icon-button"
+import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16, XIcon16 } from "./icons"
+import { NotePreview } from "./note-preview"
+import { TextInput } from "./text-input"
 
 type ShareDialogProps = {
   open: boolean
@@ -29,6 +30,7 @@ export function ShareDialog({
   onOpenChange,
 }: ShareDialogProps) {
   const githubUser = useAtomValue(githubUserAtom)
+  const { online } = useNetworkState()
   const gistId = note.frontmatter.gist_id as string | undefined
   const shareLink = gistId ? `${window.location.origin}/share/${gistId}` : ""
   const [isPublishing, setIsPublishing] = React.useState(false)
@@ -123,7 +125,11 @@ export function ShareDialog({
                   </div>
                 </FormControl>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="secondary" onClick={handleUnpublish} disabled={isUnpublishing}>
+                  <Button
+                    variant="secondary"
+                    onClick={handleUnpublish}
+                    disabled={isUnpublishing || !online}
+                  >
                     {isUnpublishing ? (
                       <LoadingIcon16 />
                     ) : (
@@ -159,7 +165,11 @@ export function ShareDialog({
               </>
             ) : (
               <div className="flex flex-col gap-2">
-                <Button variant="primary" onClick={handlePublish} disabled={isPublishing}>
+                <Button
+                  variant="primary"
+                  onClick={handlePublish}
+                  disabled={isPublishing || !online}
+                >
                   {isPublishing ? <LoadingIcon16 /> : "Publish note"}
                 </Button>
                 <span className="text-text-secondary text-sm text-center text-pretty">

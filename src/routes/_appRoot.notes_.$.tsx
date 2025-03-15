@@ -8,6 +8,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
+import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
 import { z } from "zod"
 import { AppLayout } from "../components/app-layout"
@@ -149,6 +150,7 @@ function NotePage() {
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const [width, setWidth] = useAtom(widthAtom)
   const [font, setFont] = useAtom(fontAtom)
+  const { online } = useNetworkState()
 
   // Note data
   const note = useNoteById(noteId)
@@ -579,7 +581,7 @@ function NotePage() {
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
-                  disabled={isSignedOut || !note}
+                  disabled={isSignedOut || !note || !online}
                   onSelect={() => setIsShareDialogOpen(true)}
                 >
                   Share

@@ -3,13 +3,14 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
+import { useNetworkState } from "react-use"
 import { githubRepoAtom, globalStateMachineAtom, isSignedOutAtom } from "../global-state"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
 import { cx } from "../utils/cx"
+import { updateFrontmatter } from "../utils/frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { DropdownMenu } from "./dropdown-menu"
-import { updateFrontmatter } from "../utils/frontmatter"
 import { IconButton } from "./icon-button"
 import {
   CopyIcon16,
@@ -47,6 +48,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
   const note = useNoteById(id)
   const githubRepo = useAtomValue(githubRepoAtom)
   const isSignedOut = useAtomValue(isSignedOutAtom)
+  const { online } = useNetworkState()
   const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
@@ -118,7 +120,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
-                disabled={isSignedOut}
+                disabled={isSignedOut || !online}
                 onSelect={() => setIsShareDialogOpen(true)}
               >
                 Share
