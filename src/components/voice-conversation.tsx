@@ -56,9 +56,10 @@ export function VoiceConversationButton() {
   if (state.matches("active.ready")) {
     return (
       <SpinningBorder
-        enabled={
-          state.matches("active.ready.assistant.thinking") ||
-          state.matches("active.ready.assistant.speaking")
+        disabled={
+          // Only show spinning border if the assistant is thinking or speaking
+          !state.matches("active.ready.assistant.thinking") &&
+          !state.matches("active.ready.assistant.speaking")
         }
       >
         <DropdownMenu>

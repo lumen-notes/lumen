@@ -2,11 +2,11 @@ import React from "react"
 import { useMeasure } from "react-use"
 
 type SpinningBorderProps = {
+  disabled?: boolean
   children: React.ReactNode
-  enabled?: boolean
 }
 
-export function SpinningBorder({ children, enabled = false }: SpinningBorderProps) {
+export function SpinningBorder({ children, disabled = false }: SpinningBorderProps) {
   const [ref, bounds] = useMeasure<HTMLDivElement>()
 
   const perimeter = React.useMemo(() => {
@@ -17,7 +17,7 @@ export function SpinningBorder({ children, enabled = false }: SpinningBorderProp
 
   return (
     <div ref={ref} className="relative flex">
-      {enabled ? (
+      {!disabled ? (
         <svg
           className="pointer-events-none absolute -inset-0.5 z-10 h-[calc(100%+4px)] w-[calc(100%+4px)] overflow-visible text-border"
           style={{ "--perimeter": `${perimeter}px` } as React.CSSProperties}
