@@ -25,8 +25,8 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(
           )}
           {...props}
         >
-          <div className="grid gap-4 p-4">
-            <div className="flex items-center justify-between h-4">
+          <div className="grid">
+            <div className="flex items-center justify-between h-12 px-4 border-b border-border-secondary">
               <RadixDialog.Title className="font-bold">{title}</RadixDialog.Title>
               <RadixDialog.Close asChild>
                 <IconButton
@@ -38,7 +38,7 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(
                 </IconButton>
               </RadixDialog.Close>
             </div>
-            <div>{children}</div>
+            <div className="p-4">{children}</div>
           </div>
         </RadixDialog.Content>
       </RadixDialog.Portal>

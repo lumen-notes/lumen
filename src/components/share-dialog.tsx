@@ -119,7 +119,7 @@ export function ShareDialog({
                   className="text-text-danger"
                 >
                   {isUnpublishing ? (
-                    <LoadingIcon16 />
+                    <LoadingIcon16 className="text-text" />
                   ) : (
                     <>
                       <TrashIcon16 />
