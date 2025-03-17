@@ -1,7 +1,16 @@
+import React from "react"
+
 export function Keys({ keys }: { keys: string[] }) {
   return (
     <span className="inline-flex gap-px font-normal leading-none tracking-wider text-text-secondary">
-      {keys.join("")}
+      {keys.map((key, index) => {
+        const isAlphabeticKey = /^[a-zA-Z]$/.test(key)
+        return (
+          <React.Fragment key={index}>
+            {isAlphabeticKey ? <span className="font-mono">{key}</span> : key}
+          </React.Fragment>
+        )
+      })}
     </span>
   )
 }

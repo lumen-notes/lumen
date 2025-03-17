@@ -2,10 +2,14 @@ import { Link, LinkComponentProps } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
+import { useNetworkState } from "react-use"
 import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
+import { CheatsheetDialog } from "./cheatsheet-dialog"
+import { Dialog } from "./dialog"
 import {
+  BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
   CalendarFillIcon16,
@@ -21,7 +25,6 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
-import { useNetworkState } from "react-use"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -149,13 +152,13 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               {syncText}
             </button>
           ) : null}
-          {/* <ExternalLink
-            href="https://uselumen.com"
-            icon={<BookIcon16 />}
-            className="mt-auto text-text-secondary"
-          >
-            Docs
-          </ExternalLink> */}
+          <Dialog>
+            <Dialog.Trigger className="nav-item text-text-secondary" data-size={size}>
+              <BookIcon16 />
+              Cheatsheet
+            </Dialog.Trigger>
+            <CheatsheetDialog />
+          </Dialog>
           <ExternalLink
             href="https://github.com/lumen-notes/lumen/issues/new"
             icon={<MessageIcon16 />}

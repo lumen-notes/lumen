@@ -1,11 +1,10 @@
-import { IconButton, IconButtonProps } from "./icon-button"
-
 import { useNavigate, useRouter } from "@tanstack/react-router"
 import { useSetAtom } from "jotai"
 import { forwardRef } from "react"
 import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
 import { isCommandMenuOpenAtom } from "./command-menu"
+import { IconButton, IconButtonProps } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, CommandIcon16, MenuIcon16, PlusIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 

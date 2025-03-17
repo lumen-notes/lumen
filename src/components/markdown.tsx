@@ -952,11 +952,12 @@ function WeekLink({ week, text, className }: WeekLinkProps) {
       </HoverCard.Trigger>
       <HoverCard.Portal>
         <HoverCard.Content
-          side="top"
+          side="bottom"
           sideOffset={4}
-          className="card-2 z-20 p-2 leading-none text-text animate-in fade-in data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+          align="center"
+          className="card-2 z-20 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
         >
-          {formatWeekDistance(week)}
+          <div className="p-2 leading-none text-text-secondary">{formatWeekDistance(week)}</div>
         </HoverCard.Content>
       </HoverCard.Portal>
     </HoverCard.Root>
