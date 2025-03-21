@@ -66,7 +66,7 @@
     "fast-fuzzy": "^1.11.2",
     "fast-memoize": "^2.5.2",
     "idb-keyval": "^6.2.0",
-    "isomorphic-git": "^1.25.0",
+    "isomorphic-git": "^1.29.0",
     "jotai": "^2.0.3",
     "jotai-xstate": "^0.3.0",
     "lodash.debounce": "^4.0.8",
