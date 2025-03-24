@@ -132,7 +132,7 @@
     "@types/benchmark": "^2.1.2",
     "@types/ejs": "^3.1.5",
     "@types/lodash.debounce": "^4.0.9",
-    "@types/mdast": "^3.0.10",
+    "@types/mdast": "^4.0.4",
     "@types/micromatch": "^4.0.5",
     "@types/prismjs": "^1.26.0",
     "@types/qs": "^6.9.7",
