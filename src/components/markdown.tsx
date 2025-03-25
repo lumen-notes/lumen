@@ -677,6 +677,17 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
     )
   }
 
+  // Proxy external images
+  if (props.src?.startsWith("http")) {
+    const proxyUrl = `/file-proxy?url=${encodeURIComponent(props.src)}`
+    return (
+      <a href={props.src} target="_blank" rel="noopener noreferrer">
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
+        <img {...props} src={proxyUrl} data-canonical-src={props.src} />
+      </a>
+    )
+  }
+
   // eslint-disable-next-line jsx-a11y/alt-text
   return <img {...props} />
 }
