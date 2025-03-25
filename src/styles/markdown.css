@@ -158,7 +158,7 @@
   @apply link;
 }
 
-.markdown a[href^="http"] {
+.markdown a[href^="http"]:not(:has(img)) {
   @apply link-external;
 }
 
