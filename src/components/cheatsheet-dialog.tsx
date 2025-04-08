@@ -1,5 +1,4 @@
 import { Dialog } from "./dialog"
-import { Keys } from "./keys"
 import { Markdown } from "./markdown"
 
 function CheatsheetSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -15,10 +14,25 @@ function CheatsheetItem({ children }: { children: React.ReactNode }) {
   return <li className="flex justify-between items-center h-9 gap-4">{children}</li>
 }
 
+function Keys({ keys }: { keys: string[] }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {keys.map((key) => (
+        <kbd
+          key={key}
+          className="min-w-[22px] font-[inherit] rounded-sm bg-bg-tertiary p-1 text-center font-body leading-none text-text-secondary shadow-[inset_0_-1px_0_var(--color-border-secondary)] dark:shadow-[inset_0_1px_0_var(--color-border-secondary),0_1px_2px_-1px_var(--color-bg)]"
+        >
+          {key}
+        </kbd>
+      ))}
+    </div>
+  )
+}
+
 export function CheatsheetDialog() {
   return (
     <Dialog.Content title="Cheatsheet">
-      <div className="grid gap-4">
+      <div className="grid gap-5">
         <CheatsheetSection title="Global shortcuts">
           <CheatsheetItem>
             <span>Create new note</span>
@@ -30,7 +44,7 @@ export function CheatsheetDialog() {
           </CheatsheetItem>
         </CheatsheetSection>
 
-        <CheatsheetSection title="Editing">
+        <CheatsheetSection title="Note shortcuts">
           <CheatsheetItem>
             <span>Toggle read/write mode</span>
             <Keys keys={["⌥", "⇥"]} />
@@ -43,14 +57,14 @@ export function CheatsheetDialog() {
             <span>Save and switch to read mode</span>
             <Keys keys={["⌘", "⏎"]} />
           </CheatsheetItem>
-          <CheatsheetItem>
+          {/* <CheatsheetItem>
             <span>Reference note</span>
             <Keys keys={["[", "["]} />
           </CheatsheetItem>
           <CheatsheetItem>
             <span>Insert template</span>
             <Keys keys={["/"]} />
-          </CheatsheetItem>
+          </CheatsheetItem> */}
         </CheatsheetSection>
 
         <CheatsheetSection title="Formatting">
@@ -91,7 +105,7 @@ export function CheatsheetDialog() {
           </CheatsheetItem>
           <CheatsheetItem>
             <Markdown>[link](https://example.com)</Markdown>
-            <code className="text-text-secondary">[link](url)</code>
+            <code className="text-text-secondary">[link](https://example.com)</code>
           </CheatsheetItem>
           <CheatsheetItem>
             <Markdown>{"$$LaTeX^{math}$$"}</Markdown>
@@ -100,7 +114,7 @@ export function CheatsheetDialog() {
 
           {/* Block elements */}
           <CheatsheetItem>
-            <div className="flex-grow">
+            <div className="flex-grow max-w-[10ch]">
               <Markdown>---</Markdown>
             </div>
             <code className="text-text-secondary">---</code>

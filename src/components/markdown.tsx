@@ -633,7 +633,10 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       )}
     >
       {isFirst && online ? (
-        <WebsiteFavicon url={props.href ?? ""} className="mr-2 align-sub [h1>a>&]:align-baseline" />
+        <WebsiteFavicon
+          url={props.href ?? ""}
+          className="mr-2 [h1>a>&]:inline-block hidden align-baseline"
+        />
       ) : null}
       {children}
     </a>
