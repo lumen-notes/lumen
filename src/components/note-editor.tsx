@@ -20,6 +20,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
+import { headingExtension } from "../codemirror-extensions/heading"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
@@ -29,9 +30,9 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search"
+import { cx } from "../utils/cx"
 import { formatDate, formatDateDistance } from "../utils/date"
 import { useInsertTemplate } from "./insert-template"
-import { cx } from "../utils/cx"
 
 type NoteEditorProps = {
   className?: string
@@ -63,20 +64,6 @@ const theme = createTheme({
 
 const syntaxHighlighter = HighlightStyle.define([
   {
-    tag: tags.heading1,
-    fontSize: "var(--font-size-xl)",
-    fontWeight: 550,
-  },
-  {
-    tag: tags.heading2,
-    fontSize: "var(--font-size-lg)",
-    fontWeight: 550,
-  },
-  {
-    tag: [tags.heading3, tags.heading4, tags.heading5, tags.heading6],
-    fontWeight: 550,
-  },
-  {
     tag: [tags.comment, tags.contentSeparator],
     color: "var(--color-text-secondary)",
   },
@@ -86,7 +73,7 @@ const syntaxHighlighter = HighlightStyle.define([
   },
   {
     tag: tags.strong,
-    fontWeight: 650,
+    fontWeight: "var(--font-weight-bold)",
   },
   {
     tag: tags.strikethrough,
@@ -163,6 +150,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
+        headingExtension(),
         wikilinkExtension((id) =>
           navigate({
             to: "/notes/$",
