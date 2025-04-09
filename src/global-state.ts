@@ -554,9 +554,10 @@ export const githubRepoAtom = selectAtom(
 // Notes
 // -----------------------------------------------------------------------------
 
+const markdownFilesAtom = selectAtom(globalStateMachineAtom, (state) => state.context.markdownFiles)
+
 export const notesAtom = atom((get) => {
-  const state = get(globalStateMachineAtom)
-  const markdownFiles = state.context.markdownFiles
+  const markdownFiles = get(markdownFilesAtom)
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes

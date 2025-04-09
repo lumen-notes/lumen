@@ -1,6 +1,6 @@
 import memoize from "fast-memoize"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { Node } from "mdast-util-from-markdown/lib"
+import { Node, Root } from "mdast-util-from-markdown/lib"
 import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
@@ -21,13 +21,33 @@ import {
 import { parseFrontmatter } from "./frontmatter"
 import { removeLeadingEmoji } from "./emoji"
 
-/**
- * Extract metadata from a note.
- *
- * We memoize this function because it's called a lot and it's expensive.
- * We're intentionally sacrificing memory usage for runtime performance.
- */
-export const parseNote = memoize((id: NoteId, content: string): Note => {
+/** Extracts metadata from markdown content to construct a Note object. */
+export const parseNote =
+  // We memoize this function because it's called a lot and it's expensive.
+  // We're intentionally sacrificing memory usage for runtime performance.
+  memoize(_parseNote, {
+    // Use localStorage to persist the cache across page reloads
+    cache: {
+      // @ts-expect-error get() can return undefined
+      create() {
+        return {
+          has(key) {
+            return Boolean(localStorage.getItem(key))
+          },
+          get(key) {
+            const item = localStorage.getItem(key)
+            if (!item) return undefined
+            return JSON.parse(item) as Note
+          },
+          set(key, value) {
+            localStorage.setItem(key, JSON.stringify(value))
+          },
+        }
+      },
+    },
+  })
+
+function _parseNote(id: NoteId, content: string): Note {
   let type: NoteType = "note"
   let displayName = ""
   let title = ""
@@ -101,23 +121,34 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
     tagFromMarkdown(),
   ]
 
-  const contentMdast = fromMarkdown(
-    contentWithoutFrontmatter,
-    // @ts-ignore TODO: Fix types
-    { extensions, mdastExtensions },
-  )
+  let contentMdast: Root | null = null
 
-  visit(contentMdast, visitNode)
+  try {
+    contentMdast = fromMarkdown(
+      contentWithoutFrontmatter,
+      // @ts-ignore TODO: Fix types
+      { extensions, mdastExtensions },
+    )
+
+    visit(contentMdast, visitNode)
+  } catch (error) {
+    console.error("Error parsing note content", id, error)
+  }
 
   // Parse frontmatter as markdown to find things like wikilinks and tags
   const frontmatterString = content.slice(0, content.length - contentWithoutFrontmatter.length)
-  const frontmatterMdast = fromMarkdown(
-    frontmatterString,
-    // @ts-ignore TODO: Fix types
-    { extensions, mdastExtensions },
-  )
 
-  visit(frontmatterMdast, visitNode)
+  try {
+    const frontmatterMdast = fromMarkdown(
+      frontmatterString,
+      // @ts-ignore TODO: Fix types
+      { extensions, mdastExtensions },
+    )
+
+    visit(frontmatterMdast, visitNode)
+  } catch (error) {
+    console.error("Error parsing note frontmatter", id, error)
+  }
 
   // Check for dates in the frontmatter
   for (const value of Object.values(frontmatter)) {
@@ -191,7 +222,7 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
         displayName = id
       }
       // For untitled notes with numeric IDs, we use the first 8 words as the title
-      else {
+      else if (contentMdast) {
         // Get clean text content without markdown syntax and split into words
         const words = toString(contentMdast).trim().split(/\s+/)
         const preview = words.slice(0, 8).join(" ")
@@ -220,4 +251,4 @@ export const parseNote = memoize((id: NoteId, content: string): Note => {
     tasks,
     backlinks: [],
   }
-})
+}
