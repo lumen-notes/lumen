@@ -75,12 +75,3 @@ export const templateSchema = z.object({
 })
 
 export type Template = z.infer<typeof templateSchema>
-
-export const pinnedFilterSchema = z.object({
-  name: z.string(),
-  query: z.string(),
-  view: z.enum(["grid", "list"]),
-  emoji: z.string().emoji(),
-})
-
-export type PinnedFilter = z.infer<typeof pinnedFilterSchema>

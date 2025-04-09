@@ -10,10 +10,8 @@ import {
   GitHubUser,
   Note,
   NoteId,
-  PinnedFilter,
   Template,
   githubUserSchema,
-  pinnedFilterSchema,
   templateSchema,
 } from "./schema"
 import { fs, fsWipe } from "./utils/fs"
@@ -44,7 +42,6 @@ type Context = {
   githubUser: GitHubUser | null
   githubRepo: GitHubRepository | null
   markdownFiles: Record<string, string>
-  pinnedFilters: Array<PinnedFilter>
   error: Error | null
 }
 
@@ -73,14 +70,13 @@ function createGlobalStateMachine() {
             data: {
               githubRepo: GitHubRepository
               markdownFiles: Record<string, string>
-              pinnedFilters: Array<PinnedFilter>
             }
           }
           cloneRepo: {
-            data: { markdownFiles: Record<string, string>; pinnedFilters: Array<PinnedFilter> }
+            data: { markdownFiles: Record<string, string> }
           }
           pull: {
-            data: { markdownFiles: Record<string, string>; pinnedFilters: Array<PinnedFilter> }
+            data: { markdownFiles: Record<string, string> }
           }
           push: {
             data: void
@@ -102,7 +98,6 @@ function createGlobalStateMachine() {
         githubUser: null,
         githubRepo: null,
         markdownFiles: {},
-        pinnedFilters: [],
         error: null,
       },
       states: {
@@ -122,7 +117,6 @@ function createGlobalStateMachine() {
             "clearGitHubUserLocalStorage",
             "clearMarkdownFilesLocalStorage",
             "clearFileSystem",
-            "clearPinnedFilters",
             "setSampleMarkdownFiles",
           ],
           exit: ["clearMarkdownFiles"],
@@ -144,12 +138,7 @@ function createGlobalStateMachine() {
                 src: "resolveRepo",
                 onDone: {
                   target: "cloned",
-                  actions: [
-                    "setGitHubRepo",
-                    "setMarkdownFiles",
-                    "setMarkdownFilesLocalStorage",
-                    "setPinnedFilters",
-                  ],
+                  actions: ["setGitHubRepo", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: "notCloned",
               },
@@ -160,17 +149,12 @@ function createGlobalStateMachine() {
               },
             },
             cloningRepo: {
-              entry: [
-                "setGitHubRepo",
-                "clearMarkdownFiles",
-                "clearMarkdownFilesLocalStorage",
-                "clearPinnedFilters",
-              ],
+              entry: ["setGitHubRepo", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
               invoke: {
                 src: "cloneRepo",
                 onDone: {
                   target: "cloned.sync.success",
-                  actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage", "setPinnedFilters"],
+                  actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
                   target: "notCloned",
@@ -246,11 +230,7 @@ function createGlobalStateMachine() {
                         src: "pull",
                         onDone: {
                           target: "pushing",
-                          actions: [
-                            "setMarkdownFiles",
-                            "setMarkdownFilesLocalStorage",
-                            "setPinnedFilters",
-                          ],
+                          actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                         },
                         onError: "error",
                       },
@@ -353,11 +333,9 @@ function createGlobalStateMachine() {
           const markdownFiles =
             getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(REPO_DIR))
 
-          const pinnedFilters = await getPinnedFiltersFromFs(REPO_DIR)
-
           stopTimer()
 
-          return { githubRepo, markdownFiles, pinnedFilters }
+          return { githubRepo, markdownFiles }
         },
         cloneRepo: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
@@ -366,7 +344,6 @@ function createGlobalStateMachine() {
 
           return {
             markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
-            pinnedFilters: await getPinnedFiltersFromFs(REPO_DIR),
           }
         },
         pull: async (context) => {
@@ -376,7 +353,6 @@ function createGlobalStateMachine() {
 
           return {
             markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
-            pinnedFilters: await getPinnedFiltersFromFs(REPO_DIR),
           }
         },
         push: async (context) => {
@@ -494,12 +470,6 @@ function createGlobalStateMachine() {
         clearMarkdownFilesLocalStorage: () => {
           localStorage.removeItem(MARKDOWN_FILES_STORAGE_KEY)
         },
-        setPinnedFilters: assign({
-          pinnedFilters: (_, event) => event.data.pinnedFilters,
-        }),
-        clearPinnedFilters: assign({
-          pinnedFilters: [],
-        }),
         setError: assign({
           // TODO: Remove `as Error`
           error: (_, event) => event.data as Error,
@@ -555,41 +525,11 @@ async function getMarkdownFilesFromFs(dir: string) {
   return markdownFiles
 }
 
-async function getPinnedFiltersFromFs(dir: string) {
-  try {
-    const pinnedFiltersPath = `${dir}/.lumen/pinned-filters.json`
-
-    // Check if the file exists
-    try {
-      await fs.promises.stat(pinnedFiltersPath)
-    } catch (error) {
-      // File doesn't exist
-      return []
-    }
-
-    // Read the file
-    const content = await fs.promises.readFile(pinnedFiltersPath, "utf8")
-
-    // Parse the content
-    const pinnedFilters = z.array(pinnedFilterSchema).parse(JSON.parse(content.toString()))
-
-    return pinnedFilters
-  } catch (error) {
-    console.error("Error reading pinned searches:", error)
-    return []
-  }
-}
-
 export const globalStateMachineAtom = atomWithMachine(createGlobalStateMachine)
 
 export const markdownFilesAtom = selectAtom(
   globalStateMachineAtom,
   (state) => state.context.markdownFiles,
-)
-
-export const pinnedFiltersAtom = selectAtom(
-  globalStateMachineAtom,
-  (state) => state.context.pinnedFilters,
 )
 
 export const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>

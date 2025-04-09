@@ -3,17 +3,11 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
-import {
-  globalStateMachineAtom,
-  notesAtom,
-  pinnedFiltersAtom,
-  pinnedNotesAtom,
-} from "../global-state"
+import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import { CheatsheetDialog } from "./cheatsheet-dialog"
 import { Dialog } from "./dialog"
-import { EmojiFavicon } from "./emoji-favicon"
 import {
   BookIcon16,
   CalendarDateFillIcon16,
@@ -38,7 +32,6 @@ const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekStrin
 const SizeContext = createContext<"medium" | "large">("medium")
 
 export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
-  const pinnedFilters = useAtomValue(pinnedFiltersAtom)
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
@@ -116,33 +109,10 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               </NavLink>
             </li>
           </ul>
-          {pinnedFilters.length > 0 ? (
-            <div className="flex flex-col gap-1">
-              <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-                Pinned filters
-              </div>
-              <ul className="flex flex-col gap-1">
-                {pinnedFilters.map((filter) => (
-                  <li key={filter.query} className="flex">
-                    <NavLink
-                      key={filter.query}
-                      to="/"
-                      search={{ mode: "read", query: filter.query, view: filter.view }}
-                      includeSearch
-                      icon={<EmojiFavicon emoji={filter.emoji} />}
-                      className="w-0 flex-1"
-                    >
-                      {filter.name}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
           {pinnedNotes.length > 0 ? (
             <div className="flex flex-col gap-1">
               <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-                Pinned notes
+                Pinned
               </div>
               <ul className="flex flex-col gap-1">
                 {pinnedNotes.map((note) => (
