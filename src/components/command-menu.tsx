@@ -229,7 +229,7 @@ export function CommandMenu() {
             </Command.Group>
           ) : null}
           {!deferredQuery && pinnedNotes.length ? (
-            <Command.Group heading="Pinned">
+            <Command.Group heading="Pinned notes">
               {pinnedNotes.map((note) => (
                 <NoteItem
                   key={note.id}
