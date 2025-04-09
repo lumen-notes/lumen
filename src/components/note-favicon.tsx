@@ -3,6 +3,7 @@ import { useNetworkState } from "react-use"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { getLeadingEmoji } from "../utils/emoji"
+import { EmojiFavicon } from "./emoji-favicon"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarDateIcon16, CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
 import { WebsiteFavicon } from "./website-favicon"
@@ -23,13 +24,7 @@ export const NoteFavicon = React.memo(
     // Emoji
     const leadingEmoji = getLeadingEmoji(note.title)
     if (leadingEmoji) {
-      icon = (
-        <svg className="size-icon overflow-visible" viewBox="0 0 16 16">
-          <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" className="text-sm">
-            {leadingEmoji}
-          </text>
-        </svg>
-      )
+      icon = <EmojiFavicon emoji={leadingEmoji} />
     }
 
     // Daily note
