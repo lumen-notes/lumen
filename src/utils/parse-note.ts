@@ -18,34 +18,14 @@ import {
   isValidWeekString,
   toDateStringUtc,
 } from "./date"
-import { parseFrontmatter } from "./frontmatter"
 import { removeLeadingEmoji } from "./emoji"
+import { parseFrontmatter } from "./frontmatter"
 
 /** Extracts metadata from markdown content to construct a Note object. */
 export const parseNote =
   // We memoize this function because it's called a lot and it's expensive.
   // We're intentionally sacrificing memory usage for runtime performance.
-  memoize(_parseNote, {
-    // Use localStorage to persist the cache across page reloads
-    cache: {
-      // @ts-expect-error get() can return undefined
-      create() {
-        return {
-          has(key) {
-            return Boolean(localStorage.getItem(key))
-          },
-          get(key) {
-            const item = localStorage.getItem(key)
-            if (!item) return undefined
-            return JSON.parse(item) as Note
-          },
-          set(key, value) {
-            localStorage.setItem(key, JSON.stringify(value))
-          },
-        }
-      },
-    },
-  })
+  memoize(_parseNote)
 
 function _parseNote(id: NoteId, content: string): Note {
   let type: NoteType = "note"
