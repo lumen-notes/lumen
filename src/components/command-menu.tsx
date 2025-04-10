@@ -7,23 +7,33 @@ import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
 import { notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
-import { useSaveNote } from "../hooks/note"
+import { useSaveNote, useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
+import { updateFrontmatter } from "../utils/frontmatter"
+import copy from "copy-to-clipboard"
+
 import {
   CalendarDateIcon16,
   CalendarIcon16,
+  CopyIcon16,
   GlobeIcon16,
   NoteIcon16,
+  PaperclipIcon16,
   PinFillIcon12,
+  PinIcon16,
   PlusIcon16,
+  PrinterIcon16,
   SearchIcon16,
   SettingsIcon16,
   TagIcon16,
+  CheckIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
+import { Route as NotesRoute } from "../routes/_appRoot.notes_.$"
+import { useAttachFile } from "../hooks/attach-file"
 
 export const isCommandMenuOpenAtom = atom(false)
 
@@ -31,6 +41,12 @@ const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function CommandMenu() {
+  const { _splat: noteId } = NotesRoute.useParams()
+  const note = useNoteById(noteId)
+  const attachFile = useAttachFile()
+  const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef<number | null>(null)
+
   const navigate = useNavigate()
 
   const searchNotes = useSearchNotes()
@@ -214,7 +230,96 @@ export function CommandMenu() {
           onValueChange={setQuery}
           autoCapitalize="off"
         />
+
         <Command.List>
+          {note ? (
+            <Command.Group heading="Note actions">
+              <CommandItem
+                icon={<CopyIcon16 />}
+                endIcon={
+                  copied ? (
+                    <>
+                      <span>Copied</span>
+                      <CheckIcon16 />
+                    </>
+                  ) : null
+                }
+                onSelect={() => {
+                  copy(noteId ?? "")
+                  setCopied(true)
+
+                  if (timeoutRef.current) {
+                    window.clearTimeout(timeoutRef.current)
+                  }
+
+                  timeoutRef.current = window.setTimeout(() => setCopied(false), 1000)
+                }}
+              >
+                Copy Note ID
+              </CommandItem>
+              <CommandItem
+                icon={<PinIcon16 />}
+                onSelect={handleSelect(() => {
+                  if (!noteId) return
+                  saveNote({
+                    id: noteId,
+                    content: updateFrontmatter({
+                      content: note.content,
+                      properties: { pinned: note.pinned ? null : true },
+                    }),
+                  })
+                })}
+              >
+                {note.pinned ? "Unpin Note" : "Pin Note"}
+              </CommandItem>
+              {/* Print Note */}
+              <CommandItem
+                icon={<PrinterIcon16 />}
+                onSelect={() => {
+                  window.print()
+                }}
+              >
+                Print Note
+              </CommandItem>
+              {/* Share note */}
+              {/* We will have to bring ShareDialog here, or centralize it somewhere with atom controlling it's state globally */}
+
+              {/* Save note */}
+              {/* The save action might need it's own icon. (i.e. flappy disk) */}
+              {/* also it didn't save the note for some reason. */}
+              {/* <CommandItem
+                // icon={<SaveIcon16 />}
+                onSelect={() => {
+                  if (!noteId) return
+                  saveNote({
+                    id: noteId,
+                    content: note.content,
+                  })
+                }}
+              >
+                Save note
+              </CommandItem> */}
+
+              {/* Attach file to note */}
+              {/* Note sure how to get the editor view ref here */}
+              {/* <CommandItem
+                icon={<PaperclipIcon16 />}
+                onSelect={() => {
+                  const input = document.createElement("input")
+                  input.type = "file"
+                  input.onchange = (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0]
+                    if (file) {
+                      attachFile(file, editorRef.current?.view)
+                    }
+                  }
+                  input.click()
+                }}
+              >
+                Attach file
+              </CommandItem> */}
+            </Command.Group>
+          ) : null}
           {filteredNavItems.length ? (
             <Command.Group heading="Jump to">
               {filteredNavItems.map((item) => (
@@ -396,11 +501,12 @@ type CommandItemProps = {
   children: React.ReactNode
   value?: string
   icon?: React.ReactNode
+  endIcon?: React.ReactNode
   description?: string
   onSelect?: () => void
 }
 
-function CommandItem({ children, value, icon, description, onSelect }: CommandItemProps) {
+function CommandItem({ children, value, icon, description, onSelect, endIcon }: CommandItemProps) {
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="flex items-center gap-3">
@@ -409,9 +515,13 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
         {description ? (
           <span className="flex-shrink-0 text-text-secondary">{description}</span>
         ) : null}
-        <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
-          ⏎
-        </span>
+        {endIcon ? (
+          endIcon
+        ) : (
+          <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
+            ⏎
+          </span>
+        )}
       </div>
     </Command.Item>
   )
