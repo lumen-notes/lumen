@@ -21,7 +21,6 @@ import {
   CopyIcon16,
   GlobeIcon16,
   NoteIcon16,
-  PaperclipIcon16,
   PinFillIcon12,
   PinIcon16,
   PlusIcon16,
@@ -32,7 +31,6 @@ import {
   CheckIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
-import { Route as NotesRoute } from "../routes/_appRoot.notes_.$"
 import { useAttachFile } from "../hooks/attach-file"
 import { useMatches } from "@tanstack/react-router"
 
