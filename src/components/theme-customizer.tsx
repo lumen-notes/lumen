@@ -1,6 +1,6 @@
-import { useAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import React from "react"
-import { themeAtom } from "../global-state"
+import { globalStateMachineAtom } from "../global-state"
 import { Button } from "./button"
 import { Dialog } from "./dialog"
 import { FormControl } from "./form-control"
@@ -21,7 +21,7 @@ const THEME_VARIABLES = {
 type ThemeVariable = keyof typeof THEME_VARIABLES
 
 export function ThemeCustomizer() {
-  const [theme, setTheme] = useAtom(themeAtom)
+  const send = useSetAtom(globalStateMachineAtom)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [colorValues, setColorValues] = React.useState<Record<ThemeVariable, string>>(() => {
     // Get initial colors from CSS variables
@@ -45,6 +45,21 @@ export function ThemeCustomizer() {
     Object.entries(colorValues).forEach(([variable, value]) => {
       document.documentElement.style.setProperty(variable, value)
     })
+
+    // Generate theme.css content
+    const cssContent = `:root {
+${Object.entries(colorValues)
+  .map(([variable, value]) => `  ${variable}: ${value};`)
+  .join("\n")}
+}
+`
+    // Save theme.css to the repo
+    send({
+      type: "WRITE_FILES",
+      markdownFiles: { "theme.css": cssContent },
+      commitMessage: "Update theme colors",
+    })
+
     setIsDialogOpen(false)
   }
 
