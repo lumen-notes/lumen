@@ -735,17 +735,6 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 
 export const themeAtom = atomWithStorage<"default" | "eink">("theme", "default")
 
-export interface CustomThemeVariable {
-  name: string
-  value: string
-  category: "text" | "background" | "border" | "syntax"
-}
-
-export const customThemeVariablesAtom = atomWithStorage<CustomThemeVariable[]>(
-  "custom_theme_variables",
-  [],
-)
-
 export const fontAtom = atomWithStorage<"sans" | "serif" | "handwriting">("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
