@@ -34,6 +34,7 @@ import {
 import { NoteFavicon } from "./note-favicon"
 import { Route as NotesRoute } from "../routes/_appRoot.notes_.$"
 import { useAttachFile } from "../hooks/attach-file"
+import { useMatches } from "@tanstack/react-router"
 
 export const isCommandMenuOpenAtom = atom(false)
 
@@ -41,7 +42,10 @@ const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function CommandMenu() {
-  const { _splat: noteId } = NotesRoute.useParams()
+  const matches = useMatches()
+  const noteMatch = matches.find((match) => match.pathname.startsWith("/notes/"))
+  const noteId = noteMatch ? (noteMatch.params as { _splat: string })._splat : undefined
+  // const { _splat: noteId } = NotesRoute.useParams()
   const note = useNoteById(noteId)
   const attachFile = useAttachFile()
   const [copied, setCopied] = useState(false)
@@ -260,12 +264,11 @@ export function CommandMenu() {
               <CommandItem
                 icon={<PinIcon16 />}
                 onSelect={handleSelect(() => {
-                  if (!noteId) return
                   saveNote({
-                    id: noteId,
+                    id: note.id,
                     content: updateFrontmatter({
                       content: note.content,
-                      properties: { pinned: note.pinned ? null : true },
+                      properties: { pinned: note?.pinned ? false : true },
                     }),
                   })
                 })}
