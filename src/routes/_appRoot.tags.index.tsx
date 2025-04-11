@@ -13,12 +13,16 @@ import { IconButton } from "../components/icon-button"
 
 type RouteSearch = {
   query: string | undefined
+  sort: "name" | "count"
+  view: "grid" | "list"
 }
 
 export const Route = createFileRoute("/_appRoot/tags/")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
+      sort: search.sort === "name" || search.sort === "count" ? search.sort : "name",
+      view: search.view === "grid" || search.view === "list" ? search.view : "grid",
     }
   },
   component: RouteComponent,
@@ -28,10 +32,8 @@ export const Route = createFileRoute("/_appRoot/tags/")({
 })
 
 function RouteComponent() {
-  const { query } = Route.useSearch()
+  const { query, sort, view } = Route.useSearch()
   const navigate = Route.useNavigate()
-  const [sortBy, setSortBy] = useState<"name" | "count">("name")
-  const [viewAs, setViewAs] = useState<"grid" | "list">("grid")
 
   const sortedTagEntries = useAtomValue(sortedTagEntriesAtom)
   const tagSearcher = useAtomValue(tagSearcherAtom)
@@ -52,15 +54,19 @@ function RouteComponent() {
             <SearchInput
               placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
               value={query ?? ""}
-              onChange={(value) => navigate({ search: { query: value }, replace: true })}
+              onChange={(value) =>
+                navigate({ search: { query: value, sort, view }, replace: true })
+              }
             />
             {/* view mode and sorting */}
             <IconButton
-              aria-label={viewAs === "grid" ? "List view" : "Grid view"}
+              aria-label={view === "grid" ? "List view" : "Grid view"}
               className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-              onClick={() => setViewAs(viewAs === "grid" ? "list" : "grid")}
+              onClick={() =>
+                navigate({ search: { query, sort, view: view === "grid" ? "list" : "grid" } })
+              }
             >
-              {viewAs === "grid" ? <ListIcon16 /> : <GridIcon16 />}
+              {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
             </IconButton>
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger asChild>
@@ -72,10 +78,14 @@ function RouteComponent() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
-                <DropdownMenu.Item onSelect={() => setSortBy("name")}>
+                <DropdownMenu.Item
+                  onSelect={() => navigate({ search: { query, sort: "name", view } })}
+                >
                   <span>Name</span>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item onSelect={() => setSortBy("count")}>
+                <DropdownMenu.Item
+                  onSelect={() => navigate({ search: { query, sort: "count", view } })}
+                >
                   <span>Count</span>
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -89,7 +99,7 @@ function RouteComponent() {
           ) : null}
         </div>
 
-        <TagTree tree={tagTree} sortBy={sortBy} viewAs={viewAs} />
+        <TagTree tree={tagTree} sortBy={sort} viewAs={view} />
       </div>
     </AppLayout>
   )
@@ -177,6 +187,7 @@ function TagTree({ tree, path = [], depth = 0, sortBy, viewAs }: TagTreeProps) {
                 search={{
                   query: undefined,
                   view: "grid",
+                  sort: "name",
                 }}
               >
                 {tag.fullPath}
@@ -239,6 +250,7 @@ function TagTreeItem({ node, path = [], depth = 0, viewAs, sortBy }: TagTreeItem
             search={{
               query: undefined,
               view: "grid",
+              sort: "name",
             }}
           >
             {node.name}
