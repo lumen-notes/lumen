@@ -176,6 +176,46 @@ export function CommandMenu() {
     ]
   }, [navigate, getHasDailyNote, getHasWeeklyNote])
 
+  const noteActions = useMemo(() => {
+    if (!note) return []
+    return [
+      {
+        label: "Copy note ID",
+        icon: <CopyIcon16 />,
+        onSelect: () => {
+          copy(note.id)
+          setCopied(true)
+        },
+      },
+      {
+        label: "Pin note",
+        icon: <PinIcon16 />,
+        onSelect: () => {
+          saveNote({
+            id: note.id,
+            content: updateFrontmatter({
+              content: note.content,
+              properties: { pinned: note.pinned ? false : true },
+            }),
+          })
+        },
+      },
+      {
+        label: "Print note",
+        icon: <PrinterIcon16 />,
+        onSelect: () => {
+          window.print()
+        },
+      },
+    ]
+  }, [note, saveNote, setCopied])
+
+  const filteredNoteActions = useMemo(() => {
+    return noteActions.filter((item) => {
+      return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
+    })
+  }, [noteActions, deferredQuery])
+
   const filteredNavItems = useMemo(() => {
     return navItems.filter((item) => {
       return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
@@ -234,91 +274,25 @@ export function CommandMenu() {
         />
 
         <Command.List>
-          {note ? (
+          {note && filteredNoteActions.length > 0 ? (
             <Command.Group heading="Note actions">
-              <CommandItem
-                icon={<CopyIcon16 />}
-                endIcon={
-                  copied ? (
-                    <>
-                      <span>Copied</span>
-                      <CheckIcon16 />
-                    </>
-                  ) : null
-                }
-                onSelect={() => {
-                  copy(noteId ?? "")
-                  setCopied(true)
-
-                  if (timeoutRef.current) {
-                    window.clearTimeout(timeoutRef.current)
+              {filteredNoteActions.map((action) => (
+                <CommandItem
+                  key={action.label}
+                  icon={action.icon}
+                  endIcon={
+                    action.label === "Copy note ID" && copied ? (
+                      <>
+                        <span>Copied</span>
+                        <CheckIcon16 />
+                      </>
+                    ) : null
                   }
-
-                  timeoutRef.current = window.setTimeout(() => setCopied(false), 1000)
-                }}
-              >
-                Copy Note ID
-              </CommandItem>
-              <CommandItem
-                icon={<PinIcon16 />}
-                onSelect={handleSelect(() => {
-                  saveNote({
-                    id: note.id,
-                    content: updateFrontmatter({
-                      content: note.content,
-                      properties: { pinned: note?.pinned ? false : true },
-                    }),
-                  })
-                })}
-              >
-                {note.pinned ? "Unpin Note" : "Pin Note"}
-              </CommandItem>
-              {/* Print Note */}
-              <CommandItem
-                icon={<PrinterIcon16 />}
-                onSelect={() => {
-                  window.print()
-                }}
-              >
-                Print Note
-              </CommandItem>
-              {/* Share note */}
-              {/* We will have to bring ShareDialog here, or centralize it somewhere with atom controlling it's state globally */}
-
-              {/* Save note */}
-              {/* The save action might need it's own icon. (i.e. flappy disk) */}
-              {/* also it didn't save the note for some reason. */}
-              {/* <CommandItem
-                // icon={<SaveIcon16 />}
-                onSelect={() => {
-                  if (!noteId) return
-                  saveNote({
-                    id: noteId,
-                    content: note.content,
-                  })
-                }}
-              >
-                Save note
-              </CommandItem> */}
-
-              {/* Attach file to note */}
-              {/* Note sure how to get the editor view ref here */}
-              {/* <CommandItem
-                icon={<PaperclipIcon16 />}
-                onSelect={() => {
-                  const input = document.createElement("input")
-                  input.type = "file"
-                  input.onchange = (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0]
-                    if (file) {
-                      attachFile(file, editorRef.current?.view)
-                    }
-                  }
-                  input.click()
-                }}
-              >
-                Attach file
-              </CommandItem> */}
+                  onSelect={handleSelect(action.onSelect)}
+                >
+                  {action.label}
+                </CommandItem>
+              ))}
             </Command.Group>
           ) : null}
           {filteredNavItems.length ? (
