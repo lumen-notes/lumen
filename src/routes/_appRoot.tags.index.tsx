@@ -134,26 +134,84 @@ type TagTreeProps = {
   viewAs?: "grid" | "list"
 }
 
-// TODO: Improve accessibility of the tree
 function TagTree({ tree, path = [], depth = 0, sortBy, viewAs }: TagTreeProps) {
   if (tree.length === 0) {
     return null
   }
 
+  // For grid view, flatten the tree and show full paths
+  if (viewAs === "grid") {
+    const flattenedTags: Array<{ fullPath: string; count: number }> = []
+
+    function flattenTree(nodes: TagTreeNode[], currentPath: string[] = []) {
+      for (const node of nodes) {
+        const fullPath = [...currentPath, node.name]
+        flattenedTags.push({
+          fullPath: fullPath.join("/"),
+          count: node.count,
+        })
+        flattenTree(node.children, fullPath)
+      }
+    }
+
+    flattenTree(tree)
+
+    // Sort the flattened tags
+    const sortedTags = [...flattenedTags].sort((a, b) => {
+      if (sortBy === "name") {
+        return a.fullPath.localeCompare(b.fullPath)
+      } else if (sortBy === "count") {
+        return b.count - a.count
+      }
+      return 0
+    })
+
+    return (
+      <ul className="flex flex-row flex-wrap gap-3">
+        {sortedTags.map((tag) => (
+          <li key={tag.fullPath}>
+            <PillButton asChild>
+              <Link
+                to="/tags/$"
+                params={{ _splat: tag.fullPath }}
+                search={{
+                  query: undefined,
+                  view: "grid",
+                }}
+              >
+                {tag.fullPath}
+                <span className="text-text-secondary">{tag.count}</span>
+              </Link>
+            </PillButton>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  // For list view, keep the existing nested structure
   const sortedTree = [...tree].sort((a, b) => {
     if (sortBy === "name") {
       return a.name.localeCompare(b.name)
     } else if (sortBy === "count") {
       return b.count - a.count
     }
-
     return 0
   })
 
   return (
-    <ul className={cx("flex flex-col gap-3", viewAs === "grid" ? "flex-row flex-wrap" : "")}>
+    <ul className="flex flex-col gap-3">
       {sortedTree.map((node) => {
-        return <TagTreeItem key={node.name} node={node} path={path} depth={depth} />
+        return (
+          <TagTreeItem
+            key={node.name}
+            node={node}
+            path={path}
+            depth={depth}
+            viewAs={viewAs}
+            sortBy={sortBy}
+          />
+        )
       })}
     </ul>
   )
@@ -163,14 +221,17 @@ type TagTreeItemProps = {
   node: TagTreeNode
   path?: string[]
   depth?: number
+  viewAs?: "grid" | "list"
+  sortBy?: "name" | "count"
 }
 
-function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
-  // const [isExpanded, setIsExpanded] = useState(true)
-
+function TagTreeItem({ node, path = [], depth = 0, viewAs, sortBy }: TagTreeItemProps) {
   return (
     <li className="flex flex-col gap-3">
-      <div className="flex items-center gap-1" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
+      <div
+        className="flex items-center gap-1"
+        style={{ paddingLeft: viewAs === "list" ? `calc(${depth} * 1.5rem)` : 0 }}
+      >
         <PillButton asChild>
           <Link
             to="/tags/$"
@@ -184,30 +245,19 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             <span className="text-text-secondary">{node.count}</span>
           </Link>
         </PillButton>
-        {/* {node.children.length > 0 ? (
-          <IconButton
-            aria-label={isExpanded ? "Collapse" : "Expand"}
-            className="h-6 w-6 rounded-full"
-            onClick={() => setIsExpanded(!isExpanded)}
-            disableTooltip
-          >
-            <TriangleRightIcon12
-              className={cx("transition-transform", isExpanded ? "rotate-90" : "rotate-0")}
-            />
-          </IconButton>
-        ) : null} */}
       </div>
-      <div
-        //  hidden={!isExpanded}
-        className="empty:hidden"
-      >
-        <TagTree
-          key={node.name}
-          tree={node.children}
-          path={[...path, node.name]}
-          depth={depth + 1}
-        />
-      </div>
+      {viewAs === "list" && (
+        <div className="empty:hidden">
+          <TagTree
+            key={node.name}
+            tree={node.children}
+            path={[...path, node.name]}
+            depth={depth + 1}
+            viewAs={viewAs}
+            sortBy={sortBy}
+          />
+        </div>
+      )}
     </li>
   )
 }
