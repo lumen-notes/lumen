@@ -27,6 +27,15 @@ export function NewNoteButton({ size = "small" }: NewNoteButtonProps) {
   }
   const tagQualifiers = parseQuery(query).qualifiers.filter((q) => q.key === "tag" && !q.exclude)
 
+  // Collect all tags
+  const tags = new Set<string>()
+  if (pathTag) {
+    tags.add(pathTag)
+  }
+  tagQualifiers.forEach((qualifier) => {
+    qualifier.values.forEach((tag) => tags.add(tag))
+  })
+
   return (
     <IconButton
       aria-label="New note"
@@ -34,18 +43,11 @@ export function NewNoteButton({ size = "small" }: NewNoteButtonProps) {
       size={size}
       onClick={() => {
         const noteId = `${Date.now()}`
+
+        // Create frontmatter if we have tags
         let content = ""
-
-        // Add tag from URL path
-        if (pathTag) {
-          content += `#${pathTag}`
-        }
-
-        // Add tags from search qualifiers
-        const searchTags = tagQualifiers.flatMap((q) => q.values)
-        if (searchTags.length > 0) {
-          if (content) content += " "
-          content += searchTags.map((t) => `#${t}`).join(" ")
+        if (tags.size > 0) {
+          content = `---\ntags: [${Array.from(tags).join(", ")}]\n---\n\n`
         }
 
         const note = {
