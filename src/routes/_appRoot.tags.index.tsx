@@ -79,11 +79,13 @@ function RouteComponent() {
               </DropdownMenu.Trigger>
               <DropdownMenu.Content>
                 <DropdownMenu.Item
+                  selected={sort === "name"}
                   onSelect={() => navigate({ search: { query, sort: "name", view } })}
                 >
                   <span>Name</span>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item
+                  selected={sort === "count"}
                   onSelect={() => navigate({ search: { query, sort: "count", view } })}
                 >
                   <span>Count</span>
