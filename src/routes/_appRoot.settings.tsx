@@ -24,6 +24,7 @@ import {
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { cx } from "../utils/cx"
+import { ThemeCustomizer } from "../components/theme-customizer"
 
 export const Route = createFileRoute("/_appRoot/settings")({
   component: RouteComponent,
@@ -158,27 +159,32 @@ function ThemeSection() {
 
   return (
     <SettingsSection title="Theme">
-      <RadioGroup
-        aria-labelledby="theme-label"
-        value={theme}
-        defaultValue="default"
-        onValueChange={(value) => setTheme(value as "default" | "eink")}
-        className="flex flex-col gap-3 coarse:gap-4"
-        name="theme"
-      >
-        <div className="flex items-center gap-2">
-          <RadioGroup.Item id="theme-default" value="default" />
-          <label htmlFor="theme-default" className="select-none leading-4">
-            Default
-          </label>
-        </div>
-        <div className="flex items-center gap-2">
-          <RadioGroup.Item id="theme-eink" value="eink" />
-          <label htmlFor="theme-eink" className="select-none leading-4">
-            E-ink
-          </label>
-        </div>
-      </RadioGroup>
+      <div className="flex flex-col gap-4">
+        <RadioGroup
+          aria-labelledby="theme-label"
+          value={theme}
+          defaultValue="default"
+          onValueChange={(value) => setTheme(value as "default" | "eink")}
+          className="flex flex-col gap-3 coarse:gap-4"
+          name="theme"
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="theme-default" value="default" />
+            <label htmlFor="theme-default" className="select-none leading-4">
+              Default
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroup.Item id="theme-eink" value="eink" />
+            <label htmlFor="theme-eink" className="select-none leading-4">
+              E-ink
+            </label>
+          </div>
+        </RadioGroup>
+
+        <div className="h-px bg-border-secondary" />
+        <ThemeCustomizer />
+      </div>
     </SettingsSection>
   )
 }

@@ -23,6 +23,7 @@ import {
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
+import { useLoadTheme } from "../hooks/theme"
 
 export const Route = createFileRoute("/_appRoot")({
   component: RouteComponent,
@@ -48,6 +49,9 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { online } = useNetworkState()
   const rootRef = React.useRef<HTMLDivElement>(null)
+
+  // Load custom theme if available
+  useLoadTheme()
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
@@ -174,6 +178,7 @@ function RouteComponent() {
     ]
 
     sendVoiceConversation({ type: "ADD_TOOLS", tools })
+
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
