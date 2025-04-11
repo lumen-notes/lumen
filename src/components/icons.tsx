@@ -559,6 +559,26 @@ export function LinkIcon16(props: IconProps) {
     </Icon>
   )
 }
+export function SortIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m3 16 4 4 4-4" />
+        <path d="M7 20V4" />
+        <path d="m21 8-4-4-4 4" />
+        <path d="M17 4v16" />
+      </svg>
+    </Icon>
+  )
+}
 
 export function ListIcon16(props: IconProps) {
   return (
