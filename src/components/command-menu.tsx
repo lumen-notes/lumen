@@ -1,38 +1,35 @@
 import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
+import copy from "copy-to-clipboard"
 import { atom, useAtom, useAtomValue } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
-import { notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
-import { useSaveNote, useNoteById } from "../hooks/note"
+import { githubRepoAtom, notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
+import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
-import { updateFrontmatter } from "../utils/frontmatter"
-import copy from "copy-to-clipboard"
 
+import { useMatches } from "@tanstack/react-router"
 import {
   CalendarDateIcon16,
   CalendarIcon16,
   CopyIcon16,
+  ExternalLinkIcon16,
   GlobeIcon16,
   NoteIcon16,
   PinFillIcon12,
-  PinIcon16,
   PlusIcon16,
   PrinterIcon16,
   SearchIcon16,
   SettingsIcon16,
   TagIcon16,
-  CheckIcon16,
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
-import { useAttachFile } from "../hooks/attach-file"
-import { useMatches } from "@tanstack/react-router"
 
 export const isCommandMenuOpenAtom = atom(false)
 
@@ -40,17 +37,8 @@ const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function CommandMenu() {
-  const matches = useMatches()
-  const noteMatch = matches.find((match) => match.pathname.startsWith("/notes/"))
-  const noteId = noteMatch ? (noteMatch.params as { _splat: string })._splat : undefined
-  // const { _splat: noteId } = NotesRoute.useParams()
-  const note = useNoteById(noteId)
-  const attachFile = useAttachFile()
-  const [copied, setCopied] = useState(false)
-  const timeoutRef = useRef<number | null>(null)
-
   const navigate = useNavigate()
-
+  const githubRepo = useAtomValue(githubRepoAtom)
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
@@ -58,6 +46,13 @@ export function CommandMenu() {
   const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
   const getHasWeeklyNote = useAtomCallback(useCallback((get) => get(hasWeeklyNoteAtom), []))
   const [isOpen, setIsOpen] = useAtom(isCommandMenuOpenAtom)
+
+  // Get the current note if we're on a note page.
+  // This is used to show note actions in the command menu.
+  const matches = useMatches()
+  const noteMatch = matches.find((match) => match.fullPath === "/notes/$")
+  const noteId = noteMatch?.params._splat
+  const note = useNoteById(noteId)
 
   // Refs
   const prevActiveElement = useRef<HTMLElement>()
@@ -176,28 +171,50 @@ export function CommandMenu() {
     ]
   }, [navigate, getHasDailyNote, getHasWeeklyNote])
 
+  const filteredNavItems = useMemo(() => {
+    return navItems.filter((item) => {
+      return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
+    })
+  }, [navItems, deferredQuery])
+
   const noteActions = useMemo(() => {
     if (!note) return []
     return [
+      // TODO: Get the codemirror instance and update the editor value when pinning/unpinning
+      // {
+      //   label: note.pinned ? "Unpin note" : "Pin note",
+      //   icon: note.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />,
+      //   onSelect: () => {
+      //     saveNote({
+      //       id: note.id,
+      //       content: updateFrontmatter({
+      //         content: note.content,
+      //         properties: { pinned: note.pinned ? null : true },
+      //       }),
+      //     })
+      //   },
+      // },
+      {
+        label: "Copy note markdown",
+        icon: <CopyIcon16 />,
+        onSelect: () => {
+          copy(note.content)
+        },
+      },
       {
         label: "Copy note ID",
         icon: <CopyIcon16 />,
         onSelect: () => {
           copy(note.id)
-          setCopied(true)
         },
       },
       {
-        label: "Pin note",
-        icon: <PinIcon16 />,
+        label: "Open in GitHub",
+        icon: <ExternalLinkIcon16 />,
         onSelect: () => {
-          saveNote({
-            id: note.id,
-            content: updateFrontmatter({
-              content: note.content,
-              properties: { pinned: note.pinned ? false : true },
-            }),
-          })
+          if (!githubRepo) return
+          const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${note.id}.md`
+          window.open(url, "_blank")
         },
       },
       {
@@ -208,19 +225,13 @@ export function CommandMenu() {
         },
       },
     ]
-  }, [note, saveNote, setCopied])
+  }, [note, githubRepo])
 
   const filteredNoteActions = useMemo(() => {
     return noteActions.filter((item) => {
       return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
     })
   }, [noteActions, deferredQuery])
-
-  const filteredNavItems = useMemo(() => {
-    return navItems.filter((item) => {
-      return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
-    })
-  }, [navItems, deferredQuery])
 
   // Check if query can be parsed as a date
   const dateString = useMemo(() => {
@@ -274,20 +285,12 @@ export function CommandMenu() {
         />
 
         <Command.List>
-          {note && filteredNoteActions.length > 0 ? (
+          {filteredNoteActions.length > 0 ? (
             <Command.Group heading="Note actions">
               {filteredNoteActions.map((action) => (
                 <CommandItem
                   key={action.label}
                   icon={action.icon}
-                  endIcon={
-                    action.label === "Copy note ID" && copied ? (
-                      <>
-                        <span>Copied</span>
-                        <CheckIcon16 />
-                      </>
-                    ) : null
-                  }
                   onSelect={handleSelect(action.onSelect)}
                 >
                   {action.label}
@@ -476,12 +479,11 @@ type CommandItemProps = {
   children: React.ReactNode
   value?: string
   icon?: React.ReactNode
-  endIcon?: React.ReactNode
   description?: string
   onSelect?: () => void
 }
 
-function CommandItem({ children, value, icon, description, onSelect, endIcon }: CommandItemProps) {
+function CommandItem({ children, value, icon, description, onSelect }: CommandItemProps) {
   return (
     <Command.Item value={value} onSelect={onSelect}>
       <div className="flex items-center gap-3">
@@ -490,13 +492,9 @@ function CommandItem({ children, value, icon, description, onSelect, endIcon }: 
         {description ? (
           <span className="flex-shrink-0 text-text-secondary">{description}</span>
         ) : null}
-        {endIcon ? (
-          endIcon
-        ) : (
-          <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
-            ⏎
-          </span>
-        )}
+        <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
+          ⏎
+        </span>
       </div>
     </Command.Item>
   )
