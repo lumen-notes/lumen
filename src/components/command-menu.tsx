@@ -1,24 +1,30 @@
 import { useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
+import copy from "copy-to-clipboard"
 import { atom, useAtom, useAtomValue } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
-import { notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
-import { useSaveNote } from "../hooks/note"
+import { githubRepoAtom, notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
+import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
+
+import { useMatches } from "@tanstack/react-router"
 import {
   CalendarDateIcon16,
   CalendarIcon16,
+  CopyIcon16,
+  ExternalLinkIcon16,
   GlobeIcon16,
   NoteIcon16,
   PinFillIcon12,
   PlusIcon16,
+  PrinterIcon16,
   SearchIcon16,
   SettingsIcon16,
   TagIcon16,
@@ -32,7 +38,7 @@ const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekStrin
 
 export function CommandMenu() {
   const navigate = useNavigate()
-
+  const githubRepo = useAtomValue(githubRepoAtom)
   const searchNotes = useSearchNotes()
   const tagSearcher = useAtomValue(tagSearcherAtom)
   const saveNote = useSaveNote()
@@ -40,6 +46,13 @@ export function CommandMenu() {
   const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
   const getHasWeeklyNote = useAtomCallback(useCallback((get) => get(hasWeeklyNoteAtom), []))
   const [isOpen, setIsOpen] = useAtom(isCommandMenuOpenAtom)
+
+  // Get the current note if we're on a note page.
+  // This is used to show note actions in the command menu.
+  const matches = useMatches()
+  const noteMatch = matches.find((match) => match.fullPath === "/notes/$")
+  const noteId = noteMatch?.params._splat
+  const note = useNoteById(noteId)
 
   // Refs
   const prevActiveElement = useRef<HTMLElement>()
@@ -164,6 +177,62 @@ export function CommandMenu() {
     })
   }, [navItems, deferredQuery])
 
+  const noteActions = useMemo(() => {
+    if (!note) return []
+    return [
+      // TODO: Get the codemirror instance and update the editor value when pinning/unpinning
+      // {
+      //   label: note.pinned ? "Unpin note" : "Pin note",
+      //   icon: note.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />,
+      //   onSelect: () => {
+      //     saveNote({
+      //       id: note.id,
+      //       content: updateFrontmatter({
+      //         content: note.content,
+      //         properties: { pinned: note.pinned ? null : true },
+      //       }),
+      //     })
+      //   },
+      // },
+      {
+        label: "Copy note markdown",
+        icon: <CopyIcon16 />,
+        onSelect: () => {
+          copy(note.content)
+        },
+      },
+      {
+        label: "Copy note ID",
+        icon: <CopyIcon16 />,
+        onSelect: () => {
+          copy(note.id)
+        },
+      },
+      {
+        label: "Open in GitHub",
+        icon: <ExternalLinkIcon16 />,
+        onSelect: () => {
+          if (!githubRepo) return
+          const url = `https://github.com/${githubRepo.owner}/${githubRepo.name}/blob/main/${note.id}.md`
+          window.open(url, "_blank")
+        },
+      },
+      {
+        label: "Print note",
+        icon: <PrinterIcon16 />,
+        onSelect: () => {
+          window.print()
+        },
+      },
+    ]
+  }, [note, githubRepo])
+
+  const filteredNoteActions = useMemo(() => {
+    return noteActions.filter((item) => {
+      return item.label.toLowerCase().includes(deferredQuery.toLowerCase())
+    })
+  }, [noteActions, deferredQuery])
+
   // Check if query can be parsed as a date
   const dateString = useMemo(() => {
     const date = parseDate(deferredQuery)
@@ -214,7 +283,21 @@ export function CommandMenu() {
           onValueChange={setQuery}
           autoCapitalize="off"
         />
+
         <Command.List>
+          {filteredNoteActions.length > 0 ? (
+            <Command.Group heading="Note actions">
+              {filteredNoteActions.map((action) => (
+                <CommandItem
+                  key={action.label}
+                  icon={action.icon}
+                  onSelect={handleSelect(action.onSelect)}
+                >
+                  {action.label}
+                </CommandItem>
+              ))}
+            </Command.Group>
+          ) : null}
           {filteredNavItems.length ? (
             <Command.Group heading="Jump to">
               {filteredNavItems.map((item) => (
