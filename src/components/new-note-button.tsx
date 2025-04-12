@@ -1,60 +1,46 @@
-import { useLocation, useNavigate } from "@tanstack/react-router"
+import { useLocation, useMatches, useNavigate } from "@tanstack/react-router"
+import { parseQuery } from "../hooks/search"
 import { IconButton } from "./icon-button"
 import { PlusIcon16 } from "./icons"
-import { useSaveNote } from "../hooks/note"
-import { Route as RootRoute } from "../routes/_appRoot.index"
-import { parseQuery } from "../hooks/search"
 
-export type NewNoteButtonProps = {
-  size?: "small" | "medium"
-}
+function useTagsFromRoute() {
+  const tags = new Set<string>()
 
-export function NewNoteButton({ size = "small" }: NewNoteButtonProps) {
-  const navigate = useNavigate()
-  const saveNote = useSaveNote()
-  const location = useLocation()
+  const matches = useMatches()
+  const tagMatch = matches.find((match) => match.fullPath === "/tags/$")
 
-  // Get the tag from /tags/[tag] path
-  const pathTag = location.pathname.split("/tags/")[1]
-
-  // Get tags from search query
-  let query = ""
-  try {
-    const { query: routeQuery = "" } = RootRoute.useSearch()
-    query = routeQuery
-  } catch {
-    // If route search is not available, continue with empty query
+  if (tagMatch?.params._splat) {
+    tags.add(tagMatch.params._splat)
   }
+
+  const location = useLocation()
+  const query = location.search.query ?? ""
   const tagQualifiers = parseQuery(query).qualifiers.filter((q) => q.key === "tag" && !q.exclude)
 
-  // Collect all tags
-  const tags = new Set<string>()
-  if (pathTag) {
-    tags.add(pathTag)
-  }
   tagQualifiers.forEach((qualifier) => {
     qualifier.values.forEach((tag) => tags.add(tag))
   })
+
+  return Array.from(tags)
+}
+
+export function NewNoteButton() {
+  const navigate = useNavigate()
+  const tags = useTagsFromRoute()
 
   return (
     <IconButton
       aria-label="New note"
       shortcut={["⌘", "⇧", "O"]}
-      size={size}
+      size="small"
       onClick={() => {
         const noteId = `${Date.now()}`
 
-        // Create frontmatter if we have tags
+        // Add tags to the note
         let content = ""
-        if (tags.size > 0) {
-          content = `---\ntags: [${Array.from(tags).join(", ")}]\n---\n\n`
+        if (tags.length > 0) {
+          content = `---\ntags: [${tags.join(", ")}]\n---\n\n`
         }
-
-        const note = {
-          id: noteId,
-          content,
-        }
-        saveNote(note)
 
         navigate({
           to: "/notes/$",
@@ -63,6 +49,7 @@ export function NewNoteButton({ size = "small" }: NewNoteButtonProps) {
             mode: "write",
             query: undefined,
             view: "grid",
+            content,
           },
         })
       }}

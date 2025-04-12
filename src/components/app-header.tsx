@@ -5,8 +5,8 @@ import { openaiKeyAtom, sidebarAtom, voiceAssistantEnabledAtom } from "../global
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, SidebarIcon16 } from "./icons"
-import { VoiceConversationButton } from "./voice-conversation"
 import { NewNoteButton } from "./new-note-button"
+import { VoiceConversationButton } from "./voice-conversation"
 
 export type AppHeaderProps = {
   title: React.ReactNode
@@ -55,7 +55,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
               >
                 <SidebarIcon16 />
               </IconButton>
-              <NewNoteButton size="small" />
+              <NewNoteButton />
               <div role="separator" className="mx-2 h-5 w-px bg-border-secondary" />
             </>
           ) : null}

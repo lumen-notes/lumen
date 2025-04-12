@@ -1,4 +1,3 @@
-import { useLocation } from "@tanstack/react-router"
 import { useSetAtom } from "jotai"
 import { sidebarAtom } from "../global-state"
 import { useIsScrolled } from "../hooks/is-scrolled"
@@ -28,7 +27,7 @@ export function Sidebar() {
         >
           <SidebarFillIcon16 />
         </IconButton>
-        <NewNoteButton size="small" />
+        <NewNoteButton />
       </div>
       <div className="relative flex scroll-py-2 flex-col gap-2 overflow-auto p-2 pt-0">
         <div {...topSentinelProps} />
