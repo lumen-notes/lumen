@@ -739,6 +739,8 @@ export const fontAtom = atomWithStorage<"sans" | "serif" | "handwriting">("font"
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
+export const frontmatterSidebarAtom = atomWithStorage<boolean>("frontmatter-sidebar", false)
+
 export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
 
 // -----------------------------------------------------------------------------

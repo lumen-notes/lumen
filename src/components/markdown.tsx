@@ -1,7 +1,7 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { Link } from "@tanstack/react-router"
 import { isToday } from "date-fns"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React, { useMemo } from "react"
 import ReactMarkdown from "react-markdown"
@@ -12,7 +12,7 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
-import { notesAtom } from "../global-state"
+import { notesAtom, frontmatterSidebarAtom, widthAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
@@ -41,10 +41,12 @@ import { Details } from "./details"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import {
+  ArrowRightIcon16,
   BlueskyIcon16,
   ErrorIcon16,
   GitHubIcon16,
   InstagramIcon16,
+  SidebarIcon16,
   TwitterIcon16,
   YouTubeIcon16,
 } from "./icons"
@@ -55,6 +57,8 @@ import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlight
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
 import { WebsiteFavicon } from "./website-favicon"
+import { IconButton } from "./icon-button"
+import { FrontmatterSidebar } from "./frontmatter-sidebar"
 
 export type MarkdownProps = {
   children: string
@@ -85,6 +89,8 @@ export const Markdown = React.memo(
         }),
       )
     }, [frontmatter])
+    const [isFrontmatterSidebarOpen, setIsFrontmatterSidebarOpen] = useAtom(frontmatterSidebarAtom)
+    const width = useAtomValue(widthAtom)
 
     // Split the content into title and body so we can display
     // the frontmatter below the title but above the body.
@@ -166,14 +172,32 @@ export const Markdown = React.memo(
                   <GitHubAvatar login={frontmatter.github} size={64} className="!size-16" />
                 </div>
               ) : null}
-              <div className="flex flex-col gap-5">
+              <div
+                className={cx("flex flex-col gap-5", {
+                  "mr-64": width === "fill" && isFrontmatterSidebarOpen,
+                  "mr-16": width === "fixed" && isFrontmatterSidebarOpen,
+                })}
+              >
+                   {!hideFrontmatter && !isObjectEmpty(filteredFrontmatter) && (
+                <FrontmatterSidebar frontmatter={filteredFrontmatter} />
+              )}
                 <div className="flex flex-col gap-5 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
                   {filteredFrontmatter &&
                   !hideFrontmatter &&
-                  !isObjectEmpty(filteredFrontmatter) ? (
+                  !isObjectEmpty(filteredFrontmatter) &&
+                  !isFrontmatterSidebarOpen ? (
                     <Details>
-                      <Details.Summary>Properties</Details.Summary>
+                      <Details.Summary>
+                        Properties
+                        <IconButton
+                          aria-label="Toggle properties sidebar"
+                          size="small"
+                          onClick={() => setIsFrontmatterSidebarOpen(!isFrontmatterSidebarOpen)}
+                        >
+                          <SidebarIcon16 className="rotate-180" />
+                        </IconButton>
+                      </Details.Summary>
                       <div className="pl-6">
                         <Frontmatter frontmatter={filteredFrontmatter} />
                       </div>
@@ -207,6 +231,7 @@ export const Markdown = React.memo(
                   }
                 </div>
               </div>
+           
             </>
           )}
         </div>
@@ -297,7 +322,7 @@ function BookCover({ isbn }: { isbn: string }) {
   )
 }
 
-function Frontmatter({
+export function Frontmatter({
   frontmatter,
   className,
 }: {
