@@ -1,4 +1,4 @@
-import { useLocation, useMatches, useNavigate } from "@tanstack/react-router"
+import { useLocation, useMatch, useNavigate } from "@tanstack/react-router"
 import { parseQuery } from "../hooks/search"
 import { IconButton } from "./icon-button"
 import { PlusIcon16 } from "./icons"
@@ -6,9 +6,7 @@ import { PlusIcon16 } from "./icons"
 function useTagsFromRoute() {
   const tags = new Set<string>()
 
-  const matches = useMatches()
-  const tagMatch = matches.find((match) => match.fullPath === "/tags/$")
-
+  const tagMatch = useMatch({ from: "/_appRoot/tags_/$", shouldThrow: false })
   if (tagMatch?.params._splat) {
     tags.add(tagMatch.params._splat)
   }

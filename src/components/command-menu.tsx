@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router"
+import { useMatch, useNavigate } from "@tanstack/react-router"
 import { parseDate } from "chrono-node"
 import { Command } from "cmdk"
 import copy from "copy-to-clipboard"
@@ -13,8 +13,6 @@ import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
-
-import { useMatches } from "@tanstack/react-router"
 import {
   CalendarDateIcon16,
   CalendarIcon16,
@@ -49,8 +47,7 @@ export function CommandMenu() {
 
   // Get the current note if we're on a note page.
   // This is used to show note actions in the command menu.
-  const matches = useMatches()
-  const noteMatch = matches.find((match) => match.fullPath === "/notes/$")
+  const noteMatch = useMatch({ from: "/_appRoot/notes_/$", shouldThrow: false })
   const noteId = noteMatch?.params._splat
   const note = useNoteById(noteId)
 
