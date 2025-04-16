@@ -4,7 +4,8 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { openaiKeyAtom, sidebarAtom, voiceAssistantEnabledAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, PlusIcon16, SidebarIcon16 } from "./icons"
+import { ArrowLeftIcon16, ArrowRightIcon16, SidebarIcon16 } from "./icons"
+import { NewNoteButton } from "./new-note-button"
 import { VoiceConversationButton } from "./voice-conversation"
 
 export type AppHeaderProps = {
@@ -54,24 +55,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
               >
                 <SidebarIcon16 />
               </IconButton>
-              <IconButton
-                aria-label="New note"
-                shortcut={["⌘", "⇧", "O"]}
-                size="small"
-                onClick={() => {
-                  navigate({
-                    to: "/notes/$",
-                    params: { _splat: `${Date.now()}` },
-                    search: {
-                      mode: "write",
-                      query: undefined,
-                      view: "grid",
-                    },
-                  })
-                }}
-              >
-                <PlusIcon16 />
-              </IconButton>
+              <NewNoteButton />
               <div role="separator" className="mx-2 h-5 w-px bg-border-secondary" />
             </>
           ) : null}

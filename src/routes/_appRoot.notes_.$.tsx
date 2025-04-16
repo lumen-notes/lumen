@@ -79,6 +79,7 @@ type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
   view: "grid" | "list"
+  content?: string
 }
 
 export const Route = createFileRoute("/_appRoot/notes_/$")({
@@ -87,6 +88,7 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
       view: search.view === "list" ? "list" : "grid",
+      content: typeof search.content === "string" ? search.content : undefined,
     }
   },
   component: RouteComponent,
@@ -140,7 +142,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view } = Route.useSearch()
+  const { mode, query, view, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -167,8 +169,9 @@ function NotePage() {
   const { editorValue, setEditorValue, isDirty, discardChanges, clearDraft } = useEditorValue({
     noteId: noteId ?? "",
     note,
-    defaultValue:
-      isDailyNote && dailyTemplate
+    defaultValue: defaultContent
+      ? defaultContent
+      : isDailyNote && dailyTemplate
         ? renderTemplate(dailyTemplate, { date: noteId ?? "" })
         : isWeeklyNote && weeklyTemplate
           ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
