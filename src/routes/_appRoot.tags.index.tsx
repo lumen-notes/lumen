@@ -68,14 +68,25 @@ function RouteComponent() {
               placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
               value={query ?? ""}
               onChange={(value) =>
-                navigate({ search: { query: value, sort, view }, replace: true })
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    query: value,
+                  }),
+                })
               }
             />
             <IconButton
               aria-label={view === "grid" ? "List view" : "Grid view"}
               className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
               onClick={() =>
-                navigate({ search: { query, sort, view: view === "grid" ? "list" : "grid" } })
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    view: view === "grid" ? "list" : "grid",
+                  }),
+                  replace: true,
+                })
               }
             >
               {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
@@ -84,7 +95,13 @@ function RouteComponent() {
               aria-label={sort === "count" ? "Sort by name" : "Sort by count"}
               className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
               onClick={() =>
-                navigate({ search: { query, sort: sort === "count" ? "name" : "count", view } })
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    sort: sort === "count" ? "name" : "count",
+                    view,
+                  }),
+                })
               }
             >
               {sort === "count" ? <SortAlphabetAscIcon16 /> : <SortNumberDescIcon16 />}
