@@ -1,15 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
-import { useDeferredValue, useMemo, useState } from "react"
+import { useDeferredValue, useMemo } from "react"
 import { AppLayout } from "../components/app-layout"
-import { GridIcon16, ListIcon16, SortIcon16, TagIcon16 } from "../components/icons"
+import { IconButton } from "../components/icon-button"
+import {
+  GridIcon16,
+  ListIcon16,
+  SortAlphabetAscIcon16,
+  SortNumberDescIcon16,
+  TagIcon16,
+} from "../components/icons"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
 import { pluralize } from "../utils/pluralize"
-import { DropdownMenu } from "../components/dropdown-menu"
-import { cx } from "../utils/cx"
-import { IconButton } from "../components/icon-button"
 
 type RouteSearch = {
   query: string | undefined
@@ -41,10 +45,19 @@ function RouteComponent() {
   const deferredQuery = useDeferredValue(query)
 
   const searchResults = useMemo(() => {
-    return deferredQuery ? tagSearcher.search(deferredQuery) : sortedTagEntries
-  }, [tagSearcher, deferredQuery, sortedTagEntries])
+    const results = deferredQuery ? tagSearcher.search(deferredQuery) : sortedTagEntries
 
-  const tagTree = useMemo(() => buildTagTree(searchResults), [searchResults])
+    return results.sort((a, b) => {
+      // Sort by count descending
+      if (sort === "count") {
+        return b[1].length - a[1].length
+      }
+      // Sort by name ascending
+      return a[0].localeCompare(b[0])
+    })
+  }, [tagSearcher, deferredQuery, sortedTagEntries, sort])
+
+  const tagTree = useMemo(() => buildTagTree(searchResults, sort), [searchResults, sort])
 
   return (
     <AppLayout title="Tags" icon={<TagIcon16 />}>
@@ -58,7 +71,6 @@ function RouteComponent() {
                 navigate({ search: { query: value, sort, view }, replace: true })
               }
             />
-            {/* view mode and sorting */}
             <IconButton
               aria-label={view === "grid" ? "List view" : "Grid view"}
               className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
@@ -68,40 +80,42 @@ function RouteComponent() {
             >
               {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
             </IconButton>
-            <DropdownMenu modal={false}>
-              <DropdownMenu.Trigger asChild>
-                <IconButton
-                  aria-label="Sort"
-                  className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                >
-                  <SortIcon16 />
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content>
-                <DropdownMenu.Item
-                  selected={sort === "name"}
-                  onSelect={() => navigate({ search: { query, sort: "name", view } })}
-                >
-                  <span>Name</span>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  selected={sort === "count"}
-                  onSelect={() => navigate({ search: { query, sort: "count", view } })}
-                >
-                  <span>Count</span>
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
+            <IconButton
+              aria-label={sort === "count" ? "Sort by name" : "Sort by count"}
+              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+              onClick={() =>
+                navigate({ search: { query, sort: sort === "count" ? "name" : "count", view } })
+              }
+            >
+              {sort === "count" ? <SortAlphabetAscIcon16 /> : <SortNumberDescIcon16 />}
+            </IconButton>
           </div>
-          <div className="flex flex-row gap-2"></div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
               {pluralize(searchResults.length, "result")}
             </span>
           ) : null}
         </div>
-
-        <TagTree tree={tagTree} sortBy={sort} viewAs={view} />
+        {view === "grid" ? (
+          <ul className="flex flex-wrap gap-3">
+            {searchResults.map(([tag, noteIds]) => (
+              <li key={tag}>
+                <PillButton asChild>
+                  <Link
+                    to="/tags/$"
+                    params={{ _splat: tag }}
+                    search={{ query: undefined, view: "grid" }}
+                  >
+                    {tag}
+                    <span className="text-text-secondary">{noteIds.length}</span>
+                  </Link>
+                </PillButton>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <TagTree tree={tagTree} />
+        )}
       </div>
     </AppLayout>
   )
@@ -114,7 +128,7 @@ type TagTreeNode = {
 }
 
 /** Build a tree from a flat list of tags */
-function buildTagTree(tags: [string, string[]][]): TagTreeNode[] {
+function buildTagTree(tags: [string, string[]][], sort: "name" | "count"): TagTreeNode[] {
   const tree: TagTreeNode[] = []
 
   for (const [name, noteIds] of tags) {
@@ -135,96 +149,42 @@ function buildTagTree(tags: [string, string[]][]): TagTreeNode[] {
     }
   }
 
-  return tree
+  // Sort the tree nodes based on the sort parameter
+  const sortNodes = (nodes: TagTreeNode[]): TagTreeNode[] => {
+    return nodes
+      .sort((a, b) => {
+        // Sort by count descending
+        if (sort === "count") {
+          return b.count - a.count
+        }
+        // Sort by name ascending
+        return a.name.localeCompare(b.name)
+      })
+      .map((node) => ({
+        ...node,
+        children: sortNodes(node.children),
+      }))
+  }
+
+  return sortNodes(tree)
 }
 
 type TagTreeProps = {
   tree: TagTreeNode[]
   path?: string[]
   depth?: number
-  sortBy?: "name" | "count"
-  viewAs?: "grid" | "list"
 }
 
-function TagTree({ tree, path = [], depth = 0, sortBy, viewAs }: TagTreeProps) {
+// TODO: Improve accessibility of the tree
+function TagTree({ tree, path = [], depth = 0 }: TagTreeProps) {
   if (tree.length === 0) {
     return null
   }
 
-  // For grid view, flatten the tree and show full paths
-  if (viewAs === "grid") {
-    const flattenedTags: Array<{ fullPath: string; count: number }> = []
-
-    function flattenTree(nodes: TagTreeNode[], currentPath: string[] = []) {
-      for (const node of nodes) {
-        const fullPath = [...currentPath, node.name]
-        flattenedTags.push({
-          fullPath: fullPath.join("/"),
-          count: node.count,
-        })
-        flattenTree(node.children, fullPath)
-      }
-    }
-
-    flattenTree(tree)
-
-    // Sort the flattened tags
-    const sortedTags = [...flattenedTags].sort((a, b) => {
-      if (sortBy === "name") {
-        return a.fullPath.localeCompare(b.fullPath)
-      } else if (sortBy === "count") {
-        return b.count - a.count
-      }
-      return 0
-    })
-
-    return (
-      <ul className="flex flex-row flex-wrap gap-3">
-        {sortedTags.map((tag) => (
-          <li key={tag.fullPath}>
-            <PillButton asChild>
-              <Link
-                to="/tags/$"
-                params={{ _splat: tag.fullPath }}
-                search={{
-                  query: undefined,
-                  view: "grid",
-                  sort: "name",
-                }}
-              >
-                {tag.fullPath}
-                <span className="text-text-secondary">{tag.count}</span>
-              </Link>
-            </PillButton>
-          </li>
-        ))}
-      </ul>
-    )
-  }
-
-  // For list view, keep the existing nested structure
-  const sortedTree = [...tree].sort((a, b) => {
-    if (sortBy === "name") {
-      return a.name.localeCompare(b.name)
-    } else if (sortBy === "count") {
-      return b.count - a.count
-    }
-    return 0
-  })
-
   return (
     <ul className="flex flex-col gap-3">
-      {sortedTree.map((node) => {
-        return (
-          <TagTreeItem
-            key={node.name}
-            node={node}
-            path={path}
-            depth={depth}
-            viewAs={viewAs}
-            sortBy={sortBy}
-          />
-        )
+      {tree.map((node) => {
+        return <TagTreeItem key={node.name} node={node} path={path} depth={depth} />
       })}
     </ul>
   )
@@ -234,17 +194,12 @@ type TagTreeItemProps = {
   node: TagTreeNode
   path?: string[]
   depth?: number
-  viewAs?: "grid" | "list"
-  sortBy?: "name" | "count"
 }
 
-function TagTreeItem({ node, path = [], depth = 0, viewAs, sortBy }: TagTreeItemProps) {
+function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
   return (
     <li className="flex flex-col gap-3">
-      <div
-        className="flex items-center gap-1"
-        style={{ paddingLeft: viewAs === "list" ? `calc(${depth} * 1.5rem)` : 0 }}
-      >
+      <div className="flex items-center gap-1" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
         <PillButton asChild>
           <Link
             to="/tags/$"
@@ -252,7 +207,6 @@ function TagTreeItem({ node, path = [], depth = 0, viewAs, sortBy }: TagTreeItem
             search={{
               query: undefined,
               view: "grid",
-              sort: "name",
             }}
           >
             {node.name}
@@ -260,18 +214,14 @@ function TagTreeItem({ node, path = [], depth = 0, viewAs, sortBy }: TagTreeItem
           </Link>
         </PillButton>
       </div>
-      {viewAs === "list" && (
-        <div className="empty:hidden">
-          <TagTree
-            key={node.name}
-            tree={node.children}
-            path={[...path, node.name]}
-            depth={depth + 1}
-            viewAs={viewAs}
-            sortBy={sortBy}
-          />
-        </div>
-      )}
+      <div className="empty:hidden">
+        <TagTree
+          key={node.name}
+          tree={node.children}
+          path={[...path, node.name]}
+          depth={depth + 1}
+        />
+      </div>
     </li>
   )
 }

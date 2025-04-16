@@ -9,7 +9,6 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 
 type RouteSearch = {
   query: string | undefined
-  sort: "name" | "count"
   view: "grid" | "list"
 }
 
@@ -17,7 +16,6 @@ export const Route = createFileRoute("/_appRoot/tags_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
-      sort: search.sort === "name" || search.sort === "count" ? search.sort : "name",
       view: search.view === "list" ? "list" : "grid",
     }
   },
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/_appRoot/tags_/$")({
 
 function RouteComponent() {
   const { _splat: tag } = Route.useParams()
-  const { query, sort, view } = Route.useSearch()
+  const { query, view } = Route.useSearch()
   const navigate = Route.useNavigate()
   const renameTag = useRenameTag()
   const deleteTag = useDeleteTag()
@@ -58,7 +56,7 @@ function RouteComponent() {
                   navigate({
                     to: "/tags/$",
                     params: { _splat: newName },
-                    search: { query, sort, view },
+                    search: { query, view },
                     replace: true,
                   })
                 }
@@ -82,7 +80,7 @@ function RouteComponent() {
                   deleteTag(tag)
                   navigate({
                     to: "/tags",
-                    search: { query: undefined, sort, view },
+                    search: { query: undefined, view: "grid", sort: "name" },
                     replace: true,
                   })
                 }
