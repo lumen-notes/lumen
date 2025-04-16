@@ -52,14 +52,14 @@ function RouteComponent() {
             >
               Cole Bemis
             </a>{" "}
-            and{" "}
+            &amp;{" "}
             <a
               className="link whitespace-nowrap"
               href="https://github.com/lumen-notes/lumen/graphs/contributors"
               target="_blank"
               rel="noopener noreferrer"
             >
-              the open source community
+              friends
             </a>
           </p>
         </div>
