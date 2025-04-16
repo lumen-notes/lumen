@@ -152,6 +152,8 @@ export function CommandMenu() {
             to: "/tags",
             search: {
               query: undefined,
+              sort: "name",
+              view: "grid",
             },
           })
         },
@@ -389,6 +391,8 @@ export function CommandMenu() {
                       to: "/tags",
                       search: {
                         query: deferredQuery,
+                        sort: "name",
+                        view: "grid",
                       },
                     }),
                   )}
