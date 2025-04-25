@@ -24,10 +24,12 @@ import {
   LoadingIcon16,
   MicFillIcon16,
   MicIcon16,
+  MicMuteFillIcon16,
   MicMuteIcon16,
   TriangleDownIcon8,
   XIcon16,
 } from "./icons"
+import { MicVisualizer } from "./mic-visualizer"
 import { toast } from "./toast"
 
 export type Tool<T> = {
@@ -71,20 +73,21 @@ export function VoiceConversationButton() {
               aria-label="Conversation actions"
               disableTooltip
               className={cx(
-                "!text-[#fff] eink:!bg-text eink:!text-bg",
+                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full",
                 state.matches("active.ready.mic.muted")
                   ? "!bg-[var(--red-9)]"
                   : "!bg-[var(--green-9)]",
               )}
               disabled={state.matches("active.initializing")}
             >
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 {state.matches("active.ready.mic.muted") ? (
-                  <MicMuteIcon16 />
-                ) : state.matches("active.ready.user.speaking") ? (
-                  <MicFillIcon16 />
+                  <MicMuteFillIcon16 />
                 ) : (
-                  <MicIcon16 />
+                  <div className="flex items-center gap-1">
+                    <MicFillIcon16 />
+                    <MicVisualizer />
+                  </div>
                 )}
                 <TriangleDownIcon8 />
               </div>

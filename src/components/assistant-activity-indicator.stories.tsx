@@ -1,4 +1,3 @@
-import { Button } from "./button"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 
 export default {
@@ -13,7 +12,7 @@ export const Default = {
   render: (args: { state: "idle" | "thinking" | "speaking" }) => {
     return (
       <AssistantActivityIndicator state={args.state}>
-        <Button>Button</Button>
+        <div style={{ width: "64px", height: "32px" }} />
       </AssistantActivityIndicator>
     )
   },

@@ -26,7 +26,7 @@ export function AssistantActivityIndicator({
           style={{ "--perimeter": `${perimeter}px` } as React.CSSProperties}
         >
           <rect
-            className="spin-stroke coarse:hidden"
+            className="spin-stroke"
             x="0"
             y="0"
             width="100%"
@@ -35,23 +35,7 @@ export function AssistantActivityIndicator({
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
-            rx="8"
-            strokeDasharray={
-              state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
-            }
-          />
-          {/* Increase corner radius for coarse pointer devices */}
-          <rect
-            className="spin-stroke hidden coarse:block"
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            rx="10"
+            rx={bounds.height / 2 + 2}
             strokeDasharray={
               state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
             }
