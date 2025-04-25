@@ -80,11 +80,11 @@ export function VoiceConversationButton() {
               )}
               disabled={state.matches("active.initializing")}
             >
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 coarse:gap-2">
                 {state.matches("active.ready.mic.muted") ? (
                   <MicMuteFillIcon16 />
                 ) : (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 coarse:gap-1.5">
                     <MicFillIcon16 />
                     <MicVisualizer />
                   </div>
