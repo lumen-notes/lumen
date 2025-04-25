@@ -24,6 +24,7 @@ export function MicVisualizer() {
   React.useEffect(() => {
     let audioContext: AudioContext | null = null
     let analyser: AnalyserNode | null = null
+    let stream: MediaStream | null = null
     let source: MediaStreamAudioSourceNode | null = null
     let animationFrameId: number
 
@@ -36,7 +37,7 @@ export function MicVisualizer() {
         analyser.smoothingTimeConstant = SMOOTHING_TIME_CONSTANT
 
         // Get microphone access and connect to analyzer
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         source = audioContext.createMediaStreamSource(stream)
         source.connect(analyser)
         updateLevels(analyser)
@@ -84,6 +85,9 @@ export function MicVisualizer() {
       }
       if (audioContext) {
         audioContext.close()
+      }
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop())
       }
     }
   }, [])
