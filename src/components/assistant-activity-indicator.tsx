@@ -1,12 +1,15 @@
 import React from "react"
 import { useMeasure } from "react-use"
 
-type SpinningBorderProps = {
-  disabled?: boolean
+type AssistantActivityIndicatorProps = {
+  state: "idle" | "thinking" | "speaking"
   children: React.ReactNode
 }
 
-export function SpinningBorder({ children, disabled = false }: SpinningBorderProps) {
+export function AssistantActivityIndicator({
+  children,
+  state = "idle",
+}: AssistantActivityIndicatorProps) {
   const [ref, bounds] = useMeasure<HTMLDivElement>()
 
   const perimeter = React.useMemo(() => {
@@ -17,7 +20,7 @@ export function SpinningBorder({ children, disabled = false }: SpinningBorderPro
 
   return (
     <div ref={ref} className="relative flex">
-      {!disabled ? (
+      {state !== "idle" ? (
         <svg
           className="pointer-events-none absolute -inset-0.5 z-10 h-[calc(100%+4px)] w-[calc(100%+4px)] overflow-visible text-border"
           style={{ "--perimeter": `${perimeter}px` } as React.CSSProperties}
@@ -33,7 +36,9 @@ export function SpinningBorder({ children, disabled = false }: SpinningBorderPro
             strokeWidth="2"
             strokeLinecap="round"
             rx="8"
-            strokeDasharray={`${strokeLength} ${perimeter - strokeLength}`}
+            strokeDasharray={
+              state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
+            }
           />
           {/* Increase corner radius for coarse pointer devices */}
           <rect
@@ -47,7 +52,9 @@ export function SpinningBorder({ children, disabled = false }: SpinningBorderPro
             strokeWidth="2"
             strokeLinecap="round"
             rx="10"
-            strokeDasharray={`${strokeLength} ${perimeter - strokeLength}`}
+            strokeDasharray={
+              state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
+            }
           />
         </svg>
       ) : null}

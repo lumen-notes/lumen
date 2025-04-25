@@ -16,6 +16,7 @@ import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
 import { cx } from "../utils/cx"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
+import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
@@ -27,7 +28,6 @@ import {
   TriangleDownIcon8,
   XIcon16,
 } from "./icons"
-import { SpinningBorder } from "./spinning-border"
 import { toast } from "./toast"
 
 export type Tool<T> = {
@@ -55,11 +55,13 @@ export function VoiceConversationButton() {
 
   if (state.matches("active.ready")) {
     return (
-      <SpinningBorder
-        disabled={
-          // Only show spinning border if the assistant is thinking or speaking
-          !state.matches("active.ready.assistant.thinking") &&
-          !state.matches("active.ready.assistant.speaking")
+      <AssistantActivityIndicator
+        state={
+          state.matches("active.ready.assistant.thinking")
+            ? "thinking"
+            : state.matches("active.ready.assistant.speaking")
+              ? "speaking"
+              : "idle"
         }
       >
         <DropdownMenu>
@@ -107,7 +109,7 @@ export function VoiceConversationButton() {
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu>
-      </SpinningBorder>
+      </AssistantActivityIndicator>
     )
   }
 
