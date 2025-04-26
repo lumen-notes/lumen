@@ -15,6 +15,7 @@ import { zodToJsonSchema } from "zod-to-json-schema"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
 import { cx } from "../utils/cx"
+import { notificationOffSound, notificationSound } from "../utils/sounds"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 import { DropdownMenu } from "./dropdown-menu"
@@ -120,6 +121,7 @@ export function VoiceConversationButton() {
     <IconButton
       size="small"
       aria-label="Start conversation with AI"
+      tooltipAlign="end"
       disabled={!online || state.matches("active.initializing")}
       onClick={() => send("START")}
     >
@@ -257,7 +259,7 @@ type VoiceConversationContext = {
 }
 
 const systemInstructions = `
-- You are an AI assistant integrated into a note-taking app called Lumen.
+- You are an AI assistant integrated into Lumen, a note-taking app.
 - You serve as a thought partner and writing assistant.
 - Notes are written in GitHub Flavored Markdown and support frontmatter.
 - Note titles should be written as a level 1 heading using markdown syntax (e.g. "# Title"). Do not use frontmatter for titles.
@@ -319,7 +321,6 @@ function createVoiceConversationMachine() {
             START: "active",
           },
         },
-        // TODO: Support adding/removing tools while the conversation is active
         active: {
           invoke: {
             src: "session",
@@ -534,78 +535,10 @@ function createVoiceConversationMachine() {
           alert(event.message)
         },
         playReadySound: () => {
-          const audioContext = new AudioContext()
-          const currentTime = audioContext.currentTime
-
-          // Create a master gain node for overall volume control
-          const masterGain = audioContext.createGain()
-          masterGain.gain.setValueAtTime(0.15, currentTime)
-          masterGain.connect(audioContext.destination)
-
-          // First note: G4 (392 Hz) with a softer sine wave
-          const oscillator1 = audioContext.createOscillator()
-          const gainNode1 = audioContext.createGain()
-          oscillator1.connect(gainNode1)
-          gainNode1.connect(masterGain)
-
-          oscillator1.type = "sine"
-          oscillator1.frequency.setValueAtTime(392, currentTime)
-          gainNode1.gain.setValueAtTime(0, currentTime)
-          gainNode1.gain.linearRampToValueAtTime(1, currentTime + 0.02)
-          gainNode1.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1)
-          oscillator1.start(currentTime)
-          oscillator1.stop(currentTime + 0.1)
-
-          // Second note: B4 (494 Hz) with a gentle triangle wave for warmth
-          const oscillator2 = audioContext.createOscillator()
-          const gainNode2 = audioContext.createGain()
-          oscillator2.connect(gainNode2)
-          gainNode2.connect(masterGain)
-
-          oscillator2.type = "triangle"
-          oscillator2.frequency.setValueAtTime(494, currentTime + 0.05)
-          gainNode2.gain.setValueAtTime(0, currentTime + 0.05)
-          gainNode2.gain.linearRampToValueAtTime(0.8, currentTime + 0.07)
-          gainNode2.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.15)
-          oscillator2.start(currentTime + 0.05)
-          oscillator2.stop(currentTime + 0.15)
+          notificationSound.play()
         },
         playEndSound: () => {
-          const audioContext = new AudioContext()
-          const currentTime = audioContext.currentTime
-
-          // Create a master gain node for overall volume control
-          const masterGain = audioContext.createGain()
-          masterGain.gain.setValueAtTime(0.15, currentTime)
-          masterGain.connect(audioContext.destination)
-
-          // First note: B4 (494 Hz) with a gentle triangle wave
-          const oscillator1 = audioContext.createOscillator()
-          const gainNode1 = audioContext.createGain()
-          oscillator1.connect(gainNode1)
-          gainNode1.connect(masterGain)
-
-          oscillator1.type = "triangle"
-          oscillator1.frequency.setValueAtTime(494, currentTime)
-          gainNode1.gain.setValueAtTime(0, currentTime)
-          gainNode1.gain.linearRampToValueAtTime(0.8, currentTime + 0.02)
-          gainNode1.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1)
-          oscillator1.start(currentTime)
-          oscillator1.stop(currentTime + 0.1)
-
-          // Second note: G4 (392 Hz) with a softer sine wave
-          const oscillator2 = audioContext.createOscillator()
-          const gainNode2 = audioContext.createGain()
-          oscillator2.connect(gainNode2)
-          gainNode2.connect(masterGain)
-
-          oscillator2.type = "sine"
-          oscillator2.frequency.setValueAtTime(392, currentTime + 0.05)
-          gainNode2.gain.setValueAtTime(0, currentTime + 0.05)
-          gainNode2.gain.linearRampToValueAtTime(1, currentTime + 0.07)
-          gainNode2.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.15)
-          oscillator2.start(currentTime + 0.05)
-          oscillator2.stop(currentTime + 0.15)
+          notificationOffSound.play()
         },
       },
       services: {

@@ -23,6 +23,7 @@ import {
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
+import { notificationSound } from "../utils/sounds"
 
 export const Route = createFileRoute("/_appRoot")({
   component: RouteComponent,
@@ -79,6 +80,7 @@ function RouteComponent() {
               view: "grid",
             },
           })
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
@@ -115,6 +117,7 @@ function RouteComponent() {
               view: "grid",
             },
           })
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<{ noteId: string }>,
@@ -151,6 +154,7 @@ function RouteComponent() {
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("MUTE_MIC")
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
@@ -160,6 +164,7 @@ function RouteComponent() {
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("UNMUTE_MIC")
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,

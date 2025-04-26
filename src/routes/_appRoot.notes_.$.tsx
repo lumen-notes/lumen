@@ -74,6 +74,7 @@ import {
 import { updateFrontmatter } from "../utils/frontmatter"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
+import { notificationSound } from "../utils/sounds"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -265,7 +266,7 @@ function NotePage() {
         }),
         execute: async ({ content }) => {
           setEditorValueRef.current(content)
-
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<{ content: string }>,
@@ -275,7 +276,7 @@ function NotePage() {
         parameters: z.object({}),
         execute: async () => {
           handleSaveRef.current(editorValueRef.current)
-
+          notificationSound.play()
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<Record<string, never>>,
@@ -296,6 +297,8 @@ function NotePage() {
           if (noteRef.current) {
             deleteNoteRef.current(noteRef.current.id)
           }
+
+          notificationSound.play()
 
           // Go home
           await navigate({
