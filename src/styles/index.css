@@ -57,9 +57,9 @@ body:has([data-resizing="true"]) * {
   @apply decoration-solid;
 }
 
-.link-external {
+/* .link-external {
   white-space: nowrap;
-}
+} */
 
 .link-external::after {
   content: "";
