@@ -17,6 +17,7 @@ import {
 import {
   fontAtom,
   globalStateMachineAtom,
+  notesAtom,
   tagsAtom,
   templatesAtom,
   themeAtom,
@@ -44,6 +45,7 @@ function RouteComponent() {
   const send = useSetAtom(globalStateMachineAtom)
   const searchNotes = useSearchNotes()
   const searchNotesRef = useValueRef(searchNotes)
+  const getNotes = useAtomCallback(React.useCallback((get) => get(notesAtom), []))
   const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
   const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
   const navigate = useNavigate()
@@ -61,10 +63,40 @@ function RouteComponent() {
     send("SYNC")
   })
 
+  // const router = useRouter()
+  // React.useEffect(() => {
+  //   const unsubscribe = router.subscribe("onRendered", (...args) => {
+  //     console.log("onRendered", args)
+  //   })
+
+  //   return () => {
+  //     unsubscribe()
+  //   }
+  // }, [router])
+
   // Add voice conversation tools
   const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
   React.useEffect(() => {
     const tools = [
+      {
+        name: "read_note",
+        description: "Read the content of a specific note by its ID.",
+        parameters: z.object({
+          noteId: z.string().describe("The ID of the note to read"),
+        }),
+        execute: async ({ noteId }) => {
+          const notes = getNotes()
+          const note = notes.get(noteId)
+          if (!note) {
+            return JSON.stringify({ error: "Note not found" })
+          }
+          return JSON.stringify({
+            note_id: note.id,
+            content: note.content,
+            backlinks: note.backlinks,
+          })
+        },
+      } satisfies Tool<{ noteId: string }>,
       {
         name: "create_note",
         description:
@@ -97,6 +129,7 @@ function RouteComponent() {
             results: results.slice(0, maxResults).map((note) => ({
               note_id: note.id,
               content: note.content,
+              backlinks: note.backlinks,
             })),
           })
         },
@@ -121,6 +154,25 @@ function RouteComponent() {
           return JSON.stringify({ success: true })
         },
       } satisfies Tool<{ noteId: string }>,
+      {
+        name: "go_to_tag",
+        description: "Navigate to a tag page listing all notes with that tag.",
+        parameters: z.object({
+          tag: z.string().describe("The name of the tag"),
+        }),
+        execute: async ({ tag }) => {
+          await navigate({
+            to: "/tags/$",
+            params: { _splat: tag },
+            search: {
+              query: undefined,
+              view: "grid",
+            },
+          })
+          notificationSound.play()
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<{ tag: string }>,
       {
         name: "get_templates",
         description: "Get a list of the user's templates.",
@@ -150,7 +202,7 @@ function RouteComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "mute_microphone",
-        description: "Mute the user's microphone.",
+        description: "Mute the user's microphone when explicitly requested.",
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("MUTE_MIC")
@@ -160,7 +212,7 @@ function RouteComponent() {
       } satisfies Tool<Record<string, never>>,
       {
         name: "unmute_microphone",
-        description: "Unmute the user's microphone.",
+        description: "Unmute the user's microphone when explicitly requested.",
         parameters: z.object({}),
         execute: async () => {
           sendVoiceConversation("UNMUTE_MIC")
@@ -182,7 +234,7 @@ function RouteComponent() {
     return () => {
       sendVoiceConversation({ type: "REMOVE_TOOLS", toolNames: tools.map((tool) => tool.name) })
     }
-  }, [navigate, searchNotesRef, getTemplates, getTags, sendVoiceConversation])
+  }, [navigate, searchNotesRef, getNotes, getTemplates, getTags, sendVoiceConversation])
 
   // Set the theme
   const theme = useAtomValue(themeAtom)

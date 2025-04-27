@@ -19,13 +19,14 @@
           "addToolsToContext": "ADD_TOOLS";
 "alertError": "ERROR";
 "executeToolCalls": "TOOL_CALLS";
+"initiateConversation": "SESSION_CREATED";
 "muteMicrophone": "MUTE_MIC";
 "playEndSound": "END";
 "playReadySound": "SESSION_CREATED";
 "removeToolsFromContext": "REMOVE_TOOLS";
 "sendText": "SEND_TEXT";
+"triggerResponse": "TRIGGER_RESPONSE";
 "unmuteMicrophone": "UNMUTE_MIC";
-"updateSessionWithInstructions": "SESSION_CREATED";
 "updateSessionWithTools": "ADD_TOOLS" | "REMOVE_TOOLS" | "SESSION_CREATED";
         };
         eventsCausingDelays: {
