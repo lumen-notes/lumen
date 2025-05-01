@@ -91,7 +91,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
             <li>
               <NavLink
                 to="/tags"
-                search={{ query: undefined }}
+                search={{ query: undefined, sort: "name", view: "list" }}
                 activeIcon={<TagFillIcon16 />}
                 icon={<TagIcon16 />}
               >
@@ -119,7 +119,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                   <li key={note.id} className="flex">
                     <NavLink
                       key={note.id}
-                      to={`/notes/$`}
+                      to="/notes/$"
                       params={{ _splat: note.id }}
                       search={{ mode: "read", query: undefined, view: "grid" }}
                       icon={

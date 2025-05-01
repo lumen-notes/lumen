@@ -153,7 +153,7 @@ export function CommandMenu() {
             search: {
               query: undefined,
               sort: "name",
-              view: "grid",
+              view: "list",
             },
           })
         },
@@ -392,7 +392,7 @@ export function CommandMenu() {
                       search: {
                         query: deferredQuery,
                         sort: "name",
-                        view: "grid",
+                        view: "list",
                       },
                     }),
                   )}

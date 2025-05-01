@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_appRoot/tags/")({
     return {
       query: typeof search.query === "string" ? search.query : undefined,
       sort: search.sort === "name" || search.sort === "count" ? search.sort : "name",
-      view: search.view === "grid" || search.view === "list" ? search.view : "grid",
+      view: search.view === "grid" || search.view === "list" ? search.view : "list",
     }
   },
   component: RouteComponent,

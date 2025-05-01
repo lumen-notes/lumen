@@ -80,7 +80,7 @@ function RouteComponent() {
                   deleteTag(tag)
                   navigate({
                     to: "/tags",
-                    search: { query: undefined, view: "grid", sort: "name" },
+                    search: { query: undefined, sort: "name", view: "list" },
                     replace: true,
                   })
                 }
