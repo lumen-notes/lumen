@@ -455,7 +455,7 @@ function createVoiceConversationMachine() {
           tools: (context, event) =>
             context.tools.filter((tool) => !event.toolNames.includes(tool.name)),
         }),
-        updateSessionWithTools: (context, event) => {
+        updateSessionWithTools: (context) => {
           context.sendClientEvent({
             type: "session.update",
             session: {
@@ -468,7 +468,7 @@ function createVoiceConversationMachine() {
             },
           })
         },
-        initiateConversation: async (context, event) => {
+        initiateConversation: async (context) => {
           // Send system instructions
           context.sendClientEvent({
             type: "session.update",
