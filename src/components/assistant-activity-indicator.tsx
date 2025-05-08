@@ -1,7 +1,7 @@
 import React from "react"
 import { useMeasure } from "react-use"
 
-type AssistantActivityIndicatorProps = {
+export type AssistantActivityIndicatorProps = {
   state: "idle" | "thinking" | "speaking"
   children: React.ReactNode
 }
@@ -12,8 +12,13 @@ export function AssistantActivityIndicator({
 }: AssistantActivityIndicatorProps) {
   const [ref, bounds] = useMeasure<HTMLDivElement>()
 
-  const perimeter = React.useMemo(() => {
-    return bounds.width * 2 + bounds.height * 2
+  const { radius, perimeter } = React.useMemo(() => {
+    const width = bounds.width + 4
+    const height = bounds.height + 4
+    const radius = height / 2
+    // Calculate the perimeter of the rectangle, accounting for the rounded corners
+    const perimeter = (width - 2 * radius) * 2 + (height - 2 * radius) * 2 + 2 * Math.PI * radius
+    return { radius, perimeter }
   }, [bounds])
 
   const strokeLength = 36
@@ -35,7 +40,7 @@ export function AssistantActivityIndicator({
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
-            rx={bounds.height / 2 + 2}
+            rx={radius}
             strokeDasharray={
               state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
             }

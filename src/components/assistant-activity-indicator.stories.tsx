@@ -1,3 +1,4 @@
+import { StoryObj } from "@storybook/react"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 
 export default {
@@ -6,10 +7,20 @@ export default {
   parameters: {
     layout: "centered",
   },
+  argTypes: {
+    state: {
+      control: {
+        type: "select",
+      },
+      options: ["idle", "thinking", "speaking"],
+    },
+  },
 }
 
-export const Default = {
-  render: (args: { state: "idle" | "thinking" | "speaking" }) => {
+type Story = StoryObj<typeof AssistantActivityIndicator>
+
+export const Thinking: Story = {
+  render: (args) => {
     return (
       <AssistantActivityIndicator state={args.state}>
         <div style={{ width: "64px", height: "32px" }} />
@@ -17,6 +28,19 @@ export const Default = {
     )
   },
   args: {
-    state: "idle",
+    state: "thinking",
+  },
+}
+
+export const Speaking: Story = {
+  render: (args) => {
+    return (
+      <AssistantActivityIndicator state={args.state}>
+        <div style={{ width: "64px", height: "32px" }} />
+      </AssistantActivityIndicator>
+    )
+  },
+  args: {
+    state: "speaking",
   },
 }
