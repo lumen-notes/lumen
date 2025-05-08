@@ -24,8 +24,8 @@
 "playEndSound": "END";
 "playReadySound": "SESSION_CREATED";
 "removeToolsFromContext": "REMOVE_TOOLS";
+"sendNavigationEvent": "ROUTE_CHANGED";
 "sendText": "SEND_TEXT";
-"triggerResponse": "TRIGGER_RESPONSE";
 "unmuteMicrophone": "UNMUTE_MIC";
 "updateSessionWithTools": "ADD_TOOLS" | "REMOVE_TOOLS" | "SESSION_CREATED";
         };

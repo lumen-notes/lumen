@@ -138,7 +138,6 @@ export function FloatingConversationInput() {
 
   const debouncedSendText = useDebouncedCallback((text: string) => {
     send({ type: "SEND_TEXT", text })
-    send({ type: "TRIGGER_RESPONSE" })
   }, 1000)
 
   useHotkeys(
@@ -235,7 +234,8 @@ type VoiceConversationEvent =
       text: string
     }
   | {
-      type: "TRIGGER_RESPONSE"
+      type: "ROUTE_CHANGED"
+      path: string
     }
   | {
       type: "TOOL_CALLS"
@@ -366,9 +366,6 @@ function createVoiceConversationMachine() {
                 SEND_TEXT: {
                   actions: "sendText",
                 },
-                TRIGGER_RESPONSE: {
-                  actions: "triggerResponse",
-                },
                 ADD_TOOLS: {
                   actions: ["addToolsToContext", "updateSessionWithTools"],
                 },
@@ -377,6 +374,9 @@ function createVoiceConversationMachine() {
                 },
                 TOOL_CALLS: {
                   actions: "executeToolCalls",
+                },
+                ROUTE_CHANGED: {
+                  actions: "sendNavigationEvent",
                 },
               },
               type: "parallel",
@@ -547,9 +547,28 @@ function createVoiceConversationMachine() {
               ],
             },
           })
-        },
-        triggerResponse: (context) => {
+
+          // Trigger a response from the assistant
           context.sendClientEvent({ type: "response.create" })
+        },
+        sendNavigationEvent: async (context, event) => {
+          const noteId = /\/notes\/(.*)/.exec(event.path)?.[1] ?? null
+          const readNote = context.tools.find((tool) => tool.name === "read_note")
+          const note = noteId ? await readNote?.execute({ noteId }) : null
+
+          context.sendClientEvent({
+            type: "conversation.item.create",
+            item: {
+              type: "message",
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: note ? `Navigated to note: ${note}` : `Navigated to ${event.path} page`,
+                },
+              ],
+            },
+          })
         },
         muteMicrophone: (context) => {
           context.microphoneStream?.getTracks().forEach((track) => {

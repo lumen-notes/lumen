@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Outlet, useNavigate, useRouter } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
@@ -48,6 +48,8 @@ function RouteComponent() {
   const getNotes = useAtomCallback(React.useCallback((get) => get(notesAtom), []))
   const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
   const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
+  const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
+  const router = useRouter()
   const navigate = useNavigate()
   const { online } = useNetworkState()
   const rootRef = React.useRef<HTMLDivElement>(null)
@@ -63,19 +65,18 @@ function RouteComponent() {
     send("SYNC")
   })
 
-  // const router = useRouter()
-  // React.useEffect(() => {
-  //   const unsubscribe = router.subscribe("onRendered", (...args) => {
-  //     console.log("onRendered", args)
-  //   })
+  // Notify voice assistant when the route changes
+  React.useEffect(() => {
+    const unsubscribe = router.subscribe("onRendered", ({ pathChanged, toLocation }) => {
+      if (pathChanged) {
+        sendVoiceConversation({ type: "ROUTE_CHANGED", path: toLocation.pathname })
+      }
+    })
 
-  //   return () => {
-  //     unsubscribe()
-  //   }
-  // }, [router])
+    return () => unsubscribe()
+  }, [router, sendVoiceConversation])
 
   // Add voice conversation tools
-  const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
   React.useEffect(() => {
     const tools = [
       {
