@@ -478,9 +478,8 @@ function createVoiceConversationMachine() {
           })
 
           const currentPath = window.location.pathname
-          const noteId = /\/notes\/(.*)/.exec(currentPath)?.[1] ?? null
-          const readNote = context.tools.find((tool) => tool.name === "read_note")
-          const note = noteId ? await readNote?.execute({ noteId }) : null
+          const readCurrentNote = context.tools.find((tool) => tool.name === "read_current_note")
+          const note = await readCurrentNote?.execute({})
 
           // Send information about the user's current context
           context.sendClientEvent({

@@ -248,6 +248,17 @@ function NotePage() {
   React.useEffect(() => {
     const tools = [
       {
+        name: "read_current_note",
+        description: "Read the content of the current note.",
+        parameters: z.object({}),
+        execute: async () => {
+          return JSON.stringify({
+            note_id: noteId,
+            content: editorValueRef.current,
+          })
+        },
+      } satisfies Tool<Record<string, never>>,
+      {
         name: "edit_current_note",
         description:
           "Replace the entire content of the current note with the provided text. This overwrites all existing content.",
