@@ -572,7 +572,7 @@ function createVoiceConversationMachine() {
         },
       },
       services: {
-        session: (context, event) => (sendBack, onRecieve) => {
+        session: () => (sendBack) => {
           let peerConnection: RTCPeerConnection | undefined
           let dataChannel: RTCDataChannel | undefined
           let microphoneStream: MediaStream | undefined
@@ -615,6 +615,7 @@ function createVoiceConversationMachine() {
               })
               peerConnection.addTrack(microphoneStream.getTracks()[0])
             } catch (error) {
+              console.warn("Microphone access denied", error)
               sendBack({
                 type: "ERROR",
                 message: "Microphone access denied.",
