@@ -373,6 +373,23 @@ function createGlobalStateMachine() {
 
           // Write files to file system
           Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
+            // Create directories if needed
+            const dirPath = filepath.split("/").slice(0, -1).join("/")
+            if (dirPath) {
+              let currentPath = REPO_DIR
+              const segments = dirPath.split("/")
+
+              for (const segment of segments) {
+                currentPath = `${currentPath}/${segment}`
+                const stats = await fs.promises.stat(currentPath).catch(() => null)
+                const exists = stats !== null
+                if (!exists) {
+                  await fs.promises.mkdir(currentPath)
+                }
+              }
+            }
+
+            // Write file
             await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
           })
 

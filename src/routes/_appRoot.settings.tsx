@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useAtom, useAtomValue } from "jotai"
 import { useState } from "react"
 import { useNetworkState } from "react-use"
@@ -270,22 +270,32 @@ function AISection() {
         <OpenAIKeyInput />
         <div role="separator" className="h-px bg-border-secondary" />
         <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3">
             <Switch
               id="voice-assistant"
               disabled={!hasOpenAIKey}
               checked={hasOpenAIKey && voiceAssistantEnabled}
               onCheckedChange={(checked) => setVoiceAssistantEnabled(checked)}
             />
-            <label
-              htmlFor="voice-assistant"
-              className={cx(
-                "select-none",
-                !hasOpenAIKey && "cursor-not-allowed text-text-secondary",
-              )}
-            >
-              Voice assistant <span className="italic text-text-secondary">(beta)</span>
-            </label>
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="voice-assistant"
+                className={cx(
+                  "select-none",
+                  !hasOpenAIKey && "cursor-not-allowed text-text-secondary",
+                )}
+              >
+                Voice assistant <span className="italic text-text-secondary">(beta)</span>
+              </label>
+              <Link
+                to="/notes/$"
+                params={{ _splat: ".lumen/voice-instructions" }}
+                search={{ mode: "write", query: undefined, view: "grid" }}
+                className="link text-text-secondary"
+              >
+                Custom instructions
+              </Link>
+            </div>
           </div>
         </div>
       </div>

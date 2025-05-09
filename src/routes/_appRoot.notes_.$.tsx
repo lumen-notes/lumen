@@ -436,7 +436,11 @@ function NotePage() {
 
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
-  const shouldShowPageTitle = isScrolled || isDailyNote || isWeeklyNote
+  const shouldShowPageTitle =
+    (!parsedNote.title && parsedNote.displayName === noteId) ||
+    isScrolled ||
+    isDailyNote ||
+    isWeeklyNote
 
   return (
     <AppLayout

@@ -447,11 +447,23 @@ function createVoiceConversationMachine() {
           })
         },
         initiateConversation: async (context) => {
+          // Get custom instructions from the user
+          const readNote = context.tools.find((tool) => tool.name === "read_note")
+          const customInstructions = await readNote?.execute({
+            noteId: ".lumen/voice-instructions",
+          })
+
+          // Inject custom instructions into the system prompt
+          const systemInstructions = voiceConversationPrompt.replace(
+            "{{CUSTOM_INSTRUCTIONS}}",
+            customInstructions || "",
+          )
+
           // Send system instructions
           context.sendClientEvent({
             type: "session.update",
             session: {
-              instructions: voiceConversationPrompt,
+              instructions: systemInstructions,
             },
           })
 
@@ -472,7 +484,7 @@ function createVoiceConversationMachine() {
                     note
                       ? `I'm currently viewing this note: ${note}`
                       : `I'm currently on the ${currentPath} page.`
-                  }\n\nStart the conversation by using that context to provide a brief, relevant greeting followed by asking how you can help. Keep your greeting short; only one sentence.`,
+                  }\n\nStart the conversation by using that context to provide a brief, relevant greeting followed by asking how you can help. Keep your greeting short; only one sentence.\n\nIMPORTANT:If the user has provided custom instructions about how to start the conversation, follow those instructions instead.`,
                 },
               ],
             },
