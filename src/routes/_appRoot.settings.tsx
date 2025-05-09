@@ -277,7 +277,7 @@ function AISection() {
               checked={hasOpenAIKey && voiceAssistantEnabled}
               onCheckedChange={(checked) => setVoiceAssistantEnabled(checked)}
             />
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 leading-4 coarse:leading-5">
               <label
                 htmlFor="voice-assistant"
                 className={cx(
