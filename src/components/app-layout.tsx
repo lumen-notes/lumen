@@ -41,7 +41,7 @@ export function AppLayout({
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className={cx("flex flex-col overflow-hidden", className)}>
       <SignInBanner />
       <div className="flex overflow-hidden flex-grow">
         {sidebar === "expanded" ? (
