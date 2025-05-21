@@ -7,7 +7,9 @@ import {
   isRepoClonedAtom,
   isRepoNotClonedAtom,
   isSignedOutAtom,
+  openaiKeyAtom,
   sidebarAtom,
+  voiceAssistantEnabledAtom,
 } from "../global-state"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { cx } from "../utils/cx"
@@ -16,6 +18,7 @@ import { NavBar } from "./nav-bar"
 import { Sidebar } from "./sidebar"
 import { SignInBanner } from "./sign-in-banner"
 import { VoiceConversationBar } from "./voice-conversation"
+import { useNetworkState } from "react-use"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -38,6 +41,9 @@ export function AppLayout({
   const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
   const sidebar = useAtomValue(sidebarAtom)
+  const openaiKey = useAtomValue(openaiKeyAtom)
+  const voiceAssistantEnabled = useAtomValue(voiceAssistantEnabledAtom)
+  const { online } = useNetworkState()
 
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
@@ -88,7 +94,7 @@ export function AppLayout({
 
             <div className="absolute bottom-3 right-3 flex items-center gap-2 coarse:gap-3">
               {floatingActions}
-              <VoiceConversationBar />
+              {online && openaiKey && voiceAssistantEnabled ? <VoiceConversationBar /> : null}
             </div>
           </div>
           <div className="sm:hidden print:hidden">

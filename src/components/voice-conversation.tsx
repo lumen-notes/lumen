@@ -42,7 +42,6 @@ export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversat
 
 export function VoiceConversationBar() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
-  const { online } = useNetworkState()
 
   // Stop the conversation when the user goes offline
   React.useEffect(() => {
@@ -65,55 +64,56 @@ export function VoiceConversationBar() {
             : "idle"
       }
     >
-      <div className="p-1.5 coarse:p-2 !rounded-full card-2">
+      <div className="!rounded-full card-2 p-1.5 coarse:p-2 flex items-center gap-1.5 coarse:gap-2">
         {state.matches("active.ready") ? (
-          <div className="flex items-stretch gap-1.5 coarse:gap-2">
-            <IconButton
-              aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
-              className={cx(
-                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors",
-                state.matches("active.ready.mic.muted")
-                  ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
-                  : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
-              )}
-              onClick={() => {
-                if (state.matches("active.ready.mic.muted")) {
-                  send("UNMUTE_MIC")
-                } else {
-                  send("MUTE_MIC")
-                }
-              }}
-            >
-              {state.matches("active.ready.mic.muted") ? (
-                <MicMuteFillIcon16 />
-              ) : state.context.microphoneStream ? (
-                <div className="flex items-center gap-1 coarse:gap-1.5 pr-1">
-                  <MicFillIcon16 />
-                  <AudioVisualizer stream={state.context.microphoneStream} />
-                </div>
-              ) : (
-                <ErrorIcon16 />
-              )}
-            </IconButton>
-
-            <IconButton
-              aria-label="End"
-              className="rounded-full coarse:size-12"
-              onClick={() => send("END")}
-            >
-              <XIcon16 />
-            </IconButton>
-          </div>
-        ) : (
           <IconButton
-            aria-label="Start conversation with AI"
-            disabled={!online || state.matches("active.initializing")}
-            className="rounded-full coarse:size-12"
-            onClick={() => send("START")}
+            aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
+            className={cx(
+              "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors",
+              state.matches("active.ready.mic.muted")
+                ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
+                : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
+            )}
+            onClick={() => {
+              if (state.matches("active.ready.mic.muted")) {
+                send("UNMUTE_MIC")
+              } else {
+                send("MUTE_MIC")
+              }
+            }}
           >
-            {state.matches("active.initializing") ? <LoadingIcon16 /> : <HeadphonesIcon16 />}
+            {state.matches("active.ready.mic.muted") ? (
+              <MicMuteFillIcon16 />
+            ) : state.context.microphoneStream ? (
+              <div className="flex items-center gap-1 coarse:gap-1.5 pr-1">
+                <MicFillIcon16 />
+                <AudioVisualizer stream={state.context.microphoneStream} />
+              </div>
+            ) : (
+              <ErrorIcon16 />
+            )}
           </IconButton>
-        )}
+        ) : null}
+        <IconButton
+          aria-label={state.matches("active.ready") ? "End" : "Start conversation with AI"}
+          disabled={state.matches("active.initializing")}
+          className="rounded-full coarse:size-12"
+          onClick={() => {
+            if (state.matches("active.ready")) {
+              send("END")
+            } else {
+              send("START")
+            }
+          }}
+        >
+          {state.matches("active.ready") ? (
+            <XIcon16 />
+          ) : state.matches("active.initializing") ? (
+            <LoadingIcon16 />
+          ) : (
+            <HeadphonesIcon16 />
+          )}
+        </IconButton>
       </div>
     </AssistantActivityIndicator>
   )
