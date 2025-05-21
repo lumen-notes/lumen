@@ -56,6 +56,7 @@ export function VoiceConversationBar() {
 
   return (
     <AssistantActivityIndicator
+      stream={state.context.responseStream}
       state={
         state.matches("active.ready.assistant.thinking")
           ? "thinking"
@@ -197,6 +198,7 @@ type VoiceConversationEvent =
   | {
       type: "SESSION_CREATED"
       microphoneStream: MediaStream | undefined
+      responseStream: MediaStream | undefined
       sendClientEvent: (clientEvent: RealtimeClientEvent) => void
     }
   | {
@@ -247,6 +249,7 @@ type VoiceConversationEvent =
 type VoiceConversationContext = {
   tools: Array<Tool<unknown>>
   microphoneStream: MediaStream | undefined
+  responseStream: MediaStream | undefined
   sendClientEvent: (clientEvent: RealtimeClientEvent) => void
 }
 
@@ -274,6 +277,7 @@ function createVoiceConversationMachine() {
       context: {
         tools: [],
         microphoneStream: undefined,
+        responseStream: undefined,
         sendClientEvent: () => {},
       },
       initial: "inactive",
@@ -319,6 +323,7 @@ function createVoiceConversationMachine() {
                     assign({
                       microphoneStream: (context, event) => event.microphoneStream,
                       sendClientEvent: (context, event) => event.sendClientEvent,
+                      responseStream: (context, event) => event.responseStream,
                     }),
                     "playReadySound",
                   ],
@@ -572,6 +577,7 @@ function createVoiceConversationMachine() {
           let peerConnection: RTCPeerConnection | undefined
           let dataChannel: RTCDataChannel | undefined
           let microphoneStream: MediaStream | undefined
+          let responseStream: MediaStream | undefined
           let audioElement: HTMLAudioElement | undefined
 
           init()
@@ -601,6 +607,7 @@ function createVoiceConversationMachine() {
             peerConnection.ontrack = (event) => {
               if (audioElement) {
                 audioElement.srcObject = event.streams[0]
+                responseStream = event.streams[0]
               }
             }
 
@@ -644,6 +651,7 @@ function createVoiceConversationMachine() {
                   sendBack({
                     type: "SESSION_CREATED",
                     microphoneStream,
+                    responseStream,
                     sendClientEvent,
                   })
                   break
