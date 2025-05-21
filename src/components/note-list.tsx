@@ -297,7 +297,10 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
         onClick?.()
       }}
     >
-      <Dice number={number} className="group-hover/dice:-rotate-12" />
+      <Dice
+        number={number}
+        className="group-hover/dice:rotate-[20deg] group-active/dice:rotate-[100deg] group-hover/dice:-translate-y-0.5"
+      />
     </IconButton>
   )
 }
