@@ -1,3 +1,7 @@
+import { voiceAssistantEnabledAtom } from "../global-state"
+import { useNetworkState } from "react-use"
+import { openaiKeyAtom } from "../global-state"
+import { useAtomValue } from "jotai"
 import { Dialog } from "./dialog"
 import { Markdown } from "./markdown"
 
@@ -30,6 +34,9 @@ function Keys({ keys }: { keys: string[] }) {
 }
 
 export function CheatsheetDialog() {
+  const openaiKey = useAtomValue(openaiKeyAtom)
+  const voiceAssistantEnabled = useAtomValue(voiceAssistantEnabledAtom)
+  const { online } = useNetworkState()
   return (
     <Dialog.Content title="Cheatsheet">
       <div className="grid gap-5">
@@ -39,9 +46,15 @@ export function CheatsheetDialog() {
             <Keys keys={["⌘", "⇧", "O"]} />
           </CheatsheetItem>
           <CheatsheetItem>
-            <span>Open command menu</span>
+            <span>Toggle command menu</span>
             <Keys keys={["⌘", "K"]} />
           </CheatsheetItem>
+          {online && openaiKey && voiceAssistantEnabled && (
+            <CheatsheetItem>
+              <span>Toggle voice conversation</span>
+              <Keys keys={["⌘", "⇧", "V"]} />
+            </CheatsheetItem>
+          )}
         </CheatsheetSection>
 
         <CheatsheetSection title="Note shortcuts">
