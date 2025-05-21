@@ -71,7 +71,7 @@ export function VoiceConversationBar() {
             <IconButton
               aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
               className={cx(
-                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4",
+                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors",
                 state.matches("active.ready.mic.muted")
                   ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
                   : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
