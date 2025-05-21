@@ -81,6 +81,7 @@
     "micromark-util-types": "^1.0.2",
     "micromatch": "^4.0.5",
     "mime": "^4.0.3",
+    "motion": "^12.12.1",
     "node-emoji": "^2.1.0",
     "openai": "^4.85.1",
     "prismjs": "^1.29.0",

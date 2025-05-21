@@ -1,13 +1,13 @@
 import * as Portal from "@radix-ui/react-portal"
 import { useAtom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
+import { AnimatePresence, motion } from "motion/react"
 import type {
   RealtimeClientEvent,
   RealtimeServerEvent,
 } from "openai/resources/beta/realtime/realtime"
 import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import { useNetworkState } from "react-use"
 import { useDebouncedCallback } from "use-debounce"
 import { assign, createMachine } from "xstate"
 import { ZodSchema } from "zod"
@@ -18,16 +18,9 @@ import { cx } from "../utils/cx"
 import { notificationOffSound, notificationSound, playSound } from "../utils/sounds"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
-import { IconButton } from "./icon-button"
-import {
-  ErrorIcon16,
-  HeadphonesIcon16,
-  LoadingIcon16,
-  MicFillIcon16,
-  MicMuteFillIcon16,
-  XIcon16,
-} from "./icons"
 import { AudioVisualizer } from "./audio-visualizer"
+import { IconButton } from "./icon-button"
+import { HeadphonesIcon16, LoadingIcon16, MicFillIcon16, MicMuteFillIcon16, XIcon16 } from "./icons"
 import { toast } from "./toast"
 import voiceConversationPrompt from "./voice-conversation.prompt.md?raw"
 
@@ -64,36 +57,82 @@ export function VoiceConversationBar() {
             : "idle"
       }
     >
-      <div className="!rounded-full card-2 p-1.5 coarse:p-2 flex items-center gap-1.5 coarse:gap-2">
-        {state.matches("active.ready") ? (
-          <IconButton
-            aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
-            className={cx(
-              "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors",
-              state.matches("active.ready.mic.muted")
-                ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
-                : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
-            )}
-            onClick={() => {
-              if (state.matches("active.ready.mic.muted")) {
-                send("UNMUTE_MIC")
-              } else {
-                send("MUTE_MIC")
-              }
-            }}
-          >
-            {state.matches("active.ready.mic.muted") ? (
-              <MicMuteFillIcon16 />
-            ) : state.context.microphoneStream ? (
-              <div className="flex items-center gap-1 coarse:gap-1.5 pr-1">
-                <MicFillIcon16 />
-                <AudioVisualizer stream={state.context.microphoneStream} />
-              </div>
-            ) : (
-              <ErrorIcon16 />
-            )}
-          </IconButton>
-        ) : null}
+      <div className="!rounded-full card-2 p-1.5 coarse:p-2 flex items-center">
+        <AnimatePresence initial={false}>
+          {state.matches("active.ready") ? (
+            <motion.div
+              className="grid place-items-center"
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              initial={{ width: 0 }}
+              animate={{ width: "auto" }}
+              exit={{ width: 0, transition: { delay: 0.05, duration: 0.15, ease: "easeIn" } }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5, filter: "blur(4px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)", transition: { delay: 0.05 } }}
+                exit={{
+                  opacity: 0,
+                  scale: 0.5,
+                  filter: "blur(4px)",
+                  transition: { duration: 0.15 },
+                }}
+              >
+                <IconButton
+                  aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
+                  className={cx(
+                    "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2",
+                    state.matches("active.ready.mic.muted")
+                      ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
+                      : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
+                  )}
+                  onClick={() => {
+                    if (state.matches("active.ready.mic.muted")) {
+                      send("UNMUTE_MIC")
+                    } else {
+                      send("MUTE_MIC")
+                    }
+                  }}
+                >
+                  {state.matches("active.ready.mic.muted") ? (
+                    <MicMuteFillIcon16 />
+                  ) : (
+                    <MicFillIcon16 />
+                  )}
+
+                  <AnimatePresence initial={false}>
+                    {state.matches("active.ready.mic.unmuted") && state.context.microphoneStream ? (
+                      <motion.div
+                        className="grid place-items-center"
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        initial={{ width: 0 }}
+                        animate={{ width: "auto" }}
+                        exit={{ width: 0 }}
+                      >
+                        <motion.div
+                          className="flex px-1 coarse:px-1.5"
+                          transition={{ duration: 0.15, ease: "easeOut" }}
+                          initial={{ opacity: 0, scale: 0.5, filter: "blur(4px)" }}
+                          animate={{
+                            opacity: 1,
+                            scale: 1,
+                            filter: "blur(0px)",
+                          }}
+                          exit={{
+                            opacity: 0,
+                            scale: 0.5,
+                            filter: "blur(4px)",
+                          }}
+                        >
+                          <AudioVisualizer stream={state.context.microphoneStream} />
+                        </motion.div>
+                      </motion.div>
+                    ) : null}
+                  </AnimatePresence>
+                </IconButton>
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
         <IconButton
           aria-label={state.matches("active.ready") ? "End" : "Start conversation with AI"}
           disabled={state.matches("active.initializing")}
