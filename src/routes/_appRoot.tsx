@@ -47,6 +47,7 @@ function RouteComponent() {
   const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
   const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
   const [, sendVoiceConversation] = useAtom(voiceConversationMachineAtom)
+  const setFont = useSetAtom(fontAtom)
   const router = useRouter()
   const navigate = useNavigate()
   const { online } = useNetworkState()
@@ -199,6 +200,19 @@ function RouteComponent() {
           return JSON.stringify({ clipboardText })
         },
       } satisfies Tool<Record<string, never>>,
+      {
+        name: "change_font",
+        description:
+          "Change the font style used in notes. Available options: sans-serif (clean and modern), serif (traditional and readable), or handwriting (casual and personal).",
+        parameters: z.object({
+          font: z.enum(["sans", "serif", "handwriting"]).describe("The font style to use"),
+        }),
+        execute: async ({ font }) => {
+          setFont(font)
+          playSound(notificationSound)
+          return JSON.stringify({ success: true })
+        },
+      } satisfies Tool<{ font: "sans" | "serif" | "handwriting" }>,
       {
         name: "mute_microphone",
         description: "Mute the user's microphone when explicitly requested.",
