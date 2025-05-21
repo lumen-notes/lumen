@@ -15,7 +15,7 @@ import { zodToJsonSchema } from "zod-to-json-schema"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
 import { cx } from "../utils/cx"
-import { notificationOffSound, notificationSound } from "../utils/sounds"
+import { notificationOffSound, notificationSound, playSound } from "../utils/sounds"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 import { IconButton } from "./icon-button"
@@ -561,10 +561,10 @@ function createVoiceConversationMachine() {
           alert(event.message)
         },
         playReadySound: () => {
-          notificationSound.play()
+          playSound(notificationSound)
         },
         playEndSound: () => {
-          notificationOffSound.play()
+          playSound(notificationOffSound)
         },
       },
       services: {
