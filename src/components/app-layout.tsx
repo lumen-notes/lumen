@@ -15,6 +15,7 @@ import { AppHeader, AppHeaderProps } from "./app-header"
 import { NavBar } from "./nav-bar"
 import { Sidebar } from "./sidebar"
 import { SignInBanner } from "./sign-in-banner"
+import { VoiceConversationBar } from "./voice-conversation"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -84,9 +85,11 @@ export function AppLayout({
               ) : null}
               {isRepoCloned || isSignedOut || disableGuard ? children : null}
             </main>
-            {floatingActions ? (
-              <div className="absolute bottom-3 right-3">{floatingActions}</div>
-            ) : null}
+
+            <div className="absolute bottom-3 right-3 flex items-center gap-2 coarse:gap-3">
+              {floatingActions}
+              <VoiceConversationBar />
+            </div>
           </div>
           <div className="sm:hidden print:hidden">
             <NavBar />

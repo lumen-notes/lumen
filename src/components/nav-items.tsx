@@ -25,6 +25,7 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
+import { useRegisterSW } from "virtual:pwa-register/react"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -42,6 +43,29 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const today = new Date()
   const todayString = toDateString(today)
   const weekString = toWeekString(today)
+
+  // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW({
+    onRegistered(registration) {
+      console.log("SW registered: " + registration)
+
+      if (registration) {
+        // Check for updates every hour
+        setInterval(
+          () => {
+            registration.update()
+          },
+          60 * 60 * 1000,
+        )
+      }
+    },
+    onRegisterError(error) {
+      console.error("SW registration error", error)
+    },
+  })
 
   return (
     <SizeContext.Provider value={size}>
@@ -136,6 +160,15 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           ) : null}
         </div>
         <div className="flex flex-col gap-1">
+          {needRefresh ? (
+            <button className="nav-item" data-size={size} onClick={() => updateServiceWorker(true)}>
+              <div className="grid size-4 place-items-center [&>*]:row-span-full [&>*]:col-span-full">
+                <div className="size-3 rounded-full bg-border-focus opacity-50 animate-ping" />
+                <div className="size-2 rounded-full bg-border-focus" />
+              </div>
+              Update Lumen
+            </button>
+          ) : null}
           {!online ? (
             <div className="nav-item text-text-secondary" data-size={size}>
               <OfflineIcon16 />

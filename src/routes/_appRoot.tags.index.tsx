@@ -61,7 +61,7 @@ function RouteComponent() {
 
   return (
     <AppLayout title="Tags" icon={<TagIcon16 />}>
-      <div className="flex flex-col gap-4 p-4 pt-0">
+      <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
         <div className="flex flex-col gap-2">
           <div className="grid grid-cols-[1fr_auto_auto] gap-2">
             <SearchInput

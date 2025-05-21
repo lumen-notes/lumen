@@ -18,19 +18,16 @@ import { cx } from "../utils/cx"
 import { notificationOffSound, notificationSound } from "../utils/sounds"
 import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
-import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
+  ErrorIcon16,
   HeadphonesIcon16,
   LoadingIcon16,
   MicFillIcon16,
-  MicIcon16,
   MicMuteFillIcon16,
-  MicMuteIcon16,
-  TriangleDownIcon8,
   XIcon16,
 } from "./icons"
-import { MicVisualizer } from "./mic-visualizer"
+import { AudioVisualizer } from "./audio-visualizer"
 import { toast } from "./toast"
 import voiceConversationPrompt from "./voice-conversation.prompt.md?raw"
 
@@ -43,7 +40,7 @@ export type Tool<T> = {
 
 export const voiceConversationMachineAtom = atomWithMachine(createVoiceConversationMachine)
 
-export function VoiceConversationButton() {
+export function VoiceConversationBar() {
   const [state, send] = useAtom(voiceConversationMachineAtom)
   const { online } = useNetworkState()
 
@@ -57,48 +54,28 @@ export function VoiceConversationButton() {
     return () => window.removeEventListener("offline", handleOffline)
   }, [send])
 
-  if (state.matches("active.ready")) {
-    return (
-      <AssistantActivityIndicator
-        state={
-          state.matches("active.ready.assistant.thinking")
-            ? "thinking"
-            : state.matches("active.ready.assistant.speaking")
-              ? "speaking"
-              : "idle"
-        }
-      >
-        <DropdownMenu>
-          <DropdownMenu.Trigger asChild>
+  return (
+    <AssistantActivityIndicator
+      state={
+        state.matches("active.ready.assistant.thinking")
+          ? "thinking"
+          : state.matches("active.ready.assistant.speaking")
+            ? "speaking"
+            : "idle"
+      }
+    >
+      <div className="p-1.5 coarse:p-2 !rounded-full card-2">
+        {state.matches("active.ready") ? (
+          <div className="flex items-stretch gap-1.5 coarse:gap-2">
             <IconButton
-              size="small"
-              aria-label="Conversation actions"
-              disableTooltip
+              aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
               className={cx(
-                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full",
+                "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4",
                 state.matches("active.ready.mic.muted")
-                  ? "!bg-[var(--red-9)]"
-                  : "!bg-[var(--green-9)]",
+                  ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
+                  : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
               )}
-              disabled={state.matches("active.initializing")}
-            >
-              <div className="flex items-center gap-1.5 coarse:gap-2">
-                {state.matches("active.ready.mic.muted") ? (
-                  <MicMuteFillIcon16 />
-                ) : (
-                  <div className="flex items-center gap-1 coarse:gap-1.5">
-                    <MicFillIcon16 />
-                    <MicVisualizer />
-                  </div>
-                )}
-                <TriangleDownIcon8 />
-              </div>
-            </IconButton>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
-            <DropdownMenu.Item
-              icon={state.matches("active.ready.mic.muted") ? <MicIcon16 /> : <MicMuteIcon16 />}
-              onSelect={() => {
+              onClick={() => {
                 if (state.matches("active.ready.mic.muted")) {
                   send("UNMUTE_MIC")
                 } else {
@@ -106,28 +83,38 @@ export function VoiceConversationButton() {
                 }
               }}
             >
-              {state.matches("active.ready.mic.muted") ? "Unmute microphone" : "Mute microphone"}
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item icon={<XIcon16 />} variant="danger" onSelect={() => send("END")}>
-              End conversation
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu>
-      </AssistantActivityIndicator>
-    )
-  }
+              {state.matches("active.ready.mic.muted") ? (
+                <MicMuteFillIcon16 />
+              ) : state.context.microphoneStream ? (
+                <div className="flex items-center gap-1 coarse:gap-1.5 pr-1">
+                  <MicFillIcon16 />
+                  <AudioVisualizer stream={state.context.microphoneStream} />
+                </div>
+              ) : (
+                <ErrorIcon16 />
+              )}
+            </IconButton>
 
-  return (
-    <IconButton
-      size="small"
-      aria-label="Start conversation with AI"
-      tooltipAlign="end"
-      disabled={!online || state.matches("active.initializing")}
-      onClick={() => send("START")}
-    >
-      {state.matches("active.initializing") ? <LoadingIcon16 /> : <HeadphonesIcon16 />}
-    </IconButton>
+            <IconButton
+              aria-label="End"
+              className="rounded-full coarse:size-12"
+              onClick={() => send("END")}
+            >
+              <XIcon16 />
+            </IconButton>
+          </div>
+        ) : (
+          <IconButton
+            aria-label="Start conversation with AI"
+            disabled={!online || state.matches("active.initializing")}
+            className="rounded-full coarse:size-12"
+            onClick={() => send("START")}
+          >
+            {state.matches("active.initializing") ? <LoadingIcon16 /> : <HeadphonesIcon16 />}
+          </IconButton>
+        )}
+      </div>
+    </AssistantActivityIndicator>
   )
 }
 

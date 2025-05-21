@@ -1,7 +1,7 @@
 import React from "react"
 
 // Visualization settings
-const BAR_COUNT = 3 // Number of bars in the visualization
+const BAR_COUNT = 4 // Number of bars in the visualization
 const MIN_BAR_HEIGHT = 3 // Minimum height of each bar in pixels
 const MAX_BAR_HEIGHT = 16 // Maximum height of each bar in pixels
 const BAR_WIDTH = 3 // Width of each bar in pixels
@@ -12,19 +12,25 @@ const SMOOTHING_TIME_CONSTANT = 0.8 // Smoothing factor for the visualization (0
 const DEFAULT_SAMPLE_RATE = 44100 // Default audio sample rate in Hz
 
 // Frequency ranges for each bar (in Hz)
-const FREQUENCY_RANGES = [
-  [0, 400], // Bass frequencies
-  [400, 1600], // Mid frequencies
-  [1600, 4000], // High frequencies
-] as const
+const FREQUENCY_RANGES = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const minFreq = 0
+  const maxFreq = 4000
+  const step = (maxFreq - minFreq) / BAR_COUNT
+  const low = minFreq + step * i
+  const high = minFreq + step * (i + 1)
+  return [low, high] // Each bar gets an equal frequency range slice
+})
 
-export function MicVisualizer() {
+interface AudioVisualizerProps {
+  stream: MediaStream
+}
+
+export function AudioVisualizer({ stream }: AudioVisualizerProps) {
   const [levels, setLevels] = React.useState<number[]>(Array(BAR_COUNT).fill(0))
 
   React.useEffect(() => {
     let audioContext: AudioContext | null = null
     let analyser: AnalyserNode | null = null
-    let stream: MediaStream | null = null
     let source: MediaStreamAudioSourceNode | null = null
     let animationFrameId: number
 
@@ -36,8 +42,7 @@ export function MicVisualizer() {
         analyser.fftSize = FFT_SIZE
         analyser.smoothingTimeConstant = SMOOTHING_TIME_CONSTANT
 
-        // Get microphone access and connect to analyzer
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        // Connect provided stream to analyzer
         source = audioContext.createMediaStreamSource(stream)
         source.connect(analyser)
         updateLevels(analyser)
@@ -86,11 +91,8 @@ export function MicVisualizer() {
       if (audioContext) {
         audioContext.close()
       }
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop())
-      }
     }
-  }, [])
+  }, [stream])
 
   return (
     <div className="flex gap-0.5 items-center">

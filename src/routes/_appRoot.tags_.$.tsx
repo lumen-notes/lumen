@@ -92,7 +92,7 @@ function RouteComponent() {
         </DropdownMenu>
       }
     >
-      <div className="p-4 pt-0">
+      <div className="px-4 pt-0 pb-[50vh]">
         <LinkHighlightProvider href={`/tags/${tag}`}>
           <NoteList
             key={tag}

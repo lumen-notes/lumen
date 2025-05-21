@@ -676,14 +676,14 @@ function NotePage() {
         </div>
       }
       floatingActions={
-        <div className="card-2 flex gap-2 !rounded-full p-2 sm:hidden print:hidden">
+        <div className="card-2 flex gap-1.5 coarse:gap-2 !rounded-full p-1.5 coarse:p-2 sm:hidden print:hidden">
           {(!note && editorValue) || isDirty ? (
             <Button
               disabled={isSignedOut}
               variant="primary"
               shortcut={["⌘", "S"]}
               onClick={() => handleSave(editorValue)}
-              className="!h-12 rounded-full !px-6"
+              className="coarse:h-12 rounded-full coarse:px-6"
             >
               Save
             </Button>
@@ -698,10 +698,10 @@ function NotePage() {
               }
             }}
             className={cx(
-              "relative h-12 w-[72px] cursor-pointer rounded-full bg-bg-secondary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-tertiary",
+              "relative h-8 coarse:h-12 w-[56px] coarse:w-[72px] cursor-pointer rounded-full bg-bg-secondary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-tertiary",
             )}
           >
-            <RadixSwitch.Thumb className="pointer-events-none grid h-12 w-12 translate-x-0 place-items-center rounded-full border border-border bg-bg-overlay text-text-secondary transition-transform will-change-transform data-[state=checked]:translate-x-[24px] data-[state=checked]:border-border-focus">
+            <RadixSwitch.Thumb className="pointer-events-none grid size-8 coarse:size-12 translate-x-0 place-items-center rounded-full border border-border bg-bg-overlay text-text-secondary transition-transform will-change-transform data-[state=checked]:translate-x-[24px] data-[state=checked]:border-border-focus">
               <EditIcon16 />
             </RadixSwitch.Thumb>
           </RadixSwitch.Root>

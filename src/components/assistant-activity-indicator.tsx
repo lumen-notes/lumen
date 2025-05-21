@@ -6,6 +6,9 @@ export type AssistantActivityIndicatorProps = {
   children: React.ReactNode
 }
 
+const GAP = 3
+const STROKE_LENGTH = 36
+
 export function AssistantActivityIndicator({
   children,
   state = "idle",
@@ -13,22 +16,20 @@ export function AssistantActivityIndicator({
   const [ref, bounds] = useMeasure<HTMLDivElement>()
 
   const { radius, perimeter } = React.useMemo(() => {
-    const width = bounds.width + 4
-    const height = bounds.height + 4
+    const width = bounds.width + GAP * 2
+    const height = bounds.height + GAP * 2
     const radius = height / 2
     // Calculate the perimeter of the rectangle, accounting for the rounded corners
     const perimeter = (width - 2 * radius) * 2 + (height - 2 * radius) * 2 + 2 * Math.PI * radius
     return { radius, perimeter }
   }, [bounds])
 
-  const strokeLength = 36
-
   return (
     <div ref={ref} className="relative flex">
       {state !== "idle" ? (
         <svg
-          className="pointer-events-none absolute -inset-0.5 z-10 h-[calc(100%+4px)] w-[calc(100%+4px)] overflow-visible text-border"
-          style={{ "--perimeter": `${perimeter}px` } as React.CSSProperties}
+          className="pointer-events-none absolute -inset-[var(--gap)] z-10 h-[calc(100%+var(--gap)*2)] w-[calc(100%+var(--gap)*2)] overflow-visible text-border"
+          style={{ "--perimeter": `${perimeter}px`, "--gap": `${GAP}px` } as React.CSSProperties}
         >
           <rect
             className="spin-stroke"
@@ -42,7 +43,7 @@ export function AssistantActivityIndicator({
             strokeLinecap="round"
             rx={radius}
             strokeDasharray={
-              state === "thinking" ? `${strokeLength} ${perimeter - strokeLength}` : "0 0"
+              state === "thinking" ? `${STROKE_LENGTH} ${perimeter - STROKE_LENGTH}` : "0 0"
             }
           />
         </svg>

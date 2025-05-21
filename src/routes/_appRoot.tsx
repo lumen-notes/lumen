@@ -1,14 +1,12 @@
 import { createFileRoute, Outlet, useNavigate, useRouter } from "@tanstack/react-router"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { useEvent, useNetworkState } from "react-use"
-import { Toaster } from "sonner"
 import { z } from "zod"
 import { CommandMenu } from "../components/command-menu"
 import { DevBar } from "../components/dev-bar"
 import { ErrorIcon16 } from "../components/icons"
-import { UpdateToast } from "../components/update-toast"
 import {
   FloatingConversationInput,
   Tool,
@@ -48,7 +46,7 @@ function RouteComponent() {
   const getNotes = useAtomCallback(React.useCallback((get) => get(notesAtom), []))
   const getTemplates = useAtomCallback(React.useCallback((get) => get(templatesAtom), []))
   const getTags = useAtomCallback(React.useCallback((get) => get(tagsAtom), []))
-  const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
+  const [, sendVoiceConversation] = useAtom(voiceConversationMachineAtom)
   const router = useRouter()
   const navigate = useNavigate()
   const { online } = useNetworkState()
@@ -295,9 +293,8 @@ function RouteComponent() {
         <Outlet />
       </div>
       <FloatingConversationInput />
-      <UpdateToast />
       <CommandMenu />
-      <Toaster toastOptions={{ duration: 2000 }} />
+      {/* <Toaster toastOptions={{ duration: 2000 }} /> */}
       <DevBar />
     </div>
   )
