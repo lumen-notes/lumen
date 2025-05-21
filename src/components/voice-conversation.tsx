@@ -65,7 +65,7 @@ export function VoiceConversationBar() {
               transition={{ duration: 0.15, ease: "easeOut" }}
               initial={{ width: 0 }}
               animate={{ width: "auto" }}
-              exit={{ width: 0, transition: { delay: 0.05, duration: 0.15, ease: "easeIn" } }}
+              exit={{ width: 0 }}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, filter: "blur(4px)" }}
@@ -74,7 +74,7 @@ export function VoiceConversationBar() {
                   opacity: 0,
                   scale: 0.5,
                   filter: "blur(4px)",
-                  transition: { duration: 0.15 },
+                  transition: { duration: 0.1 },
                 }}
               >
                 <IconButton
