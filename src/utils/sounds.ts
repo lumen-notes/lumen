@@ -17,7 +17,7 @@ export function playSound(sound: Howl) {
 
 export const notificationSound = new Howl({
   src: "/sounds/notification.mp3",
-  html5: true, // This helps with Safari PWA compatibility
+  preload: false,
   onloaderror: (id, error) => {
     console.warn("Failed to load notification sound:", error)
   },
@@ -25,7 +25,7 @@ export const notificationSound = new Howl({
 
 export const notificationOffSound = new Howl({
   src: "/sounds/notification-off.mp3",
-  html5: true, // This helps with Safari PWA compatibility
+  preload: false,
   onloaderror: (id, error) => {
     console.warn("Failed to load notification off sound:", error)
   },
