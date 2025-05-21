@@ -1,5 +1,6 @@
 import React from "react"
-import { useMeasure } from "react-use"
+// import { useMeasure } from "react-use"
+import { cx } from "../utils/cx"
 
 export type AssistantActivityIndicatorProps = {
   state: "idle" | "thinking" | "speaking"
@@ -8,8 +9,8 @@ export type AssistantActivityIndicatorProps = {
 }
 
 // Spinner settings
-const GAP = 3
-const STROKE_LENGTH = 48
+// const GAP = 3
+// const STROKE_LENGTH = 48
 
 // Audio analysis settings
 const FFT_SIZE = 256 // Size of the FFT (Fast Fourier Transform) for frequency analysis
@@ -21,16 +22,16 @@ export function AssistantActivityIndicator({
   state = "idle",
   stream,
 }: AssistantActivityIndicatorProps) {
-  const [ref, bounds] = useMeasure<HTMLDivElement>()
+  // const [ref, bounds] = useMeasure<HTMLDivElement>()
 
-  const { radius, perimeter } = React.useMemo(() => {
-    const width = bounds.width + GAP * 2
-    const height = bounds.height + GAP * 2
-    const radius = height / 2
-    // Calculate the perimeter of the rectangle, accounting for the rounded corners
-    const perimeter = (width - 2 * radius) * 2 + (height - 2 * radius) * 2 + 2 * Math.PI * radius
-    return { radius, perimeter }
-  }, [bounds])
+  // const { radius, perimeter } = React.useMemo(() => {
+  //   const width = bounds.width + GAP * 2
+  //   const height = bounds.height + GAP * 2
+  //   const radius = height / 2
+  //   // Calculate the perimeter of the rectangle, accounting for the rounded corners
+  //   const perimeter = (width - 2 * radius) * 2 + (height - 2 * radius) * 2 + 2 * Math.PI * radius
+  //   return { radius, perimeter }
+  // }, [bounds])
 
   const [volume, setVolume] = React.useState(0)
 
@@ -91,8 +92,11 @@ export function AssistantActivityIndicator({
   }, [stream])
 
   return (
-    <div ref={ref} className="relative flex">
-      {state === "thinking" ? (
+    <div
+      // ref={ref}
+      className="relative flex"
+    >
+      {/* {state === "thinking" ? (
         <svg
           className="pointer-events-none absolute -inset-[var(--gap)] z-10 h-[calc(100%+var(--gap)*2)] w-[calc(100%+var(--gap)*2)] overflow-visible text-border"
           style={{ "--perimeter": `${perimeter}px`, "--gap": `${GAP}px` } as React.CSSProperties}
@@ -111,10 +115,13 @@ export function AssistantActivityIndicator({
             strokeDasharray={`${STROKE_LENGTH} ${perimeter - STROKE_LENGTH}`}
           />
         </svg>
-      ) : null}
-      {state === "speaking" ? (
+      ) : null} */}
+      {state === "thinking" || state === "speaking" ? (
         <div
-          className="pointer-events-none absolute inset-0 ring-[calc(2px+10px*var(--volume))] ring-[var(--neutral-a4)] eink:ring-text rounded-full"
+          className={cx(
+            "pointer-events-none absolute inset-0 ring-[calc(3px+9px*var(--volume))] ring-[var(--neutral-a4)] eink:ring-text rounded-full",
+            state === "thinking" && "animate-pulse eink:animate-none",
+          )}
           style={
             {
               "--volume": volume,
