@@ -46,6 +46,38 @@ export function VoiceConversationBar() {
     return () => window.removeEventListener("offline", handleOffline)
   }, [send])
 
+  useHotkeys(
+    "mod+shift+v",
+    () => {
+      if (state.matches("active")) {
+        send("END")
+      } else {
+        send("START")
+      }
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
+
+  useHotkeys(
+    "mod+shift+m",
+    () => {
+      if (state.matches("active.ready.mic.muted")) {
+        send("UNMUTE_MIC")
+      } else {
+        send("MUTE_MIC")
+      }
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
+
   return (
     <AssistantActivityIndicator
       stream={state.context.responseStream}
@@ -79,8 +111,9 @@ export function VoiceConversationBar() {
               >
                 <IconButton
                   aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
+                  shortcut={["⌘", "⇧", "M"]}
                   className={cx(
-                    "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2",
+                    "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2 overflow-hidden",
                     state.matches("active.ready.mic.muted")
                       ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
                       : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
@@ -135,6 +168,7 @@ export function VoiceConversationBar() {
         </AnimatePresence>
         <IconButton
           aria-label={state.matches("active.ready") ? "End" : "Start conversation with AI"}
+          shortcut={["⌘", "⇧", "V"]}
           disabled={state.matches("active.initializing")}
           className="rounded-full coarse:size-12"
           onClick={() => {
