@@ -1,142 +1,76 @@
-import git from "isomorphic-git"
-import http from "isomorphic-git/http/web"
-import { GitHubRepository, GitHubUser } from "../schema"
-import { fs, fsWipe } from "./fs"
-import { startTimer } from "./timer"
+import { GitHubRepository, GitHubUser } from "../schema";
 
-export const REPO_DIR = "/repo"
-const DEFAULT_BRANCH = "main"
+// Initialize the worker
+const worker = new Worker(new URL("../workers/git-worker.ts", import.meta.url), { type: "module" });
 
-export async function gitClone(repo: GitHubRepository, user: GitHubUser) {
-  const options: Parameters<typeof git.clone>[0] = {
-    fs,
-    http,
-    dir: REPO_DIR,
-    // corsProxy: "https://cors.isomorphic-git.org",
-    corsProxy: "/cors-proxy",
-    url: `https://github.com/${repo.owner}/${repo.name}`,
-    ref: DEFAULT_BRANCH,
-    singleBranch: true,
-    depth: 1,
-    onMessage: (message) => console.debug("onMessage", message),
-    onProgress: (progress) => console.debug("onProgress", progress),
-    onAuth: () => ({ username: user.login, password: user.token }),
-  }
+// REPO_DIR and DEFAULT_BRANCH are no longer needed here, they are managed by the worker.
+// fsWipe is also handled by the worker for the gitClone operation.
+// startTimer calls are removed as timing is handled by the worker or not at all.
 
-  // Wipe file system
-  // TODO: Only remove the repo directory instead of wiping the entire file system
-  // Blocked by https://github.com/isomorphic-git/lightning-fs/issues/71
-  fsWipe()
+function createWorkerPromise<T>(operation: string, payload: any): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const messageListener = (event: MessageEvent) => {
+      if (event.data.operation === operation) {
+        if (event.data.status === "success") {
+          resolve(event.data.data as T);
+        } else {
+          reject(new Error(event.data.error));
+        }
+        worker.removeEventListener("message", messageListener);
+        worker.removeEventListener("error", errorListener);
+      }
+    };
 
-  // Clone repo
-  let stopTimer = startTimer(`git clone ${options.url} ${options.dir}`)
-  await git.clone(options)
-  stopTimer()
+    const errorListener = (event: ErrorEvent) => {
+      // This handles general worker errors, not specific operation errors from postMessage
+      // Specific operation errors are expected to come via the 'message' event with status: "error"
+      if (event.message.includes("Unknown operation") && event.filename.includes("git-worker")) {
+        // This is likely an error from the worker's onmessage handler itself, for an unknown operation
+        // We tie it to the current operation if no specific message has been received yet.
+         reject(new Error(`Worker error for operation ${operation}: ${event.message}`));
+      } else {
+        // Generic worker error not tied to a specific operation response
+        reject(new Error(`Generic worker error: ${event.message}`));
+      }
+      worker.removeEventListener("message", messageListener);
+      worker.removeEventListener("error", errorListener);
+    };
 
-  // Set user in git config
-  stopTimer = startTimer(`git config user.name "${user.name}"`)
-  await git.setConfig({ fs, dir: REPO_DIR, path: "user.name", value: user.name })
-  stopTimer()
+    worker.addEventListener("message", messageListener);
+    worker.addEventListener("error", errorListener);
 
-  // Set email in git config
-  stopTimer = startTimer(`git config user.email "${user.email}"`)
-  await git.setConfig({ fs, dir: REPO_DIR, path: "user.email", value: user.email })
-  stopTimer()
+    worker.postMessage({ operation, payload });
+  });
 }
 
-export async function gitPull(user: GitHubUser) {
-  const options: Parameters<typeof git.pull>[0] = {
-    fs,
-    http,
-    dir: REPO_DIR,
-    singleBranch: true,
-    onMessage: (message) => console.debug("onMessage", message),
-    onProgress: (progress) => console.debug("onProgress", progress),
-    onAuth: () => ({ username: user.login, password: user.token }),
-  }
-
-  const stopTimer = startTimer("git pull")
-  await git.pull(options)
-  stopTimer()
+export function gitClone(repo: GitHubRepository, user: GitHubUser): Promise<string> {
+  return createWorkerPromise<string>("gitClone", { repo, user });
 }
 
-export async function gitPush(user: GitHubUser) {
-  const options: Parameters<typeof git.push>[0] = {
-    fs,
-    http,
-    dir: REPO_DIR,
-    onMessage: (message) => console.debug("onMessage", message),
-    onProgress: (progress) => console.debug("onProgress", progress),
-    onAuth: () => ({ username: user.login, password: user.token }),
-  }
-
-  const stopTimer = startTimer("git push")
-  await git.push(options)
-  stopTimer()
+export function gitPull(user: GitHubUser): Promise<string> {
+  return createWorkerPromise<string>("gitPull", { user });
 }
 
-export async function gitAdd(filePaths: string[]) {
-  const options: Parameters<typeof git.add>[0] = {
-    fs,
-    dir: REPO_DIR,
-    filepath: filePaths,
-  }
-
-  const stopTimer = startTimer(`git add ${filePaths.join(" ")}`)
-  await git.add(options)
-  stopTimer()
+export function gitPush(user: GitHubUser): Promise<string> {
+  return createWorkerPromise<string>("gitPush", { user });
 }
 
-export async function gitRemove(filePath: string) {
-  const options: Parameters<typeof git.remove>[0] = {
-    fs,
-    dir: REPO_DIR,
-    filepath: filePath,
-  }
-
-  const stopTimer = startTimer(`git remove ${filePath}`)
-  await git.remove(options)
-  stopTimer()
+export function gitAdd(filePaths: string[]): Promise<string> {
+  return createWorkerPromise<string>("gitAdd", { filePaths });
 }
 
-export async function gitCommit(message: string) {
-  const options: Parameters<typeof git.commit>[0] = {
-    fs,
-    dir: REPO_DIR,
-    message,
-  }
-
-  const stopTimer = startTimer(`git commit -m "${message}"`)
-  await git.commit(options)
-  stopTimer()
+export function gitRemove(filePath: string): Promise<string> {
+  return createWorkerPromise<string>("gitRemove", { filePath });
 }
 
-/** Check if the repo is synced with the remote origin */
-export async function isRepoSynced() {
-  const latestLocalCommit = await git.resolveRef({
-    fs,
-    dir: REPO_DIR,
-    ref: `refs/heads/${DEFAULT_BRANCH}`,
-  })
-
-  const latestRemoteCommit = await git.resolveRef({
-    fs,
-    dir: REPO_DIR,
-    ref: `refs/remotes/origin/${DEFAULT_BRANCH}`,
-  })
-
-  const isSynced = latestLocalCommit === latestRemoteCommit
-
-  return isSynced
+export function gitCommit(message: string): Promise<string> {
+  return createWorkerPromise<string>("gitCommit", { message });
 }
 
-export async function getRemoteOriginUrl() {
-  // Check git config for remote origin url
-  const remoteOriginUrl = await git.getConfig({
-    fs,
-    dir: REPO_DIR,
-    path: "remote.origin.url",
-  })
+export function isRepoSynced(): Promise<boolean> {
+  return createWorkerPromise<boolean>("isRepoSynced", {});
+}
 
-  return remoteOriginUrl
+export function getRemoteOriginUrl(): Promise<string> {
+  return createWorkerPromise<string>("getRemoteOriginUrl", {});
 }
