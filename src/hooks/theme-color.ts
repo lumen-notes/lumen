@@ -4,7 +4,7 @@ import { themeAtom } from "../global-state"
 
 export const THEME_COLOR_VAR = "--color-bg"
 
-/** Dyanmically change the theme color */
+/** Dynamically change the theme color */
 export function useThemeColor() {
   const theme = useAtomValue(themeAtom)
 
