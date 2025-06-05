@@ -29,7 +29,7 @@ Here's how you could use EJS to include the current date in our Book template:
 ```
 ---
 template:
-  name Book
+  name: Book
 author:
 isbn:
 recommended_by:
