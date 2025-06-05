@@ -342,8 +342,7 @@ function createVoiceConversationMachine() {
   return createMachine(
     {
       id: "voiceConversation",
-      tsTypes: {} as import("./voice-conversation.typegen").Typegen0,
-      schema: {} as {
+      types: {} as {
         events: VoiceConversationEvent
         context: VoiceConversationContext
       },

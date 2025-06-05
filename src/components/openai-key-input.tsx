@@ -12,8 +12,7 @@ const openaiKeyValidationMachineAtom = atomWithMachine(() =>
   createMachine(
     {
       id: "openaiKeyValidation",
-      tsTypes: {} as import("./openai-key-input.typegen").Typegen0,
-      schema: {} as {
+      types: {} as {
         events: { type: "CHANGE"; openaiKey: string } | { type: "RESTART" }
         services: {
           initialize: {
