@@ -20,6 +20,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
+import { ellipsisExtension } from "../codemirror-extensions/ellipsis"
 import { headingExtension } from "../codemirror-extensions/heading"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
 import { pasteExtension } from "../codemirror-extensions/paste"
@@ -147,6 +148,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           icons: false,
         }),
         frontmatterExtension(),
+        ellipsisExtension(),
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
