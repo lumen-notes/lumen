@@ -1,4 +1,3 @@
-import { TooltipContentProps } from "@radix-ui/react-tooltip"
 import React from "react"
 import { cx } from "../utils/cx"
 import { Keys } from "./keys"
@@ -9,8 +8,8 @@ export type IconButtonProps = React.ComponentPropsWithoutRef<"button"> & {
   "aria-label": string // Required for accessibility
   size?: "small" | "medium"
   shortcut?: string[]
-  tooltipSide?: TooltipContentProps["side"]
-  tooltipAlign?: TooltipContentProps["align"]
+  tooltipSide?: "top" | "bottom" | "left" | "right"
+  tooltipAlign?: "start" | "center" | "end"
   disableTooltip?: boolean
   asChild?: boolean
 }
