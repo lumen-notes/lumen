@@ -27,8 +27,8 @@ export type Note = {
   title: string
   /** If the title contains a link (e.g. `# [title](url)`), we use that as the url */
   url: string | null
-  /** The alias to use when linking to this note, from _link_alias frontmatter */
-  linkAlias: string | null
+  /** The alias to use when linking to this note, from alias frontmatter */
+  alias: string | null
   /** If the note is pinned */
   pinned: boolean
   /** The ids of all notes that are linked to from this note */

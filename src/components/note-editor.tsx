@@ -392,7 +392,7 @@ function useNoteCompletion() {
       }
 
       const options = searchResults.slice(0, 5).map((note): Completion => {
-        const linkText = note.linkAlias || note.displayName
+        const linkText = note.alias || note.displayName
         return {
           label: note.displayName,
           detail: linkText !== note.displayName ? linkText : undefined,

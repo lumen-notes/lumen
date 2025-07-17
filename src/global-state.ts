@@ -647,7 +647,7 @@ export const noteSearcherAtom = atom((get) => {
       note.displayName,
       note.content,
       note.id,
-      note.linkAlias || "",
+      note.alias || "",
     ],
     threshold: 0.8,
   })
