@@ -1,16 +1,17 @@
 import { request } from "@octokit/request"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { formatDistance } from "date-fns"
 import { useAtomValue } from "jotai"
 import React from "react"
+import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { EditIcon16 } from "../components/icons"
+import { EditIcon16, ExternalLinkIcon16, MoreIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { fontSchema } from "../schema"
-import { parseNote } from "../utils/parse-note"
 import { getLeadingEmoji, removeLeadingEmoji } from "../utils/emoji"
+import { parseNote } from "../utils/parse-note"
 
 export const Route = createFileRoute("/share/$gistId")({
   component: RouteComponent,
@@ -73,6 +74,7 @@ function RouteComponent() {
   const { gist, note } = Route.useLoaderData()
   const githubUser = useAtomValue(githubUserAtom)
   const userNote = useNoteById(note?.id) // Check if the note is owned by the user
+  const navigate = useNavigate()
 
   const content = React.useMemo(() => {
     let content = note?.content ?? ""
@@ -128,17 +130,37 @@ function RouteComponent() {
               ) : null}
             </span>
           </div>
-          {githubUser && userNote ? (
-            <IconButton aria-label="Edit in Lumen" asChild>
-              <Link
-                to="/notes/$"
-                params={{ _splat: userNote.id }}
-                search={{ mode: "write", query: undefined, view: "grid" }}
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild>
+              <IconButton aria-label="Options" disableTooltip>
+                <MoreIcon16 />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content align="end">
+              {githubUser && userNote ? (
+                <DropdownMenu.Item
+                  icon={<EditIcon16 />}
+                  onClick={() => {
+                    navigate({
+                      to: "/notes/$",
+                      params: { _splat: userNote.id },
+                      search: { mode: "write", query: undefined, view: "grid" },
+                    })
+                  }}
+                >
+                  Edit in Lumen
+                </DropdownMenu.Item>
+              ) : null}
+              <DropdownMenu.Item
+                icon={<ExternalLinkIcon16 />}
+                href={gist.html_url}
+                target="_blank"
+                rel="noreferrer noopener"
               >
-                <EditIcon16 />
-              </Link>
-            </IconButton>
-          ) : null}
+                Open gist
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu>
         </div>
         <div
           className="flex flex-col gap-2"
