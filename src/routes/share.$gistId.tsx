@@ -143,7 +143,10 @@ function RouteComponent() {
         <div
           className="flex flex-col gap-2"
           style={
-            { "--font-family-content": `var(--font-family-${resolvedFont})` } as React.CSSProperties
+            {
+              "--font-family-content": `var(--font-family-${resolvedFont})`,
+              "--font-family-mono": `var(--font-family-${resolvedFont}-mono)`,
+            } as React.CSSProperties
           }
         >
           <Markdown hideFrontmatter>{content}</Markdown>

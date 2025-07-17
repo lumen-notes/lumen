@@ -203,6 +203,10 @@ function NotePage() {
       "--font-family-content",
       `var(--font-family-${resolvedFont})`,
     )
+    document.documentElement.style.setProperty(
+      "--font-family-mono",
+      `var(--font-family-${resolvedFont}-mono)`,
+    )
   }, [resolvedFont])
 
   // Layout

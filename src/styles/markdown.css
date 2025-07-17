@@ -55,6 +55,7 @@
 }
 
 .markdown code {
+  font-family: var(--font-family-mono);
   border-radius: var(--border-radius-sm);
   background-color: var(--color-bg-secondary);
   padding-inline: calc(var(--font-size-base) * 0.25);

@@ -60,7 +60,10 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
         className,
       )}
       style={
-        { "--font-family-content": `var(--font-family-${resolvedFont})` } as React.CSSProperties
+        {
+          "--font-family-content": `var(--font-family-${resolvedFont})`,
+          "--font-family-mono": `var(--font-family-${resolvedFont}-mono)`,
+        } as React.CSSProperties
       }
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
