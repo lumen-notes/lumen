@@ -122,16 +122,6 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                 Tags
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to="/settings"
-                search={{ query: undefined }}
-                activeIcon={<SettingsFillIcon16 />}
-                icon={<SettingsIcon16 />}
-              >
-                Settings
-              </NavLink>
-            </li>
           </ul>
           {pinnedNotes.length > 0 ? (
             <div className="flex flex-col gap-1">
@@ -185,6 +175,15 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
               {syncText}
             </button>
           ) : null}
+          <NavLink
+            to="/settings"
+            search={{ query: undefined }}
+            activeIcon={<SettingsFillIcon16 />}
+            icon={<SettingsIcon16 />}
+            className="text-text-secondary"
+          >
+            Settings
+          </NavLink>
           <Dialog>
             <Dialog.Trigger className="nav-item text-text-secondary" data-size={size}>
               <BookIcon16 />
