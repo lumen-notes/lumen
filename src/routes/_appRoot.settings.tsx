@@ -12,7 +12,7 @@ import { RadioGroup } from "../components/radio-group"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
-  fontAtom,
+  defaultFontAtom,
   githubRepoAtom,
   githubUserAtom,
   hasOpenAIKeyAtom,
@@ -23,6 +23,7 @@ import {
   voiceAssistantEnabledAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
+import { Font } from "../schema"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
@@ -184,15 +185,15 @@ function ThemeSection() {
 }
 
 function FontSection() {
-  const [font, setFont] = useAtom(fontAtom)
+  const [defaultFont, setDefaultFont] = useAtom(defaultFontAtom)
 
   return (
-    <SettingsSection title="Font">
+    <SettingsSection title="Default font">
       <RadioGroup
         aria-labelledby="font-label"
-        value={font}
+        value={defaultFont}
         defaultValue="sans"
-        onValueChange={(value) => setFont(value as "sans" | "serif")}
+        onValueChange={(value) => setDefaultFont(value as Font)}
         className="flex flex-col gap-3 coarse:gap-4"
         name="font"
       >

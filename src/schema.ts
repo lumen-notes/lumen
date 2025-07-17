@@ -75,3 +75,7 @@ export const templateSchema = z.object({
 })
 
 export type Template = z.infer<typeof templateSchema>
+
+export const fontSchema = z.enum(["sans", "serif", "handwriting"])
+
+export type Font = z.infer<typeof fontSchema>

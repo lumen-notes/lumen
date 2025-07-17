@@ -6,6 +6,7 @@ import { atomWithStorage, selectAtom } from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
+  Font,
   GitHubRepository,
   GitHubUser,
   Note,
@@ -752,7 +753,7 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 
 export const themeAtom = atomWithStorage<"default" | "eink">("theme", "default")
 
-export const fontAtom = atomWithStorage<"sans" | "serif" | "handwriting">("font", "sans")
+export const defaultFontAtom = atomWithStorage<Font>("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 

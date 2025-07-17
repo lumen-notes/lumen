@@ -8,6 +8,7 @@ import { EditIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
+import { fontSchema } from "../schema"
 import { parseNote } from "../utils/parse-note"
 import { getLeadingEmoji, removeLeadingEmoji } from "../utils/emoji"
 
@@ -83,6 +84,14 @@ function RouteComponent() {
     return content
   }, [gist?.description, note?.title, note?.content])
 
+  // Resolve font (frontmatter font or default)
+  const resolvedFont = React.useMemo(() => {
+    const frontmatterFont = note?.frontmatter?.font
+    const parseResult = fontSchema.safeParse(frontmatterFont)
+    const parsedFont = parseResult.success ? parseResult.data : null
+    return parsedFont || "serif" // Default to serif for published notes
+  }, [note?.frontmatter?.font])
+
   if (!gist || !note) {
     return (
       <div className="w-full h-[100svh] grid place-content-center text-text-secondary">
@@ -133,7 +142,9 @@ function RouteComponent() {
         </div>
         <div
           className="flex flex-col gap-2"
-          style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
+          style={
+            { "--font-family-content": `var(--font-family-${resolvedFont})` } as React.CSSProperties
+          }
         >
           <Markdown hideFrontmatter>{content}</Markdown>
         </div>

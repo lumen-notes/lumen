@@ -1,10 +1,12 @@
+import { useAtomValue } from "jotai"
 import { useMemo } from "react"
-import { Note } from "../schema"
+import { defaultFontAtom } from "../global-state"
+import { Note, fontSchema } from "../schema"
 import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
+import { GlobeIcon16 } from "./icons"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
-import { GlobeIcon16 } from "./icons"
 
 const NUM_VISIBLE_TAGS = 4
 
@@ -16,6 +18,15 @@ type NotePreviewProps = {
 
 export function NotePreview({ note, className, hideProperties }: NotePreviewProps) {
   const highlightedHrefs = useLinkHighlight()
+  const defaultFont = useAtomValue(defaultFontAtom)
+
+  // Resolve note font (frontmatter font or default)
+  const resolvedFont = useMemo(() => {
+    const frontmatterFont = note.frontmatter?.font
+    const parseResult = fontSchema.safeParse(frontmatterFont)
+    const parsedFont = parseResult.success ? parseResult.data : null
+    return parsedFont || defaultFont
+  }, [note.frontmatter?.font, defaultFont])
 
   const frontmatterTags = useMemo(() => {
     const tagsArray =
@@ -48,6 +59,9 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
         "flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-4 [contain:layout_paint]",
         className,
       )}
+      style={
+        { "--font-family-content": `var(--font-family-${resolvedFont})` } as React.CSSProperties
+      }
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className={cx("mb-1 flex items-baseline gap-2.5 font-content")}>

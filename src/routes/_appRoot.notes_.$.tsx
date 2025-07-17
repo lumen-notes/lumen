@@ -48,7 +48,7 @@ import { ShareDialog } from "../components/share-dialog"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
   dailyTemplateAtom,
-  fontAtom,
+  defaultFontAtom,
   githubRepoAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
@@ -61,7 +61,7 @@ import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
-import { GitHubRepository, Note, NoteId, Template } from "../schema"
+import { Font, GitHubRepository, Note, NoteId, Template, fontSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -140,6 +140,12 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
   return text
 }
 
+const fontDisplayNames: Record<Font, string> = {
+  sans: "Sans serif",
+  serif: "Serif",
+  handwriting: "Handwriting",
+}
+
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
@@ -152,7 +158,7 @@ function NotePage() {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const [width, setWidth] = useAtom(widthAtom)
-  const [font, setFont] = useAtom(fontAtom)
+  const defaultFont = useAtomValue(defaultFontAtom)
   const { online } = useNetworkState()
 
   // Note data
@@ -185,6 +191,20 @@ function NotePage() {
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
 
+  // Resolve font (frontmatter font or default)
+  const frontmatterFont = parsedNote?.frontmatter?.font
+  const parseResult = fontSchema.safeParse(frontmatterFont)
+  const parsedFont = parseResult.success ? parseResult.data : null
+  const resolvedFont = parsedFont || defaultFont
+
+  // Set the font
+  React.useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--font-family-content",
+      `var(--font-family-${resolvedFont})`,
+    )
+  }, [resolvedFont])
+
   // Layout
   const { ref: containerRef, width: containerWidth = 0 } = useResizeObserver()
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false)
@@ -209,6 +229,21 @@ function NotePage() {
       clearDraft()
     },
     [isSignedOut, noteId, note, saveNote, clearDraft],
+  )
+
+  const updateFont = React.useCallback(
+    (font: Font | null) => {
+      if (!noteId) return
+
+      const newContent = updateFrontmatter({
+        content: editorValue,
+        properties: { font },
+      })
+
+      setEditorValue(newContent)
+      handleSave(newContent)
+    },
+    [noteId, editorValue, setEditorValue, handleSave],
   )
 
   const switchToWriting = React.useCallback(() => {
@@ -535,29 +570,27 @@ function NotePage() {
                 ) : null}
 
                 <DropdownMenu.Item
-                  className="font-sans"
-                  icon={<span className="font-sans">Aa</span>}
-                  selected={font === "sans"}
-                  onSelect={() => setFont("sans")}
+                  className={`font-${defaultFont}`}
+                  icon={<span className={`font-${defaultFont}`}>Aa</span>}
+                  selected={parsedFont === null}
+                  onSelect={() => updateFont(null)}
                 >
-                  Sans serif
+                  Default{" "}
+                  <span className="italic text-text-secondary">
+                    ({fontDisplayNames[defaultFont]})
+                  </span>
                 </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  className="font-serif"
-                  icon={<span className="font-serif">Aa</span>}
-                  selected={font === "serif"}
-                  onSelect={() => setFont("serif")}
-                >
-                  Serif
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  className="font-handwriting"
-                  icon={<span className="font-handwriting">Aa</span>}
-                  selected={font === "handwriting"}
-                  onSelect={() => setFont("handwriting")}
-                >
-                  Handwriting
-                </DropdownMenu.Item>
+                {Object.entries(fontDisplayNames).map(([fontKey, displayName]) => (
+                  <DropdownMenu.Item
+                    key={fontKey}
+                    className={`font-${fontKey}`}
+                    icon={<span className={`font-${fontKey}`}>Aa</span>}
+                    selected={parsedFont === fontKey}
+                    onSelect={() => updateFont(fontKey as Font)}
+                  >
+                    {displayName}
+                  </DropdownMenu.Item>
+                ))}
                 <DropdownMenu.Separator />
                 {containerWidth > 800 && (
                   <>
