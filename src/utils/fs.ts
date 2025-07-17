@@ -7,7 +7,7 @@ import {
   resolveGitLfsPointer,
   uploadToGitLfsServer,
 } from "./git-lfs"
-import { REPO_DIR } from "./git"
+import { getRepoDir, REPO_DIR } from "./git"
 
 const DB_NAME = "fs"
 
@@ -32,9 +32,19 @@ export async function readFile(path: string) {
     content = new TextEncoder().encode(content)
   }
 
-  const mimeType = mime.getType(path) ?? ""
-  const filename = path.split("/").pop() ?? ""
-  return new File([content], filename, { type: mimeType })
+  // Extract file name from path
+  const filename = path.split("/").pop()
+  if (!filename) {
+    throw new Error("Invalid file path")
+  }
+
+  // Get MIME type
+  const mimeType = mime.getType(filename) || "application/octet-stream"
+
+  // Create a File object from the content
+  const file = new File([content], filename, { type: mimeType })
+
+  return file
 }
 
 /** Returns a URL to the given file */
@@ -59,6 +69,34 @@ export async function getFileUrl({
 
 /** Write a file to the file system and handle Git LFS automatically if needed */
 export async function writeFile({
+  repo,
+  path,
+  content,
+  githubUser,
+  githubRepo,
+}: {
+  repo: GitHubRepository
+  path: string
+  content: ArrayBuffer
+  githubUser: GitHubUser
+  githubRepo: GitHubRepository
+}) {
+  const fullPath = `${getRepoDir(repo)}${path}`
+  
+  if (await isTrackedWithGitLfs(fullPath)) {
+    await uploadToGitLfsServer({ content, githubUser, githubRepo })
+
+    // Write a Git LFS pointer to the file system
+    const pointer = await createGitLfsPointer(content)
+    await fs.promises.writeFile(fullPath, pointer)
+  } else {
+    // TODO: Test this
+    await fs.promises.writeFile(fullPath, Buffer.from(content))
+  }
+}
+
+// Legacy function for backward compatibility
+export async function writeFileLegacy({
   path,
   content,
   githubUser,

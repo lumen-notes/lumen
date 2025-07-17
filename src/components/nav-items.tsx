@@ -3,17 +3,19 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
-import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
+import { availableReposAtom, globalStateMachineAtom, githubRepoAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
 import { CheatsheetDialog } from "./cheatsheet-dialog"
 import { Dialog } from "./dialog"
+import { DropdownMenu } from "./dropdown-menu"
 import {
   BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
   CalendarFillIcon16,
   CalendarIcon16,
+  ChevronDownIcon16,
   MessageIcon16,
   NoteFillIcon16,
   NoteIcon16,
@@ -39,6 +41,8 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const syncText = useSyncStatusText()
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
+  const availableRepos = useAtomValue(availableReposAtom)
+  const currentRepo = useAtomValue(githubRepoAtom)
 
   const today = new Date()
   const todayString = toDateString(today)
@@ -70,59 +74,96 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   return (
     <SizeContext.Provider value={size}>
       <div className="flex flex-grow flex-col justify-between gap-6">
-        <div className="flex flex-col gap-2">
-          <ul className="flex flex-col gap-1">
-            <li>
-              <NavLink
-                to="/"
-                search={{ query: undefined, view: "grid" }}
-                activeIcon={<NoteFillIcon16 />}
-                icon={<NoteIcon16 />}
-              >
-                Notes
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/notes/$"
-                params={{ _splat: todayString }}
-                search={{
-                  mode: hasDailyNote ? "read" : "write",
-                  query: undefined,
-                  view: "grid",
-                }}
-                activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
-                icon={<CalendarDateIcon16 date={today.getDate()} />}
-              >
-                Today
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/notes/$"
-                params={{ _splat: weekString }}
-                search={{
-                  mode: hasWeeklyNote ? "read" : "write",
-                  query: undefined,
-                  view: "grid",
-                }}
-                activeIcon={<CalendarFillIcon16 />}
-                icon={<CalendarIcon16 />}
-              >
-                This week
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/tags"
-                search={{ query: undefined, sort: "name", view: "list" }}
-                activeIcon={<TagFillIcon16 />}
-                icon={<TagIcon16 />}
-              >
-                Tags
-              </NavLink>
-            </li>
-          </ul>
+        <div className="flex flex-col gap-4">
+          {availableRepos.length > 1 && currentRepo ? (
+            <div className="px-2">
+              <DropdownMenu>
+                <DropdownMenu.Trigger className="flex w-full items-center gap-2 rounded-md border border-border-secondary bg-bg-inset px-3 py-2 text-sm hover:bg-bg-secondary">
+                  <div className="flex-1 truncate text-left">
+                    {currentRepo.owner}/{currentRepo.name}
+                  </div>
+                  <ChevronDownIcon16 />
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="start" className="min-w-[200px]">
+                  {availableRepos.map((repo) => (
+                    <DropdownMenu.Item
+                      key={`${repo.owner}/${repo.name}`}
+                      onClick={() => {
+                        if (repo.owner !== currentRepo.owner || repo.name !== currentRepo.name) {
+                          send({ type: "SELECT_REPO", githubRepo: repo })
+                        }
+                      }}
+                      className={cx(
+                        "flex items-center gap-2",
+                        repo.owner === currentRepo.owner && repo.name === currentRepo.name && "bg-bg-secondary"
+                      )}
+                    >
+                      <div className="flex-1 truncate">
+                        {repo.owner}/{repo.name}
+                      </div>
+                      {repo.owner === currentRepo.owner && repo.name === currentRepo.name && (
+                        <div className="size-2 rounded-full bg-border-focus" />
+                      )}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
+              <li>
+                <NavLink
+                  to="/"
+                  search={{ query: undefined, view: "grid" }}
+                  activeIcon={<NoteFillIcon16 />}
+                  icon={<NoteIcon16 />}
+                >
+                  Notes
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/notes/$"
+                  params={{ _splat: todayString }}
+                  search={{
+                    mode: hasDailyNote ? "read" : "write",
+                    query: undefined,
+                    view: "grid",
+                  }}
+                  activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
+                  icon={<CalendarDateIcon16 date={today.getDate()} />}
+                >
+                  Today
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/notes/$"
+                  params={{ _splat: weekString }}
+                  search={{
+                    mode: hasWeeklyNote ? "read" : "write",
+                    query: undefined,
+                    view: "grid",
+                  }}
+                  activeIcon={<CalendarFillIcon16 />}
+                  icon={<CalendarIcon16 />}
+                >
+                  This week
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/tags"
+                  search={{ query: undefined, sort: "name", view: "list" }}
+                  activeIcon={<TagFillIcon16 />}
+                  icon={<TagIcon16 />}
+                >
+                  Tags
+                </NavLink>
+              </li>
+            </ul>
+          </div>
           {pinnedNotes.length > 0 ? (
             <div className="flex flex-col gap-1">
               <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">

@@ -23,6 +23,9 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<Error | null>(null)
 
+  // Check if this is being used to add a new repo vs initial setup
+  const isAddingRepo = Boolean(githubRepo)
+
   async function createRepo({ owner, name }: GitHubRepository) {
     if (!githubUser) return
 
@@ -59,7 +62,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
       // 1 second delay to allow GitHub API to catch up
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      send({ type: "SELECT_REPO", githubRepo: { owner, name } })
+      const eventType = isAddingRepo ? "ADD_REPO" : "SELECT_REPO"
+      send({ type: eventType, githubRepo: { owner, name } })
       onSubmit?.({ owner, name })
       setError(null)
     } catch (error) {
@@ -91,7 +95,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
         throw new Error(message || "Something went wrong.")
       }
 
-      send({ type: "SELECT_REPO", githubRepo: { owner, name } })
+      const eventType = isAddingRepo ? "ADD_REPO" : "SELECT_REPO"
+      send({ type: eventType, githubRepo: { owner, name } })
       onSubmit?.({ owner, name })
       setError(null)
     } catch (error) {
@@ -142,63 +147,58 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
           </label>
         </div>
       </RadioGroup>
-      <div className="flex flex-col gap-4 @lg:gap-3">
-        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-3">
-          <FormControl htmlFor="repo-owner" label="Repository owner">
-            <TextInput
-              id="repo-owner"
-              name="repo-owner"
-              spellCheck={false}
-              autoCapitalize="off"
-              defaultValue={githubRepo?.owner ?? githubUser?.login}
-              required
-              invalid={Boolean(error)}
-              onChange={() => setError(null)}
-            />
-          </FormControl>
-          <FormControl htmlFor="repo-name" label="Repository name">
-            <TextInput
-              id="repo-name"
-              name="repo-name"
-              spellCheck={false}
-              autoCapitalize="off"
-              defaultValue={githubRepo?.name}
-              required
-              invalid={Boolean(error)}
-              onChange={() => setError(null)}
-            />
-          </FormControl>
-        </div>
-        {error ? (
-          <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
-            <div className="grid h-5 flex-shrink-0 place-items-center">
-              <ErrorIcon16 />
-            </div>
-            <pre className="whitespace-pre-wrap font-mono text-sm leading-5">{error.message}</pre>
-          </div>
-        ) : null}
+      <div className="flex flex-col gap-3 @sm:flex-row">
+        <FormControl
+          id="repo-owner"
+          label="Owner"
+          className="@sm:flex-1"
+          defaultValue={githubUser?.login}
+        >
+          <TextInput
+            id="repo-owner"
+            name="repo-owner"
+            placeholder="owner"
+            defaultValue={githubUser?.login}
+            required
+          />
+        </FormControl>
+        <FormControl id="repo-name" label="Repository name" className="@sm:flex-1">
+          <TextInput
+            id="repo-name"
+            name="repo-name"
+            placeholder="notes"
+            defaultValue={githubRepo?.name}
+            required
+          />
+        </FormControl>
       </div>
-      <div className="flex gap-3 @lg:ml-auto">
-        {onCancel ? (
-          <Button className="w-full" onClick={onCancel}>
-            Cancel
-          </Button>
-        ) : null}
+      {error ? (
+        <div className="flex items-center gap-2 leading-4 text-text-error">
+          <ErrorIcon16 />
+          {error.message}
+        </div>
+      ) : null}
+      <div className="flex items-center gap-2">
         <Button
           type="submit"
-          className="relative w-full flex-grow"
           variant="primary"
           disabled={isLoading}
+          className="relative"
         >
-          <span className={cx({ invisible: isLoading })}>
-            {repoType === "new" ? "Create" : "Select"}
-          </span>
           {isLoading ? (
             <span className="absolute inset-0 grid place-items-center">
               <LoadingIcon16 />
             </span>
           ) : null}
+          <span className={cx(isLoading && "invisible")}>
+            {repoType === "new" ? (isAddingRepo ? "Create & Add" : "Create") : (isAddingRepo ? "Add" : "Select")}
+          </span>
         </Button>
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+        ) : null}
       </div>
     </form>
   )

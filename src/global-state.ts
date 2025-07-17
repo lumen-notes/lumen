@@ -17,7 +17,7 @@ import {
 } from "./schema"
 import { fs, fsWipe } from "./utils/fs"
 import {
-  REPO_DIR,
+  getRepoDir,
   getRemoteOriginUrl,
   gitAdd,
   gitClone,
@@ -26,6 +26,9 @@ import {
   gitPush,
   gitRemove,
   isRepoSynced,
+  listClonedRepos,
+  removeClonedRepo,
+  REPO_DIR, // Keep for backward compatibility
 } from "./utils/git"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
@@ -38,10 +41,13 @@ import { startTimer } from "./utils/timer"
 
 const GITHUB_USER_STORAGE_KEY = "github_user"
 const MARKDOWN_FILES_STORAGE_KEY = "markdown_files"
+const CURRENT_REPO_STORAGE_KEY = "current_repo"
+const AVAILABLE_REPOS_STORAGE_KEY = "available_repos"
 
 type Context = {
   githubUser: GitHubUser | null
   githubRepo: GitHubRepository | null
+  availableRepos: GitHubRepository[]
   markdownFiles: Record<string, string>
   error: Error | null
 }
@@ -50,6 +56,8 @@ type Event =
   | { type: "SIGN_IN"; githubUser: GitHubUser }
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
+  | { type: "ADD_REPO"; githubRepo: GitHubRepository }
+  | { type: "REMOVE_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
   | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
@@ -70,6 +78,7 @@ function createGlobalStateMachine() {
           resolveRepo: {
             data: {
               githubRepo: GitHubRepository
+              availableRepos: GitHubRepository[]
               markdownFiles: Record<string, string>
             }
           }
@@ -91,6 +100,12 @@ function createGlobalStateMachine() {
           deleteFile: {
             data: void
           }
+          addRepo: {
+            data: { markdownFiles: Record<string, string> }
+          }
+          removeRepo: {
+            data: void
+          }
         }
       },
       predictableActionArguments: true,
@@ -98,6 +113,7 @@ function createGlobalStateMachine() {
       context: {
         githubUser: null,
         githubRepo: null,
+        availableRepos: [],
         markdownFiles: {},
         error: null,
       },
@@ -117,6 +133,8 @@ function createGlobalStateMachine() {
             "clearGitHubUser",
             "clearGitHubUserLocalStorage",
             "clearMarkdownFilesLocalStorage",
+            "clearCurrentRepoLocalStorage",
+            "clearAvailableReposLocalStorage",
             "clearFileSystem",
             "setSampleMarkdownFiles",
           ],
@@ -139,7 +157,7 @@ function createGlobalStateMachine() {
                 src: "resolveRepo",
                 onDone: {
                   target: "cloned",
-                  actions: ["setGitHubRepo", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
+                  actions: ["setGitHubRepo", "setAvailableRepos", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: "notCloned",
               },
@@ -147,15 +165,30 @@ function createGlobalStateMachine() {
             notCloned: {
               on: {
                 SELECT_REPO: "cloningRepo",
+                ADD_REPO: "addingRepo",
               },
             },
             cloningRepo: {
-              entry: ["setGitHubRepo", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
+              entry: ["setGitHubRepo", "setCurrentRepoLocalStorage", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
               invoke: {
                 src: "cloneRepo",
                 onDone: {
                   target: "cloned.sync.success",
-                  actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
+                  actions: ["addRepoToAvailable", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
+                },
+                onError: {
+                  target: "notCloned",
+                  actions: ["clearGitHubRepo", "setError"],
+                },
+              },
+            },
+            addingRepo: {
+              entry: ["setGitHubRepo", "setCurrentRepoLocalStorage", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
+              invoke: {
+                src: "addRepo",
+                onDone: {
+                  target: "cloned.sync.success",
+                  actions: ["addRepoToAvailable", "setMarkdownFiles", "setMarkdownFilesLocalStorage"],
                 },
                 onError: {
                   target: "notCloned",
@@ -165,7 +198,9 @@ function createGlobalStateMachine() {
             },
             cloned: {
               on: {
-                SELECT_REPO: "cloningRepo",
+                SELECT_REPO: "switchingRepo",
+                ADD_REPO: "addingRepo",
+                REMOVE_REPO: "removingRepo",
               },
               type: "parallel",
               states: {
@@ -270,6 +305,28 @@ function createGlobalStateMachine() {
                 },
               },
             },
+            switchingRepo: {
+              entry: ["setGitHubRepo", "setCurrentRepoLocalStorage", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
+              always: [
+                {
+                  target: "cloned.sync.success",
+                  actions: ["setMarkdownFiles", "setMarkdownFilesLocalStorage"],
+                },
+              ],
+            },
+            removingRepo: {
+              invoke: {
+                src: "removeRepo",
+                onDone: {
+                  target: "notCloned",
+                  actions: ["removeRepoFromAvailable", "clearGitHubRepo", "clearCurrentRepoLocalStorage", "clearMarkdownFiles", "clearMarkdownFilesLocalStorage"],
+                },
+                onError: {
+                  target: "cloned",
+                  actions: "setError",
+                },
+              },
+            },
           },
         },
       },
@@ -318,25 +375,33 @@ function createGlobalStateMachine() {
         resolveRepo: async () => {
           const stopTimer = startTimer("resolveRepo()")
 
-          const remoteOriginUrl = await getRemoteOriginUrl()
+          // Get available repos from filesystem
+          const availableRepos = await listClonedRepos()
 
-          // Remove https://github.com/ from the beginning of the URL to get the repo name
-          const repo = String(remoteOriginUrl).replace(/^https:\/\/github.com\//, "")
+          // Get current repo from localStorage
+          const currentRepoData = localStorage.getItem(CURRENT_REPO_STORAGE_KEY)
+          const currentRepo = currentRepoData ? JSON.parse(currentRepoData) : null
 
-          const [owner, name] = repo.split("/")
+          let githubRepo = null
+          let markdownFiles = {}
 
-          if (!owner || !name) {
-            throw new Error("Invalid repo")
+          // If we have a current repo and it's available, use it
+          if (currentRepo && availableRepos.some(r => r.owner === currentRepo.owner && r.name === currentRepo.name)) {
+            githubRepo = currentRepo
+            markdownFiles = getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(getRepoDir(currentRepo)))
+          } else if (availableRepos.length > 0) {
+            // If no current repo but we have available repos, use the first one
+            githubRepo = availableRepos[0]
+            localStorage.setItem(CURRENT_REPO_STORAGE_KEY, JSON.stringify(githubRepo))
+            markdownFiles = await getMarkdownFilesFromFs(getRepoDir(githubRepo))
+          } else {
+            // No repos available, throw error to go to notCloned state
+            throw new Error("No repos available")
           }
-
-          const githubRepo = { owner, name }
-
-          const markdownFiles =
-            getMarkdownFilesFromLocalStorage() ?? (await getMarkdownFilesFromFs(REPO_DIR))
 
           stopTimer()
 
-          return { githubRepo, markdownFiles }
+          return { githubRepo, availableRepos, markdownFiles }
         },
         cloneRepo: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
@@ -344,40 +409,56 @@ function createGlobalStateMachine() {
           await gitClone(event.githubRepo, context.githubUser)
 
           return {
-            markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
+            markdownFiles: await getMarkdownFilesFromFs(getRepoDir(event.githubRepo)),
           }
         },
-        pull: async (context) => {
+        addRepo: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
-          await gitPull(context.githubUser)
+          await gitClone(event.githubRepo, context.githubUser)
 
           return {
-            markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
+            markdownFiles: await getMarkdownFilesFromFs(getRepoDir(event.githubRepo)),
+          }
+        },
+        removeRepo: async (context, event) => {
+          await removeClonedRepo(event.githubRepo)
+        },
+        pull: async (context) => {
+          if (!context.githubUser || !context.githubRepo) throw new Error("Not signed in or no repo")
+
+          await gitPull(context.githubRepo, context.githubUser)
+
+          return {
+            markdownFiles: await getMarkdownFilesFromFs(getRepoDir(context.githubRepo)),
           }
         },
         push: async (context) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+          if (!context.githubUser || !context.githubRepo) throw new Error("Not signed in or no repo")
 
-          await gitPush(context.githubUser)
+          await gitPush(context.githubRepo, context.githubUser)
         },
-        checkStatus: async () => {
-          return { isSynced: await isRepoSynced() }
+        checkStatus: async (context) => {
+          if (!context.githubRepo) throw new Error("No repo")
+          
+          return { isSynced: await isRepoSynced(context.githubRepo) }
         },
         writeFiles: async (context, event) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+          if (!context.githubUser || !context.githubRepo) throw new Error("Not signed in or no repo")
 
           const {
             markdownFiles,
             commitMessage = `Update ${Object.keys(markdownFiles).join(" ")}`,
           } = event
 
+          const repoDir = getRepoDir(context.githubRepo)
+
           // Write files to file system
           Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
             // Create directories if needed
             const dirPath = filepath.split("/").slice(0, -1).join("/")
             if (dirPath) {
-              let currentPath = REPO_DIR
+              let currentPath = repoDir
               const segments = dirPath.split("/")
 
               for (const segment of segments) {
@@ -391,28 +472,29 @@ function createGlobalStateMachine() {
             }
 
             // Write file
-            await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
+            await fs.promises.writeFile(`${repoDir}/${filepath}`, content, "utf8")
           })
 
           // Stage files
-          await gitAdd(Object.keys(markdownFiles))
+          await gitAdd(context.githubRepo, Object.keys(markdownFiles))
 
           // Commit files
-          await gitCommit(commitMessage)
+          await gitCommit(context.githubRepo, commitMessage)
         },
         deleteFile: async (context, event) => {
-          if (!context.githubUser) throw new Error("Not signed in")
+          if (!context.githubUser || !context.githubRepo) throw new Error("Not signed in or no repo")
 
           const { filepath } = event
+          const repoDir = getRepoDir(context.githubRepo)
 
           // Delete file from file system
-          await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
+          await fs.promises.unlink(`${repoDir}/${filepath}`)
 
           // Stage deletion
-          await gitRemove(filepath)
+          await gitRemove(context.githubRepo, filepath)
 
           // Commit deletion
-          await gitCommit(`Delete ${filepath}`)
+          await gitCommit(context.githubRepo, `Delete ${filepath}`)
         },
       },
       actions: {
@@ -437,6 +519,8 @@ function createGlobalStateMachine() {
             switch (event.type) {
               case "SELECT_REPO":
                 return event.githubRepo
+              case "ADD_REPO":
+                return event.githubRepo
               case "done.invoke.global.signedIn.resolvingRepo:invocation[0]":
                 return event.data.githubRepo
             }
@@ -445,17 +529,91 @@ function createGlobalStateMachine() {
         clearGitHubRepo: assign({
           githubRepo: null,
         }),
+        setCurrentRepoLocalStorage: (_, event) => {
+          switch (event.type) {
+            case "SELECT_REPO":
+              localStorage.setItem(CURRENT_REPO_STORAGE_KEY, JSON.stringify(event.githubRepo))
+              break
+            case "ADD_REPO":
+              localStorage.setItem(CURRENT_REPO_STORAGE_KEY, JSON.stringify(event.githubRepo))
+              break
+          }
+        },
+        clearCurrentRepoLocalStorage: () => {
+          localStorage.removeItem(CURRENT_REPO_STORAGE_KEY)
+        },
+        setAvailableRepos: assign({
+          availableRepos: (_, event) => {
+            switch (event.type) {
+              case "done.invoke.global.signedIn.resolvingRepo:invocation[0]":
+                return event.data.availableRepos
+            }
+          },
+        }),
+        addRepoToAvailable: assign({
+          availableRepos: (context, event) => {
+            const newRepo = event.type === "done.invoke.global.signedIn.cloningRepo:invocation[0]" || 
+                          event.type === "done.invoke.global.signedIn.addingRepo:invocation[0]" 
+                          ? context.githubRepo 
+                          : null
+            
+            if (!newRepo) return context.availableRepos
+            
+            const exists = context.availableRepos.some(r => r.owner === newRepo.owner && r.name === newRepo.name)
+            if (exists) return context.availableRepos
+            
+            const updatedRepos = [...context.availableRepos, newRepo]
+            localStorage.setItem(AVAILABLE_REPOS_STORAGE_KEY, JSON.stringify(updatedRepos))
+            return updatedRepos
+          },
+        }),
+        removeRepoFromAvailable: assign({
+          availableRepos: (context, event) => {
+            const repoToRemove = event.type === "REMOVE_REPO" ? event.githubRepo : null
+            if (!repoToRemove) return context.availableRepos
+            
+            const updatedRepos = context.availableRepos.filter(r => !(r.owner === repoToRemove.owner && r.name === repoToRemove.name))
+            localStorage.setItem(AVAILABLE_REPOS_STORAGE_KEY, JSON.stringify(updatedRepos))
+            return updatedRepos
+          },
+        }),
+        clearAvailableReposLocalStorage: () => {
+          localStorage.removeItem(AVAILABLE_REPOS_STORAGE_KEY)
+        },
         clearFileSystem: () => {
           fsWipe()
         },
         setMarkdownFiles: assign({
-          markdownFiles: (_, event) => event.data.markdownFiles,
+          markdownFiles: (context, event) => {
+            switch (event.type) {
+              case "done.invoke.global.signedIn.resolvingRepo:invocation[0]":
+                return event.data.markdownFiles
+              case "done.invoke.global.signedIn.cloningRepo:invocation[0]":
+                return event.data.markdownFiles
+              case "done.invoke.global.signedIn.addingRepo:invocation[0]":
+                return event.data.markdownFiles
+              case "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]":
+                return event.data.markdownFiles
+              default:
+                // For switchingRepo, load from current repo
+                if (context.githubRepo) {
+                  return getMarkdownFilesFromLocalStorage() ?? {}
+                }
+                return {}
+            }
+          },
         }),
         setSampleMarkdownFiles: assign({
           markdownFiles: getSampleMarkdownFiles(),
         }),
-        setMarkdownFilesLocalStorage: (_, event) => {
-          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(event.data.markdownFiles))
+        setMarkdownFilesLocalStorage: (context, event) => {
+          const markdownFiles = event.type === 'done.invoke.global.signedIn.resolvingRepo:invocation[0]' || 
+                              event.type === 'done.invoke.global.signedIn.cloningRepo:invocation[0]' ||
+                              event.type === 'done.invoke.global.signedIn.addingRepo:invocation[0]' ||
+                              event.type === 'done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]'
+                              ? event.data.markdownFiles 
+                              : context.markdownFiles
+          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(markdownFiles))
         },
         mergeMarkdownFiles: assign({
           markdownFiles: (context, event) => ({
@@ -550,34 +708,39 @@ export const markdownFilesAtom = selectAtom(
   (state) => state.context.markdownFiles,
 )
 
-export const isRepoNotClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.notCloned"),
-)
-
-export const isCloningRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloningRepo"),
-)
-
-export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloned"),
-)
-
-export const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedOut"),
-)
-
-// -----------------------------------------------------------------------------
-// GitHub
-// -----------------------------------------------------------------------------
-
 export const githubUserAtom = selectAtom(
   globalStateMachineAtom,
   (state) => state.context.githubUser,
 )
 
+export const isSignedOutAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.matches("signedOut"),
+)
+
+export const isRepoNotClonedAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.matches("signedIn.notCloned"),
+)
+
+export const isCloningRepoAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.matches("signedIn.cloningRepo") || state.matches("signedIn.addingRepo"),
+)
+
+export const isRepoClonedAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.matches("signedIn.cloned"),
+)
+
 export const githubRepoAtom = selectAtom(
   globalStateMachineAtom,
   (state) => state.context.githubRepo,
+)
+
+export const availableReposAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) => state.context.availableRepos,
 )
 
 // -----------------------------------------------------------------------------

@@ -4,7 +4,7 @@ import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
 import { GitHubRepository, GitHubUser, Note } from "../schema"
 import { readFile } from "./fs"
-import { REPO_DIR } from "./git"
+import { getRepoDir, REPO_DIR } from "./git"
 import { isTrackedWithGitLfs, resolveGitLfsPointer } from "./git-lfs"
 import { stripWikilinks } from "./strip-wikilinks"
 import { transformUploadUrls } from "./transform-upload-urls"
@@ -90,10 +90,11 @@ export async function updateGist({
 
     // Add file uploads to the gist
     for (const path of uploadPaths) {
-      const file = await readFile(`${REPO_DIR}${path}`)
+      const repoDir = getRepoDir(githubRepo)
+      const file = await readFile(`${repoDir}${path}`)
 
       // If the file is tracked with Git LFS, resolve the pointer and fetch the binary file content
-      if (await isTrackedWithGitLfs(path)) {
+      if (await isTrackedWithGitLfs(`${repoDir}${path}`)) {
         const fileUrl = await resolveGitLfsPointer({
           file,
           githubUser,
