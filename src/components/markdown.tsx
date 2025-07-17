@@ -80,6 +80,9 @@ export const Markdown = React.memo(
           // Skip reserved frontmatter keys
           if (["pinned", "gist_id"].includes(key)) return false
 
+          // Filter out empty arrays
+          if (Array.isArray(value) && value.length === 0) return false
+
           // Filter out empty values
           return Boolean(value)
         }),
@@ -314,7 +317,7 @@ function Frontmatter({
             key={key}
             className="grid gap-1 py-2 first:pt-0 last:pb-0 @[24rem]:grid-cols-[10rem_1fr]"
           >
-            <h3 className="font-mono text-sm/4 text-text-secondary @[24rem]:text-base/6">
+            <h3 className="text-sm/4 text-text-secondary @[24rem]:text-base/6">
               {formatFrontmatterKey(key)}
             </h3>
             <FrontmatterValue entry={[key, value]} />
