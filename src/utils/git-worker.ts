@@ -9,7 +9,7 @@ import {
   gitAdd,
   gitRemove,
   isRepoSynced,
-} from "../utils/git"
+} from "./git"
 import type {
   WorkerRequest,
   WorkerResponse,
@@ -19,7 +19,7 @@ import type {
   GitCommitRequest,
   GitAddRequest,
   GitRemoveRequest
-} from "./worker-types"
+} from "./git-worker-types"
 
 // Helper function to send success response
 function sendSuccess(id: string, result?: unknown) {

@@ -8,7 +8,7 @@ import type {
   GitAddRequest,
   GitRemoveRequest,
   GitStatusRequest
-} from './worker-types'
+} from './git-worker-types'
 
 class WorkerClient {
   private worker: Worker | null = null

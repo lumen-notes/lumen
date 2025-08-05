@@ -20,7 +20,7 @@ import {
   REPO_DIR,
   getRemoteOriginUrl,
 } from "./utils/git"
-import { worker } from "./workers/worker-client"
+import { worker } from "./utils/git-worker-client"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"

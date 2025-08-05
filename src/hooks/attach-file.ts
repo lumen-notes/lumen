@@ -5,7 +5,7 @@ import { fileCache } from "../components/file-preview"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { fs, writeFile } from "../utils/fs"
 import { REPO_DIR } from "../utils/git"
-import { worker } from "../workers/worker-client"
+import { worker } from "../utils/git-worker-client"
 
 export const UPLOADS_DIR = "/uploads"
 
