@@ -25,7 +25,7 @@ class WorkerClient {
   private initWorker() {
     try {
       this.worker = new Worker(
-        new URL('./worker.ts', import.meta.url),
+        new URL('./git-worker.ts', import.meta.url),
         { type: 'module' }
       )
 
