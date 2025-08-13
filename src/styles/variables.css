@@ -56,9 +56,9 @@
 
   /* Border colors */
   --color-border: var(--neutral-a8);
-  --color-border-secondary: var(--neutral-a5);
+  --color-border-secondary: var(--neutral-a4);
   --color-border-table: var(--neutral-7);
-  --color-border-focus: var(--cyan-9);
+  --color-border-focus: var(--cyan-10);
 
   /* Syntax colors */
   --color-syntax-yellow: var(--yellow11);
@@ -90,7 +90,7 @@
   --font-weight-bold: 600;
 
   /* Border radii */
-  --border-radius-base: 6px;
+  --border-radius-base: 8px;
   --border-radius-sm: calc(var(--border-radius-base) - 2px);
   --border-radius-lg: calc(var(--border-radius-base) + 4px);
   --border-radius-xl: calc(var(--border-radius-base) + 8px);
