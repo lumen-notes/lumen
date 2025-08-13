@@ -30,11 +30,10 @@
 1.  Start the development server:
 
     ```shell
-    npm run dev:netlify
+    npm run dev
     ```
 
 1.  Open the app at http://localhost:8888
-
 
 ## Architecture
 
