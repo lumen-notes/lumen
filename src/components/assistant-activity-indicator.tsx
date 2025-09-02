@@ -5,6 +5,7 @@ import { cx } from "../utils/cx"
 export type AssistantActivityIndicatorProps = {
   state: "idle" | "thinking" | "speaking"
   stream: MediaStream | undefined
+  className?: string
   children: React.ReactNode
 }
 
@@ -21,6 +22,7 @@ export function AssistantActivityIndicator({
   children,
   state = "idle",
   stream,
+  className,
 }: AssistantActivityIndicatorProps) {
   // const [ref, bounds] = useMeasure<HTMLDivElement>()
 
@@ -94,7 +96,7 @@ export function AssistantActivityIndicator({
   return (
     <div
       // ref={ref}
-      className="relative flex"
+      className={cx("relative flex", className)}
     >
       {/* {state === "thinking" ? (
         <svg

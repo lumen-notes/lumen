@@ -20,7 +20,7 @@ import { validateOpenAIKey } from "../utils/validate-openai-key"
 import { AssistantActivityIndicator } from "./assistant-activity-indicator"
 import { AudioVisualizer } from "./audio-visualizer"
 import { IconButton } from "./icon-button"
-import { HeadphonesIcon16, LoadingIcon16, MicFillIcon16, MicMuteFillIcon16, XIcon16 } from "./icons"
+import { LoadingIcon16, MicFillIcon16, MicMuteFillIcon16, WaveformIcon16, XIcon16 } from "./icons"
 import { toast } from "./toast"
 import voiceConversationPrompt from "./voice-conversation.prompt.md?raw"
 
@@ -80,6 +80,7 @@ export function VoiceConversationBar() {
 
   return (
     <AssistantActivityIndicator
+      className="has-[button:active]:scale-95 transition-transform"
       stream={state.context.responseStream}
       state={
         state.matches("active.ready.assistant.thinking")
@@ -106,12 +107,13 @@ export function VoiceConversationBar() {
                   opacity: 0,
                   scale: 0.5,
                   filter: "blur(4px)",
-                  transition: { duration: 0.1 },
+                  transition: { duration: 0.075 },
                 }}
               >
                 <IconButton
                   aria-label={state.matches("active.ready.mic.muted") ? "Unmute" : "Mute"}
                   shortcut={["⌘", "⇧", "M"]}
+                  tooltipSideOffset={12}
                   className={cx(
                     "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2 overflow-hidden",
                     state.matches("active.ready.mic.muted")
@@ -167,7 +169,7 @@ export function VoiceConversationBar() {
           ) : null}
         </AnimatePresence>
         <IconButton
-          aria-label={state.matches("active.ready") ? "End" : "Start conversation with AI"}
+          aria-label={state.matches("active.ready") ? "End" : "Talk with AI"}
           shortcut={["⌘", "⇧", "V"]}
           disabled={state.matches("active.initializing")}
           className="rounded-full coarse:size-12"
@@ -178,13 +180,15 @@ export function VoiceConversationBar() {
               send("START")
             }
           }}
+          tooltipAlign="end"
+          tooltipSideOffset={12}
         >
           {state.matches("active.ready") ? (
             <XIcon16 />
           ) : state.matches("active.initializing") ? (
             <LoadingIcon16 />
           ) : (
-            <HeadphonesIcon16 />
+            <WaveformIcon16 />
           )}
         </IconButton>
       </div>
