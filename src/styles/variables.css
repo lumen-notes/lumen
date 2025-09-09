@@ -91,7 +91,7 @@
 
   /* Border radii */
   --border-radius-base: 8px;
-  --border-radius-sm: calc(var(--border-radius-base) - 2px);
+  --border-radius-sm: calc(var(--border-radius-base) - 4px);
   --border-radius-lg: calc(var(--border-radius-base) + 4px);
   --border-radius-xl: calc(var(--border-radius-base) + 8px);
   --border-radius-full: 9999px;

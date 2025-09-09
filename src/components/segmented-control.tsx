@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react"
 import { cx } from "../utils/cx"
 import { Button, ButtonProps } from "./button"
+import React from "react"
 
 export type SegmentedControlProps = {
   "aria-label"?: string
@@ -36,24 +37,27 @@ type SegmentedControlSegmentProps = Omit<
   selected?: boolean
 }
 
-function Segment({ className, selected, ...props }: SegmentedControlSegmentProps) {
-  const size = useContext(SizeContext)
-  return (
-    <li>
-      <Button
-        size={size}
-        aria-current={selected ? "true" : "false"}
-        className={cx(
-          selected
-            ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg active:bg-bg"
-            : "bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary",
-          className,
-        )}
-        {...props}
-      />
-    </li>
-  )
-}
+const Segment = React.forwardRef<HTMLButtonElement, SegmentedControlSegmentProps>(
+  ({ className, selected, ...props }, ref) => {
+    const size = useContext(SizeContext)
+    return (
+      <li>
+        <Button
+          ref={ref}
+          size={size}
+          aria-current={selected ? "true" : "false"}
+          className={cx(
+            selected
+              ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg active:bg-bg"
+              : "bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary",
+            className,
+          )}
+          {...props}
+        />
+      </li>
+    )
+  },
+)
 
 export const SegmentedControl = Object.assign(Root, {
   Segment,

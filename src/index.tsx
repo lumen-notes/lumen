@@ -34,7 +34,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <Tooltip.Provider>
+      <Tooltip.Provider delayDuration={100}>
         <RouterProvider router={router} />
       </Tooltip.Provider>
     </StrictMode>,

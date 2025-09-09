@@ -75,6 +75,7 @@ import { updateFrontmatter } from "../utils/frontmatter"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
+import { Tooltip } from "../components/tooltip"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -510,20 +511,26 @@ function NotePage() {
           ) : null}
 
           <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
-            <SegmentedControl.Segment
-              selected={mode === "read"}
-              shortcut={mode !== "read" ? toggleModeShortcut : undefined}
-              onClick={switchToReading}
-            >
-              Read
-            </SegmentedControl.Segment>
-            <SegmentedControl.Segment
-              selected={mode === "write"}
-              shortcut={mode !== "write" ? toggleModeShortcut : undefined}
-              onClick={switchToWriting}
-            >
-              Write
-            </SegmentedControl.Segment>
+            <Tooltip open={mode === "read" ? false : undefined}>
+              <Tooltip.Trigger asChild>
+                <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
+                  Read
+                </SegmentedControl.Segment>
+              </Tooltip.Trigger>
+              <Tooltip.Content side="bottom" className="text-text-secondary">
+                {toggleModeShortcut}
+              </Tooltip.Content>
+            </Tooltip>
+            <Tooltip open={mode === "write" ? false : undefined}>
+              <Tooltip.Trigger asChild>
+                <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
+                  Write
+                </SegmentedControl.Segment>
+              </Tooltip.Trigger>
+              <Tooltip.Content side="bottom" className="text-text-secondary">
+                {toggleModeShortcut}
+              </Tooltip.Content>
+            </Tooltip>
           </SegmentedControl>
           <div className="flex items-center">
             <IconButton
