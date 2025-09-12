@@ -174,6 +174,8 @@ function _parseNote(id: NoteId, content: string): Note {
   // Determine the type of the note
   if (isValidDateString(id)) {
     type = "daily"
+    // Add the daily note's date to its dates array
+    dates.add(id)
   } else if (isValidWeekString(id)) {
     type = "weekly"
   } else if (templateSchema.omit({ body: true }).safeParse(frontmatter.template).success) {
