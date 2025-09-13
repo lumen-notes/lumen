@@ -40,13 +40,13 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ref={ref}
             type="button"
             className={cx(
-              "focus-ring inline-flex select-none items-center justify-center rounded text-text-secondary enabled:hover:bg-bg-secondary enabled:active:bg-bg-tertiary data-[state=open]:bg-bg-secondary",
+              "focus-ring inline-flex select-none items-center justify-center rounded text-text-secondary enabled:hover:bg-bg-hover enabled:active:bg-bg-active data-[state=open]:bg-bg-hover",
               "disabled:cursor-not-allowed disabled:opacity-50",
               "coarse:h-10 coarse:px-3",
               size === "small" && "h-6 px-2",
               size === "medium" && "h-8 px-2",
               // If we're not rendering a button, we need to add hover and active styles without the `enabled:` prefix
-              asChild && "hover:bg-bg-secondary active:bg-bg-tertiary",
+              asChild && "hover:bg-bg-hover active:bg-bg-active",
               className,
             )}
             {...props}

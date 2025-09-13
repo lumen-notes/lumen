@@ -80,7 +80,7 @@ function RouteComponent() {
             />
             <IconButton
               aria-label={view === "grid" ? "List view" : "Grid view"}
-              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
               onClick={() =>
                 navigate({
                   search: (prev) => ({
@@ -95,7 +95,7 @@ function RouteComponent() {
             </IconButton>
             <IconButton
               aria-label={sort === "count" ? "Sort by name" : "Sort by count"}
-              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
               onClick={() =>
                 navigate({
                   search: (prev) => ({

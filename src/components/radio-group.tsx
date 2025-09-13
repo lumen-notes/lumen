@@ -7,7 +7,7 @@ function Item({ className, ...props }: RadixRadioGroup.RadioGroupItemProps) {
   return (
     <RadixRadioGroup.Item
       className={cx(
-        "flex size-icon shrink-0 rounded-[50%] border border-border bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus disabled:opacity-50 data-[state=checked]:border-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:hover:bg-bg-secondary",
+        "flex size-icon shrink-0 rounded-[50%] border border-border bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus disabled:opacity-50 data-[state=checked]:border-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:hover:bg-bg-hover",
         className,
       )}
       {...props}

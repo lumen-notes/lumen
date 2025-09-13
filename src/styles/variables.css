@@ -43,12 +43,16 @@
 
   /* Background colors */
   --color-bg: var(--neutral-1);
+  --color-bg-hover: var(--neutral-a3);
+  --color-bg-active: var(--neutral-a4);
   --color-bg-inset: var(--neutral-2);
   --color-bg-card: white;
   --color-bg-overlay: white;
   --color-bg-backdrop: #fcfcfccc;
   --color-bg-overlay-backdrop: #ffffffcc;
   --color-bg-secondary: var(--neutral-a3);
+  --color-bg-secondary-hover: var(--neutral-a4);
+  --color-bg-secondary-active: var(--neutral-a5);
   --color-bg-tertiary: var(--neutral-a4);
   --color-bg-code-block: var(--neutral-3);
   --color-bg-highlight: var(--yellow-a4);

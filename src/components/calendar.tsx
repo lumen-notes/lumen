@@ -55,13 +55,12 @@ export function Calendar({
           <div className="flex gap-px rounded bg-bg-secondary">
             <IconButton
               aria-label="Previous week"
-              className="active:bg-bg-tertiary"
               onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
             >
               <ChevronLeftIcon16 />
             </IconButton>
             <Button
-              className="bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary"
+              className="bg-transparent hover:bg-bg-hover active:bg-bg-active"
               onClick={() => {
                 const today = new Date()
                 setStartOfWeek(isMonday(today) ? today : previousMonday(today))
@@ -80,7 +79,6 @@ export function Calendar({
             </Button>
             <IconButton
               aria-label="Next week"
-              className="active:bg-bg-tertiary"
               onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
             >
               <ChevronRightIcon16 />
@@ -219,7 +217,7 @@ function CalendarItem({
         }}
         aria-label={ariaLabel}
         className={cx(
-          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-secondary active:bg-bg-tertiary",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-hover active:bg-bg-active",
 
           // Underline the active day
           isActive &&

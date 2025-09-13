@@ -100,7 +100,7 @@
 }
 
 .cm-editor .cm-foldPlaceholder:hover {
-  @apply bg-bg-tertiary;
+  @apply bg-bg-secondary-hover;
 }
 
 .cm-editor .cm-wikilink {
