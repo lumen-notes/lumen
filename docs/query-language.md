@@ -8,22 +8,24 @@ Search your notes with Lumen's [GitHub-style](https://docs.github.com/en/search-
 - Qualifiers can also be used to filter notes based on numerical ranges. To do this, use one of the following operators before the qualifier value: `>`, `<`, `>=`, `<=`. For example, `backlinks:>10` matches notes with more than 10 backlinks; `date:>=2021-01-01` matches notes with a date on or after `2021-01-01`.
 - Text outside of qualifiers is used to fuzzy search the note's title and body. For example, `tag:recipe cookie` matches notes with the `recipe` tag that also contain the word "cookie" in the title or body.
 - To search for a value that contains spaces, wrap the value in quotes. For example, `genre:"science fiction"` matches notes with `genre: science fiction` in their [frontmatter](/docs/metadata.md).
+- Use `sort:` to order results. For example, `sort:title`, `sort:id:desc`, or multiple keys `sort:title,tags:desc`. Direction can be `asc` or `desc`. Default is `asc` for `id` and `title`. `tags`, `links`, `backlinks` default to `desc`.
 
 ## Qualifiers
 
-| Key         | Example                                                                                                                                    |
-| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`        | `id:1652342106359` matches the note with ID `1652342106359`.                                                                               |
-| `tag`       | `tag:recipe` matches notes with the `recipe` tag.                                                                                          |
-| `tags`      | `tags:>1` matches notes with more than one tag.                                                                                            |
-| `date`      | `date:2021-07-11` matches notes with the date `2021-07-11`.                                                                                |
-| `dates`     | `dates:>1` matches notes with more than one date.                                                                                          |
-| `link`      | `link:1652342106359` matches notes that link to the note with ID `1652342106359`.                                                          |
-| `links`     | `links:>1` matches notes with more than one link.                                                                                          |
-| `backlink`  | `backlink:1652342106359` matches notes that are linked to by the note with ID `1652342106359`.                                             |
-| `backlinks` | `backlinks:>1` matches notes with more than one backlink.                                                                                  |
-| `tasks`     | `tasks:>0` matches notes with at least one open task.                                                                                      |
-| `no`        | `no:tag` matches notes without a tag. `no` can be used with any qualifier key or frontmatter key.                                          |
-| `has`       | `has:tag` matches notes with one or more tag. `has` can be used with any qualifier key or frontmatter key. `has` and `-no` are equivalent. |
+| Key         | Example                                                                                                                                                                                                                                                                       |
+| :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`        | `id:1652342106359` matches the note with ID `1652342106359`.                                                                                                                                                                                                                  |
+| `tag`       | `tag:recipe` matches notes with the `recipe` tag.                                                                                                                                                                                                                             |
+| `tags`      | `tags:>1` matches notes with more than one tag.                                                                                                                                                                                                                               |
+| `date`      | `date:2021-07-11` matches notes with the date `2021-07-11`.                                                                                                                                                                                                                   |
+| `dates`     | `dates:>1` matches notes with more than one date.                                                                                                                                                                                                                             |
+| `link`      | `link:1652342106359` matches notes that link to the note with ID `1652342106359`.                                                                                                                                                                                             |
+| `links`     | `links:>1` matches notes with more than one link.                                                                                                                                                                                                                             |
+| `backlink`  | `backlink:1652342106359` matches notes that are linked to by the note with ID `1652342106359`.                                                                                                                                                                                |
+| `backlinks` | `backlinks:>1` matches notes with more than one backlink.                                                                                                                                                                                                                     |
+| `tasks`     | `tasks:>0` matches notes with at least one open task.                                                                                                                                                                                                                         |
+| `no`        | `no:tags` matches notes without a tag. `no` can be used with any filter qualifier key or frontmatter key.                                                                                                                                                                     |
+| `has`       | `has:tags` matches notes with one or more tag. `has` can be used with any filter qualifier key or frontmatter key.                                                                                                                                                            |
+| `sort`      | `sort:title`, `sort:id:desc`, `sort:tags,links:desc`. Supports `id`, `title`, `tags`, `links`, `backlinks`. Use `:asc` or `:desc`. Default is `asc` for `id` and `title`. `tags`, `links`, `backlinks` default to `desc`. Multiple comma-separated sorts apply left-to-right. |
 
 Unrecognized qualifier keys are assumed to be [frontmatter](/docs/metadata.md) keys. For example, `read:true` matches notes with `read: true` in their frontmatter.
