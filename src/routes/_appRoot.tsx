@@ -240,7 +240,6 @@ function RouteComponent() {
     document.documentElement.setAttribute("data-theme", theme)
   }, [theme])
 
-
   // Apply overflow classes to parent elements
   React.useEffect(() => {
     if (!rootRef.current) return

@@ -10,13 +10,16 @@ export default {
 }
 
 // Group icons by size
-const iconsBySize = Object.entries(icons).reduce((acc, [name, Icon]) => {
-  // Get number at end of name
-  const size = parseInt(name.match(/\d+$/)?.[0] ?? "0")
-  acc[size] = acc[size] ?? []
-  acc[size].push([name, Icon])
-  return acc
-}, {} as Record<number, [string, React.ComponentType][]>)
+const iconsBySize = Object.entries(icons).reduce(
+  (acc, [name, Icon]) => {
+    // Get number at end of name
+    const size = parseInt(name.match(/\d+$/)?.[0] ?? "0")
+    acc[size] = acc[size] ?? []
+    acc[size].push([name, Icon])
+    return acc
+  },
+  {} as Record<number, [string, React.ComponentType][]>,
+)
 
 export const All = {
   render: () => (

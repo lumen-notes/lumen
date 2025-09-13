@@ -13,23 +13,26 @@ export async function isTrackedWithGitLfs(path: string) {
     const parsedGitAttributes = gitAttributes
       .toString()
       .split("\n")
-      .reduce((acc, line) => {
-        // Ignore comments
-        if (line.startsWith("#")) {
-          return acc
-        }
+      .reduce(
+        (acc, line) => {
+          // Ignore comments
+          if (line.startsWith("#")) {
+            return acc
+          }
 
-        // Ignore empty lines
-        if (!line.trim()) {
-          return acc
-        }
+          // Ignore empty lines
+          if (!line.trim()) {
+            return acc
+          }
 
-        // Split line into parts
-        const [pattern, ...attrs] = line.split(" ")
+          // Split line into parts
+          const [pattern, ...attrs] = line.split(" ")
 
-        // Add pattern and filter to accumulator
-        return [...acc, { pattern, attrs }]
-      }, [] as Array<{ pattern: string; attrs: string[] }>)
+          // Add pattern and filter to accumulator
+          return [...acc, { pattern, attrs }]
+        },
+        [] as Array<{ pattern: string; attrs: string[] }>,
+      )
 
     // Return true if any patterns matching the file path have filter=lfs set
     return parsedGitAttributes.some(({ pattern, attrs }) => {
