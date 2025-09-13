@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
-import { useDeferredValue, useMemo } from "react"
+import { useDeferredValue, useMemo, useState } from "react"
 import { AppLayout } from "../components/app-layout"
 import { IconButton } from "../components/icon-button"
 import {
@@ -9,10 +9,12 @@ import {
   SortAlphabetAscIcon16,
   SortNumberDescIcon16,
   TagIcon16,
+  TriangleRightIcon12,
 } from "../components/icons"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
+import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
 
 type RouteSearch = {
@@ -114,7 +116,7 @@ function RouteComponent() {
           ) : null}
         </div>
         {view === "grid" ? (
-          <ul className="flex flex-wrap gap-3">
+          <ul className="flex flex-wrap gap-y-3 gap-x-2">
             {searchResults.map(([tag, noteIds]) => (
               <li key={tag}>
                 <PillButton asChild>
@@ -214,9 +216,11 @@ type TagTreeItemProps = {
 }
 
 function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
+  const [expanded, setExpanded] = useState(true)
+
   return (
     <li className="flex flex-col gap-3">
-      <div className="flex items-center gap-1" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
+      <div className="flex items-center gap-0.5" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
         <PillButton asChild>
           <Link
             to="/tags/$"
@@ -230,8 +234,19 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             <span className="text-text-secondary">{node.count}</span>
           </Link>
         </PillButton>
+        {node.children.length ? (
+          <IconButton
+            aria-label={expanded ? "Collapse" : "Expand"}
+            disableTooltip
+            size="small"
+            className="rounded-full px-1.5"
+            onClick={() => setExpanded(!expanded)}
+          >
+            <TriangleRightIcon12 className={cx("transition-transform", expanded && "rotate-90")} />
+          </IconButton>
+        ) : null}
       </div>
-      <div className="empty:hidden">
+      <div className={cx("empty:hidden", !expanded && "hidden")}>
         <TagTree
           key={node.name}
           tree={node.children}
