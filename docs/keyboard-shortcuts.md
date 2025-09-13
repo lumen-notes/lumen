@@ -1,9 +1,9 @@
 # Keyboard shortcuts
 
-| Action                | Shortcut                  |
-| --------------------- | ------------------------- |
-| Toggle command menu   | <kbd>⌘</kbd> <kbd>K</kbd> |
-| Create new note       | <kbd>⌘</kbd> <kbd>I</kbd> |
+| Action              | Shortcut                  |
+| ------------------- | ------------------------- |
+| Toggle command menu | <kbd>⌘</kbd> <kbd>K</kbd> |
+| Create new note     | <kbd>⌘</kbd> <kbd>I</kbd> |
 
 **With focus inside a note card...**
 
@@ -16,4 +16,3 @@
 | Copy note ID                       | <kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>C</kbd> |
 | Delete note                        | <kbd>⌘</kbd> <kbd>⌫</kbd>              |
 | Open note action menu              | <kbd>⌘</kbd> <kbd>.</kbd>              |
-

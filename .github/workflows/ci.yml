@@ -1,6 +1,19 @@
 name: CI
+permissions:
+  contents: read
 on: [push]
 jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "npm"
+      - run: npm ci
+      - name: Check formatting
+        run: npx prettier --check .
   lint:
     runs-on: ubuntu-latest
     steps:
