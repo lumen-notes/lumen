@@ -1,5 +1,5 @@
 import { useLocation, useMatch, useNavigate } from "@tanstack/react-router"
-import { parseQuery } from "../hooks/search"
+import { parseQuery } from "../utils/search"
 import { IconButton } from "./icon-button"
 import { PlusIcon16 } from "./icons"
 
@@ -13,10 +13,10 @@ function useTagsFromRoute() {
 
   const location = useLocation()
   const query = location.search.query ?? ""
-  const tagQualifiers = parseQuery(query).qualifiers.filter((q) => q.key === "tag" && !q.exclude)
+  const tagFilters = parseQuery(query).filters.filter((q) => q.key === "tag" && !q.exclude)
 
-  tagQualifiers.forEach((qualifier) => {
-    qualifier.values.forEach((tag) => tags.add(tag))
+  tagFilters.forEach((filter) => {
+    filter.values.forEach((tag) => tags.add(tag))
   })
 
   return Array.from(tags)

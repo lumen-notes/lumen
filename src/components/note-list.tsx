@@ -2,7 +2,8 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import React, { useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { useDebounce } from "use-debounce"
-import { parseQuery, useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search"
+import { parseQuery } from "../utils/search"
 import { formatNumber, pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Dice } from "./dice"
@@ -89,30 +90,30 @@ export function NoteList({
     )
   }, [searchResults])
 
-  const qualifiers = React.useMemo(() => {
-    return parseQuery(query).qualifiers
+  const filters = React.useMemo(() => {
+    return parseQuery(query).filters
   }, [query])
 
-  const tagQualifiers = React.useMemo(() => {
-    return qualifiers.filter((qualifier) => qualifier.key === "tag")
-  }, [qualifiers])
+  const tagFilters = React.useMemo(() => {
+    return filters.filter((filter) => filter.key === "tag")
+  }, [filters])
 
   const highlightPaths = React.useMemo(() => {
-    return qualifiers
-      .filter((qualifier) => !qualifier.exclude)
-      .flatMap((qualifier) => {
-        switch (qualifier.key) {
+    return filters
+      .filter((filter) => !filter.exclude)
+      .flatMap((filter) => {
+        switch (filter.key) {
           case "tag":
-            return qualifier.values.map((value) => `/tags/${value}`)
+            return filter.values.map((value) => `/tags/${value}`)
           case "link":
-            return qualifier.values.map((value) => `/${value}`)
+            return filter.values.map((value) => `/${value}`)
           case "date":
-            return qualifier.values.map((value) => `/${value}`)
+            return filter.values.map((value) => `/${value}`)
           default:
             return []
         }
       })
-  }, [qualifiers])
+  }, [filters])
 
   return (
     <LinkHighlightProvider href={highlightPaths}>
@@ -124,6 +125,7 @@ export function NoteList({
                 placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
                 value={query}
                 autoCapitalize="off"
+                spellCheck="false"
                 onChange={(value) => {
                   onQueryChange(value)
 
@@ -154,17 +156,15 @@ export function NoteList({
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2 empty:hidden">
-            {sortedTagFrequencies.length > 0 || tagQualifiers.length > 0 ? (
+            {sortedTagFrequencies.length > 0 || tagFilters.length > 0 ? (
               <>
-                {tagQualifiers.map((qualifier) => (
+                {tagFilters.map((filter) => (
                   <PillButton
-                    key={qualifier.values.join(",")}
-                    data-tag={qualifier.values.join(",")}
+                    key={filter.values.join(",")}
+                    data-tag={filter.values.join(",")}
                     variant="primary"
                     onClick={() => {
-                      const text = `${qualifier.exclude ? "-" : ""}tag:${qualifier.values.join(
-                        ",",
-                      )}`
+                      const text = `${filter.exclude ? "-" : ""}tag:${filter.values.join(",")}`
 
                       const index = query.indexOf(text)
 
@@ -179,8 +179,8 @@ export function NoteList({
                       // TODO: Move focus
                     }}
                   >
-                    {qualifier.exclude ? <span className="italic">not</span> : null}
-                    {qualifier.values.map((value, index) => (
+                    {filter.exclude ? <span className="italic">not</span> : null}
+                    {filter.values.map((value, index) => (
                       <React.Fragment key={value}>
                         {index > 0 ? <span>or</span> : null}
                         <span key={value}>{value}</span>
