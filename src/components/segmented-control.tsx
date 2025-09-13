@@ -49,7 +49,7 @@ const Segment = React.forwardRef<HTMLButtonElement, SegmentedControlSegmentProps
           className={cx(
             selected
               ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg active:bg-bg"
-              : "bg-transparent hover:bg-bg-secondary active:bg-bg-tertiary",
+              : "bg-transparent hover:bg-bg-hover active:bg-bg-active",
             className,
           )}
           {...props}

@@ -103,7 +103,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .nav-item:is(a, button) {
-  @apply focus-ring hover:bg-bg-secondary active:bg-bg-tertiary;
+  @apply focus-ring hover:bg-bg-hover active:bg-bg-active;
 }
 
 .nav-item[aria-current] {

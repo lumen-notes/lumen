@@ -133,7 +133,7 @@ export function NoteList({
               />
               <IconButton
                 aria-label={view === "grid" ? "List view" : "Grid view"}
-                className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
                 onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
               >
                 {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
@@ -211,7 +211,7 @@ export function NoteList({
                 {sortedTagFrequencies.length > numVisibleTags ? (
                   <DropdownMenu>
                     <DropdownMenu.Trigger asChild>
-                      <PillButton variant="dashed" className="data-[state=open]:bg-bg-secondary">
+                      <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
                         Show more
                       </PillButton>
                     </DropdownMenu.Trigger>
@@ -255,7 +255,7 @@ export function NoteList({
                         query: undefined,
                         view: "grid",
                       }}
-                      className="focus-ring flex h-10 items-center rounded-lg px-3 hover:bg-bg-secondary coarse:h-12 coarse:p-4"
+                      className="focus-ring flex h-10 items-center rounded-lg px-3 hover:bg-bg-hover coarse:h-12 coarse:p-4"
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
@@ -291,7 +291,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-tertiary eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
       onClick={() => {
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()
