@@ -3,7 +3,7 @@ import { sidebarAtom } from "../global-state"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
-import { SidebarFillIcon16 } from "./icons"
+import { SidebarIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 import { NewNoteButton } from "./new-note-button"
 
@@ -21,11 +21,12 @@ export function Sidebar() {
       >
         <IconButton
           aria-label="Collapse sidebar"
-          tooltipSide="right"
+          shortcut={["⌘", "B"]}
+          tooltipAlign="start"
           size="small"
           onClick={() => setSidebar("collapsed")}
         >
-          <SidebarFillIcon16 />
+          <SidebarIcon16 />
         </IconButton>
         <NewNoteButton />
       </div>

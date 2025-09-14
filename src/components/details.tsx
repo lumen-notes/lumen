@@ -36,7 +36,7 @@ function Summary({ children, className }: { children: React.ReactNode; className
       )}
       onMouseDown={stopPropagationOnDoubleClick}
     >
-      <div className="flex select-none items-center text-text-secondary rounded gap-2 -ml-1 leading-5">
+      <div className="flex select-none items-center text-text-secondary rounded gap-1 -ml-1 leading-5">
         <div className="p-1 flex group-hover/summary:bg-bg-hover group-active/summary:bg-bg-active rounded-full group-focus-visible/summary:text-text group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus group-focus-visible/summary:-outline-offset-2">
           <TriangleRightIcon12 className="transition-transform group-open/details:rotate-90 " />
         </div>

@@ -104,7 +104,7 @@ function GitHubSection() {
         <div className="flex w-0 flex-grow flex-col gap-1">
           <span className="text-sm leading-4 text-text-secondary">Account</span>
           <span className="flex items-center gap-2 leading-4">
-            {online ? <GitHubAvatar login={githubUser.login} /> : null}
+            {online ? <GitHubAvatar login={githubUser.login} size={16} /> : null}
             <span className="truncate">{githubUser.login}</span>
           </span>
         </div>

@@ -4,7 +4,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, SidebarIcon16 } from "./icons"
+import { ArrowLeftIcon16, ArrowRightIcon16, SidebarCollapsedIcon16 } from "./icons"
 import { NewNoteButton } from "./new-note-button"
 
 export type AppHeaderProps = {
@@ -18,6 +18,19 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   const router = useRouter()
   const navigate = useNavigate()
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
+
+  // Toggle sidebar with Cmd/Ctrl + B
+  useHotkeys(
+    "mod+b",
+    () => {
+      setSidebar((prev) => (prev === "expanded" ? "collapsed" : "expanded"))
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
 
   useHotkeys(
     "mod+shift+o",
@@ -47,10 +60,12 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
             <>
               <IconButton
                 aria-label="Expand sidebar"
+                shortcut={["⌘", "B"]}
+                tooltipAlign="start"
                 size="small"
                 onClick={() => setSidebar("expanded")}
               >
-                <SidebarIcon16 />
+                <SidebarCollapsedIcon16 />
               </IconButton>
               <NewNoteButton />
               <div role="separator" className="mx-2 h-5 w-px bg-border-secondary" />
