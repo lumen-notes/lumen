@@ -751,8 +751,6 @@ export const defaultFontAtom = atomWithStorage<Font>("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
-export const widthAtom = atomWithStorage<"fixed" | "fill">("width", "fixed")
-
 // -----------------------------------------------------------------------------
 // AI
 // -----------------------------------------------------------------------------
