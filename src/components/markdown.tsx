@@ -40,6 +40,7 @@ import { WebsiteFavicon } from "./website-favicon"
 
 export type MarkdownProps = {
   children: string
+  className?: string
   hideFrontmatter?: boolean
   fontSize?: "small" | "large"
   onChange?: (value: string) => void
@@ -53,7 +54,13 @@ const MarkdownContext = React.createContext<{
 })
 
 export const Markdown = React.memo(
-  ({ children, hideFrontmatter = false, fontSize = "large", onChange }: MarkdownProps) => {
+  ({
+    children,
+    className,
+    hideFrontmatter = false,
+    fontSize = "large",
+    onChange,
+  }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
     const filteredFrontmatter = React.useMemo(() => {
@@ -94,7 +101,7 @@ export const Markdown = React.memo(
 
     return (
       <MarkdownContext.Provider value={contextValue}>
-        <div className="font-content">
+        <div className={cx("font-content", className)}>
           {parsedTemplate.success ? (
             <div className="flex flex-col gap-5">
               <div className="flex flex-wrap items-center gap-2">
@@ -159,7 +166,7 @@ export const Markdown = React.memo(
                   !isObjectEmpty(filteredFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
-                      <div className="p-4 coarse:p-3 bg-bg-code-block rounded-lg">
+                      <div className="p-3 coarse:p-2 bg-bg-code-block rounded-lg">
                         <Frontmatter
                           frontmatter={filteredFrontmatter}
                           onChange={(key, value) =>

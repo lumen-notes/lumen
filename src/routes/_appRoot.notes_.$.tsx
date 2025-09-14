@@ -797,7 +797,7 @@ function NotePage() {
         <div className="p-4 lg:p-8">
           <div
             className={cx(
-              "flex flex-col gap-10 pb-[50vh]",
+              "flex flex-col gap-8 pb-[50vh]",
               resolvedWidth === "fixed" && "mx-auto max-w-3xl",
             )}
           >
@@ -865,6 +865,7 @@ function NotePage() {
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 onChange={setEditorValue}
+                minHeight={160}
               />
             </div>
             {isWeeklyNote ? (

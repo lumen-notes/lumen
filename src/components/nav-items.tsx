@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
+import { useRegisterSW } from "virtual:pwa-register/react"
 import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { toDateString, toWeekString } from "../utils/date"
@@ -25,7 +26,6 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
-import { useRegisterSW } from "virtual:pwa-register/react"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
@@ -125,8 +125,8 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           </ul>
           {pinnedNotes.length > 0 ? (
             <div className="flex flex-col gap-1">
-              <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
-                Pinned notes
+              <div className="flex h-8 items-center px-2 text-sm font-medium text-text-secondary coarse:h-10 coarse:px-3">
+                Pinned
               </div>
               <ul className="flex flex-col gap-1">
                 {pinnedNotes.map((note) => (

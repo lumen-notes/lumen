@@ -1,7 +1,6 @@
-import { voiceAssistantEnabledAtom } from "../global-state"
-import { useNetworkState } from "react-use"
-import { openaiKeyAtom } from "../global-state"
 import { useAtomValue } from "jotai"
+import { useNetworkState } from "react-use"
+import { openaiKeyAtom, voiceAssistantEnabledAtom } from "../global-state"
 import { Dialog } from "./dialog"
 import { Markdown } from "./markdown"
 
@@ -48,6 +47,10 @@ export function CheatsheetDialog() {
           <CheatsheetItem>
             <span>Toggle command menu</span>
             <Keys keys={["⌘", "K"]} />
+          </CheatsheetItem>
+          <CheatsheetItem>
+            <span>Toggle sidebar</span>
+            <Keys keys={["⌘", "B"]} />
           </CheatsheetItem>
           {online && openaiKey && voiceAssistantEnabled && (
             <CheatsheetItem>

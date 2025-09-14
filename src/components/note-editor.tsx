@@ -39,6 +39,7 @@ type NoteEditorProps = {
   className?: string
   defaultValue?: string
   placeholder?: string
+  minHeight?: number
   editorRef?: React.MutableRefObject<ReactCodeMirrorRef>
   autoFocus?: boolean
   onChange?: (value: string) => void
@@ -89,6 +90,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       className,
       defaultValue = "",
       placeholder = "Write something…",
+      minHeight,
       autoFocus = false,
       onChange,
       onStateChange,
@@ -188,7 +190,12 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     return (
       <CodeMirror
         ref={ref}
-        className={cx(className, isCommandKeyPressed && "cm-wikilinks-enabled")}
+        className={cx(
+          "[&_.cm-content]:min-h-[var(--min-height)]",
+          className,
+          isCommandKeyPressed && "cm-wikilinks-enabled",
+        )}
+        style={{ "--min-height": `${minHeight}px` } as React.CSSProperties}
         editable={!disabled}
         placeholder={placeholder}
         value={defaultValue}
