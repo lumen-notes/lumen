@@ -38,7 +38,7 @@ export function updateFrontmatter({
   properties,
 }: {
   content: string
-  properties: Record<string, string | boolean | number | null>
+  properties: Record<string, unknown>
 }): string {
   // Define a regular expression to match the frontmatter block
   const frontmatterRegex = /^---\n([\s\S]*?)\n---/
@@ -64,7 +64,8 @@ export function updateFrontmatter({
             line.startsWith(`${key}:`),
           )
 
-          const formattedValue = typeof value === "string" ? value : String(value)
+          // Quote all string values with double quotes (YAML-compatible via JSON escaping)
+          const formattedValue = typeof value === "string" ? JSON.stringify(value) : String(value)
 
           if (propertyIndex !== -1) {
             // If property already exists, update it
@@ -87,7 +88,10 @@ export function updateFrontmatter({
     // If there's no frontmatter, add it with the properties
     const frontmatterLines = Object.entries(properties)
       .filter(([_, value]) => value !== null)
-      .map(([key, value]) => `${key}: ${value}`)
+      .map(([key, value]) => {
+        const formattedValue = typeof value === "string" ? JSON.stringify(value) : String(value)
+        return `${key}: ${formattedValue}`
+      })
       .join("\n")
 
     return `---\n${frontmatterLines}\n---\n\n${content}`

@@ -239,7 +239,7 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             aria-label={expanded ? "Collapse" : "Expand"}
             disableTooltip
             size="small"
-            className="rounded-full px-1.5"
+            className="rounded-full size-6 p-0 coarse:size-8 coarse:p-0"
             onClick={() => setExpanded(!expanded)}
           >
             <TriangleRightIcon12 className={cx("transition-transform", expanded && "rotate-90")} />

@@ -59,7 +59,7 @@
   --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
-  --color-border: var(--neutral-a8);
+  --color-border: var(--neutral-a7);
   --color-border-secondary: var(--neutral-a4);
   --color-border-table: var(--neutral-7);
   --color-border-focus: var(--cyan-9);
@@ -117,6 +117,7 @@
     --color-bg-overlay: var(--neutral-3);
     --color-bg-backdrop: #111111cc;
     --color-bg-overlay-backdrop: #222222cc;
+    --color-bg-code-block: var(--neutral-2);
 
     /* Border colors */
     --color-border-focus: var(--cyan-11);

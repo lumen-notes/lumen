@@ -48,10 +48,11 @@
 
 .markdown pre {
   overflow: auto;
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-lg);
   background-color: var(--color-bg-code-block);
   padding-inline: var(--font-size-base);
   padding-block: calc(var(--font-size-base) * 0.75);
+  min-height: 48px;
 }
 
 .markdown code {
@@ -159,7 +160,7 @@
   @apply link;
 }
 
-.markdown a[href^="http"]:not(:has(img)) {
+.markdown a[href^="http"] {
   @apply link-external;
 }
 
