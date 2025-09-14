@@ -23,7 +23,17 @@ describe("updateFrontmatter", () => {
       content: "Hello",
       properties: { title: "Test" },
       output: `---
-title: Test
+title: "Test"
+---
+
+Hello`,
+    },
+    // Handle empty string values
+    {
+      content: "Hello",
+      properties: { title: "" },
+      output: `---
+title: ""
 ---
 
 Hello`,
@@ -37,7 +47,7 @@ title: Old
 Hello`,
       properties: { title: "New" },
       output: `---
-title: New
+title: "New"
 ---
 
 Hello`,
@@ -52,7 +62,7 @@ Hello`,
       properties: { tags: "test" },
       output: `---
 title: Test
-tags: test
+tags: "test"
 ---
 
 Hello`,
@@ -82,8 +92,8 @@ tags: old
 Hello`,
       properties: { title: "New", tags: "new" },
       output: `---
-title: New
-tags: new
+title: "New"
+tags: "new"
 ---
 
 Hello`,
@@ -124,7 +134,7 @@ Hello`,
       content: "",
       properties: { title: "Test" },
       output: `---
-title: Test
+title: "Test"
 ---
 
 `,

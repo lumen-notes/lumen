@@ -45,6 +45,7 @@ type NoteEditorProps = {
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
   disabled?: boolean
+  indentWithTab?: boolean
 }
 
 const theme = createTheme({
@@ -93,6 +94,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       onStateChange,
       onPaste,
       disabled = false,
+      indentWithTab = true,
     },
     ref,
   ) => {
@@ -191,6 +193,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         placeholder={placeholder}
         value={defaultValue}
         theme={theme}
+        indentWithTab={indentWithTab}
         basicSetup={{
           lineNumbers: editorSettings.lineNumbers,
           foldGutter: editorSettings.foldGutter,
