@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import copy from "copy-to-clipboard"
 import ejs from "ejs"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -45,6 +45,7 @@ import { NoteList } from "../components/note-list"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
+import { Tooltip } from "../components/tooltip"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
   dailyTemplateAtom,
@@ -53,7 +54,6 @@ import {
   globalStateMachineAtom,
   isSignedOutAtom,
   weeklyTemplateAtom,
-  widthAtom,
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
@@ -61,7 +61,16 @@ import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
-import { Font, GitHubRepository, Note, NoteId, Template, fontSchema } from "../schema"
+import {
+  Font,
+  GitHubRepository,
+  Note,
+  NoteId,
+  Template,
+  Width,
+  fontSchema,
+  widthSchema,
+} from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -75,7 +84,6 @@ import { updateFrontmatter } from "../utils/frontmatter"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import { Tooltip } from "../components/tooltip"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -158,7 +166,7 @@ function NotePage() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
-  const [width, setWidth] = useAtom(widthAtom)
+  // removed global width atom; width is per-note via frontmatter
   const defaultFont = useAtomValue(defaultFontAtom)
   const { online } = useNetworkState()
 
@@ -197,6 +205,11 @@ function NotePage() {
   const parseResult = fontSchema.safeParse(frontmatterFont)
   const parsedFont = parseResult.success ? parseResult.data : null
   const resolvedFont = parsedFont || defaultFont
+
+  // Resolve width (frontmatter width or default)
+  const frontmatterWidth = parsedNote?.frontmatter?.width
+  const parsedWidthResult = widthSchema.safeParse(frontmatterWidth)
+  const resolvedWidth = parsedWidthResult.success ? parsedWidthResult.data : "fixed"
 
   // Set the font
   React.useEffect(() => {
@@ -243,6 +256,22 @@ function NotePage() {
       const newContent = updateFrontmatter({
         content: editorValue,
         properties: { font },
+      })
+
+      setEditorValue(newContent)
+      handleSave(newContent)
+    },
+    [noteId, editorValue, setEditorValue, handleSave],
+  )
+
+  const updateWidth = React.useCallback(
+    (width: Width) => {
+      if (!noteId) return
+
+      const newContent = updateFrontmatter({
+        content: editorValue,
+        // "fixed" is the default width
+        properties: { width: width === "fixed" ? null : width },
       })
 
       setEditorValue(newContent)
@@ -607,9 +636,9 @@ function NotePage() {
                   <>
                     <DropdownMenu.Item
                       icon={<CenteredIcon16 />}
-                      selected={width === "fixed"}
+                      selected={resolvedWidth === "fixed"}
                       onSelect={() => {
-                        setWidth("fixed")
+                        updateWidth("fixed")
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -617,9 +646,9 @@ function NotePage() {
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
                       icon={<FullwidthIcon16 />}
-                      selected={width === "fill"}
+                      selected={resolvedWidth === "fill"}
                       onSelect={() => {
-                        setWidth("fill")
+                        updateWidth("fill")
                         editorRef.current?.view?.focus()
                       }}
                     >
@@ -769,7 +798,7 @@ function NotePage() {
           <div
             className={cx(
               "flex flex-col gap-10 pb-[50vh]",
-              width === "fixed" && "mx-auto max-w-3xl",
+              resolvedWidth === "fixed" && "mx-auto max-w-3xl",
             )}
           >
             {isDailyNote || isWeeklyNote ? (
