@@ -195,7 +195,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
           className,
           isCommandKeyPressed && "cm-wikilinks-enabled",
         )}
-        style={{ "--min-height": `${minHeight}px` } as React.CSSProperties}
+        style={{ "--min-height": `${Math.max(0, minHeight ?? 0)}px` } as React.CSSProperties}
         editable={!disabled}
         placeholder={placeholder}
         value={defaultValue}
