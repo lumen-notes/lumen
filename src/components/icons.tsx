@@ -735,30 +735,6 @@ export function TaskListIcon16(props: IconProps) {
   )
 }
 
-// export function SidebarIcon16(props: IconProps) {
-//   return (
-//     <Icon size={16} {...props}>
-//       <path
-//         fillRule="evenodd"
-//         clipRule="evenodd"
-//         d="M2.5 1C1.11929 1 0 2.11929 0 3.5V12.5C0 13.8807 1.11929 15 2.5 15H13.5C14.8807 15 16 13.8807 16 12.5V3.5C16 2.11929 14.8807 1 13.5 1H2.5ZM1.5 3.5C1.5 2.94772 1.94772 2.5 2.5 2.5H4.5V13.5H2.5C1.94772 13.5 1.5 13.0523 1.5 12.5V3.5ZM6 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5H6V13.5Z"
-//       />
-//     </Icon>
-//   )
-// }
-
-// export function SidebarFillIcon16(props: IconProps) {
-//   return (
-//     <Icon size={16} {...props}>
-//       <path
-//         fillRule="evenodd"
-//         clipRule="evenodd"
-//         d="M0 3.5C0 2.11929 1.11929 1 2.5 1H13.5C14.8807 1 16 2.11929 16 3.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 0 13.8807 0 12.5V3.5ZM13.5 13.5H6V2.5H13.5C14.0523 2.5 14.5 2.94772 14.5 3.5V12.5C14.5 13.0523 14.0523 13.5 13.5 13.5Z"
-//       />
-//     </Icon>
-//   )
-// }
-
 export function GridIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
