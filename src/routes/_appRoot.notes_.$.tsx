@@ -21,7 +21,6 @@ import { IconButton } from "../components/icon-button"
 import {
   CenteredIcon16,
   CopyIcon16,
-  DotIcon8,
   EditIcon16,
   ExternalLinkIcon16,
   FullwidthIcon16,
@@ -36,6 +35,7 @@ import {
   TrashIcon16,
   UndoIcon16,
 } from "../components/icons"
+import { DraftIndicator } from "../components/draft-indicator"
 import { InsertTemplateDialog, removeFrontmatterComments } from "../components/insert-template"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
@@ -61,16 +61,7 @@ import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
-import {
-  Font,
-  GitHubRepository,
-  Note,
-  NoteId,
-  Template,
-  Width,
-  fontSchema,
-  widthSchema,
-} from "../schema"
+import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -81,6 +72,7 @@ import {
   isValidWeekString,
 } from "../utils/date"
 import { updateFrontmatter } from "../utils/frontmatter"
+import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
@@ -182,7 +174,7 @@ function NotePage() {
 
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
-  const { editorValue, setEditorValue, isDirty, discardChanges, clearDraft } = useEditorValue({
+  const { editorValue, setEditorValue, isDraft, discardChanges } = useEditorValue({
     noteId: noteId ?? "",
     note,
     defaultValue: defaultContent
@@ -244,9 +236,9 @@ function NotePage() {
         saveNote({ id: noteId, content: value })
       }
 
-      clearDraft()
+      clearNoteDraft({ githubRepo, noteId })
     },
-    [isSignedOut, noteId, note, saveNote, clearDraft],
+    [isSignedOut, noteId, note, saveNote, githubRepo],
   )
 
   const updateFont = React.useCallback(
@@ -310,7 +302,7 @@ function NotePage() {
   const setEditorValueRef = useValueRef(setEditorValue)
   const switchToReadingRef = useValueRef(switchToReading)
   const switchToWritingRef = useValueRef(switchToWriting)
-  const isDirtyRef = useValueRef(isDirty)
+  const isDraftRef = useValueRef(isDraft)
 
   // Voice conversation tools
   const sendVoiceConversation = useSetAtom(voiceConversationMachineAtom)
@@ -362,7 +354,7 @@ function NotePage() {
             return JSON.stringify({ error: "Operation cancelled by user" })
           }
 
-          localStorage.removeItem(getNoteStorageKey({ githubRepo: githubRepoRef.current, noteId }))
+          clearNoteDraft({ githubRepo: githubRepoRef.current, noteId })
 
           if (noteRef.current) {
             deleteNoteRef.current(noteRef.current.id)
@@ -497,11 +489,11 @@ function NotePage() {
 
     // :q - Switch to read mode if there are no changes
     Vim.defineEx("q", "q", () => {
-      if (!isDirtyRef.current) {
+      if (!isDraftRef.current) {
         switchToReadingRef.current()
       }
     })
-  }, [handleSaveRef, editorValueRef, switchToReadingRef, isDirtyRef])
+  }, [handleSaveRef, editorValueRef, switchToReadingRef, isDraftRef])
 
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
@@ -520,13 +512,13 @@ function NotePage() {
               <PageTitle note={parsedNote} />
             </span>
           ) : null}
-          {isDirty ? <DotIcon8 className="text-text-pending" /> : null}
+          {isDraft ? <DraftIndicator /> : null}
         </span>
       }
       icon={shouldShowPageTitle ? <NoteFavicon note={parsedNote} /> : null}
       actions={
         <div className="flex items-center gap-2">
-          {(!note && editorValue) || isDirty ? (
+          {(!note && editorValue) || isDraft ? (
             <Button
               disabled={isSignedOut}
               variant="primary"
@@ -600,9 +592,15 @@ function NotePage() {
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end" side="top">
-                {isDirty ? (
+                {isDraft ? (
                   <>
-                    <DropdownMenu.Item icon={<UndoIcon16 />} onSelect={discardChanges}>
+                    <DropdownMenu.Item
+                      icon={<UndoIcon16 />}
+                      onSelect={() => {
+                        discardChanges()
+                        editorRef.current?.view?.focus()
+                      }}
+                    >
                       Discard changes
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator />
@@ -705,7 +703,7 @@ function NotePage() {
                       return
                     }
 
-                    localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+                    clearNoteDraft({ githubRepo, noteId })
 
                     if (note) {
                       deleteNote(note.id)
@@ -750,7 +748,7 @@ function NotePage() {
       }
       floatingActions={
         <div className="card-2 flex gap-1.5 coarse:gap-2 !rounded-full p-1.5 coarse:p-2 sm:hidden print:hidden">
-          {(!note && editorValue) || isDirty ? (
+          {(!note && editorValue) || isDraft ? (
             <Button
               disabled={isSignedOut}
               variant="primary"
@@ -905,17 +903,6 @@ function NotePage() {
   )
 }
 
-function getNoteStorageKey({
-  githubRepo,
-  noteId,
-}: {
-  githubRepo: GitHubRepository | null
-  noteId: NoteId
-}) {
-  if (!githubRepo) return ""
-  return `${githubRepo.owner}/${githubRepo.name}/${noteId}`
-}
-
 function useEditorValue({
   noteId,
   note,
@@ -928,27 +915,21 @@ function useEditorValue({
   const githubRepo = useAtomValue(githubRepoAtom)
 
   const [editorValue, _setEditorValue] = useState(() => {
-    // We use localStorage to persist a "draft" of the note while editing,
-    // then clear it when the note is saved
-    return (
-      localStorage.getItem(getNoteStorageKey({ githubRepo, noteId })) ??
-      note?.content ??
-      defaultValue
-    )
+    return getNoteDraft({ githubRepo, noteId }) ?? note?.content ?? defaultValue
   })
 
-  const isDirty = useMemo(() => {
-    return note && editorValue !== note.content
-  }, [note, editorValue])
+  const isDraft = useMemo(() => {
+    return editorValue !== (note ? note.content : defaultValue)
+  }, [note, editorValue, defaultValue])
 
   const setEditorValue = useCallback(
     (value: string) => {
       _setEditorValue(value)
 
       if (note ? value !== note.content : value !== defaultValue) {
-        localStorage.setItem(getNoteStorageKey({ githubRepo, noteId }), value)
+        setNoteDraft({ githubRepo, noteId, value })
       } else {
-        localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+        clearNoteDraft({ githubRepo, noteId })
       }
     },
     [note, defaultValue, githubRepo, noteId],
@@ -957,13 +938,8 @@ function useEditorValue({
   const discardChanges = useCallback(() => {
     // Reset editor value to the last saved state of the note
     _setEditorValue(note?.content ?? defaultValue)
-    // Clear the "draft" from localStorage
-    localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
+    clearNoteDraft({ githubRepo, noteId })
   }, [note, defaultValue, githubRepo, noteId])
 
-  const clearDraft = useCallback(() => {
-    localStorage.removeItem(getNoteStorageKey({ githubRepo, noteId }))
-  }, [githubRepo, noteId])
-
-  return { editorValue, setEditorValue, isDirty, discardChanges, clearDraft }
+  return { editorValue, setEditorValue, isDraft, discardChanges }
 }

@@ -9,7 +9,7 @@ function Icon({ size, className, ...props }: IconProps & { size: number }) {
       height={size}
       viewBox={`0 0 ${size} ${size}`}
       fill="currentColor"
-      aria-hidden
+      aria-hidden="true"
       className={cx(
         "flex-shrink-0 overflow-visible",
         // 16px icons scale to 20px on touch devices
