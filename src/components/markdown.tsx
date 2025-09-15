@@ -312,8 +312,8 @@ function Frontmatter({
     <div className={cx("@container empty:hidden grid gap-2", className)}>
       {Object.entries(frontmatter).map(([key, value]) => {
         return (
-          <div key={key} className="grid @[28rem]:grid-cols-[10rem_1fr]">
-            <div className="text-text-secondary py-1 px-2 coarse:px-3 coarse:py-2 font-sans leading-[1.75]">
+          <div key={key} className="grid grid-cols-[2fr_3fr] gap-2 @[24rem]:grid-cols-[10rem_1fr]">
+            <div className="truncate text-text-secondary py-1 px-2 coarse:px-3 coarse:py-2 font-sans leading-[1.75]">
               {sentenceCase(key)}
             </div>
             <PropertyValueEditor

@@ -296,23 +296,17 @@ export function PropertyValueEditor({
     }
   }, [])
 
-  const handleButtonFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget) return
-    setMode("write")
-  }, [])
-
   if (onChange && typeof value === "string") {
     return (
       <div className="min-h-8 coarse:min-h-10">
         {mode === "read" ? (
           <div
-            className="leading-[1.75] hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-1 coarse:px-3 coarse:py-2 w-full text-left rounded"
+            className="leading-[1.75] focus-ring hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-1 coarse:px-3 coarse:py-2 w-full text-left rounded"
             role="button"
             tabIndex={0}
             onMouseDown={stopPropagationOnDoubleClick}
             onClick={handleButtonClick}
             onKeyDown={handleButtonKeyDown}
-            onFocus={handleButtonFocus}
           >
             <PropertyValue property={[key, value]} />
           </div>
