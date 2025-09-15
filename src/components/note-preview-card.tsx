@@ -67,8 +67,17 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           view: "grid",
         }}
         className={cx(
-          "card-1 !rounded-[calc(var(--border-radius-base)+6px)] relative block w-full cursor-pointer overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus group-hover:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-2 [&:not(:focus-visible)]:group-focus-within:ring-border [&:not(:focus-visible)]:group-hover:ring-border",
-          isDropdownOpen && "ring-1 ring-border",
+          "card-1 !rounded-[calc(var(--border-radius-base)+6px)] relative block w-full cursor-pointer overflow-hidden -outline-offset-1",
+          "focus-visible:outline-none",
+          "focus-visible:outline-2",
+          "focus-visible:outline",
+          "focus-visible:outline-border-focus",
+          "[&:not(:focus-visible)]:group-hover:outline-2",
+          "[&:not(:focus-visible)]:group-hover:outline",
+          "[&:not(:focus-visible)]:group-hover:outline-[var(--neutral-7)]",
+          "[&:not(:focus-visible)]:group-focus-within:outline-2",
+          "[&:not(:focus-visible)]:group-focus-within:outline",
+          "[&:not(:focus-visible)]:group-focus-within:outline-[var(--neutral-7)]",
         )}
       >
         <NotePreview note={note} className="coarse:pr-[52px]" />
