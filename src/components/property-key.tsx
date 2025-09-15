@@ -19,11 +19,11 @@ export function PropertyKeyEditor({ name, onChange }: PropertyKeyEditorProps) {
   )
 
   return (
-    <div className="truncate font-mono leading-[1.75]">
+    <div className="truncate font-mono leading-7">
       {mode === "read" ? (
         <button
           ref={buttonRef}
-          className="text-text-secondary truncate focus-ring py-1 px-2 coarse:px-3 coarse:py-2 hover:ring-inset hover:ring-1 cursor-text hover:ring-border w-full text-left rounded"
+          className="text-text-secondary truncate focus-ring py-0.5 px-2 coarse:px-3 coarse:py-1.5 hover:ring-inset hover:ring-1 cursor-text hover:ring-border w-full text-left rounded"
           onMouseDown={stopPropagationOnDoubleClick}
           onClick={() => setMode("write")}
           onFocus={() => setMode("write")}
@@ -37,7 +37,7 @@ export function PropertyKeyEditor({ name, onChange }: PropertyKeyEditorProps) {
           autoFocus
           type="text"
           defaultValue={name}
-          className="w-full rounded px-2 py-1 bg-transparent coarse:px-3 coarse:py-2 outline-none ring-2 ring-inset ring-border-focus"
+          className="w-full rounded px-2 py-0.5 bg-transparent coarse:px-3 coarse:py-1.5 outline-none ring-2 ring-inset ring-border-focus"
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"

@@ -329,7 +329,7 @@ export function PropertyValueEditor({
             ref={buttonRef}
             role="button"
             tabIndex={0}
-            className="leading-[1.75] focus-ring hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-1 coarse:px-3 coarse:py-2 w-full text-left rounded"
+            className="leading-7 focus-ring hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-0.5 coarse:px-3 coarse:py-1.5 w-full text-left rounded"
             onMouseDown={stopPropagationOnDoubleClick}
             onPointerDown={handleButtonPointerDown}
             onClick={handleButtonClick}
@@ -365,7 +365,7 @@ export function PropertyValueEditor({
               placeholder=""
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={true}
-              className="px-2 py-1 coarse:px-3 coarse:py-2"
+              className="px-2 py-0.5 coarse:px-3 coarse:py-1.5"
               indentWithTab={false}
               onChange={onChange}
             />
@@ -376,7 +376,7 @@ export function PropertyValueEditor({
   }
 
   return (
-    <div className="px-2 py-1 coarse:px-3 coarse:py-2 leading-[1.75]">
+    <div className="px-2 py-0.5 coarse:px-3 coarse:py-1.5 leading-7">
       <PropertyValue property={[key, value]} />
     </div>
   )

@@ -1,6 +1,6 @@
 .markdown {
   font-size: var(--font-size-base);
-  line-height: 1.75;
+  line-height: 28px;
 }
 
 .markdown *:first-child {
