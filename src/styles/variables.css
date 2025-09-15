@@ -165,16 +165,16 @@
 
   /* Background colors */
   --color-bg: #fff;
-  --color-bg-hover: var(--color-bg);
-  --color-bg-active: var(--color-bg);
+  --color-bg-hover: transparent;
+  --color-bg-active: transparent;
   --color-bg-inset: var(--color-bg);
   --color-bg-card: var(--color-bg);
   --color-bg-overlay: var(--color-bg);
   --color-bg-backdrop: var(--color-bg);
   --color-bg-overlay-backdrop: var(--color-bg);
   --color-bg-secondary: var(--color-bg);
-  --color-bg-secondary-hover: var(--color-bg);
-  --color-bg-secondary-active: var(--color-bg);
+  --color-bg-secondary-hover: transparent;
+  --color-bg-secondary-active: transparent;
   --color-bg-tertiary: var(--color-bg);
   --color-bg-code-block: var(--color-bg);
   --color-bg-highlight: var(--color-text);

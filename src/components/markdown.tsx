@@ -327,6 +327,8 @@ function Frontmatter({
   )
 }
 
+const anchorUrlSchema = z.union([z.string().url(), z.tuple([z.string().url()])])
+
 function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
   const [isFirst, setIsFirst] = React.useState(false)
@@ -360,11 +362,21 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   let children: React.ReactNode = props.children
 
   // If the text content of the link is a URL, remove the protocol and trailing slash
-  const urlSchema = z.tuple([z.string().url()])
-  const parsedChildren = urlSchema.safeParse(props.children)
+  const parsedChildren = anchorUrlSchema.safeParse(props.children)
   if (parsedChildren.success) {
-    children = parsedChildren.data[0].replace(/^https?:\/\//, "").replace(/\/$/, "")
+    const urlText =
+      typeof parsedChildren.data === "string" ? parsedChildren.data : parsedChildren.data[0]
+    children = urlText.replace(/^https?:\/\//, "").replace(/\/$/, "")
   }
+
+  // Check if the link contains only a single image element
+  const isSingleImageChild = React.isValidElement(props.children)
+    ? props.children.type === "img" || props.children.type === Image
+    : Array.isArray(props.children) &&
+      props.children.length === 1 &&
+      React.isValidElement(props.children[0]) &&
+      ((props.children[0] as React.ReactElement).type === "img" ||
+        (props.children[0] as React.ReactElement).type === Image)
 
   const link = (
     <a
@@ -374,7 +386,9 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
       {...props}
       className={cx(
         // Break long links
-        String(props.children).startsWith("http") && "[word-break:break-all]",
+        parsedChildren.success && "[word-break:break-all]",
+        // Add external link styling for non-image HTTP(S) links
+        props.href?.startsWith("http") && !isSingleImageChild && "link-external",
         props.className,
       )}
     >

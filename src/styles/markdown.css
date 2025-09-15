@@ -161,12 +161,8 @@
   @apply link;
 }
 
-.markdown a[href^="http"] {
-  @apply link-external;
-}
-
 .markdown img {
-  border-radius: var(--border-radius-base);
+  border-radius: var(--border-radius-sm);
   overflow: hidden;
 }
 
