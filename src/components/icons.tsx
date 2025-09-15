@@ -795,7 +795,7 @@ export function FullwidthIcon16(props: IconProps) {
         clipRule="evenodd"
         d="M0 3.5C0 2.11929 1.11929 1 2.5 1H13.5C14.8807 1 16 2.11929 16 3.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 0 13.8807 0 12.5V3.5ZM2.5 2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5H2.5Z"
       />
-      <path d="M3 4H13V12H3V4Z" fillOpacity="0.75" />
+      <path d="M3 4H13V12H3V4Z" className="opacity-60 eink:opacity-100" />
     </Icon>
   )
 }
@@ -808,7 +808,7 @@ export function CenteredIcon16(props: IconProps) {
         clipRule="evenodd"
         d="M0 3.5C0 2.11929 1.11929 1 2.5 1H13.5C14.8807 1 16 2.11929 16 3.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 0 13.8807 0 12.5V3.5ZM2.5 2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5H2.5Z"
       />
-      <path d="M5 4H11V12H5V4Z" fillOpacity="0.75" />
+      <path d="M5 4H11V12H5V4Z" className="opacity-60 eink:opacity-100" />
     </Icon>
   )
 }
@@ -817,7 +817,7 @@ export function SidebarCollapsedIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
       <path d="M13.5 1C14.8807 1 16 2.11929 16 3.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 4.0266e-09 13.8807 0 12.5V3.5C0 2.11929 1.11929 1 2.5 1H13.5ZM2.5 2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5H2.5Z" />
-      <rect x="3" y="4" width="2" height="8" fillOpacity="0.75" />
+      <rect x="3" y="4" width="2" height="8" className="opacity-60 eink:opacity-100" />
     </Icon>
   )
 }
@@ -826,7 +826,7 @@ export function SidebarIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
       <path d="M13.5 1C14.8807 1 16 2.11929 16 3.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 4.0266e-09 13.8807 0 12.5V3.5C0 2.11929 1.11929 1 2.5 1H13.5ZM2.5 2.5C1.94772 2.5 1.5 2.94772 1.5 3.5V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H13.5C14.0523 13.5 14.5 13.0523 14.5 12.5V3.5C14.5 2.94772 14.0523 2.5 13.5 2.5H2.5Z" />
-      <rect x="3" y="4" width="4" height="8" fillOpacity="0.75" />
+      <rect x="3" y="4" width="4" height="8" className="opacity-60 eink:opacity-100" />
     </Icon>
   )
 }
