@@ -7,7 +7,7 @@ export function Keys({ keys }: { keys: string[] }) {
         const isAlphabeticKey = /^[a-zA-Z]$/.test(key)
         return (
           <React.Fragment key={index}>
-            {isAlphabeticKey ? <span className="font-mono">{key}</span> : key}
+            {isAlphabeticKey ? <span className="font-sans-mono">{key}</span> : key}
           </React.Fragment>
         )
       })}

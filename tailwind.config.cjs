@@ -23,6 +23,7 @@ module.exports = {
     },
     fontFamily: {
       sans: "var(--font-family-sans)",
+      "sans-mono": "var(--font-family-sans-mono)",
       serif: "var(--font-family-serif)",
       handwriting: "var(--font-family-handwriting)",
       content: "var(--font-family-content)",
