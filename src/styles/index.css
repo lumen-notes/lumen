@@ -78,7 +78,7 @@ body:has([data-resizing="true"]) * {
   @apply rounded-lg border-0 ring-1 ring-[var(--neutral-a3)] dark:ring-inset;
   /* Undo ring-inset for eink theme */
   /* Reference: https://github.com/tailwindlabs/tailwindcss/discussions/3016#discussioncomment-8797920 */
-  @apply eink:dark:[--tw-ring-inset:_];
+  @apply eink:dark:[--tw-ring-inset:_] eink:ring-border;
 }
 
 .card-1 {

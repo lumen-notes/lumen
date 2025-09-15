@@ -165,12 +165,16 @@
 
   /* Background colors */
   --color-bg: #fff;
+  --color-bg-hover: var(--color-bg);
+  --color-bg-active: var(--color-bg);
   --color-bg-inset: var(--color-bg);
   --color-bg-card: var(--color-bg);
   --color-bg-overlay: var(--color-bg);
   --color-bg-backdrop: var(--color-bg);
   --color-bg-overlay-backdrop: var(--color-bg);
   --color-bg-secondary: var(--color-bg);
+  --color-bg-secondary-hover: var(--color-bg);
+  --color-bg-secondary-active: var(--color-bg);
   --color-bg-tertiary: var(--color-bg);
   --color-bg-code-block: var(--color-bg);
   --color-bg-highlight: var(--color-text);
@@ -187,6 +191,9 @@
   --color-syntax-red: var(--color-text);
   --color-syntax-purple: var(--color-text);
   --color-syntax-green: var(--color-text);
+
+  /* Border radii */
+  --border-radius-base: 0;
 }
 
 @media (prefers-color-scheme: dark) {

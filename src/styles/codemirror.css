@@ -73,6 +73,7 @@
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
   @apply bg-bg-secondary text-text;
+  @apply eink:bg-text eink:text-bg;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li .cm-completionDetail {
