@@ -36,8 +36,8 @@ import { startTimer } from "./utils/timer"
 // State machine
 // -----------------------------------------------------------------------------
 
-const GITHUB_USER_STORAGE_KEY = "github_user"
-const MARKDOWN_FILES_STORAGE_KEY = "markdown_files"
+const GITHUB_USER_STORAGE_KEY = "github_user" as const
+const MARKDOWN_FILES_STORAGE_KEY = "markdown_files" as const
 
 type Context = {
   githubUser: GitHubUser | null
