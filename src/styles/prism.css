@@ -11,7 +11,7 @@
 }
 
 .prism .function {
-  color: var(--color-syntax-yellow);
+  color: var(--color-syntax-cyan);
 }
 
 .prism .property {
@@ -31,7 +31,7 @@
 }
 
 .prism .attr-value {
-  color: var(--color-syntax-yellow);
+  color: var(--color-syntax-cyan);
 }
 
 .prism .key {

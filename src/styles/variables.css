@@ -34,11 +34,11 @@
   --color-text: var(--neutral-12);
   --color-text-secondary: var(--neutral-11);
   --color-text-tertiary: var(--neutral-10);
-  --color-text-highlight: var(--yellow-a12);
+  --color-text-highlight: var(--amber-a12);
   --color-text-selection: var(--neutral-12);
   --color-text-success: var(--green-11);
   --color-text-danger: var(--red-11);
-  --color-text-pending: var(--yellow-11);
+  --color-text-pending: var(--amber-11);
   --color-text-pinned: var(--orange-11);
 
   /* Background colors */
@@ -55,7 +55,7 @@
   --color-bg-secondary-active: var(--neutral-a5);
   --color-bg-tertiary: var(--neutral-a4);
   --color-bg-code-block: var(--neutral-3);
-  --color-bg-highlight: var(--yellow-a4);
+  --color-bg-highlight: var(--amber-a3);
   --color-bg-selection: var(--cyan-a4);
 
   /* Border colors */
@@ -65,7 +65,7 @@
   --color-border-focus: var(--cyan-9);
 
   /* Syntax colors */
-  --color-syntax-yellow: var(--yellow11);
+  --color-syntax-cyan: var(--cyan-11);
   --color-syntax-red: var(--red-11);
   --color-syntax-purple: var(--purple-11);
   --color-syntax-green: var(--green-11);
@@ -123,7 +123,7 @@
     --color-border-focus: var(--cyan-11);
 
     /* Syntax colors */
-    --color-syntax-yellow: var(--yellow-12);
+    --color-syntax-cyan: var(--cyan-12);
     --color-syntax-red: var(--red-12);
     --color-syntax-purple: var(--purple-12);
     --color-syntax-green: var(--green-12);
@@ -183,7 +183,7 @@
   --color-border-focus: var(--color-text);
 
   /* Syntax colors */
-  --color-syntax-yellow: var(--color-text);
+  --color-syntax-cyan: var(--color-text);
   --color-syntax-red: var(--color-text);
   --color-syntax-purple: var(--color-text);
   --color-syntax-green: var(--color-text);
@@ -231,7 +231,7 @@
     --color-border-focus: var(--color-text);
 
     /* Syntax colors */
-    --color-syntax-yellow: var(--color-text);
+    --color-syntax-cyan: var(--color-text);
     --color-syntax-red: var(--color-text);
     --color-syntax-purple: var(--color-text);
     --color-syntax-green: var(--color-text);
