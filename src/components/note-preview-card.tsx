@@ -8,7 +8,7 @@ import { githubRepoAtom, globalStateMachineAtom, isSignedOutAtom } from "../glob
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { NoteId } from "../schema"
 import { cx } from "../utils/cx"
-import { updateFrontmatter } from "../utils/frontmatter"
+import { updateFrontmatterValue } from "../utils/frontmatter"
 import { pluralize } from "../utils/pluralize"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
@@ -98,7 +98,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             if (isSignedOut) return
             saveNote({
               id,
-              content: updateFrontmatter({
+              content: updateFrontmatterValue({
                 content: note.content,
                 properties: { pinned: note.pinned ? null : true },
               }),
@@ -177,7 +177,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             onPublish={(gistId) => {
               saveNote({
                 id,
-                content: updateFrontmatter({
+                content: updateFrontmatterValue({
                   content: note.content,
                   properties: { gist_id: gistId },
                 }),
@@ -186,7 +186,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
             onUnpublish={() => {
               saveNote({
                 id,
-                content: updateFrontmatter({
+                content: updateFrontmatterValue({
                   content: note.content,
                   properties: { gist_id: null },
                 }),
