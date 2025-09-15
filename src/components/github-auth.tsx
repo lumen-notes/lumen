@@ -2,6 +2,7 @@ import { useSetAtom } from "jotai"
 import urlcat from "urlcat"
 import { globalStateMachineAtom } from "../global-state"
 import { Button, ButtonProps } from "./button"
+import { GitHubIcon16 } from "./icons"
 
 export function SignInButton(props: ButtonProps) {
   const send = useSetAtom(globalStateMachineAtom)
@@ -31,6 +32,7 @@ export function SignInButton(props: ButtonProps) {
         props.onClick?.(event)
       }}
     >
+      <GitHubIcon16 />
       Sign in with GitHub
     </Button>
   )
