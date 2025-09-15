@@ -71,7 +71,7 @@ import {
   isValidDateString,
   isValidWeekString,
 } from "../utils/date"
-import { updateFrontmatter } from "../utils/frontmatter"
+import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
@@ -245,7 +245,7 @@ function NotePage() {
     (font: Font | null) => {
       if (!noteId) return
 
-      const newContent = updateFrontmatter({
+      const newContent = updateFrontmatterValue({
         content: editorValue,
         properties: { font },
       })
@@ -260,7 +260,7 @@ function NotePage() {
     (width: Width) => {
       if (!noteId) return
 
-      const newContent = updateFrontmatter({
+      const newContent = updateFrontmatterValue({
         content: editorValue,
         // "fixed" is the default width
         properties: { width: width === "fixed" ? null : width },
@@ -575,7 +575,7 @@ function NotePage() {
               aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
               size="small"
               onClick={() => {
-                const newContent = updateFrontmatter({
+                const newContent = updateFrontmatterValue({
                   content: editorValue,
                   properties: { pinned: parsedNote?.pinned ? null : true },
                 })
@@ -724,7 +724,7 @@ function NotePage() {
             <ShareDialog
               note={parsedNote}
               onPublish={(gistId) => {
-                const newContent = updateFrontmatter({
+                const newContent = updateFrontmatterValue({
                   content: editorValue,
                   properties: { gist_id: gistId },
                 })
@@ -732,7 +732,7 @@ function NotePage() {
                 handleSave(newContent)
               }}
               onUnpublish={() => {
-                const newContent = updateFrontmatter({
+                const newContent = updateFrontmatterValue({
                   content: editorValue,
                   properties: { gist_id: null },
                 })

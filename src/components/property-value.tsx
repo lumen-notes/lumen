@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router"
 import { isToday } from "date-fns"
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { z } from "zod"
 import {
   formatDate,
@@ -252,6 +252,10 @@ export function PropertyValueEditor({
   onChange,
 }: PropertyValueEditorProps) {
   const [mode, setMode] = useState<"read" | "write">("read")
+  const buttonRef = useRef<HTMLDivElement>(null)
+  const lastPointerDownTimeRef = useRef(0)
+  const lastPointerOnInteractiveRef = useRef(false)
+  const skipFocusWriteRef = useRef(false)
 
   // Prevent double-clicks inside the property editor from bubbling to the page,
   // which would otherwise toggle full-page write mode.
@@ -287,6 +291,14 @@ export function PropertyValueEditor({
     setMode("write")
   }, [])
 
+  const handleButtonPointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    lastPointerDownTimeRef.current = Date.now()
+    const target = event.target as HTMLElement | null
+    lastPointerOnInteractiveRef.current = !!target?.closest(
+      "a,button,input,textarea,select,summary,[contenteditable='true'],[contenteditable='']",
+    )
+  }, [])
+
   const handleButtonKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.defaultPrevented) return
     if (event.target !== event.currentTarget) return
@@ -296,17 +308,33 @@ export function PropertyValueEditor({
     }
   }, [])
 
+  const handleButtonFocus = useCallback((event: React.FocusEvent<HTMLDivElement>) => {
+    if (skipFocusWriteRef.current) {
+      skipFocusWriteRef.current = false
+      return
+    }
+    const timeSincePointerMs = Date.now() - lastPointerDownTimeRef.current
+    // Only switch to write on focus if it was not caused by a recent pointer
+    // interaction (touch/mouse). This preserves link taps on mobile.
+    if (timeSincePointerMs > 400 && !lastPointerOnInteractiveRef.current) {
+      setMode("write")
+    }
+  }, [])
+
   if (onChange && typeof value === "string") {
     return (
       <div className="min-h-8 coarse:min-h-10">
         {mode === "read" ? (
           <div
-            className="leading-[1.75] focus-ring hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-1 coarse:px-3 coarse:py-2 w-full text-left rounded"
+            ref={buttonRef}
             role="button"
             tabIndex={0}
+            className="leading-[1.75] focus-ring hover:ring-inset hover:ring-1 cursor-text hover:ring-border px-2 py-1 coarse:px-3 coarse:py-2 w-full text-left rounded"
             onMouseDown={stopPropagationOnDoubleClick}
+            onPointerDown={handleButtonPointerDown}
             onClick={handleButtonClick}
             onKeyDown={handleButtonKeyDown}
+            onFocus={handleButtonFocus}
           >
             <PropertyValue property={[key, value]} />
           </div>
@@ -317,6 +345,20 @@ export function PropertyValueEditor({
             className="focus-within:ring-2 focus-within:ring-inset focus-within:ring-border-focus rounded"
             onMouseDown={stopPropagationOnDoubleClick}
             onBlur={handleBlur}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" && !event.metaKey && !event.ctrlKey) {
+                event.preventDefault()
+                event.stopPropagation()
+                setMode("read")
+                setTimeout(() => {
+                  skipFocusWriteRef.current = true
+                  buttonRef.current?.focus()
+                  setTimeout(() => {
+                    skipFocusWriteRef.current = false
+                  })
+                })
+              }
+            }}
           >
             <NoteEditor
               defaultValue={value}

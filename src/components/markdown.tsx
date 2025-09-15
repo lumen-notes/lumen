@@ -20,9 +20,12 @@ import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import { formatWeek, formatWeekDistance, isValidDateString, isValidWeekString } from "../utils/date"
-import { parseFrontmatter, updateFrontmatter } from "../utils/frontmatter"
+import {
+  parseFrontmatter,
+  updateFrontmatterValue,
+  updateFrontmatterKey,
+} from "../utils/frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
-import { sentenceCase } from "../utils/sentence-case"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
 import { DateLink } from "./date-link"
@@ -33,6 +36,7 @@ import { ErrorIcon16 } from "./icons"
 import { NotePreview } from "./note-preview"
 import { PillButton } from "./pill-button"
 import { PropertyValueEditor } from "./property-value"
+import { PropertyKeyEditor } from "./property-key"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
@@ -169,11 +173,20 @@ export const Markdown = React.memo(
                       <div className="p-3 coarse:p-2 bg-bg-code-block rounded-lg">
                         <Frontmatter
                           frontmatter={filteredFrontmatter}
-                          onChange={(key, value) =>
+                          onKeyChange={(oldKey, newKey) =>
                             onChange?.(
-                              updateFrontmatter({
+                              updateFrontmatterKey({
                                 content: children,
-                                properties: { [key]: value },
+                                oldKey,
+                                newKey,
+                              }),
+                            )
+                          }
+                          onValueChange={(key, newValue) =>
+                            onChange?.(
+                              updateFrontmatterValue({
+                                content: children,
+                                properties: { [key]: newValue },
                               }),
                             )
                           }
@@ -300,25 +313,25 @@ function BookCover({ isbn }: { isbn: string }) {
 function Frontmatter({
   frontmatter,
   className,
-  onChange,
+  onKeyChange,
+  onValueChange,
 }: {
   frontmatter: Record<string, unknown>
   className?: string
-  onChange?: (key: string, value: unknown) => void
+  onKeyChange?: (oldKey: string, newKey: string) => void
+  onValueChange?: (key: string, value: unknown) => void
 }) {
   if (Object.keys(frontmatter).length === 0) return null
 
   return (
     <div className={cx("@container empty:hidden grid gap-2", className)}>
-      {Object.entries(frontmatter).map(([key, value]) => {
+      {Object.entries(frontmatter).map(([key, value], i) => {
         return (
-          <div key={key} className="grid grid-cols-[2fr_3fr] gap-2 @[24rem]:grid-cols-[10rem_1fr]">
-            <div className="truncate text-text-secondary py-1 px-2 coarse:px-3 coarse:py-2 font-sans leading-[1.75]">
-              {sentenceCase(key)}
-            </div>
+          <div key={i} className="grid grid-cols-[2fr_3fr] gap-1 @[24rem]:grid-cols-[10rem_1fr]">
+            <PropertyKeyEditor name={key} onChange={(newName) => onKeyChange?.(key, newName)} />
             <PropertyValueEditor
               property={[key, value]}
-              onChange={(value) => onChange?.(key, value)}
+              onChange={(newValue) => onValueChange?.(key, newValue)}
             />
           </div>
         )

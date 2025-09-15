@@ -1,25 +1,26 @@
 import { describe, test, expect } from "vitest"
-import { updateFrontmatter } from "./frontmatter"
+import { updateFrontmatterKey, updateFrontmatterValue } from "./frontmatter"
 
-describe("updateFrontmatter", () => {
+describe("updateFrontmatterValue", () => {
   function runTests(
     tests: {
+      description: string
       content: string
       properties: Record<string, string | boolean | number | null>
       output: string
     }[],
   ) {
-    for (const { content, properties, output } of tests) {
-      test(JSON.stringify({ content, properties }), () => {
-        const result = updateFrontmatter({ content, properties })
+    for (const { description, content, properties, output } of tests) {
+      test(description, () => {
+        const result = updateFrontmatterValue({ content, properties })
         expect(result).toBe(output)
       })
     }
   }
 
   runTests([
-    // Add new frontmatter
     {
+      description: "add new frontmatter",
       content: "Hello",
       properties: { title: "Test" },
       output: `---
@@ -28,8 +29,8 @@ title: "Test"
 
 Hello`,
     },
-    // Handle empty string values
     {
+      description: "handle empty string values",
       content: "Hello",
       properties: { title: "" },
       output: `---
@@ -38,8 +39,8 @@ title: ""
 
 Hello`,
     },
-    // Update existing frontmatter
     {
+      description: "update existing frontmatter",
       content: `---
 title: Old
 ---
@@ -52,8 +53,8 @@ title: "New"
 
 Hello`,
     },
-    // Add new property to existing frontmatter
     {
+      description: "add new property to existing frontmatter",
       content: `---
 title: Test
 ---
@@ -67,8 +68,8 @@ tags: "test"
 
 Hello`,
     },
-    // Remove property using null
     {
+      description: "remove property using null",
       content: `---
 title: Test
 tags: test
@@ -82,8 +83,8 @@ title: Test
 
 Hello`,
     },
-    // Update multiple properties
     {
+      description: "update multiple properties",
       content: `---
 title: Test
 tags: old
@@ -98,8 +99,8 @@ tags: "new"
 
 Hello`,
     },
-    // Handle boolean values
     {
+      description: "handle boolean values",
       content: "Hello",
       properties: { draft: true },
       output: `---
@@ -108,8 +109,8 @@ draft: true
 
 Hello`,
     },
-    // Handle number values
     {
+      description: "handle number values",
       content: "Hello",
       properties: { priority: 1 },
       output: `---
@@ -118,8 +119,8 @@ priority: 1
 
 Hello`,
     },
-    // Remove all properties
     {
+      description: "remove all properties",
       content: `---
 title: Test
 tags: test
@@ -129,8 +130,8 @@ Hello`,
       properties: { title: null, tags: null },
       output: "Hello",
     },
-    // Empty content with frontmatter
     {
+      description: "empty content with frontmatter",
       content: "",
       properties: { title: "Test" },
       output: `---
@@ -138,6 +139,153 @@ title: "Test"
 ---
 
 `,
+    },
+    {
+      description: "add quoted key when key contains space",
+      content: "Hello",
+      properties: { "draft status": true },
+      output: `---
+"draft status": true
+---
+
+Hello`,
+    },
+    {
+      description: "update existing quoted key value",
+      content: `---
+"draft status": false
+---
+
+Hello`,
+      properties: { "draft status": true },
+      output: `---
+"draft status": true
+---
+
+Hello`,
+    },
+    {
+      description: "add property when key contains colon (quoted)",
+      content: "Hello",
+      properties: { "title:subtitle": "Part I" },
+      output: `---
+"title:subtitle": "Part I"
+---
+
+Hello`,
+    },
+    {
+      description: "update existing quoted colon key value",
+      content: `---
+"title:subtitle": "Part I"
+---
+
+Hello`,
+      properties: { "title:subtitle": "Part II" },
+      output: `---
+"title:subtitle": "Part II"
+---
+
+Hello`,
+    },
+  ])
+})
+
+describe("updateFrontmatterKey", () => {
+  function runTests(
+    tests: {
+      description: string
+      content: string
+      oldKey: string
+      newKey: string
+      output: string
+    }[],
+  ) {
+    for (const { description, content, oldKey, newKey, output } of tests) {
+      test(description, () => {
+        const result = updateFrontmatterKey({ content, oldKey, newKey })
+        expect(result).toBe(output)
+      })
+    }
+  }
+
+  runTests([
+    {
+      description: "empty new key leaves content unchanged",
+      content: `---
+title: "Hello"
+---
+
+Body`,
+      oldKey: "title",
+      newKey: "",
+      output: `---
+title: "Hello"
+---
+
+Body`,
+    },
+    {
+      description: "rename key to unquoted safe name",
+      content: `---
+"draft status": true
+---
+
+Hello`,
+      oldKey: "draft status",
+      newKey: "draft-status",
+      output: `---
+draft-status: true
+---
+
+Hello`,
+    },
+    {
+      description: "rename key to quoted unsafe name",
+      content: `---
+title: "Hello"
+---
+
+Body`,
+      oldKey: "title",
+      newKey: "page title",
+      output: `---
+"page title": "Hello"
+---
+
+Body`,
+    },
+    {
+      description: "renaming to existing key appends numeric suffix",
+      content: `---
+foo: 1
+bar: 2
+---
+
+Body`,
+      oldKey: "foo",
+      newKey: "bar",
+      output: `---
+bar1: 1
+bar: 2
+---
+
+Body`,
+    },
+    {
+      description: "rename colon key to safe key without quotes",
+      content: `---
+"title:subtitle": "Part I"
+---
+
+Hello`,
+      oldKey: "title:subtitle",
+      newKey: "title_subtitle",
+      output: `---
+title_subtitle: "Part I"
+---
+
+Hello`,
     },
   ])
 })
