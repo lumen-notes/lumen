@@ -63,7 +63,7 @@ export function CheatsheetDialog() {
         <CheatsheetSection title="Note shortcuts">
           <CheatsheetItem>
             <span>Toggle read/write mode</span>
-            <Keys keys={["⌥", "⇥"]} />
+            <Keys keys={["⌘", "E"]} />
           </CheatsheetItem>
           <CheatsheetItem>
             <span>Save note</span>

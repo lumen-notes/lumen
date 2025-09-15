@@ -132,7 +132,7 @@ function RouteComponent() {
   )
 }
 
-const toggleModeShortcut = ["⌥", "⇥"]
+const toggleModeShortcut = ["⌘", "E"]
 
 function renderTemplate(template: Template, args: Record<string, unknown> = {}) {
   let text = ejs.render(template.body, args)
@@ -420,7 +420,7 @@ function NotePage() {
 
   // Keyboard shortcuts
   useHotkeys(
-    "alt+tab",
+    "mod+e",
     (event) => {
       toggleMode()
       event.preventDefault()
