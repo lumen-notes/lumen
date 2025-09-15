@@ -200,7 +200,7 @@ export const Markdown = React.memo(
                     (!filteredFrontmatter ||
                       isObjectEmpty(filteredFrontmatter) ||
                       hideFrontmatter) ? (
-                      <span className="text-text-secondary italic font-sans">Empty</span>
+                      <span className="text-text-tertiary italic font-sans">Empty</span>
                     ) : body ? (
                       <MarkdownContent>{body}</MarkdownContent>
                     ) : null
