@@ -1,6 +1,6 @@
-import { cx } from "../utils/cx"
 import { useCallback } from "react"
-import { TriangleRightIcon12 } from "./icons"
+import { cx } from "../utils/cx"
+import { ChevronRightIcon12 } from "./icons"
 
 function Root({
   children,
@@ -36,11 +36,9 @@ function Summary({ children, className }: { children: React.ReactNode; className
       )}
       onMouseDown={stopPropagationOnDoubleClick}
     >
-      <div className="flex select-none items-center text-text-secondary rounded gap-1 -ml-1 leading-5">
-        <div className="p-1 flex group-hover/summary:bg-bg-hover group-active/summary:bg-bg-active rounded-full group-focus-visible/summary:text-text group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus group-focus-visible/summary:-outline-offset-2">
-          <TriangleRightIcon12 className="transition-transform group-open/details:rotate-90 " />
-        </div>
+      <div className="flex px-2 -mx-2 py-0.5 select-none items-center text-text-secondary rounded gap-1.5 leading-5 group-hover/summary:text-text group-focus-visible/summary:outline group-focus-visible/summary:outline-2 group-focus-visible/summary:outline-border-focus group-focus-visible/summary:-outline-offset-2">
         {children}
+        <ChevronRightIcon12 className="transition-transform group-open/details:rotate-90" />
       </div>
     </summary>
   )

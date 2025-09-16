@@ -152,8 +152,11 @@
 /* E-ink theme */
 
 [data-theme="eink"] {
+  --color-light: #fff;
+  --color-dark: #000;
+
   /* Text colors */
-  --color-text: #000;
+  --color-text: var(--color-dark);
   --color-text-secondary: var(--color-text);
   --color-text-tertiary: var(--color-text);
   --color-text-highlight: var(--color-bg);
@@ -164,7 +167,7 @@
   --color-text-pinned: var(--color-text);
 
   /* Background colors */
-  --color-bg: #fff;
+  --color-bg: var(--color-light);
   --color-bg-hover: transparent;
   --color-bg-active: transparent;
   --color-bg-inset: var(--color-bg);
@@ -198,8 +201,8 @@
 
 @media (prefers-color-scheme: dark) {
   [data-theme="eink"] {
-    --color-text: #fff;
-    --color-bg: #000;
+    --color-text: var(--color-light);
+    --color-bg: var(--color-dark);
   }
 }
 

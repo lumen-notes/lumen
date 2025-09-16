@@ -19,7 +19,7 @@ export function PropertyKeyEditor({ name, onChange }: PropertyKeyEditorProps) {
   )
 
   return (
-    <div className="truncate font-mono leading-7">
+    <div className="truncate leading-7">
       {mode === "read" ? (
         <button
           ref={buttonRef}

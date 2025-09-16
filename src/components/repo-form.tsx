@@ -104,7 +104,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
   return (
     <form
       id="github-form"
-      className={cx("flex flex-col gap-6 @container", className)}
+      className={cx("flex flex-col gap-5 @container", className)}
       onSubmit={async (event) => {
         event.preventDefault()
 
@@ -129,13 +129,13 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
         className="flex flex-col gap-3 coarse:gap-4"
         name="repo-type"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="repo-existing" value="existing" />
           <label htmlFor="repo-existing" className="select-none leading-4">
             Select an existing repository
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="repo-new" value="new" />
           <label htmlFor="repo-new" className="select-none leading-4">
             Create a new repository
@@ -143,7 +143,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
         </div>
       </RadioGroup>
       <div className="flex flex-col gap-4 @lg:gap-3">
-        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-3">
+        <div className="flex flex-col gap-4 @lg:flex-row @lg:gap-2.5">
           <FormControl htmlFor="repo-owner" label="Repository owner">
             <TextInput
               id="repo-owner"
@@ -178,7 +178,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
           </div>
         ) : null}
       </div>
-      <div className="flex gap-2 @lg:ml-auto">
+      <div className="flex gap-2.5 @lg:ml-auto">
         {onCancel ? (
           <Button className="w-full" onClick={onCancel}>
             Cancel

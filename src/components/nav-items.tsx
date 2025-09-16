@@ -125,7 +125,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
           </ul>
           {pinnedNotes.length > 0 ? (
             <div className="flex flex-col gap-1">
-              <div className="flex h-8 items-center px-2 text-sm font-medium text-text-secondary coarse:h-10 coarse:px-3">
+              <div className="flex h-8 items-center px-2 text-sm text-text-secondary coarse:h-10 coarse:px-3">
                 Pinned
               </div>
               <ul className="flex flex-col gap-1">

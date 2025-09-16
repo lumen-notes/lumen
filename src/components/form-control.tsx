@@ -23,7 +23,7 @@ export function FormControl({
     <div className={cx("flex flex-col gap-2 w-full", className)}>
       <label
         htmlFor={htmlFor}
-        className={cx("self-start leading-[1.25]", visuallyHideLabel && "sr-only")}
+        className={cx("self-start text-sm/4 text-text-secondary", visuallyHideLabel && "sr-only")}
       >
         {label}
         {required ? <span className="ml-1 text-text-secondary">*</span> : null}

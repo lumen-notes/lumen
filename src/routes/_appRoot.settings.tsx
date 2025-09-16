@@ -167,13 +167,13 @@ function ThemeSection() {
         className="flex flex-col gap-3 coarse:gap-4"
         name="theme"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="theme-default" value="default" />
           <label htmlFor="theme-default" className="select-none leading-4">
             Default
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="theme-eink" value="eink" />
           <label htmlFor="theme-eink" className="select-none leading-4">
             E-ink
@@ -197,19 +197,19 @@ function FontSection() {
         className="flex flex-col gap-3 coarse:gap-4"
         name="font"
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="font-sans" value="sans" />
           <label htmlFor="font-sans" className="select-none font-sans leading-4">
             Sans serif
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="font-serif" value="serif" />
           <label htmlFor="font-serif" className="select-none font-serif leading-4">
             Serif
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <RadioGroup.Item id="font-handwriting" value="handwriting" />
           <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
             Handwriting
@@ -226,7 +226,7 @@ function EditorSection() {
   return (
     <SettingsSection title="Editor">
       <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Switch
             id="vim-mode"
             defaultChecked={editorSettings.vimMode}
@@ -236,7 +236,7 @@ function EditorSection() {
             Vim mode
           </label>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Switch
             id="line-numbers"
             defaultChecked={editorSettings.lineNumbers}
@@ -246,7 +246,7 @@ function EditorSection() {
             Line numbers
           </label>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Switch
             id="fold-gutter"
             defaultChecked={editorSettings.foldGutter}
@@ -271,7 +271,7 @@ function AISection() {
         <OpenAIKeyInput />
         <div role="separator" className="h-px bg-border-secondary" />
         <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2.5">
             <Switch
               id="voice-assistant"
               disabled={!hasOpenAIKey}
