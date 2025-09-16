@@ -25,7 +25,7 @@
 }
 
 [cmdk-group-heading] {
-  @apply flex h-8 items-center px-3 text-sm font-medium text-text-secondary;
+  @apply flex h-8 items-center px-3 text-sm text-text-secondary;
 }
 
 [cmdk-group]:not(:first-child) {

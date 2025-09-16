@@ -111,7 +111,7 @@ export function ShareDialog({
                   </IconButton>
                 </div>
               </FormControl>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5">
                 <Button
                   variant="secondary"
                   onClick={handleUnpublish}

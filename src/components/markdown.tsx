@@ -170,7 +170,7 @@ export const Markdown = React.memo(
                   !isObjectEmpty(filteredFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
-                      <div className="p-3 coarse:p-2 bg-bg-code-block rounded-lg">
+                      <div className="-mx-2 coarse:-mx-3">
                         <Frontmatter
                           frontmatter={filteredFrontmatter}
                           onKeyChange={(oldKey, newKey) =>

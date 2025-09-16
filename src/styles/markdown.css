@@ -152,7 +152,7 @@
   inset-block: 0;
   left: 0;
   width: 3px;
-  border-radius: var(--border-radius-full);
+  border-radius: var(--border-radius-sm);
   background-color: var(--color-border);
   content: "";
 }

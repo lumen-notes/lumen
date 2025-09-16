@@ -792,7 +792,7 @@ function NotePage() {
         }}
       >
         <div {...topSentinelProps} />
-        <div className="p-4 lg:p-8">
+        <div className="p-5 lg:p-10">
           <div
             className={cx(
               "flex flex-col gap-8 pb-[50vh]",
@@ -833,6 +833,7 @@ function NotePage() {
             <div
               hidden={mode !== "write"}
               className={cx(
+                "min-h-[160px]",
                 isDraggingFile &&
                   "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
               )}

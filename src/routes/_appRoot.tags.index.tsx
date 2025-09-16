@@ -4,12 +4,12 @@ import { useDeferredValue, useMemo, useState } from "react"
 import { AppLayout } from "../components/app-layout"
 import { IconButton } from "../components/icon-button"
 import {
+  ChevronRightIcon12,
   GridIcon16,
   ListIcon16,
   SortAlphabetAscIcon16,
   SortNumberDescIcon16,
   TagIcon16,
-  TriangleRightIcon12,
 } from "../components/icons"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
@@ -239,10 +239,10 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
             aria-label={expanded ? "Collapse" : "Expand"}
             disableTooltip
             size="small"
-            className="rounded-full size-6 p-0 coarse:size-8 coarse:p-0"
+            className="size-6 p-0 coarse:size-8 coarse:p-0"
             onClick={() => setExpanded(!expanded)}
           >
-            <TriangleRightIcon12 className={cx("transition-transform", expanded && "rotate-90")} />
+            <ChevronRightIcon12 className={cx("transition-transform", expanded && "rotate-90")} />
           </IconButton>
         ) : null}
       </div>

@@ -221,7 +221,7 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded before:content-['']",
+            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
 
           // Show a dot if the date has notes
           hasNotes &&
