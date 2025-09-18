@@ -1,5 +1,5 @@
-import React from "react"
 import * as Tooltip from "@radix-ui/react-tooltip"
+import React from "react"
 import "../src/styles/index.css"
 
 export const parameters = {
@@ -12,10 +12,30 @@ export const parameters = {
   },
 }
 
+export const globalTypes = {
+  theme: {
+    toolbar: {
+      icon: "mirror",
+      items: ["default", "eink"],
+      dynamicTitle: true,
+    },
+  },
+}
+
+export const initialGlobals = {
+  theme: "default",
+}
+
 export const decorators = [
-  (Story) => (
-    <Tooltip.Provider>
-      <Story />
-    </Tooltip.Provider>
-  ),
+  (Story, context) => {
+    React.useEffect(() => {
+      document.documentElement.setAttribute("data-theme", context.globals.theme || "default")
+    }, [context.globals.theme])
+
+    return (
+      <Tooltip.Provider>
+        <Story />
+      </Tooltip.Provider>
+    )
+  },
 ]

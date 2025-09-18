@@ -99,7 +99,7 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
       {levels.map((level, index) => (
         <div
           key={index}
-          className="rounded-full bg-[currentColor]"
+          className="rounded-sm bg-[currentColor]"
           style={{
             width: `${BAR_WIDTH}px`,
             height: `${MIN_BAR_HEIGHT + level * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT)}px`,
