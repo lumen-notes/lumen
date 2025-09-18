@@ -65,12 +65,15 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         <div
           className={cx(
             "flex w-0 flex-grow items-center gap-3",
-            variant === "danger" && "text-text-danger",
+            variant === "danger" && "text-text-danger eink:group-focus:text-bg",
           )}
         >
           {icon ? (
             <div
-              className={cx("flex text-text-secondary", variant === "danger" && "text-text-danger")}
+              className={cx(
+                "flex text-text-secondary eink:group-focus:text-bg",
+                variant === "danger" && "text-text-danger",
+              )}
             >
               {icon}
             </div>
@@ -91,7 +94,9 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <RadixDropdownMenu.Item
         ref={ref}
         className={cx(
-          "flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-hover focus:outline-none active:bg-bg-active data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent coarse:h-10",
+          "group flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-hover focus:outline-none active:bg-bg-active coarse:h-10",
+          "eink:focus:bg-text eink:focus:text-bg",
+          "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent",
           className,
         )}
         asChild={Boolean(href)}

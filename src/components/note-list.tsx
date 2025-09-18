@@ -220,7 +220,11 @@ export function NoteList({
                         <DropdownMenu.Item
                           key={tag}
                           icon={<TagIcon16 />}
-                          trailingVisual={<span className="text-text-secondary">{frequency}</span>}
+                          trailingVisual={
+                            <span className="text-text-secondary eink:text-current">
+                              {frequency}
+                            </span>
+                          }
                           onClick={(event) => {
                             const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
                             onQueryChange(query ? `${query} ${qualifier}` : qualifier)

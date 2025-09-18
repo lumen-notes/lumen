@@ -54,6 +54,7 @@
   padding-inline: var(--font-size-base);
   padding-block: calc(var(--font-size-base) * 0.75);
   min-height: 48px;
+  @apply eink:border eink:border-border;
 }
 
 .markdown code {

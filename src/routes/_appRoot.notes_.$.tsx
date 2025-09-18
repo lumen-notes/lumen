@@ -19,11 +19,11 @@ import { Details } from "../components/details"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
-  CenteredIcon16,
+  WidthFixedIcon16,
   CopyIcon16,
   EditIcon16,
   ExternalLinkIcon16,
-  FullwidthIcon16,
+  WidthFullIcon16,
   GlobeIcon16,
   MoreIcon16,
   NoteIcon16,
@@ -614,7 +614,7 @@ function NotePage() {
                   onSelect={() => updateFont(null)}
                 >
                   Default{" "}
-                  <span className="italic text-text-secondary">
+                  <span className="italic text-text-secondary eink:text-current">
                     ({fontDisplayNames[defaultFont]})
                   </span>
                 </DropdownMenu.Item>
@@ -633,7 +633,7 @@ function NotePage() {
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Item
-                      icon={<CenteredIcon16 />}
+                      icon={<WidthFixedIcon16 />}
                       selected={resolvedWidth === "fixed"}
                       onSelect={() => {
                         updateWidth("fixed")
@@ -643,7 +643,7 @@ function NotePage() {
                       Centered content
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
-                      icon={<FullwidthIcon16 />}
+                      icon={<WidthFullIcon16 />}
                       selected={resolvedWidth === "fill"}
                       onSelect={() => {
                         updateWidth("fill")

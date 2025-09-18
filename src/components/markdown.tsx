@@ -296,7 +296,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="inline-block rounded-sm bg-bg-secondary shadow-sm transition-[box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+      className="inline-block rounded-sm bg-bg-secondary shadow-sm eink:shadow-none transition-[box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"

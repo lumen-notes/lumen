@@ -1,6 +1,7 @@
 import React from "react"
 import * as icons from "./icons"
 import { StoryObj } from "@storybook/react"
+import { cx } from "../utils/cx"
 
 export default {
   title: "Icons",
@@ -22,18 +23,29 @@ const iconsBySize = Object.entries(icons).reduce(
 )
 
 export const All = {
-  render: () => (
-    <div className="flex flex-col gap-8 p-8">
+  render: (args: { showNames: boolean }) => (
+    <div className={cx("flex flex-col gap-8 p-8", !args.showNames && "mx-auto max-w-3xl")}>
       {Object.entries(iconsBySize).map(([size, icons]) => (
-        <div key={size} className="flex flex-col gap-4">
+        <div key={size} className="flex flex-col gap-6">
           <h3 className="text-base font-bold">
             {size}&times;{size}
           </h3>
-          <div className="grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] gap-4">
+          <div
+            className={cx(
+              args.showNames
+                ? "grid grid-cols-[repeat(auto-fill,_minmax(240px,_1fr))] gap-4"
+                : "flex flex-wrap gap-[calc(var(--size)*2)]",
+            )}
+            style={
+              {
+                "--size": `${size}px`,
+              } as React.CSSProperties
+            }
+          >
             {icons.map(([name, Icon]) => (
-              <div key={name} className="flex items-center gap-4">
+              <div key={name} className="flex items-center gap-4 [&_svg]:text-text-secondary">
                 <Icon />
-                <span>{name}</span>
+                {args.showNames && <span>{name}</span>}
               </div>
             ))}
           </div>
@@ -41,6 +53,9 @@ export const All = {
       ))}
     </div>
   ),
+  args: {
+    showNames: false,
+  },
 }
 
 export const Calendar: StoryObj<{ date: number }> = {
