@@ -335,7 +335,11 @@ function parsePrimitiveFromString(input: string): string | number | boolean {
   const numericPattern = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/
   if (numericPattern.test(trimmed)) {
     const n = Number(trimmed)
-    if (!Number.isNaN(n)) return n
+    if (Number.isFinite(n)) {
+      // Avoid silent precision loss for integers beyond JS safe range
+      if (Number.isInteger(n) && !Number.isSafeInteger(n)) return input
+      return n
+    }
   }
 
   return input
