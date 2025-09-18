@@ -10,17 +10,18 @@ import {
   toDateString,
   toDateStringUtc,
 } from "../utils/date"
+import { Checkbox } from "./checkbox"
 import { DateLink } from "./date-link"
-import { BlueskyIcon16, GitHubIcon16, InstagramIcon16, TwitterIcon16, YouTubeIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { TagLink } from "./tag-link"
 
 type PropertyValueProps = {
   property: [string, unknown]
+  onChange?: (value: unknown) => void
 }
 
-export function PropertyValue({ property: [key, value] }: PropertyValueProps) {
+export function PropertyValue({ property: [key, value], onChange }: PropertyValueProps) {
   // Special keys
   switch (key) {
     case "isbn":
@@ -34,86 +35,6 @@ export function PropertyValue({ property: [key, value] }: PropertyValueProps) {
             rel="noopener noreferrer"
           >
             {`${value}`}
-          </a>
-        </div>
-      )
-
-    case "github":
-      if (!value || typeof value !== "string") break
-      return (
-        <div className="flex items-center gap-2">
-          <GitHubIcon16 />
-          <a
-            className="link link-external"
-            href={`https://github.com/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {value}
-          </a>
-        </div>
-      )
-
-    case "twitter":
-      if (!value || typeof value !== "string") break
-      return (
-        <div className="flex items-center gap-2">
-          <TwitterIcon16 />
-          <a
-            className="link link-external"
-            href={`https://twitter.com/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {value}
-          </a>
-        </div>
-      )
-
-    case "bluesky":
-      if (!value || typeof value !== "string") break
-      return (
-        <div className="flex items-center gap-2">
-          <BlueskyIcon16 />
-          <a
-            className="link link-external"
-            href={`https://bsky.app/profile/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {value}
-          </a>
-        </div>
-      )
-
-    case "youtube":
-      if (!value || typeof value !== "string") break
-      return (
-        <div className="flex items-center gap-2">
-          <YouTubeIcon16 />
-          <a
-            className="link link-external"
-            href={`https://youtube.com/@${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {value}
-          </a>
-        </div>
-      )
-
-    case "instagram":
-      if (!value || typeof value !== "string") break
-      return (
-        <div className="flex items-center gap-2">
-          <InstagramIcon16 />
-          <a
-            className="link link-external"
-            href={`https://instagram.com/${value}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {value}
           </a>
         </div>
       )
@@ -193,6 +114,15 @@ export function PropertyValue({ property: [key, value] }: PropertyValueProps) {
   // If value is a string, render it as markdown
   if (typeof value === "string") {
     return <Markdown fontSize="small">{value}</Markdown>
+  }
+
+  // If value is a boolean, render it as a checkbox
+  if (typeof value === "boolean") {
+    return (
+      <div className="flex items-center h-7">
+        <Checkbox checked={value} onCheckedChange={(checked) => onChange?.(checked === true)} />
+      </div>
+    )
   }
 
   // If value is a date, render it as a link to the date page
@@ -321,7 +251,10 @@ export function PropertyValueEditor({
     }
   }, [])
 
-  if (onChange && typeof value === "string") {
+  if (
+    onChange &&
+    (typeof value === "string" || typeof value === "number" || typeof value === "boolean")
+  ) {
     return (
       <div className="min-h-8 coarse:min-h-10">
         {mode === "read" ? (
@@ -336,7 +269,7 @@ export function PropertyValueEditor({
             onKeyDown={handleButtonKeyDown}
             onFocus={handleButtonFocus}
           >
-            <PropertyValue property={[key, value]} />
+            <PropertyValue property={[key, value]} onChange={onChange} />
           </div>
         ) : null}
         {mode === "write" ? (
@@ -361,13 +294,16 @@ export function PropertyValueEditor({
             }}
           >
             <NoteEditor
-              defaultValue={value}
+              defaultValue={String(value)}
               placeholder=""
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={true}
               className="px-2 py-0.5 coarse:px-3 coarse:py-1.5"
               indentWithTab={false}
-              onChange={onChange}
+              onChange={(text) => {
+                const parsed = parsePrimitiveFromString(text)
+                onChange(parsed)
+              }}
             />
           </div>
         ) : null}
@@ -380,4 +316,31 @@ export function PropertyValueEditor({
       <PropertyValue property={[key, value]} />
     </div>
   )
+}
+
+/**
+ * Coerce a string input to a boolean when it is "true"/"false" (case-insensitive),
+ * otherwise to a number when it is a valid numeric literal. Returns the original
+ * string when neither case applies.
+ */
+function parsePrimitiveFromString(input: string): string | number | boolean {
+  const trimmed = input.trim()
+  if (trimmed === "") return input
+
+  const lower = trimmed.toLowerCase()
+  if (lower === "true") return true
+  if (lower === "false") return false
+
+  // Match optional sign, integer or decimal (with optional leading/trailing digits), optional exponent
+  const numericPattern = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/
+  if (numericPattern.test(trimmed)) {
+    const n = Number(trimmed)
+    if (Number.isFinite(n)) {
+      // Avoid silent precision loss for integers beyond JS safe range
+      if (Number.isInteger(n) && !Number.isSafeInteger(n)) return input
+      return n
+    }
+  }
+
+  return input
 }
