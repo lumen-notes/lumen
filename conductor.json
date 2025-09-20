@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "cp \"$CONDUCTOR_ROOT_PATH/.env.local\" .\nnpm install",
+    "run": "npm run dev"
+  }
+}
