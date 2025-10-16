@@ -1,10 +1,10 @@
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import {
   addDays,
+  addWeeks,
   eachDayOfInterval,
   getISOWeek,
   isMonday,
-  nextMonday,
   nextSunday,
   parseISO,
   previousMonday,
@@ -17,7 +17,14 @@ import { datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { cx } from "../utils/cx"
-import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "../utils/date"
+import {
+  DAY_NAMES,
+  MONTH_NAMES,
+  formatWeek,
+  toDateString,
+  toWeekString,
+  isValidWeekString,
+} from "../utils/date"
 import { IconButton } from "./icon-button"
 import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
 import { Button } from "./button"
@@ -33,15 +40,35 @@ export function Calendar({
   const searchParams = useSearch({ strict: false })
   const date = parseISO(activeNoteId)
 
-  const [startOfWeek, setStartOfWeek] = React.useState(() =>
-    isMonday(date) ? date : previousMonday(date),
-  )
+  const startOfWeek = React.useMemo(() => (isMonday(date) ? date : previousMonday(date)), [date])
 
   const endOfWeek = React.useMemo(() => nextSunday(startOfWeek), [startOfWeek])
 
   const daysOfWeek = React.useMemo(
     () => eachDayOfInterval({ start: startOfWeek, end: endOfWeek }),
     [startOfWeek, endOfWeek],
+  )
+
+  const navigateByWeek = React.useCallback(
+    (direction: "previous" | "next") => {
+      const isWeeklyNote = isValidWeekString(activeNoteId)
+      const weeksToAdd = direction === "next" ? 1 : -1
+
+      const target = isWeeklyNote
+        ? toWeekString(addWeeks(date, weeksToAdd))
+        : toDateString(addDays(date, weeksToAdd * 7))
+
+      navigate({
+        to: "/notes/$",
+        params: { _splat: target },
+        search: {
+          mode: searchParams.mode ?? "read",
+          query: undefined,
+          view: searchParams.view ?? "grid",
+        },
+      })
+    },
+    [activeNoteId, date, navigate, searchParams.mode, searchParams.view],
   )
 
   return (
@@ -53,17 +80,13 @@ export function Calendar({
             <span>{startOfWeek.getFullYear()}</span>
           </span>
           <div className="flex gap-px rounded bg-bg-secondary">
-            <IconButton
-              aria-label="Previous week"
-              onClick={() => setStartOfWeek(previousMonday(startOfWeek))}
-            >
+            <IconButton aria-label="Previous week" onClick={() => navigateByWeek("previous")}>
               <ChevronLeftIcon16 />
             </IconButton>
             <Button
               className="bg-transparent hover:bg-bg-hover active:bg-bg-active"
               onClick={() => {
                 const today = new Date()
-                setStartOfWeek(isMonday(today) ? today : previousMonday(today))
                 navigate({
                   to: "/notes/$",
                   params: { _splat: toDateString(today) },
@@ -77,10 +100,7 @@ export function Calendar({
             >
               Today
             </Button>
-            <IconButton
-              aria-label="Next week"
-              onClick={() => setStartOfWeek(nextMonday(startOfWeek))}
-            >
+            <IconButton aria-label="Next week" onClick={() => navigateByWeek("next")}>
               <ChevronRightIcon16 />
             </IconButton>
           </div>
