@@ -5,11 +5,9 @@ import {
   eachDayOfInterval,
   getISOWeek,
   isMonday,
-  nextMonday,
   nextSunday,
   parseISO,
   previousMonday,
-  subWeeks,
 } from "date-fns"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
