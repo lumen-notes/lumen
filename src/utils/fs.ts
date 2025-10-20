@@ -17,7 +17,8 @@ export const fs = new LightningFS(DB_NAME)
 
 /** Delete file system database */
 export function fsWipe() {
-  window.indexedDB.deleteDatabase(DB_NAME)
+  const indexedDB = globalThis.indexedDB
+    indexedDB.deleteDatabase(DB_NAME)
 }
 
 /**
