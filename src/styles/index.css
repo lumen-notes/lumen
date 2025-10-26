@@ -115,17 +115,26 @@ body:has([data-resizing="true"]) * {
   @apply h-10 gap-4 px-3;
 }
 
-/* Spinning stroke */
+/* Scroll mask */
 
-@keyframes spin-stroke {
-  to {
-    stroke-dashoffset: var(--perimeter);
-  }
-  from {
-    stroke-dashoffset: 0;
-  }
+@property --mask-height {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
-.spin-stroke {
-  animation: spin-stroke 1.5s linear infinite;
+.scroll-mask {
+  mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
+  animation: mask-height-grow forwards;
+  animation-timeline: scroll(self);
+  animation-range: 0 32px;
+}
+
+@keyframes mask-height-grow {
+  from {
+    --mask-height: 0px;
+  }
+  to {
+    --mask-height: 32px;
+  }
 }

@@ -1,4 +1,5 @@
 import { useAtomValue } from "jotai"
+import { useNetworkState } from "react-use"
 import { LoadingIcon16 } from "../components/icons"
 import { RepoForm } from "../components/repo-form"
 import {
@@ -11,14 +12,12 @@ import {
   sidebarAtom,
   voiceAssistantEnabledAtom,
 } from "../global-state"
-import { useIsScrolled } from "../hooks/is-scrolled"
 import { cx } from "../utils/cx"
 import { AppHeader, AppHeaderProps } from "./app-header"
 import { NavBar } from "./nav-bar"
 import { Sidebar } from "./sidebar"
 import { SignInBanner } from "./sign-in-banner"
 import { VoiceConversationBar } from "./voice-conversation"
-import { useNetworkState } from "react-use"
 
 type AppLayoutProps = AppHeaderProps & {
   className?: string
@@ -45,8 +44,6 @@ export function AppLayout({
   const voiceAssistantEnabled = useAtomValue(voiceAssistantEnabledAtom)
   const { online } = useNetworkState()
 
-  const { isScrolled, topSentinelProps } = useIsScrolled()
-
   return (
     <div className={cx("flex flex-col overflow-hidden", className)}>
       <SignInBanner />
@@ -60,14 +57,10 @@ export function AppLayout({
           <AppHeader
             {...props}
             actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
-            className={cx(
-              "border-b print:hidden",
-              isScrolled ? "border-border-secondary" : "border-transparent",
-            )}
+            className="print:hidden"
           />
           <div className="relative grid overflow-hidden">
-            <main className="relative isolate overflow-auto [scrollbar-gutter:stable]">
-              <div {...topSentinelProps} />
+            <main className="relative isolate overflow-auto [scrollbar-gutter:stable] scroll-mask">
               {isRepoNotCloned && !disableGuard ? (
                 <div className="flex h-full flex-col items-center">
                   <div className="mx-auto w-full max-w-lg p-4 pb-8 md:pb-14">
