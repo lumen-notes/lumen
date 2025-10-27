@@ -117,24 +117,27 @@ body:has([data-resizing="true"]) * {
 
 /* Scroll mask */
 
-@property --mask-height {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-.scroll-mask {
-  mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
-  animation: mask-height-grow forwards;
-  animation-timeline: scroll(self);
-  animation-range: 0 32px;
-}
-
-@keyframes mask-height-grow {
-  from {
-    --mask-height: 0px;
+@supports (animation-timeline: scroll()) {
+  @property --mask-height {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
   }
-  to {
-    --mask-height: 32px;
+
+  .scroll-mask {
+    mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
+    animation: mask-height-grow forwards;
+    animation-timeline: scroll(self);
+    animation-range: 0 32px;
+  }
+
+  @keyframes mask-height-grow {
+    from {
+      --mask-height: 0px;
+    }
+    to {
+      --mask-height: 32px;
+    }
   }
 }
