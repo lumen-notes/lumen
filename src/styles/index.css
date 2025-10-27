@@ -132,6 +132,13 @@ body:has([data-resizing="true"]) * {
     animation-range: 0 32px;
   }
 
+  /* Disable scroll mask for eink */
+  [data-theme="eink"] .scroll-mask {
+    mask-image: none;
+    -webkit-mask-image: none;
+    animation: none;
+  }
+
   @keyframes mask-height-grow {
     from {
       --mask-height: 0px;
