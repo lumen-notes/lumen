@@ -44,7 +44,9 @@ export function NoteList({
 
   const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
 
-  const [bottomRef, bottomInView] = useInView()
+  const [bottomRef, bottomInView] = useInView({
+    rootMargin: "0px 0px 400px 0px",
+  })
 
   const loadMore = React.useCallback(() => {
     setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
