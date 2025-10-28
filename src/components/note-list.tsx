@@ -44,7 +44,9 @@ export function NoteList({
 
   const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
 
-  const [bottomRef, bottomInView] = useInView()
+  const [bottomRef, bottomInView] = useInView({
+    rootMargin: "400px",
+  })
 
   const loadMore = React.useCallback(() => {
     setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
@@ -52,7 +54,7 @@ export function NoteList({
 
   React.useEffect(() => {
     if (bottomInView) {
-      // Load more notes when the user scrolls to the bottom of the list
+      // Load more notes when the user scrolls near the bottom of the list
       loadMore()
     }
   }, [bottomInView, loadMore])
