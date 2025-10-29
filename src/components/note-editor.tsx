@@ -377,7 +377,13 @@ function useNoteCompletion() {
 
       const query = word.text.startsWith("@") ? word.text.slice(1) : word.text.slice(2)
 
-      const insertWikilink = (view: EditorView, from: number, to: number, noteId: string, label: string) => {
+      const insertWikilink = (
+        view: EditorView,
+        from: number,
+        to: number,
+        noteId: string,
+        label: string,
+      ) => {
         const text = `[[${noteId}|${label}]]`
 
         const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
