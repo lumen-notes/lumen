@@ -435,6 +435,7 @@ function insertWikilink({ view, from, to, noteId, label }: InsertWikilinkParams)
   const text = `[[${noteId}|${label}]]`
 
   const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
+
   view.dispatch({
     changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
     selection: { anchor: from + text.length },
