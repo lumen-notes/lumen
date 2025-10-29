@@ -367,6 +367,19 @@ function useNoteCompletion() {
   const searchNotes = useStableSearchNotes()
   const isSignedOut = useAtomValue(isSignedOutAtom)
 
+  const insertWikilink = React.useCallback(
+    (view: EditorView, from: number, to: number, noteId: string, label: string) => {
+      const text = `[[${noteId}|${label}]]`
+
+      const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
+      view.dispatch({
+        changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
+        selection: { anchor: from + text.length },
+      })
+    },
+    [],
+  )
+
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
       const word = context.matchBefore(/(?:\[\[|@)[^\]|^]*/)
@@ -376,22 +389,6 @@ function useNoteCompletion() {
       }
 
       const query = word.text.startsWith("@") ? word.text.slice(1) : word.text.slice(2)
-
-      const insertWikilink = (
-        view: EditorView,
-        from: number,
-        to: number,
-        noteId: string,
-        label: string,
-      ) => {
-        const text = `[[${noteId}|${label}]]`
-
-        const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
-        view.dispatch({
-          changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
-          selection: { anchor: from + text.length },
-        })
-      }
 
       const searchResults = searchNotes(query)
 
@@ -432,7 +429,7 @@ function useNoteCompletion() {
         filter: false,
       }
     },
-    [searchNotes, saveNote, isSignedOut],
+    [searchNotes, saveNote, isSignedOut, insertWikilink],
   )
 
   return noteCompletion
