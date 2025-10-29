@@ -391,7 +391,7 @@ function useNoteCompletion() {
           saveNote(note)
 
           // Insert link to new note
-          insertWikilink(view, from, to, note.id, query)
+          insertWikilink({ view, from, to, noteId: note.id, label: query })
         },
       }
 
@@ -402,7 +402,7 @@ function useNoteCompletion() {
           detail: linkText !== note.displayName ? linkText : undefined,
           apply: (view, completion, from, to) => {
             // Insert link to note
-            insertWikilink(view, from, to, note.id, linkText)
+            insertWikilink({ view, from, to, noteId: note.id, label: linkText })
           },
         }
       })
@@ -423,7 +423,15 @@ function useNoteCompletion() {
   return noteCompletion
 }
 
-function insertWikilink(view: EditorView, from: number, to: number, noteId: string, label: string) {
+type InsertWikilinkParams = {
+  view: EditorView
+  from: number
+  to: number
+  noteId: string
+  label: string
+}
+
+function insertWikilink({ view, from, to, noteId, label }: InsertWikilinkParams) {
   const text = `[[${noteId}|${label}]]`
 
   const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
