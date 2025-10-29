@@ -52,15 +52,6 @@ function RouteComponent() {
               rel="noopener noreferrer"
             >
               Cole Bemis
-            </a>{" "}
-            &amp;{" "}
-            <a
-              className="link whitespace-nowrap"
-              href="https://github.com/lumen-notes/lumen/graphs/contributors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              friends
             </a>
           </p>
         </div>
