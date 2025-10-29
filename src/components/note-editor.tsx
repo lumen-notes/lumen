@@ -369,7 +369,7 @@ function useNoteCompletion() {
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
-      const word = context.matchBefore(/(?:\[\[|@)[^\]\|^]*/)
+      const word = context.matchBefore(/(?:\[\[|@)[^\]|^]*/)
 
       if (!word) {
         return null
