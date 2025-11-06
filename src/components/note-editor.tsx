@@ -369,14 +369,13 @@ function useNoteCompletion() {
 
   const noteCompletion = React.useCallback(
     async (context: CompletionContext): Promise<CompletionResult | null> => {
-      const word = context.matchBefore(/(?:\[\[|@)[^\]|^|]*/)
+      const word = context.matchBefore(/\[\[[^\]|^|]*/)
 
       if (!word) {
         return null
       }
 
-      const triggerLength = word.text.startsWith("@") ? 1 : 2
-      const query = word.text.slice(triggerLength)
+      const query = word.text.slice(2)
 
       const searchResults = searchNotes(query)
 
