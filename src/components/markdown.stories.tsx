@@ -100,19 +100,19 @@ Sometimes you have headings directly underneath each other. In those cases you o
 When a heading comes after a paragraph, we need a bit more space, like I already mentioned above. Now let's see what a more complex list would look like.
 
 *   **I often do this thing where list items have headings.**
-    
+
     For some reason I think this looks cool which is unfortunate because it's pretty annoying to get the styles right.
-    
+
     I often have two or three paragraphs in these list items, too, so the hard part is getting the spacing between the paragraphs, list item heading, and separate list items to all make sense. Pretty tough honestly, you could make a strong argument that you just shouldn't write this way.
-    
+
 *   **Since this is a list, I need at least two items.**
-    
+
     I explained what I'm doing already in the previous list item, but a list wouldn't be a list if it only had one item, and we really want this to look realistic. That's why I've added this second list item so I actually have something to look at when writing the styles.
-    
+
 *   **It's not a bad idea to add a third item either.**
-    
+
     I think it probably would've been fine to just use two items but three is definitely not worse, and since I seem to be having no trouble making up arbitrary things to type, I might as well include it.
-    
+
 
 After this sort of list I usually have a closing statement or paragraph, because it kinda looks weird jumping right to a heading.
 
@@ -156,23 +156,23 @@ Nested lists basically always look bad which is why editors like Medium don't ev
 The most annoying thing about lists in Markdown is that \`<li>\` elements aren't given a child \`<p>\` tag unless there are multiple paragraphs in the list item. That means I have to worry about styling that annoying situation too.
 
 *   **For example, here's another nested list.**
-    
+
     But this time with a second paragraph.
-    
+
     *   These list items won't have \`<p>\` tags
     *   Because they are only one line each
 *   **But in this second top-level list item, they will.**
-    
+
     This is especially annoying because of the spacing on this paragraph.
-    
+
     *   As you can see here, because I've added a second line, this list item now has a \`<p>\` tag.
-        
+
         This is the second line I'm talking about by the way.
-        
+
     *   Finally here's another list item so it's more like a list.
-        
+
 *   A closing list item, but with no nested list, because why not?
-    
+
 
 And finally a sentence to close off this section.
 
@@ -245,7 +245,7 @@ export const Book: StoryObj<typeof Markdown> = {
 
 const person = `---
 phone: 555-555-5555
-website: https://colebemis.com 
+website: https://colebemis.com
 github: colebemis
 twitter: colebemis
 ---
@@ -259,7 +259,9 @@ export const Person: StoryObj<typeof Markdown> = {
   },
 }
 
-const taskList = `- [ ] Task 1
+const taskList = `## Tasks
+
+- [ ] Task 1
 - [x] Task 2
 - [ ] Task 3
 `

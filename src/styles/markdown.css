@@ -16,7 +16,7 @@
 }
 
 .markdown li :is(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote) {
-  margin-block: calc(var(--font-size-base) * 0.75);
+  margin-block: calc(var(--font-size-base) * 0.5);
 }
 
 .markdown hr {
@@ -103,7 +103,7 @@
 }
 
 .markdown li {
-  margin-block: calc(var(--font-size-base) * 0.75);
+  margin-block: calc(var(--font-size-base) * 0.5);
 }
 
 .markdown li.task-list-item {
