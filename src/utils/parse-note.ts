@@ -19,7 +19,7 @@ import {
   toDateStringUtc,
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
-import { parseFrontmatter, RESERVED_FRONTMATTER_KEYS } from "./frontmatter"
+import { getVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
 import { getTaskContent, getTaskDate, getTaskDisplayText, getTaskLinks, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
@@ -263,12 +263,5 @@ export function isNoteEmpty({
   // If frontmatter won't be displayed, only content determines emptiness
   if (hideFrontmatter) return true
 
-  const hasVisibleFrontmatter = Object.entries(frontmatter).some(([key, value]) => {
-    if (RESERVED_FRONTMATTER_KEYS.includes(key)) return false
-    if (Array.isArray(value) && value.length === 0) return false
-    if (value === undefined || value === null) return false
-    return true
-  })
-
-  return !hasVisibleFrontmatter
+  return Object.keys(getVisibleFrontmatter(frontmatter)).length === 0
 }

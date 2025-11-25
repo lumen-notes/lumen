@@ -16,8 +16,8 @@ import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
+  getVisibleFrontmatter,
   parseFrontmatter,
-  RESERVED_FRONTMATTER_KEYS,
   updateFrontmatterKey,
   updateFrontmatterValue,
 } from "../utils/frontmatter"
@@ -63,22 +63,10 @@ export const Markdown = React.memo(
   }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
-    const filteredFrontmatter = React.useMemo(() => {
-      return Object.fromEntries(
-        Object.entries(frontmatter).filter(([key, value]) => {
-          // Skip reserved frontmatter keys
-          if (RESERVED_FRONTMATTER_KEYS.includes(key)) return false
-
-          // Filter out empty arrays
-          if (Array.isArray(value) && value.length === 0) return false
-
-          // Filter out undefined and null values
-          if (value === undefined || value === null) return false
-
-          return true
-        }),
-      )
-    }, [frontmatter])
+    const filteredFrontmatter = React.useMemo(
+      () => getVisibleFrontmatter(frontmatter),
+      [frontmatter],
+    )
 
     // Split the content into title and body so we can display
     // the frontmatter below the title but above the body.
