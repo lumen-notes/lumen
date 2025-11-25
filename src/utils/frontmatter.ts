@@ -1,5 +1,8 @@
 import yaml from "yamljs"
 
+/** Reserved frontmatter keys that are not displayed to users */
+export const RESERVED_FRONTMATTER_KEYS = ["pinned", "gist_id", "font", "width"]
+
 /** Parses frontmatter from a markdown string */
 export function parseFrontmatter(markdown: string): {
   frontmatter: Record<string, unknown>
