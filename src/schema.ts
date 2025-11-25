@@ -11,6 +11,8 @@ export type Task = {
   links: NoteId[]
   tags: string[]
   date: string | null
+  /** The character offset where the task starts in the content (for position-based updates) */
+  startOffset: number
 }
 
 export type Note = {

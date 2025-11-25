@@ -91,6 +91,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          startOffset: 0,
         },
         {
           completed: true,
@@ -99,6 +100,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          startOffset: 10,
         },
       ],
       tags: ["a", "b"],
@@ -185,6 +187,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          startOffset: 0,
         },
       ],
     })

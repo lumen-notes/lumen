@@ -39,8 +39,10 @@ function _parseNote(id: NoteId, content: string): Note {
   const tasks: Task[] = []
 
   const { frontmatter, content: contentWithoutFrontmatter } = parseFrontmatter(content)
+  // Calculate the offset to convert from contentWithoutFrontmatter positions to full content positions
+  const frontmatterLength = content.length - contentWithoutFrontmatter.length
 
-  function createNodeVisitor(value: string) {
+  function createNodeVisitor(value: string, baseOffset: number = 0) {
     return function visitNode(node: Node) {
       switch (node.type) {
         case "heading": {
@@ -95,6 +97,7 @@ function _parseNote(id: NoteId, content: string): Note {
               links: taskLinks,
               tags: taskTags,
               date: taskDate,
+              startOffset: baseOffset + (node.position?.start?.offset ?? 0),
             })
           }
           break
@@ -123,7 +126,7 @@ function _parseNote(id: NoteId, content: string): Note {
       { extensions, mdastExtensions },
     )
 
-    visit(contentMdast, createNodeVisitor(contentWithoutFrontmatter))
+    visit(contentMdast, createNodeVisitor(contentWithoutFrontmatter, frontmatterLength))
   } catch (error) {
     console.error("Error parsing note content", id, error)
   }
