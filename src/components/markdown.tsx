@@ -149,9 +149,7 @@ export const Markdown = React.memo(
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {visibleFrontmatter &&
-                  !hideFrontmatter &&
-                  !isObjectEmpty(visibleFrontmatter) ? (
+                  {!hideFrontmatter && visibleFrontmatter && !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
                       <div className="-mx-2 coarse:-mx-3">
