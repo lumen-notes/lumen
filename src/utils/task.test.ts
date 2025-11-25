@@ -1,14 +1,12 @@
 import { fromMarkdown } from "mdast-util-from-markdown"
+import type { ListItem } from "mdast-util-from-markdown/lib"
 import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
+import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { describe, expect, test } from "vitest"
-import { embedFromMarkdown } from "../remark-plugins/embed"
-import { tagFromMarkdown } from "../remark-plugins/tag"
-import { wikilinkFromMarkdown } from "../remark-plugins/wikilink"
-import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
-import { embed } from "../remark-plugins/embed"
-import { tag } from "../remark-plugins/tag"
-import { wikilink } from "../remark-plugins/wikilink"
+import { embed, embedFromMarkdown } from "../remark-plugins/embed"
+import { tag, tagFromMarkdown } from "../remark-plugins/tag"
+import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import {
   getTaskContent,
   getTaskDate,
@@ -34,8 +32,8 @@ function parseMarkdown(content: string) {
   )
 }
 
-function findFirstListItem(root: ReturnType<typeof parseMarkdown>) {
-  let listItem = null
+function findFirstListItem(root: ReturnType<typeof parseMarkdown>): ListItem | null {
+  let listItem: ListItem | null = null
   visit(root, (node) => {
     if (node.type === "listItem" && !listItem) {
       listItem = node

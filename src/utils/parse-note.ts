@@ -1,8 +1,6 @@
 import memoize from "fast-memoize"
 import { fromMarkdown } from "mdast-util-from-markdown"
-import { toMarkdown } from "mdast-util-to-markdown"
 import { Node, Root } from "mdast-util-from-markdown/lib"
-import type { ListItem } from "mdast-util-from-markdown/lib"
 import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"

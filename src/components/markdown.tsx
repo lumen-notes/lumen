@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import React, { useMemo } from "react"
+import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
@@ -15,11 +15,10 @@ import { remarkTag } from "../remark-plugins/tag"
 import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { isValidDateString } from "../utils/date"
 import {
   parseFrontmatter,
-  updateFrontmatterValue,
   updateFrontmatterKey,
+  updateFrontmatterValue,
 } from "../utils/frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
@@ -27,15 +26,15 @@ import { CopyButton } from "./copy-button"
 import { Details } from "./details"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
-import { NotePreview } from "./note-preview"
+import { ErrorIcon16 } from "./icons"
+import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
-import { PropertyValueEditor } from "./property-value"
 import { PropertyKeyEditor } from "./property-key"
+import { PropertyValueEditor } from "./property-value"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
 import { WebsiteFavicon } from "./website-favicon"
-import { NoteLink } from "./note-link"
 
 export type MarkdownProps = {
   children: string
