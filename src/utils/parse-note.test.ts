@@ -97,6 +97,8 @@ describe("isNoteEmpty", () => {
   })
 
   test("returns false when hideFrontmatter is true but note has content", () => {
-    expect(isNoteEmpty({ markdown: "---\nauthor: John\n---\nSome content", hideFrontmatter: true })).toBe(false)
+    expect(
+      isNoteEmpty({ markdown: "---\nauthor: John\n---\nSome content", hideFrontmatter: true }),
+    ).toBe(false)
   })
 })
