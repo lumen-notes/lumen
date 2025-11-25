@@ -1,8 +1,5 @@
-import * as HoverCard from "@radix-ui/react-hover-card"
 import { Link } from "@tanstack/react-router"
-import { useAtomValue } from "jotai"
-import { selectAtom } from "jotai/utils"
-import React, { useMemo } from "react"
+import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
@@ -11,7 +8,6 @@ import rehypeRaw from "rehype-raw"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
-import { notesAtom } from "../global-state"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { remarkEmbed } from "../remark-plugins/embed"
@@ -19,24 +15,22 @@ import { remarkTag } from "../remark-plugins/tag"
 import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { formatWeek, formatWeekDistance, isValidDateString, isValidWeekString } from "../utils/date"
 import {
   parseFrontmatter,
-  updateFrontmatterValue,
   updateFrontmatterKey,
+  updateFrontmatterValue,
 } from "../utils/frontmatter"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
-import { DateLink } from "./date-link"
 import { Details } from "./details"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import { ErrorIcon16 } from "./icons"
-import { NotePreview } from "./note-preview"
+import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
-import { PropertyValueEditor } from "./property-value"
 import { PropertyKeyEditor } from "./property-key"
+import { PropertyValueEditor } from "./property-value"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
 import { TagLink } from "./tag-link"
 import { Tooltip } from "./tooltip"
@@ -535,76 +529,6 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
   )
 }
 
-type NoteLinkProps = {
-  id: string
-  text: string
-}
-
-function NoteLink({ id, text }: NoteLinkProps) {
-  const note = useNoteById(id)
-  const ref = React.useRef<HTMLAnchorElement>(null)
-  // const [isFirst, setIsFirst] = React.useState(false)
-  // const { online } = useNetworkState()
-
-  // React.useLayoutEffect(() => {
-  //   if (ref.current) {
-  //     setIsFirst(checkIsFirst(ref.current))
-  //   }
-  // }, [])
-
-  if (isValidDateString(id)) {
-    return <DateLink date={id} text={text} />
-  }
-
-  if (isValidWeekString(id)) {
-    return <WeekLink week={id} text={text} />
-  }
-
-  return (
-    <HoverCard.Root>
-      <HoverCard.Trigger asChild>
-        <Link
-          ref={ref}
-          to="/notes/$"
-          params={{ _splat: id }}
-          search={{
-            mode: "read",
-            query: undefined,
-            view: "grid",
-          }}
-        >
-          {/* {isFirst && note && online ? (
-            <NoteFavicon
-              note={note}
-              content={note.content}
-              className="mr-2 align-sub [h1>a>&]:align-baseline"
-              defaultFavicon={null}
-            />
-          ) : null} */}
-          {text || id}
-        </Link>
-      </HoverCard.Trigger>
-      <HoverCard.Portal>
-        <HoverCard.Content
-          side="bottom"
-          sideOffset={4}
-          align="start"
-          className="card-2 !rounded-[calc(var(--border-radius-base)+6px)] z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
-        >
-          {note ? (
-            <NotePreview note={note} />
-          ) : (
-            <span className="flex items-center gap-2 p-4 text-text-danger">
-              <ErrorIcon16 />
-              Note not found
-            </span>
-          )}
-        </HoverCard.Content>
-      </HoverCard.Portal>
-    </HoverCard.Root>
-  )
-}
-
 type NoteEmbedProps = {
   id: string
 }
@@ -636,47 +560,6 @@ function NoteEmbed({ id }: NoteEmbedProps) {
         </Link>
       </div>
     </div>
-  )
-}
-
-type WeekLinkProps = {
-  week: string
-  text?: string
-  className?: string
-}
-
-function WeekLink({ week, text, className }: WeekLinkProps) {
-  const hasWeekNote = useAtomValue(
-    useMemo(() => selectAtom(notesAtom, (notes) => notes.has(week)), [week]),
-  )
-
-  return (
-    <HoverCard.Root>
-      <HoverCard.Trigger asChild>
-        <Link
-          className={className}
-          to="/notes/$"
-          params={{ _splat: week }}
-          search={{
-            mode: hasWeekNote ? "read" : "write",
-            query: undefined,
-            view: "grid",
-          }}
-        >
-          {text || formatWeek(week)}
-        </Link>
-      </HoverCard.Trigger>
-      <HoverCard.Portal>
-        <HoverCard.Content
-          side="bottom"
-          sideOffset={4}
-          align="center"
-          className="card-2 z-20 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
-        >
-          <div className="p-2 leading-none text-text-secondary">{formatWeekDistance(week)}</div>
-        </HoverCard.Content>
-      </HoverCard.Portal>
-    </HoverCard.Root>
   )
 }
 

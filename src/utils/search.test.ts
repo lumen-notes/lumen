@@ -84,8 +84,22 @@ describe("filtering", () => {
       title: "Title 1",
       frontmatter: { priority: "high" },
       tasks: [
-        { completed: false, text: "do it" },
-        { completed: true, text: "done" },
+        {
+          completed: false,
+          text: "do it",
+          displayText: "do it",
+          links: [],
+          date: null,
+          tags: [],
+        },
+        {
+          completed: true,
+          text: "done",
+          displayText: "done",
+          links: [],
+          date: null,
+          tags: [],
+        },
       ],
       tags: ["a", "b"],
       dates: ["2021-01-01", "2021-01-03"],
@@ -162,7 +176,18 @@ describe("filtering", () => {
   })
 
   test("task count filters match incomplete task counts with range operators", () => {
-    const note = makeNote({ tasks: [{ completed: false, text: "x" }] })
+    const note = makeNote({
+      tasks: [
+        {
+          completed: false,
+          text: "x",
+          displayText: "x",
+          links: [],
+          date: null,
+          tags: [],
+        },
+      ],
+    })
     expect(testFilters([{ key: "tasks", values: ["0"], exclude: false }], note)).toBe(false)
     expect(testFilters([{ key: "tasks", values: ["<=1"], exclude: false }], note)).toBe(true)
   })

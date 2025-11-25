@@ -43,6 +43,7 @@ import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
 import { PillButton } from "../components/pill-button"
+import { TaskItem } from "../components/task-item"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
 import { Tooltip } from "../components/tooltip"
@@ -76,6 +77,7 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
+import { updateTask } from "../utils/task"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -164,13 +166,26 @@ function NotePage() {
 
   // Note data
   const note = useNoteById(noteId)
-  const searchNotes = useSearchNotes()
-  const backlinks = React.useMemo(
-    () => searchNotes(`link:"${noteId}" -id:"${noteId}"`),
-    [noteId, searchNotes],
-  )
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
+  const searchNotes = useSearchNotes()
+  const saveNote = useSaveNote()
+  const backlinks = React.useMemo(() => {
+    const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
+    return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
+  }, [noteId, searchNotes])
+  const backlinkTasks = React.useMemo(() => {
+    if (!noteId) return []
+
+    return Array.from(backlinks.values()).flatMap((backlinkNote) =>
+      backlinkNote.tasks
+        .filter((task) => task.links.includes(noteId))
+        .map((task) => ({
+          ...task,
+          parentId: backlinkNote.id,
+        })),
+    )
+  }, [backlinks, noteId])
 
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -220,7 +235,6 @@ function NotePage() {
   const [isShareDialogOpen, setIsShareDialogOpen] = React.useState(false)
 
   // Actions
-  const saveNote = useSaveNote()
   const deleteNote = useDeleteNote()
   const attachFile = useAttachFile()
 
@@ -867,13 +881,47 @@ function NotePage() {
                 minHeight={160}
               />
             </div>
+            {backlinkTasks.length > 0 ? (
+              <Details className="print:hidden">
+                <Details.Summary>Tasks</Details.Summary>
+                <LinkHighlightProvider href={`/notes/${noteId}`}>
+                  <div className="flex flex-col">
+                    {backlinkTasks.map((task, index) => {
+                      const parentNote = backlinks.get(task.parentId)
+                      return (
+                        <TaskItem
+                          key={`${task.parentId}-${index}`}
+                          task={task}
+                          parentId={task.parentId}
+                          hideDate={isDailyNote}
+                          onCompletedChange={(completed) => {
+                            if (!parentNote) return
+
+                            const updatedContent = updateTask({
+                              content: parentNote.content,
+                              task,
+                              completed,
+                            })
+
+                            // Only save if content actually changed
+                            if (updatedContent !== parentNote.content) {
+                              saveNote({ id: parentNote.id, content: updatedContent })
+                            }
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </LinkHighlightProvider>
+              </Details>
+            ) : null}
             {isWeeklyNote ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteId ?? ""} />
               </Details>
             ) : null}
-            {backlinks.length > 0 ? (
+            {backlinks.size > 0 ? (
               <Details className="print:hidden">
                 <Details.Summary>Backlinks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
