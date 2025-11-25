@@ -63,7 +63,7 @@ export const Markdown = React.memo(
   }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
-    const filteredFrontmatter = React.useMemo(
+    const visibleFrontmatter = React.useMemo(
       () => getVisibleFrontmatter(frontmatter),
       [frontmatter],
     )
@@ -149,14 +149,14 @@ export const Markdown = React.memo(
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {filteredFrontmatter &&
+                  {visibleFrontmatter &&
                   !hideFrontmatter &&
-                  !isObjectEmpty(filteredFrontmatter) ? (
+                  !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
                       <div className="-mx-2 coarse:-mx-3">
                         <Frontmatter
-                          frontmatter={filteredFrontmatter}
+                          frontmatter={visibleFrontmatter}
                           onKeyChange={(oldKey, newKey) =>
                             onChange?.(
                               updateFrontmatterKey({
