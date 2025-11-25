@@ -3,18 +3,24 @@ import yaml from "yamljs"
 /** Reserved frontmatter keys that are not displayed to users */
 export const RESERVED_FRONTMATTER_KEYS = ["pinned", "gist_id", "font", "width"]
 
+/** Checks if a frontmatter entry is visible to users */
+function isVisibleFrontmatterEntry([key, value]: [string, unknown]): boolean {
+  if (RESERVED_FRONTMATTER_KEYS.includes(key)) return false
+  if (Array.isArray(value) && value.length === 0) return false
+  if (value === undefined || value === null) return false
+  return true
+}
+
 /** Filters frontmatter to only include user-visible properties */
 export function getVisibleFrontmatter(
   frontmatter: Record<string, unknown>,
 ): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(frontmatter).filter(([key, value]) => {
-      if (RESERVED_FRONTMATTER_KEYS.includes(key)) return false
-      if (Array.isArray(value) && value.length === 0) return false
-      if (value === undefined || value === null) return false
-      return true
-    }),
-  )
+  return Object.fromEntries(Object.entries(frontmatter).filter(isVisibleFrontmatterEntry))
+}
+
+/** Checks if frontmatter has any user-visible properties (short-circuits on first match) */
+export function hasVisibleFrontmatter(frontmatter: Record<string, unknown>): boolean {
+  return Object.entries(frontmatter).some(isVisibleFrontmatterEntry)
 }
 
 /** Parses frontmatter from a markdown string */
