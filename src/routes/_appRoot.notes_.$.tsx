@@ -62,7 +62,7 @@ import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { useValueRef } from "../hooks/value-ref"
-import { Font, Note, NoteId, Task, Template, Width, fontSchema, widthSchema } from "../schema"
+import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
