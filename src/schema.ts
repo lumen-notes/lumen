@@ -7,6 +7,10 @@ export type NoteType = "note" | "daily" | "weekly" | "template"
 export type Task = {
   completed: boolean
   text: string
+  displayText: string
+  links: NoteId[]
+  tags: string[]
+  date: string | null
 }
 
 export type Note = {

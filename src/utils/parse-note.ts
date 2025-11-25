@@ -1,6 +1,8 @@
 import memoize from "fast-memoize"
 import { fromMarkdown } from "mdast-util-from-markdown"
+import { toMarkdown } from "mdast-util-to-markdown"
 import { Node, Root } from "mdast-util-from-markdown/lib"
+import type { ListItem } from "mdast-util-from-markdown/lib"
 import { gfmTaskListItemFromMarkdown } from "mdast-util-gfm-task-list-item"
 import { toString } from "mdast-util-to-string"
 import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
@@ -20,6 +22,7 @@ import {
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
 import { parseFrontmatter } from "./frontmatter"
+import { getTaskContent, getTaskDate, getTaskDisplayText, getTaskLinks, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
 export const parseNote =
@@ -39,53 +42,65 @@ function _parseNote(id: NoteId, content: string): Note {
 
   const { frontmatter, content: contentWithoutFrontmatter } = parseFrontmatter(content)
 
-  function visitNode(node: Node) {
-    switch (node.type) {
-      case "heading": {
-        // Only use the first heading
-        if (node.depth > 1 || title) return
+  function createNodeVisitor(value: string) {
+    return function visitNode(node: Node) {
+      switch (node.type) {
+        case "heading": {
+          // Only use the first heading
+          if (node.depth > 1 || title) return
 
-        title = toString(node)
+          title = toString(node)
 
-        // Is there a link in the title?
-        if (node.children.length === 1 && node.children[0].type === "link") {
-          url = node.children[0].url
+          // Is there a link in the title?
+          if (node.children.length === 1 && node.children[0].type === "link") {
+            url = node.children[0].url
+          }
+
+          break
         }
 
-        break
-      }
+        case "embed":
+        case "wikilink": {
+          links.add(node.data.id)
 
-      case "embed":
-      case "wikilink": {
-        links.add(node.data.id)
-
-        if (isValidDateString(node.data.id)) {
-          dates.add(node.data.id)
+          if (isValidDateString(node.data.id)) {
+            dates.add(node.data.id)
+          }
+          break
         }
-        break
-      }
 
-      case "tag": {
-        // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
-        node.data.name.split("/").forEach((_, index) => {
-          tags.add(
-            node.data.name
-              .split("/")
-              .slice(0, index + 1)
-              .join("/"),
-          )
-        })
-        break
-      }
-
-      case "listItem": {
-        if (typeof node.checked === "boolean") {
-          tasks.push({
-            completed: node.checked === true,
-            text: toString(node),
+        case "tag": {
+          // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
+          node.data.name.split("/").forEach((_, index) => {
+            tags.add(
+              node.data.name
+                .split("/")
+                .slice(0, index + 1)
+                .join("/"),
+            )
           })
+          break
         }
-        break
+
+        case "listItem": {
+          if (typeof node.checked === "boolean") {
+            const taskContent = getTaskContent(node, value)
+            const taskLinks = getTaskLinks(taskContent.node)
+            const taskTags = getTaskTags(taskContent.node)
+            const taskDate = getTaskDate(taskLinks)
+            const taskDisplayText = getTaskDisplayText(taskContent.text)
+
+            tasks.push({
+              completed: node.checked === true,
+              text: taskContent.text,
+              displayText: taskDisplayText,
+              links: taskLinks,
+              tags: taskTags,
+              date: taskDate,
+            })
+          }
+          break
+        }
       }
     }
   }
@@ -110,7 +125,7 @@ function _parseNote(id: NoteId, content: string): Note {
       { extensions, mdastExtensions },
     )
 
-    visit(contentMdast, visitNode)
+    visit(contentMdast, createNodeVisitor(contentWithoutFrontmatter))
   } catch (error) {
     console.error("Error parsing note content", id, error)
   }
@@ -125,7 +140,7 @@ function _parseNote(id: NoteId, content: string): Note {
       { extensions, mdastExtensions },
     )
 
-    visit(frontmatterMdast, visitNode)
+    visit(frontmatterMdast, createNodeVisitor(frontmatterString))
   } catch (error) {
     console.error("Error parsing note frontmatter", id, error)
   }
@@ -233,4 +248,29 @@ function _parseNote(id: NoteId, content: string): Note {
     tasks,
     backlinks: [],
   }
+}
+
+function stripTaskPrefix(text: string) {
+  let remaining = text
+  let removed = 0
+
+  const bulletMatch = remaining.match(/^-\s+/)
+  if (bulletMatch) {
+    removed += bulletMatch[0].length
+    remaining = remaining.slice(bulletMatch[0].length)
+  }
+
+  const checkboxMatch = remaining.match(/^\[[ xX]\]\s+/)
+  if (checkboxMatch) {
+    removed += checkboxMatch[0].length
+    remaining = remaining.slice(checkboxMatch[0].length)
+  }
+
+  const whitespaceMatch = remaining.match(/^\s+/)
+  if (whitespaceMatch) {
+    removed += whitespaceMatch[0].length
+    remaining = remaining.slice(whitespaceMatch[0].length)
+  }
+
+  return { text: remaining, removedPrefixLength: removed }
 }
