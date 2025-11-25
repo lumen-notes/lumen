@@ -85,8 +85,8 @@ function _parseNote(id: NoteId, content: string): Note {
             const taskContent = getTaskContent(node, value)
             const taskLinks = getTaskLinks(taskContent.node)
             const taskTags = getTaskTags(taskContent.node)
-            const taskDate = getTaskDate(taskLinks)
-            const taskDisplayText = getTaskDisplayText(taskContent.text)
+            const taskDate = getTaskDate(taskLinks, taskContent.text)
+            const taskDisplayText = getTaskDisplayText(taskContent.text, taskDate)
 
             tasks.push({
               completed: node.checked === true,

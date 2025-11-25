@@ -214,28 +214,38 @@ describe("getTaskTags", () => {
 })
 
 describe("getTaskDate", () => {
-  test("returns the last date link when multiple dates present", () => {
+  test("returns the first date link when task starts with a date", () => {
     const links = ["2024-01-01", "2024-12-31", "note-id"]
-    expect(getTaskDate(links)).toBe("2024-12-31")
+    const text = "[[2024-01-01]] Task with multiple dates [[2024-12-31]]"
+    expect(getTaskDate(links, text)).toBe("2024-01-01")
+  })
+
+  test("returns the last date link when task does not start with a date", () => {
+    const links = ["2024-01-01", "2024-12-31", "note-id"]
+    const text = "Task with multiple dates [[2024-01-01]] [[2024-12-31]]"
+    expect(getTaskDate(links, text)).toBe("2024-12-31")
   })
 
   test("returns the date when single date present", () => {
     const links = ["2024-12-31"]
-    expect(getTaskDate(links)).toBe("2024-12-31")
+    const text = "Task with date [[2024-12-31]]"
+    expect(getTaskDate(links, text)).toBe("2024-12-31")
   })
 
   test("returns null when no date links", () => {
     const links = ["note-id", "another-note"]
-    expect(getTaskDate(links)).toBe(null)
+    const text = "Task with no dates"
+    expect(getTaskDate(links, text)).toBe(null)
   })
 
   test("returns null when links array is empty", () => {
-    expect(getTaskDate([])).toBe(null)
+    expect(getTaskDate([], "Task with no links")).toBe(null)
   })
 
   test("filters out non-date links", () => {
     const links = ["note-id", "2024-12-31", "another-note"]
-    expect(getTaskDate(links)).toBe("2024-12-31")
+    const text = "Task with date [[2024-12-31]]"
+    expect(getTaskDate(links, text)).toBe("2024-12-31")
   })
 })
 
@@ -256,8 +266,10 @@ describe("getTaskDisplayText", () => {
     expect(getTaskDisplayText("Task text  [[2024-12-31]]  ")).toBe("Task text")
   })
 
-  test("removes date links from both start and end", () => {
-    expect(getTaskDisplayText("[[2024-01-01]] Task text [[2024-12-31]]")).toBe("Task text")
+  test("removes only start date when task starts with a date", () => {
+    expect(getTaskDisplayText("[[2024-01-01]] Task text [[2024-12-31]]")).toBe(
+      "Task text [[2024-12-31]]",
+    )
   })
 
   test("does not remove non-date wikilinks", () => {

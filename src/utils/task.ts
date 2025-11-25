@@ -51,21 +51,35 @@ export function getTaskTags(node: Node): string[] {
   return Array.from(tags)
 }
 
-export function getTaskDate(links: NoteId[]): string | null {
+export function getTaskDate(links: NoteId[], text: string): string | null {
   const dateLinks = links.filter((link) => isValidDateString(link))
   if (dateLinks.length === 0) {
     return null
   }
 
+  // Check if task starts with a date
+  const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(text)
+
+  if (startsWithDate) {
+    // Use the first date link
+    return dateLinks[0]
+  }
+
+  // Otherwise, use the last date link
   return dateLinks[dateLinks.length - 1]
 }
 
-export function getTaskDisplayText(text: string): string {
-  // Regex to match [[YYYY-MM-DD]] at start or end, with optional surrounding whitespace
-  return text
-    .replace(/^\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*/u, "")
-    .replace(/\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*$/u, "")
-    .trim()
+export function getTaskDisplayText(text: string, taskDate: string | null = null): string {
+  // Check if task starts with a date
+  const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(text)
+
+  if (startsWithDate) {
+    // Remove date from start
+    return text.replace(/^\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*/u, "").trim()
+  }
+
+  // Otherwise, remove date from end (if present)
+  return text.replace(/\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*$/u, "").trim()
 }
 
 export function updateTask({
@@ -83,11 +97,9 @@ export function updateTask({
   }
 
   // Escape special regex characters in the task text
-  // Note: task.text may contain wikilinks like [[...]], so brackets need to be escaped
   const escapedText = task.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 
-  // Match: "-" followed by exactly 1 space, then "[ ]" or "[x]" or "[X]",
-  // followed by 1+ spaces, then the task text
+  // Match "- [ ]" or "- [x]" or "- [X]", followed by 1+ spaces, then the task text
   const pattern = new RegExp(`(- \\[[ xX]\\])\\s+(${escapedText})`, "u")
 
   const match = content.match(pattern)
@@ -96,10 +108,7 @@ export function updateTask({
     return content
   }
 
-  // Replace [ ] with [x] or [x]/[X] with [ ] based on completed state
   const newCheckbox = completed ? "[x]" : "[ ]"
-  // Preserve the original spacing and task text from the match
   const replacement = `- ${newCheckbox} ${match[2]}`
-
   return content.replace(pattern, replacement)
 }
