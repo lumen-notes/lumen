@@ -992,9 +992,3 @@ function useEditorValue({
 
   return { editorValue, setEditorValue, isDraft, discardChanges }
 }
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
-type BacklinkTask = Task & { parentId: NoteId }

@@ -247,28 +247,3 @@ function _parseNote(id: NoteId, content: string): Note {
     backlinks: [],
   }
 }
-
-function stripTaskPrefix(text: string) {
-  let remaining = text
-  let removed = 0
-
-  const bulletMatch = remaining.match(/^-\s+/)
-  if (bulletMatch) {
-    removed += bulletMatch[0].length
-    remaining = remaining.slice(bulletMatch[0].length)
-  }
-
-  const checkboxMatch = remaining.match(/^\[[ xX]\]\s+/)
-  if (checkboxMatch) {
-    removed += checkboxMatch[0].length
-    remaining = remaining.slice(checkboxMatch[0].length)
-  }
-
-  const whitespaceMatch = remaining.match(/^\s+/)
-  if (whitespaceMatch) {
-    removed += whitespaceMatch[0].length
-    remaining = remaining.slice(whitespaceMatch[0].length)
-  }
-
-  return { text: remaining, removedPrefixLength: removed }
-}
