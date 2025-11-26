@@ -51,13 +51,14 @@ type Event =
   | { type: "SIGN_OUT" }
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
+  | { type: "SYNC_DEBOUNCED" }
   | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
   return createMachine(
     {
-      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m0UNCyADC6FurwAogAZA-buk-HUHgAKd07IO9oHZi0xx05CcR0UszmFXn7ouDvjOHyEqxsu-AWmuGpSHuIhFmghqsOwzrcLwK61lBMH2roLbSG2Sgdh6QL3j2PoIF+Ni2BKOIuAs8LmMK0R2IG9iMQmYRfnylhgZc6E2tBLCwQ6pT4OUlTVHUjRmuBq65rg-EUIJ2HdHhfQEZoRHdqyj6IDYyh2LgezQsmcquDEMZuPpdhMdZyj2IKDjcaqObWnJe6QIeJ5nhe163oRTLDCR2kIPZL4SrE5gfl+wq+DKkQLks0QhAubFeI5EGyfJkByQAFlgVDGhAKBgAwADqOpvHSB4-AAYm8J4vHemngqRn64MoqROP+rjSlC0UKtYtnmFZlgShyn7pESNbOeurlGhAOV5TA7CFcVAAix4HpVNV1QejUBVppiIK1QH2DKUrmO1QGWNFcrTskwaDt10LmGlMkuZl81SLl+W4AA7vgoJUNVZBFbACHGshppTZBfFuZ931Lf9gNQMDoM4a6+HqH5Xb7c1QXQsobWMdK0S7HKNizNFw6RLM0QLpyumilxk1odNGFzQtP1I-IQMg3AwmiWWElVlJPFs7DHNfYtbDcyIqNwOjKnuup-ksnjh1kXGQYWQqn57HGcRU0xNNLOEsS-u1E3nNJvGzbcnNLRAYBFTzKN8+DSGcFDrMw3bWVSz9Tsu3LfOK70yuerjvauITjHxaZCz2NFiIDbGSVRJs3hDq9tsfQ7bBB2ArvywLpbiRWknQxlcP57ghfF6Hynh2pkdq72sYRBszjd5Y47eMn-YhLZsxLAqGxuFbyo2+LfvzbAgQUFIVwPFIUhwGDLwAJpfNue1t6RMrWJ+pN8vOYRjvRQShAcFF6UPvh2N45EZiz0++3n8+L7gJaMFvO97w+DWAY2rHChJ+dqThRzfivuMPkFFuo2CGkkWM0oc4zw-gvJe2gHgoBQCID2JpUJv2rhzT+WCcF4KoGHdsWMVY433kFYMhMUxOFSKAnkl81iLCiOKBc8whyLB1mg9+NcyFVAofgn+QsK4iyru9URmDxG4JENQzGADAoa2hPAqyMomLzFjAqYUSVu5BiHp1BIfIsTCJIfbMR2DlFUAYOog67JYzijiMkdqFkAzIiMamCiiCPCJTCoxRUr8xYiNIYo7BsBsr4OYIhQhosnKRNsdEh4sSVFNxoc49WYxLBJTavCZIQF+SLDpkYxw04UhWSlO4CMvdrHyKiV-GJcTHFSPLpWasPsbFZTsRk9pUBVGqVoa3QBrj9K+B8KTMcDhpQ2CMbKXAj8pR7DCKTIazgmkzQwa0wZ+DcnR0cAZewEwFgRSiFYIxrgti7EjL+MmqYJQ7PZmkr+X0wBSC4CIF4sg5AZIIZDIhES+lz0UZ875vz-myAySMiOGko6kSWDCX8dMRrSnCAzIxFN9KLAAuc3w9hXkS3eUvSFPyqB-IBWDBJEMvYgpSWCq4ELspfMpVAalsLYDwo7G4OhxEXGIFHrCCMDhUgGO7kKGBHU7mxD4Q-IcbgSWzxZR8tlUKqUwsBZ08s3TknpWaWSnK7LoU0t5WMxFDCNYxEJt3QUMp2KuGujK5B4oL7TF2DraEKq9nko1RyrlgK-672xoKvJkJUhTEFFYQccY5jREqccNqCYkgnCSBMF6SpNxO3gECEk4yNFjF9BPCIN9dKbHslKRKwpfTTgWEkMcMR-wosjK9BsHQxCFqFQgLW84lh7AzhMBU0C1iIO2AmPYopDjHBGjsx4shu0RuCgqcUyRe531jQsBiZb5hwl1hMUtJKl29hLTiTEyIK0ZpxAkaVaxOT6SsB4CmJSn2pXCUylyHasJoBPaROtbgDIym7mPBmUZJyRlhPMQ97hkiLCzdbUFLlNw7jhn+-Gq6jjJn3UxK5EHY7jiGuTQdyqP2Gt2ZhJsuh0NANXUOREqQPwWQpi6tY8QIj8kGvYWyDh32Ic-RRuaNHi02AouWpw17q3Rhgb4CMkRGYWV-I-CKfGp5IcE-bAOMBhN+mNjsVZ3hgyM2k2sPYFNMSM3agqZMRLfU1y0wVIqOn1jTmKTEBUVkjjIJuhsKYelSbyg-EsOzksEYywBg3UGzmowgN0u4fqY0JwyYcPpeI-nfARU-Nssjb0NP+zC3XZ2RcQ5OatRMxArhAMJUjPMBYFl3DRShNYKIVl06m2JiFslzn-SE3E5W-FCQTOhG8BRPYTgZSgODBMTr-TFGwBXmvWAebVbld7WJwJKIkrnxGkYm+bU5gpgsk-KcM3wVfx-s55rXrpgJhaxsBrMDH6rsCTx2MHhOSqbkXls75CHFQEu74IMU34gRh8L3Th18fADjgQcZE-JTtqvIZkqgl24iwgsoxEa0JDjbplciLYqzRNDSHMzfj5G3mzfVaarVNLnPnRWaZc2yIlWJplSiTEOIoS6SJ-EDIGQgA */
+      /** @xstate-layout N4IgpgJg5mDOIC5RQDYHsBGBDFA6ATnGigG4CWAdlAKqxj4DEEaFYulJaA1m6pjgSKlKNOvgQc0AYywAXMiwDaABgC6K1YlAAHNLDLyWWkAA9EAFgDsuABwBmS8qcBWSwEZnygGxu3AGhAAT0QAJhDzXEsvAE5lSxtY6OdfEJsAXzSAvmw8QlhicipaegZ6fDR8XG0UOQAzCoBbXGyBPIKRYvFJGUMKDQ1jXX1e4zMEEPdcaOmvOxCvELt7BwDghDdlaNtHczdwkOc7Nys7DKz0HNx9KFYIAHkAV1kGAGUASQBxADkAfTevgZIEBDAwKCijRBeZxeXDQkKxGzhZz2BKrUJHXAHRx2KEbBLI06ZEAtPDXW5vCivT6-O7UAAqgJ0elBRiBY2c5i2HiiyWiXnizhCaIQ5nCuHMuy8NjcPnM-Ls0TOxIuAjJkApgnywioACUwLomCw2JIeM0VaSyDd1RRNe1dfq0BIKJwemD+mpBsyRmzEABaczOXBeWaihLHaI2Vx2YWWOwRZQBqVeZRuabxEJKklXS3km1tbVQPUGsoVKo1WT1fBNLNqiAa-OFQsOp0uuRutSM4FesEQ8ZWIOC5SHQ5xGzuLzC5EhcXjzxzNzuMeZ83Zq11m0UNCyADC6FurwAogAZA-buk-HUHgAKd07IO9oHZi0xx05CcR0UszmFXn7ouDvjOHyEqxsu-AWmuGpSHuIhFmghqsOwzrcLwK61lBMH2roLbSG2Sgdh6QL3j2PoIPENi2BKOIuAs8LmMKsSBhMHhJAk-52IS5zgauua4NBLCwQ6pT4OUlTVHUjRmtx6E2vxFCCdh3R4X0BGaER3aso+iA2Modi4Hs0LJnKrgxDGbh6Rxw52Mo9iCg4YGXDJfF7pAh4nmeF7XrehFMsMJFaQgdkvhKsTmB+X7Cr4MqRAuSzRCEC4JvMDmqjm1rOUaEB8QAFlgVDGhAKBgAwADqOpvHSB4-AAYm8J4vHeGngqRn64MoqROP+rjSlCkUKtYNnmBxlgShyn7pESNZpeuGW3DleUwOwhXFQAIseB6VTVdUHo1fmaaYiCtUB9gylK5jtUBliRXK07JMGg7ddC5gpRBvFyZA835bgADu+CglQ1VkEVsAIcayGmlNkGyS5WVSLlX2-f9UCA8DOGuvh6g+V2e3NQF0LKG10RLKmuxyjYsyRcOkSzNEC6cjpoqWC9PHpe9sPw4tiPyADQNwMJollhJVZSY500YZln2c393PI7zsBo8p7pqb5LK4wdZFxkG5kKp+exxnElN2IGURLOEsS-u1E1caLUOzR9cMLWwEBgEVMso8VzCISaqHSWL0MSw7X3O67IjuwrvRK56OO9q4BNE7FJkLPYkWIgNsYJVEmzeEOzNOWzktOy7YBu7z-OluJFaSZDb0wwXuDB8Xoe8+H7aY8r2Oq72sYRBszh95Y47eCn-YhDZsxLAqGxuFbyq+7b+ewIEFBSFcDxSFIcAgy8ACaXzbrtnekR4ek6eEewRvEST0UE6Lmfp1l8sBTi00zk1oX7dtZYvy+r+vm+vLvbcPw1oACFaR7wPCtA+D51ajzcJEDkiwgIJjhEOYUYRkRtTmCmcy3gvyIlzh-BeS8V4lkYDvPe0D-Lqw5JiU+PgOQmzxN+G+CAjjxFhFYICCoozSkIfPWu39SEiQqAAvewCDxgOoBAqBWNiL7TGAGSiDhPBODUU4CcrCjjzExLTYM+iDHOH4TXCWQj65gAwGgB4y8RBiP3nIpqXc5h0OSHCFhaxFi7EiLpPYnJpj+KMW-OeJi5pmOdpY6xUhbEUKAaA8B25IFUIUdpSw04pRhD0QY-k6DR4wg5KdLJ-JjGs0ESQ8xESbFUAYCYWAsg5BsCwLUWQ9AAAUGwnAAEoGDVxKaYsp4SrGVKgEktWYx4gRAHhdRwY4EhRHQQqCIY5AnW1SgIvpP9tAPBQCgWxnswacAhu-NZoSymbO2SIFuGMRm9hiIGOIA8cRhWfjYGw6CFjwOhPYdq08IzFJmsQjZWydlVLIYLSuwsen-NKYC85VBLkqTblHQ+AUGG4FNpyPxY5fxXVYQcTBDg5j7AOMNP54sTkwuBVABg1zSKykxJM+Y4QsVWHQckCi08Uxxl8MGbwyzZ42xCR9MxmzYDZV2UaJCByfYCt6eSleIqxVwqUhHVSSKYFjOhITVJUpoRJDxOg6InJMQ6vJmOVMY5X4rNerKoVpyHiitsaCiulZqxHMFV-O1DqlXIXRgimlKKnCwn5BMWY9hGLRHQS8wMrhkQCiWFCKwpL-ZyqqPaxVVL-XqzpRMRwjKwpRBZbimwQ1772DjeTRhSbP5XDKXDMAUguAiBeHU2Q9rQaSpQiLVZ7qa0-zrQ2ptLb7XwsjupaOpFPDTjmIKRY-J3DuMQNg6chq-HHAStKBcVaAUr37Y2qgza5Btr2R2w5wSbUer7dlete6oAHtbfLZVrdFBuHbvI0Z2kdHT3eYiHwi4I1aNHsukKtNRTT18Ja-l3bz29p3Vegd+6h0gydeWF1XbrVQvWbB69g7D0Pp9YrVVY7kXq1SYGWmOlXCD00WsOYkxclm12NrLwW7oVYfg7exDdjM1jCSHk1J8wpSOE2HyYU1k+6RE5CNC2PhDUscwzlbDCHcN2IkVImR3HDqatcQsBdbC9gwnhAUwpgSiSbmdvAIEJI1XULGL6BcWwdjWWTPohm0ZWG+jSfCWNrgyaCjlMzBsHQxDWeSWwiI85iYhvarGJIwpi3bATL44lxwRp-MeLIEL77AoKnFMkSZcwuELAYhEMIUIFg62YsWpNmXex2YxI57OLmExubWJyPSVgZRDTJnsdwVbAtYTQDV0iHn4Hcr7pPemUZJyRlhIy9w869bPSCTKmam4dwwyG3jHLRxkxwksgW6bcdxxdalD1twcn5IDc2+rIaWwhyIlSB+cy5McVrHGUGaZYVrJluY8tqDGHbjXds-YbxQ1GvBlc5Fc1kQdKT2OLMvlkKyX2w5mAIHfojag6c94CHzXIqpAM7D2m8PPyI7ddBwOi0yDLXR+sacXmYgKg4kcJIr3EDHA2FMXShr5QfiWBdlHjsfrSybsDWnUY2ocvcP1Ma1H2cEph9z3wYVScC-ZkLhuJciri8mHFSMAmEoOH8KwmUrhqYcQzqbImM8kfJttcvWnvprJTHjl+JIs6EgtdCL4O7kpClFL++h5HF6V6wDXhvWAFmVbqsXRRVIuwUQJTCGOa+HiDgUV0nA3B-Ipxq5g7gMhtOFxtW8Iic6VhZgbDZ2ws+mIhzBkcL+F5yVA8swB-bleAzIkiFpyNaNco+QKh5XL8YEwKLFoDL4Jz+CMyt7zqx1NsKoC97lJEDiF8WfJBsqy7wtgq9EsOPZOfRCF8Kp70RmPZFRSwh6gGS+5NYtFs1nf+Kl1Z0Qdt9Wsxu6cP3t76mcUYlCMaYZ7QUUTGyCyLFNMPuY4EzNIIAA */
       id: "global",
       tsTypes: {} as import("./global-state.typegen").Typegen0,
       schema: {} as {
@@ -184,7 +185,7 @@ function createGlobalStateMachine() {
                         src: "writeFiles",
                         onDone: {
                           target: "idle",
-                          actions: raise("SYNC"),
+                          actions: raise("SYNC_DEBOUNCED"),
                         },
                         onError: {
                           target: "idle",
@@ -198,7 +199,7 @@ function createGlobalStateMachine() {
                         src: "deleteFile",
                         onDone: {
                           target: "idle",
-                          actions: raise("SYNC"),
+                          actions: raise("SYNC_DEBOUNCED"),
                         },
                         onError: {
                           target: "idle",
@@ -214,12 +215,23 @@ function createGlobalStateMachine() {
                     success: {
                       on: {
                         SYNC: "pulling",
+                        SYNC_DEBOUNCED: "debouncing",
                       },
                     },
                     error: {
                       entry: "logError",
                       on: {
                         SYNC: "pulling",
+                        SYNC_DEBOUNCED: "debouncing",
+                      },
+                    },
+                    debouncing: {
+                      after: {
+                        1000: "pulling",
+                      },
+                      on: {
+                        SYNC: "pulling",
+                        SYNC_DEBOUNCED: "debouncing",
                       },
                     },
                     pulling: {
@@ -250,6 +262,7 @@ function createGlobalStateMachine() {
                     checkingStatus: {
                       on: {
                         SYNC: "pulling",
+                        SYNC_DEBOUNCED: "debouncing",
                       },
                       invoke: {
                         src: "checkStatus",
