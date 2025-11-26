@@ -13,6 +13,7 @@ describe("parseNote", () => {
         links: ["project-alpha"],
         date: null,
         tags: ["ops"],
+        startOffset: 0,
       },
     ])
   })
@@ -34,6 +35,7 @@ describe("parseNote", () => {
         links: ["2025-01-02", "2024-12-31"],
         date: "2025-01-02",
         tags: ["parent"],
+        startOffset: 1, // After the leading newline
       },
       {
         completed: false,
@@ -42,6 +44,7 @@ describe("parseNote", () => {
         links: ["2023-04-04", "note-b", "2023-05-05"],
         date: "2023-05-05",
         tags: ["child"],
+        startOffset: 61, // After parent task + newline + 2 spaces for nesting
       },
     ])
   })

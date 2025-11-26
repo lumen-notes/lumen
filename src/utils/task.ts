@@ -96,19 +96,7 @@ export function updateTask({
     return content
   }
 
-  // Escape special regex characters in the task text
-  const escapedText = task.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-
-  // Match "- [ ]" or "- [x]" or "- [X]", followed by 1+ spaces, then the task text
-  const pattern = new RegExp(`(- \\[[ xX]\\])\\s+(${escapedText})`, "u")
-
-  const match = content.match(pattern)
-  if (!match) {
-    // If we can't find the task, return the original content
-    return content
-  }
-
-  const newCheckbox = completed ? "[x]" : "[ ]"
-  const replacement = `- ${newCheckbox} ${match[2]}`
-  return content.replace(pattern, replacement)
+  // Use position-based update to handle duplicate tasks correctly
+  const newCheckbox = completed ? "- [x]" : "- [ ]"
+  return content.slice(0, task.startOffset) + newCheckbox + content.slice(task.startOffset + 5)
 }

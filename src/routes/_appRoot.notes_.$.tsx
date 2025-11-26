@@ -886,11 +886,11 @@ function NotePage() {
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
                   <div className="flex flex-col">
-                    {backlinkTasks.map((task, index) => {
+                    {backlinkTasks.map((task) => {
                       const parentNote = backlinks.get(task.parentId)
                       return (
                         <TaskItem
-                          key={`${task.parentId}-${index}`}
+                          key={`${task.parentId}-${task.startOffset}`}
                           task={task}
                           parentId={task.parentId}
                           hideDate={isDailyNote}

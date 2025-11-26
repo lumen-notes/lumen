@@ -297,6 +297,7 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -312,6 +313,7 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: false })
@@ -327,6 +329,7 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: false })
@@ -342,10 +345,11 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
-    expect(result).toBe("- [x] Do laundry")
+    expect(result).toBe("- [x]   Do laundry")
   })
 
   test("handles tasks with wikilinks", () => {
@@ -357,6 +361,7 @@ describe("updateTask", () => {
       links: ["project-alpha"],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -372,6 +377,7 @@ describe("updateTask", () => {
       links: [],
       tags: ["tag"],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -387,6 +393,7 @@ describe("updateTask", () => {
       links: ["2024-12-31"],
       tags: [],
       date: "2024-12-31",
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -402,25 +409,11 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
     expect(result).toBe("- [x] Task with (parentheses) and [brackets]")
-  })
-
-  test("returns original content if task not found", () => {
-    const content = "- [ ] Different task"
-    const task = {
-      completed: false,
-      text: "This task doesn't exist",
-      displayText: "This task doesn't exist",
-      links: [],
-      tags: [],
-      date: null,
-    }
-
-    const result = updateTask({ content, task, completed: true })
-    expect(result).toBe("- [ ] Different task")
   })
 
   test("returns original content if task already in desired state", () => {
@@ -432,13 +425,14 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: false })
     expect(result).toBe("- [ ] Do laundry")
   })
 
-  test("only updates first matching task when multiple exist", () => {
+  test("updates first task when multiple exist", () => {
     const content = "- [ ] First task\n- [ ] Second task"
     const task = {
       completed: false,
@@ -447,6 +441,7 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -462,6 +457,7 @@ describe("updateTask", () => {
       links: [],
       tags: [],
       date: null,
+      startOffset: 17, // Position of "- [ ] Middle task"
     }
 
     const result = updateTask({ content, task, completed: true })
@@ -477,9 +473,66 @@ describe("updateTask", () => {
       links: ["2024-11-11"],
       tags: [],
       date: "2024-11-11",
+      startOffset: 0,
     }
 
     const result = updateTask({ content, task, completed: true })
     expect(result).toBe("- [x] Publish **release notes** [[2024-11-11]]")
+  })
+
+  test("updates correct duplicate task using position", () => {
+    const content = "- [ ] Buy milk\n- [ ] Buy milk"
+    const secondTask = {
+      completed: false,
+      text: "Buy milk",
+      displayText: "Buy milk",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 15, // Position of second "- [ ] Buy milk"
+    }
+
+    const result = updateTask({ content, task: secondTask, completed: true })
+    expect(result).toBe("- [ ] Buy milk\n- [x] Buy milk")
+  })
+
+  test("updates first of duplicate tasks correctly", () => {
+    const content = "- [ ] Buy milk\n- [ ] Buy milk"
+    const firstTask = {
+      completed: false,
+      text: "Buy milk",
+      displayText: "Buy milk",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0, // Position of first "- [ ] Buy milk"
+    }
+
+    const result = updateTask({ content, task: firstTask, completed: true })
+    expect(result).toBe("- [x] Buy milk\n- [ ] Buy milk")
+  })
+
+  test("updates task with frontmatter offset correctly", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] Task after frontmatter`
+    const task = {
+      completed: false,
+      text: "Task after frontmatter",
+      displayText: "Task after frontmatter",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 24, // "---\ntitle: My Note\n---\n\n" = 24 chars
+    }
+
+    const result = updateTask({ content, task, completed: true })
+    expect(result).toBe(`---
+title: My Note
+---
+
+- [x] Task after frontmatter`)
   })
 })
