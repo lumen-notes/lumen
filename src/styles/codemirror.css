@@ -55,7 +55,7 @@
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
-  @apply card-2 max-w-sm border-0 p-1;
+  @apply card-2 max-w-sm border-0 !bg-bg-overlay p-1 !backdrop-blur-none;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {
