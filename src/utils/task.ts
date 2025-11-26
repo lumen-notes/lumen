@@ -98,7 +98,5 @@ export function updateTask({
 
   // Use position-based update to handle duplicate tasks correctly
   const newCheckbox = completed ? "- [x]" : "- [ ]"
-  return (
-    content.slice(0, task.startOffset) + newCheckbox + content.slice(task.startOffset + 5)
-  )
+  return content.slice(0, task.startOffset) + newCheckbox + content.slice(task.startOffset + 5)
 }
