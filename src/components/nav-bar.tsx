@@ -5,7 +5,7 @@ import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
 import { isCommandMenuOpenAtom } from "./command-menu"
 import { IconButton, IconButtonProps } from "./icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, CommandIcon16, MenuIcon16, PlusIcon16 } from "./icons"
+import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16, SearchIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 
 export function NavBar() {
@@ -39,7 +39,7 @@ export function NavBar() {
           <ArrowRightIcon16 />
         </NavButton>
         <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
-          <CommandIcon16 />
+          <SearchIcon16 />
         </NavButton>
         <NavButton
           aria-label="New note"
