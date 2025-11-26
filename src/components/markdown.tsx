@@ -44,6 +44,7 @@ export type MarkdownProps = {
   hideFrontmatter?: boolean
   fontSize?: "small" | "large"
   onChange?: (value: string) => void
+  emptyText?: string
 }
 
 const MarkdownContext = React.createContext<{
@@ -60,6 +61,7 @@ export const Markdown = React.memo(
     hideFrontmatter = false,
     fontSize = "large",
     onChange,
+    emptyText = "Empty",
   }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
@@ -191,7 +193,7 @@ export const Markdown = React.memo(
                   {
                     // If there's no content and no visible frontmatter, show a placeholder
                     isNoteEmpty({ markdown: children, hideFrontmatter }) ? (
-                      <span className="text-text-tertiary italic font-sans">Empty note</span>
+                      <span className="text-text-tertiary italic font-sans">{emptyText}</span>
                     ) : body ? (
                       <MarkdownContent>{body}</MarkdownContent>
                     ) : null
@@ -523,7 +525,9 @@ function NoteEmbed({ id }: NoteEmbedProps) {
   return (
     <div className="relative pl-[calc(var(--font-size-base)*1.25)] before:absolute before:bottom-0 before:left-0 before:top-0 before:w-[3px] before:rounded-full before:bg-border before:content-['']">
       {note ? (
-        <Markdown hideFrontmatter>{note.content}</Markdown>
+        <Markdown hideFrontmatter emptyText="Empty note">
+          {note.content}
+        </Markdown>
       ) : (
         <span className="flex items-center gap-2 text-text-danger">
           <ErrorIcon16 />
