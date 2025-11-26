@@ -55,41 +55,41 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   return (
     <div className={cx("@container/header", className)}>
       <header className="flex h-[var(--height-app-header)] items-center gap-2 px-2">
-        <div className="hidden items-center empty:hidden sm:flex">
-          {sidebar === "collapsed" ? (
-            <>
-              <IconButton
-                aria-label="Expand sidebar"
-                shortcut={["⌘", "B"]}
-                tooltipAlign="start"
-                size="small"
-                onClick={() => setSidebar("expanded")}
-              >
-                <SidebarCollapsedIcon16 />
-              </IconButton>
-              <NewNoteButton />
-              <div role="separator" className="mx-2 h-5 w-px bg-border-secondary" />
-            </>
-          ) : null}
-          <IconButton
-            aria-label="Go back"
-            size="small"
-            // TODO: Disable if you can't go back
-            // https://stackoverflow.com/questions/3588315/how-to-check-if-the-user-can-go-back-in-browser-history-or-not
-            onClick={() => router.history.back()}
-            className="group"
-          >
-            <ArrowLeftIcon16 className="transition-transform group-active:-translate-x-0.5" />
-          </IconButton>
-          <IconButton
-            aria-label="Go forward"
-            size="small"
-            className="group"
-            onClick={() => router.history.forward()}
-          >
-            <ArrowRightIcon16 className="transition-transform group-active:translate-x-0.5" />
-          </IconButton>
-        </div>
+        {sidebar === "collapsed" ? (
+          <div className="hidden items-center sm:flex">
+            <IconButton
+              aria-label="Expand sidebar"
+              shortcut={["⌘", "B"]}
+              tooltipAlign="start"
+              size="small"
+              onClick={() => setSidebar("expanded")}
+            >
+              <SidebarCollapsedIcon16 />
+            </IconButton>
+            <IconButton
+              aria-label="Go back"
+              size="small"
+              // TODO: Disable if you can't go back
+              // https://stackoverflow.com/questions/3588315/how-to-check-if-the-user-can-go-back-in-browser-history-or-not
+              onClick={() => router.history.back()}
+              className="group"
+            >
+              <ArrowLeftIcon16 className="transition-transform group-active:-translate-x-0.5" />
+            </IconButton>
+            <IconButton
+              aria-label="Go forward"
+              size="small"
+              className="group"
+              onClick={() => router.history.forward()}
+            >
+              <ArrowRightIcon16 className="transition-transform group-active:translate-x-0.5" />
+            </IconButton>
+            <NewNoteButton />
+          </div>
+        ) : null}
+        {sidebar === "collapsed" && icon ? (
+          <div role="separator" className="h-5 w-px bg-border-secondary" />
+        ) : null}
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
           {icon ? (
             <div className="flex size-icon flex-shrink-0 text-text-secondary">{icon}</div>
