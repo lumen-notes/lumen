@@ -1,7 +1,8 @@
-import { useNavigate, useRouter } from "@tanstack/react-router"
+import { useRouter } from "@tanstack/react-router"
 import { useAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
 import { sidebarAtom } from "../global-state"
+import { useCreateNewNote } from "../hooks/create-new-note"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, SidebarCollapsedIcon16 } from "./icons"
@@ -16,8 +17,8 @@ export type AppHeaderProps = {
 
 export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
   const router = useRouter()
-  const navigate = useNavigate()
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
+  const createNewNote = useCreateNewNote()
 
   // Toggle sidebar with Cmd/Ctrl + B
   useHotkeys(
@@ -32,25 +33,11 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
     },
   )
 
-  useHotkeys(
-    "mod+shift+o",
-    () => {
-      navigate({
-        to: "/notes/$",
-        params: { _splat: `${Date.now()}` },
-        search: {
-          mode: "write",
-          query: undefined,
-          view: "grid",
-        },
-      })
-    },
-    {
-      preventDefault: true,
-      enableOnFormTags: true,
-      enableOnContentEditable: true,
-    },
-  )
+  useHotkeys("mod+shift+o", createNewNote, {
+    preventDefault: true,
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
 
   return (
     <div className={cx("@container/header", className)}>
