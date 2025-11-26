@@ -13,10 +13,6 @@ const isSyncingAtom = selectAtom(
     state.matches("signedIn.cloned.sync.checkingStatus"),
 )
 
-const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloned.sync.success"),
-)
-
 const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned.sync.error"),
 )
