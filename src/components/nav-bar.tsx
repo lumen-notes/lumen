@@ -8,7 +8,6 @@ import { IconButton, IconButtonProps } from "./icon-button"
 import {
   ArrowLeftIcon16,
   ArrowRightIcon16,
-  CommandIcon16,
   MenuIcon16,
   PlusIcon16,
   SearchIcon16,
