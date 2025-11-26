@@ -19,7 +19,7 @@ import {
   toDateStringUtc,
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
-import { parseFrontmatter } from "./frontmatter"
+import { hasVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
 import { getTaskContent, getTaskDate, getTaskDisplayText, getTaskLinks, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
@@ -249,4 +249,22 @@ function _parseNote(id: NoteId, content: string): Note {
     tasks,
     backlinks: [],
   }
+}
+
+/** Checks if a note has nothing to display to the user (no content or visible frontmatter) */
+export function isNoteEmpty({
+  markdown,
+  hideFrontmatter = false,
+}: {
+  markdown: string
+  hideFrontmatter?: boolean
+}): boolean {
+  const { frontmatter, content } = parseFrontmatter(markdown)
+
+  if (content.trim()) return false
+
+  // If frontmatter won't be displayed, only content determines emptiness
+  if (hideFrontmatter) return true
+
+  return !hasVisibleFrontmatter(frontmatter)
 }

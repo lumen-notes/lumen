@@ -16,10 +16,12 @@ import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
+  getVisibleFrontmatter,
   parseFrontmatter,
   updateFrontmatterKey,
   updateFrontmatterValue,
 } from "../utils/frontmatter"
+import { isNoteEmpty } from "../utils/parse-note"
 import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
@@ -61,22 +63,10 @@ export const Markdown = React.memo(
   }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
-    const filteredFrontmatter = React.useMemo(() => {
-      return Object.fromEntries(
-        Object.entries(frontmatter).filter(([key, value]) => {
-          // Skip reserved frontmatter keys
-          if (["pinned", "gist_id", "font", "width"].includes(key)) return false
-
-          // Filter out empty arrays
-          if (Array.isArray(value) && value.length === 0) return false
-
-          // Filter out undefined and null values
-          if (value === undefined || value === null) return false
-
-          return true
-        }),
-      )
-    }, [frontmatter])
+    const visibleFrontmatter = React.useMemo(
+      () => getVisibleFrontmatter(frontmatter),
+      [frontmatter],
+    )
 
     // Split the content into title and body so we can display
     // the frontmatter below the title but above the body.
@@ -159,14 +149,12 @@ export const Markdown = React.memo(
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
                   {title ? <MarkdownContent>{title}</MarkdownContent> : null}
-                  {filteredFrontmatter &&
-                  !hideFrontmatter &&
-                  !isObjectEmpty(filteredFrontmatter) ? (
+                  {!hideFrontmatter && !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
                       <div className="-mx-2 coarse:-mx-3">
                         <Frontmatter
-                          frontmatter={filteredFrontmatter}
+                          frontmatter={visibleFrontmatter}
                           onKeyChange={(oldKey, newKey) =>
                             onChange?.(
                               updateFrontmatterKey({
@@ -201,13 +189,9 @@ export const Markdown = React.memo(
                   }
                 >
                   {
-                    // If there's no title, no body, and no frontmatter, show a placeholder
-                    !title &&
-                    !body &&
-                    (!filteredFrontmatter ||
-                      isObjectEmpty(filteredFrontmatter) ||
-                      hideFrontmatter) ? (
-                      <span className="text-text-tertiary italic font-sans">Empty</span>
+                    // If there's no content and no visible frontmatter, show a placeholder
+                    isNoteEmpty({ markdown: children, hideFrontmatter }) ? (
+                      <span className="text-text-tertiary italic font-sans">Empty note</span>
                     ) : body ? (
                       <MarkdownContent>{body}</MarkdownContent>
                     ) : null
