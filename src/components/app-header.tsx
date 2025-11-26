@@ -75,7 +75,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           </div>
         ) : null}
         {sidebar === "collapsed" && icon ? (
-          <div role="separator" className="h-5 w-px bg-border-secondary" />
+          <div role="separator" className="h-5 w-px bg-border-secondary hidden sm:block" />
         ) : null}
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
           {icon ? (
