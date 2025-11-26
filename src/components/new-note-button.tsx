@@ -1,56 +1,16 @@
-import { useLocation, useMatch, useNavigate } from "@tanstack/react-router"
-import { parseQuery } from "../utils/search"
+import { useCreateNewNote } from "../hooks/create-new-note"
 import { IconButton } from "./icon-button"
 import { PlusIcon16 } from "./icons"
 
-function useTagsFromRoute() {
-  const tags = new Set<string>()
-
-  const tagMatch = useMatch({ from: "/_appRoot/tags_/$", shouldThrow: false })
-  if (tagMatch?.params._splat) {
-    tags.add(tagMatch.params._splat)
-  }
-
-  const location = useLocation()
-  const query = location.search.query ?? ""
-  const tagFilters = parseQuery(query).filters.filter((q) => q.key === "tag" && !q.exclude)
-
-  tagFilters.forEach((filter) => {
-    filter.values.forEach((tag) => tags.add(tag))
-  })
-
-  return Array.from(tags)
-}
-
 export function NewNoteButton() {
-  const navigate = useNavigate()
-  const tags = useTagsFromRoute()
+  const createNewNote = useCreateNewNote()
 
   return (
     <IconButton
       aria-label="New note"
       shortcut={["⌘", "⇧", "O"]}
       size="small"
-      onClick={() => {
-        const noteId = `${Date.now()}`
-
-        // Add tags to the note
-        let content = ""
-        if (tags.length > 0) {
-          content = `---\ntags: [${tags.join(", ")}]\n---\n\n`
-        }
-
-        navigate({
-          to: "/notes/$",
-          params: { _splat: noteId },
-          search: {
-            mode: "write",
-            query: undefined,
-            view: "grid",
-            content,
-          },
-        })
-      }}
+      onClick={createNewNote}
     >
       <PlusIcon16 />
     </IconButton>
