@@ -17,14 +17,14 @@ export function TagLink({ name, className }: TagLinkProps) {
             {i > 0 && <span>/</span>}
             <Link
               className="link"
-              to={`/tags/$`}
-              params={{
-                _splat: name
+              to="/"
+              search={{
+                query: `tag:${name
                   .split("/")
                   .slice(0, i + 1)
-                  .join("/"),
+                  .join("/")}`,
+                view: "grid",
               }}
-              search={{ query: undefined, view: "grid" }}
             >
               {part}
             </Link>
