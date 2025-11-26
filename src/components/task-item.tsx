@@ -36,7 +36,7 @@ export function TaskItem({
           onCheckedChange={(checked) => onCompletedChange?.(checked === true)}
         />
       </div>
-      <Markdown>{task.displayText || task.text}</Markdown>
+      <Markdown emptyText="Empty task">{task.displayText || task.text}</Markdown>
       {!hideDate && task.date ? (
         <Link
           to="/notes/$"
