@@ -482,7 +482,6 @@ describe("updateTask", () => {
 
   test("updates correct duplicate task using position", () => {
     const content = "- [ ] Buy milk\n- [ ] Buy milk"
-    // The second "Buy milk" task - position-based update should target the correct one
     const secondTask = {
       completed: false,
       text: "Buy milk",
@@ -514,13 +513,11 @@ describe("updateTask", () => {
   })
 
   test("updates task with frontmatter offset correctly", () => {
-    // Simulates content with frontmatter - the task startOffset should account for frontmatter length
     const content = `---
 title: My Note
 ---
 
 - [ ] Task after frontmatter`
-    const frontmatterLength = 24 // "---\ntitle: My Note\n---\n\n" = 24 chars
     const task = {
       completed: false,
       text: "Task after frontmatter",
@@ -528,7 +525,7 @@ title: My Note
       links: [],
       tags: [],
       date: null,
-      startOffset: frontmatterLength, // Task starts right after frontmatter
+      startOffset: 24, // "---\ntitle: My Note\n---\n\n" = 24 chars
     }
 
     const result = updateTask({ content, task, completed: true })
