@@ -967,6 +967,20 @@ function useEditorValue({
     return getNoteDraft({ githubRepo, noteId }) ?? note?.content ?? defaultValue
   })
 
+  // Track previous note content to detect external changes
+  const [prevNoteContent, setPrevNoteContent] = useState(note?.content)
+
+  // Adjust state during render when note content changes externally (no effect needed)
+  // See: https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  if (note?.content !== prevNoteContent) {
+    setPrevNoteContent(note?.content)
+    // Only update editor if there's no local draft
+    const hasDraft = getNoteDraft({ githubRepo, noteId }) !== null
+    if (!hasDraft && note?.content !== undefined) {
+      _setEditorValue(note.content)
+    }
+  }
+
   const isDraft = useMemo(() => {
     return editorValue !== (note ? note.content : defaultValue)
   }, [note, editorValue, defaultValue])
