@@ -18,6 +18,7 @@
 "error.platform.global.signedIn.cloned.sync.pulling:invocation[0]": { type: "error.platform.global.signedIn.cloned.sync.pulling:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]": { type: "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]"; data: unknown };
 "error.platform.global.signedIn.cloningRepo:invocation[0]": { type: "error.platform.global.signedIn.cloningRepo:invocation[0]"; data: unknown };
+"xstate.after(1000)#global.signedIn.cloned.sync.debouncing": { type: "xstate.after(1000)#global.signedIn.cloned.sync.debouncing" };
 "xstate.init": { type: "xstate.init" };
 "xstate.stop": { type: "xstate.stop" };
         };
@@ -67,14 +68,14 @@
           "checkStatus": "done.invoke.global.signedIn.cloned.sync.pushing:invocation[0]";
 "cloneRepo": "SELECT_REPO";
 "deleteFile": "DELETE_FILE";
-"pull": "SYNC" | "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
+"pull": "SYNC" | "done.invoke.global.signedIn.cloned.sync.checkingStatus:invocation[0]" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]" | "xstate.after(1000)#global.signedIn.cloned.sync.debouncing";
 "push": "done.invoke.global.signedIn.cloned.sync.pulling:invocation[0]";
 "resolveRepo": "SIGN_IN" | "done.invoke.global.resolvingUser:invocation[0]";
 "resolveUser": "xstate.init";
 "writeFiles": "WRITE_FILES";
         };
-        matchesStates: "resolvingUser" | "signedIn" | "signedIn.cloned" | "signedIn.cloned.change" | "signedIn.cloned.change.deletingFile" | "signedIn.cloned.change.idle" | "signedIn.cloned.change.writingFiles" | "signedIn.cloned.sync" | "signedIn.cloned.sync.checkingStatus" | "signedIn.cloned.sync.error" | "signedIn.cloned.sync.pulling" | "signedIn.cloned.sync.pushing" | "signedIn.cloned.sync.success" | "signedIn.cloningRepo" | "signedIn.notCloned" | "signedIn.resolvingRepo" | "signedOut" | { "signedIn"?: "cloned" | "cloningRepo" | "notCloned" | "resolvingRepo" | { "cloned"?: "change" | "sync" | { "change"?: "deletingFile" | "idle" | "writingFiles";
-"sync"?: "checkingStatus" | "error" | "pulling" | "pushing" | "success"; }; }; };
+        matchesStates: "resolvingUser" | "signedIn" | "signedIn.cloned" | "signedIn.cloned.change" | "signedIn.cloned.change.deletingFile" | "signedIn.cloned.change.idle" | "signedIn.cloned.change.writingFiles" | "signedIn.cloned.sync" | "signedIn.cloned.sync.checkingStatus" | "signedIn.cloned.sync.debouncing" | "signedIn.cloned.sync.error" | "signedIn.cloned.sync.pulling" | "signedIn.cloned.sync.pushing" | "signedIn.cloned.sync.success" | "signedIn.cloningRepo" | "signedIn.notCloned" | "signedIn.resolvingRepo" | "signedOut" | { "signedIn"?: "cloned" | "cloningRepo" | "notCloned" | "resolvingRepo" | { "cloned"?: "change" | "sync" | { "change"?: "deletingFile" | "idle" | "writingFiles";
+"sync"?: "checkingStatus" | "debouncing" | "error" | "pulling" | "pushing" | "success"; }; }; };
         tags: never;
       }
   
