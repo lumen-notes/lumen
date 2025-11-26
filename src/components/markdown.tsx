@@ -119,8 +119,8 @@ export const Markdown = React.memo(
                 style={
                   fontSize === "large"
                     ? ({
-                        "--font-size-base": "16px",
-                        "--font-size-sm": "14px",
+                        "--font-size-base": "15px",
+                        "--font-size-sm": "13px",
                       } as React.CSSProperties)
                     : undefined
                 }
@@ -182,8 +182,8 @@ export const Markdown = React.memo(
                   style={
                     fontSize === "large"
                       ? ({
-                          "--font-size-base": "16px",
-                          "--font-size-sm": "14px",
+                          "--font-size-base": "15px",
+                          "--font-size-sm": "13px",
                         } as React.CSSProperties)
                       : undefined
                   }
