@@ -1,5 +1,6 @@
 import {
   addDays,
+  differenceInCalendarDays,
   differenceInCalendarISOWeeks,
   formatDistance,
   getISOWeek,
@@ -125,6 +126,15 @@ export function formatDateDistance(dateString: string) {
   return formatDistance(then, nowUtc, {
     addSuffix: true,
   })
+}
+
+/** Checks if a date is within 7 days of today */
+export function isDateWithinWeek(dateString: string) {
+  const now = new Date()
+  const nowUtc = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))
+  const then = new Date(dateString)
+  const daysDiff = Math.abs(differenceInCalendarDays(then, nowUtc))
+  return daysDiff <= 7
 }
 
 /**

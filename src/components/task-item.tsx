@@ -42,7 +42,7 @@ export function TaskItem({
           to="/notes/$"
           params={{ _splat: task.date }}
           search={{ mode: "read", query: undefined, view: "grid" }}
-          className="text-text-secondary whitespace-nowrap leading-7 italic"
+          className="text-text-secondary whitespace-nowrap leading-7 italic hover:underline hover:underline-offset-[3px]"
         >
           {formatDateDistance(task.date)}
         </Link>
