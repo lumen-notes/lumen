@@ -11,11 +11,10 @@ import { githubRepoAtom, notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../
 import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search"
 import { Note } from "../schema"
-import { formatDate, formatDateDistance, toDateString, toWeekString } from "../utils/date"
+import { formatDate, formatDateDistance, toDateString } from "../utils/date"
 import { pluralize } from "../utils/pluralize"
 import {
   CalendarDateIcon16,
-  CalendarIcon16,
   CopyIcon16,
   ExternalLinkIcon16,
   GlobeIcon16,
@@ -32,7 +31,6 @@ import { NoteFavicon } from "./note-favicon"
 export const isCommandMenuOpenAtom = atom(false)
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
-const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 export function CommandMenu() {
   const navigate = useNavigate()
@@ -42,7 +40,6 @@ export function CommandMenu() {
   const saveNote = useSaveNote()
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
-  const getHasWeeklyNote = useAtomCallback(useCallback((get) => get(hasWeeklyNoteAtom), []))
   const [isOpen, setIsOpen] = useAtom(isCommandMenuOpenAtom)
 
   // Get the current note if we're on a note page.
@@ -111,7 +108,7 @@ export function CommandMenu() {
         },
       },
       {
-        label: "Today",
+        label: "Calendar",
         icon: <CalendarDateIcon16 date={new Date().getDate()} />,
         onSelect: () => {
           navigate({
@@ -121,23 +118,6 @@ export function CommandMenu() {
             },
             search: {
               mode: getHasDailyNote() ? "read" : "write",
-              query: undefined,
-              view: "grid",
-            },
-          })
-        },
-      },
-      {
-        label: "This week",
-        icon: <CalendarIcon16 />,
-        onSelect: () => {
-          navigate({
-            to: "/notes/$",
-            params: {
-              _splat: toWeekString(new Date()),
-            },
-            search: {
-              mode: getHasWeeklyNote() ? "read" : "write",
               query: undefined,
               view: "grid",
             },
@@ -168,7 +148,7 @@ export function CommandMenu() {
         },
       },
     ]
-  }, [navigate, getHasDailyNote, getHasWeeklyNote])
+  }, [navigate, getHasDailyNote])
 
   const filteredNavItems = useMemo(() => {
     return navItems.filter((item) => {

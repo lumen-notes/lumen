@@ -1,4 +1,4 @@
-import { Link, LinkComponentProps } from "@tanstack/react-router"
+import { Link, LinkComponentProps, useLocation } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
@@ -6,15 +6,13 @@ import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
-import { toDateString, toWeekString } from "../utils/date"
+import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
 import { CheatsheetDialog } from "./cheatsheet-dialog"
 import { Dialog } from "./dialog"
 import {
   BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
-  CalendarFillIcon16,
-  CalendarIcon16,
   MessageIcon16,
   NoteFillIcon16,
   NoteIcon16,
@@ -28,21 +26,23 @@ import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
-const hasWeeklyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toWeekString(new Date())))
 
 const SizeContext = createContext<"medium" | "large">("medium")
 
 export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
-  const hasWeeklyNote = useAtomValue(hasWeeklyNoteAtom)
   const syncText = useSyncStatusText()
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
+  const { pathname } = useLocation()
 
   const today = new Date()
   const todayString = toDateString(today)
-  const weekString = toWeekString(today)
+
+  // Calendar link is active when viewing any daily or weekly note
+  const noteId = pathname.startsWith("/notes/") ? pathname.slice(7) : ""
+  const isCalendarActive = isValidDateString(noteId) || isValidWeekString(noteId)
 
   // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
   const {
@@ -93,23 +93,9 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                 }}
                 activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
                 icon={<CalendarDateIcon16 date={today.getDate()} />}
+                forceActive={isCalendarActive}
               >
-                Today
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/notes/$"
-                params={{ _splat: weekString }}
-                search={{
-                  mode: hasWeeklyNote ? "read" : "write",
-                  query: undefined,
-                  view: "grid",
-                }}
-                activeIcon={<CalendarFillIcon16 />}
-                icon={<CalendarIcon16 />}
-              >
-                This week
+                Calendar
               </NavLink>
             </li>
             <li>
@@ -208,12 +194,14 @@ function NavLink({
   activeIcon,
   icon,
   includeSearch = false,
+  forceActive = false,
   children,
   ...props
 }: LinkComponentProps<"a"> & {
   activeIcon?: React.ReactNode
   icon: React.ReactNode
   includeSearch?: boolean
+  forceActive?: boolean
   children: React.ReactNode
 }) {
   const size = useContext(SizeContext)
@@ -223,6 +211,7 @@ function NavLink({
       activeOptions={{ exact: true, includeSearch }}
       data-size={size}
       className={cx("nav-item", className)}
+      aria-current={forceActive ? "page" : undefined}
       {...props}
     >
       {activeIcon ? (
