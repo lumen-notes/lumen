@@ -5,8 +5,12 @@ import { globalStateMachineAtom, isRepoClonedAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { CheckFillIcon16, ErrorFillIcon16, LoadingFillIcon16 } from "./icons"
 
-const isSyncSuccessAtom = selectAtom(globalStateMachineAtom, (state) =>
-  state.matches("signedIn.cloned.sync.success"),
+const isSyncingAtom = selectAtom(
+  globalStateMachineAtom,
+  (state) =>
+    state.matches("signedIn.cloned.sync.pulling") ||
+    state.matches("signedIn.cloned.sync.pushing") ||
+    state.matches("signedIn.cloned.sync.checkingStatus"),
 )
 
 const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
@@ -14,39 +18,39 @@ const isSyncErrorAtom = selectAtom(globalStateMachineAtom, (state) =>
 )
 
 export function useSyncStatusText() {
-  const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
+  const isSyncing = useAtomValue(isSyncingAtom)
   const isSyncError = useAtomValue(isSyncErrorAtom)
   const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const { online } = useNetworkState()
 
   if (!isRepoCloned || !online) return null
 
-  if (isSyncSuccess) {
-    return "Synced"
+  if (isSyncing) {
+    return "Syncing…"
   }
 
   if (isSyncError) {
     return <span className="text-text-danger">Sync error</span>
   }
 
-  return "Syncing…"
+  return "Synced"
 }
 
 export function SyncStatusIcon({ className }: { className?: string }) {
-  const isSyncSuccess = useAtomValue(isSyncSuccessAtom)
+  const isSyncing = useAtomValue(isSyncingAtom)
   const isSyncError = useAtomValue(isSyncErrorAtom)
   const isRepoCloned = useAtomValue(isRepoClonedAtom)
   const { online } = useNetworkState()
 
   if (!isRepoCloned || !online) return null
 
-  if (isSyncSuccess) {
-    return <CheckFillIcon16 className={cx("text-text-success", className)} />
+  if (isSyncing) {
+    return <LoadingFillIcon16 className={cx("text-text-pending", className)} />
   }
 
   if (isSyncError) {
     return <ErrorFillIcon16 className={cx("text-text-danger", className)} />
   }
 
-  return <LoadingFillIcon16 className={cx("text-text-pending", className)} />
+  return <CheckFillIcon16 className={cx("text-text-success", className)} />
 }

@@ -1,7 +1,8 @@
 import * as HoverCard from "@radix-ui/react-hover-card"
 import { Link } from "@tanstack/react-router"
 import { useNoteById } from "../hooks/note"
-import { formatDate, formatDateDistance } from "../utils/date"
+import { cx } from "../utils/cx"
+import { formatDate, formatDateDistance, isDateWithinWeek } from "../utils/date"
 import { NotePreview } from "./note-preview"
 
 type DateLinkProps = {
@@ -12,12 +13,18 @@ type DateLinkProps = {
 
 export function DateLink({ date, text, className }: DateLinkProps) {
   const note = useNoteById(date)
+  const isNearby = isDateWithinWeek(date)
+
+  // For nearby dates: show relative in link, absolute in tooltip
+  // For distant dates: show absolute in link, relative in tooltip
+  const linkText = text || (isNearby ? formatDateDistance(date) : formatDate(date))
+  const tooltipText = isNearby ? formatDate(date) : formatDateDistance(date)
 
   return (
     <HoverCard.Root>
       <HoverCard.Trigger asChild>
         <Link
-          className={className}
+          className={cx(!text && "text-text-secondary", className)}
           to="/notes/$"
           params={{ _splat: date }}
           search={{
@@ -26,7 +33,7 @@ export function DateLink({ date, text, className }: DateLinkProps) {
             view: "grid",
           }}
         >
-          {text || formatDate(date)}
+          {linkText}
         </Link>
       </HoverCard.Trigger>
       <HoverCard.Portal>
@@ -41,7 +48,7 @@ export function DateLink({ date, text, className }: DateLinkProps) {
               <NotePreview note={note} />
             </div>
           ) : (
-            <div className="p-2 leading-none text-text-secondary">{formatDateDistance(date)}</div>
+            <div className="p-2 leading-none text-text-secondary">{tooltipText}</div>
           )}
         </HoverCard.Content>
       </HoverCard.Portal>
