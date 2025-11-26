@@ -113,7 +113,7 @@ export function PropertyValue({ property: [key, value], onChange }: PropertyValu
 
   // If value is a string, render it as markdown
   if (typeof value === "string") {
-    return <Markdown fontSize="small">{value}</Markdown>
+    return <Markdown fontSize="small" emptyText="Empty">{value}</Markdown>
   }
 
   // If value is a boolean, render it as a checkbox
@@ -140,7 +140,7 @@ export function PropertyValue({ property: [key, value], onChange }: PropertyValu
     return (
       <div className="flex flex-col gap-1">
         {value.map((v, i) => (
-          <Markdown key={`${i}-${v}`} fontSize="small">
+          <Markdown key={`${i}-${v}`} fontSize="small" emptyText="Empty">
             {String(v)}
           </Markdown>
         ))}
