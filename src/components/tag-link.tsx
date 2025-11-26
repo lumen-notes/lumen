@@ -17,14 +17,8 @@ export function TagLink({ name, className }: TagLinkProps) {
             {i > 0 && <span>/</span>}
             <Link
               className="link"
-              to={`/tags/$`}
-              params={{
-                _splat: name
-                  .split("/")
-                  .slice(0, i + 1)
-                  .join("/"),
-              }}
-              search={{ query: undefined, view: "grid" }}
+              to="/"
+              search={{ query: `tag:${name.split("/").slice(0, i + 1).join("/")}`, view: "grid" }}
             >
               {part}
             </Link>

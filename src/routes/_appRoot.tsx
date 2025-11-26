@@ -160,12 +160,8 @@ function RouteComponent() {
         }),
         execute: async ({ tag }) => {
           await navigate({
-            to: "/tags/$",
-            params: { _splat: tag },
-            search: {
-              query: undefined,
-              view: "grid",
-            },
+            to: "/",
+            search: { query: `tag:${tag}`, view: "grid" },
           })
           playSound(notificationSound)
           return JSON.stringify({ success: true })
