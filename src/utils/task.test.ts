@@ -10,10 +10,11 @@ import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import {
   getTaskContent,
   getTaskDate,
-  getTaskDisplayText,
+  removeDateFromTaskText,
   getTaskLinks,
   getTaskTags,
-  updateTask,
+  updateTaskCompletion,
+  updateTaskText,
 } from "./task"
 
 function parseMarkdown(content: string) {
@@ -249,58 +250,57 @@ describe("getTaskDate", () => {
   })
 })
 
-describe("getTaskDisplayText", () => {
+describe("removeDateFromTaskText", () => {
   test("removes date link from start of text", () => {
-    expect(getTaskDisplayText("[[2024-12-31]] Task text")).toBe("Task text")
+    expect(removeDateFromTaskText("[[2024-12-31]] Task text")).toBe("Task text")
   })
 
   test("removes date link from end of text", () => {
-    expect(getTaskDisplayText("Task text [[2024-12-31]]")).toBe("Task text")
+    expect(removeDateFromTaskText("Task text [[2024-12-31]]")).toBe("Task text")
   })
 
   test("removes date link from start with whitespace", () => {
-    expect(getTaskDisplayText("  [[2024-12-31]]  Task text")).toBe("Task text")
+    expect(removeDateFromTaskText("  [[2024-12-31]]  Task text")).toBe("Task text")
   })
 
   test("removes date link from end with whitespace", () => {
-    expect(getTaskDisplayText("Task text  [[2024-12-31]]  ")).toBe("Task text")
+    expect(removeDateFromTaskText("Task text  [[2024-12-31]]  ")).toBe("Task text")
   })
 
   test("removes only start date when task starts with a date", () => {
-    expect(getTaskDisplayText("[[2024-01-01]] Task text [[2024-12-31]]")).toBe(
+    expect(removeDateFromTaskText("[[2024-01-01]] Task text [[2024-12-31]]")).toBe(
       "Task text [[2024-12-31]]",
     )
   })
 
   test("does not remove non-date wikilinks", () => {
-    expect(getTaskDisplayText("Review [[project-alpha]] plan")).toBe(
+    expect(removeDateFromTaskText("Review [[project-alpha]] plan")).toBe(
       "Review [[project-alpha]] plan",
     )
   })
 
   test("returns text unchanged when no date links", () => {
-    expect(getTaskDisplayText("Simple task text")).toBe("Simple task text")
+    expect(removeDateFromTaskText("Simple task text")).toBe("Simple task text")
   })
 
   test("trims whitespace after removing date links", () => {
-    expect(getTaskDisplayText("  [[2024-12-31]]  ")).toBe("")
+    expect(removeDateFromTaskText("  [[2024-12-31]]  ")).toBe("")
   })
 })
 
-describe("updateTask", () => {
+describe("updateTaskCompletion", () => {
   test("marks incomplete task as completed", () => {
     const content = "- [ ] Do laundry"
     const task = {
       completed: false,
       text: "Do laundry",
-      displayText: "Do laundry",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Do laundry")
   })
 
@@ -309,14 +309,13 @@ describe("updateTask", () => {
     const task = {
       completed: true,
       text: "Do laundry",
-      displayText: "Do laundry",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: false })
+    const result = updateTaskCompletion({ content, task, completed: false })
     expect(result).toBe("- [ ] Do laundry")
   })
 
@@ -325,14 +324,13 @@ describe("updateTask", () => {
     const task = {
       completed: true,
       text: "Do laundry",
-      displayText: "Do laundry",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: false })
+    const result = updateTaskCompletion({ content, task, completed: false })
     expect(result).toBe("- [ ] Do laundry")
   })
 
@@ -341,14 +339,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Do laundry",
-      displayText: "Do laundry",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x]   Do laundry")
   })
 
@@ -357,14 +354,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Review [[project-alpha]] plan",
-      displayText: "Review [[project-alpha]] plan",
       links: ["project-alpha"],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Review [[project-alpha]] plan")
   })
 
@@ -373,14 +369,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Task with #tag",
-      displayText: "Task with #tag",
       links: [],
       tags: ["tag"],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Task with #tag")
   })
 
@@ -389,14 +384,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Task due [[2024-12-31]]",
-      displayText: "Task due",
       links: ["2024-12-31"],
       tags: [],
       date: "2024-12-31",
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Task due [[2024-12-31]]")
   })
 
@@ -405,14 +399,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Task with (parentheses) and [brackets]",
-      displayText: "Task with (parentheses) and [brackets]",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Task with (parentheses) and [brackets]")
   })
 
@@ -421,14 +414,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Do laundry",
-      displayText: "Do laundry",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: false })
+    const result = updateTaskCompletion({ content, task, completed: false })
     expect(result).toBe("- [ ] Do laundry")
   })
 
@@ -437,14 +429,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "First task",
-      displayText: "First task",
       links: [],
       tags: [],
       date: null,
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] First task\n- [ ] Second task")
   })
 
@@ -453,14 +444,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Middle task",
-      displayText: "Middle task",
       links: [],
       tags: [],
       date: null,
       startOffset: 17, // Position of "- [ ] Middle task"
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [ ] First task\n- [x] Middle task\n- [ ] Last task")
   })
 
@@ -469,14 +459,13 @@ describe("updateTask", () => {
     const task = {
       completed: false,
       text: "Publish **release notes** [[2024-11-11]]",
-      displayText: "Publish **release notes**",
       links: ["2024-11-11"],
       tags: [],
       date: "2024-11-11",
       startOffset: 0,
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe("- [x] Publish **release notes** [[2024-11-11]]")
   })
 
@@ -485,14 +474,13 @@ describe("updateTask", () => {
     const secondTask = {
       completed: false,
       text: "Buy milk",
-      displayText: "Buy milk",
       links: [],
       tags: [],
       date: null,
       startOffset: 15, // Position of second "- [ ] Buy milk"
     }
 
-    const result = updateTask({ content, task: secondTask, completed: true })
+    const result = updateTaskCompletion({ content, task: secondTask, completed: true })
     expect(result).toBe("- [ ] Buy milk\n- [x] Buy milk")
   })
 
@@ -501,14 +489,13 @@ describe("updateTask", () => {
     const firstTask = {
       completed: false,
       text: "Buy milk",
-      displayText: "Buy milk",
       links: [],
       tags: [],
       date: null,
       startOffset: 0, // Position of first "- [ ] Buy milk"
     }
 
-    const result = updateTask({ content, task: firstTask, completed: true })
+    const result = updateTaskCompletion({ content, task: firstTask, completed: true })
     expect(result).toBe("- [x] Buy milk\n- [ ] Buy milk")
   })
 
@@ -521,18 +508,192 @@ title: My Note
     const task = {
       completed: false,
       text: "Task after frontmatter",
-      displayText: "Task after frontmatter",
       links: [],
       tags: [],
       date: null,
       startOffset: 24, // "---\ntitle: My Note\n---\n\n" = 24 chars
     }
 
-    const result = updateTask({ content, task, completed: true })
+    const result = updateTaskCompletion({ content, task, completed: true })
     expect(result).toBe(`---
 title: My Note
 ---
 
 - [x] Task after frontmatter`)
+  })
+})
+
+describe("updateTaskText", () => {
+  test("updates task text", () => {
+    const content = "- [ ] Do laundry"
+    const task = {
+      completed: false,
+      text: "Do laundry",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "Do dishes" })
+    expect(result).toBe("- [ ] Do dishes")
+  })
+
+  test("preserves checkbox state when updating text", () => {
+    const content = "- [x] Do laundry"
+    const task = {
+      completed: true,
+      text: "Do laundry",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "Do dishes" })
+    expect(result).toBe("- [x] Do dishes")
+  })
+
+  test("handles empty text", () => {
+    const content = "- [ ] Do laundry"
+    const task = {
+      completed: false,
+      text: "Do laundry",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "" })
+    expect(result).toBe("- [ ]")
+  })
+
+  test("handles whitespace-only text", () => {
+    const content = "- [ ] Do laundry"
+    const task = {
+      completed: false,
+      text: "Do laundry",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "   " })
+    expect(result).toBe("- [ ]")
+  })
+
+  test("trims whitespace from new text", () => {
+    const content = "- [ ] Do laundry"
+    const task = {
+      completed: false,
+      text: "Do laundry",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "  Do dishes  " })
+    expect(result).toBe("- [ ] Do dishes")
+  })
+
+  test("updates task in multiline content", () => {
+    const content = "- [ ] First task\n- [ ] Second task\n- [ ] Third task"
+    const task = {
+      completed: false,
+      text: "Second task",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 17,
+    }
+
+    const result = updateTaskText({ content, task, text: "Updated task" })
+    expect(result).toBe("- [ ] First task\n- [ ] Updated task\n- [ ] Third task")
+  })
+
+  test("updates last task in content", () => {
+    const content = "- [ ] First task\n- [ ] Last task"
+    const task = {
+      completed: false,
+      text: "Last task",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 17,
+    }
+
+    const result = updateTaskText({ content, task, text: "Updated last" })
+    expect(result).toBe("- [ ] First task\n- [ ] Updated last")
+  })
+
+  test("handles task with wikilinks", () => {
+    const content = "- [ ] Review [[project-alpha]]"
+    const task = {
+      completed: false,
+      text: "Review [[project-alpha]]",
+      links: ["project-alpha"],
+      tags: [],
+      date: null,
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "Review [[project-beta]]" })
+    expect(result).toBe("- [ ] Review [[project-beta]]")
+  })
+
+  test("handles task with date links", () => {
+    const content = "- [ ] Task due [[2024-12-31]]"
+    const task = {
+      completed: false,
+      text: "Task due [[2024-12-31]]",
+      links: ["2024-12-31"],
+      tags: [],
+      date: "2024-12-31",
+      startOffset: 0,
+    }
+
+    const result = updateTaskText({ content, task, text: "Task due [[2025-01-01]]" })
+    expect(result).toBe("- [ ] Task due [[2025-01-01]]")
+  })
+
+  test("updates correct duplicate task using position", () => {
+    const content = "- [ ] Buy milk\n- [ ] Buy milk"
+    const secondTask = {
+      completed: false,
+      text: "Buy milk",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 15,
+    }
+
+    const result = updateTaskText({ content, task: secondTask, text: "Buy eggs" })
+    expect(result).toBe("- [ ] Buy milk\n- [ ] Buy eggs")
+  })
+
+  test("updates task with frontmatter offset correctly", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] Task after frontmatter`
+    const task = {
+      completed: false,
+      text: "Task after frontmatter",
+      links: [],
+      tags: [],
+      date: null,
+      startOffset: 24,
+    }
+
+    const result = updateTaskText({ content, task, text: "Updated task" })
+    expect(result).toBe(`---
+title: My Note
+---
+
+- [ ] Updated task`)
   })
 })

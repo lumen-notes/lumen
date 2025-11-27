@@ -20,7 +20,7 @@ import {
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
 import { hasVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
-import { getTaskContent, getTaskDate, getTaskDisplayText, getTaskLinks, getTaskTags } from "./task"
+import { getTaskContent, getTaskDate, getTaskLinks, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
 export const parseNote =
@@ -88,12 +88,10 @@ function _parseNote(id: NoteId, content: string): Note {
             const taskLinks = getTaskLinks(taskContent.node)
             const taskTags = getTaskTags(taskContent.node)
             const taskDate = getTaskDate(taskLinks, taskContent.text)
-            const taskDisplayText = getTaskDisplayText(taskContent.text, taskDate)
 
             tasks.push({
               completed: node.checked === true,
               text: taskContent.text,
-              displayText: taskDisplayText,
               links: taskLinks,
               tags: taskTags,
               date: taskDate,

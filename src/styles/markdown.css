@@ -91,15 +91,15 @@
 
 .markdown ul,
 .markdown ol {
-  padding-inline-start: calc(var(--font-size-base) * 2);
+  padding-inline-start: calc(var(--font-size-base) * 2.25);
 }
 
 .markdown ul ul,
 .markdown ul ol,
 .markdown ol ul,
 .markdown ol ol {
-  margin-block-start: calc(var(--font-size-base) * 0.75) !important;
-  margin-block-end: calc(var(--font-size-base) * 0.75);
+  margin-block-start: calc(var(--font-size-base) * 0.5) !important;
+  margin-block-end: calc(var(--font-size-base) * 0.5);
 }
 
 .markdown li {

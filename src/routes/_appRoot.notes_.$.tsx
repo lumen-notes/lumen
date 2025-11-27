@@ -77,7 +77,7 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import { updateTask } from "../utils/task"
+import { updateTaskCompletion, updateTaskText } from "../utils/task"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -890,7 +890,7 @@ function NotePage() {
               <Details className="print:hidden">
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-0.5">
                     {backlinkTasks.map((task) => {
                       const parentNote = backlinks.get(task.parentId)
                       return (
@@ -902,13 +902,26 @@ function NotePage() {
                           onCompletedChange={(completed) => {
                             if (!parentNote) return
 
-                            const updatedContent = updateTask({
+                            const updatedContent = updateTaskCompletion({
                               content: parentNote.content,
                               task,
                               completed,
                             })
 
                             // Only save if content actually changed
+                            if (updatedContent !== parentNote.content) {
+                              saveNote({ id: parentNote.id, content: updatedContent })
+                            }
+                          }}
+                          onTextChange={(newText) => {
+                            if (!parentNote) return
+
+                            const updatedContent = updateTaskText({
+                              content: parentNote.content,
+                              task,
+                              text: newText,
+                            })
+
                             if (updatedContent !== parentNote.content) {
                               saveNote({ id: parentNote.id, content: updatedContent })
                             }
