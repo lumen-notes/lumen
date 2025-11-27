@@ -100,6 +100,8 @@ export function TaskItem({
     [commitChange],
   )
 
+  const contextValue = useMemo(() => ({ completed: task.completed }), [task.completed])
+
   return (
     <div
       role="button"
@@ -124,7 +126,7 @@ export function TaskItem({
       <div className="flex w-full @md:gap-3 flex-col @md:flex-row">
         {mode === "read" ? (
           <div className="flex-1 min-w-0">
-            <TaskListItemContext.Provider value={{ completed: task.completed }}>
+            <TaskListItemContext.Provider value={contextValue}>
               <Markdown emptyText="Empty task">{displayText}</Markdown>
             </TaskListItemContext.Provider>
           </div>
