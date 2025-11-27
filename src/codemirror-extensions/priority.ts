@@ -3,7 +3,7 @@ import { Decoration, DecorationSet, EditorView } from "@codemirror/view"
 
 // Priority colors matching priority-indicator.tsx
 const priorityStyles: Record<1 | 2 | 3, string> = {
-  1: "color: var(--red-a12); background-color: var(--red-a4); border-radius: var(--border-radius-sm); padding: 0 2px; ",
+  1: "color: var(--red-a12); background-color: var(--red-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
   2: "color: var(--orange-a12); background-color: var(--orange-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
   3: "color: var(--blue-a12); background-color: var(--blue-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
 }
