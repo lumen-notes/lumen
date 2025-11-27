@@ -22,6 +22,7 @@ import React from "react"
 import { frontmatterExtension } from "../codemirror-extensions/frontmatter"
 import { ellipsisExtension } from "../codemirror-extensions/ellipsis"
 import { headingExtension } from "../codemirror-extensions/heading"
+import { priorityExtension } from "../codemirror-extensions/priority"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
@@ -157,6 +158,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         pasteExtension({ attachFile, onPaste }),
         indentedLineWrapExtension(),
         headingExtension(),
+        priorityExtension(),
         wikilinkExtension((id) =>
           navigate({
             to: "/notes/$",
