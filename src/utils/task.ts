@@ -51,6 +51,25 @@ export function getTaskTags(node: Node): string[] {
   return Array.from(tags)
 }
 
+export function getTaskPriority(node: Node): 1 | 2 | 3 | null {
+  let priority: 1 | 2 | 3 | null = null
+
+  visit(node, (child) => {
+    if (
+      child.type === "priority" &&
+      child.data &&
+      typeof child.data.level === "number" &&
+      child.data.level >= 1 &&
+      child.data.level <= 3
+    ) {
+      // Last priority wins
+      priority = child.data.level as 1 | 2 | 3
+    }
+  })
+
+  return priority
+}
+
 export function getTaskDate(links: NoteId[], text: string): string | null {
   const dateLinks = links.filter((link) => isValidDateString(link))
   if (dateLinks.length === 0) {
@@ -70,16 +89,16 @@ export function getTaskDate(links: NoteId[], text: string): string | null {
 }
 
 export function removeDateFromTaskText(text: string, taskDate: string | null = null): string {
-  // Check if task starts with a date
-  const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(text)
-
-  if (startsWithDate) {
-    // Remove date from start
-    return text.replace(/^\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*/u, "").trim()
+  if (!taskDate) {
+    return text
   }
 
-  // Otherwise, remove date from end (if present)
-  return text.replace(/\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*$/u, "").trim()
+  // Escape the date for use in regex (dates don't have special chars, but be safe)
+  const escapedDate = taskDate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  // Remove the specific date wikilink when at word boundaries (start, end, or surrounded by whitespace)
+  const pattern = new RegExp(`(^|\\s)\\[\\[${escapedDate}\\]\\](\\s|$)`, "g")
+
+  return text.replace(pattern, " ").replace(/\s+/g, " ").trim()
 }
 
 export function updateTaskCompletion({

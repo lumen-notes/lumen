@@ -10,6 +10,7 @@ export type Task = {
   links: NoteId[]
   tags: string[]
   date: string | null
+  priority: 1 | 2 | 3 | null
   /** The character offset where the task starts in the content (for position-based updates) */
   startOffset: number
 }

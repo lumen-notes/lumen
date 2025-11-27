@@ -5,11 +5,13 @@ import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { describe, expect, test } from "vitest"
 import { embed, embedFromMarkdown } from "../remark-plugins/embed"
+import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import {
   getTaskContent,
   getTaskDate,
+  getTaskPriority,
   removeDateFromTaskText,
   getTaskLinks,
   getTaskTags,
@@ -18,12 +20,13 @@ import {
 } from "./task"
 
 function parseMarkdown(content: string) {
-  const extensions = [gfmTaskListItem(), wikilink(), embed(), tag()]
+  const extensions = [gfmTaskListItem(), wikilink(), embed(), tag(), priority()]
   const mdastExtensions = [
     gfmTaskListItemFromMarkdown(),
     wikilinkFromMarkdown(),
     embedFromMarkdown(),
     tagFromMarkdown(),
+    priorityFromMarkdown(),
   ]
 
   return fromMarkdown(
@@ -251,40 +254,62 @@ describe("getTaskDate", () => {
 })
 
 describe("removeDateFromTaskText", () => {
-  test("removes date link from start of text", () => {
-    expect(removeDateFromTaskText("[[2024-12-31]] Task text")).toBe("Task text")
+  test("removes specific date from start of text", () => {
+    expect(removeDateFromTaskText("[[2024-12-31]] Task text", "2024-12-31")).toBe("Task text")
   })
 
-  test("removes date link from end of text", () => {
-    expect(removeDateFromTaskText("Task text [[2024-12-31]]")).toBe("Task text")
+  test("removes specific date from end of text", () => {
+    expect(removeDateFromTaskText("Task text [[2024-12-31]]", "2024-12-31")).toBe("Task text")
   })
 
-  test("removes date link from start with whitespace", () => {
-    expect(removeDateFromTaskText("  [[2024-12-31]]  Task text")).toBe("Task text")
+  test("removes specific date from start with whitespace", () => {
+    expect(removeDateFromTaskText("  [[2024-12-31]]  Task text", "2024-12-31")).toBe("Task text")
   })
 
-  test("removes date link from end with whitespace", () => {
-    expect(removeDateFromTaskText("Task text  [[2024-12-31]]  ")).toBe("Task text")
+  test("removes specific date from end with whitespace", () => {
+    expect(removeDateFromTaskText("Task text  [[2024-12-31]]  ", "2024-12-31")).toBe("Task text")
   })
 
-  test("removes only start date when task starts with a date", () => {
-    expect(removeDateFromTaskText("[[2024-01-01]] Task text [[2024-12-31]]")).toBe(
-      "Task text [[2024-12-31]]",
+  test("removes only the specified date, not other dates", () => {
+    expect(removeDateFromTaskText("[[2024-01-01]] Task text [[2024-12-31]]", "2024-12-31")).toBe(
+      "[[2024-01-01]] Task text",
     )
   })
 
+  test("removes specific date from middle of text", () => {
+    expect(removeDateFromTaskText("Task [[2024-12-31]] text", "2024-12-31")).toBe("Task text")
+  })
+
   test("does not remove non-date wikilinks", () => {
-    expect(removeDateFromTaskText("Review [[project-alpha]] plan")).toBe(
+    expect(removeDateFromTaskText("Review [[project-alpha]] plan", "2024-12-31")).toBe(
       "Review [[project-alpha]] plan",
     )
   })
 
-  test("returns text unchanged when no date links", () => {
-    expect(removeDateFromTaskText("Simple task text")).toBe("Simple task text")
+  test("returns text unchanged when taskDate is null", () => {
+    expect(removeDateFromTaskText("[[2024-12-31]] Task text", null)).toBe(
+      "[[2024-12-31]] Task text",
+    )
   })
 
-  test("trims whitespace after removing date links", () => {
-    expect(removeDateFromTaskText("  [[2024-12-31]]  ")).toBe("")
+  test("returns text unchanged when date not found", () => {
+    expect(removeDateFromTaskText("[[2024-01-01]] Task text", "2024-12-31")).toBe(
+      "[[2024-01-01]] Task text",
+    )
+  })
+
+  test("trims whitespace after removing date", () => {
+    expect(removeDateFromTaskText("  [[2024-12-31]]  ", "2024-12-31")).toBe("")
+  })
+
+  test("normalizes multiple spaces after removal", () => {
+    expect(removeDateFromTaskText("Task  [[2024-12-31]]  text", "2024-12-31")).toBe("Task text")
+  })
+
+  test("removes all occurrences of the same date", () => {
+    expect(
+      removeDateFromTaskText("[[2024-12-31]] Task [[2024-12-31]] text", "2024-12-31"),
+    ).toBe("Task text")
   })
 })
 
@@ -297,6 +322,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -312,6 +338,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -327,6 +354,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -342,6 +370,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -357,6 +386,7 @@ describe("updateTaskCompletion", () => {
       links: ["project-alpha"],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -372,6 +402,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: ["tag"],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -387,6 +418,7 @@ describe("updateTaskCompletion", () => {
       links: ["2024-12-31"],
       tags: [],
       date: "2024-12-31",
+      priority: null,
       startOffset: 0,
     }
 
@@ -402,6 +434,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -417,6 +450,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -432,6 +466,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -447,6 +482,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 17, // Position of "- [ ] Middle task"
     }
 
@@ -462,6 +498,7 @@ describe("updateTaskCompletion", () => {
       links: ["2024-11-11"],
       tags: [],
       date: "2024-11-11",
+      priority: null,
       startOffset: 0,
     }
 
@@ -477,6 +514,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 15, // Position of second "- [ ] Buy milk"
     }
 
@@ -492,6 +530,7 @@ describe("updateTaskCompletion", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0, // Position of first "- [ ] Buy milk"
     }
 
@@ -511,6 +550,7 @@ title: My Note
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 24, // "---\ntitle: My Note\n---\n\n" = 24 chars
     }
 
@@ -532,6 +572,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -547,6 +588,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -562,6 +604,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -577,6 +620,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -592,6 +636,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -607,6 +652,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 17,
     }
 
@@ -622,6 +668,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 17,
     }
 
@@ -637,6 +684,7 @@ describe("updateTaskText", () => {
       links: ["project-alpha"],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 0,
     }
 
@@ -652,6 +700,7 @@ describe("updateTaskText", () => {
       links: ["2024-12-31"],
       tags: [],
       date: "2024-12-31",
+      priority: null,
       startOffset: 0,
     }
 
@@ -667,6 +716,7 @@ describe("updateTaskText", () => {
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 15,
     }
 
@@ -686,6 +736,7 @@ title: My Note
       links: [],
       tags: [],
       date: null,
+      priority: null,
       startOffset: 24,
     }
 
@@ -697,3 +748,83 @@ title: My Note
 - [ ] Updated task`)
   })
 })
+
+describe("getTaskPriority", () => {
+  test("extracts priority 1 from task", () => {
+    const root = parseMarkdown("- [ ] !!1 Urgent task")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(1)
+    }
+  })
+
+  test("extracts priority 2 from task", () => {
+    const root = parseMarkdown("- [ ] !!2 Medium task")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(2)
+    }
+  })
+
+  test("extracts priority 3 from task", () => {
+    const root = parseMarkdown("- [ ] !!3 Low task")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(3)
+    }
+  })
+
+  test("returns null when no priority", () => {
+    const root = parseMarkdown("- [ ] Simple task")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBeNull()
+    }
+  })
+
+  test("last priority wins when multiple", () => {
+    const root = parseMarkdown("- [ ] !!1 first !!2 second !!3 third")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(3)
+    }
+  })
+
+  test("handles priority in middle of task", () => {
+    const root = parseMarkdown("- [ ] Task with !!2 priority here")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(2)
+    }
+  })
+
+  test("handles priority at end of task", () => {
+    const root = parseMarkdown("- [ ] Task at end !!1")
+    const listItem = findFirstListItem(root)
+    expect(listItem).not.toBeNull()
+
+    if (listItem) {
+      const result = getTaskPriority(listItem)
+      expect(result).toBe(1)
+    }
+  })
+})
+
