@@ -87,7 +87,6 @@ describe("filtering", () => {
         {
           completed: false,
           text: "do it",
-          displayText: "do it",
           links: [],
           date: null,
           tags: [],
@@ -96,7 +95,6 @@ describe("filtering", () => {
         {
           completed: true,
           text: "done",
-          displayText: "done",
           links: [],
           date: null,
           tags: [],
@@ -183,7 +181,6 @@ describe("filtering", () => {
         {
           completed: false,
           text: "x",
-          displayText: "x",
           links: [],
           date: null,
           tags: [],

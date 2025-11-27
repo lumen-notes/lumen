@@ -69,7 +69,7 @@ export function getTaskDate(links: NoteId[], text: string): string | null {
   return dateLinks[dateLinks.length - 1]
 }
 
-export function getTaskDisplayText(text: string, taskDate: string | null = null): string {
+export function removeDateFromTaskText(text: string, taskDate: string | null = null): string {
   // Check if task starts with a date
   const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(text)
 
@@ -82,7 +82,7 @@ export function getTaskDisplayText(text: string, taskDate: string | null = null)
   return text.replace(/\s*\[\[\d{4}-\d{2}-\d{2}\]\]\s*$/u, "").trim()
 }
 
-export function updateTask({
+export function updateTaskCompletion({
   content,
   task,
   completed,
@@ -99,4 +99,28 @@ export function updateTask({
   // Use position-based update to handle duplicate tasks correctly
   const newCheckbox = completed ? "- [x]" : "- [ ]"
   return content.slice(0, task.startOffset) + newCheckbox + content.slice(task.startOffset + 5)
+}
+
+export function updateTaskText({
+  content,
+  task,
+  text,
+}: {
+  content: string
+  task: Task
+  text: string
+}): string {
+  const checkboxLength = 5 // "- [ ]" or "- [x]"
+  const originalTextStart = task.startOffset + checkboxLength
+  // Find where the task text ends (next newline or end of content)
+  const restOfContent = content.slice(originalTextStart)
+  const newlineIndex = restOfContent.indexOf("\n")
+  const originalTextEnd = newlineIndex === -1 ? content.length : originalTextStart + newlineIndex
+
+  // Preserve checkbox, replace text (add space after checkbox if text is non-empty)
+  const checkbox = content.slice(task.startOffset, originalTextStart)
+  const textWithSpace = text.trim() ? " " + text.trim() : ""
+  return (
+    content.slice(0, task.startOffset) + checkbox + textWithSpace + content.slice(originalTextEnd)
+  )
 }
