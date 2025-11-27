@@ -58,26 +58,34 @@ export function TaskItem({
     [commitChange],
   )
 
-  const handleButtonClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement | null
-    if (
-      target?.closest(
-        "a,button,input,textarea,select,summary,[contenteditable='true'],[contenteditable='']",
-      )
-    ) {
-      return
-    }
-    setMode("write")
-  }, [])
-
-  const handleButtonKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.defaultPrevented) return
-    if (event.target !== event.currentTarget) return
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault()
+  const handleButtonClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null
+      if (
+        target?.closest(
+          "a,button,input,textarea,select,summary,[contenteditable='true'],[contenteditable='']",
+        )
+      ) {
+        return
+      }
+      setPendingText(task.text)
       setMode("write")
-    }
-  }, [])
+    },
+    [task.text],
+  )
+
+  const handleButtonKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.defaultPrevented) return
+      if (event.target !== event.currentTarget) return
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault()
+        setPendingText(task.text)
+        setMode("write")
+      }
+    },
+    [task.text],
+  )
 
   const handleEditorKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
