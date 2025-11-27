@@ -21,13 +21,7 @@ import {
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
 import { hasVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
-import {
-  getTaskContent,
-  getTaskDate,
-  getTaskLinks,
-  getTaskPriority,
-  getTaskTags,
-} from "./task"
+import { getTaskContent, getTaskDate, getTaskLinks, getTaskPriority, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
 export const parseNote =

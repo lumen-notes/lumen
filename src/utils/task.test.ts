@@ -307,9 +307,9 @@ describe("removeDateFromTaskText", () => {
   })
 
   test("removes all occurrences of the same date", () => {
-    expect(
-      removeDateFromTaskText("[[2024-12-31]] Task [[2024-12-31]] text", "2024-12-31"),
-    ).toBe("Task text")
+    expect(removeDateFromTaskText("[[2024-12-31]] Task [[2024-12-31]] text", "2024-12-31")).toBe(
+      "Task text",
+    )
   })
 })
 
@@ -827,4 +827,3 @@ describe("getTaskPriority", () => {
     }
   })
 })
-
