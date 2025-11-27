@@ -118,17 +118,7 @@ export const Markdown = React.memo(
                 </div>
               ) : null}
               {/* Render template as a code block */}
-              <div
-                className="markdown"
-                style={
-                  fontSize === "large"
-                    ? ({
-                        "--font-size-base": "15px",
-                        "--font-size-sm": "13px",
-                      } as React.CSSProperties)
-                    : undefined
-                }
-              >
+              <div className={cx("markdown", fontSize === "large" && "markdown-large")}>
                 <pre>
                   <TemplateSyntaxHighlighter>
                     {removeTemplateFrontmatter(children)}
@@ -181,17 +171,7 @@ export const Markdown = React.memo(
                     </Details>
                   ) : null}
                 </div>
-                <div
-                  className="empty:hidden"
-                  style={
-                    fontSize === "large"
-                      ? ({
-                          "--font-size-base": "15px",
-                          "--font-size-sm": "13px",
-                        } as React.CSSProperties)
-                      : undefined
-                  }
-                >
+                <div className={cx("empty:hidden", fontSize === "large" && "markdown-large")}>
                   {
                     // If there's no content and no visible frontmatter, show a placeholder
                     isNoteEmpty({ markdown: children, hideFrontmatter }) ? (

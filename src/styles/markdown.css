@@ -3,6 +3,18 @@
   line-height: 28px;
 }
 
+.markdown-large {
+  --font-size-base: 15px;
+  --font-size-sm: 13px;
+}
+
+@media (pointer: coarse) {
+  .markdown-large {
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+  }
+}
+
 .markdown *:first-child {
   margin-block-start: 0;
 }
@@ -91,7 +103,7 @@
 
 .markdown ul,
 .markdown ol {
-  padding-inline-start: calc(var(--font-size-base) * 2.25);
+  padding-inline-start: calc(var(--font-size-base) * 2);
 }
 
 .markdown ul ul,
