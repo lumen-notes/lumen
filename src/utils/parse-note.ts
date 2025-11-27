@@ -7,6 +7,7 @@ import { gfmTaskListItem } from "micromark-extension-gfm-task-list-item"
 import { visit } from "unist-util-visit"
 import { z } from "zod"
 import { embed, embedFromMarkdown } from "../remark-plugins/embed"
+import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { Note, NoteId, NoteType, Task, Template, templateSchema } from "../schema"
@@ -20,7 +21,7 @@ import {
 } from "./date"
 import { removeLeadingEmoji } from "./emoji"
 import { hasVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
-import { getTaskContent, getTaskDate, getTaskLinks, getTaskTags } from "./task"
+import { getTaskContent, getTaskDate, getTaskLinks, getTaskPriority, getTaskTags } from "./task"
 
 /** Extracts metadata from markdown content to construct a Note object. */
 export const parseNote =
@@ -88,6 +89,7 @@ function _parseNote(id: NoteId, content: string): Note {
             const taskLinks = getTaskLinks(taskContent.node)
             const taskTags = getTaskTags(taskContent.node)
             const taskDate = getTaskDate(taskLinks, taskContent.text)
+            const taskPriority = getTaskPriority(taskContent.node)
 
             tasks.push({
               completed: node.checked === true,
@@ -95,6 +97,7 @@ function _parseNote(id: NoteId, content: string): Note {
               links: taskLinks,
               tags: taskTags,
               date: taskDate,
+              priority: taskPriority,
               startOffset: baseOffset + (node.position?.start?.offset ?? 0),
             })
           }
@@ -107,12 +110,13 @@ function _parseNote(id: NoteId, content: string): Note {
   // It's important that embed is included after wikilink.
   // embed is a subset of wikilink. In other words, all embeds are also wikilinks.
   // If embed is included before wikilink, all embeds are parsed as wikilinks.
-  const extensions = [gfmTaskListItem(), wikilink(), embed(), tag()]
+  const extensions = [gfmTaskListItem(), wikilink(), embed(), tag(), priority()]
   const mdastExtensions = [
     gfmTaskListItemFromMarkdown(),
     wikilinkFromMarkdown(),
     embedFromMarkdown(),
     tagFromMarkdown(),
+    priorityFromMarkdown(),
   ]
 
   let contentMdast: Root | null = null

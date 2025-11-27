@@ -90,6 +90,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          priority: null,
           startOffset: 0,
         },
         {
@@ -98,6 +99,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          priority: null,
           startOffset: 10,
         },
       ],
@@ -184,6 +186,7 @@ describe("filtering", () => {
           links: [],
           date: null,
           tags: [],
+          priority: null,
           startOffset: 0,
         },
       ],

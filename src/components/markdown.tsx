@@ -11,6 +11,7 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { remarkEmbed } from "../remark-plugins/embed"
+import { remarkPriority } from "../remark-plugins/priority"
 import { remarkTag } from "../remark-plugins/tag"
 import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
@@ -31,6 +32,7 @@ import { GitHubAvatar } from "./github-avatar"
 import { ErrorIcon16 } from "./icons"
 import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
+import { PriorityIndicator } from "./priority-indicator"
 import { PropertyKeyEditor } from "./property-key"
 import { PropertyValueEditor } from "./property-value"
 import { SyntaxHighlighter, TemplateSyntaxHighlighter } from "./syntax-highlighter"
@@ -222,6 +224,7 @@ function MarkdownContent({ children, className }: { children: string; className?
         remarkWikilink,
         remarkEmbed,
         remarkTag,
+        remarkPriority,
         [remarkMath, { singleDollarTextMath: false }],
       ]}
       rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -250,6 +253,11 @@ function MarkdownContent({ children, className }: { children: string; className?
               name: node.data.name,
             })
           },
+          priority(h, node) {
+            return h(node, "priority", {
+              level: node.data.level,
+            })
+          },
         },
       }}
       components={{
@@ -266,6 +274,8 @@ function MarkdownContent({ children, className }: { children: string; className?
         embed: NoteEmbed,
         // @ts-ignore
         tag: TagLink,
+        // @ts-ignore
+        priority: PriorityIndicator,
       }}
     >
       {children}
@@ -471,17 +481,30 @@ function Code({ className, inline, children, ...props }: CodeProps) {
   )
 }
 
-const TaskListItemContext = React.createContext<{
+export const TaskListItemContext = React.createContext<{
   position?: Position
+  completed?: boolean | null
 } | null>(null)
 
 function ListItem({ node, ordered, index, ...props }: LiProps) {
   const isTaskListItem = props.className?.includes("task-list-item")
 
+  // Extract checked state from the input element child (hast node structure)
+  let checked: boolean | null = null
+  if (isTaskListItem && node.children) {
+    const inputChild = node.children.find(
+      (child): child is typeof child & { properties: { checked?: boolean } } =>
+        child.type === "element" && "tagName" in child && child.tagName === "input",
+    )
+    if (inputChild?.properties?.checked !== undefined) {
+      checked = inputChild.properties.checked
+    }
+  }
+
   if (isTaskListItem) {
     return (
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      <TaskListItemContext.Provider value={{ position: node.position }}>
+      <TaskListItemContext.Provider value={{ position: node.position, completed: checked }}>
         <li {...props} />
       </TaskListItemContext.Provider>
     )
@@ -498,7 +521,7 @@ function CheckboxInput({ checked }: { checked?: boolean }) {
   return (
     <Checkbox
       ref={checkedRef}
-      checked={checked}
+      defaultChecked={checked}
       disabled={!onChange}
       onCheckedChange={(checked) => {
         if (!position) return
