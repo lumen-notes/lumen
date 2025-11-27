@@ -171,7 +171,9 @@ function RouteComponent() {
             } as React.CSSProperties
           }
         >
-          <Markdown hideFrontmatter>{content}</Markdown>
+          <Markdown hideFrontmatter emptyText="Empty note">
+            {content}
+          </Markdown>
         </div>
         <div className="mt-5 print:hidden">
           <span className="text-text-secondary text-sm">

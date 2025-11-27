@@ -116,7 +116,7 @@ export function TaskItem({
       <div className="flex w-full @md:gap-3 flex-col @md:flex-row">
         {mode === "read" ? (
           <div className="flex-1 min-w-0">
-            <Markdown>{displayText}</Markdown>
+            <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
           <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEditorKeyDown}>
