@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react"
-import { Checkbox } from "./checkbox"
-import { Markdown } from "./markdown"
-import { NoteEditor } from "./note-editor"
 import { useNoteById } from "../hooks/note"
 import type { NoteId, Task } from "../schema"
 import { cx } from "../utils/cx"
-import { NoteLink } from "./note-link"
 import { removeDateFromTaskText } from "../utils/task"
+import { Checkbox } from "./checkbox"
+import { Markdown } from "./markdown"
+import { NoteEditor } from "./note-editor"
+import { NoteLink } from "./note-link"
 
 type TaskItemProps = {
   task: Task
