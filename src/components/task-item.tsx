@@ -119,10 +119,12 @@ export function TaskItem({
             <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
           <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEditorKeyDown}>
             <NoteEditor
               defaultValue={pendingText}
               placeholder=""
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={true}
               indentWithTab={false}
               onChange={(text) => setPendingText(text)}
