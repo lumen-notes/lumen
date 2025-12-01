@@ -68,7 +68,7 @@
     "idb-keyval": "^6.2.0",
     "isomorphic-git": "^1.29.0",
     "jotai": "^2.0.3",
-    "jotai-xstate": "^0.3.0",
+    "jotai-xstate": "^0.6.1",
     "lodash.debounce": "^4.0.8",
     "mdast-util-from-markdown": "^1.2.0",
     "mdast-util-gfm-task-list-item": "^2.0.0",
