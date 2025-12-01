@@ -1,19 +1,11 @@
 import { EditorState, Extension, Range, StateField, Transaction } from "@codemirror/state"
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view"
 
-// Priority colors matching priority-indicator.tsx
 const priorityStyles: Record<1 | 2 | 3, string> = {
   1: "color: var(--red-a12); background-color: var(--red-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
   2: "color: var(--orange-a12); background-color: var(--orange-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
   3: "color: var(--blue-a12); background-color: var(--blue-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
 }
-
-// Muted style for completed tasks (matches priority-indicator.tsx)
-const completedStyle =
-  "color: var(--color-text-secondary); background-color: var(--color-bg-secondary); border-radius: var(--border-radius-sm); padding: 0 2px;"
-
-// Matches completed task checkbox at start of line: "- [x]", "* [x]", "+ [x]" with optional indentation
-const completedTaskRegex = /^\s*[-*+] \[x\]/i
 
 const priorityField = StateField.define({
   create(state) {
@@ -39,13 +31,9 @@ function createDecorations(state: EditorState): DecorationSet {
     const from = match.index
     const to = from + match[0].length
 
-    // Use muted style if on a completed task line
-    const line = state.doc.lineAt(from)
-    const isCompleted = completedTaskRegex.test(line.text)
-
     decorations.push(
       Decoration.mark({
-        attributes: { style: isCompleted ? completedStyle : priorityStyles[level] },
+        attributes: { style: priorityStyles[level] },
       }).range(from, to),
     )
   }

@@ -463,28 +463,15 @@ function Code({ className, inline, children, ...props }: CodeProps) {
 
 export const TaskListItemContext = React.createContext<{
   position?: Position
-  completed?: boolean | null
 } | null>(null)
 
 function ListItem({ node, ordered, index, ...props }: LiProps) {
   const isTaskListItem = props.className?.includes("task-list-item")
 
-  // Extract checked state from the input element child (hast node structure)
-  let checked: boolean | null = null
-  if (isTaskListItem && node.children) {
-    const inputChild = node.children.find(
-      (child): child is typeof child & { properties: { checked?: boolean } } =>
-        child.type === "element" && "tagName" in child && child.tagName === "input",
-    )
-    if (inputChild?.properties?.checked !== undefined) {
-      checked = inputChild.properties.checked
-    }
-  }
-
   if (isTaskListItem) {
     return (
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      <TaskListItemContext.Provider value={{ position: node.position, completed: checked }}>
+      <TaskListItemContext.Provider value={{ position: node.position }}>
         <li {...props} />
       </TaskListItemContext.Provider>
     )
@@ -496,20 +483,25 @@ function ListItem({ node, ordered, index, ...props }: LiProps) {
 function CheckboxInput({ checked }: { checked?: boolean }) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
   const { position } = React.useContext(TaskListItemContext) ?? {}
-  const checkedRef = React.useRef<HTMLButtonElement>(null)
 
   return (
     <Checkbox
-      ref={checkedRef}
+      key={String(checked)}
       defaultChecked={checked}
       disabled={!onChange}
-      onCheckedChange={(checked) => {
+      onMouseDown={(event) => {
+        // Prevent double-click from propagating
+        if (event.detail > 1) {
+          event.stopPropagation()
+        }
+      }}
+      onCheckedChange={(newChecked) => {
         if (!position) return
 
         // Update the corresponding checkbox in the markdown string
         const newValue =
           markdown.slice(0, position.start.offset) +
-          (checked ? "- [x]" : "- [ ]") +
+          (newChecked ? "- [x]" : "- [ ]") +
           markdown.slice((position.start.offset ?? 0) + 5)
 
         onChange?.(newValue)

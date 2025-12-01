@@ -119,7 +119,8 @@ export function TaskItem({
     >
       <div className="h-7 flex items-center">
         <Checkbox
-          checked={task.completed}
+          key={String(task.completed)}
+          defaultChecked={task.completed}
           onCheckedChange={(checked) => onCompletedChange?.(checked === true)}
         />
       </div>
