@@ -1,10 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useNoteById } from "../hooks/note"
 import type { NoteId, Task } from "../schema"
 import { cx } from "../utils/cx"
 import { removeDateFromTaskText } from "../utils/task"
 import { Checkbox } from "./checkbox"
-import { Markdown, TaskListItemContext } from "./markdown"
+import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { NoteLink } from "./note-link"
 
@@ -100,8 +100,6 @@ export function TaskItem({
     [commitChange],
   )
 
-  const contextValue = useMemo(() => ({ completed: task.completed }), [task.completed])
-
   return (
     <div
       role="button"
@@ -127,9 +125,7 @@ export function TaskItem({
       <div className="flex w-full @md:gap-3 flex-col @md:flex-row">
         {mode === "read" ? (
           <div className="flex-1 min-w-0">
-            <TaskListItemContext.Provider value={contextValue}>
-              <Markdown emptyText="Empty task">{displayText}</Markdown>
-            </TaskListItemContext.Provider>
+            <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
           // eslint-disable-next-line jsx-a11y/no-static-element-interactions
