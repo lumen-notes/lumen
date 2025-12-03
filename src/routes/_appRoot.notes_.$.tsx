@@ -898,7 +898,7 @@ function NotePage() {
                           key={`${task.parentId}-${task.startOffset}`}
                           task={task}
                           parentId={task.parentId}
-                          hideDate={isDailyNote}
+                          hideDate={isDailyNote ? noteId : undefined}
                           onCompletedChange={(completed) => {
                             if (!parentNote) return
 
