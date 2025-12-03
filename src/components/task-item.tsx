@@ -11,7 +11,7 @@ import { NoteLink } from "./note-link"
 type TaskItemProps = {
   task: Task
   parentId: NoteId
-  hideDate?: boolean
+  hideDate?: string
   className?: string
   onCompletedChange: (completed: boolean) => void
   onTextChange?: (text: string) => void
@@ -20,16 +20,17 @@ type TaskItemProps = {
 export function TaskItem({
   task,
   parentId,
-  hideDate = false,
+  hideDate,
   className,
   onCompletedChange,
   onTextChange,
 }: TaskItemProps) {
   const parentNote = useNoteById(parentId)
   const parentLabel = parentNote?.displayName ?? parentId
+  const shouldHideDate = hideDate !== undefined && hideDate === task.date
   const displayText = useMemo(
-    () => (hideDate ? removeDateFromTaskText(task.text, task.date) : task.text),
-    [hideDate, task.text, task.date],
+    () => (shouldHideDate ? removeDateFromTaskText(task.text, task.date) : task.text),
+    [shouldHideDate, task.text, task.date],
   )
   const [mode, setMode] = useState<"read" | "write">("read")
   const [pendingText, setPendingText] = useState(task.text)
