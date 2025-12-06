@@ -177,7 +177,7 @@ function NotePage() {
   const backlinkTasks = React.useMemo(() => {
     if (!noteId) return []
 
-    return Array.from(backlinks.values()).flatMap((backlinkNote) =>
+    const tasks = Array.from(backlinks.values()).flatMap((backlinkNote) =>
       backlinkNote.tasks
         .filter((task) => task.links.includes(noteId))
         .map((task) => ({
@@ -185,6 +185,18 @@ function NotePage() {
           parentId: backlinkNote.id,
         })),
     )
+
+    // Sort by incomplete first, then by priority
+    return tasks.sort((a, b) => {
+      // Incomplete tasks first
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1
+      }
+      // Then by priority (lower number = higher priority, null last)
+      const priorityA = a.priority ?? 4
+      const priorityB = b.priority ?? 4
+      return priorityA - priorityB
+    })
   }, [backlinks, noteId])
 
   // Editor state
