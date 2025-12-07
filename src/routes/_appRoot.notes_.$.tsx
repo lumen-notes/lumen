@@ -78,6 +78,7 @@ import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
 import { updateTaskCompletion, updateTaskText } from "../utils/task"
+import { motion } from "motion/react"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -902,46 +903,56 @@ function NotePage() {
               <Details className="print:hidden">
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <div className="flex flex-col gap-0.5">
+                  <ul className="flex flex-col gap-0.5">
                     {backlinkTasks.map((task) => {
                       const parentNote = backlinks.get(task.parentId)
                       return (
-                        <TaskItem
+                        <motion.li
                           key={`${task.parentId}-${task.startOffset}`}
-                          task={task}
-                          parentId={task.parentId}
-                          hideDate={isDailyNote ? noteId : undefined}
-                          onCompletedChange={(completed) => {
-                            if (!parentNote) return
-
-                            const updatedContent = updateTaskCompletion({
-                              content: parentNote.content,
-                              task,
-                              completed,
-                            })
-
-                            // Only save if content actually changed
-                            if (updatedContent !== parentNote.content) {
-                              saveNote({ id: parentNote.id, content: updatedContent })
-                            }
+                          layout
+                          transition={{
+                            type: "spring",
+                            duration: 0.3,
+                            bounce: 0,
                           }}
-                          onTextChange={(newText) => {
-                            if (!parentNote) return
+                          className="list-none"
+                        >
+                          <TaskItem
+                            task={task}
+                            parentId={task.parentId}
+                            hideDate={isDailyNote ? noteId : undefined}
+                            onCompletedChange={(completed) => {
+                              if (!parentNote) return
 
-                            const updatedContent = updateTaskText({
-                              content: parentNote.content,
-                              task,
-                              text: newText,
-                            })
+                              const updatedContent = updateTaskCompletion({
+                                content: parentNote.content,
+                                task,
+                                completed,
+                              })
 
-                            if (updatedContent !== parentNote.content) {
-                              saveNote({ id: parentNote.id, content: updatedContent })
-                            }
-                          }}
-                        />
+                              // Only save if content actually changed
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onTextChange={(newText) => {
+                              if (!parentNote) return
+
+                              const updatedContent = updateTaskText({
+                                content: parentNote.content,
+                                task,
+                                text: newText,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                          />
+                        </motion.li>
                       )
                     })}
-                  </div>
+                  </ul>
                 </LinkHighlightProvider>
               </Details>
             ) : null}
