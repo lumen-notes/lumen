@@ -5,7 +5,7 @@ import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
 import { isCommandMenuOpenAtom } from "./command-menu"
 import { IconButton, IconButtonProps } from "./icon-button"
-import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, PlusIcon16, SearchIcon16 } from "./icons"
+import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, ComposeIcon16, SearchIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
 
 export function NavBar() {
@@ -56,7 +56,7 @@ export function NavBar() {
             })
           }
         >
-          <PlusIcon16 />
+          <ComposeIcon16 />
         </NavButton>
       </div>
     </div>
