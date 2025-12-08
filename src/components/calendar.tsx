@@ -40,6 +40,8 @@ export function Calendar({
   const searchParams = useSearch({ strict: false })
   const date = parseISO(activeNoteId)
 
+  const isWeeklyNote = isValidWeekString(activeNoteId)
+
   const startOfWeek = React.useMemo(() => (isMonday(date) ? date : previousMonday(date)), [date])
 
   const endOfWeek = React.useMemo(() => nextSunday(startOfWeek), [startOfWeek])
@@ -49,14 +51,14 @@ export function Calendar({
     [startOfWeek, endOfWeek],
   )
 
-  const navigateByWeek = React.useCallback(
+  const navigateByInterval = React.useCallback(
     (direction: "previous" | "next") => {
-      const isWeeklyNote = isValidWeekString(activeNoteId)
-      const weeksToAdd = direction === "next" ? 1 : -1
+      const increment = direction === "next" ? 1 : -1
 
+      // Navigate by week for weekly notes, by day for daily notes
       const target = isWeeklyNote
-        ? toWeekString(addWeeks(date, weeksToAdd))
-        : toDateString(addDays(date, weeksToAdd * 7))
+        ? toWeekString(addWeeks(date, increment))
+        : toDateString(addDays(date, increment))
 
       navigate({
         to: "/notes/$",
@@ -68,7 +70,7 @@ export function Calendar({
         },
       })
     },
-    [activeNoteId, date, navigate, searchParams.mode, searchParams.view],
+    [isWeeklyNote, date, navigate, searchParams.mode, searchParams.view],
   )
 
   return (
@@ -80,7 +82,10 @@ export function Calendar({
             <span>{startOfWeek.getFullYear()}</span>
           </span>
           <div className="flex gap-px rounded bg-bg-secondary">
-            <IconButton aria-label="Previous week" onClick={() => navigateByWeek("previous")}>
+            <IconButton
+              aria-label={isWeeklyNote ? "Previous week" : "Previous day"}
+              onClick={() => navigateByInterval("previous")}
+            >
               <ChevronLeftIcon16 />
             </IconButton>
             <Button
@@ -100,7 +105,10 @@ export function Calendar({
             >
               Today
             </Button>
-            <IconButton aria-label="Next week" onClick={() => navigateByWeek("next")}>
+            <IconButton
+              aria-label={isWeeklyNote ? "Next week" : "Next day"}
+              onClick={() => navigateByInterval("next")}
+            >
               <ChevronRightIcon16 />
             </IconButton>
           </div>
