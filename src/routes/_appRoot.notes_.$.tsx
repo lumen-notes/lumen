@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard"
 import ejs from "ejs"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
@@ -161,7 +161,6 @@ function NotePage() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
-  // removed global width atom; width is per-note via frontmatter
   const defaultFont = useAtomValue(defaultFontAtom)
   const { online } = useNetworkState()
 
@@ -219,6 +218,20 @@ function NotePage() {
     [noteId, editorValue],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
+
+  // Task item animation
+  const [shouldAnimateTasks, setShouldAnimateTasks] = useState(false)
+  const animationTimeoutRef = useRef<number>()
+  const enableTaskAnimation = useCallback(() => {
+    setShouldAnimateTasks(true)
+    clearTimeout(animationTimeoutRef.current)
+    animationTimeoutRef.current = window.setTimeout(() => {
+      setShouldAnimateTasks(false)
+    }, 400)
+  }, [])
+  useEffect(() => {
+    return () => clearTimeout(animationTimeoutRef.current)
+  }, [])
 
   // Resolve font (frontmatter font or default)
   const frontmatterFont = parsedNote?.frontmatter?.font
@@ -909,11 +922,13 @@ function NotePage() {
                       return (
                         <motion.li
                           key={`${task.parentId}-${task.startOffset}`}
-                          layout
+                          layout="position"
                           transition={{
-                            type: "spring",
-                            duration: 0.3,
-                            bounce: 0,
+                            layout: {
+                              type: "tween",
+                              duration: shouldAnimateTasks ? 0.2 : 0,
+                              ease: [0.2, 0, 0, 1],
+                            },
                           }}
                           className="list-none"
                         >
@@ -923,6 +938,8 @@ function NotePage() {
                             hideDate={isDailyNote ? noteId : undefined}
                             onCompletedChange={(completed) => {
                               if (!parentNote) return
+
+                              enableTaskAnimation()
 
                               const updatedContent = updateTaskCompletion({
                                 content: parentNote.content,
@@ -937,6 +954,8 @@ function NotePage() {
                             }}
                             onTextChange={(newText) => {
                               if (!parentNote) return
+
+                              enableTaskAnimation()
 
                               const updatedContent = updateTaskText({
                                 content: parentNote.content,

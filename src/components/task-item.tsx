@@ -88,9 +88,9 @@ export function TaskItem({
     [task.text],
   )
 
-  const handleEditorKeyDown = useCallback(
+  const handleEscape = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "Escape" || event.key === "Enter") {
+      if (event.key === "Escape") {
         event.preventDefault()
         event.stopPropagation()
         commitChange()
@@ -100,6 +100,13 @@ export function TaskItem({
     },
     [commitChange],
   )
+
+  const handleEnter = useCallback(() => {
+    commitChange()
+    setMode("read")
+    setTimeout(() => buttonRef.current?.focus())
+    return true
+  }, [commitChange])
 
   return (
     <div
@@ -123,27 +130,34 @@ export function TaskItem({
           onCheckedChange={(checked) => onCompletedChange?.(checked === true)}
         />
       </div>
-      <div className="flex w-full @md:gap-3 flex-col @md:flex-row">
+      <div className="grid w-full @md:gap-3 @md:grid-cols-[1fr_auto]">
         {mode === "read" ? (
           <div className="flex-1 min-w-0">
             <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
           // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-          <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEditorKeyDown}>
+          <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEscape}>
             <NoteEditor
               defaultValue={pendingText}
               placeholder=""
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={true}
               indentWithTab={false}
-              onChange={(text) => setPendingText(text)}
+              onChange={setPendingText}
+              onEnter={handleEnter}
             />
           </div>
         )}
         {mode === "read" ? (
-          <div className="@md:h-7 h-6 flex items-center text-text-secondary whitespace-nowrap">
-            <NoteLink id={parentId} text={parentLabel} className="link" />
+          <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate @md:max-w-52">
+            <NoteLink
+              id={parentId}
+              text={parentLabel}
+              className="link truncate"
+              hoverCardAlign="end"
+              hoverCardAlignOffset={-12}
+            />
           </div>
         ) : null}
       </div>
