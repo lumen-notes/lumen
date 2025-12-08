@@ -151,7 +151,13 @@ export function TaskItem({
         )}
         {mode === "read" ? (
           <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate @md:max-w-52">
-            <NoteLink id={parentId} text={parentLabel} className="link truncate" hoverCardAlign="end" hoverCardAlignOffset={-12} />
+            <NoteLink
+              id={parentId}
+              text={parentLabel}
+              className="link truncate"
+              hoverCardAlign="end"
+              hoverCardAlignOffset={-12}
+            />
           </div>
         ) : null}
       </div>
