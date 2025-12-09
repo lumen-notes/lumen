@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard"
 import { request } from "@octokit/request"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { formatDistance } from "date-fns"
@@ -140,7 +141,7 @@ function RouteComponent() {
               <DropdownMenu.Item
                 icon={<LinkIcon16 />}
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.href)
+                  copy(window.location.href)
                 }}
               >
                 Copy link
