@@ -12,10 +12,8 @@ import {
   CalendarDateIcon16,
   CircleSlashIcon16,
   FlagFillIcon16,
-  FlagIcon16,
   MoreIcon16,
   TrashIcon16,
-  XIcon16,
 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"

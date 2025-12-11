@@ -226,7 +226,9 @@ export function prioritizeTask({
     if (priority) {
       // Replace in place
       newText =
-        task.text.slice(0, index) + `!!${priority}` + task.text.slice(index + priorityPattern.length)
+        task.text.slice(0, index) +
+        `!!${priority}` +
+        task.text.slice(index + priorityPattern.length)
     } else {
       // Remove priority
       newText = removePriorityFromTaskText(task.text, task.priority)
@@ -239,13 +241,7 @@ export function prioritizeTask({
   return updateTaskText({ content, task, text: newText })
 }
 
-export function deleteTask({
-  content,
-  task,
-}: {
-  content: string
-  task: Task
-}): string {
+export function deleteTask({ content, task }: { content: string; task: Task }): string {
   // Find the start of the line containing the task
   let lineStart = task.startOffset
   while (lineStart > 0 && content[lineStart - 1] !== "\n") {
