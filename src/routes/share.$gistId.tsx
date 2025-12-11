@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard"
 import { request } from "@octokit/request"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { formatDistance } from "date-fns"
@@ -5,7 +6,7 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
-import { EditIcon16, ExternalLinkIcon16, MoreIcon16 } from "../components/icons"
+import { EditIcon16, ExternalLinkIcon16, LinkIcon16, MoreIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
@@ -91,7 +92,7 @@ function RouteComponent() {
     const frontmatterFont = note?.frontmatter?.font
     const parseResult = fontSchema.safeParse(frontmatterFont)
     const parsedFont = parseResult.success ? parseResult.data : null
-    return parsedFont || "serif" // Default to serif for published notes
+    return parsedFont || "sans"
   }, [note?.frontmatter?.font])
 
   if (!gist || !note) {
@@ -137,6 +138,14 @@ function RouteComponent() {
               </IconButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content align="end">
+              <DropdownMenu.Item
+                icon={<LinkIcon16 />}
+                onClick={() => {
+                  copy(window.location.href)
+                }}
+              >
+                Copy link
+              </DropdownMenu.Item>
               {githubUser && userNote ? (
                 <DropdownMenu.Item
                   icon={<EditIcon16 />}
@@ -148,7 +157,7 @@ function RouteComponent() {
                     })
                   }}
                 >
-                  Edit in Lumen
+                  Edit
                 </DropdownMenu.Item>
               ) : null}
               <DropdownMenu.Item
@@ -157,7 +166,7 @@ function RouteComponent() {
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                Open gist
+                Open in GitHub
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu>
@@ -174,19 +183,6 @@ function RouteComponent() {
           <Markdown hideFrontmatter emptyText="Empty note">
             {content}
           </Markdown>
-        </div>
-        <div className="mt-5 print:hidden">
-          <span className="text-text-secondary text-sm">
-            Published with{" "}
-            <a
-              href="https://uselumen.com"
-              className="link"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              Lumen
-            </a>
-          </span>
         </div>
       </div>
     </div>
