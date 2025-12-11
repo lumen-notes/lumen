@@ -143,3 +143,71 @@ export function updateTaskText({
     content.slice(0, task.startOffset) + checkbox + textWithSpace + content.slice(originalTextEnd)
   )
 }
+
+export function deleteTask({
+  content,
+  task,
+}: {
+  content: string
+  task: Task
+}): string {
+  // Find the start of the line containing the task
+  let lineStart = task.startOffset
+  while (lineStart > 0 && content[lineStart - 1] !== "\n") {
+    lineStart--
+  }
+
+  // Get the indentation of this task (everything before "- [")
+  const taskLine = content.slice(lineStart, task.startOffset)
+  const taskIndent = taskLine.length
+
+  // Find the end of the task and any nested content
+  // We need to find where this task's content ends (including nested items)
+  let lineEnd = task.startOffset
+  // First, find end of current line
+  while (lineEnd < content.length && content[lineEnd] !== "\n") {
+    lineEnd++
+  }
+  // Include the newline
+  if (lineEnd < content.length) {
+    lineEnd++
+  }
+
+  // Now scan forward for nested content (lines with greater indentation)
+  while (lineEnd < content.length) {
+    // Find end of next line
+    let nextLineEnd = lineEnd
+    while (nextLineEnd < content.length && content[nextLineEnd] !== "\n") {
+      nextLineEnd++
+    }
+
+    const nextLine = content.slice(lineEnd, nextLineEnd)
+
+    // Empty line - check if it's followed by more nested content
+    if (nextLine.trim() === "") {
+      // Include the empty line for now, we'll check what comes after
+      lineEnd = nextLineEnd
+      if (lineEnd < content.length) {
+        lineEnd++ // Include newline
+      }
+      continue
+    }
+
+    // Check indentation of this line
+    const nextLineIndent = nextLine.length - nextLine.trimStart().length
+
+    // If indentation is greater than task, it's nested content - include it
+    if (nextLineIndent > taskIndent) {
+      lineEnd = nextLineEnd
+      if (lineEnd < content.length) {
+        lineEnd++ // Include newline
+      }
+    } else {
+      // Not nested, stop here
+      break
+    }
+  }
+
+  // Remove the task and its nested content
+  return content.slice(0, lineStart) + content.slice(lineEnd)
+}

@@ -4,6 +4,9 @@ import type { NoteId, Task } from "../schema"
 import { cx } from "../utils/cx"
 import { removeDateFromTaskText } from "../utils/task"
 import { Checkbox } from "./checkbox"
+import { DropdownMenu } from "./dropdown-menu"
+import { IconButton } from "./icon-button"
+import { MoreIcon16, TrashIcon16 } from "./icons"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { NoteLink } from "./note-link"
@@ -15,6 +18,7 @@ type TaskItemProps = {
   className?: string
   onCompletedChange: (completed: boolean) => void
   onTextChange?: (text: string) => void
+  onDelete?: () => void
 }
 
 export function TaskItem({
@@ -24,6 +28,7 @@ export function TaskItem({
   className,
   onCompletedChange,
   onTextChange,
+  onDelete,
 }: TaskItemProps) {
   const parentNote = useNoteById(parentId)
   const parentLabel = parentNote?.displayName ?? parentId
@@ -34,6 +39,7 @@ export function TaskItem({
   )
   const [mode, setMode] = useState<"read" | "write">("read")
   const [pendingText, setPendingText] = useState(task.text)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const buttonRef = useRef<HTMLDivElement>(null)
 
   const commitChange = useCallback(() => {
@@ -113,9 +119,10 @@ export function TaskItem({
       role="button"
       ref={buttonRef}
       className={cx(
-        "flex rounded-lg py-1.5 coarse:py-2.5 gap-3 px-3 coarse:px-[14px] coarse:gap-[14px] cursor-text focus-ring @container",
+        "flex rounded-lg gap-1 p-1 cursor-text focus-ring @container",
         mode === "read" && "hover:bg-bg-hover",
         mode === "write" && "ring-2 ring-inset ring-border-focus",
+        isMenuOpen && "bg-bg-hover",
         className,
       )}
       tabIndex={0}
@@ -123,16 +130,16 @@ export function TaskItem({
       onKeyDown={mode === "read" ? handleButtonKeyDown : undefined}
       onClick={mode === "read" ? handleButtonClick : undefined}
     >
-      <div className="h-7 flex items-center">
+      <div className="size-8 coarse:size-10 grid place-items-center shrink-0">
         <Checkbox
           key={String(task.completed)}
           defaultChecked={task.completed}
           onCheckedChange={(checked) => onCompletedChange?.(checked === true)}
         />
       </div>
-      <div className="grid w-full @md:gap-3 @md:grid-cols-[1fr_auto]">
+      <div className="grid w-full @md:gap-3 @md:grid-cols-[1fr_auto] py-0.5 coarse:py-1.5">
         {mode === "read" ? (
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 ">
             <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
@@ -150,17 +157,30 @@ export function TaskItem({
           </div>
         )}
         {mode === "read" ? (
-          <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate @md:max-w-52">
+          <div className="@md:h-7 h-6 flex items-center text-text-secondary">
             <NoteLink
               id={parentId}
               text={parentLabel}
-              className="link truncate"
+              className="link truncate @md:max-w-52"
               hoverCardAlign="end"
-              hoverCardAlignOffset={-12}
             />
           </div>
         ) : null}
       </div>
+      {mode === "read" ? (
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <DropdownMenu.Trigger asChild>
+            <IconButton aria-label="More actions" disableTooltip className="ml-1">
+              <MoreIcon16 />
+            </IconButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onSelect={onDelete}>
+              Delete task
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      ) : null}
     </div>
   )
 }

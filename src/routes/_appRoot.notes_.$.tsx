@@ -77,7 +77,7 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import { updateTaskCompletion, updateTaskText } from "../utils/task"
+import { deleteTask, updateTaskCompletion, updateTaskText } from "../utils/task"
 import { motion } from "motion/react"
 
 type RouteSearch = {
@@ -961,6 +961,20 @@ function NotePage() {
                                 content: parentNote.content,
                                 task,
                                 text: newText,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onDelete={() => {
+                              if (!parentNote) return
+
+                              enableTaskAnimation()
+
+                              const updatedContent = deleteTask({
+                                content: parentNote.content,
+                                task,
                               })
 
                               if (updatedContent !== parentNote.content) {

@@ -9,6 +9,7 @@ import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import {
+  deleteTask,
   getTaskContent,
   getTaskDate,
   getTaskPriority,
@@ -825,5 +826,191 @@ describe("getTaskPriority", () => {
       const result = getTaskPriority(listItem)
       expect(result).toBe(1)
     }
+  })
+})
+
+describe("deleteTask", () => {
+  test("deletes a simple task", () => {
+    const content = "- [ ] Task to delete"
+    const task = {
+      completed: false,
+      text: "Task to delete",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("")
+  })
+
+  test("deletes task and preserves surrounding content", () => {
+    const content = "Some text\n- [ ] Task to delete\nMore text"
+    const task = {
+      completed: false,
+      text: "Task to delete",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 10,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("Some text\nMore text")
+  })
+
+  test("deletes task at start of content", () => {
+    const content = "- [ ] First task\n- [ ] Second task"
+    const task = {
+      completed: false,
+      text: "First task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Second task")
+  })
+
+  test("deletes task at end of content", () => {
+    const content = "- [ ] First task\n- [ ] Second task"
+    const task = {
+      completed: false,
+      text: "Second task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 17,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] First task\n")
+  })
+
+  test("deletes task with nested tasks", () => {
+    const content = "- [ ] Parent task\n  - [ ] Nested task\n- [ ] Sibling task"
+    const task = {
+      completed: false,
+      text: "Parent task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Sibling task")
+  })
+
+  test("deletes task with multiple levels of nesting", () => {
+    const content = "- [ ] Parent\n  - [ ] Child\n    - [ ] Grandchild\n- [ ] Sibling"
+    const task = {
+      completed: false,
+      text: "Parent",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Sibling")
+  })
+
+  test("deletes only nested task, not parent", () => {
+    const content = "- [ ] Parent task\n  - [ ] Nested task\n- [ ] Sibling task"
+    const task = {
+      completed: false,
+      text: "Nested task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 20,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Parent task\n- [ ] Sibling task")
+  })
+
+  test("deletes correct task when duplicates exist using position", () => {
+    const content = "- [ ] Same task\n- [ ] Same task"
+    const secondTask = {
+      completed: false,
+      text: "Same task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 16,
+    }
+
+    const result = deleteTask({ content, task: secondTask })
+    expect(result).toBe("- [ ] Same task\n")
+  })
+
+  test("deletes task with no trailing newline", () => {
+    const content = "- [ ] Only task"
+    const task = {
+      completed: false,
+      text: "Only task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("")
+  })
+
+  test("deletes completed task", () => {
+    const content = "- [x] Completed task\n- [ ] Incomplete task"
+    const task = {
+      completed: true,
+      text: "Completed task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Incomplete task")
+  })
+
+  test("handles task with frontmatter", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] Task after frontmatter`
+    const task = {
+      completed: false,
+      text: "Task after frontmatter",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 24,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe(`---
+title: My Note
+---
+
+`)
   })
 })
