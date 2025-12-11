@@ -184,13 +184,13 @@ export function TaskItem({
         ) : null}
       </div>
       {mode === "read" ? (
-        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
           <DropdownMenu.Trigger asChild>
             <IconButton aria-label="More actions" disableTooltip className="ml-1">
               <MoreIcon16 />
             </IconButton>
           </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end" width={280} alignOffset={-4}>
+          <DropdownMenu.Content align="end" width={280}>
             <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
             {(() => {
               const today = new Date()
