@@ -1,12 +1,22 @@
+import { addDays, format, isWeekend, nextMonday, nextSaturday } from "date-fns"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useNoteById } from "../hooks/note"
 import type { NoteId, Task } from "../schema"
 import { cx } from "../utils/cx"
+import { toDateString } from "../utils/date"
 import { removeDateFromTaskText } from "../utils/task"
 import { Checkbox } from "./checkbox"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { MoreIcon16, TrashIcon16 } from "./icons"
+import {
+  CalendarDateIcon16,
+  CircleSlashIcon16,
+  FlagFillIcon16,
+  FlagIcon16,
+  MoreIcon16,
+  TrashIcon16,
+  XIcon16,
+} from "./icons"
 import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { NoteLink } from "./note-link"
@@ -18,6 +28,8 @@ type TaskItemProps = {
   className?: string
   onCompletedChange: (completed: boolean) => void
   onTextChange?: (text: string) => void
+  onReschedule?: (date: string | null) => void
+  onPriorityChange?: (priority: 1 | 2 | 3 | null) => void
   onDelete?: () => void
 }
 
@@ -28,6 +40,8 @@ export function TaskItem({
   className,
   onCompletedChange,
   onTextChange,
+  onReschedule,
+  onPriorityChange,
   onDelete,
 }: TaskItemProps) {
   const parentNote = useNoteById(parentId)
@@ -68,6 +82,10 @@ export function TaskItem({
   const handleButtonClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement | null
+      // Only trigger write mode if clicking within this component
+      if (!event.currentTarget.contains(target)) {
+        return
+      }
       if (
         target?.closest(
           "a,button,input,textarea,select,summary,[contenteditable='true'],[contenteditable='']",
@@ -174,7 +192,102 @@ export function TaskItem({
               <MoreIcon16 />
             </IconButton>
           </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end">
+          <DropdownMenu.Content align="end" width={280}>
+            <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
+            {(() => {
+              const today = new Date()
+              return task.date !== toDateString(today) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={today.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(today))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(today, "EEE")}</span>
+                  }
+                >
+                  Today
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const tomorrow = addDays(new Date(), 1)
+              return task.date !== toDateString(tomorrow) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={tomorrow.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(tomorrow))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(tomorrow, "EEE")}</span>
+                  }
+                >
+                  Tomorrow
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const now = new Date()
+              const weekendDate = nextSaturday(now)
+              const label = isWeekend(now) ? "Next weekend" : "This weekend"
+              return task.date !== toDateString(weekendDate) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={weekendDate.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(weekendDate))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(weekendDate, "EEE MMM d")}</span>
+                  }
+                >
+                  {label}
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const mondayDate = nextMonday(new Date())
+              return task.date !== toDateString(mondayDate) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={mondayDate.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(mondayDate))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(mondayDate, "EEE MMM d")}</span>
+                  }
+                >
+                  Next week
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {task.date !== null ? (
+              <DropdownMenu.Item icon={<CircleSlashIcon16 />} onSelect={() => onReschedule?.(null)}>
+                No date
+              </DropdownMenu.Item>
+            ) : null}
+            <DropdownMenu.Separator />
+            <DropdownMenu.Label>Priority</DropdownMenu.Label>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--red-11)]" />}
+              selected={task.priority === 1}
+              onSelect={() => onPriorityChange?.(1)}
+            >
+              High
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--orange-11)]" />}
+              selected={task.priority === 2}
+              onSelect={() => onPriorityChange?.(2)}
+            >
+              Medium
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--blue-11)]" />}
+              selected={task.priority === 3}
+              onSelect={() => onPriorityChange?.(3)}
+            >
+              Low
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<CircleSlashIcon16 />}
+              selected={task.priority === null}
+              onSelect={() => onPriorityChange?.(null)}
+            >
+              No priority
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
             <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onSelect={onDelete}>
               Delete task
             </DropdownMenu.Item>

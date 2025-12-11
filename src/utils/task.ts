@@ -101,6 +101,12 @@ export function removeDateFromTaskText(text: string, taskDate: string | null = n
   return text.replace(pattern, " ").replace(/\s+/g, " ").trim()
 }
 
+export function removePriorityFromTaskText(text: string, priority: 1 | 2 | 3): string {
+  // Remove the priority marker (!!1, !!2, or !!3) with surrounding whitespace cleanup
+  const pattern = new RegExp(`(^|\\s)!!${priority}(\\s|$)`, "g")
+  return text.replace(pattern, " ").replace(/\s+/g, " ").trim()
+}
+
 export function updateTaskCompletion({
   content,
   task,
@@ -142,6 +148,95 @@ export function updateTaskText({
   return (
     content.slice(0, task.startOffset) + checkbox + textWithSpace + content.slice(originalTextEnd)
   )
+}
+
+export function scheduleTask({
+  content,
+  task,
+  date,
+}: {
+  content: string
+  task: Task
+  date: string | null
+}): string {
+  // No-op if date unchanged
+  if (date === task.date) {
+    return content
+  }
+
+  let newText: string
+
+  if (task.date) {
+    // Task has existing date - find and replace/remove it
+    const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(task.text)
+    const datePattern = `[[${task.date}]]`
+
+    if (startsWithDate) {
+      // Use first occurrence
+      const index = task.text.indexOf(datePattern)
+      if (date) {
+        // Replace in place
+        newText =
+          task.text.slice(0, index) + `[[${date}]]` + task.text.slice(index + datePattern.length)
+      } else {
+        // Remove date
+        newText = removeDateFromTaskText(task.text, task.date)
+      }
+    } else {
+      // Use last occurrence
+      const index = task.text.lastIndexOf(datePattern)
+      if (date) {
+        // Replace in place
+        newText =
+          task.text.slice(0, index) + `[[${date}]]` + task.text.slice(index + datePattern.length)
+      } else {
+        // Remove date
+        newText = removeDateFromTaskText(task.text, task.date)
+      }
+    }
+  } else {
+    // No existing date - append new date
+    newText = date ? `${task.text} [[${date}]]` : task.text
+  }
+
+  return updateTaskText({ content, task, text: newText })
+}
+
+export function prioritizeTask({
+  content,
+  task,
+  priority,
+}: {
+  content: string
+  task: Task
+  priority: 1 | 2 | 3 | null
+}): string {
+  // No-op if priority unchanged
+  if (priority === task.priority) {
+    return content
+  }
+
+  let newText: string
+
+  if (task.priority) {
+    // Task has existing priority - find and replace/remove it
+    const priorityPattern = `!!${task.priority}`
+    const index = task.text.indexOf(priorityPattern)
+
+    if (priority) {
+      // Replace in place
+      newText =
+        task.text.slice(0, index) + `!!${priority}` + task.text.slice(index + priorityPattern.length)
+    } else {
+      // Remove priority
+      newText = removePriorityFromTaskText(task.text, task.priority)
+    }
+  } else {
+    // No existing priority - prepend new priority
+    newText = priority ? `!!${priority} ${task.text}` : task.text
+  }
+
+  return updateTaskText({ content, task, text: newText })
 }
 
 export function deleteTask({
