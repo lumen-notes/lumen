@@ -190,7 +190,7 @@ export function TaskItem({
               <MoreIcon16 />
             </IconButton>
           </DropdownMenu.Trigger>
-          <DropdownMenu.Content align="end" width={280}>
+          <DropdownMenu.Content align="end" width={280} alignOffset={-4}>
             <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
             {(() => {
               const today = new Date()
