@@ -664,7 +664,7 @@ function NotePage() {
                   onSelect={() => updateFont(null)}
                 >
                   Default{" "}
-                  <span className="italic text-text-secondary eink:text-current">
+                  <span className="text-text-secondary eink:text-current">
                     ({fontDisplayNames[defaultFont]})
                   </span>
                 </DropdownMenu.Item>
