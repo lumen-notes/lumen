@@ -173,7 +173,7 @@ export function TaskItem({
           </div>
         )}
         {mode === "read" ? (
-          <div className="@md:h-7 h-6 flex items-center text-text-secondary">
+          <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate">
             <NoteLink
               id={parentId}
               text={parentLabel}
