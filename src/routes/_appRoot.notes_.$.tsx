@@ -695,13 +695,13 @@ function NotePage() {
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
                       icon={<WidthFullIcon16 />}
-                      selected={resolvedWidth === "fill"}
+                      selected={resolvedWidth === "full"}
                       onSelect={() => {
-                        updateWidth("fill")
+                        updateWidth("full")
                         editorRef.current?.view?.focus()
                       }}
                     >
-                      Fill
+                      Full
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                   </>
