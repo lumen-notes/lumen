@@ -10,7 +10,13 @@ import { Button } from "./button"
 import { Dialog } from "./dialog"
 import { FormControl } from "./form-control"
 import { IconButton } from "./icon-button"
-import { CheckIcon16, ExternalLinkIcon16, LinkIcon16, LoadingIcon16, TrashIcon16 } from "./icons"
+import {
+  CheckIcon16,
+  ExternalLinkIcon16,
+  GlobeSlashIcon16,
+  LinkIcon16,
+  LoadingIcon16,
+} from "./icons"
 import { NotePreview } from "./note-preview"
 import { TextInput } from "./text-input"
 
@@ -122,7 +128,7 @@ export function ShareDialog({
                     <LoadingIcon16 className="text-text" />
                   ) : (
                     <>
-                      <TrashIcon16 />
+                      <GlobeSlashIcon16 />
                       Unpublish
                     </>
                   )}
