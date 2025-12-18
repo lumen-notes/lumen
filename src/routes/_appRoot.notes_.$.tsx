@@ -60,7 +60,7 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
-import { useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
@@ -82,7 +82,7 @@ import { updateTaskCompletion, updateTaskText } from "../utils/task"
 type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
-  view: "grid" | "list"
+  view: "grid" | "list" | "tasks"
   content?: string
 }
 
@@ -91,7 +91,7 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
     return {
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
-      view: search.view === "list" ? "list" : "grid",
+      view: search.view === "list" ? "list" : search.view === "tasks" ? "tasks" : "grid",
       content: typeof search.content === "string" ? search.content : undefined,
     }
   },

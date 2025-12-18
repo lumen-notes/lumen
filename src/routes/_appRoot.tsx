@@ -19,7 +19,7 @@ import {
   templatesAtom,
   themeAtom,
 } from "../global-state"
-import { useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { notificationSound, playSound } from "../utils/sounds"
 

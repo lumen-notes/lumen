@@ -2,29 +2,50 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import React, { useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { useDebounce } from "use-debounce"
-import { useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search-notes"
 import { parseQuery } from "../utils/search"
 import { formatNumber, pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { GlobeIcon16, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16, XIcon12 } from "./icons"
+import {
+  CheckIcon16,
+  GlobeIcon16,
+  GridIcon16,
+  ListIcon16,
+  PinFillIcon12,
+  TagIcon16,
+  TaskListIcon16,
+  XIcon12,
+} from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
+import { useSearchTasks } from "../hooks/search-tasks"
+import { TaskItem } from "./task-item"
+import { updateTaskCompletion, updateTaskText } from "../utils/task"
+import { useSaveNote } from "../hooks/note"
+
+type View = "grid" | "list" | "tasks"
+
+const viewIcons: Record<View, React.ReactNode> = {
+  grid: <GridIcon16 />,
+  list: <ListIcon16 />,
+  tasks: <TaskListIcon16 />,
+}
 
 type NoteListProps = {
   baseQuery?: string
   query: string
-  view: "grid" | "list"
+  view: View
   onQueryChange: (query: string) => void
-  onViewChange: (view: "grid" | "list") => void
+  onViewChange: (view: View) => void
 }
 
-const initialVisibleNotes = 10
+const initialVisibleItems = 10
 
 export function NoteList({
   baseQuery = "",
@@ -34,21 +55,31 @@ export function NoteList({
   onViewChange,
 }: NoteListProps) {
   const searchNotes = useSearchNotes()
+  const searchTasks = useSearchTasks()
   const navigate = useNavigate()
+  const saveNote = useSaveNote()
 
   const [deferredQuery] = useDebounce(query, 150)
 
-  const searchResults = useMemo(() => {
+  const noteResults = useMemo(() => {
     return searchNotes(`${baseQuery} ${deferredQuery}`)
   }, [searchNotes, baseQuery, deferredQuery])
 
-  const [numVisibleNotes, setNumVisibleNotes] = useState(initialVisibleNotes)
+  const taskResults = useMemo(() => {
+    return searchTasks(`${baseQuery} ${deferredQuery}`)
+  }, [searchTasks, baseQuery, deferredQuery])
+
+  const results = useMemo(() => {
+    return view === "tasks" ? taskResults : noteResults
+  }, [view, taskResults, noteResults])
+
+  const [numVisibleItems, setNumVisibleItems] = useState(initialVisibleItems)
 
   const [bottomRef, bottomInView] = useInView()
 
   const loadMore = React.useCallback(() => {
-    setNumVisibleNotes((num) => Math.min(num + 10, searchResults.length))
-  }, [searchResults.length])
+    setNumVisibleItems((num) => Math.min(num + 10, results.length))
+  }, [results.length])
 
   React.useEffect(() => {
     if (bottomInView) {
@@ -62,7 +93,7 @@ export function NoteList({
   const sortedTagFrequencies = React.useMemo(() => {
     const frequencyMap = new Map<string, number>()
 
-    const tags = searchResults.flatMap((note) => note.tags)
+    const tags = results.flatMap((result) => result.tags)
 
     for (const tag of tags) {
       frequencyMap.set(tag, (frequencyMap.get(tag) ?? 0) + 1)
@@ -73,7 +104,7 @@ export function NoteList({
     return (
       frequencyEntries
         // Filter out tags that every note has
-        .filter(([, frequency]) => frequency < searchResults.length)
+        .filter(([, frequency]) => frequency < results.length)
         // Filter out parent tags if the all the childs tag has the same frequency
         .filter(([tag, frequency]) => {
           const childTags = frequencyEntries.filter(
@@ -88,7 +119,7 @@ export function NoteList({
           return b[1] - a[1]
         })
     )
-  }, [searchResults])
+  }, [results])
 
   const filters = React.useMemo(() => {
     return parseQuery(query).filters
@@ -120,9 +151,42 @@ export function NoteList({
       <div>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+            <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenu.Trigger asChild>
+                  <IconButton
+                    aria-label="Change view"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                  >
+                    {viewIcons[view]}
+                  </IconButton>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content align="start" width={140}>
+                  <DropdownMenu.Item
+                    icon={<GridIcon16 />}
+                    onSelect={() => onViewChange("grid")}
+                    selected={view === "grid"}
+                  >
+                    Grid
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<ListIcon16 />}
+                    onSelect={() => onViewChange("list")}
+                    selected={view === "list"}
+                  >
+                    List
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<TaskListIcon16 />}
+                    onSelect={() => onViewChange("tasks")}
+                    selected={view === "tasks"}
+                  >
+                    Tasks
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu>
               <SearchInput
-                placeholder={`Search ${pluralize(searchResults.length, "note")}…`}
+                placeholder={`Search ${view === "tasks" ? pluralize(taskResults.length, "task") : pluralize(noteResults.length, "note")}…`}
                 value={query}
                 autoCapitalize="off"
                 spellCheck="false"
@@ -130,30 +194,20 @@ export function NoteList({
                   onQueryChange(value)
 
                   // Reset the number of visible notes when the user starts typing
-                  setNumVisibleNotes(initialVisibleNotes)
+                  setNumVisibleItems(initialVisibleItems)
                 }}
               />
-              <IconButton
-                aria-label={view === "grid" ? "List view" : "Grid view"}
-                className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                onClick={() => onViewChange(view === "grid" ? "list" : "grid")}
-              >
-                {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
-              </IconButton>
-              <DiceButton
-                disabled={searchResults.length === 0}
-                onClick={() => {
-                  const resultsCount = searchResults.length
-                  const randomIndex = Math.floor(Math.random() * resultsCount)
-                  navigate({ to: `/notes/${searchResults[randomIndex].id}` })
-                }}
-              />
+              {view !== "tasks" ? (
+                <DiceButton
+                  disabled={noteResults.length === 0}
+                  onClick={() => {
+                    const resultsCount = noteResults.length
+                    const randomIndex = Math.floor(Math.random() * resultsCount)
+                    navigate({ to: `/notes/${noteResults[randomIndex].id}` })
+                  }}
+                />
+              ) : null}
             </div>
-            {deferredQuery ? (
-              <span className="text-sm text-text-secondary">
-                {pluralize(searchResults.length, "result")}
-              </span>
-            ) : null}
           </div>
           <div className="flex flex-wrap gap-2 empty:hidden">
             {sortedTagFrequencies.length > 0 || tagFilters.length > 0 ? (
@@ -241,14 +295,14 @@ export function NoteList({
           </div>
           {view === "grid" ? (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
-              {searchResults.slice(0, numVisibleNotes).map(({ id }) => (
+              {noteResults.slice(0, numVisibleItems).map(({ id }) => (
                 <NotePreviewCard key={id} id={id} />
               ))}
             </div>
           ) : null}
           {view === "list" ? (
-            <ul>
-              {searchResults.slice(0, numVisibleNotes).map((note) => {
+            <ul className="flex flex-col gap-0.5">
+              {noteResults.slice(0, numVisibleItems).map((note) => {
                 return (
                   <li key={note.id}>
                     <Link
@@ -277,9 +331,43 @@ export function NoteList({
               })}
             </ul>
           ) : null}
+          {view === "tasks" ? (
+            <ul className="flex flex-col gap-0.5">
+              {taskResults.slice(0, numVisibleItems).map((task) => (
+                <li key={`${task.parent.id}-${task.startOffset}`}>
+                  <TaskItem
+                    task={task}
+                    parentId={task.parent.id}
+                    onCompletedChange={(completed) => {
+                      const updatedContent = updateTaskCompletion({
+                        content: task.parent.content,
+                        task,
+                        completed,
+                      })
+
+                      if (updatedContent !== task.parent.content) {
+                        saveNote({ id: task.parent.id, content: updatedContent })
+                      }
+                    }}
+                    onTextChange={(newText) => {
+                      const updatedContent = updateTaskText({
+                        content: task.parent.content,
+                        task,
+                        text: newText,
+                      })
+
+                      if (updatedContent !== task.parent.content) {
+                        saveNote({ id: task.parent.id, content: updatedContent })
+                      }
+                    }}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
-        {searchResults.length > numVisibleNotes ? (
+        {results.length > numVisibleItems ? (
           <Button ref={bottomRef} className="mt-4 w-full" onClick={loadMore}>
             Load more
           </Button>
@@ -295,7 +383,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
       onClick={() => {
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()

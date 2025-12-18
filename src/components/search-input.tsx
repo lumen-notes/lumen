@@ -40,7 +40,7 @@ export function SearchInput({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div className="absolute inset-y-0 left-0 grid aspect-square place-items-center text-text-secondary">
         <SearchIcon16 />
       </div>
