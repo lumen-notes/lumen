@@ -42,9 +42,9 @@ describe("filtering", () => {
     const incomplete = makeTask({ completed: false })
     const complete = makeTask({ completed: true })
 
-    expect(testTaskFilter({ key: "completed", values: ["false"], exclude: false }, incomplete)).toBe(
-      true,
-    )
+    expect(
+      testTaskFilter({ key: "completed", values: ["false"], exclude: false }, incomplete),
+    ).toBe(true)
     expect(testTaskFilter({ key: "completed", values: ["false"], exclude: false }, complete)).toBe(
       false,
     )

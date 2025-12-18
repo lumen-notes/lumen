@@ -77,9 +77,9 @@ describe("filtering", () => {
     expect(testNoteFilters([{ key: "dates", values: ["2"], exclude: false }], note)).toBe(true)
     expect(testNoteFilters([{ key: "tasks", values: [">=1"], exclude: false }], note)).toBe(true)
 
-    expect(
-      testNoteFilters([{ key: "date", values: [">=2021-01-02"], exclude: false }], note),
-    ).toBe(true)
+    expect(testNoteFilters([{ key: "date", values: [">=2021-01-02"], exclude: false }], note)).toBe(
+      true,
+    )
 
     expect(testNoteFilters([{ key: "has", values: ["backlinks"], exclude: false }], note)).toBe(
       true,

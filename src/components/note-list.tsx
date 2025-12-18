@@ -10,7 +10,6 @@ import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import {
-  CheckIcon16,
   GlobeIcon16,
   GridIcon16,
   ListIcon16,

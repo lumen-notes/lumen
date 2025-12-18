@@ -11,7 +11,6 @@ import {
   GitHubUser,
   Note,
   NoteId,
-  TaskWithParent,
   Template,
   githubUserSchema,
   templateSchema,
