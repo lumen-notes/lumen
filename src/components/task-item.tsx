@@ -1,38 +1,57 @@
-import React, { useCallback, useMemo, useRef, useState } from "react"
+import { addDays, format, isWeekend, nextMonday, nextSaturday } from "date-fns"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useNoteById } from "../hooks/note"
 import type { NoteId, Task } from "../schema"
 import { cx } from "../utils/cx"
+import { toDateString } from "../utils/date"
 import { removeDateFromTaskText } from "../utils/task"
 import { Checkbox } from "./checkbox"
-import { Markdown, TaskListItemContext } from "./markdown"
+import { DropdownMenu } from "./dropdown-menu"
+import { IconButton } from "./icon-button"
+import {
+  CalendarDateIcon16,
+  CircleSlashIcon16,
+  FlagFillIcon16,
+  MoreIcon16,
+  TrashIcon16,
+} from "./icons"
+import { Markdown } from "./markdown"
 import { NoteEditor } from "./note-editor"
 import { NoteLink } from "./note-link"
 
 type TaskItemProps = {
   task: Task
   parentId: NoteId
-  hideDate?: boolean
+  hideDate?: string
   className?: string
   onCompletedChange: (completed: boolean) => void
   onTextChange?: (text: string) => void
+  onReschedule?: (date: string | null) => void
+  onPriorityChange?: (priority: 1 | 2 | 3 | null) => void
+  onDelete?: () => void
 }
 
 export function TaskItem({
   task,
   parentId,
-  hideDate = false,
+  hideDate,
   className,
   onCompletedChange,
   onTextChange,
+  onReschedule,
+  onPriorityChange,
+  onDelete,
 }: TaskItemProps) {
   const parentNote = useNoteById(parentId)
   const parentLabel = parentNote?.displayName ?? parentId
+  const shouldHideDate = hideDate !== undefined && hideDate === task.date
   const displayText = useMemo(
-    () => (hideDate ? removeDateFromTaskText(task.text, task.date) : task.text),
-    [hideDate, task.text, task.date],
+    () => (shouldHideDate ? removeDateFromTaskText(task.text, task.date) : task.text),
+    [shouldHideDate, task.text, task.date],
   )
   const [mode, setMode] = useState<"read" | "write">("read")
   const [pendingText, setPendingText] = useState(task.text)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const buttonRef = useRef<HTMLDivElement>(null)
 
   const commitChange = useCallback(() => {
@@ -61,6 +80,10 @@ export function TaskItem({
   const handleButtonClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       const target = event.target as HTMLElement | null
+      // Only trigger write mode if clicking within this component
+      if (!event.currentTarget.contains(target)) {
+        return
+      }
       if (
         target?.closest(
           "a,button,input,textarea,select,summary,[contenteditable='true'],[contenteditable='']",
@@ -87,9 +110,9 @@ export function TaskItem({
     [task.text],
   )
 
-  const handleEditorKeyDown = useCallback(
+  const handleEscape = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === "Escape" || event.key === "Enter") {
+      if (event.key === "Escape") {
         event.preventDefault()
         event.stopPropagation()
         commitChange()
@@ -100,16 +123,22 @@ export function TaskItem({
     [commitChange],
   )
 
-  const contextValue = useMemo(() => ({ completed: task.completed }), [task.completed])
+  const handleEnter = useCallback(() => {
+    commitChange()
+    setMode("read")
+    setTimeout(() => buttonRef.current?.focus())
+    return true
+  }, [commitChange])
 
   return (
     <div
       role="button"
       ref={buttonRef}
       className={cx(
-        "flex rounded-lg py-1.5 coarse:py-2.5 gap-3 px-3 coarse:px-[14px] coarse:gap-[14px] cursor-text focus-ring @container",
+        "flex rounded-lg gap-1 p-1 cursor-text focus-ring @container",
         mode === "read" && "hover:bg-bg-hover",
         mode === "write" && "ring-2 ring-inset ring-border-focus",
+        isMenuOpen && "bg-bg-hover",
         className,
       )}
       tabIndex={0}
@@ -117,39 +146,152 @@ export function TaskItem({
       onKeyDown={mode === "read" ? handleButtonKeyDown : undefined}
       onClick={mode === "read" ? handleButtonClick : undefined}
     >
-      <div className="h-7 flex items-center">
+      <div className="size-8 coarse:size-10 grid place-items-center shrink-0">
         <Checkbox
           key={String(task.completed)}
           defaultChecked={task.completed}
           onCheckedChange={(checked) => onCompletedChange?.(checked === true)}
         />
       </div>
-      <div className="flex w-full @md:gap-3 flex-col @md:flex-row">
+      <div className="grid w-full @md:gap-3 @md:grid-cols-[1fr_auto] py-0.5 coarse:py-1.5">
         {mode === "read" ? (
-          <div className="flex-1 min-w-0">
-            <TaskListItemContext.Provider value={contextValue}>
-              <Markdown emptyText="Empty task">{displayText}</Markdown>
-            </TaskListItemContext.Provider>
+          <div className="flex-1 min-w-0 ">
+            <Markdown emptyText="Empty task">{displayText}</Markdown>
           </div>
         ) : (
           // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-          <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEditorKeyDown}>
+          <div className="flex-1 min-w-0" onBlur={handleBlur} onKeyDown={handleEscape}>
             <NoteEditor
               defaultValue={pendingText}
               placeholder=""
               // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus={true}
               indentWithTab={false}
-              onChange={(text) => setPendingText(text)}
+              onChange={setPendingText}
+              onEnter={handleEnter}
             />
           </div>
         )}
         {mode === "read" ? (
-          <div className="@md:h-7 h-6 flex items-center text-text-secondary whitespace-nowrap">
-            <NoteLink id={parentId} text={parentLabel} className="link" />
+          <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate">
+            <NoteLink
+              id={parentId}
+              text={parentLabel}
+              className="link truncate @md:max-w-52"
+              hoverCardAlign="end"
+            />
           </div>
         ) : null}
       </div>
+      {mode === "read" ? (
+        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
+          <DropdownMenu.Trigger asChild>
+            <IconButton aria-label="More actions" disableTooltip className="ml-1">
+              <MoreIcon16 />
+            </IconButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end" width={280}>
+            <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
+            {(() => {
+              const today = new Date()
+              return task.date !== toDateString(today) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={today.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(today))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(today, "EEE")}</span>
+                  }
+                >
+                  Today
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const tomorrow = addDays(new Date(), 1)
+              return task.date !== toDateString(tomorrow) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={tomorrow.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(tomorrow))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(tomorrow, "EEE")}</span>
+                  }
+                >
+                  Tomorrow
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const now = new Date()
+              const weekendDate = nextSaturday(now)
+              const label = isWeekend(now) ? "Next weekend" : "This weekend"
+              return task.date !== toDateString(weekendDate) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={weekendDate.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(weekendDate))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(weekendDate, "EEE MMM d")}</span>
+                  }
+                >
+                  {label}
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {(() => {
+              const mondayDate = nextMonday(new Date())
+              return task.date !== toDateString(mondayDate) ? (
+                <DropdownMenu.Item
+                  icon={<CalendarDateIcon16 date={mondayDate.getDate()} />}
+                  onSelect={() => onReschedule?.(toDateString(mondayDate))}
+                  trailingVisual={
+                    <span className="text-text-secondary">{format(mondayDate, "EEE MMM d")}</span>
+                  }
+                >
+                  Next week
+                </DropdownMenu.Item>
+              ) : null
+            })()}
+            {task.date !== null ? (
+              <DropdownMenu.Item icon={<CircleSlashIcon16 />} onSelect={() => onReschedule?.(null)}>
+                No date
+              </DropdownMenu.Item>
+            ) : null}
+            <DropdownMenu.Separator />
+            <DropdownMenu.Label>Priority</DropdownMenu.Label>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--red-11)]" />}
+              selected={task.priority === 1}
+              onSelect={() => onPriorityChange?.(1)}
+            >
+              High
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--orange-11)]" />}
+              selected={task.priority === 2}
+              onSelect={() => onPriorityChange?.(2)}
+            >
+              Medium
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<FlagFillIcon16 className="text-[var(--blue-11)]" />}
+              selected={task.priority === 3}
+              onSelect={() => onPriorityChange?.(3)}
+            >
+              Low
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              icon={<CircleSlashIcon16 />}
+              selected={task.priority === null}
+              onSelect={() => onPriorityChange?.(null)}
+            >
+              No priority
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onSelect={onDelete}>
+              Delete task
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      ) : null}
     </div>
   )
 }

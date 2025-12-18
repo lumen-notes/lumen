@@ -12,9 +12,17 @@ export type NoteLinkProps = {
   id: string
   text?: string
   className?: string
+  hoverCardAlign?: "start" | "center" | "end"
+  hoverCardAlignOffset?: number
 }
 
-export function NoteLink({ id, text, className }: NoteLinkProps) {
+export function NoteLink({
+  id,
+  text,
+  className,
+  hoverCardAlign = "start",
+  hoverCardAlignOffset,
+}: NoteLinkProps) {
   const note = useNoteById(id)
 
   if (isValidDateString(id)) {
@@ -41,7 +49,8 @@ export function NoteLink({ id, text, className }: NoteLinkProps) {
         <HoverCard.Content
           side="bottom"
           sideOffset={4}
-          align="start"
+          align={hoverCardAlign}
+          alignOffset={hoverCardAlignOffset}
           className="card-2 !rounded-[calc(var(--border-radius-base)+6px)] z-20 w-96 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2 print:hidden"
         >
           {note ? (

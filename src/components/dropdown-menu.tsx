@@ -112,9 +112,23 @@ const Separator = () => {
   return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary" />
 }
 
+const Label = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuLabelProps>(
+  ({ className, ...props }, ref) => (
+    <RadixDropdownMenu.Label
+      ref={ref}
+      className={cx(
+        "flex h-8 select-none items-center px-3 text-sm text-text-secondary coarse:pt-2",
+        className,
+      )}
+      {...props}
+    />
+  ),
+)
+
 export const DropdownMenu = Object.assign(Root, {
   Trigger,
   Content,
   Item,
   Separator,
+  Label,
 })

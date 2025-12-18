@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard"
 import ejs from "ejs"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
@@ -77,7 +77,14 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import { updateTaskCompletion, updateTaskText } from "../utils/task"
+import {
+  deleteTask,
+  prioritizeTask,
+  scheduleTask,
+  updateTaskCompletion,
+  updateTaskText,
+} from "../utils/task"
+import { motion } from "motion/react"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -160,7 +167,6 @@ function NotePage() {
   const isSignedOut = useAtomValue(isSignedOutAtom)
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
-  // removed global width atom; width is per-note via frontmatter
   const defaultFont = useAtomValue(defaultFontAtom)
   const { online } = useNetworkState()
 
@@ -177,7 +183,7 @@ function NotePage() {
   const backlinkTasks = React.useMemo(() => {
     if (!noteId) return []
 
-    return Array.from(backlinks.values()).flatMap((backlinkNote) =>
+    const tasks = Array.from(backlinks.values()).flatMap((backlinkNote) =>
       backlinkNote.tasks
         .filter((task) => task.links.includes(noteId))
         .map((task) => ({
@@ -185,6 +191,18 @@ function NotePage() {
           parentId: backlinkNote.id,
         })),
     )
+
+    // Sort by incomplete first, then by priority
+    return tasks.sort((a, b) => {
+      // Incomplete tasks first
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1
+      }
+      // Then by priority (lower number = higher priority, null last)
+      const priorityA = a.priority ?? 4
+      const priorityB = b.priority ?? 4
+      return priorityA - priorityB
+    })
   }, [backlinks, noteId])
 
   // Editor state
@@ -206,6 +224,20 @@ function NotePage() {
     [noteId, editorValue],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
+
+  // Task item animation
+  const [shouldAnimateTasks, setShouldAnimateTasks] = useState(false)
+  const animationTimeoutRef = useRef<number>()
+  const enableTaskAnimation = useCallback(() => {
+    setShouldAnimateTasks(true)
+    clearTimeout(animationTimeoutRef.current)
+    animationTimeoutRef.current = window.setTimeout(() => {
+      setShouldAnimateTasks(false)
+    }, 400)
+  }, [])
+  useEffect(() => {
+    return () => clearTimeout(animationTimeoutRef.current)
+  }, [])
 
   // Resolve font (frontmatter font or default)
   const frontmatterFont = parsedNote?.frontmatter?.font
@@ -624,6 +656,7 @@ function NotePage() {
                   </>
                 ) : null}
 
+                <DropdownMenu.Label>Font</DropdownMenu.Label>
                 <DropdownMenu.Item
                   className={`font-${defaultFont}`}
                   icon={<span className={`font-${defaultFont}`}>Aa</span>}
@@ -631,7 +664,7 @@ function NotePage() {
                   onSelect={() => updateFont(null)}
                 >
                   Default{" "}
-                  <span className="italic text-text-secondary eink:text-current">
+                  <span className="text-text-secondary eink:text-current">
                     ({fontDisplayNames[defaultFont]})
                   </span>
                 </DropdownMenu.Item>
@@ -649,6 +682,7 @@ function NotePage() {
                 <DropdownMenu.Separator />
                 {containerWidth > 800 && (
                   <>
+                    <DropdownMenu.Label>Width</DropdownMenu.Label>
                     <DropdownMenu.Item
                       icon={<WidthFixedIcon16 />}
                       selected={resolvedWidth === "fixed"}
@@ -657,17 +691,17 @@ function NotePage() {
                         editorRef.current?.view?.focus()
                       }}
                     >
-                      Centered content
+                      Fixed
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
                       icon={<WidthFullIcon16 />}
-                      selected={resolvedWidth === "fill"}
+                      selected={resolvedWidth === "full"}
                       onSelect={() => {
-                        updateWidth("fill")
+                        updateWidth("full")
                         editorRef.current?.view?.focus()
                       }}
                     >
-                      Fullwidth content
+                      Full
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                   </>
@@ -890,46 +924,106 @@ function NotePage() {
               <Details className="print:hidden">
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <div className="flex flex-col gap-0.5">
+                  <ul className="flex flex-col gap-0.5">
                     {backlinkTasks.map((task) => {
                       const parentNote = backlinks.get(task.parentId)
                       return (
-                        <TaskItem
+                        <motion.li
                           key={`${task.parentId}-${task.startOffset}`}
-                          task={task}
-                          parentId={task.parentId}
-                          hideDate={isDailyNote}
-                          onCompletedChange={(completed) => {
-                            if (!parentNote) return
-
-                            const updatedContent = updateTaskCompletion({
-                              content: parentNote.content,
-                              task,
-                              completed,
-                            })
-
-                            // Only save if content actually changed
-                            if (updatedContent !== parentNote.content) {
-                              saveNote({ id: parentNote.id, content: updatedContent })
-                            }
+                          layout="position"
+                          transition={{
+                            layout: {
+                              type: "tween",
+                              duration: shouldAnimateTasks ? 0.2 : 0,
+                              ease: [0.2, 0, 0, 1],
+                            },
                           }}
-                          onTextChange={(newText) => {
-                            if (!parentNote) return
+                          className="list-none"
+                        >
+                          <TaskItem
+                            task={task}
+                            parentId={task.parentId}
+                            hideDate={isDailyNote ? noteId : undefined}
+                            onCompletedChange={(completed) => {
+                              if (!parentNote) return
 
-                            const updatedContent = updateTaskText({
-                              content: parentNote.content,
-                              task,
-                              text: newText,
-                            })
+                              enableTaskAnimation()
 
-                            if (updatedContent !== parentNote.content) {
-                              saveNote({ id: parentNote.id, content: updatedContent })
-                            }
-                          }}
-                        />
+                              const updatedContent = updateTaskCompletion({
+                                content: parentNote.content,
+                                task,
+                                completed,
+                              })
+
+                              // Only save if content actually changed
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onTextChange={(newText) => {
+                              if (!parentNote) return
+
+                              enableTaskAnimation()
+
+                              const updatedContent = updateTaskText({
+                                content: parentNote.content,
+                                task,
+                                text: newText,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onReschedule={(date) => {
+                              if (!parentNote) return
+
+                              enableTaskAnimation()
+
+                              const updatedContent = scheduleTask({
+                                content: parentNote.content,
+                                task,
+                                date,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onPriorityChange={(priority) => {
+                              if (!parentNote) return
+
+                              enableTaskAnimation()
+
+                              const updatedContent = prioritizeTask({
+                                content: parentNote.content,
+                                task,
+                                priority,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                            onDelete={() => {
+                              if (!parentNote) return
+
+                              enableTaskAnimation()
+
+                              const updatedContent = deleteTask({
+                                content: parentNote.content,
+                                task,
+                              })
+
+                              if (updatedContent !== parentNote.content) {
+                                saveNote({ id: parentNote.id, content: updatedContent })
+                              }
+                            }}
+                          />
+                        </motion.li>
                       )
                     })}
-                  </div>
+                  </ul>
                 </LinkHighlightProvider>
               </Details>
             ) : null}

@@ -101,6 +101,12 @@ export function removeDateFromTaskText(text: string, taskDate: string | null = n
   return text.replace(pattern, " ").replace(/\s+/g, " ").trim()
 }
 
+export function removePriorityFromTaskText(text: string, priority: 1 | 2 | 3): string {
+  // Remove the priority marker (!!1, !!2, or !!3) with surrounding whitespace cleanup
+  const pattern = new RegExp(`(^|\\s)!!${priority}(\\s|$)`, "g")
+  return text.replace(pattern, " ").replace(/\s+/g, " ").trim()
+}
+
 export function updateTaskCompletion({
   content,
   task,
@@ -142,4 +148,157 @@ export function updateTaskText({
   return (
     content.slice(0, task.startOffset) + checkbox + textWithSpace + content.slice(originalTextEnd)
   )
+}
+
+export function scheduleTask({
+  content,
+  task,
+  date,
+}: {
+  content: string
+  task: Task
+  date: string | null
+}): string {
+  // No-op if date unchanged
+  if (date === task.date) {
+    return content
+  }
+
+  let newText: string
+
+  if (task.date) {
+    // Task has existing date - find and replace/remove it
+    const startsWithDate = /^\s*\[\[\d{4}-\d{2}-\d{2}\]\]/.test(task.text)
+    const datePattern = `[[${task.date}]]`
+
+    if (startsWithDate) {
+      // Use first occurrence
+      const index = task.text.indexOf(datePattern)
+      if (date) {
+        // Replace in place
+        newText =
+          task.text.slice(0, index) + `[[${date}]]` + task.text.slice(index + datePattern.length)
+      } else {
+        // Remove date
+        newText = removeDateFromTaskText(task.text, task.date)
+      }
+    } else {
+      // Use last occurrence
+      const index = task.text.lastIndexOf(datePattern)
+      if (date) {
+        // Replace in place
+        newText =
+          task.text.slice(0, index) + `[[${date}]]` + task.text.slice(index + datePattern.length)
+      } else {
+        // Remove date
+        newText = removeDateFromTaskText(task.text, task.date)
+      }
+    }
+  } else {
+    // No existing date - append new date
+    newText = date ? `${task.text} [[${date}]]` : task.text
+  }
+
+  return updateTaskText({ content, task, text: newText })
+}
+
+export function prioritizeTask({
+  content,
+  task,
+  priority,
+}: {
+  content: string
+  task: Task
+  priority: 1 | 2 | 3 | null
+}): string {
+  // No-op if priority unchanged
+  if (priority === task.priority) {
+    return content
+  }
+
+  let newText: string
+
+  if (task.priority) {
+    // Task has existing priority - find and replace/remove it
+    const priorityPattern = `!!${task.priority}`
+    const index = task.text.indexOf(priorityPattern)
+
+    if (priority) {
+      // Replace in place
+      newText =
+        task.text.slice(0, index) +
+        `!!${priority}` +
+        task.text.slice(index + priorityPattern.length)
+    } else {
+      // Remove priority
+      newText = removePriorityFromTaskText(task.text, task.priority)
+    }
+  } else {
+    // No existing priority - prepend new priority
+    newText = priority ? `!!${priority} ${task.text}` : task.text
+  }
+
+  return updateTaskText({ content, task, text: newText })
+}
+
+export function deleteTask({ content, task }: { content: string; task: Task }): string {
+  // Find the start of the line containing the task
+  let lineStart = task.startOffset
+  while (lineStart > 0 && content[lineStart - 1] !== "\n") {
+    lineStart--
+  }
+
+  // Get the indentation of this task (everything before "- [")
+  const taskLine = content.slice(lineStart, task.startOffset)
+  const taskIndent = taskLine.length
+
+  // Find the end of the task and any nested content
+  // We need to find where this task's content ends (including nested items)
+  let lineEnd = task.startOffset
+  // First, find end of current line
+  while (lineEnd < content.length && content[lineEnd] !== "\n") {
+    lineEnd++
+  }
+  // Include the newline
+  if (lineEnd < content.length) {
+    lineEnd++
+  }
+
+  // Now scan forward for nested content (lines with greater indentation)
+  while (lineEnd < content.length) {
+    // Find end of next line
+    let nextLineEnd = lineEnd
+    while (nextLineEnd < content.length && content[nextLineEnd] !== "\n") {
+      nextLineEnd++
+    }
+
+    const nextLine = content.slice(lineEnd, nextLineEnd)
+
+    // Empty line - check if it's followed by more nested content
+    if (nextLine.trim() === "") {
+      // Include the empty line for now, we'll check what comes after
+      lineEnd = nextLineEnd
+      if (lineEnd < content.length) {
+        lineEnd++ // Include newline
+      }
+      continue
+    }
+
+    // Check indentation of this line
+    const nextLineIndent = nextLine.length - nextLine.trimStart().length
+
+    // If indentation is greater than task, it's nested content - include it
+    if (nextLineIndent > taskIndent) {
+      lineEnd = nextLineEnd
+      if (lineEnd < content.length) {
+        lineEnd++ // Include newline
+      }
+    } else {
+      // Not nested, stop here
+      break
+    }
+  }
+
+  // Remove the task and its nested content
+  return content.slice(0, lineStart) + content.slice(lineEnd)
 }

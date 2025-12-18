@@ -7,8 +7,8 @@ import {
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import { yamlFrontmatter } from "@codemirror/lang-yaml"
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language"
-import { EditorSelection } from "@codemirror/state"
-import { EditorView, ViewUpdate } from "@codemirror/view"
+import { EditorSelection, Prec } from "@codemirror/state"
+import { EditorView, keymap, ViewUpdate } from "@codemirror/view"
 import { createTheme } from "@uiw/codemirror-themes"
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror"
 import { parseDate } from "chrono-node"
@@ -46,6 +46,7 @@ type NoteEditorProps = {
   onChange?: (value: string) => void
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
+  onEnter?: () => boolean
   disabled?: boolean
   indentWithTab?: boolean
 }
@@ -96,6 +97,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       onChange,
       onStateChange,
       onPaste,
+      onEnter,
       disabled = false,
       indentWithTab = true,
     },
@@ -140,6 +142,15 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
 
     const extensions = React.useMemo(() => {
       const baseExtensions = [
+        // Intercept Enter key before CodeMirror processes it
+        Prec.highest(
+          keymap.of([
+            {
+              key: "Enter",
+              run: () => onEnter?.() ?? false,
+            },
+          ]),
+        ),
         yamlFrontmatter({ content: markdown({ base: markdownLanguage }) }),
         autocompletion({
           override: [
@@ -181,6 +192,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     }, [
       attachFile,
       onPaste, // TODO
+      onEnter,
       editorSettings.vimMode, // TODO
       noteCompletion,
       tagPropertyCompletion,

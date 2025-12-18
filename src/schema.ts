@@ -90,6 +90,6 @@ export type TaskWithParent = Task & {
   parent: Note
 }
 
-export const widthSchema = z.enum(["fixed", "fill"])
+export const widthSchema = z.enum(["fixed", "full"])
 
 export type Width = z.infer<typeof widthSchema>

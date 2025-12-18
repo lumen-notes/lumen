@@ -266,7 +266,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="inline-block rounded-sm bg-bg-secondary shadow-sm eink:shadow-none transition-[box-shadow] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+      className="book-cover inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -274,7 +274,7 @@ function BookCover({ isbn }: { isbn: string }) {
       <img
         src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`}
         alt="Book cover"
-        className="aspect-[2/3] h-20 rounded-sm"
+        className="aspect-[2/3] h-[120px] bg-bg-tertiary"
       />
     </a>
   )
