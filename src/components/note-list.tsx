@@ -170,147 +170,152 @@ export function NoteList({
     <LinkHighlightProvider href={highlightPaths}>
       <div>
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex gap-2">
-              <DropdownMenu>
-                <DropdownMenu.Trigger asChild>
-                  <IconButton
-                    aria-label="Change view"
-                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                  >
-                    {viewIcons[view]}
-                  </IconButton>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content align="start" width={140}>
-                  <DropdownMenu.Item
-                    icon={<GridIcon16 />}
-                    onSelect={() => onViewChange("grid")}
-                    selected={view === "grid"}
-                  >
-                    Grid
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    icon={<ListIcon16 />}
-                    onSelect={() => onViewChange("list")}
-                    selected={view === "list"}
-                  >
-                    List
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    icon={<TaskListIcon16 />}
-                    onSelect={() => onViewChange("tasks")}
-                    selected={view === "tasks"}
-                  >
-                    Tasks
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu>
-              <SearchInput
-                placeholder={`Search ${view === "tasks" ? pluralize(taskResults.length, "task") : pluralize(noteResults.length, "note")}…`}
-                value={query}
-                autoCapitalize="off"
-                spellCheck="false"
-                onChange={(value) => {
-                  onQueryChange(value)
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  aria-label="Change view"
+                  className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                >
+                  {viewIcons[view]}
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="start" width={160}>
+                <DropdownMenu.Item
+                  icon={<GridIcon16 />}
+                  onSelect={() => onViewChange("grid")}
+                  selected={view === "grid"}
+                >
+                  Grid
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ListIcon16 />}
+                  onSelect={() => onViewChange("list")}
+                  selected={view === "list"}
+                >
+                  List
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<TaskListIcon16 />}
+                  onSelect={() => onViewChange("tasks")}
+                  selected={view === "tasks"}
+                >
+                  Tasks
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+            <SearchInput
+              placeholder={`Search ${view === "tasks" ? pluralize(taskResults.length, "task") : pluralize(noteResults.length, "note")}…`}
+              value={query}
+              autoCapitalize="off"
+              spellCheck="false"
+              onChange={(value) => {
+                onQueryChange(value)
 
-                  // Reset the number of visible notes when the user starts typing
-                  setNumVisibleItems(initialVisibleItems)
+                // Reset the number of visible notes when the user starts typing
+                setNumVisibleItems(initialVisibleItems)
+              }}
+            />
+            {view !== "tasks" ? (
+              <DiceButton
+                disabled={noteResults.length === 0}
+                onClick={() => {
+                  const resultsCount = noteResults.length
+                  const randomIndex = Math.floor(Math.random() * resultsCount)
+                  navigate({ to: `/notes/${noteResults[randomIndex].id}` })
                 }}
               />
-              {view !== "tasks" ? (
-                <DiceButton
-                  disabled={noteResults.length === 0}
-                  onClick={() => {
-                    const resultsCount = noteResults.length
-                    const randomIndex = Math.floor(Math.random() * resultsCount)
-                    navigate({ to: `/notes/${noteResults[randomIndex].id}` })
-                  }}
-                />
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-2 empty:hidden">
+              {sortedTagFrequencies.length > 0 || tagFilters.length > 0 ? (
+                <>
+                  {tagFilters.map((filter) => (
+                    <PillButton
+                      key={filter.values.join(",")}
+                      data-tag={filter.values.join(",")}
+                      variant="primary"
+                      onClick={() => {
+                        const text = `${filter.exclude ? "-" : ""}tag:${filter.values.join(",")}`
+
+                        const index = query.indexOf(text)
+
+                        if (index === -1) return
+
+                        const newQuery =
+                          query.slice(0, index) + query.slice(index + text.length).trimStart()
+
+                        // Remove the tag qualifier from the query
+                        onQueryChange(newQuery.trim())
+
+                        // TODO: Move focus
+                      }}
+                    >
+                      {filter.exclude ? <span className="italic">not</span> : null}
+                      {filter.values.map((value, index) => (
+                        <React.Fragment key={value}>
+                          {index > 0 ? <span>or</span> : null}
+                          <span key={value}>{value}</span>
+                        </React.Fragment>
+                      ))}
+                      <XIcon12 className="-mr-0.5" />
+                    </PillButton>
+                  ))}
+                  {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
+                    <PillButton
+                      key={tag}
+                      data-tag={tag}
+                      onClick={(event) => {
+                        const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+
+                        onQueryChange(query ? `${query} ${qualifier}` : qualifier)
+
+                        // Move focus
+                        setTimeout(() => {
+                          document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
+                        })
+                      }}
+                    >
+                      {tag}
+                      <span className="text-text-secondary">{formatNumber(frequency)}</span>
+                    </PillButton>
+                  ))}
+                  {sortedTagFrequencies.length > numVisibleTags ? (
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
+                          Show more
+                        </PillButton>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content width={300}>
+                        {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
+                          <DropdownMenu.Item
+                            key={tag}
+                            icon={<TagIcon16 />}
+                            trailingVisual={
+                              <span className="text-text-secondary eink:text-current">
+                                {frequency}
+                              </span>
+                            }
+                            onClick={(event) => {
+                              const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
+                              onQueryChange(query ? `${query} ${qualifier}` : qualifier)
+                            }}
+                          >
+                            {tag}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  ) : null}
+                </>
               ) : null}
             </div>
-          </div>
-          <div className="flex flex-wrap gap-2 empty:hidden">
-            {sortedTagFrequencies.length > 0 || tagFilters.length > 0 ? (
-              <>
-                {tagFilters.map((filter) => (
-                  <PillButton
-                    key={filter.values.join(",")}
-                    data-tag={filter.values.join(",")}
-                    variant="primary"
-                    onClick={() => {
-                      const text = `${filter.exclude ? "-" : ""}tag:${filter.values.join(",")}`
-
-                      const index = query.indexOf(text)
-
-                      if (index === -1) return
-
-                      const newQuery =
-                        query.slice(0, index) + query.slice(index + text.length).trimStart()
-
-                      // Remove the tag qualifier from the query
-                      onQueryChange(newQuery.trim())
-
-                      // TODO: Move focus
-                    }}
-                  >
-                    {filter.exclude ? <span className="italic">not</span> : null}
-                    {filter.values.map((value, index) => (
-                      <React.Fragment key={value}>
-                        {index > 0 ? <span>or</span> : null}
-                        <span key={value}>{value}</span>
-                      </React.Fragment>
-                    ))}
-                    <XIcon12 className="-mr-0.5" />
-                  </PillButton>
-                ))}
-                {sortedTagFrequencies.slice(0, numVisibleTags).map(([tag, frequency]) => (
-                  <PillButton
-                    key={tag}
-                    data-tag={tag}
-                    onClick={(event) => {
-                      const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-
-                      onQueryChange(query ? `${query} ${qualifier}` : qualifier)
-
-                      // Move focus
-                      setTimeout(() => {
-                        document.querySelector<HTMLElement>(`[data-tag="${tag}"]`)?.focus()
-                      })
-                    }}
-                  >
-                    {tag}
-                    <span className="text-text-secondary">{formatNumber(frequency)}</span>
-                  </PillButton>
-                ))}
-                {sortedTagFrequencies.length > numVisibleTags ? (
-                  <DropdownMenu>
-                    <DropdownMenu.Trigger asChild>
-                      <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
-                        Show more
-                      </PillButton>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content width={300}>
-                      {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
-                        <DropdownMenu.Item
-                          key={tag}
-                          icon={<TagIcon16 />}
-                          trailingVisual={
-                            <span className="text-text-secondary eink:text-current">
-                              {frequency}
-                            </span>
-                          }
-                          onClick={(event) => {
-                            const qualifier = `${event.shiftKey ? "-" : ""}tag:${tag}`
-                            onQueryChange(query ? `${query} ${qualifier}` : qualifier)
-                          }}
-                        >
-                          {tag}
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Content>
-                  </DropdownMenu>
-                ) : null}
-              </>
+            {deferredQuery ? (
+              <div className="text-sm text-text-secondary leading-4">
+                {pluralize(results.length, "result")}
+              </div>
             ) : null}
           </div>
           {view === "grid" ? (
