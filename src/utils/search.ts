@@ -1,3 +1,6 @@
+import { parseDate } from "chrono-node"
+import { toDateString } from "./date"
+
 export type Filter = {
   key: string
   values: string[]
@@ -75,16 +78,30 @@ function getSortDirection(key: string, direction?: string): SortDirection {
   return "asc"
 }
 
+/**
+ * Resolves relative date strings (today, tomorrow, yesterday, etc.) to ISO format.
+ * Returns original string if not a parseable date.
+ */
+export function resolveRelativeDate(value: string): string {
+  // Replace + with space to support date:next+week syntax
+  const normalized = value.replace(/\+/g, " ")
+  const date = parseDate(normalized)
+  if (date) {
+    return toDateString(date)
+  }
+  return value
+}
+
 export function isInRange(value: string | number, range: string): boolean {
   if (range.startsWith(">=")) {
-    return value >= range.slice(2)
+    return value >= resolveRelativeDate(range.slice(2))
   } else if (range.startsWith("<=")) {
-    return value <= range.slice(2)
+    return value <= resolveRelativeDate(range.slice(2))
   } else if (range.startsWith(">")) {
-    return value > range.slice(1)
+    return value > resolveRelativeDate(range.slice(1))
   } else if (range.startsWith("<")) {
-    return value < range.slice(1)
+    return value < resolveRelativeDate(range.slice(1))
   } else {
-    return value.toString() === range
+    return value.toString() === resolveRelativeDate(range)
   }
 }
