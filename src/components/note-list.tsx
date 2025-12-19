@@ -315,7 +315,7 @@ export function NoteList({
             </div>
             {deferredQuery ? (
               <div className="text-sm text-text-secondary leading-4">
-                {pluralize(results.length, "result")}
+                {pluralize(results.length, view === "tasks" ? "task" : "note")}
               </div>
             ) : null}
           </div>

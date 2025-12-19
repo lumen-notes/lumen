@@ -72,7 +72,7 @@ function RouteComponent() {
   return (
     <AppLayout title="Tags" icon={<TagIcon16 />}>
       <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <div className="grid grid-cols-[auto_auto_1fr] gap-2">
             <DropdownMenu>
               <DropdownMenu.Trigger asChild>
@@ -162,8 +162,8 @@ function RouteComponent() {
             />
           </div>
           {deferredQuery ? (
-            <span className="text-sm text-text-secondary">
-              {pluralize(searchResults.length, "result")}
+            <span className="text-sm text-text-secondary leading-4">
+              {pluralize(searchResults.length, "tag")}
             </span>
           ) : null}
         </div>
