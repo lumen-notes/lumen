@@ -43,7 +43,6 @@ import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
 import { PillButton } from "../components/pill-button"
-import { TaskItem } from "../components/task-item"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
 import { Tooltip } from "../components/tooltip"
@@ -77,14 +76,6 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import {
-  deleteTask,
-  prioritizeTask,
-  scheduleTask,
-  updateTaskCompletion,
-  updateTaskText,
-} from "../utils/task"
-import { motion } from "motion/react"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -180,31 +171,6 @@ function NotePage() {
     const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
     return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
   }, [noteId, searchNotes])
-  const backlinkTasks = React.useMemo(() => {
-    if (!noteId) return []
-
-    const tasks = Array.from(backlinks.values()).flatMap((backlinkNote) =>
-      backlinkNote.tasks
-        .filter((task) => task.links.includes(noteId))
-        .map((task) => ({
-          ...task,
-          parentId: backlinkNote.id,
-        })),
-    )
-
-    // Sort by incomplete first, then by priority
-    return tasks.sort((a, b) => {
-      // Incomplete tasks first
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1
-      }
-      // Then by priority (lower number = higher priority, null last)
-      const priorityA = a.priority ?? 4
-      const priorityB = b.priority ?? 4
-      return priorityA - priorityB
-    })
-  }, [backlinks, noteId])
-
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const { editorValue, setEditorValue, isDraft, discardChanges } = useEditorValue({
@@ -224,20 +190,6 @@ function NotePage() {
     [noteId, editorValue],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
-
-  // Task item animation
-  const [shouldAnimateTasks, setShouldAnimateTasks] = useState(false)
-  const animationTimeoutRef = useRef<number>()
-  const enableTaskAnimation = useCallback(() => {
-    setShouldAnimateTasks(true)
-    clearTimeout(animationTimeoutRef.current)
-    animationTimeoutRef.current = window.setTimeout(() => {
-      setShouldAnimateTasks(false)
-    }, 400)
-  }, [])
-  useEffect(() => {
-    return () => clearTimeout(animationTimeoutRef.current)
-  }, [])
 
   // Resolve font (frontmatter font or default)
   const frontmatterFont = parsedNote?.frontmatter?.font
@@ -920,113 +872,6 @@ function NotePage() {
                 minHeight={160}
               />
             </div>
-            {backlinkTasks.length > 0 ? (
-              <Details className="print:hidden">
-                <Details.Summary>Tasks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <ul className="flex flex-col gap-0.5">
-                    {backlinkTasks.map((task) => {
-                      const parentNote = backlinks.get(task.parentId)
-                      return (
-                        <motion.li
-                          key={`${task.parentId}-${task.startOffset}`}
-                          layout="position"
-                          transition={{
-                            layout: {
-                              type: "tween",
-                              duration: shouldAnimateTasks ? 0.2 : 0,
-                              ease: [0.2, 0, 0, 1],
-                            },
-                          }}
-                          className="list-none"
-                        >
-                          <TaskItem
-                            task={task}
-                            parentId={task.parentId}
-                            hideDate={isDailyNote ? noteId : undefined}
-                            onCompletedChange={(completed) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = updateTaskCompletion({
-                                content: parentNote.content,
-                                task,
-                                completed,
-                              })
-
-                              // Only save if content actually changed
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                            onTextChange={(newText) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = updateTaskText({
-                                content: parentNote.content,
-                                task,
-                                text: newText,
-                              })
-
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                            onReschedule={(date) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = scheduleTask({
-                                content: parentNote.content,
-                                task,
-                                date,
-                              })
-
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                            onPriorityChange={(priority) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = prioritizeTask({
-                                content: parentNote.content,
-                                task,
-                                priority,
-                              })
-
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                            onDelete={() => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = deleteTask({
-                                content: parentNote.content,
-                                task,
-                              })
-
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                          />
-                        </motion.li>
-                      )
-                    })}
-                  </ul>
-                </LinkHighlightProvider>
-              </Details>
-            ) : null}
             {isWeeklyNote ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
