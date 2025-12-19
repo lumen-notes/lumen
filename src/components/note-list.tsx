@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
-import React, { useMemo, useState } from "react"
+import { motion } from "motion/react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useInView } from "react-intersection-observer"
 import { useDebounce } from "use-debounce"
 import { useSearchNotes } from "../hooks/search-notes"
@@ -25,7 +26,13 @@ import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
 import { useSearchTasks } from "../hooks/search-tasks"
 import { TaskItem } from "./task-item"
-import { updateTaskCompletion, updateTaskText } from "../utils/task"
+import {
+  deleteTask,
+  prioritizeTask,
+  scheduleTask,
+  updateTaskCompletion,
+  updateTaskText,
+} from "../utils/task"
 import { useSaveNote } from "../hooks/note"
 
 type View = "grid" | "list" | "tasks"
@@ -57,6 +64,20 @@ export function NoteList({
   const searchTasks = useSearchTasks()
   const navigate = useNavigate()
   const saveNote = useSaveNote()
+
+  // Task item animation
+  const [shouldAnimateTasks, setShouldAnimateTasks] = useState(false)
+  const animationTimeoutRef = useRef<number>()
+  const enableTaskAnimation = useCallback(() => {
+    setShouldAnimateTasks(true)
+    clearTimeout(animationTimeoutRef.current)
+    animationTimeoutRef.current = window.setTimeout(() => {
+      setShouldAnimateTasks(false)
+    }, 400)
+  }, [])
+  useEffect(() => {
+    return () => clearTimeout(animationTimeoutRef.current)
+  }, [])
 
   const [deferredQuery] = useDebounce(query, 150)
 
@@ -333,11 +354,24 @@ export function NoteList({
           {view === "tasks" ? (
             <ul className="flex flex-col gap-0.5">
               {taskResults.slice(0, numVisibleItems).map((task) => (
-                <li key={`${task.parent.id}-${task.startOffset}`}>
+                <motion.li
+                  key={`${task.parent.id}-${task.startOffset}`}
+                  layout="position"
+                  transition={{
+                    layout: {
+                      type: "tween",
+                      duration: shouldAnimateTasks ? 0.2 : 0,
+                      ease: [0.2, 0, 0, 1],
+                    },
+                  }}
+                  className="list-none"
+                >
                   <TaskItem
                     task={task}
                     parentId={task.parent.id}
                     onCompletedChange={(completed) => {
+                      enableTaskAnimation()
+
                       const updatedContent = updateTaskCompletion({
                         content: task.parent.content,
                         task,
@@ -349,6 +383,8 @@ export function NoteList({
                       }
                     }}
                     onTextChange={(newText) => {
+                      enableTaskAnimation()
+
                       const updatedContent = updateTaskText({
                         content: task.parent.content,
                         task,
@@ -359,8 +395,46 @@ export function NoteList({
                         saveNote({ id: task.parent.id, content: updatedContent })
                       }
                     }}
+                    onReschedule={(date) => {
+                      enableTaskAnimation()
+
+                      const updatedContent = scheduleTask({
+                        content: task.parent.content,
+                        task,
+                        date,
+                      })
+
+                      if (updatedContent !== task.parent.content) {
+                        saveNote({ id: task.parent.id, content: updatedContent })
+                      }
+                    }}
+                    onPriorityChange={(priority) => {
+                      enableTaskAnimation()
+
+                      const updatedContent = prioritizeTask({
+                        content: task.parent.content,
+                        task,
+                        priority,
+                      })
+
+                      if (updatedContent !== task.parent.content) {
+                        saveNote({ id: task.parent.id, content: updatedContent })
+                      }
+                    }}
+                    onDelete={() => {
+                      enableTaskAnimation()
+
+                      const updatedContent = deleteTask({
+                        content: task.parent.content,
+                        task,
+                      })
+
+                      if (updatedContent !== task.parent.content) {
+                        saveNote({ id: task.parent.id, content: updatedContent })
+                      }
+                    }}
                   />
-                </li>
+                </motion.li>
               ))}
             </ul>
           ) : null}
