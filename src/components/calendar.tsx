@@ -15,7 +15,7 @@ import React from "react"
 import { Link, useSearch, useNavigate } from "@tanstack/react-router"
 import { datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
-import { useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
 import {
   DAY_NAMES,

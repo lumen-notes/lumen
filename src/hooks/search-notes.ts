@@ -2,7 +2,8 @@ import { useAtomValue } from "jotai"
 import React from "react"
 import type { FullOptions, Searcher as FuzzySearcher } from "fast-fuzzy"
 import { noteSearcherAtom, sortedNotesAtom } from "../global-state"
-import { filterNotes, parseQuery, sortNotes } from "../utils/search"
+import { parseQuery } from "../utils/search"
+import { filterNotes, sortNotes } from "../utils/search-notes"
 import type { Note } from "../schema"
 
 // Shared search routine used by both hooks

@@ -44,7 +44,15 @@ export function getTaskTags(node: Node): string[] {
 
   visit(node, (child) => {
     if (child.type === "tag" && child.data && typeof child.data.name === "string") {
-      tags.add(child.data.name)
+      // Add all parent tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
+      child.data.name.split("/").forEach((_, index) => {
+        tags.add(
+          child.data.name
+            .split("/")
+            .slice(0, index + 1)
+            .join("/"),
+        )
+      })
     }
   })
 

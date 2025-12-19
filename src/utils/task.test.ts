@@ -187,14 +187,14 @@ describe("getTaskTags", () => {
     }
   })
 
-  test("extracts nested tags", () => {
+  test("extracts nested tags with parent expansion", () => {
     const root = parseMarkdown("- [ ] Task with #parent/child")
     const listItem = findFirstListItem(root)
     expect(listItem).not.toBeNull()
 
     if (listItem) {
       const result = getTaskTags(listItem)
-      expect(result).toEqual(["parent/child"])
+      expect(result.sort()).toEqual(["parent", "parent/child"])
     }
   })
 
