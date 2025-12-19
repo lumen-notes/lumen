@@ -174,13 +174,14 @@ export function NoteList({
             <DropdownMenu>
               <DropdownMenu.Trigger asChild>
                 <IconButton
-                  aria-label="Change view"
+                  aria-label="View"
                   className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
                 >
                   {viewIcons[view]}
                 </IconButton>
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="start" width={160}>
+                <DropdownMenu.Label>View</DropdownMenu.Label>
                 <DropdownMenu.Item
                   icon={<GridIcon16 />}
                   onSelect={() => onViewChange("grid")}

@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
-import { useDeferredValue, useMemo, useState } from "react"
+import React, { useDeferredValue, useMemo, useState } from "react"
 import { AppLayout } from "../components/app-layout"
+import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
   ChevronRightIcon12,
@@ -17,10 +18,17 @@ import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { pluralize } from "../utils/pluralize"
 
+type View = "grid" | "list"
+
+const viewIcons: Record<View, React.ReactNode> = {
+  grid: <GridIcon16 />,
+  list: <ListIcon16 />,
+}
+
 type RouteSearch = {
   query: string | undefined
   sort: "name" | "count"
-  view: "grid" | "list" | "tasks"
+  view: View
 }
 
 export const Route = createFileRoute("/_appRoot/tags/")({
@@ -28,10 +36,7 @@ export const Route = createFileRoute("/_appRoot/tags/")({
     return {
       query: typeof search.query === "string" ? search.query : undefined,
       sort: search.sort === "name" || search.sort === "count" ? search.sort : "name",
-      view:
-        search.view === "grid" || search.view === "list" || search.view === "tasks"
-          ? search.view
-          : "list",
+      view: search.view === "grid" || search.view === "list" ? search.view : "list",
     }
   },
   component: RouteComponent,
@@ -68,7 +73,81 @@ function RouteComponent() {
     <AppLayout title="Tags" icon={<TagIcon16 />}>
       <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
         <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[1fr_auto_auto] gap-2">
+          <div className="grid grid-cols-[auto_auto_1fr] gap-2">
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  aria-label="View"
+                  className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                >
+                  {viewIcons[view]}
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="start" width={160}>
+                <DropdownMenu.Label>View</DropdownMenu.Label>
+                <DropdownMenu.Item
+                  icon={<GridIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, view: "grid" }),
+                      replace: true,
+                    })
+                  }
+                  selected={view === "grid"}
+                >
+                  Grid
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ListIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, view: "list" }),
+                      replace: true,
+                    })
+                  }
+                  selected={view === "list"}
+                >
+                  List
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  aria-label="Sort"
+                  className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                >
+                  {sort === "count" ? <SortNumberDescIcon16 /> : <SortAlphabetAscIcon16 />}
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="start" width={160}>
+                <DropdownMenu.Label>Sort</DropdownMenu.Label>
+                <DropdownMenu.Item
+                  icon={<SortAlphabetAscIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, sort: "name" }),
+                      replace: true,
+                    })
+                  }
+                  selected={sort === "name"}
+                >
+                  Name
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<SortNumberDescIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, sort: "count" }),
+                      replace: true,
+                    })
+                  }
+                  selected={sort === "count"}
+                >
+                  Count
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
             <SearchInput
               placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
               value={query ?? ""}
@@ -81,36 +160,6 @@ function RouteComponent() {
                 })
               }
             />
-            <IconButton
-              aria-label={view === "grid" ? "List view" : "Grid view"}
-              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-              onClick={() =>
-                navigate({
-                  search: (prev) => ({
-                    ...prev,
-                    view: view === "grid" ? "list" : "grid",
-                  }),
-                  replace: true,
-                })
-              }
-            >
-              {view === "grid" ? <ListIcon16 /> : <GridIcon16 />}
-            </IconButton>
-            <IconButton
-              aria-label={sort === "count" ? "Sort by name" : "Sort by count"}
-              className="h-10 w-10 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-              onClick={() =>
-                navigate({
-                  search: (prev) => ({
-                    ...prev,
-                    sort: sort === "count" ? "name" : "count",
-                    view,
-                  }),
-                })
-              }
-            >
-              {sort === "count" ? <SortAlphabetAscIcon16 /> : <SortNumberDescIcon16 />}
-            </IconButton>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary">
