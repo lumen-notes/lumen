@@ -1,16 +1,16 @@
-import type { TaskWithParent } from "../schema"
+import type { TaskWithNote } from "../schema"
 import type { Filter, Sort } from "./search"
 import { isInRange } from "./search"
 
-export function filterTasks(tasks: TaskWithParent[], filters: Filter[]): TaskWithParent[] {
+export function filterTasks(tasks: TaskWithNote[], filters: Filter[]): TaskWithNote[] {
   return tasks.filter((task) => testTaskFilters(filters, task))
 }
 
-export function testTaskFilters(filters: Filter[], task: TaskWithParent): boolean {
+export function testTaskFilters(filters: Filter[], task: TaskWithNote): boolean {
   return filters.every((filter) => testTaskFilter(filter, task))
 }
 
-export function testTaskFilter(filter: Filter, task: TaskWithParent): boolean {
+export function testTaskFilter(filter: Filter, task: TaskWithNote): boolean {
   let value = false
 
   switch (filter.key) {
@@ -43,11 +43,11 @@ export function testTaskFilter(filter: Filter, task: TaskWithParent): boolean {
     case "links":
       value = filter.values.some((v) => isInRange(task.links.length, v))
       break
-    case "parent":
-      value = filter.values.includes(task.parent.id)
+    case "note":
+      value = filter.values.includes(task.note.id)
       break
     case "type":
-      value = filter.values.includes(task.parent.type)
+      value = filter.values.includes(task.note.type)
       break
     case "has":
       value = filter.values.some((v) => {
@@ -92,7 +92,7 @@ export function testTaskFilter(filter: Filter, task: TaskWithParent): boolean {
   return filter.exclude ? !value : value
 }
 
-export function sortTasks(tasks: TaskWithParent[], sorts: Sort[]): TaskWithParent[] {
+export function sortTasks(tasks: TaskWithNote[], sorts: Sort[]): TaskWithNote[] {
   return [...tasks].sort((a, b) => compareTasks(a, b, sorts))
 }
 
@@ -102,7 +102,7 @@ const collator = new Intl.Collator(undefined, {
   ignorePunctuation: true,
 })
 
-function compareTasks(a: TaskWithParent, b: TaskWithParent, sorts: Sort[]): number {
+function compareTasks(a: TaskWithNote, b: TaskWithNote, sorts: Sort[]): number {
   for (const sort of sorts) {
     let result = 0
 
@@ -129,8 +129,8 @@ function compareTasks(a: TaskWithParent, b: TaskWithParent, sorts: Sort[]): numb
           return -1 // b (null) goes after a
         else result = a.priority - b.priority
         break
-      case "parent":
-        result = collator.compare(a.parent.id, b.parent.id)
+      case "note":
+        result = collator.compare(a.note.id, b.note.id)
         break
       case "text":
         result = collator.compare(a.text, b.text)

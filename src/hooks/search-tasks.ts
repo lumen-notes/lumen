@@ -4,13 +4,13 @@ import type { FullOptions, Searcher as FuzzySearcher } from "fast-fuzzy"
 import { taskSearcherAtom, tasksAtom } from "../global-state"
 import { parseQuery } from "../utils/search"
 import { filterTasks, sortTasks } from "../utils/search-tasks"
-import type { TaskWithParent } from "../schema"
+import type { TaskWithNote } from "../schema"
 
 // Shared search routine used by both hooks
 function runSearch(
   query: string,
-  tasks: TaskWithParent[],
-  taskSearcher: FuzzySearcher<TaskWithParent, FullOptions<TaskWithParent>>,
+  tasks: TaskWithNote[],
+  taskSearcher: FuzzySearcher<TaskWithNote, FullOptions<TaskWithNote>>,
 ) {
   if (!query) return tasks
   const { fuzzy, filters, sorts } = parseQuery(query)

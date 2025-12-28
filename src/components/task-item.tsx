@@ -21,7 +21,7 @@ import { NoteLink } from "./note-link"
 
 type TaskItemProps = {
   task: Task
-  parentId: NoteId
+  noteId: NoteId
   hideDate?: string
   className?: string
   onCompletedChange: (completed: boolean) => void
@@ -33,7 +33,7 @@ type TaskItemProps = {
 
 export function TaskItem({
   task,
-  parentId,
+  noteId,
   hideDate,
   className,
   onCompletedChange,
@@ -42,8 +42,8 @@ export function TaskItem({
   onPriorityChange,
   onDelete,
 }: TaskItemProps) {
-  const parentNote = useNoteById(parentId)
-  const parentLabel = parentNote?.displayName ?? parentId
+  const note = useNoteById(noteId)
+  const noteLabel = note?.displayName ?? noteId
   const shouldHideDate = hideDate !== undefined && hideDate === task.date
   const displayText = useMemo(
     () => (shouldHideDate ? removeDateFromTaskText(task.text, task.date) : task.text),
@@ -175,8 +175,8 @@ export function TaskItem({
         {mode === "read" ? (
           <div className="@md:h-7 h-6 flex items-center text-text-secondary truncate">
             <NoteLink
-              id={parentId}
-              text={parentLabel}
+              id={noteId}
+              text={noteLabel}
               className="link truncate @md:max-w-52"
               hoverCardAlign="end"
             />

@@ -23,13 +23,19 @@ import { useSaveNote } from "../hooks/note"
 
 type TaskListProps = {
   baseQuery?: string
+  defaultSort?: string
   query: string
   onQueryChange: (query: string) => void
 }
 
 const initialVisibleItems = 10
 
-export function TaskList({ baseQuery = "", query, onQueryChange }: TaskListProps) {
+export function TaskList({
+  baseQuery = "",
+  defaultSort = "completed,date,priority",
+  query,
+  onQueryChange,
+}: TaskListProps) {
   const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
 
@@ -50,8 +56,8 @@ export function TaskList({ baseQuery = "", query, onQueryChange }: TaskListProps
   const [deferredQuery] = useDebounce(query, 150)
 
   const taskResults = useMemo(() => {
-    return searchTasks(`${baseQuery} ${deferredQuery}`)
-  }, [searchTasks, baseQuery, deferredQuery])
+    return searchTasks(`${baseQuery} ${deferredQuery} sort:${defaultSort}`)
+  }, [searchTasks, baseQuery, deferredQuery, defaultSort])
 
   const [numVisibleItems, setNumVisibleItems] = useState(initialVisibleItems)
 
@@ -233,7 +239,7 @@ export function TaskList({ baseQuery = "", query, onQueryChange }: TaskListProps
           <ul className="flex flex-col gap-0.5">
             {taskResults.slice(0, numVisibleItems).map((task) => (
               <motion.li
-                key={`${task.parent.id}-${task.startOffset}`}
+                key={`${task.note.id}-${task.startOffset}`}
                 layout="position"
                 transition={{
                   layout: {
@@ -246,69 +252,69 @@ export function TaskList({ baseQuery = "", query, onQueryChange }: TaskListProps
               >
                 <TaskItem
                   task={task}
-                  parentId={task.parent.id}
+                  noteId={task.note.id}
                   onCompletedChange={(completed) => {
                     enableTaskAnimation()
 
                     const updatedContent = updateTaskCompletion({
-                      content: task.parent.content,
+                      content: task.note.content,
                       task,
                       completed,
                     })
 
-                    if (updatedContent !== task.parent.content) {
-                      saveNote({ id: task.parent.id, content: updatedContent })
+                    if (updatedContent !== task.note.content) {
+                      saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
                   onTextChange={(newText) => {
                     enableTaskAnimation()
 
                     const updatedContent = updateTaskText({
-                      content: task.parent.content,
+                      content: task.note.content,
                       task,
                       text: newText,
                     })
 
-                    if (updatedContent !== task.parent.content) {
-                      saveNote({ id: task.parent.id, content: updatedContent })
+                    if (updatedContent !== task.note.content) {
+                      saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
                   onReschedule={(date) => {
                     enableTaskAnimation()
 
                     const updatedContent = scheduleTask({
-                      content: task.parent.content,
+                      content: task.note.content,
                       task,
                       date,
                     })
 
-                    if (updatedContent !== task.parent.content) {
-                      saveNote({ id: task.parent.id, content: updatedContent })
+                    if (updatedContent !== task.note.content) {
+                      saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
                   onPriorityChange={(priority) => {
                     enableTaskAnimation()
 
                     const updatedContent = prioritizeTask({
-                      content: task.parent.content,
+                      content: task.note.content,
                       task,
                       priority,
                     })
 
-                    if (updatedContent !== task.parent.content) {
-                      saveNote({ id: task.parent.id, content: updatedContent })
+                    if (updatedContent !== task.note.content) {
+                      saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
                   onDelete={() => {
                     enableTaskAnimation()
 
                     const updatedContent = deleteTask({
-                      content: task.parent.content,
+                      content: task.note.content,
                       task,
                     })
 
-                    if (updatedContent !== task.parent.content) {
-                      saveNote({ id: task.parent.id, content: updatedContent })
+                    if (updatedContent !== task.note.content) {
+                      saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
                 />
