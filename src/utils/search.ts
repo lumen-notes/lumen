@@ -1,4 +1,6 @@
+import { parseDate } from "chrono-node"
 import type { Note } from "../schema"
+import { toDateString } from "./date"
 
 export type Filter = {
   key: string
@@ -77,123 +79,18 @@ function getSortDirection(key: string, direction?: string): SortDirection {
   return "asc"
 }
 
-export function filterNotes(results: Array<Note>, filters: Filter[]) {
-  return results.filter((note) => {
-    if (!note) return false
-    return testFilters(filters, note)
-  })
-}
-
-export function testFilters(filters: Filter[], note: Note) {
-  return filters.every((filter) => testFilter(filter, note))
-}
-
-export function testFilter(filter: Filter, note: Note) {
-  const frontmatter = note.frontmatter
-
-  let value = false
-
-  switch (filter.key) {
-    case "id":
-      value = filter.values.includes(note.id)
-      break
-    case "title":
-      value = filter.values.includes(note.title)
-      break
-    case "tag":
-      value = note.tags.some((tag) => filter.values.includes(tag))
-      break
-    case "tags":
-      value = filter.values.some((range) => isInRange(String(note.tags.length), range))
-      break
-    case "date":
-      value = note.dates.some((date) => {
-        return filter.values.some((value) => isInRange(date, value))
-      })
-      break
-    case "dates":
-      value = filter.values.some((range) => isInRange(note.dates.length, range))
-      break
-    case "link":
-      value = note.links.some((link) => filter.values.includes(link))
-      break
-    case "links":
-      value = filter.values.some((range) => isInRange(note.links.length, range))
-      break
-    case "backlink":
-      if (!("backlinks" in note)) return false
-      value = note.backlinks.some((backlink) => filter.values.includes(backlink))
-      break
-    case "backlinks":
-      if (!("backlinks" in note)) return false
-      value = filter.values.some((value) => isInRange(note.backlinks.length, value))
-      break
-    case "tasks":
-      value = filter.values.some((value) =>
-        isInRange(note.tasks.filter((task) => !task.completed).length, value),
-      )
-      break
-    case "no":
-      value = filter.values.some((value) => {
-        switch (value) {
-          case "backlink":
-          case "backlinks":
-            return !("backlinks" in note) || note.backlinks.length === 0
-          case "tag":
-          case "tags":
-            return note.tags.length === 0
-          case "date":
-          case "dates":
-            return note.dates.length === 0
-          case "link":
-          case "links":
-            return note.links.length === 0
-          case "task":
-          case "tasks":
-            return note.tasks.filter((task) => !task.completed).length === 0
-          case "title":
-            return !note.title
-          default:
-            return !(value in frontmatter)
-        }
-      })
-      break
-    case "has":
-      value = filter.values.some((value) => {
-        switch (value) {
-          case "backlink":
-          case "backlinks":
-            return "backlinks" in note && note.backlinks.length > 0
-          case "tag":
-          case "tags":
-            return note.tags.length > 0
-          case "date":
-          case "dates":
-            return note.dates.length > 0
-          case "link":
-          case "links":
-            return note.links.length > 0
-          case "task":
-          case "tasks":
-            return note.tasks.filter((task) => !task.completed).length > 0
-          case "title":
-            return Boolean(note.title)
-          default:
-            return value in frontmatter
-        }
-      })
-      break
-    case "type":
-      value = filter.values.includes(note.type)
-      break
-    default:
-      if (filter.key in frontmatter) {
-        value = filter.values.includes(String(frontmatter[filter.key]))
-      }
-      break
+/**
+ * Resolves relative date strings (today, tomorrow, yesterday, etc.) to ISO format.
+ * Returns original string if not a parseable date.
+ */
+export function resolveRelativeDate(value: string): string {
+  // Replace + with space to support date:next+week syntax
+  const normalized = value.replace(/\+/g, " ")
+  const date = parseDate(normalized)
+  if (date) {
+    return toDateString(date)
   }
-
-  return filter.exclude ? !value : value
+  return value
 }
 
 export function sortNotes(results: Array<Note>, sorts: Sort[]): Array<Note> {
@@ -280,16 +177,16 @@ function compareNotes(a: Note, b: Note, sorts: Sort[]) {
   return 0
 }
 
-function isInRange(value: string | number, range: string) {
+export function isInRange(value: string | number, range: string): boolean {
   if (range.startsWith(">=")) {
-    return value >= range.slice(2)
+    return value >= resolveRelativeDate(range.slice(2))
   } else if (range.startsWith("<=")) {
-    return value <= range.slice(2)
+    return value <= resolveRelativeDate(range.slice(2))
   } else if (range.startsWith(">")) {
-    return value > range.slice(1)
+    return value > resolveRelativeDate(range.slice(1))
   } else if (range.startsWith("<")) {
-    return value < range.slice(1)
+    return value < resolveRelativeDate(range.slice(1))
   } else {
-    return value.toString() === range
+    return value.toString() === resolveRelativeDate(range)
   }
 }

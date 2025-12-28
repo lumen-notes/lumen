@@ -12,7 +12,12 @@ type PriorityIndicatorProps = {
 
 export function PriorityIndicator({ level }: PriorityIndicatorProps) {
   return (
-    <span className={cx("[font-size:var(--font-size-sm)] rounded-sm px-0.5", colors[level])}>
+    <span
+      className={cx(
+        "rounded-sm px-0.5 leading-4 eink:text-text eink:bg-transparent",
+        colors[level],
+      )}
+    >
       !!{level}
     </span>
   )

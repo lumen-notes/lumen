@@ -763,6 +763,23 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 )
 
 // -----------------------------------------------------------------------------
+// Tasks
+// -----------------------------------------------------------------------------
+
+export const tasksAtom = atom((get) => {
+  const notes = get(notesAtom)
+  return [...notes.values()].flatMap((note) => note.tasks.map((task) => ({ ...task, note })))
+})
+
+export const taskSearcherAtom = atom((get) => {
+  const tasks = get(tasksAtom)
+  return new Searcher(tasks, {
+    keySelector: (task) => [task.text, task.note.title, task.note.displayName],
+    threshold: 0.8,
+  })
+})
+
+// -----------------------------------------------------------------------------
 // UI state
 // -----------------------------------------------------------------------------
 

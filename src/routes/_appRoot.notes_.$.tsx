@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard"
 import ejs from "ejs"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
@@ -42,8 +42,8 @@ import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
+import { TaskList } from "../components/task-list"
 import { PillButton } from "../components/pill-button"
-import { TaskItem } from "../components/task-item"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
 import { Tooltip } from "../components/tooltip"
@@ -60,7 +60,8 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
-import { useSearchNotes } from "../hooks/search"
+import { useSearchNotes } from "../hooks/search-notes"
+import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
 import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
@@ -77,13 +78,12 @@ import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
-import { updateTaskCompletion, updateTaskText } from "../utils/task"
-import { motion } from "motion/react"
 
 type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
   view: "grid" | "list"
+  tasks?: string | undefined
   content?: string
 }
 
@@ -93,6 +93,7 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
       view: search.view === "list" ? "list" : "grid",
+      tasks: typeof search.tasks === "string" ? search.tasks : undefined,
       content: typeof search.content === "string" ? search.content : undefined,
     }
   },
@@ -153,7 +154,7 @@ const fontDisplayNames: Record<Font, string> = {
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, content: defaultContent } = Route.useSearch()
+  const { mode, query, view, tasks, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -169,35 +170,15 @@ function NotePage() {
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
   const searchNotes = useSearchNotes()
+  const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
     const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
     return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
   }, [noteId, searchNotes])
   const backlinkTasks = React.useMemo(() => {
-    if (!noteId) return []
-
-    const tasks = Array.from(backlinks.values()).flatMap((backlinkNote) =>
-      backlinkNote.tasks
-        .filter((task) => task.links.includes(noteId))
-        .map((task) => ({
-          ...task,
-          parentId: backlinkNote.id,
-        })),
-    )
-
-    // Sort by incomplete first, then by priority
-    return tasks.sort((a, b) => {
-      // Incomplete tasks first
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1
-      }
-      // Then by priority (lower number = higher priority, null last)
-      const priorityA = a.priority ?? 4
-      const priorityB = b.priority ?? 4
-      return priorityA - priorityB
-    })
-  }, [backlinks, noteId])
+    return searchTasks(`link:"${noteId}" -note:"${noteId}"`)
+  }, [noteId, searchTasks])
 
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -218,20 +199,6 @@ function NotePage() {
     [noteId, editorValue],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
-
-  // Task item animation
-  const [shouldAnimateTasks, setShouldAnimateTasks] = useState(false)
-  const animationTimeoutRef = useRef<number>()
-  const enableTaskAnimation = useCallback(() => {
-    setShouldAnimateTasks(true)
-    clearTimeout(animationTimeoutRef.current)
-    animationTimeoutRef.current = window.setTimeout(() => {
-      setShouldAnimateTasks(false)
-    }, 400)
-  }, [])
-  useEffect(() => {
-    return () => clearTimeout(animationTimeoutRef.current)
-  }, [])
 
   // Resolve font (frontmatter font or default)
   const frontmatterFont = parsedNote?.frontmatter?.font
@@ -650,6 +617,7 @@ function NotePage() {
                   </>
                 ) : null}
 
+                <DropdownMenu.Label>Font</DropdownMenu.Label>
                 <DropdownMenu.Item
                   className={`font-${defaultFont}`}
                   icon={<span className={`font-${defaultFont}`}>Aa</span>}
@@ -657,7 +625,7 @@ function NotePage() {
                   onSelect={() => updateFont(null)}
                 >
                   Default{" "}
-                  <span className="italic text-text-secondary eink:text-current">
+                  <span className="text-text-secondary eink:text-current">
                     ({fontDisplayNames[defaultFont]})
                   </span>
                 </DropdownMenu.Item>
@@ -675,6 +643,7 @@ function NotePage() {
                 <DropdownMenu.Separator />
                 {containerWidth > 800 && (
                   <>
+                    <DropdownMenu.Label>Width</DropdownMenu.Label>
                     <DropdownMenu.Item
                       icon={<WidthFixedIcon16 />}
                       selected={resolvedWidth === "fixed"}
@@ -683,17 +652,17 @@ function NotePage() {
                         editorRef.current?.view?.focus()
                       }}
                     >
-                      Centered content
+                      Fixed
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
                       icon={<WidthFullIcon16 />}
-                      selected={resolvedWidth === "fill"}
+                      selected={resolvedWidth === "full"}
                       onSelect={() => {
-                        updateWidth("fill")
+                        updateWidth("full")
                         editorRef.current?.view?.focus()
                       }}
                     >
-                      Fullwidth content
+                      Full
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                   </>
@@ -912,73 +881,27 @@ function NotePage() {
                 minHeight={160}
               />
             </div>
-            {backlinkTasks.length > 0 ? (
-              <Details className="print:hidden">
-                <Details.Summary>Tasks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <ul className="flex flex-col gap-0.5">
-                    {backlinkTasks.map((task) => {
-                      const parentNote = backlinks.get(task.parentId)
-                      return (
-                        <motion.li
-                          key={`${task.parentId}-${task.startOffset}`}
-                          layout="position"
-                          transition={{
-                            layout: {
-                              type: "tween",
-                              duration: shouldAnimateTasks ? 0.2 : 0,
-                              ease: [0.2, 0, 0, 1],
-                            },
-                          }}
-                          className="list-none"
-                        >
-                          <TaskItem
-                            task={task}
-                            parentId={task.parentId}
-                            hideDate={isDailyNote ? noteId : undefined}
-                            onCompletedChange={(completed) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = updateTaskCompletion({
-                                content: parentNote.content,
-                                task,
-                                completed,
-                              })
-
-                              // Only save if content actually changed
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                            onTextChange={(newText) => {
-                              if (!parentNote) return
-
-                              enableTaskAnimation()
-
-                              const updatedContent = updateTaskText({
-                                content: parentNote.content,
-                                task,
-                                text: newText,
-                              })
-
-                              if (updatedContent !== parentNote.content) {
-                                saveNote({ id: parentNote.id, content: updatedContent })
-                              }
-                            }}
-                          />
-                        </motion.li>
-                      )
-                    })}
-                  </ul>
-                </LinkHighlightProvider>
-              </Details>
-            ) : null}
             {isWeeklyNote ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteId ?? ""} />
+              </Details>
+            ) : null}
+            {backlinkTasks.length > 0 ? (
+              <Details className="print:hidden">
+                <Details.Summary>Tasks</Details.Summary>
+                <LinkHighlightProvider href={`/notes/${noteId}`}>
+                  <TaskList
+                    baseQuery={`link:"${noteId}" -note:"${noteId}"`}
+                    query={tasks ?? ""}
+                    onQueryChange={(tasks) =>
+                      navigate({
+                        search: (prev) => ({ ...prev, tasks }),
+                        replace: true,
+                      })
+                    }
+                  />
+                </LinkHighlightProvider>
               </Details>
             ) : null}
             {backlinks.size > 0 ? (

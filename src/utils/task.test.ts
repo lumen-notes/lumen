@@ -9,10 +9,14 @@ import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import {
+  deleteTask,
   getTaskContent,
   getTaskDate,
   getTaskPriority,
+  prioritizeTask,
   removeDateFromTaskText,
+  removePriorityFromTaskText,
+  scheduleTask,
   getTaskLinks,
   getTaskTags,
   updateTaskCompletion,
@@ -183,14 +187,14 @@ describe("getTaskTags", () => {
     }
   })
 
-  test("extracts nested tags", () => {
+  test("extracts nested tags with parent expansion", () => {
     const root = parseMarkdown("- [ ] Task with #parent/child")
     const listItem = findFirstListItem(root)
     expect(listItem).not.toBeNull()
 
     if (listItem) {
       const result = getTaskTags(listItem)
-      expect(result).toEqual(["parent/child"])
+      expect(result.sort()).toEqual(["parent", "parent/child"])
     }
   })
 
@@ -825,5 +829,637 @@ describe("getTaskPriority", () => {
       const result = getTaskPriority(listItem)
       expect(result).toBe(1)
     }
+  })
+})
+
+describe("scheduleTask", () => {
+  test("reschedules task from one date to another", () => {
+    const content = "- [ ] Task [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task [[2024-12-31]]")
+  })
+
+  test("schedules an unscheduled task", () => {
+    const content = "- [ ] Task without date"
+    const task = {
+      completed: false,
+      text: "Task without date",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task without date [[2024-12-31]]")
+  })
+
+  test("unschedules a task", () => {
+    const content = "- [ ] Task [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: null })
+    expect(result).toBe("- [ ] Task")
+  })
+
+  test("returns unchanged content when date is the same", () => {
+    const content = "- [ ] Task [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-01-01" })
+    expect(result).toBe("- [ ] Task [[2024-01-01]]")
+  })
+
+  test("replaces date at start in place", () => {
+    const content = "- [ ] [[2024-01-01]] Task text"
+    const task = {
+      completed: false,
+      text: "[[2024-01-01]] Task text",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] [[2024-12-31]] Task text")
+  })
+
+  test("replaces date at end in place", () => {
+    const content = "- [ ] Task text [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "Task text [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task text [[2024-12-31]]")
+  })
+
+  test("replaces date in middle in place", () => {
+    const content = "- [ ] Task [[2024-01-01]] text"
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]] text",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task [[2024-12-31]] text")
+  })
+
+  test("replaces first date when task starts with date", () => {
+    const content = "- [ ] [[2024-01-01]] Task [[2024-06-15]]"
+    const task = {
+      completed: false,
+      text: "[[2024-01-01]] Task [[2024-06-15]]",
+      links: ["2024-01-01", "2024-06-15"],
+      tags: [],
+      date: "2024-01-01", // First date because task starts with it
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] [[2024-12-31]] Task [[2024-06-15]]")
+  })
+
+  test("replaces last date when task does not start with date", () => {
+    const content = "- [ ] Task [[2024-01-01]] then [[2024-06-15]]"
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]] then [[2024-06-15]]",
+      links: ["2024-01-01", "2024-06-15"],
+      tags: [],
+      date: "2024-06-15", // Last date because task doesn't start with date
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task [[2024-01-01]] then [[2024-12-31]]")
+  })
+
+  test("preserves other wikilinks", () => {
+    const content = "- [ ] Review [[project-alpha]] by [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "Review [[project-alpha]] by [[2024-01-01]]",
+      links: ["project-alpha", "2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Review [[project-alpha]] by [[2024-12-31]]")
+  })
+
+  test("preserves tags and priority", () => {
+    const content = "- [ ] !!1 Task #urgent [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "!!1 Task #urgent [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: ["urgent"],
+      date: "2024-01-01",
+      priority: 1 as const,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe("- [ ] !!1 Task #urgent [[2024-12-31]]")
+  })
+
+  test("handles duplicate tasks using position", () => {
+    const content = "- [ ] Task [[2024-01-01]]\n- [ ] Task [[2024-01-01]]"
+    const secondTask = {
+      completed: false,
+      text: "Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 26,
+    }
+
+    const result = scheduleTask({ content, task: secondTask, date: "2024-12-31" })
+    expect(result).toBe("- [ ] Task [[2024-01-01]]\n- [ ] Task [[2024-12-31]]")
+  })
+
+  test("handles task with frontmatter offset", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] Task [[2024-01-01]]`
+    const task = {
+      completed: false,
+      text: "Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: null,
+      startOffset: 24,
+    }
+
+    const result = scheduleTask({ content, task, date: "2024-12-31" })
+    expect(result).toBe(`---
+title: My Note
+---
+
+- [ ] Task [[2024-12-31]]`)
+  })
+
+  test("returns unchanged when scheduling null to null", () => {
+    const content = "- [ ] Task without date"
+    const task = {
+      completed: false,
+      text: "Task without date",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = scheduleTask({ content, task, date: null })
+    expect(result).toBe("- [ ] Task without date")
+  })
+})
+
+describe("removePriorityFromTaskText", () => {
+  test("removes priority from start of text", () => {
+    expect(removePriorityFromTaskText("!!1 Task text", 1)).toBe("Task text")
+  })
+
+  test("removes priority from end of text", () => {
+    expect(removePriorityFromTaskText("Task text !!2", 2)).toBe("Task text")
+  })
+
+  test("removes priority from middle of text", () => {
+    expect(removePriorityFromTaskText("Task !!3 text", 3)).toBe("Task text")
+  })
+
+  test("normalizes multiple spaces after removal", () => {
+    expect(removePriorityFromTaskText("Task  !!1  text", 1)).toBe("Task text")
+  })
+
+  test("does not remove different priority level", () => {
+    expect(removePriorityFromTaskText("!!1 Task text", 2)).toBe("!!1 Task text")
+  })
+
+  test("removes all occurrences of the same priority", () => {
+    expect(removePriorityFromTaskText("!!1 Task !!1 text", 1)).toBe("Task text")
+  })
+})
+
+describe("prioritizeTask", () => {
+  test("adds priority to task with no existing priority (prepends)", () => {
+    const content = "- [ ] Task without priority"
+    const task = {
+      completed: false,
+      text: "Task without priority",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 1 })
+    expect(result).toBe("- [ ] !!1 Task without priority")
+  })
+
+  test("changes priority from one level to another", () => {
+    const content = "- [ ] !!1 Urgent task"
+    const task = {
+      completed: false,
+      text: "!!1 Urgent task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 1 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 2 })
+    expect(result).toBe("- [ ] !!2 Urgent task")
+  })
+
+  test("removes priority when setting to null", () => {
+    const content = "- [ ] !!1 Urgent task"
+    const task = {
+      completed: false,
+      text: "!!1 Urgent task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 1 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: null })
+    expect(result).toBe("- [ ] Urgent task")
+  })
+
+  test("returns unchanged when priority is the same", () => {
+    const content = "- [ ] !!1 Urgent task"
+    const task = {
+      completed: false,
+      text: "!!1 Urgent task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 1 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 1 })
+    expect(result).toBe("- [ ] !!1 Urgent task")
+  })
+
+  test("returns unchanged when setting null to null", () => {
+    const content = "- [ ] Task without priority"
+    const task = {
+      completed: false,
+      text: "Task without priority",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: null })
+    expect(result).toBe("- [ ] Task without priority")
+  })
+
+  test("replaces priority at end of task text in place", () => {
+    const content = "- [ ] Task at end !!2"
+    const task = {
+      completed: false,
+      text: "Task at end !!2",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 2 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 1 })
+    expect(result).toBe("- [ ] Task at end !!1")
+  })
+
+  test("replaces priority in middle of task text in place", () => {
+    const content = "- [ ] Task !!3 in middle"
+    const task = {
+      completed: false,
+      text: "Task !!3 in middle",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 3 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 1 })
+    expect(result).toBe("- [ ] Task !!1 in middle")
+  })
+
+  test("handles task with both priority and date", () => {
+    const content = "- [ ] !!1 Task [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "!!1 Task [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: [],
+      date: "2024-01-01",
+      priority: 1 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 2 })
+    expect(result).toBe("- [ ] !!2 Task [[2024-01-01]]")
+  })
+
+  test("handles task with priority, date, and tags", () => {
+    const content = "- [ ] !!2 Task #urgent [[2024-01-01]]"
+    const task = {
+      completed: false,
+      text: "!!2 Task #urgent [[2024-01-01]]",
+      links: ["2024-01-01"],
+      tags: ["urgent"],
+      date: "2024-01-01",
+      priority: 2 as const,
+      startOffset: 0,
+    }
+
+    const result = prioritizeTask({ content, task, priority: null })
+    expect(result).toBe("- [ ] Task #urgent [[2024-01-01]]")
+  })
+
+  test("handles duplicate tasks using position", () => {
+    const content = "- [ ] !!1 Task\n- [ ] !!1 Task"
+    const secondTask = {
+      completed: false,
+      text: "!!1 Task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 1 as const,
+      startOffset: 15,
+    }
+
+    const result = prioritizeTask({ content, task: secondTask, priority: 2 })
+    expect(result).toBe("- [ ] !!1 Task\n- [ ] !!2 Task")
+  })
+
+  test("handles task with frontmatter offset", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] !!1 Task after frontmatter`
+    const task = {
+      completed: false,
+      text: "!!1 Task after frontmatter",
+      links: [],
+      tags: [],
+      date: null,
+      priority: 1 as const,
+      startOffset: 24,
+    }
+
+    const result = prioritizeTask({ content, task, priority: 3 })
+    expect(result).toBe(`---
+title: My Note
+---
+
+- [ ] !!3 Task after frontmatter`)
+  })
+})
+
+describe("deleteTask", () => {
+  test("deletes a simple task", () => {
+    const content = "- [ ] Task to delete"
+    const task = {
+      completed: false,
+      text: "Task to delete",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("")
+  })
+
+  test("deletes task and preserves surrounding content", () => {
+    const content = "Some text\n- [ ] Task to delete\nMore text"
+    const task = {
+      completed: false,
+      text: "Task to delete",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 10,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("Some text\nMore text")
+  })
+
+  test("deletes task at start of content", () => {
+    const content = "- [ ] First task\n- [ ] Second task"
+    const task = {
+      completed: false,
+      text: "First task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Second task")
+  })
+
+  test("deletes task at end of content", () => {
+    const content = "- [ ] First task\n- [ ] Second task"
+    const task = {
+      completed: false,
+      text: "Second task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 17,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] First task\n")
+  })
+
+  test("deletes task with nested tasks", () => {
+    const content = "- [ ] Parent task\n  - [ ] Nested task\n- [ ] Sibling task"
+    const task = {
+      completed: false,
+      text: "Parent task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Sibling task")
+  })
+
+  test("deletes task with multiple levels of nesting", () => {
+    const content = "- [ ] Parent\n  - [ ] Child\n    - [ ] Grandchild\n- [ ] Sibling"
+    const task = {
+      completed: false,
+      text: "Parent",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Sibling")
+  })
+
+  test("deletes only nested task, not parent", () => {
+    const content = "- [ ] Parent task\n  - [ ] Nested task\n- [ ] Sibling task"
+    const task = {
+      completed: false,
+      text: "Nested task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 20,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Parent task\n- [ ] Sibling task")
+  })
+
+  test("deletes correct task when duplicates exist using position", () => {
+    const content = "- [ ] Same task\n- [ ] Same task"
+    const secondTask = {
+      completed: false,
+      text: "Same task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 16,
+    }
+
+    const result = deleteTask({ content, task: secondTask })
+    expect(result).toBe("- [ ] Same task\n")
+  })
+
+  test("deletes task with no trailing newline", () => {
+    const content = "- [ ] Only task"
+    const task = {
+      completed: false,
+      text: "Only task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("")
+  })
+
+  test("deletes completed task", () => {
+    const content = "- [x] Completed task\n- [ ] Incomplete task"
+    const task = {
+      completed: true,
+      text: "Completed task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe("- [ ] Incomplete task")
+  })
+
+  test("handles task with frontmatter", () => {
+    const content = `---
+title: My Note
+---
+
+- [ ] Task after frontmatter`
+    const task = {
+      completed: false,
+      text: "Task after frontmatter",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 24,
+    }
+
+    const result = deleteTask({ content, task })
+    expect(result).toBe(`---
+title: My Note
+---
+
+`)
   })
 })

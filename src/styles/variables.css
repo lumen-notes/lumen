@@ -155,8 +155,11 @@
   --color-light: #fff;
   --color-dark: #000;
 
-  /* Text colors */
+  /* Base colors - define first */
   --color-text: var(--color-dark);
+  --color-bg: var(--color-light);
+
+  /* Text colors */
   --color-text-secondary: var(--color-text);
   --color-text-tertiary: var(--color-text);
   --color-text-highlight: var(--color-bg);
@@ -167,7 +170,6 @@
   --color-text-pinned: var(--color-text);
 
   /* Background colors */
-  --color-bg: var(--color-light);
   --color-bg-hover: transparent;
   --color-bg-active: transparent;
   --color-bg-inset: var(--color-bg);
