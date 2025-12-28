@@ -66,7 +66,7 @@ export function Calendar({
         search: {
           mode: searchParams.mode ?? "read",
           query: undefined,
-          view: searchParams.view ?? "grid",
+          view: searchParams.view === "list" ? "list" : "grid",
         },
       })
     },
@@ -98,7 +98,7 @@ export function Calendar({
                   search: {
                     mode: searchParams.mode ?? "read",
                     query: undefined,
-                    view: searchParams.view ?? "grid",
+                    view: searchParams.view === "list" ? "list" : "grid",
                   },
                 })
               }}
@@ -241,7 +241,7 @@ function CalendarItem({
         search={{
           mode: searchParams.mode ?? "read",
           query: undefined,
-          view: searchParams.view ?? "grid",
+          view: searchParams.view === "list" ? "list" : "grid",
         }}
         aria-label={ariaLabel}
         className={cx(

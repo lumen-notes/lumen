@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
 import { parseQuery } from "./search"
 import { filterTasks, sortTasks, testTaskFilter, testTaskFilters } from "./search-tasks"
-import type { Note, TaskWithParent } from "../schema"
+import type { Note, TaskWithNote } from "../schema"
 
 function makeNote(overrides: Partial<Note> = {}): Note {
   return {
@@ -23,7 +23,7 @@ function makeNote(overrides: Partial<Note> = {}): Note {
   }
 }
 
-function makeTask(overrides: Partial<TaskWithParent> = {}): TaskWithParent {
+function makeTask(overrides: Partial<TaskWithNote> = {}): TaskWithNote {
   return {
     completed: false,
     text: "do something",
@@ -32,7 +32,7 @@ function makeTask(overrides: Partial<TaskWithParent> = {}): TaskWithParent {
     date: null,
     priority: null,
     startOffset: 0,
-    parent: makeNote(),
+    note: makeNote(),
     ...overrides,
   }
 }
@@ -145,20 +145,20 @@ describe("filtering", () => {
     expect(testTaskFilter({ key: "links", values: [">=1"], exclude: false }, noLinks)).toBe(false)
   })
 
-  test("filters by parent note id", () => {
-    const task = makeTask({ parent: makeNote({ id: "daily-2024-01-15" }) })
+  test("filters by note id", () => {
+    const task = makeTask({ note: makeNote({ id: "daily-2024-01-15" }) })
 
     expect(
-      testTaskFilter({ key: "parent", values: ["daily-2024-01-15"], exclude: false }, task),
+      testTaskFilter({ key: "note", values: ["daily-2024-01-15"], exclude: false }, task),
     ).toBe(true)
-    expect(testTaskFilter({ key: "parent", values: ["other-note"], exclude: false }, task)).toBe(
+    expect(testTaskFilter({ key: "note", values: ["other-note"], exclude: false }, task)).toBe(
       false,
     )
   })
 
-  test("filters by parent note type", () => {
-    const dailyTask = makeTask({ parent: makeNote({ type: "daily" }) })
-    const noteTask = makeTask({ parent: makeNote({ type: "note" }) })
+  test("filters by note type", () => {
+    const dailyTask = makeTask({ note: makeNote({ type: "daily" }) })
+    const noteTask = makeTask({ note: makeNote({ type: "note" }) })
 
     expect(testTaskFilter({ key: "type", values: ["daily"], exclude: false }, dailyTask)).toBe(true)
     expect(testTaskFilter({ key: "type", values: ["daily"], exclude: false }, noteTask)).toBe(false)
@@ -315,14 +315,14 @@ describe("sorting", () => {
     expect(sorted.map((t) => t.text)).toEqual(["p3", "p1", "no-priority"])
   })
 
-  test("sorts by parent note id", () => {
+  test("sorts by note id", () => {
     const tasks = [
-      makeTask({ text: "c", parent: makeNote({ id: "note-3" }) }),
-      makeTask({ text: "a", parent: makeNote({ id: "note-1" }) }),
-      makeTask({ text: "b", parent: makeNote({ id: "note-2" }) }),
+      makeTask({ text: "c", note: makeNote({ id: "note-3" }) }),
+      makeTask({ text: "a", note: makeNote({ id: "note-1" }) }),
+      makeTask({ text: "b", note: makeNote({ id: "note-2" }) }),
     ]
 
-    const sorted = sortTasks(tasks, [{ key: "parent", direction: "asc" }])
+    const sorted = sortTasks(tasks, [{ key: "note", direction: "asc" }])
     expect(sorted.map((t) => t.text)).toEqual(["a", "b", "c"])
   })
 
@@ -393,9 +393,9 @@ describe("integration: parse + filter + sort", () => {
 
   test("excludes completed tasks from daily notes", () => {
     const tasks = [
-      makeTask({ text: "a", completed: false, parent: makeNote({ type: "daily" }) }),
-      makeTask({ text: "b", completed: true, parent: makeNote({ type: "daily" }) }),
-      makeTask({ text: "c", completed: false, parent: makeNote({ type: "note" }) }),
+      makeTask({ text: "a", completed: false, note: makeNote({ type: "daily" }) }),
+      makeTask({ text: "b", completed: true, note: makeNote({ type: "daily" }) }),
+      makeTask({ text: "c", completed: false, note: makeNote({ type: "note" }) }),
     ]
 
     const { filters } = parseQuery("type:daily -completed:true")

@@ -73,55 +73,30 @@ function RouteComponent() {
     <AppLayout title="Tags" icon={<TagIcon16 />}>
       <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
         <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-[auto_auto_1fr] gap-2">
-            <DropdownMenu>
-              <DropdownMenu.Trigger asChild>
-                <IconButton
-                  aria-label="View"
-                  className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                >
-                  {viewIcons[view]}
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="start" width={160}>
-                <DropdownMenu.Label>View</DropdownMenu.Label>
-                <DropdownMenu.Item
-                  icon={<GridIcon16 />}
-                  onSelect={() =>
-                    navigate({
-                      search: (prev) => ({ ...prev, view: "grid" }),
-                      replace: true,
-                    })
-                  }
-                  selected={view === "grid"}
-                >
-                  Grid
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<ListIcon16 />}
-                  onSelect={() =>
-                    navigate({
-                      search: (prev) => ({ ...prev, view: "list" }),
-                      replace: true,
-                    })
-                  }
-                  selected={view === "list"}
-                >
-                  List
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
+          <div className="flex gap-2">
+            <SearchInput
+              placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
+              value={query ?? ""}
+              onChange={(value) =>
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    query: value,
+                  }),
+                })
+              }
+            />
             <DropdownMenu>
               <DropdownMenu.Trigger asChild>
                 <IconButton
                   aria-label="Sort"
-                  className="h-10 w-10 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                  className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
                 >
                   {sort === "count" ? <SortNumberDescIcon16 /> : <SortAlphabetAscIcon16 />}
                 </IconButton>
               </DropdownMenu.Trigger>
-              <DropdownMenu.Content align="start" width={160}>
-                <DropdownMenu.Label>Sort</DropdownMenu.Label>
+              <DropdownMenu.Content align="end" width={160}>
+                <DropdownMenu.Label>Sort by</DropdownMenu.Label>
                 <DropdownMenu.Item
                   icon={<SortAlphabetAscIcon16 />}
                   onSelect={() =>
@@ -148,18 +123,43 @@ function RouteComponent() {
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
-            <SearchInput
-              placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
-              value={query ?? ""}
-              onChange={(value) =>
-                navigate({
-                  search: (prev) => ({
-                    ...prev,
-                    query: value,
-                  }),
-                })
-              }
-            />
+            <DropdownMenu>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  aria-label="View"
+                  className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                >
+                  {viewIcons[view]}
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end" width={160}>
+                <DropdownMenu.Label>View as</DropdownMenu.Label>
+                <DropdownMenu.Item
+                  icon={<GridIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, view: "grid" }),
+                      replace: true,
+                    })
+                  }
+                  selected={view === "grid"}
+                >
+                  Grid
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<ListIcon16 />}
+                  onSelect={() =>
+                    navigate({
+                      search: (prev) => ({ ...prev, view: "list" }),
+                      replace: true,
+                    })
+                  }
+                  selected={view === "list"}
+                >
+                  List
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
           </div>
           {deferredQuery ? (
             <span className="text-sm text-text-secondary leading-4">

@@ -86,8 +86,8 @@ export const fontSchema = z.enum(["sans", "serif", "handwriting"])
 
 export type Font = z.infer<typeof fontSchema>
 
-export type TaskWithParent = Task & {
-  parent: Note
+export type TaskWithNote = Task & {
+  note: Note
 }
 
 export const widthSchema = z.enum(["fixed", "full"])
