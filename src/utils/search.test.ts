@@ -3,8 +3,8 @@ vi.mock("../global-state", () => ({
   sortedNotesAtom: {},
   noteSearcherAtom: {},
 }))
-import { isInRange, parseQuery, resolveRelativeDate, sortNotes } from "./search"
-import { filterNotes, testFilters } from "./search-notes"
+import { isInRange, parseQuery, resolveRelativeDate } from "./search"
+import { filterNotes, sortNotes } from "./search-notes"
 import type { Note } from "../schema"
 
 function makeNote(overrides: Partial<Note> = {}): Note {
