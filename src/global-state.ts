@@ -760,9 +760,7 @@ export const weeklyTemplateAtom = selectAtom(templatesAtom, (templates) =>
 
 export const tasksAtom = atom((get) => {
   const notes = get(notesAtom)
-  return [...notes.values()].flatMap((note) =>
-    note.tasks.map((task) => ({ ...task, note })),
-  )
+  return [...notes.values()].flatMap((note) => note.tasks.map((task) => ({ ...task, note })))
 })
 
 export const taskSearcherAtom = atom((get) => {
