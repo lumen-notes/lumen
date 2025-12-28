@@ -72,7 +72,7 @@ function needsYamlQuoting(str: string): boolean {
   if (str !== str.trim()) return true
 
   // Characters with special meaning in YAML at the start
-  if (/^[&*!|>'"%@`#\-?:,\[\]{}]/.test(str)) return true
+  if (/^[&*!|>'"%@`#\-?:,[\]{}]/.test(str)) return true
 
   // Colon-space anywhere (key-value separator)
   if (/: /.test(str)) return true
