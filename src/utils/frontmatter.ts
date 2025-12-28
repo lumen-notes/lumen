@@ -74,8 +74,8 @@ function needsYamlQuoting(str: string): boolean {
   // Characters with special meaning in YAML at the start
   if (/^[&*!|>'"%@`#\-?:,[\]{}]/.test(str)) return true
 
-  // Colon-space anywhere (key-value separator)
-  if (/: /.test(str)) return true
+  // Colon followed by whitespace anywhere (key-value separator)
+  if (/:\s/.test(str)) return true
 
   // Hash anywhere (comment)
   if (/#/.test(str)) return true

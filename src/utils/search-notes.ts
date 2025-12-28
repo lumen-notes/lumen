@@ -163,7 +163,7 @@ function compareNotes(a: Note, b: Note, sorts: Sort[]) {
         break
       }
       case "updated_at": {
-        // Notes without updatedAt sort to end
+        // Null treated as infinitely old (follows sort direction)
         const aTime = a.updatedAt ?? -Infinity
         const bTime = b.updatedAt ?? -Infinity
         compareResult = aTime - bTime
@@ -174,18 +174,12 @@ function compareNotes(a: Note, b: Note, sorts: Sort[]) {
         const aValue = a.frontmatter[sort.key]
         const bValue = b.frontmatter[sort.key]
 
-        // Notes missing the key sort to end
+        // Notes missing the key sort to end (regardless of direction)
         const aHas = aValue !== undefined && aValue !== null
         const bHas = bValue !== undefined && bValue !== null
         if (!aHas && !bHas) continue
-        if (!aHas) {
-          compareResult = 1
-          break
-        }
-        if (!bHas) {
-          compareResult = -1
-          break
-        }
+        if (!aHas) return 1
+        if (!bHas) return -1
 
         // Compare values
         if (typeof aValue === "number" && typeof bValue === "number") {

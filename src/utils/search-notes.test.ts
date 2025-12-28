@@ -242,11 +242,22 @@ describe("integration: parse + filter + sort", () => {
       makeNote({ id: "1", updatedAt: 1000 }),
       makeNote({ id: "2", updatedAt: 3000 }),
       makeNote({ id: "3", updatedAt: 2000 }),
-      makeNote({ id: "4", updatedAt: null }), // no timestamp sorts to end
+      makeNote({ id: "4", updatedAt: null }), // null = infinitely old, sorts to end in desc
     ]
     const { sorts } = parseQuery("sort:updated_at")
     const sorted = sortNotes(notes, sorts)
     expect(sorted.map((n) => n.id)).toEqual(["2", "3", "1", "4"])
+  })
+
+  test("sort by updated_at asc puts null (oldest) first", () => {
+    const notes = [
+      makeNote({ id: "1", updatedAt: 1000 }),
+      makeNote({ id: "2", updatedAt: 3000 }),
+      makeNote({ id: "3", updatedAt: null }), // null = infinitely old, sorts to start in asc
+    ]
+    const { sorts } = parseQuery("sort:updated_at:asc")
+    const sorted = sortNotes(notes, sorts)
+    expect(sorted.map((n) => n.id)).toEqual(["3", "1", "2"])
   })
 
   test("sort by arbitrary frontmatter key (numeric)", () => {
