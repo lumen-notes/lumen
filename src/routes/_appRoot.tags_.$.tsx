@@ -9,14 +9,14 @@ import { LinkHighlightProvider } from "../components/link-highlight-provider"
 
 type RouteSearch = {
   query: string | undefined
-  view: "grid" | "list" | "tasks"
+  view: "grid" | "list"
 }
 
 export const Route = createFileRoute("/_appRoot/tags_/$")({
   validateSearch: (search: Record<string, unknown>): RouteSearch => {
     return {
       query: typeof search.query === "string" ? search.query : undefined,
-      view: search.view === "list" ? "list" : search.view === "tasks" ? "tasks" : "grid",
+      view: search.view === "list" ? "list" : "grid",
     }
   },
   component: RouteComponent,

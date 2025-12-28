@@ -42,6 +42,7 @@ import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
+import { TaskList } from "../components/task-list"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
@@ -60,6 +61,7 @@ import { useEditorSettings } from "../hooks/editor-settings"
 import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
+import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
 import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
@@ -80,7 +82,8 @@ import { notificationSound, playSound } from "../utils/sounds"
 type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
-  view: "grid" | "list" | "tasks"
+  view: "grid" | "list"
+  taskQuery?: string | undefined
   content?: string
 }
 
@@ -89,7 +92,8 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
     return {
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
-      view: search.view === "list" ? "list" : search.view === "tasks" ? "tasks" : "grid",
+      view: search.view === "list" ? "list" : "grid",
+      taskQuery: typeof search.taskQuery === "string" ? search.taskQuery : undefined,
       content: typeof search.content === "string" ? search.content : undefined,
     }
   },
@@ -150,7 +154,7 @@ const fontDisplayNames: Record<Font, string> = {
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, content: defaultContent } = Route.useSearch()
+  const { mode, query, view, taskQuery, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -166,11 +170,15 @@ function NotePage() {
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
   const searchNotes = useSearchNotes()
+  const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
     const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
     return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
   }, [noteId, searchNotes])
+  const backlinkTasks = React.useMemo(() => {
+    return searchTasks(`link:"${noteId}"`)
+  }, [noteId, searchTasks])
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const { editorValue, setEditorValue, isDraft, discardChanges } = useEditorValue({
@@ -876,6 +884,23 @@ function NotePage() {
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteId ?? ""} />
+              </Details>
+            ) : null}
+            {backlinkTasks.length > 0 ? (
+              <Details className="print:hidden">
+                <Details.Summary>Tasks</Details.Summary>
+                <LinkHighlightProvider href={`/notes/${noteId}`}>
+                  <TaskList
+                    baseQuery={`link:"${noteId}"`}
+                    query={taskQuery ?? ""}
+                    onQueryChange={(taskQuery) =>
+                      navigate({
+                        search: (prev) => ({ ...prev, taskQuery }),
+                        replace: true,
+                      })
+                    }
+                  />
+                </LinkHighlightProvider>
               </Details>
             ) : null}
             {backlinks.size > 0 ? (
