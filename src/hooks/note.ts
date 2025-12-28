@@ -3,7 +3,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { githubRepoAtom, githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
 import { Note, NoteId } from "../schema"
-import { parseFrontmatter } from "../utils/frontmatter"
+import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
 
@@ -23,17 +23,23 @@ export function useSaveNote() {
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
+      // Add updated_at timestamp to frontmatter
+      const contentWithTimestamp = updateFrontmatterValue({
+        content,
+        properties: { updated_at: new Date() },
+      })
+
       send({
         type: "WRITE_FILES",
-        markdownFiles: { [`${id}.md`]: content },
+        markdownFiles: { [`${id}.md`]: contentWithTimestamp },
       })
 
       // If the note has a gist ID, update the gist
-      const { frontmatter } = parseFrontmatter(content)
+      const { frontmatter } = parseFrontmatter(contentWithTimestamp)
       if (typeof frontmatter.gist_id === "string" && githubUser && githubRepo) {
         await updateGist({
           gistId: frontmatter.gist_id,
-          note: parseNote(id ?? "", content),
+          note: parseNote(id ?? "", contentWithTimestamp),
           githubUser,
           githubRepo,
         })

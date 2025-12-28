@@ -17,6 +17,7 @@ function makeNote(overrides: Partial<Note> = {}): Note {
     url: null,
     alias: null,
     pinned: false,
+    updatedAt: null,
     links: [],
     dates: [],
     tags: [],
@@ -267,10 +268,45 @@ describe("integration: parse + filter + sort", () => {
     expect(sorted.map((n) => n.id)).toEqual(["3", "2", "1"]) // desc by links count
   })
 
+  test("sort by updated_at defaults to desc (most recent first)", () => {
+    const notes = [
+      makeNote({ id: "1", updatedAt: 1000 }),
+      makeNote({ id: "2", updatedAt: 3000 }),
+      makeNote({ id: "3", updatedAt: 2000 }),
+      makeNote({ id: "4", updatedAt: null }), // no timestamp sorts to end
+    ]
+    const { sorts } = parseQuery("sort:updated_at")
+    const sorted = sortNotes(notes, sorts)
+    expect(sorted.map((n) => n.id)).toEqual(["2", "3", "1", "4"])
+  })
+
   test("exclusion filter excludes notes with matching tags", () => {
     const notes = [makeNote({ id: "1", tags: ["foo"] }), makeNote({ id: "2", tags: [] })]
     const { filters } = parseQuery("-tag:foo")
     const filtered = filterNotes(notes, filters)
     expect(filtered.map((n) => n.id)).toEqual(["2"])
+  })
+
+  test("sort by arbitrary frontmatter key (numeric)", () => {
+    const notes = [
+      makeNote({ id: "1", frontmatter: { priority: 3 } }),
+      makeNote({ id: "2", frontmatter: { priority: 1 } }),
+      makeNote({ id: "3", frontmatter: {} }), // missing key sorts to end
+      makeNote({ id: "4", frontmatter: { priority: 2 } }),
+    ]
+    const { sorts } = parseQuery("sort:priority")
+    const sorted = sortNotes(notes, sorts)
+    expect(sorted.map((n) => n.id)).toEqual(["2", "4", "1", "3"])
+  })
+
+  test("sort by arbitrary frontmatter key (string)", () => {
+    const notes = [
+      makeNote({ id: "1", frontmatter: { status: "draft" } }),
+      makeNote({ id: "2", frontmatter: { status: "published" } }),
+      makeNote({ id: "3", frontmatter: { status: "archived" } }),
+    ]
+    const { sorts } = parseQuery("sort:status")
+    const sorted = sortNotes(notes, sorts)
+    expect(sorted.map((n) => n.id)).toEqual(["3", "1", "2"]) // archived, draft, published
   })
 })

@@ -37,6 +37,8 @@ export type Note = {
   alias: string | null
   /** If the note is pinned */
   pinned: boolean
+  /** When the note was last updated (from `updated_at` frontmatter), null if not set */
+  updatedAt: number | null
   /** The ids of all notes that are linked to from this note */
   links: NoteId[]
   dates: string[]

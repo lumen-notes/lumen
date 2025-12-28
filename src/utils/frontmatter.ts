@@ -1,7 +1,7 @@
 import yaml from "yamljs"
 
 /** Reserved frontmatter keys that are not displayed to users */
-export const RESERVED_FRONTMATTER_KEYS = ["pinned", "gist_id", "font", "width"]
+export const RESERVED_FRONTMATTER_KEYS = ["pinned", "gist_id", "font", "width", "updated_at"]
 
 /** Checks if a frontmatter entry is visible to users */
 function isVisibleFrontmatterEntry([key, value]: [string, unknown]): boolean {
@@ -57,6 +57,65 @@ export function parseFrontmatter(markdown: string): {
 function serializeYamlKey(key: string): string {
   const isSafe = /^[A-Za-z_][A-Za-z0-9_-]*$/.test(key)
   return isSafe ? key : JSON.stringify(key)
+}
+
+/**
+ * Determines if a string value needs quotes in YAML.
+ * Strings need quotes when YAML would misinterpret them as other types
+ * (booleans, numbers, null, dates) or when they contain special syntax.
+ */
+function needsYamlQuoting(str: string): boolean {
+  // Empty string needs quotes
+  if (str === "") return true
+
+  // Leading/trailing whitespace needs quotes to be preserved
+  if (str !== str.trim()) return true
+
+  // Characters with special meaning in YAML at the start
+  if (/^[&*!|>'"%@`#\-?:,\[\]{}]/.test(str)) return true
+
+  // Colon-space anywhere (key-value separator)
+  if (/: /.test(str)) return true
+
+  // Hash anywhere (comment)
+  if (/#/.test(str)) return true
+
+  // Newlines
+  if (/\n/.test(str)) return true
+
+  // YAML boolean/null values
+  const lower = str.toLowerCase()
+  if (["true", "false", "yes", "no", "on", "off", "null", "~"].includes(lower)) return true
+
+  // Numeric values (integers, floats, scientific notation)
+  if (/^-?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i.test(str)) return true
+
+  // Infinity and NaN
+  if (/^[+-]?(\.inf|\.nan)$/i.test(str)) return true
+
+  // Date-like patterns (YAML 1.1 timestamp) - quote to preserve as string
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) return true
+
+  return false
+}
+
+/**
+ * Formats a value for YAML frontmatter output.
+ * Date objects are converted to unquoted ISO strings (parsed back as Date by yamljs).
+ * Strings are only quoted when necessary for YAML syntax.
+ */
+function formatYamlValue(value: unknown): string {
+  if (value instanceof Date) {
+    // Convert to ISO string, unquoted - yamljs will parse back as Date
+    return value.toISOString()
+  }
+
+  if (typeof value === "string") {
+    return needsYamlQuoting(value) ? JSON.stringify(value) : value
+  }
+
+  // Numbers, booleans, etc.
+  return String(value)
 }
 
 /** Extracts the key from a YAML key/value line. Returns null if not a key/value line */
@@ -117,8 +176,7 @@ export function updateFrontmatterValue({
 
           const propertyIndex = findKeyLineIndex(frontmatterLines, key)
 
-          // Quote all string values with double quotes (YAML-compatible via JSON escaping)
-          const formattedValue = typeof value === "string" ? JSON.stringify(value) : String(value)
+          const formattedValue = formatYamlValue(value)
 
           if (propertyIndex !== -1) {
             // If property already exists, update it
@@ -148,8 +206,7 @@ export function updateFrontmatterValue({
     const frontmatterLines = Object.entries(properties)
       .filter(([_, value]) => value !== null)
       .map(([key, value]) => {
-        const formattedValue = typeof value === "string" ? JSON.stringify(value) : String(value)
-        return `${serializeYamlKey(key)}: ${formattedValue}`
+        return `${serializeYamlKey(key)}: ${formatYamlValue(value)}`
       })
       .join("\n")
 

@@ -625,32 +625,40 @@ export const notesAtom = atom((get) => {
   return notes
 })
 
-export const pinnedNotesAtom = atom((get) => {
-  const notes = get(notesAtom)
-  return [...notes.values()].filter((note) => note.pinned).reverse()
-})
-
 export const sortedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
 
-  // Sort notes by when they were created in descending order
+  // Sort notes by updatedAt in descending order (most recent first)
   return [...notes.values()].sort((a, b) => {
-    // Favor pinned notes
-    if (a.frontmatter.pinned === true && b.frontmatter.pinned !== true) {
-      return -1
-    } else if (a.frontmatter.pinned !== true && b.frontmatter.pinned === true) {
-      return 1
+    // Pinned notes first
+    if (a.pinned && !b.pinned) return -1
+    if (!a.pinned && b.pinned) return 1
+
+    // Then by updatedAt descending (most recent first)
+    // Notes without updatedAt (null) sort to bottom
+    if (a.updatedAt !== null && b.updatedAt !== null) {
+      if (a.updatedAt !== b.updatedAt) {
+        return b.updatedAt - a.updatedAt
+      }
+    } else if (a.updatedAt !== null) {
+      return -1 // a has timestamp, b doesn't -> a first
+    } else if (b.updatedAt !== null) {
+      return 1 // b has timestamp, a doesn't -> b first
     }
 
-    // Favor numeric IDs
-    if (a.id.match(/^\d+$/) && !b.id.match(/^\d+$/)) {
-      return -1
-    } else if (!a.id.match(/^\d+$/) && b.id.match(/^\d+$/)) {
-      return 1
-    }
+    // Fallback: favor numeric IDs (like timestamps) over non-numeric
+    const aNumeric = /^\d+$/.test(a.id)
+    const bNumeric = /^\d+$/.test(b.id)
+    if (aNumeric && !bNumeric) return -1
+    if (!aNumeric && bNumeric) return 1
 
     return b.id.localeCompare(a.id)
   })
+})
+
+export const pinnedNotesAtom = atom((get) => {
+  const sortedNotes = get(sortedNotesAtom)
+  return sortedNotes.filter((note) => note.pinned)
 })
 
 export const noteSearcherAtom = atom((get) => {
