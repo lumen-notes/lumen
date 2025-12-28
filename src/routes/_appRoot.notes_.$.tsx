@@ -83,7 +83,7 @@ type RouteSearch = {
   mode: "read" | "write"
   query: string | undefined
   view: "grid" | "list"
-  taskQuery?: string | undefined
+  tasks?: string | undefined
   content?: string
 }
 
@@ -93,7 +93,7 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
       mode: search.mode === "write" ? "write" : "read",
       query: typeof search.query === "string" ? search.query : undefined,
       view: search.view === "list" ? "list" : "grid",
-      taskQuery: typeof search.taskQuery === "string" ? search.taskQuery : undefined,
+      tasks: typeof search.tasks === "string" ? search.tasks : undefined,
       content: typeof search.content === "string" ? search.content : undefined,
     }
   },
@@ -154,7 +154,7 @@ const fontDisplayNames: Record<Font, string> = {
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, taskQuery, content: defaultContent } = Route.useSearch()
+  const { mode, query, view, tasks, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -177,8 +177,9 @@ function NotePage() {
     return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
   }, [noteId, searchNotes])
   const backlinkTasks = React.useMemo(() => {
-    return searchTasks(`link:"${noteId}"`)
+    return searchTasks(`link:"${noteId}" -note:"${noteId}"`)
   }, [noteId, searchTasks])
+
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
   const { editorValue, setEditorValue, isDraft, discardChanges } = useEditorValue({
@@ -891,11 +892,11 @@ function NotePage() {
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
                   <TaskList
-                    baseQuery={`link:"${noteId}"`}
-                    query={taskQuery ?? ""}
-                    onQueryChange={(taskQuery) =>
+                    baseQuery={`link:"${noteId}" -note:"${noteId}"`}
+                    query={tasks ?? ""}
+                    onQueryChange={(tasks) =>
                       navigate({
-                        search: (prev) => ({ ...prev, taskQuery }),
+                        search: (prev) => ({ ...prev, tasks }),
                         replace: true,
                       })
                     }
