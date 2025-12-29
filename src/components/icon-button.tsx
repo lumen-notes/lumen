@@ -32,7 +32,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
     ref,
   ) => {
     const Component = asChild ? Slot : "button"
-    const button = (
+    const trigger = (
       <Component
         ref={ref}
         type="button"
@@ -54,7 +54,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
 
     return (
       <Tooltip open={disableTooltip ? false : undefined}>
-        <Tooltip.Trigger render={button} />
+        <Tooltip.Trigger render={trigger} />
         <Tooltip.Content side={tooltipSide} align={tooltipAlign} sideOffset={tooltipSideOffset}>
           <div className="flex items-center gap-1.5">
             <span>{props["aria-label"]}</span>
