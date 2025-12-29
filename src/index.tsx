@@ -10,7 +10,7 @@ import "@fontsource/monaspace-xenon/400-italic.css"
 import "@fontsource/monaspace-xenon/400.css"
 import "@fontsource/monaspace-xenon/600-italic.css"
 import "@fontsource/monaspace-xenon/600.css"
-import * as Tooltip from "@radix-ui/react-tooltip"
+import { Tooltip } from "@base-ui/react/tooltip"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import "@total-typescript/ts-reset"
 import { StrictMode } from "react"
@@ -34,7 +34,7 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <Tooltip.Provider delayDuration={200}>
+      <Tooltip.Provider delay={200}>
         <RouterProvider router={router} />
       </Tooltip.Provider>
     </StrictMode>,
