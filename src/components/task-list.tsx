@@ -7,7 +7,7 @@ import { parseQuery } from "../utils/search"
 import { formatNumber, pluralize } from "../utils/pluralize"
 import { Button } from "./button"
 import { DropdownMenu } from "./dropdown-menu"
-import { TagIcon16, XIcon12 } from "./icons"
+import { TagFillIcon12, TagIcon12, TagIcon16, XIcon12 } from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { PillButton } from "./pill-button"
 import { SearchInput } from "./search-input"
@@ -170,6 +170,7 @@ export function TaskList({
                           onQueryChange(newQuery.trim())
                         }}
                       >
+                        <TagFillIcon12 />
                         {filter.exclude ? <span className="italic">not</span> : null}
                         {filter.values.map((value, index) => (
                           <React.Fragment key={value}>
@@ -194,6 +195,7 @@ export function TaskList({
                           })
                         }}
                       >
+                        <TagIcon12 className="text-text-secondary" />
                         {tag}
                         <span className="text-text-secondary">{formatNumber(frequency)}</span>
                       </PillButton>

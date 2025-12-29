@@ -9,7 +9,16 @@ import { Button } from "./button"
 import { Dice } from "./dice"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { GlobeIcon16, GridIcon16, ListIcon16, PinFillIcon12, TagIcon16, XIcon12 } from "./icons"
+import {
+  GlobeIcon16,
+  GridIcon16,
+  ListIcon16,
+  PinFillIcon12,
+  TagFillIcon12,
+  TagIcon12,
+  TagIcon16,
+  XIcon12,
+} from "./icons"
 import { LinkHighlightProvider } from "./link-highlight-provider"
 import { NoteFavicon } from "./note-favicon"
 import { NotePreviewCard } from "./note-preview-card"
@@ -201,6 +210,7 @@ export function NoteList({
                           // TODO: Move focus
                         }}
                       >
+                        <TagFillIcon12 />
                         {filter.exclude ? <span className="italic">not</span> : null}
                         {filter.values.map((value, index) => (
                           <React.Fragment key={value}>
@@ -226,6 +236,7 @@ export function NoteList({
                           })
                         }}
                       >
+                        <TagIcon12 className="text-text-secondary" />
                         {tag}
                         <span className="text-text-secondary">{formatNumber(frequency)}</span>
                       </PillButton>
@@ -234,7 +245,7 @@ export function NoteList({
                       <DropdownMenu>
                         <DropdownMenu.Trigger asChild>
                           <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
-                            Show more
+                            More…
                           </PillButton>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content width={300}>
