@@ -114,15 +114,21 @@ export function NoteList({
     return filters.filter((filter) => filter.key === "tag")
   }, [filters])
 
-  const highlightTags = React.useMemo(() => {
-    return tagFilters.filter((f) => !f.exclude).flatMap((f) => f.values)
-  }, [tagFilters])
-
   const highlightPaths = React.useMemo(() => {
     return filters
       .filter((filter) => !filter.exclude)
       .flatMap((filter) => {
         switch (filter.key) {
+          case "tag":
+            // Tag links now use search query params instead of /tags/ routes
+            // Include paths for each segment of the tag (e.g., tag:foo/bar highlights both foo and foo/bar)
+            return filter.values.flatMap((value) => {
+              const segments = value.split("/")
+              return segments.map((_, i) => {
+                const tagPath = segments.slice(0, i + 1).join("/")
+                return `/?query=tag%3A${encodeURIComponent(tagPath)}&view=grid`
+              })
+            })
           case "link":
             return filter.values.map((value) => `/${value}`)
           case "date":
@@ -134,7 +140,7 @@ export function NoteList({
   }, [filters])
 
   return (
-    <LinkHighlightProvider href={highlightPaths} tags={highlightTags}>
+    <LinkHighlightProvider href={highlightPaths}>
       <div>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2">
