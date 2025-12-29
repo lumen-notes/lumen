@@ -10,7 +10,6 @@ import {
   ListIcon16,
   SortAlphabetAscIcon16,
   SortNumberDescIcon16,
-  TagIcon12,
   TagIcon16,
 } from "../components/icons"
 import { PillButton } from "../components/pill-button"
@@ -174,7 +173,6 @@ function RouteComponent() {
               <li key={tag}>
                 <PillButton asChild>
                   <Link to="/" search={{ query: `tag:${tag}`, view: "grid" }}>
-                    <TagIcon12 className="text-text-secondary" />
                     {tag}
                     <span className="text-text-secondary">{noteIds.length}</span>
                   </Link>
@@ -273,7 +271,6 @@ function TagTreeItem({ node, path = [], depth = 0 }: TagTreeItemProps) {
       <div className="flex items-center gap-0.5" style={{ paddingLeft: `calc(${depth} * 1.5rem)` }}>
         <PillButton asChild>
           <Link to="/" search={{ query: `tag:${[...path, node.name].join("/")}`, view: "grid" }}>
-            <TagIcon12 className="text-text-secondary" />
             {node.name}
             <span className="text-text-secondary">{node.count}</span>
           </Link>

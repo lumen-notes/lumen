@@ -245,7 +245,7 @@ export function NoteList({
                       <DropdownMenu>
                         <DropdownMenu.Trigger asChild>
                           <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
-                            Show more
+                            More…
                           </PillButton>
                         </DropdownMenu.Trigger>
                         <DropdownMenu.Content width={300}>
