@@ -389,7 +389,7 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   if (!parsedChildren.success) {
     return (
       <Tooltip>
-        <Tooltip.Trigger asChild>{link}</Tooltip.Trigger>
+        <Tooltip.Trigger render={link} />
         <Tooltip.Content side="bottom" className="flex items-center gap-2">
           {props.href ? <WebsiteFavicon url={props.href} className="align-sub" /> : null}
           <span className="inline-block max-w-[40vw] truncate leading-4">

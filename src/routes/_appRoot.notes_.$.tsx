@@ -543,21 +543,25 @@ function NotePage() {
 
           <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
             <Tooltip open={mode === "read" ? false : undefined}>
-              <Tooltip.Trigger asChild>
-                <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
-                  Read
-                </SegmentedControl.Segment>
-              </Tooltip.Trigger>
+              <Tooltip.Trigger
+                render={
+                  <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
+                    Read
+                  </SegmentedControl.Segment>
+                }
+              />
               <Tooltip.Content side="bottom" className="text-text-secondary">
                 {toggleModeShortcut}
               </Tooltip.Content>
             </Tooltip>
             <Tooltip open={mode === "write" ? false : undefined}>
-              <Tooltip.Trigger asChild>
-                <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
-                  Write
-                </SegmentedControl.Segment>
-              </Tooltip.Trigger>
+              <Tooltip.Trigger
+                render={
+                  <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
+                    Write
+                  </SegmentedControl.Segment>
+                }
+              />
               <Tooltip.Content side="bottom" className="text-text-secondary">
                 {toggleModeShortcut}
               </Tooltip.Content>

@@ -1,4 +1,4 @@
-import * as Tooltip from "@radix-ui/react-tooltip"
+import { Tooltip } from "@base-ui/react/tooltip"
 import React from "react"
 import "../src/styles/index.css"
 
