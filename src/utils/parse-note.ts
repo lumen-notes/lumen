@@ -235,6 +235,17 @@ function _parseNote(id: NoteId, content: string): Note {
       break
   }
 
+  // Parse updated_at from frontmatter
+  let updatedAt: number | null = null
+  if (frontmatter.updated_at instanceof Date) {
+    updatedAt = frontmatter.updated_at.getTime()
+  } else if (typeof frontmatter.updated_at === "string") {
+    const parsed = Date.parse(frontmatter.updated_at)
+    if (!Number.isNaN(parsed)) {
+      updatedAt = parsed
+    }
+  }
+
   return {
     id,
     content,
@@ -245,6 +256,7 @@ function _parseNote(id: NoteId, content: string): Note {
     url,
     alias: typeof frontmatter.alias === "string" ? frontmatter.alias : null,
     pinned: frontmatter.pinned === true,
+    updatedAt,
     dates: Array.from(dates),
     links: Array.from(links),
     tags: Array.from(tags),

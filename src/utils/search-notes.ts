@@ -162,8 +162,32 @@ function compareNotes(a: Note, b: Note, sorts: Sort[]) {
         compareResult = aBacklinkCount - bBacklinkCount
         break
       }
+      case "updated_at": {
+        // Null treated as infinitely old (follows sort direction)
+        const aTime = a.updatedAt ?? -Infinity
+        const bTime = b.updatedAt ?? -Infinity
+        compareResult = aTime - bTime
+        break
+      }
       default: {
-        continue
+        // Sort by arbitrary frontmatter key
+        const aValue = a.frontmatter[sort.key]
+        const bValue = b.frontmatter[sort.key]
+
+        // Notes missing the key sort to end (regardless of direction)
+        const aHas = aValue !== undefined && aValue !== null
+        const bHas = bValue !== undefined && bValue !== null
+        if (!aHas && !bHas) continue
+        if (!aHas) return 1
+        if (!bHas) return -1
+
+        // Compare values
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          compareResult = aValue - bValue
+        } else {
+          compareResult = collator.compare(String(aValue), String(bValue))
+        }
+        break
       }
     }
 

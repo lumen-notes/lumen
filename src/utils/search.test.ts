@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { parseQuery, resolveRelativeDate, isInRange } from "./search"
+import { isInRange, parseQuery, resolveRelativeDate } from "./search"
 
 describe("parseQuery", () => {
   test("parses quoted values, comma lists, exclusions, and multiple sorts", () => {

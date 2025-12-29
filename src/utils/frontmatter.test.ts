@@ -6,7 +6,7 @@ describe("updateFrontmatterValue", () => {
     tests: {
       description: string
       content: string
-      properties: Record<string, string | boolean | number | null>
+      properties: Record<string, string | boolean | number | Date | null>
       output: string
     }[],
   ) {
@@ -24,7 +24,7 @@ describe("updateFrontmatterValue", () => {
       content: "Hello",
       properties: { title: "Test" },
       output: `---
-title: "Test"
+title: Test
 ---
 
 Hello`,
@@ -48,7 +48,7 @@ title: Old
 Hello`,
       properties: { title: "New" },
       output: `---
-title: "New"
+title: New
 ---
 
 Hello`,
@@ -63,7 +63,7 @@ Hello`,
       properties: { tags: "test" },
       output: `---
 title: Test
-tags: "test"
+tags: test
 ---
 
 Hello`,
@@ -93,8 +93,8 @@ tags: old
 Hello`,
       properties: { title: "New", tags: "new" },
       output: `---
-title: "New"
-tags: "new"
+title: New
+tags: new
 ---
 
 Hello`,
@@ -120,6 +120,46 @@ priority: 1
 Hello`,
     },
     {
+      description: "handle Date values",
+      content: "Hello",
+      properties: { updated_at: new Date("2024-01-15T10:30:00.000Z") },
+      output: `---
+updated_at: 2024-01-15T10:30:00.000Z
+---
+
+Hello`,
+    },
+    {
+      description: "quote strings that look like dates",
+      content: "Hello",
+      properties: { date_string: "2024-01-15" },
+      output: `---
+date_string: "2024-01-15"
+---
+
+Hello`,
+    },
+    {
+      description: "quote strings that look like booleans",
+      content: "Hello",
+      properties: { status: "true" },
+      output: `---
+status: "true"
+---
+
+Hello`,
+    },
+    {
+      description: "quote strings with special characters",
+      content: "Hello",
+      properties: { note: "item: value" },
+      output: `---
+note: "item: value"
+---
+
+Hello`,
+    },
+    {
       description: "remove all properties",
       content: `---
 title: Test
@@ -135,7 +175,7 @@ Hello`,
       content: "",
       properties: { title: "Test" },
       output: `---
-title: "Test"
+title: Test
 ---
 
 `,
@@ -169,7 +209,7 @@ Hello`,
       content: "Hello",
       properties: { "title:subtitle": "Part I" },
       output: `---
-"title:subtitle": "Part I"
+"title:subtitle": Part I
 ---
 
 Hello`,
@@ -183,7 +223,7 @@ Hello`,
 Hello`,
       properties: { "title:subtitle": "Part II" },
       output: `---
-"title:subtitle": "Part II"
+"title:subtitle": Part II
 ---
 
 Hello`,

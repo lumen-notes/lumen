@@ -74,7 +74,7 @@ export function parseQuery(query: string): Query {
 function getSortDirection(key: string, direction?: string): SortDirection {
   if (direction === "asc") return "asc"
   if (direction === "desc") return "desc"
-  if (["tags", "links", "backlinks"].includes(key)) return "desc"
+  if (["tags", "links", "backlinks", "updated_at"].includes(key)) return "desc"
   return "asc"
 }
 
