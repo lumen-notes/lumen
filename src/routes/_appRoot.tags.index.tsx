@@ -10,6 +10,7 @@ import {
   ListIcon16,
   SortAlphabetAscIcon16,
   SortNumberDescIcon16,
+  TagIcon12,
   TagIcon16,
 } from "../components/icons"
 import { PillButton } from "../components/pill-button"
