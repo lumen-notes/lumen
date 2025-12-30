@@ -38,15 +38,17 @@ function RouteComponent() {
       icon={<TagIcon16 />}
       actions={
         <DropdownMenu modal={false}>
-          <DropdownMenu.Trigger asChild>
-            <IconButton aria-label="More actions" size="small" disableTooltip>
-              <MoreIcon16 />
-            </IconButton>
-          </DropdownMenu.Trigger>
+          <DropdownMenu.Trigger
+            render={
+              <IconButton aria-label="More actions" size="small" disableTooltip>
+                <MoreIcon16 />
+              </IconButton>
+            }
+          />
           <DropdownMenu.Content align="end" side="top">
             <DropdownMenu.Item
               icon={<EditIcon16 />}
-              onSelect={() => {
+              onClick={() => {
                 if (!tag) return
 
                 const newName = window.prompt("Rename tag", tag)
@@ -68,7 +70,7 @@ function RouteComponent() {
             <DropdownMenu.Item
               icon={<TrashIcon16 />}
               variant="danger"
-              onSelect={() => {
+              onClick={() => {
                 if (!tag) return
 
                 // Confirm deletion

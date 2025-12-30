@@ -157,30 +157,34 @@ export function NoteList({
               }}
             />
             <DropdownMenu>
-              <DropdownMenu.Trigger asChild>
-                <IconButton
-                  aria-label="View"
-                  className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[state=open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                >
-                  {viewIcons[view]}
-                </IconButton>
-              </DropdownMenu.Trigger>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton
+                    aria-label="View"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                  >
+                    {viewIcons[view]}
+                  </IconButton>
+                }
+              />
               <DropdownMenu.Content align="end" width={160}>
-                <DropdownMenu.Label>View as</DropdownMenu.Label>
-                <DropdownMenu.Item
-                  icon={<GridIcon16 />}
-                  onSelect={() => onViewChange("grid")}
-                  selected={view === "grid"}
-                >
-                  Grid
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<ListIcon16 />}
-                  onSelect={() => onViewChange("list")}
-                  selected={view === "list"}
-                >
-                  List
-                </DropdownMenu.Item>
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>View as</DropdownMenu.GroupLabel>
+                  <DropdownMenu.Item
+                    icon={<GridIcon16 />}
+                    onClick={() => onViewChange("grid")}
+                    selected={view === "grid"}
+                  >
+                    Grid
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<ListIcon16 />}
+                    onClick={() => onViewChange("list")}
+                    selected={view === "list"}
+                  >
+                    List
+                  </DropdownMenu.Item>
+                </DropdownMenu.Group>
               </DropdownMenu.Content>
             </DropdownMenu>
           </div>
@@ -243,11 +247,13 @@ export function NoteList({
                     ))}
                     {sortedTagFrequencies.length > numVisibleTags ? (
                       <DropdownMenu>
-                        <DropdownMenu.Trigger asChild>
-                          <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
-                            More…
-                          </PillButton>
-                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Trigger
+                          render={
+                            <PillButton variant="dashed" className="data-[popup-open]:bg-bg-hover">
+                              More…
+                            </PillButton>
+                          }
+                        />
                         <DropdownMenu.Content width={300}>
                           {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
                             <DropdownMenu.Item
