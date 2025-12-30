@@ -59,6 +59,7 @@ export type GitHubRepository = {
 
 export const githubUserSchema = z.object({
   token: z.string(),
+  id: z.number().optional(),
   login: z.string(),
   name: z.string(),
   email: z.string(),

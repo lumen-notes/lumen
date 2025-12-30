@@ -29,10 +29,13 @@ export default async (request: Request) => {
       throw new Error(error)
     }
 
-    const { login, name, email } = await getUser(token)
+    const { id, login, name, email } = await getUser(token)
 
     const redirectUrl = new URL(state || "https://uselumen.com")
     redirectUrl.searchParams.set("user_token", token)
+    if (typeof id === "number" && Number.isFinite(id)) {
+      redirectUrl.searchParams.set("user_id", String(id))
+    }
     redirectUrl.searchParams.set("user_login", login)
     redirectUrl.searchParams.set("user_name", name)
     redirectUrl.searchParams.set("user_email", email)
@@ -50,7 +53,7 @@ async function getUser(token: string) {
     },
   })
 
-  const { error, login, name } = await userResponse.json()
+  const { error, id, login, name } = await userResponse.json()
 
   if (error) {
     throw new Error(error)
@@ -83,7 +86,7 @@ async function getUser(token: string) {
     )
   }
 
-  return { login, name, email: primaryEmail.email }
+  return { id, login, name, email: primaryEmail.email }
 }
 
 export const config: Config = {
