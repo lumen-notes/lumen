@@ -256,7 +256,10 @@ export function TaskItem({
                 ) : null
               })()}
               {task.date !== null ? (
-                <DropdownMenu.Item icon={<CircleSlashIcon16 />} onClick={() => onReschedule?.(null)}>
+                <DropdownMenu.Item
+                  icon={<CircleSlashIcon16 />}
+                  onClick={() => onReschedule?.(null)}
+                >
                   No date
                 </DropdownMenu.Item>
               ) : null}

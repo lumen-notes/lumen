@@ -116,6 +116,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
           "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent",
           className,
         )}
+        // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is provided via children
         render={href ? <a href={href} target={target} rel={rel} /> : undefined}
         {...props}
       >
