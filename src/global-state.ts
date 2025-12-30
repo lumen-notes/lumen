@@ -295,22 +295,26 @@ function createGlobalStateMachine() {
       services: {
         resolveUser: async () => {
           // First, check URL params for user metadata
-          const token = new URLSearchParams(window.location.search).get("user_token")
-          const login = new URLSearchParams(window.location.search).get("user_login")
-          const name = new URLSearchParams(window.location.search).get("user_name")
-          const email = new URLSearchParams(window.location.search).get("user_email")
+          const searchParams = new URLSearchParams(window.location.search)
+          const token = searchParams.get("user_token")
+          const id = searchParams.get("user_id")
+          const login = searchParams.get("user_login")
+          const name = searchParams.get("user_name")
+          const email = searchParams.get("user_email")
 
           if (token && login && name && email) {
+            const idNumberRaw = id ? Number(id) : undefined
+            const idNumber = Number.isFinite(idNumberRaw) ? idNumberRaw : undefined
+
             // Save user metadata to localStorage
             localStorage.setItem(
               GITHUB_USER_STORAGE_KEY,
-              JSON.stringify({ token, login, name, email }),
+              JSON.stringify({ token, id: idNumber, login, name, email }),
             )
-
-            const searchParams = new URLSearchParams(window.location.search)
 
             // Remove user metadata from URL
             searchParams.delete("user_token")
+            searchParams.delete("user_id")
             searchParams.delete("user_login")
             searchParams.delete("user_name")
             searchParams.delete("user_email")
@@ -321,7 +325,7 @@ function createGlobalStateMachine() {
               }`,
             )
 
-            return { githubUser: { token, login, name, email } }
+            return { githubUser: { token, id: idNumber, login, name, email } }
           }
 
           // Next, check localStorage for user metadata
