@@ -1,63 +1,80 @@
-import * as RadixDropdownMenu from "@radix-ui/react-dropdown-menu"
-import * as Portal from "@radix-ui/react-portal"
+import { Menu } from "@base-ui/react/menu"
 import React from "react"
 import { cx } from "../utils/cx"
 import { CheckIcon16 } from "./icons"
 import { Keys } from "./keys"
 
-const Root = RadixDropdownMenu.Root
-
-const Trigger = RadixDropdownMenu.Trigger
-
-type DropdownMenuContentProps = RadixDropdownMenu.DropdownMenuContentProps & {
+type ContentProps = {
+  side?: "top" | "bottom" | "left" | "right"
+  sideOffset?: number
+  align?: "start" | "center" | "end"
+  alignOffset?: number
   width?: number | string
+  children?: React.ReactNode
+  className?: string
 }
 
-const Content = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
-  ({ children, width = 256, className, ...props }, ref) => (
-    <Portal.Root>
-      <RadixDropdownMenu.Content
-        ref={ref}
-        align="start"
-        sideOffset={4}
-        {...props}
-        className={cx(
-          "card-2 place-items-stretch z-20 grid overflow-hidden rounded-lg animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 print:hidden",
-          // Set transform-origin for every combination of side and align
-          "data-[side=bottom]:data-[align=center]:origin-top",
-          "data-[side=bottom]:data-[align=end]:origin-top-right",
-          "data-[side=bottom]:data-[align=start]:origin-top-left",
-          "data-[side=left]:data-[align=center]:origin-right",
-          "data-[side=left]:data-[align=end]:origin-bottom-right",
-          "data-[side=left]:data-[align=start]:origin-top-right",
-          "data-[side=right]:data-[align=center]:origin-left",
-          "data-[side=right]:data-[align=end]:origin-bottom-left",
-          "data-[side=right]:data-[align=start]:origin-top-left",
-          "data-[side=top]:data-[align=center]:origin-bottom",
-          "data-[side=top]:data-[align=end]:origin-bottom-right",
-          "data-[side=top]:data-[align=start]:origin-bottom-left",
-          className,
-        )}
-        style={{ width: width }}
-      >
-        <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
-      </RadixDropdownMenu.Content>
-    </Portal.Root>
-  ),
-)
+function Content({
+  side = "bottom",
+  sideOffset = 4,
+  align = "start",
+  alignOffset,
+  width = 256,
+  children,
+  className,
+}: ContentProps) {
+  return (
+    <Menu.Portal>
+      <Menu.Positioner side={side} sideOffset={sideOffset} align={align} alignOffset={alignOffset}>
+        <Menu.Popup
+          className={cx(
+            "card-2 z-20 grid place-items-stretch overflow-hidden rounded-lg print:hidden outline-none",
+            "origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+            className,
+          )}
+          style={{ width }}
+        >
+          <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
+        </Menu.Popup>
+      </Menu.Positioner>
+    </Menu.Portal>
+  )
+}
 
-type ItemProps = RadixDropdownMenu.DropdownMenuItemProps &
-  React.ComponentPropsWithoutRef<"a"> & {
-    icon?: React.ReactNode
-    shortcut?: string[]
-    trailingVisual?: React.ReactNode
-    variant?: "default" | "danger"
-    selected?: boolean
-  }
+function Trigger({ render, children, ...props }: Menu.Trigger.Props) {
+  return (
+    <Menu.Trigger render={render} {...props}>
+      {children}
+    </Menu.Trigger>
+  )
+}
+
+type ItemProps = Omit<Menu.Item.Props, "render"> & {
+  icon?: React.ReactNode
+  shortcut?: string[]
+  trailingVisual?: React.ReactNode
+  variant?: "default" | "danger"
+  selected?: boolean
+  href?: string
+  target?: string
+  rel?: string
+}
 
 const Item = React.forwardRef<HTMLDivElement, ItemProps>(
   (
-    { className, icon, shortcut, trailingVisual, variant, selected, href, children, ...props },
+    {
+      className,
+      icon,
+      shortcut,
+      trailingVisual,
+      variant,
+      selected,
+      href,
+      target,
+      rel,
+      children,
+      ...props
+    },
     ref,
   ) => {
     const content = (
@@ -91,7 +108,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     )
 
     return (
-      <RadixDropdownMenu.Item
+      <Menu.Item
         ref={ref}
         className={cx(
           "group flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-hover focus:outline-none active:bg-bg-active coarse:h-10",
@@ -99,22 +116,25 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
           "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent",
           className,
         )}
-        asChild={Boolean(href)}
+        // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is provided via children
+        render={href ? <a href={href} target={target} rel={rel} /> : undefined}
         {...props}
       >
-        {href ? <a href={href}>{content}</a> : content}
-      </RadixDropdownMenu.Item>
+        {content}
+      </Menu.Item>
     )
   },
 )
 
-const Separator = () => {
-  return <RadixDropdownMenu.Separator className="mx-3 my-1 h-px bg-border-secondary" />
+function Separator() {
+  return <Menu.Separator className="mx-3 my-1 h-px bg-border-secondary" />
 }
 
-const Label = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuLabelProps>(
+const Group = Menu.Group
+
+const GroupLabel = React.forwardRef<HTMLDivElement, Menu.GroupLabel.Props>(
   ({ className, ...props }, ref) => (
-    <RadixDropdownMenu.Label
+    <Menu.GroupLabel
       ref={ref}
       className={cx(
         "flex h-8 select-none items-center px-3 text-sm text-text-secondary coarse:pt-2",
@@ -125,10 +145,11 @@ const Label = React.forwardRef<HTMLDivElement, RadixDropdownMenu.DropdownMenuLab
   ),
 )
 
-export const DropdownMenu = Object.assign(Root, {
+export const DropdownMenu = Object.assign(Menu.Root, {
   Trigger,
   Content,
   Item,
   Separator,
-  Label,
+  Group,
+  GroupLabel,
 })

@@ -600,17 +600,19 @@ function NotePage() {
               {parsedNote?.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
             </IconButton>
             <DropdownMenu modal={false}>
-              <DropdownMenu.Trigger asChild>
-                <IconButton aria-label="More actions" size="small" disableTooltip>
-                  <MoreIcon16 />
-                </IconButton>
-              </DropdownMenu.Trigger>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton aria-label="More actions" size="small" disableTooltip>
+                    <MoreIcon16 />
+                  </IconButton>
+                }
+              />
               <DropdownMenu.Content align="end" side="top">
                 {isDraft ? (
                   <>
                     <DropdownMenu.Item
                       icon={<UndoIcon16 />}
-                      onSelect={() => {
+                      onClick={() => {
                         discardChanges()
                         editorRef.current?.view?.focus()
                       }}
@@ -621,67 +623,71 @@ function NotePage() {
                   </>
                 ) : null}
 
-                <DropdownMenu.Label>Font</DropdownMenu.Label>
-                <DropdownMenu.Item
-                  className={`font-${defaultFont}`}
-                  icon={<span className={`font-${defaultFont}`}>Aa</span>}
-                  selected={parsedFont === null}
-                  onSelect={() => updateFont(null)}
-                >
-                  Default{" "}
-                  <span className="text-text-secondary eink:text-current">
-                    ({fontDisplayNames[defaultFont]})
-                  </span>
-                </DropdownMenu.Item>
-                {Object.entries(fontDisplayNames).map(([fontKey, displayName]) => (
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>Font</DropdownMenu.GroupLabel>
                   <DropdownMenu.Item
-                    key={fontKey}
-                    className={`font-${fontKey}`}
-                    icon={<span className={`font-${fontKey}`}>Aa</span>}
-                    selected={parsedFont === fontKey}
-                    onSelect={() => updateFont(fontKey as Font)}
+                    className={`font-${defaultFont}`}
+                    icon={<span className={`font-${defaultFont}`}>Aa</span>}
+                    selected={parsedFont === null}
+                    onClick={() => updateFont(null)}
                   >
-                    {displayName}
+                    Default{" "}
+                    <span className="text-text-secondary eink:text-current">
+                      ({fontDisplayNames[defaultFont]})
+                    </span>
                   </DropdownMenu.Item>
-                ))}
+                  {Object.entries(fontDisplayNames).map(([fontKey, displayName]) => (
+                    <DropdownMenu.Item
+                      key={fontKey}
+                      className={`font-${fontKey}`}
+                      icon={<span className={`font-${fontKey}`}>Aa</span>}
+                      selected={parsedFont === fontKey}
+                      onClick={() => updateFont(fontKey as Font)}
+                    >
+                      {displayName}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Group>
                 <DropdownMenu.Separator />
                 {containerWidth > 800 && (
                   <>
-                    <DropdownMenu.Label>Width</DropdownMenu.Label>
-                    <DropdownMenu.Item
-                      icon={<WidthFixedIcon16 />}
-                      selected={resolvedWidth === "fixed"}
-                      onSelect={() => {
-                        updateWidth("fixed")
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Fixed
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<WidthFullIcon16 />}
-                      selected={resolvedWidth === "full"}
-                      onSelect={() => {
-                        updateWidth("full")
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Full
-                    </DropdownMenu.Item>
+                    <DropdownMenu.Group>
+                      <DropdownMenu.GroupLabel>Width</DropdownMenu.GroupLabel>
+                      <DropdownMenu.Item
+                        icon={<WidthFixedIcon16 />}
+                        selected={resolvedWidth === "fixed"}
+                        onClick={() => {
+                          updateWidth("fixed")
+                          editorRef.current?.view?.focus()
+                        }}
+                      >
+                        Fixed
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<WidthFullIcon16 />}
+                        selected={resolvedWidth === "full"}
+                        onClick={() => {
+                          updateWidth("full")
+                          editorRef.current?.view?.focus()
+                        }}
+                      >
+                        Full
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                   </>
                 )}
-                <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(editorValue)}>
+                <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(editorValue)}>
                   Copy markdown
                 </DropdownMenu.Item>
-                <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(noteId ?? "")}>
+                <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(noteId ?? "")}>
                   Copy ID
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item
                   icon={<ShareIcon16 />}
                   disabled={isSignedOut || !note || !online}
-                  onSelect={() => setIsShareDialogOpen(true)}
+                  onClick={() => setIsShareDialogOpen(true)}
                 >
                   Share
                 </DropdownMenu.Item>
@@ -694,7 +700,7 @@ function NotePage() {
                 >
                   Open in GitHub
                 </DropdownMenu.Item>
-                <DropdownMenu.Item icon={<PrinterIcon16 />} onSelect={() => window.print()}>
+                <DropdownMenu.Item icon={<PrinterIcon16 />} onClick={() => window.print()}>
                   Print
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
@@ -702,7 +708,7 @@ function NotePage() {
                   variant="danger"
                   icon={<TrashIcon16 />}
                   disabled={isSignedOut}
-                  onSelect={() => {
+                  onClick={() => {
                     if (!noteId) return
 
                     // Ask the user to confirm before deleting a note with backlinks

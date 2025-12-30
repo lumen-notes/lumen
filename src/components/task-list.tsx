@@ -202,11 +202,13 @@ export function TaskList({
                     ))}
                     {sortedTagFrequencies.length > numVisibleTags ? (
                       <DropdownMenu>
-                        <DropdownMenu.Trigger asChild>
-                          <PillButton variant="dashed" className="data-[state=open]:bg-bg-hover">
-                            Show more
-                          </PillButton>
-                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Trigger
+                          render={
+                            <PillButton variant="dashed" className="data-[popup-open]:bg-bg-hover">
+                              Show more
+                            </PillButton>
+                          }
+                        />
                         <DropdownMenu.Content width={300}>
                           {sortedTagFrequencies.slice(numVisibleTags).map(([tag, frequency]) => (
                             <DropdownMenu.Item
