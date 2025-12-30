@@ -185,108 +185,119 @@ export function TaskItem({
       </div>
       {mode === "read" ? (
         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
-          <DropdownMenu.Trigger asChild>
-            <IconButton aria-label="More actions" disableTooltip className="ml-1">
-              <MoreIcon16 />
-            </IconButton>
-          </DropdownMenu.Trigger>
+          <DropdownMenu.Trigger
+            render={
+              <IconButton aria-label="More actions" disableTooltip className="ml-1">
+                <MoreIcon16 />
+              </IconButton>
+            }
+          />
           <DropdownMenu.Content align="end" width={280}>
-            <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
-            {(() => {
-              const today = new Date()
-              return task.date !== toDateString(today) ? (
+            <DropdownMenu.Group>
+              <DropdownMenu.GroupLabel>Reschedule</DropdownMenu.GroupLabel>
+              {(() => {
+                const today = new Date()
+                return task.date !== toDateString(today) ? (
+                  <DropdownMenu.Item
+                    icon={<CalendarDateIcon16 date={today.getDate()} />}
+                    onClick={() => onReschedule?.(toDateString(today))}
+                    trailingVisual={
+                      <span className="text-text-secondary">{format(today, "EEE")}</span>
+                    }
+                  >
+                    Today
+                  </DropdownMenu.Item>
+                ) : null
+              })()}
+              {(() => {
+                const tomorrow = addDays(new Date(), 1)
+                return task.date !== toDateString(tomorrow) ? (
+                  <DropdownMenu.Item
+                    icon={<CalendarDateIcon16 date={tomorrow.getDate()} />}
+                    onClick={() => onReschedule?.(toDateString(tomorrow))}
+                    trailingVisual={
+                      <span className="text-text-secondary">{format(tomorrow, "EEE")}</span>
+                    }
+                  >
+                    Tomorrow
+                  </DropdownMenu.Item>
+                ) : null
+              })()}
+              {(() => {
+                const now = new Date()
+                const weekendDate = nextSaturday(now)
+                const label = isWeekend(now) ? "Next weekend" : "This weekend"
+                return task.date !== toDateString(weekendDate) ? (
+                  <DropdownMenu.Item
+                    icon={<CalendarDateIcon16 date={weekendDate.getDate()} />}
+                    onClick={() => onReschedule?.(toDateString(weekendDate))}
+                    trailingVisual={
+                      <span className="text-text-secondary">
+                        {format(weekendDate, "EEE MMM d")}
+                      </span>
+                    }
+                  >
+                    {label}
+                  </DropdownMenu.Item>
+                ) : null
+              })()}
+              {(() => {
+                const mondayDate = nextMonday(new Date())
+                return task.date !== toDateString(mondayDate) ? (
+                  <DropdownMenu.Item
+                    icon={<CalendarDateIcon16 date={mondayDate.getDate()} />}
+                    onClick={() => onReschedule?.(toDateString(mondayDate))}
+                    trailingVisual={
+                      <span className="text-text-secondary">{format(mondayDate, "EEE MMM d")}</span>
+                    }
+                  >
+                    Next week
+                  </DropdownMenu.Item>
+                ) : null
+              })()}
+              {task.date !== null ? (
                 <DropdownMenu.Item
-                  icon={<CalendarDateIcon16 date={today.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(today))}
-                  trailingVisual={
-                    <span className="text-text-secondary">{format(today, "EEE")}</span>
-                  }
+                  icon={<CircleSlashIcon16 />}
+                  onClick={() => onReschedule?.(null)}
                 >
-                  Today
+                  No date
                 </DropdownMenu.Item>
-              ) : null
-            })()}
-            {(() => {
-              const tomorrow = addDays(new Date(), 1)
-              return task.date !== toDateString(tomorrow) ? (
-                <DropdownMenu.Item
-                  icon={<CalendarDateIcon16 date={tomorrow.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(tomorrow))}
-                  trailingVisual={
-                    <span className="text-text-secondary">{format(tomorrow, "EEE")}</span>
-                  }
-                >
-                  Tomorrow
-                </DropdownMenu.Item>
-              ) : null
-            })()}
-            {(() => {
-              const now = new Date()
-              const weekendDate = nextSaturday(now)
-              const label = isWeekend(now) ? "Next weekend" : "This weekend"
-              return task.date !== toDateString(weekendDate) ? (
-                <DropdownMenu.Item
-                  icon={<CalendarDateIcon16 date={weekendDate.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(weekendDate))}
-                  trailingVisual={
-                    <span className="text-text-secondary">{format(weekendDate, "EEE MMM d")}</span>
-                  }
-                >
-                  {label}
-                </DropdownMenu.Item>
-              ) : null
-            })()}
-            {(() => {
-              const mondayDate = nextMonday(new Date())
-              return task.date !== toDateString(mondayDate) ? (
-                <DropdownMenu.Item
-                  icon={<CalendarDateIcon16 date={mondayDate.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(mondayDate))}
-                  trailingVisual={
-                    <span className="text-text-secondary">{format(mondayDate, "EEE MMM d")}</span>
-                  }
-                >
-                  Next week
-                </DropdownMenu.Item>
-              ) : null
-            })()}
-            {task.date !== null ? (
-              <DropdownMenu.Item icon={<CircleSlashIcon16 />} onSelect={() => onReschedule?.(null)}>
-                No date
+              ) : null}
+            </DropdownMenu.Group>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Group>
+              <DropdownMenu.GroupLabel>Priority</DropdownMenu.GroupLabel>
+              <DropdownMenu.Item
+                icon={<FlagFillIcon16 className="text-[var(--red-9)] eink:text-text" />}
+                selected={task.priority === 1}
+                onClick={() => onPriorityChange?.(1)}
+              >
+                High
               </DropdownMenu.Item>
-            ) : null}
+              <DropdownMenu.Item
+                icon={<FlagFillIcon16 className="text-[var(--orange-9)] eink:text-text" />}
+                selected={task.priority === 2}
+                onClick={() => onPriorityChange?.(2)}
+              >
+                Medium
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<FlagFillIcon16 className="text-[var(--blue-9)] eink:text-text" />}
+                selected={task.priority === 3}
+                onClick={() => onPriorityChange?.(3)}
+              >
+                Low
+              </DropdownMenu.Item>
+              <DropdownMenu.Item
+                icon={<CircleSlashIcon16 />}
+                selected={task.priority === null}
+                onClick={() => onPriorityChange?.(null)}
+              >
+                No priority
+              </DropdownMenu.Item>
+            </DropdownMenu.Group>
             <DropdownMenu.Separator />
-            <DropdownMenu.Label>Priority</DropdownMenu.Label>
-            <DropdownMenu.Item
-              icon={<FlagFillIcon16 className="text-[var(--red-9)] eink:text-text" />}
-              selected={task.priority === 1}
-              onSelect={() => onPriorityChange?.(1)}
-            >
-              High
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<FlagFillIcon16 className="text-[var(--orange-9)] eink:text-text" />}
-              selected={task.priority === 2}
-              onSelect={() => onPriorityChange?.(2)}
-            >
-              Medium
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<FlagFillIcon16 className="text-[var(--blue-9)] eink:text-text" />}
-              selected={task.priority === 3}
-              onSelect={() => onPriorityChange?.(3)}
-            >
-              Low
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              icon={<CircleSlashIcon16 />}
-              selected={task.priority === null}
-              onSelect={() => onPriorityChange?.(null)}
-            >
-              No priority
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onSelect={onDelete}>
+            <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onClick={onDelete}>
               Delete task
             </DropdownMenu.Item>
           </DropdownMenu.Content>

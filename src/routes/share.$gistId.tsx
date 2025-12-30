@@ -132,11 +132,13 @@ function RouteComponent() {
             </span>
           </div>
           <DropdownMenu>
-            <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Options" disableTooltip>
-                <MoreIcon16 />
-              </IconButton>
-            </DropdownMenu.Trigger>
+            <DropdownMenu.Trigger
+              render={
+                <IconButton aria-label="Options" disableTooltip>
+                  <MoreIcon16 />
+                </IconButton>
+              }
+            />
             <DropdownMenu.Content align="end">
               <DropdownMenu.Item
                 icon={<LinkIcon16 />}

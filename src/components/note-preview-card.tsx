@@ -116,23 +116,25 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
           )}
         >
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen} modal={false}>
-            <DropdownMenu.Trigger asChild>
-              <IconButton aria-label="Actions" disableTooltip>
-                <MoreIcon16 />
-              </IconButton>
-            </DropdownMenu.Trigger>
+            <DropdownMenu.Trigger
+              render={
+                <IconButton aria-label="Actions" disableTooltip>
+                  <MoreIcon16 />
+                </IconButton>
+              }
+            />
             <DropdownMenu.Content align="end" side="top">
-              <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(note?.content ?? "")}>
+              <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(note?.content ?? "")}>
                 Copy markdown
               </DropdownMenu.Item>
-              <DropdownMenu.Item icon={<CopyIcon16 />} onSelect={() => copy(id)}>
+              <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(id)}>
                 Copy ID
               </DropdownMenu.Item>
               <DropdownMenu.Separator />
               <DropdownMenu.Item
                 icon={<ShareIcon16 />}
                 disabled={isSignedOut || !online}
-                onSelect={() => setIsShareDialogOpen(true)}
+                onClick={() => setIsShareDialogOpen(true)}
               >
                 Share
               </DropdownMenu.Item>
@@ -150,7 +152,7 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                 variant="danger"
                 icon={<TrashIcon16 />}
                 disabled={isSignedOut}
-                onSelect={() => {
+                onClick={() => {
                   // Ask the user to confirm before deleting a note with backlinks
                   if (
                     note.backlinks.length > 0 &&

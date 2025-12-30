@@ -14,11 +14,13 @@ export const Default = {
   render: () => {
     return (
       <DropdownMenu>
-        <DropdownMenu.Trigger asChild>
-          <IconButton aria-label="Menu">
-            <MoreIcon16 />
-          </IconButton>
-        </DropdownMenu.Trigger>
+        <DropdownMenu.Trigger
+          render={
+            <IconButton aria-label="Menu">
+              <MoreIcon16 />
+            </IconButton>
+          }
+        />
         <DropdownMenu.Content align="center">
           <DropdownMenu.Item icon={<EditIcon16 />} shortcut={["E"]}>
             Edit
