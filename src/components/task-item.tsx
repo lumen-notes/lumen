@@ -26,7 +26,7 @@ type TaskItemProps = {
   className?: string
   onCompletedChange: (completed: boolean) => void
   onTextChange?: (text: string) => void
-  onReschedule?: (date: string | null) => void
+  onSchedule?: (date: string | null) => void
   onPriorityChange?: (priority: 1 | 2 | 3 | null) => void
   onDelete?: () => void
 }
@@ -38,7 +38,7 @@ export function TaskItem({
   className,
   onCompletedChange,
   onTextChange,
-  onReschedule,
+  onSchedule,
   onPriorityChange,
   onDelete,
 }: TaskItemProps) {
@@ -191,13 +191,13 @@ export function TaskItem({
             </IconButton>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end" width={280}>
-            <DropdownMenu.Label>Reschedule</DropdownMenu.Label>
+            <DropdownMenu.Label>Schedule</DropdownMenu.Label>
             {(() => {
               const today = new Date()
               return task.date !== toDateString(today) ? (
                 <DropdownMenu.Item
                   icon={<CalendarDateIcon16 date={today.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(today))}
+                  onSelect={() => onSchedule?.(toDateString(today))}
                   trailingVisual={
                     <span className="text-text-secondary">{format(today, "EEE")}</span>
                   }
@@ -211,7 +211,7 @@ export function TaskItem({
               return task.date !== toDateString(tomorrow) ? (
                 <DropdownMenu.Item
                   icon={<CalendarDateIcon16 date={tomorrow.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(tomorrow))}
+                  onSelect={() => onSchedule?.(toDateString(tomorrow))}
                   trailingVisual={
                     <span className="text-text-secondary">{format(tomorrow, "EEE")}</span>
                   }
@@ -227,7 +227,7 @@ export function TaskItem({
               return task.date !== toDateString(weekendDate) ? (
                 <DropdownMenu.Item
                   icon={<CalendarDateIcon16 date={weekendDate.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(weekendDate))}
+                  onSelect={() => onSchedule?.(toDateString(weekendDate))}
                   trailingVisual={
                     <span className="text-text-secondary">{format(weekendDate, "EEE MMM d")}</span>
                   }
@@ -241,7 +241,7 @@ export function TaskItem({
               return task.date !== toDateString(mondayDate) ? (
                 <DropdownMenu.Item
                   icon={<CalendarDateIcon16 date={mondayDate.getDate()} />}
-                  onSelect={() => onReschedule?.(toDateString(mondayDate))}
+                  onSelect={() => onSchedule?.(toDateString(mondayDate))}
                   trailingVisual={
                     <span className="text-text-secondary">{format(mondayDate, "EEE MMM d")}</span>
                   }
@@ -251,7 +251,7 @@ export function TaskItem({
               ) : null
             })()}
             {task.date !== null ? (
-              <DropdownMenu.Item icon={<CircleSlashIcon16 />} onSelect={() => onReschedule?.(null)}>
+              <DropdownMenu.Item icon={<CircleSlashIcon16 />} onSelect={() => onSchedule?.(null)}>
                 No date
               </DropdownMenu.Item>
             ) : null}

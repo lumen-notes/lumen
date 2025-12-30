@@ -833,7 +833,7 @@ describe("getTaskPriority", () => {
 })
 
 describe("scheduleTask", () => {
-  test("reschedules task from one date to another", () => {
+  test("schedules task from one date to another", () => {
     const content = "- [ ] Task [[2024-01-01]]"
     const task = {
       completed: false,

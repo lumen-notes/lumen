@@ -281,7 +281,7 @@ export function TaskList({
                       saveNote({ id: task.note.id, content: updatedContent })
                     }
                   }}
-                  onReschedule={(date) => {
+                  onSchedule={(date) => {
                     enableTaskAnimation()
 
                     const updatedContent = scheduleTask({
