@@ -63,7 +63,7 @@ import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
-import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
+import { /* Font, */ Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
