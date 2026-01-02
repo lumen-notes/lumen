@@ -145,11 +145,11 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
   return text
 }
 
-const fontDisplayNames: Record<Font, string> = {
-  sans: "Sans serif",
-  serif: "Serif",
-  handwriting: "Handwriting",
-}
+// const fontDisplayNames: Record<Font, string> = {
+//   sans: "Sans serif",
+//   serif: "Serif",
+//   handwriting: "Handwriting",
+// }
 
 function NotePage() {
   // Router
@@ -248,20 +248,20 @@ function NotePage() {
     [isSignedOut, noteId, note, saveNote, githubRepo],
   )
 
-  const updateFont = React.useCallback(
-    (font: Font | null) => {
-      if (!noteId) return
+  // const updateFont = React.useCallback(
+  //   (font: Font | null) => {
+  //     if (!noteId) return
 
-      const newContent = updateFrontmatterValue({
-        content: editorValue,
-        properties: { font },
-      })
+  //     const newContent = updateFrontmatterValue({
+  //       content: editorValue,
+  //       properties: { font },
+  //     })
 
-      setEditorValue(newContent)
-      handleSave(newContent)
-    },
-    [noteId, editorValue, setEditorValue, handleSave],
-  )
+  //     setEditorValue(newContent)
+  //     handleSave(newContent)
+  //   },
+  //   [noteId, editorValue, setEditorValue, handleSave],
+  // )
 
   const updateWidth = React.useCallback(
     (width: Width) => {

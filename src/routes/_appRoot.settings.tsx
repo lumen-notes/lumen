@@ -12,7 +12,7 @@ import { RadioGroup } from "../components/radio-group"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
-  defaultFontAtom,
+  // defaultFontAtom,
   githubRepoAtom,
   githubUserAtom,
   hasOpenAIKeyAtom,
@@ -23,7 +23,7 @@ import {
   voiceAssistantEnabledAtom,
 } from "../global-state"
 import { useEditorSettings } from "../hooks/editor-settings"
-import { Font } from "../schema"
+// import { Font } from "../schema"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
