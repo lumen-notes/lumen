@@ -40,7 +40,7 @@ function RouteComponent() {
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
           <ThemeSection />
-          <FontSection />
+          {/* <FontSection /> */}
           <EditorSection />
           <AISection />
           <p className="font-handwriting text-text-secondary text-center mt-2">
@@ -184,41 +184,41 @@ function ThemeSection() {
   )
 }
 
-function FontSection() {
-  const [defaultFont, setDefaultFont] = useAtom(defaultFontAtom)
+// function FontSection() {
+//   const [defaultFont, setDefaultFont] = useAtom(defaultFontAtom)
 
-  return (
-    <SettingsSection title="Default font">
-      <RadioGroup
-        aria-labelledby="font-label"
-        value={defaultFont}
-        defaultValue="sans"
-        onValueChange={(value) => setDefaultFont(value as Font)}
-        className="flex flex-col gap-3 coarse:gap-4"
-        name="font"
-      >
-        <div className="flex items-center gap-2.5">
-          <RadioGroup.Item id="font-sans" value="sans" />
-          <label htmlFor="font-sans" className="select-none font-sans leading-4">
-            Sans serif
-          </label>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <RadioGroup.Item id="font-serif" value="serif" />
-          <label htmlFor="font-serif" className="select-none font-serif leading-4">
-            Serif
-          </label>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <RadioGroup.Item id="font-handwriting" value="handwriting" />
-          <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
-            Handwriting
-          </label>
-        </div>
-      </RadioGroup>
-    </SettingsSection>
-  )
-}
+//   return (
+//     <SettingsSection title="Default font">
+//       <RadioGroup
+//         aria-labelledby="font-label"
+//         value={defaultFont}
+//         defaultValue="sans"
+//         onValueChange={(value) => setDefaultFont(value as Font)}
+//         className="flex flex-col gap-3 coarse:gap-4"
+//         name="font"
+//       >
+//         <div className="flex items-center gap-2.5">
+//           <RadioGroup.Item id="font-sans" value="sans" />
+//           <label htmlFor="font-sans" className="select-none font-sans leading-4">
+//             Sans serif
+//           </label>
+//         </div>
+//         <div className="flex items-center gap-2.5">
+//           <RadioGroup.Item id="font-serif" value="serif" />
+//           <label htmlFor="font-serif" className="select-none font-serif leading-4">
+//             Serif
+//           </label>
+//         </div>
+//         <div className="flex items-center gap-2.5">
+//           <RadioGroup.Item id="font-handwriting" value="handwriting" />
+//           <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
+//             Handwriting
+//           </label>
+//         </div>
+//       </RadioGroup>
+//     </SettingsSection>
+//   )
+// }
 
 function EditorSection() {
   const [editorSettings, setEditorSettings] = useEditorSettings()

@@ -623,7 +623,7 @@ function NotePage() {
                   </>
                 ) : null}
 
-                <DropdownMenu.Group>
+                {/* <DropdownMenu.Group>
                   <DropdownMenu.GroupLabel>Font</DropdownMenu.GroupLabel>
                   <DropdownMenu.Item
                     className={`font-${defaultFont}`}
@@ -648,7 +648,7 @@ function NotePage() {
                     </DropdownMenu.Item>
                   ))}
                 </DropdownMenu.Group>
-                <DropdownMenu.Separator />
+                <DropdownMenu.Separator /> */}
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
