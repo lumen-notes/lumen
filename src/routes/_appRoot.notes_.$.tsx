@@ -63,7 +63,7 @@ import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
-import { Font, Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
+import { /* Font, */ Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -145,11 +145,11 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
   return text
 }
 
-const fontDisplayNames: Record<Font, string> = {
-  sans: "Sans serif",
-  serif: "Serif",
-  handwriting: "Handwriting",
-}
+// const fontDisplayNames: Record<Font, string> = {
+//   sans: "Sans serif",
+//   serif: "Serif",
+//   handwriting: "Handwriting",
+// }
 
 function NotePage() {
   // Router
@@ -248,20 +248,20 @@ function NotePage() {
     [isSignedOut, noteId, note, saveNote, githubRepo],
   )
 
-  const updateFont = React.useCallback(
-    (font: Font | null) => {
-      if (!noteId) return
+  // const updateFont = React.useCallback(
+  //   (font: Font | null) => {
+  //     if (!noteId) return
 
-      const newContent = updateFrontmatterValue({
-        content: editorValue,
-        properties: { font },
-      })
+  //     const newContent = updateFrontmatterValue({
+  //       content: editorValue,
+  //       properties: { font },
+  //     })
 
-      setEditorValue(newContent)
-      handleSave(newContent)
-    },
-    [noteId, editorValue, setEditorValue, handleSave],
-  )
+  //     setEditorValue(newContent)
+  //     handleSave(newContent)
+  //   },
+  //   [noteId, editorValue, setEditorValue, handleSave],
+  // )
 
   const updateWidth = React.useCallback(
     (width: Width) => {
@@ -623,7 +623,7 @@ function NotePage() {
                   </>
                 ) : null}
 
-                <DropdownMenu.Group>
+                {/* <DropdownMenu.Group>
                   <DropdownMenu.GroupLabel>Font</DropdownMenu.GroupLabel>
                   <DropdownMenu.Item
                     className={`font-${defaultFont}`}
@@ -648,7 +648,7 @@ function NotePage() {
                     </DropdownMenu.Item>
                   ))}
                 </DropdownMenu.Group>
-                <DropdownMenu.Separator />
+                <DropdownMenu.Separator /> */}
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
