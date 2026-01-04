@@ -41,7 +41,7 @@ const EXPOSE_HEADERS = [
   "x-redirected-url",
 ]
 
-async function handle(request: Request): Promise<Response> {
+async function handler(request: Request): Promise<Response> {
   try {
     const url = getRequestUrl(request)
     const path = url.searchParams.get("path")
@@ -98,13 +98,13 @@ async function handle(request: Request): Promise<Response> {
   }
 }
 
-export const GET = handle
-export const POST = handle
-export const PUT = handle
-export const PATCH = handle
-export const DELETE = handle
-export const OPTIONS = handle
-export const HEAD = handle
+export const GET = handler
+export const POST = handler
+export const PUT = handler
+export const PATCH = handler
+export const DELETE = handler
+export const OPTIONS = handler
+export const HEAD = handler
 
 function getRequestUrl(request: Request): URL {
   try {

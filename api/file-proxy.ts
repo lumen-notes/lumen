@@ -2,7 +2,7 @@
  * This function proxies a file from a given URL and returns it directly.
  * The URL should be provided as a query parameter, e.g. /file-proxy?url=https://example.com/image.jpg
  */
-async function handle(request: Request): Promise<Response> {
+async function handler(request: Request): Promise<Response> {
   try {
     const url = getRequestUrl(request)
     const fileUrl = url.searchParams.get("url")
@@ -36,8 +36,8 @@ async function handle(request: Request): Promise<Response> {
   }
 }
 
-export const GET = handle
-export const HEAD = handle
+export const GET = handler
+export const HEAD = handler
 
 function getRequestUrl(request: Request): URL {
   try {
