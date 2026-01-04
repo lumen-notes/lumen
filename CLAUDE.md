@@ -10,7 +10,7 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 
 ### Core Development
 
-- `npm run dev:vercel` - Start development server with Vercel functions
+- `npm run dev:vercel` - Start development server with Vercel Functions
 - `npm run build` - Build for production (includes TypeScript compilation)
 - `npm run preview` - Preview production build locally
 
@@ -34,7 +34,7 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 ### Other
 
 - `npm run benchmark` - Run performance benchmarks
-- `npm run dev:netlify` - Start development with Netlify edge functions
+- `npm run dev:netlify` - Start development with Netlify Edge Functions
 
 ## Architecture
 
@@ -79,8 +79,8 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 - `src/codemirror-extensions/` - Custom CodeMirror extensions
 - `src/remark-plugins/` - Custom remark plugins for markdown processing
 - `src/styles/` - CSS files and styling
-- `api/` - Vercel serverless functions
-- `netlify/edge-functions/` - Netlify edge functions (legacy)
+- `api/` - Vercel Functions
+- `netlify/edge-functions/` - Netlify Edge Functions (legacy)
 
 ## Development Notes
 
