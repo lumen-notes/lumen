@@ -48,6 +48,7 @@
 "deleteMarkdownFile": "DELETE_FILE";
 "deleteMarkdownFileLocalStorage": "DELETE_FILE";
 "logError": "error.platform.global.signedIn.cloned.sync.checkingStatus:invocation[0]" | "error.platform.global.signedIn.cloned.sync.pulling:invocation[0]" | "error.platform.global.signedIn.cloned.sync.pushing:invocation[0]";
+"logUser": "" | "SELECT_REPO" | "done.invoke.global.signedIn.cloningRepo:invocation[0]" | "done.invoke.global.signedIn.resolvingRepo:invocation[0]";
 "mergeMarkdownFiles": "WRITE_FILES";
 "mergeMarkdownFilesLocalStorage": "WRITE_FILES";
 "setError": "error.platform.global.signedIn.cloned.change.deletingFile:invocation[0]" | "error.platform.global.signedIn.cloned.change.writingFiles:invocation[0]" | "error.platform.global.signedIn.cloningRepo:invocation[0]";
