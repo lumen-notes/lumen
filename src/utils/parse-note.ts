@@ -148,8 +148,9 @@ function _parseNote(id: NoteId, content: string): Note {
     console.error("Error parsing note frontmatter", id, error)
   }
 
-  // Check for dates in the frontmatter
-  for (const value of Object.values(frontmatter)) {
+  // Check for dates in the frontmatter (excluding updated_at)
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (key === "updated_at") continue
     if (value instanceof Date) {
       const date = toDateStringUtc(value)
       dates.add(date)
