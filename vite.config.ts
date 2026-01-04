@@ -43,7 +43,7 @@ export default defineConfig({
         navigateFallback: "index.html",
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         sourcemap: true,
-        // Do not cache edge function routes
+        // Do not cache function routes
         navigateFallbackDenylist: [/cors-proxy/, /git-lfs-file/, /github-auth/],
       },
       devOptions: {

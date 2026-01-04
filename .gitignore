@@ -29,3 +29,4 @@ stats.html
 
 # Local Netlify folder
 .netlify
+.vercel
