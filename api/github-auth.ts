@@ -13,7 +13,7 @@ export async function GET(request: Request): Promise<Response> {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        client_id: process.env.VITE_GITHUB_CLIENT_ID ?? process.env.GITHUB_CLIENT_ID,
+        client_id: process.env.VITE_GITHUB_CLIENT_ID,
         client_secret: process.env.GITHUB_CLIENT_SECRET,
         code,
       }),
