@@ -7,6 +7,7 @@ type LfsUploadRequest = {
   size: number
 }
 
+/** Resolves a Git LFS pointer to get the actual file download URL. */
 export async function GET(request: Request): Promise<Response> {
   try {
     const url = getRequestUrl(request)
@@ -53,6 +54,7 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
+/** Uploads a file to Git LFS storage. */
 export async function POST(request: Request): Promise<Response> {
   try {
     const { repo, content, oid, size } = (await request.json()) as LfsUploadRequest

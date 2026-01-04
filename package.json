@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --host",
-    "dev:vercel": "vercel dev",
+    "dev:vercel": "vercel dev --listen 8888",
     "dev:storybook": "storybook dev -p 6006",
     "build": "tsc && vite build",
     "build:storybook": "storybook build",
