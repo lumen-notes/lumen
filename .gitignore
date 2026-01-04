@@ -29,3 +29,9 @@ stats.html
 
 # Local Netlify folder
 .netlify
+
+# Local Vercel folder
+.vercel
+
+# Environment variables
+.env

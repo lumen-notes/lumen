@@ -30,7 +30,7 @@
 1.  Start the development server:
 
     ```shell
-    npm run dev
+    npm run dev:vercel
     ```
 
 1.  Open the app at http://localhost:8888
@@ -52,7 +52,7 @@ graph
       indexeddb[(IndexedDB)]
     end
 
-    subgraph edge[Netlify Edge Functions]
+    subgraph edge[Vercel Functions]
       cors-proxy(["/cors-proxy"])
     end
 
