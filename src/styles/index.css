@@ -107,7 +107,7 @@ body:has([data-resizing="true"]) * {
 }
 
 .nav-item[aria-current] {
-  @apply bg-bg-secondary font-bold;
+  @apply bg-bg-secondary font-bold text-text;
   @apply eink:bg-text eink:text-bg;
 }
 
