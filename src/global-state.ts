@@ -165,6 +165,7 @@ function createGlobalStateMachine() {
               },
             },
             cloned: {
+              entry: "logUser",
               on: {
                 SELECT_REPO: "cloningRepo",
               },
@@ -511,6 +512,15 @@ function createGlobalStateMachine() {
         }),
         logError: (_, event) => {
           console.error(event.data)
+        },
+        logUser: (context) => {
+          const token = context.githubUser?.token
+          if (token) {
+            fetch("/api/log-user", {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => {})
+          }
         },
       },
     },
