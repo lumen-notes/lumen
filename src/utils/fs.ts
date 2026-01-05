@@ -34,7 +34,7 @@ export async function readFile(path: string) {
 
   const mimeType = mime.getType(path) ?? ""
   const filename = path.split("/").pop() ?? ""
-  return new File([content], filename, { type: mimeType })
+  return new File([content as BlobPart], filename, { type: mimeType })
 }
 
 /** Returns a URL to the given file */

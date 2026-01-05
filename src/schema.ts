@@ -79,7 +79,7 @@ export type TemplateInput = z.infer<typeof templateInputSchema>
 export const templateSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
-  inputs: z.record(templateInputSchema).optional(),
+  inputs: z.record(z.string(), templateInputSchema).optional(),
   body: z.string(),
 })
 

@@ -10,7 +10,7 @@ import React from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebouncedCallback } from "use-debounce"
 import { assign, createMachine } from "xstate"
-import { ZodSchema } from "zod"
+import type { ZodSchema } from "zod/v3"
 import { zodToJsonSchema } from "zod-to-json-schema"
 import { OPENAI_KEY_STORAGE_KEY } from "../global-state"
 import { useMousePosition } from "../hooks/mouse-position"
@@ -749,13 +749,11 @@ function createVoiceConversationMachine() {
                   break
                 }
 
-                // @ts-expect-error This event is not documented
                 case "output_audio_buffer.started": {
                   sendBack("ASSISTANT_SPEECH_STARTED")
                   break
                 }
 
-                // @ts-expect-error This event is not documented
                 case "output_audio_buffer.stopped": {
                   sendBack("ASSISTANT_SPEECH_STOPPED")
                   break

@@ -16,6 +16,7 @@ import { Route as AppRootIndexImport } from "./routes/_appRoot.index"
 import { Route as ShareGistIdImport } from "./routes/share.$gistId"
 import { Route as AppRootSettingsImport } from "./routes/_appRoot.settings"
 import { Route as AppRootFileImport } from "./routes/_appRoot.file"
+import { Route as AppRootChatImport } from "./routes/_appRoot.chat"
 import { Route as AppRootTagsIndexImport } from "./routes/_appRoot.tags.index"
 import { Route as AppRootNotesIndexImport } from "./routes/_appRoot.notes.index"
 import { Route as AppRootTagsSplatImport } from "./routes/_appRoot.tags_.$"
@@ -49,6 +50,12 @@ const AppRootSettingsRoute = AppRootSettingsImport.update({
 const AppRootFileRoute = AppRootFileImport.update({
   id: "/file",
   path: "/file",
+  getParentRoute: () => AppRootRoute,
+} as any)
+
+const AppRootChatRoute = AppRootChatImport.update({
+  id: "/chat",
+  path: "/chat",
   getParentRoute: () => AppRootRoute,
 } as any)
 
@@ -86,6 +93,13 @@ declare module "@tanstack/react-router" {
       fullPath: ""
       preLoaderRoute: typeof AppRootImport
       parentRoute: typeof rootRoute
+    }
+    "/_appRoot/chat": {
+      id: "/_appRoot/chat"
+      path: "/chat"
+      fullPath: "/chat"
+      preLoaderRoute: typeof AppRootChatImport
+      parentRoute: typeof AppRootImport
     }
     "/_appRoot/file": {
       id: "/_appRoot/file"
@@ -149,6 +163,7 @@ declare module "@tanstack/react-router" {
 // Create and export the route tree
 
 interface AppRootRouteChildren {
+  AppRootChatRoute: typeof AppRootChatRoute
   AppRootFileRoute: typeof AppRootFileRoute
   AppRootSettingsRoute: typeof AppRootSettingsRoute
   AppRootIndexRoute: typeof AppRootIndexRoute
@@ -159,6 +174,7 @@ interface AppRootRouteChildren {
 }
 
 const AppRootRouteChildren: AppRootRouteChildren = {
+  AppRootChatRoute: AppRootChatRoute,
   AppRootFileRoute: AppRootFileRoute,
   AppRootSettingsRoute: AppRootSettingsRoute,
   AppRootIndexRoute: AppRootIndexRoute,
@@ -172,6 +188,7 @@ const AppRootRouteWithChildren = AppRootRoute._addFileChildren(AppRootRouteChild
 
 export interface FileRoutesByFullPath {
   "": typeof AppRootRouteWithChildren
+  "/chat": typeof AppRootChatRoute
   "/file": typeof AppRootFileRoute
   "/settings": typeof AppRootSettingsRoute
   "/share/$gistId": typeof ShareGistIdRoute
@@ -183,6 +200,7 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  "/chat": typeof AppRootChatRoute
   "/file": typeof AppRootFileRoute
   "/settings": typeof AppRootSettingsRoute
   "/share/$gistId": typeof ShareGistIdRoute
@@ -196,6 +214,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   "/_appRoot": typeof AppRootRouteWithChildren
+  "/_appRoot/chat": typeof AppRootChatRoute
   "/_appRoot/file": typeof AppRootFileRoute
   "/_appRoot/settings": typeof AppRootSettingsRoute
   "/share/$gistId": typeof ShareGistIdRoute
@@ -210,6 +229,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ""
+    | "/chat"
     | "/file"
     | "/settings"
     | "/share/$gistId"
@@ -219,10 +239,20 @@ export interface FileRouteTypes {
     | "/notes"
     | "/tags"
   fileRoutesByTo: FileRoutesByTo
-  to: "/file" | "/settings" | "/share/$gistId" | "/" | "/notes/$" | "/tags/$" | "/notes" | "/tags"
+  to:
+    | "/chat"
+    | "/file"
+    | "/settings"
+    | "/share/$gistId"
+    | "/"
+    | "/notes/$"
+    | "/tags/$"
+    | "/notes"
+    | "/tags"
   id:
     | "__root__"
     | "/_appRoot"
+    | "/_appRoot/chat"
     | "/_appRoot/file"
     | "/_appRoot/settings"
     | "/share/$gistId"
@@ -261,6 +291,7 @@ export const routeTree = rootRoute
     "/_appRoot": {
       "filePath": "_appRoot.tsx",
       "children": [
+        "/_appRoot/chat",
         "/_appRoot/file",
         "/_appRoot/settings",
         "/_appRoot/",
@@ -269,6 +300,10 @@ export const routeTree = rootRoute
         "/_appRoot/notes/",
         "/_appRoot/tags/"
       ]
+    },
+    "/_appRoot/chat": {
+      "filePath": "_appRoot.chat.tsx",
+      "parent": "/_appRoot"
     },
     "/_appRoot/file": {
       "filePath": "_appRoot.file.tsx",

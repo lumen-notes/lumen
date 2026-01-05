@@ -43,6 +43,7 @@ jobs:
           node-version: 18.x
           cache: "npm"
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm run test:storybook:ci
   build:
     runs-on: ubuntu-latest
