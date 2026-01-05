@@ -514,6 +514,7 @@ function createGlobalStateMachine() {
           console.error(event.data)
         },
         logUser: (context) => {
+          if (import.meta.env.DEV) return
           const token = context.githubUser?.token
           if (token) {
             fetch("/api/log-user", {
