@@ -1,47 +1,56 @@
 import { useChat } from "@ai-sdk/react"
 import { createFileRoute } from "@tanstack/react-router"
+import { useAtomValue } from "jotai"
 import React from "react"
+import { SignInButton } from "../components/github-auth"
+import { Markdown } from "../components/markdown"
+import { isSignedOutAtom } from "../global-state"
+import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/chat")({
-  component: ChatPage,
+  component: RouteComponent,
 })
 
-function ChatPage() {
-  const [input, setInput] = React.useState("")
-  const { messages, sendMessage, status, error } = useChat()
+function RouteComponent() {
+  const isSignedOut = useAtomValue(isSignedOutAtom)
+  return <div className="overflow-auto p-4">{isSignedOut ? <SignInButton /> : <Chat />}</div>
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+function Chat() {
+  const [input, setInput] = React.useState("")
+  const { messages, sendMessage, error } = useChat()
+
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!input.trim()) return
     sendMessage({ text: input })
     setInput("")
   }
 
-  const isLoading = status === "streaming" || status === "submitted"
-
   return (
-    <div>
+    <div className="grid gap-2">
       {messages.map((message) => (
-        <div key={message.id}>
-          {message.role}:{" "}
-          {message.parts
-            .filter((part): part is { type: "text"; text: string } => part.type === "text")
-            .map((part) => part.text)
-            .join("")}
+        <div
+          key={message.id}
+          className={cx("px-4 py-2", message.role === "user" && "bg-bg-secondary rounded-xl")}
+        >
+          <Markdown fontSize="small">
+            {message.parts
+              .filter((part): part is { type: "text"; text: string } => part.type === "text")
+              .map((part) => part.text)
+              .join("")}
+          </Markdown>
         </div>
       ))}
-      {isLoading && <div>Loading…</div>}
-      {error && <div>Error: {error.message}</div>}
+      {error && <div className="px-4 py-2 leading-7 text-text-danger">Error: {error.message}</div>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask AI…"
+          className="px-4 py-2 bg-bg-secondary w-full leading-7 placeholder:text-text-tertiary focus-ring rounded-xl"
         />
-        <button type="submit" disabled={isLoading}>
-          Send
-        </button>
       </form>
     </div>
   )
