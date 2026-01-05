@@ -749,13 +749,11 @@ function createVoiceConversationMachine() {
                   break
                 }
 
-                // @ts-expect-error This event is not documented
                 case "output_audio_buffer.started": {
                   sendBack("ASSISTANT_SPEECH_STARTED")
                   break
                 }
 
-                // @ts-expect-error This event is not documented
                 case "output_audio_buffer.stopped": {
                   sendBack("ASSISTANT_SPEECH_STOPPED")
                   break
