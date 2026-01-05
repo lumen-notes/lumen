@@ -119,3 +119,19 @@
 .cm-wikilinks-enabled .cm-editor .cm-wikilink:hover {
   @apply cursor-pointer decoration-solid ring-0;
 }
+
+.cm-editor .cm-priority {
+  @apply rounded-sm px-0.5 eink:bg-transparent eink:px-0 eink:text-text;
+}
+
+.cm-editor .cm-priority-1 {
+  @apply text-[var(--red-a12)] bg-[var(--red-a4)];
+}
+
+.cm-editor .cm-priority-2 {
+  @apply text-[var(--orange-a12)] bg-[var(--orange-a4)];
+}
+
+.cm-editor .cm-priority-3 {
+  @apply text-[var(--blue-a12)] bg-[var(--blue-a4)];
+}

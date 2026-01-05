@@ -1,10 +1,10 @@
 import { EditorState, Extension, Range, StateField, Transaction } from "@codemirror/state"
 import { Decoration, DecorationSet, EditorView } from "@codemirror/view"
 
-const priorityStyles: Record<1 | 2 | 3, string> = {
-  1: "color: var(--red-a12); background-color: var(--red-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
-  2: "color: var(--orange-a12); background-color: var(--orange-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
-  3: "color: var(--blue-a12); background-color: var(--blue-a4); border-radius: var(--border-radius-sm); padding: 0 2px;",
+const priorityClasses: Record<1 | 2 | 3, string> = {
+  1: "cm-priority cm-priority-1",
+  2: "cm-priority cm-priority-2",
+  3: "cm-priority cm-priority-3",
 }
 
 const priorityField = StateField.define({
@@ -33,7 +33,7 @@ function createDecorations(state: EditorState): DecorationSet {
 
     decorations.push(
       Decoration.mark({
-        attributes: { style: priorityStyles[level] },
+        class: priorityClasses[level],
       }).range(from, to),
     )
   }
