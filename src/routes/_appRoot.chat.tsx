@@ -18,7 +18,7 @@ function RouteComponent() {
 
 function Chat() {
   const [input, setInput] = React.useState("")
-  const { messages, sendMessage, status, error } = useChat()
+  const { messages, sendMessage, error } = useChat()
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
