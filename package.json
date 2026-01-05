@@ -21,6 +21,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.6",
     "@base-ui/react": "^1.0.0",
     "@codemirror/autocomplete": "^6.1.0",
     "@codemirror/commands": "^6.7.0",
@@ -52,6 +53,7 @@
     "@supabase/supabase-js": "^2.89.0",
     "@uiw/codemirror-themes": "^4.22.0",
     "@uiw/react-codemirror": "^4.23.6",
+    "ai": "^6.0.6",
     "buffer": "^6.0.3",
     "change-case": "^5.4.4",
     "chrono-node": "^2.7.0",
@@ -82,7 +84,7 @@
     "mime": "^4.0.3",
     "motion": "^12.12.1",
     "node-emoji": "^2.1.0",
-    "openai": "^4.85.1",
+    "openai": "^6.15.0",
     "prismjs": "^1.29.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
@@ -113,8 +115,8 @@
     "vaul": "^1.1.1",
     "xstate": "^4.38.3",
     "yamljs": "^0.3.0",
-    "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.24.1"
+    "zod": "^4.3.5",
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.4.7",
@@ -166,7 +168,7 @@
     "storybook": "^8.4.7",
     "tailwindcss": "^3.4.16",
     "tailwindcss-animate": "^1.0.5",
-    "typescript": "^5.2.2",
+    "typescript": "^5.9.3",
     "vercel": "^44.7.3",
     "vite": "^5.4.11",
     "vite-node": "^2.1.8",

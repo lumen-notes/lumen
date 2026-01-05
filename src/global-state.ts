@@ -532,7 +532,7 @@ function createGlobalStateMachine() {
 function getMarkdownFilesFromLocalStorage() {
   const markdownFiles = JSON.parse(localStorage.getItem(MARKDOWN_FILES_STORAGE_KEY) ?? "null")
   if (!markdownFiles) return null
-  const parsedMarkdownFiles = z.record(z.string()).safeParse(markdownFiles)
+  const parsedMarkdownFiles = z.record(z.string(), z.string()).safeParse(markdownFiles)
   return parsedMarkdownFiles.success ? parsedMarkdownFiles.data : null
 }
 
