@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { AppLayout } from "../components/app-layout"
-import { NoteList } from "../components/note-list"
 import { NoteIcon16 } from "../components/icons"
+import { NoteList } from "../components/note-list"
+import { PageLayout } from "../components/page-layout"
 
 type RouteSearch = {
   query: string | undefined
@@ -23,7 +23,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate()
 
   return (
-    <AppLayout title="Notes" icon={<NoteIcon16 />}>
+    <PageLayout title="Notes" icon={<NoteIcon16 />}>
       <div className="p-4 pt-0">
         <NoteList
           query={query ?? ""}
@@ -36,6 +36,6 @@ function RouteComponent() {
           }
         />
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }

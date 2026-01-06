@@ -4,6 +4,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import { useEvent, useNetworkState } from "react-use"
 import { z } from "zod/v3"
+import { AppLayout } from "../components/app-layout"
 import { CommandMenu } from "../components/command-menu"
 import { DevBar } from "../components/dev-bar"
 import { ErrorIcon16 } from "../components/icons"
@@ -275,9 +276,9 @@ function RouteComponent() {
           <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>
         </div>
       ) : null}
-      <div className="grid flex-grow overflow-hidden print:overflow-visible">
+      <AppLayout>
         <Outlet />
-      </div>
+      </AppLayout>
       <FloatingConversationInput />
       <CommandMenu />
       {/* <Toaster toastOptions={{ duration: 2000 }} /> */}

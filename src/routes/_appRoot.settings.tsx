@@ -2,8 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useAtom, useAtomValue } from "jotai"
 import { useState } from "react"
 import { useNetworkState } from "react-use"
-import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
+import { PageLayout } from "../components/page-layout"
 import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_appRoot/settings")({
 
 function RouteComponent() {
   return (
-    <AppLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
+    <PageLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
       <div className="p-4 pb-[50vh]">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
@@ -65,7 +65,7 @@ function RouteComponent() {
           </p>
         </div>
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }
 

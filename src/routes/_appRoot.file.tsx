@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { AppLayout } from "../components/app-layout"
 import { FilePreview } from "../components/file-preview"
 import { FileIcon16 } from "../components/icons"
+import { PageLayout } from "../components/page-layout"
 
 type RouteSearch = {
   path: string
@@ -20,10 +20,10 @@ function RouteComponent() {
   const { path } = Route.useSearch()
 
   return (
-    <AppLayout title={path.split("/").pop() || "No file selected"} icon={<FileIcon16 />}>
+    <PageLayout title={path.split("/").pop() || "No file selected"} icon={<FileIcon16 />}>
       <div className="grid h-full w-full place-items-center">
         {path ? <FilePreview path={path} /> : null}
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }
