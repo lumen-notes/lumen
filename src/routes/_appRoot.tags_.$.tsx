@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { AppLayout } from "../components/app-layout"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import { EditIcon16, MoreIcon16, TagIcon16, TrashIcon16 } from "../components/icons"
-import { NoteList } from "../components/note-list"
-import { useDeleteTag, useRenameTag } from "../hooks/tag"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
+import { NoteList } from "../components/note-list"
+import { PageLayout } from "../components/page-layout"
+import { useDeleteTag, useRenameTag } from "../hooks/tag"
 
 type RouteSearch = {
   query: string | undefined
@@ -33,7 +33,7 @@ function RouteComponent() {
   const deleteTag = useDeleteTag()
 
   return (
-    <AppLayout
+    <PageLayout
       title={tag}
       icon={<TagIcon16 />}
       actions={
@@ -113,6 +113,6 @@ function RouteComponent() {
           />
         </LinkHighlightProvider>
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }

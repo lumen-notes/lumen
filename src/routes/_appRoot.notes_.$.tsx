@@ -11,7 +11,6 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
 import { z } from "zod/v3"
-import { AppLayout } from "../components/app-layout"
 import { Button } from "../components/button"
 import { Calendar } from "../components/calendar"
 import { DaysOfWeek } from "../components/days-of-week"
@@ -37,6 +36,7 @@ import {
 } from "../components/icons"
 import { DraftIndicator } from "../components/draft-indicator"
 import { InsertTemplateDialog, removeFrontmatterComments } from "../components/insert-template"
+import { PageLayout } from "../components/page-layout"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
@@ -130,9 +130,9 @@ function RouteComponent() {
   }
 
   return (
-    <AppLayout title={`${noteId}.md`} icon={<NoteIcon16 />}>
+    <PageLayout title={`${noteId}.md`} icon={<NoteIcon16 />}>
       <div>{/* TODO */}</div>
-    </AppLayout>
+    </PageLayout>
   )
 }
 
@@ -511,7 +511,7 @@ function NotePage() {
     isWeeklyNote
 
   return (
-    <AppLayout
+    <PageLayout
       title={
         shouldShowPageTitle ? (
           <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
@@ -941,7 +941,7 @@ function NotePage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }
 

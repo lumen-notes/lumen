@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import React, { useDeferredValue, useMemo, useState } from "react"
-import { AppLayout } from "../components/app-layout"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
@@ -12,6 +11,7 @@ import {
   SortNumberDescIcon16,
   TagIcon16,
 } from "../components/icons"
+import { PageLayout } from "../components/page-layout"
 import { PillButton } from "../components/pill-button"
 import { SearchInput } from "../components/search-input"
 import { sortedTagEntriesAtom, tagSearcherAtom } from "../global-state"
@@ -70,7 +70,7 @@ function RouteComponent() {
   const tagTree = useMemo(() => buildTagTree(searchResults, sort), [searchResults, sort])
 
   return (
-    <AppLayout title="Tags" icon={<TagIcon16 />}>
+    <PageLayout title="Tags" icon={<TagIcon16 />}>
       <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
@@ -192,7 +192,7 @@ function RouteComponent() {
           <TagTree tree={tagTree} />
         )}
       </div>
-    </AppLayout>
+    </PageLayout>
   )
 }
 
