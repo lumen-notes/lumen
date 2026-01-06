@@ -71,126 +71,126 @@ function RouteComponent() {
 
   return (
     <PageLayout title="Tags" icon={<TagIcon16 />}>
-        <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-2">
-              <SearchInput
-                placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
-                value={query ?? ""}
-                onChange={(value) =>
-                  navigate({
-                    search: (prev) => ({
-                      ...prev,
-                      query: value,
-                    }),
-                  })
+      <div className="flex flex-col gap-4 px-4 pt-0 pb-[50vh]">
+        <div className="flex flex-col gap-3">
+          <div className="flex gap-2">
+            <SearchInput
+              placeholder={`Search ${pluralize(sortedTagEntries.length, "tag")}…`}
+              value={query ?? ""}
+              onChange={(value) =>
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    query: value,
+                  }),
+                })
+              }
+            />
+            <DropdownMenu>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton
+                    aria-label="Sort"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                  >
+                    {sort === "count" ? <SortNumberDescIcon16 /> : <SortAlphabetAscIcon16 />}
+                  </IconButton>
                 }
               />
-              <DropdownMenu>
-                <DropdownMenu.Trigger
-                  render={
-                    <IconButton
-                      aria-label="Sort"
-                      className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                    >
-                      {sort === "count" ? <SortNumberDescIcon16 /> : <SortAlphabetAscIcon16 />}
-                    </IconButton>
-                  }
-                />
-                <DropdownMenu.Content align="end" width={160}>
-                  <DropdownMenu.Group>
-                    <DropdownMenu.GroupLabel>Sort by</DropdownMenu.GroupLabel>
-                    <DropdownMenu.Item
-                      icon={<SortAlphabetAscIcon16 />}
-                      onClick={() =>
-                        navigate({
-                          search: (prev) => ({ ...prev, sort: "name" }),
-                          replace: true,
-                        })
-                      }
-                      selected={sort === "name"}
-                    >
-                      Name
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<SortNumberDescIcon16 />}
-                      onClick={() =>
-                        navigate({
-                          search: (prev) => ({ ...prev, sort: "count" }),
-                          replace: true,
-                        })
-                      }
-                      selected={sort === "count"}
-                    >
-                      Count
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Group>
-                </DropdownMenu.Content>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenu.Trigger
-                  render={
-                    <IconButton
-                      aria-label="View"
-                      className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
-                    >
-                      {viewIcons[view]}
-                    </IconButton>
-                  }
-                />
-                <DropdownMenu.Content align="end" width={160}>
-                  <DropdownMenu.Group>
-                    <DropdownMenu.GroupLabel>View as</DropdownMenu.GroupLabel>
-                    <DropdownMenu.Item
-                      icon={<GridIcon16 />}
-                      onClick={() =>
-                        navigate({
-                          search: (prev) => ({ ...prev, view: "grid" }),
-                          replace: true,
-                        })
-                      }
-                      selected={view === "grid"}
-                    >
-                      Grid
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<ListIcon16 />}
-                      onClick={() =>
-                        navigate({
-                          search: (prev) => ({ ...prev, view: "list" }),
-                          replace: true,
-                        })
-                      }
-                      selected={view === "list"}
-                    >
-                      List
-                    </DropdownMenu.Item>
-                  </DropdownMenu.Group>
-                </DropdownMenu.Content>
-              </DropdownMenu>
-            </div>
-            {deferredQuery ? (
-              <span className="text-sm text-text-secondary leading-4">
-                {pluralize(searchResults.length, "tag")}
-              </span>
-            ) : null}
+              <DropdownMenu.Content align="end" width={160}>
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>Sort by</DropdownMenu.GroupLabel>
+                  <DropdownMenu.Item
+                    icon={<SortAlphabetAscIcon16 />}
+                    onClick={() =>
+                      navigate({
+                        search: (prev) => ({ ...prev, sort: "name" }),
+                        replace: true,
+                      })
+                    }
+                    selected={sort === "name"}
+                  >
+                    Name
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<SortNumberDescIcon16 />}
+                    onClick={() =>
+                      navigate({
+                        search: (prev) => ({ ...prev, sort: "count" }),
+                        replace: true,
+                      })
+                    }
+                    selected={sort === "count"}
+                  >
+                    Count
+                  </DropdownMenu.Item>
+                </DropdownMenu.Group>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton
+                    aria-label="View"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                  >
+                    {viewIcons[view]}
+                  </IconButton>
+                }
+              />
+              <DropdownMenu.Content align="end" width={160}>
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>View as</DropdownMenu.GroupLabel>
+                  <DropdownMenu.Item
+                    icon={<GridIcon16 />}
+                    onClick={() =>
+                      navigate({
+                        search: (prev) => ({ ...prev, view: "grid" }),
+                        replace: true,
+                      })
+                    }
+                    selected={view === "grid"}
+                  >
+                    Grid
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    icon={<ListIcon16 />}
+                    onClick={() =>
+                      navigate({
+                        search: (prev) => ({ ...prev, view: "list" }),
+                        replace: true,
+                      })
+                    }
+                    selected={view === "list"}
+                  >
+                    List
+                  </DropdownMenu.Item>
+                </DropdownMenu.Group>
+              </DropdownMenu.Content>
+            </DropdownMenu>
           </div>
-          {view === "grid" ? (
-            <ul className="flex flex-wrap gap-y-3 gap-x-2">
-              {searchResults.map(([tag, noteIds]) => (
-                <li key={tag}>
-                  <PillButton asChild>
-                    <Link to="/" search={{ query: `tag:${tag}`, view: "grid" }}>
-                      {tag}
-                      <span className="text-text-secondary">{noteIds.length}</span>
-                    </Link>
-                  </PillButton>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <TagTree tree={tagTree} />
-          )}
+          {deferredQuery ? (
+            <span className="text-sm text-text-secondary leading-4">
+              {pluralize(searchResults.length, "tag")}
+            </span>
+          ) : null}
+        </div>
+        {view === "grid" ? (
+          <ul className="flex flex-wrap gap-y-3 gap-x-2">
+            {searchResults.map(([tag, noteIds]) => (
+              <li key={tag}>
+                <PillButton asChild>
+                  <Link to="/" search={{ query: `tag:${tag}`, view: "grid" }}>
+                    {tag}
+                    <span className="text-text-secondary">{noteIds.length}</span>
+                  </Link>
+                </PillButton>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <TagTree tree={tagTree} />
+        )}
       </div>
     </PageLayout>
   )

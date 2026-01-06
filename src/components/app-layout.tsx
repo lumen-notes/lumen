@@ -14,7 +14,9 @@ export function AppLayout({ className, children }: AppLayoutProps) {
   const sidebar = useAtomValue(sidebarAtom)
 
   return (
-    <div className={cx("flex flex-grow flex-col overflow-hidden print:overflow-visible", className)}>
+    <div
+      className={cx("flex flex-grow flex-col overflow-hidden print:overflow-visible", className)}
+    >
       <SignInBanner />
       <div className="flex overflow-hidden flex-grow">
         {sidebar === "expanded" ? (

@@ -34,84 +34,84 @@ function RouteComponent() {
 
   return (
     <PageLayout
-        title={tag}
-        icon={<TagIcon16 />}
-        actions={
-          <DropdownMenu modal={false}>
-            <DropdownMenu.Trigger
-              render={
-                <IconButton aria-label="More actions" size="small" disableTooltip>
-                  <MoreIcon16 />
-                </IconButton>
-              }
-            />
-            <DropdownMenu.Content align="end" side="top">
-              <DropdownMenu.Item
-                icon={<EditIcon16 />}
-                onClick={() => {
-                  if (!tag) return
+      title={tag}
+      icon={<TagIcon16 />}
+      actions={
+        <DropdownMenu modal={false}>
+          <DropdownMenu.Trigger
+            render={
+              <IconButton aria-label="More actions" size="small" disableTooltip>
+                <MoreIcon16 />
+              </IconButton>
+            }
+          />
+          <DropdownMenu.Content align="end" side="top">
+            <DropdownMenu.Item
+              icon={<EditIcon16 />}
+              onClick={() => {
+                if (!tag) return
 
-                  const newName = window.prompt("Rename tag", tag)
+                const newName = window.prompt("Rename tag", tag)
 
-                  if (newName) {
-                    renameTag(tag, newName)
-                    navigate({
-                      to: "/tags/$",
-                      params: { _splat: newName },
-                      search: { query, view },
-                      replace: true,
-                    })
-                  }
-                }}
-              >
-                Rename tag
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                icon={<TrashIcon16 />}
-                variant="danger"
-                onClick={() => {
-                  if (!tag) return
+                if (newName) {
+                  renameTag(tag, newName)
+                  navigate({
+                    to: "/tags/$",
+                    params: { _splat: newName },
+                    search: { query, view },
+                    replace: true,
+                  })
+                }
+              }}
+            >
+              Rename tag
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item
+              icon={<TrashIcon16 />}
+              variant="danger"
+              onClick={() => {
+                if (!tag) return
 
-                  // Confirm deletion
-                  if (
-                    window.confirm(
-                      `Remove the "${tag}" tag from all notes?\nDon't worry—no notes will be deleted.`,
-                    )
-                  ) {
-                    deleteTag(tag)
-                    navigate({
-                      to: "/tags",
-                      search: { query: undefined, sort: "name", view: "list" },
-                      replace: true,
-                    })
-                  }
-                }}
-              >
-                Delete tag
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu>
-        }
-      >
-        <div className="px-4 pt-0 pb-[50vh]">
-          <LinkHighlightProvider href={`/tags/${tag}`}>
-            <NoteList
-              key={tag}
-              baseQuery={`tag:${tag}`}
-              query={query ?? ""}
-              view={view}
-              onQueryChange={(query) =>
-                navigate({
-                  search: (prev) => ({ ...prev, query }),
-                  replace: true,
-                })
-              }
-              onViewChange={(view) =>
-                navigate({ search: (prev) => ({ ...prev, view }), replace: true })
-              }
-            />
-          </LinkHighlightProvider>
+                // Confirm deletion
+                if (
+                  window.confirm(
+                    `Remove the "${tag}" tag from all notes?\nDon't worry—no notes will be deleted.`,
+                  )
+                ) {
+                  deleteTag(tag)
+                  navigate({
+                    to: "/tags",
+                    search: { query: undefined, sort: "name", view: "list" },
+                    replace: true,
+                  })
+                }
+              }}
+            >
+              Delete tag
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu>
+      }
+    >
+      <div className="px-4 pt-0 pb-[50vh]">
+        <LinkHighlightProvider href={`/tags/${tag}`}>
+          <NoteList
+            key={tag}
+            baseQuery={`tag:${tag}`}
+            query={query ?? ""}
+            view={view}
+            onQueryChange={(query) =>
+              navigate({
+                search: (prev) => ({ ...prev, query }),
+                replace: true,
+              })
+            }
+            onViewChange={(view) =>
+              navigate({ search: (prev) => ({ ...prev, view }), replace: true })
+            }
+          />
+        </LinkHighlightProvider>
       </div>
     </PageLayout>
   )

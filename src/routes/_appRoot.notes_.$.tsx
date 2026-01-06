@@ -513,20 +513,20 @@ function NotePage() {
   return (
     <PageLayout
       title={
-          shouldShowPageTitle ? (
-            <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
-              <PageTitle note={parsedNote} />
-            </span>
-          ) : null
-        }
-        icon={
-          isDraft ? (
-            <DraftIndicator />
-          ) : shouldShowPageTitle ? (
-            <NoteFavicon note={parsedNote} />
-          ) : null
-        }
-        actions={
+        shouldShowPageTitle ? (
+          <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
+            <PageTitle note={parsedNote} />
+          </span>
+        ) : null
+      }
+      icon={
+        isDraft ? (
+          <DraftIndicator />
+        ) : shouldShowPageTitle ? (
+          <NoteFavicon note={parsedNote} />
+        ) : null
+      }
+      actions={
         <div className="flex items-center gap-2">
           {(!note && editorValue) || isDraft ? (
             <Button
