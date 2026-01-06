@@ -13,6 +13,7 @@ import useResizeObserver from "use-resize-observer"
 import { z } from "zod/v3"
 import { Button } from "../components/button"
 import { Calendar } from "../components/calendar"
+import { CalendarHeader } from "../components/calendar-header"
 import { DaysOfWeek } from "../components/days-of-week"
 import { Details } from "../components/details"
 import { DropdownMenu } from "../components/dropdown-menu"
@@ -107,9 +108,8 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
 function PageTitle({ note }: { note: Note }) {
   if (note.type === "daily" || note.type === "weekly") {
     return (
-      <span className="font-content">
+      <span className="font-content space-x-3">
         <span>{note.displayName}</span>
-        <span className="mx-2 font-normal text-text-secondary">·</span>
         <span className="font-normal text-text-secondary">
           {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
         </span>
@@ -504,28 +504,19 @@ function NotePage() {
 
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
-  const shouldShowPageTitle =
-    (!parsedNote.title && parsedNote.displayName === noteId) ||
-    isScrolled ||
-    isDailyNote ||
-    isWeeklyNote
+  const shouldShowPageTitle = (!parsedNote.title && parsedNote.displayName === noteId) || isScrolled
 
   return (
     <PageLayout
-      title={
-        shouldShowPageTitle ? (
-          <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
-            <PageTitle note={parsedNote} />
-          </span>
-        ) : null
-      }
-      icon={
-        isDraft ? (
-          <DraftIndicator />
-        ) : shouldShowPageTitle ? (
-          <NoteFavicon note={parsedNote} />
-        ) : null
-      }
+      title={`${noteId}.md`}
+      // title={
+      //   shouldShowPageTitle ? (
+      //     <span className="truncate">
+      //       <PageTitle note={parsedNote} />
+      //     </span>
+      //   ) : null
+      // }
+      icon={isDraft ? <DraftIndicator /> : <NoteFavicon note={parsedNote} />}
       actions={
         <div className="flex items-center gap-2">
           {(!note && editorValue) || isDraft ? (
@@ -622,33 +613,6 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-
-                {/* <DropdownMenu.Group>
-                  <DropdownMenu.GroupLabel>Font</DropdownMenu.GroupLabel>
-                  <DropdownMenu.Item
-                    className={`font-${defaultFont}`}
-                    icon={<span className={`font-${defaultFont}`}>Aa</span>}
-                    selected={parsedFont === null}
-                    onClick={() => updateFont(null)}
-                  >
-                    Default{" "}
-                    <span className="text-text-secondary eink:text-current">
-                      ({fontDisplayNames[defaultFont]})
-                    </span>
-                  </DropdownMenu.Item>
-                  {Object.entries(fontDisplayNames).map(([fontKey, displayName]) => (
-                    <DropdownMenu.Item
-                      key={fontKey}
-                      className={`font-${fontKey}`}
-                      icon={<span className={`font-${fontKey}`}>Aa</span>}
-                      selected={parsedFont === fontKey}
-                      onClick={() => updateFont(fontKey as Font)}
-                    >
-                      {displayName}
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Group>
-                <DropdownMenu.Separator /> */}
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
@@ -821,12 +785,12 @@ function NotePage() {
               resolvedWidth === "fixed" && "mx-auto max-w-3xl",
             )}
           >
-            {isDailyNote || isWeeklyNote ? (
-              <Calendar className="print:hidden" activeNoteId={noteId ?? ""} />
+            {(isDailyNote || isWeeklyNote) && noteId ? (
+              <CalendarHeader noteId={noteId ?? ""} />
             ) : null}
 
             {mode === "read" && (
-              <div>
+              <div className="min-h-[240px]">
                 {parsedNote?.frontmatter?.gist_id ? (
                   <div className="mb-5 print:hidden">
                     <PillButton
@@ -857,7 +821,7 @@ function NotePage() {
             <div
               hidden={mode !== "write"}
               className={cx(
-                "min-h-[160px]",
+                "min-h-[240px]",
                 isDraggingFile &&
                   "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
               )}
@@ -897,7 +861,7 @@ function NotePage() {
                 <DaysOfWeek week={noteId ?? ""} />
               </Details>
             ) : null}
-            {backlinkTasks.length > 0 ? (
+            {/*{backlinkTasks.length > 0 ? (
               <Details className="print:hidden">
                 <Details.Summary>Tasks</Details.Summary>
                 <LinkHighlightProvider href={`/notes/${noteId}`}>
@@ -913,7 +877,7 @@ function NotePage() {
                   />
                 </LinkHighlightProvider>
               </Details>
-            ) : null}
+            ) : null}*/}
             {backlinks.size > 0 ? (
               <Details className="print:hidden">
                 <Details.Summary>Backlinks</Details.Summary>

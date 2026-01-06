@@ -142,7 +142,11 @@ export const Markdown = React.memo(
               ) : null}
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
-                  {title ? <MarkdownContent>{title}</MarkdownContent> : null}
+                  {title ? (
+                    <MarkdownContent className="[&_h1]:[text-box-trim:trim-start]">
+                      {title}
+                    </MarkdownContent>
+                  ) : null}
                   {!hideFrontmatter && !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
