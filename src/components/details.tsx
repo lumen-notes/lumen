@@ -31,7 +31,7 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-3 coarse:-m-4 font-sans font-bold inline-flex cursor-pointer list-none self-start rounded p-3 coarse:p-4 outline-none [&::-webkit-details-marker]:hidden",
+        "group/summary -m-3 coarse:-m-4 font-sans inline-flex cursor-pointer list-none self-start rounded p-3 coarse:p-4 outline-none [&::-webkit-details-marker]:hidden",
         className,
       )}
       onMouseDown={stopPropagationOnDoubleClick}
