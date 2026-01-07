@@ -8,6 +8,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import { useNetworkState } from "react-use"
 import useResizeObserver from "use-resize-observer"
 import { z } from "zod/v3"
@@ -86,6 +87,7 @@ type RouteSearch = {
   view: "grid" | "list"
   tasks?: string | undefined
   content?: string
+  calendar?: boolean
 }
 
 export const Route = createFileRoute("/_appRoot/notes_/$")({
@@ -96,6 +98,10 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
       view: search.view === "list" ? "list" : "grid",
       tasks: typeof search.tasks === "string" ? search.tasks : undefined,
       content: typeof search.content === "string" ? search.content : undefined,
+      calendar:
+        "calendar" in search && search.calendar !== "false" && search.calendar !== "0"
+          ? true
+          : undefined,
     }
   },
   component: RouteComponent,
@@ -154,7 +160,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, tasks, content: defaultContent } = Route.useSearch()
+  const { mode, query, view, tasks, content: defaultContent, calendar } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -169,6 +175,7 @@ function NotePage() {
   const note = useNoteById(noteId)
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
+  const showCalendarSidebar = (isDailyNote || isWeeklyNote) && calendar
   const searchNotes = useSearchNotes()
   const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
@@ -297,6 +304,19 @@ function NotePage() {
       switchToReading()
     }
   }, [mode, switchToWriting, switchToReading])
+
+  const toggleCalendarSidebar = React.useCallback(() => {
+    navigate({
+      search: (prev) => {
+        if (prev.calendar) {
+          const { calendar: _, ...rest } = prev
+          return rest
+        }
+        return { ...prev, calendar: true }
+      },
+      replace: true,
+    })
+  }, [navigate])
 
   // Value refs
   // These refs allow us to access the latest values of these variables inside callbacks and effects
@@ -507,405 +527,436 @@ function NotePage() {
   const shouldShowPageTitle = (!parsedNote.title && parsedNote.displayName === noteId) || isScrolled
 
   return (
-    <PageLayout
-      title={`${noteId}.md`}
-      // title={
-      //   shouldShowPageTitle ? (
-      //     <span className="truncate">
-      //       <PageTitle note={parsedNote} />
-      //     </span>
-      //   ) : null
-      // }
-      icon={isDraft ? <DraftIndicator /> : <NoteFavicon note={parsedNote} />}
-      actions={
-        <div className="flex items-center gap-2">
-          {(!note && editorValue) || isDraft ? (
-            <Button
-              disabled={isSignedOut}
-              variant="primary"
-              size="small"
-              shortcut={["⌘", "S"]}
-              onClick={() => handleSave(editorValue)}
-              className="hidden sm:flex"
-            >
-              Save
-            </Button>
-          ) : null}
-
-          <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
-            <Tooltip open={mode === "read" ? false : undefined}>
-              <Tooltip.Trigger
-                render={
-                  <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
-                    Read
-                  </SegmentedControl.Segment>
-                }
-              />
-              <Tooltip.Content side="bottom" className="text-text-secondary">
-                {toggleModeShortcut}
-              </Tooltip.Content>
-            </Tooltip>
-            <Tooltip open={mode === "write" ? false : undefined}>
-              <Tooltip.Trigger
-                render={
-                  <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
-                    Write
-                  </SegmentedControl.Segment>
-                }
-              />
-              <Tooltip.Content side="bottom" className="text-text-secondary">
-                {toggleModeShortcut}
-              </Tooltip.Content>
-            </Tooltip>
-          </SegmentedControl>
-          <div className="flex items-center">
-            <IconButton
-              aria-label="Attach file"
-              size="small"
-              onClick={() => {
-                const input = document.createElement("input")
-                input.type = "file"
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0]
-                  if (file) {
-                    attachFile(file, editorRef.current?.view)
-                  }
-                }
-                input.click()
-              }}
-            >
-              <PaperclipIcon16 />
-            </IconButton>
-            <IconButton
-              aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
-              size="small"
-              onClick={() => {
-                const newContent = updateFrontmatterValue({
-                  content: editorValue,
-                  properties: { pinned: parsedNote?.pinned ? null : true },
-                })
-                setEditorValue(newContent)
-                handleSave(newContent)
-              }}
-            >
-              {parsedNote?.pinned ? <PinFillIcon16 className="text-text-pinned" /> : <PinIcon16 />}
-            </IconButton>
-            <DropdownMenu modal={false}>
-              <DropdownMenu.Trigger
-                render={
-                  <IconButton aria-label="More actions" size="small" disableTooltip>
-                    <MoreIcon16 />
-                  </IconButton>
-                }
-              />
-              <DropdownMenu.Content align="end" side="top">
-                {isDraft ? (
-                  <>
-                    <DropdownMenu.Item
-                      icon={<UndoIcon16 />}
-                      onClick={() => {
-                        discardChanges()
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Discard changes
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                  </>
-                ) : null}
-                {containerWidth > 800 && (
-                  <>
-                    <DropdownMenu.Group>
-                      <DropdownMenu.GroupLabel>Width</DropdownMenu.GroupLabel>
-                      <DropdownMenu.Item
-                        icon={<WidthFixedIcon16 />}
-                        selected={resolvedWidth === "fixed"}
-                        onClick={() => {
-                          updateWidth("fixed")
-                          editorRef.current?.view?.focus()
-                        }}
-                      >
-                        Fixed
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        icon={<WidthFullIcon16 />}
-                        selected={resolvedWidth === "full"}
-                        onClick={() => {
-                          updateWidth("full")
-                          editorRef.current?.view?.focus()
-                        }}
-                      >
-                        Full
-                      </DropdownMenu.Item>
-                    </DropdownMenu.Group>
-                    <DropdownMenu.Separator />
-                  </>
-                )}
-                <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(editorValue)}>
-                  Copy markdown
-                </DropdownMenu.Item>
-                <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(noteId ?? "")}>
-                  Copy ID
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                  icon={<ShareIcon16 />}
-                  disabled={isSignedOut || !note || !online}
-                  onClick={() => setIsShareDialogOpen(true)}
-                >
-                  Share
-                </DropdownMenu.Item>
-                <DropdownMenu.Item
-                  icon={<ExternalLinkIcon16 />}
-                  href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  disabled={isSignedOut || !note}
-                >
-                  Open in GitHub
-                </DropdownMenu.Item>
-                <DropdownMenu.Item icon={<PrinterIcon16 />} onClick={() => window.print()}>
-                  Print
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator />
-                <DropdownMenu.Item
-                  variant="danger"
-                  icon={<TrashIcon16 />}
+    <PanelGroup
+      direction="horizontal"
+      autoSaveId={showCalendarSidebar ? "note-calendar-sidebar-v3" : undefined}
+    >
+      <Panel defaultSize={showCalendarSidebar ? 70 : 100} minSize={50}>
+        <PageLayout
+          title={`${noteId}.md`}
+          // title={
+          //   shouldShowPageTitle ? (
+          //     <span className="truncate">
+          //       <PageTitle note={parsedNote} />
+          //     </span>
+          //   ) : null
+          // }
+          icon={isDraft ? <DraftIndicator /> : <NoteFavicon note={parsedNote} />}
+          actions={
+            <div className="flex items-center gap-2">
+              {(!note && editorValue) || isDraft ? (
+                <Button
                   disabled={isSignedOut}
+                  variant="primary"
+                  size="small"
+                  shortcut={["⌘", "S"]}
+                  onClick={() => handleSave(editorValue)}
+                  className="hidden sm:flex"
+                >
+                  Save
+                </Button>
+              ) : null}
+
+              <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
+                <Tooltip open={mode === "read" ? false : undefined}>
+                  <Tooltip.Trigger
+                    render={
+                      <SegmentedControl.Segment
+                        selected={mode === "read"}
+                        onClick={switchToReading}
+                      >
+                        Read
+                      </SegmentedControl.Segment>
+                    }
+                  />
+                  <Tooltip.Content side="bottom" className="text-text-secondary">
+                    {toggleModeShortcut}
+                  </Tooltip.Content>
+                </Tooltip>
+                <Tooltip open={mode === "write" ? false : undefined}>
+                  <Tooltip.Trigger
+                    render={
+                      <SegmentedControl.Segment
+                        selected={mode === "write"}
+                        onClick={switchToWriting}
+                      >
+                        Write
+                      </SegmentedControl.Segment>
+                    }
+                  />
+                  <Tooltip.Content side="bottom" className="text-text-secondary">
+                    {toggleModeShortcut}
+                  </Tooltip.Content>
+                </Tooltip>
+              </SegmentedControl>
+              <div className="flex items-center">
+                <IconButton
+                  aria-label="Attach file"
+                  size="small"
                   onClick={() => {
-                    if (!noteId) return
-
-                    // Ask the user to confirm before deleting a note with backlinks
-                    if (
-                      note &&
-                      note.backlinks.length > 0 &&
-                      !window.confirm(
-                        `${note.id}.md has ${pluralize(
-                          note.backlinks.length,
-                          "backlink",
-                        )}. Are you sure you want to delete it?`,
-                      )
-                    ) {
-                      return
+                    const input = document.createElement("input")
+                    input.type = "file"
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0]
+                      if (file) {
+                        attachFile(file, editorRef.current?.view)
+                      }
                     }
-
-                    clearNoteDraft({ githubRepo, noteId })
-
-                    if (note) {
-                      deleteNote(note.id)
-                    }
-
-                    // Go home
-                    navigate({
-                      to: "/",
-                      search: { query: undefined, view: "grid" },
-                      replace: true,
-                    })
+                    input.click()
                   }}
                 >
-                  Delete
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
-            <ShareDialog
-              note={parsedNote}
-              onPublish={(gistId) => {
-                const newContent = updateFrontmatterValue({
-                  content: editorValue,
-                  properties: { gist_id: gistId },
-                })
-                setEditorValue(newContent)
-                handleSave(newContent)
-              }}
-              onUnpublish={() => {
-                const newContent = updateFrontmatterValue({
-                  content: editorValue,
-                  properties: { gist_id: null },
-                })
-                setEditorValue(newContent)
-                handleSave(newContent)
-                setIsShareDialogOpen(false)
-              }}
-              open={isShareDialogOpen}
-              onOpenChange={setIsShareDialogOpen}
-            />
-          </div>
-        </div>
-      }
-      floatingActions={
-        <div className="card-2 flex gap-1.5 coarse:gap-2 !rounded-full p-1.5 coarse:p-2 sm:hidden print:hidden">
-          {(!note && editorValue) || isDraft ? (
-            <Button
-              disabled={isSignedOut}
-              variant="primary"
-              shortcut={["⌘", "S"]}
-              onClick={() => handleSave(editorValue)}
-              className="coarse:h-12 rounded-full coarse:px-6"
-            >
-              Save
-            </Button>
-          ) : null}
-          <RadixSwitch.Root
-            checked={mode === "write"}
-            onCheckedChange={(checked) => {
-              if (checked) {
-                switchToWriting()
-              } else {
-                switchToReading()
-              }
-            }}
-            className={cx(
-              "relative h-8 coarse:h-12 w-[48px] coarse:w-[72px] cursor-pointer rounded-full bg-bg-secondary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-secondary-hover",
-            )}
-          >
-            <RadixSwitch.Thumb className="pointer-events-none grid size-8 coarse:size-12 translate-x-0 place-items-center rounded-full border border-border bg-bg-overlay text-text-secondary transition-transform will-change-transform data-[state=checked]:translate-x-[16px] coarse:data-[state=checked]:translate-x-[24px] data-[state=checked]:border-border-focus">
-              <EditIcon16 />
-            </RadixSwitch.Thumb>
-          </RadixSwitch.Root>
-        </div>
-      }
-    >
-      <InsertTemplateDialog />
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        ref={containerRef}
-        onMouseDown={(event) => {
-          // Double click to edit
-          if (mode === "read" && event.detail > 1) {
-            event.preventDefault()
-            switchToWriting()
-          }
-        }}
-      >
-        <div {...topSentinelProps} />
-        <div className="p-5 lg:p-10">
-          <div
-            className={cx(
-              "flex flex-col gap-8 pb-[50vh]",
-              resolvedWidth === "fixed" && "mx-auto max-w-3xl",
-            )}
-          >
-            {(isDailyNote || isWeeklyNote) && noteId ? (
-              <CalendarHeader noteId={noteId ?? ""} />
-            ) : null}
-
-            {mode === "read" && (
-              <div className="min-h-[240px]">
-                {parsedNote?.frontmatter?.gist_id ? (
-                  <div className="mb-5 print:hidden">
-                    <PillButton
-                      className="pl-1 coarse:pl-2"
+                  <PaperclipIcon16 />
+                </IconButton>
+                <IconButton
+                  aria-label={parsedNote?.pinned ? "Unpin" : "Pin"}
+                  size="small"
+                  onClick={() => {
+                    const newContent = updateFrontmatterValue({
+                      content: editorValue,
+                      properties: { pinned: parsedNote?.pinned ? null : true },
+                    })
+                    setEditorValue(newContent)
+                    handleSave(newContent)
+                  }}
+                >
+                  {parsedNote?.pinned ? (
+                    <PinFillIcon16 className="text-text-pinned" />
+                  ) : (
+                    <PinIcon16 />
+                  )}
+                </IconButton>
+                <DropdownMenu modal={false}>
+                  <DropdownMenu.Trigger
+                    render={
+                      <IconButton aria-label="More actions" size="small" disableTooltip>
+                        <MoreIcon16 />
+                      </IconButton>
+                    }
+                  />
+                  <DropdownMenu.Content align="end" side="top">
+                    {isDraft ? (
+                      <>
+                        <DropdownMenu.Item
+                          icon={<UndoIcon16 />}
+                          onClick={() => {
+                            discardChanges()
+                            editorRef.current?.view?.focus()
+                          }}
+                        >
+                          Discard changes
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Separator />
+                      </>
+                    ) : null}
+                    {containerWidth > 800 && (
+                      <>
+                        <DropdownMenu.Group>
+                          <DropdownMenu.GroupLabel>Width</DropdownMenu.GroupLabel>
+                          <DropdownMenu.Item
+                            icon={<WidthFixedIcon16 />}
+                            selected={resolvedWidth === "fixed"}
+                            onClick={() => {
+                              updateWidth("fixed")
+                              editorRef.current?.view?.focus()
+                            }}
+                          >
+                            Fixed
+                          </DropdownMenu.Item>
+                          <DropdownMenu.Item
+                            icon={<WidthFullIcon16 />}
+                            selected={resolvedWidth === "full"}
+                            onClick={() => {
+                              updateWidth("full")
+                              editorRef.current?.view?.focus()
+                            }}
+                          >
+                            Full
+                          </DropdownMenu.Item>
+                        </DropdownMenu.Group>
+                        <DropdownMenu.Separator />
+                      </>
+                    )}
+                    <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(editorValue)}>
+                      Copy markdown
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(noteId ?? "")}>
+                      Copy ID
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      icon={<ShareIcon16 />}
+                      disabled={isSignedOut || !note || !online}
                       onClick={() => setIsShareDialogOpen(true)}
                     >
-                      <GlobeIcon16 className="text-border-focus" />
-                      Published
-                    </PillButton>
-                  </div>
-                ) : null}
-                {
-                  // When printing a daily or weekly note without a title,
-                  // insert the date or week number as the title
-                  (isDailyNote || isWeeklyNote) && !note?.title ? (
-                    <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
-                      {isDailyNote
-                        ? formatDate(noteId ?? "", { alwaysIncludeYear: true })
-                        : formatWeek(noteId ?? "")}
-                    </h1>
-                  ) : null
-                }
-                <Markdown onChange={setEditorValue} emptyText="Empty note">
-                  {editorValue}
-                </Markdown>
+                      Share
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      icon={<ExternalLinkIcon16 />}
+                      href={`https://github.com/${githubRepo?.owner}/${githubRepo?.name}/blob/main/${noteId}.md`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      disabled={isSignedOut || !note}
+                    >
+                      Open in GitHub
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item icon={<PrinterIcon16 />} onClick={() => window.print()}>
+                      Print
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                      variant="danger"
+                      icon={<TrashIcon16 />}
+                      disabled={isSignedOut}
+                      onClick={() => {
+                        if (!noteId) return
+
+                        // Ask the user to confirm before deleting a note with backlinks
+                        if (
+                          note &&
+                          note.backlinks.length > 0 &&
+                          !window.confirm(
+                            `${note.id}.md has ${pluralize(
+                              note.backlinks.length,
+                              "backlink",
+                            )}. Are you sure you want to delete it?`,
+                          )
+                        ) {
+                          return
+                        }
+
+                        clearNoteDraft({ githubRepo, noteId })
+
+                        if (note) {
+                          deleteNote(note.id)
+                        }
+
+                        // Go home
+                        navigate({
+                          to: "/",
+                          search: { query: undefined, view: "grid" },
+                          replace: true,
+                        })
+                      }}
+                    >
+                      Delete
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Content>
+                </DropdownMenu>
+                <ShareDialog
+                  note={parsedNote}
+                  onPublish={(gistId) => {
+                    const newContent = updateFrontmatterValue({
+                      content: editorValue,
+                      properties: { gist_id: gistId },
+                    })
+                    setEditorValue(newContent)
+                    handleSave(newContent)
+                  }}
+                  onUnpublish={() => {
+                    const newContent = updateFrontmatterValue({
+                      content: editorValue,
+                      properties: { gist_id: null },
+                    })
+                    setEditorValue(newContent)
+                    handleSave(newContent)
+                    setIsShareDialogOpen(false)
+                  }}
+                  open={isShareDialogOpen}
+                  onOpenChange={setIsShareDialogOpen}
+                />
               </div>
-            )}
-            <div
-              hidden={mode !== "write"}
-              className={cx(
-                "min-h-[240px]",
-                isDraggingFile &&
-                  "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
-              )}
-              onDragOver={(event) => {
-                // Show visual feedback when dragging files
-                if (event.dataTransfer.types.includes("Files")) {
-                  event.preventDefault()
-                  event.dataTransfer.dropEffect = "copy"
-                  setIsDraggingFile(true)
-                }
-              }}
-              onDragLeave={() => {
-                setIsDraggingFile(false)
-              }}
-              onDrop={(event) => {
-                // Handle dropped files
-                if (event.dataTransfer.files.length > 0) {
-                  event.preventDefault()
-                  const file = event.dataTransfer.files[0]
-                  attachFile(file, editorRef.current?.view)
-                }
-                setIsDraggingFile(false)
-              }}
-            >
-              <NoteEditor
-                ref={editorRef}
-                defaultValue={editorValue}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                onChange={setEditorValue}
-                minHeight={160}
-              />
             </div>
-            {isWeeklyNote ? (
-              <Details className="print:hidden">
-                <Details.Summary>Days</Details.Summary>
-                <DaysOfWeek week={noteId ?? ""} />
-              </Details>
-            ) : null}
-            {/*{backlinkTasks.length > 0 ? (
-              <Details className="print:hidden">
-                <Details.Summary>Tasks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <TaskList
-                    baseQuery={`link:"${noteId}" -note:"${noteId}"`}
-                    query={tasks ?? ""}
-                    onQueryChange={(tasks) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, tasks }),
-                        replace: true,
-                      })
-                    }
+          }
+          floatingActions={
+            <div className="card-2 flex gap-1.5 coarse:gap-2 !rounded-full p-1.5 coarse:p-2 sm:hidden print:hidden">
+              {(!note && editorValue) || isDraft ? (
+                <Button
+                  disabled={isSignedOut}
+                  variant="primary"
+                  shortcut={["⌘", "S"]}
+                  onClick={() => handleSave(editorValue)}
+                  className="coarse:h-12 rounded-full coarse:px-6"
+                >
+                  Save
+                </Button>
+              ) : null}
+              <RadixSwitch.Root
+                checked={mode === "write"}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    switchToWriting()
+                  } else {
+                    switchToReading()
+                  }
+                }}
+                className={cx(
+                  "relative h-8 coarse:h-12 w-[48px] coarse:w-[72px] cursor-pointer rounded-full bg-bg-secondary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-border-focus data-[state=checked]:bg-border-focus data-[state=unchecked]:ring-1 data-[state=unchecked]:ring-inset data-[state=unchecked]:ring-border-secondary data-[state=unchecked]:hover:bg-bg-secondary-hover",
+                )}
+              >
+                <RadixSwitch.Thumb className="pointer-events-none grid size-8 coarse:size-12 translate-x-0 place-items-center rounded-full border border-border bg-bg-overlay text-text-secondary transition-transform will-change-transform data-[state=checked]:translate-x-[16px] coarse:data-[state=checked]:translate-x-[24px] data-[state=checked]:border-border-focus">
+                  <EditIcon16 />
+                </RadixSwitch.Thumb>
+              </RadixSwitch.Root>
+            </div>
+          }
+        >
+          <InsertTemplateDialog />
+          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+          <div
+            ref={containerRef}
+            onMouseDown={(event) => {
+              // Double click to edit
+              if (mode === "read" && event.detail > 1) {
+                event.preventDefault()
+                switchToWriting()
+              }
+            }}
+          >
+            <div {...topSentinelProps} />
+            <div className="p-5 lg:p-10">
+              <div
+                className={cx(
+                  "flex flex-col gap-8 pb-[50vh]",
+                  resolvedWidth === "fixed" && "mx-auto max-w-3xl",
+                )}
+              >
+                {(isDailyNote || isWeeklyNote) && noteId ? (
+                  <CalendarHeader
+                    noteId={noteId ?? ""}
+                    onToggleCalendar={toggleCalendarSidebar}
+                    calendarOpen={calendar}
                   />
-                </LinkHighlightProvider>
-              </Details>
-            ) : null}*/}
-            {backlinks.size > 0 ? (
-              <Details className="print:hidden">
-                <Details.Summary>Backlinks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <NoteList
-                    baseQuery={`link:"${noteId}" -id:"${noteId}"`}
-                    query={query ?? ""}
-                    view={view}
-                    onQueryChange={(query) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, query }),
-                        replace: true,
-                      })
+                ) : null}
+
+                {mode === "read" && (
+                  <div className="min-h-[240px]">
+                    {parsedNote?.frontmatter?.gist_id ? (
+                      <div className="mb-5 print:hidden">
+                        <PillButton
+                          className="pl-1 coarse:pl-2"
+                          onClick={() => setIsShareDialogOpen(true)}
+                        >
+                          <GlobeIcon16 className="text-border-focus" />
+                          Published
+                        </PillButton>
+                      </div>
+                    ) : null}
+                    {
+                      // When printing a daily or weekly note without a title,
+                      // insert the date or week number as the title
+                      (isDailyNote || isWeeklyNote) && !note?.title ? (
+                        <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
+                          {isDailyNote
+                            ? formatDate(noteId ?? "", { alwaysIncludeYear: true })
+                            : formatWeek(noteId ?? "")}
+                        </h1>
+                      ) : null
                     }
-                    onViewChange={(view) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, view }),
-                        replace: true,
-                      })
+                    <Markdown onChange={setEditorValue} emptyText="Empty note">
+                      {editorValue}
+                    </Markdown>
+                  </div>
+                )}
+                <div
+                  hidden={mode !== "write"}
+                  className={cx(
+                    "min-h-[240px]",
+                    isDraggingFile &&
+                      "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
+                  )}
+                  onDragOver={(event) => {
+                    // Show visual feedback when dragging files
+                    if (event.dataTransfer.types.includes("Files")) {
+                      event.preventDefault()
+                      event.dataTransfer.dropEffect = "copy"
+                      setIsDraggingFile(true)
                     }
+                  }}
+                  onDragLeave={() => {
+                    setIsDraggingFile(false)
+                  }}
+                  onDrop={(event) => {
+                    // Handle dropped files
+                    if (event.dataTransfer.files.length > 0) {
+                      event.preventDefault()
+                      const file = event.dataTransfer.files[0]
+                      attachFile(file, editorRef.current?.view)
+                    }
+                    setIsDraggingFile(false)
+                  }}
+                >
+                  <NoteEditor
+                    ref={editorRef}
+                    defaultValue={editorValue}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    onChange={setEditorValue}
+                    minHeight={160}
                   />
-                </LinkHighlightProvider>
-              </Details>
-            ) : null}
+                </div>
+                {isWeeklyNote ? (
+                  <Details className="print:hidden">
+                    <Details.Summary>Days</Details.Summary>
+                    <DaysOfWeek week={noteId ?? ""} />
+                  </Details>
+                ) : null}
+                {/*{backlinkTasks.length > 0 ? (
+                  <Details className="print:hidden">
+                    <Details.Summary>Tasks</Details.Summary>
+                    <LinkHighlightProvider href={`/notes/${noteId}`}>
+                      <TaskList
+                        baseQuery={`link:"${noteId}" -note:"${noteId}"`}
+                        query={tasks ?? ""}
+                        onQueryChange={(tasks) =>
+                          navigate({
+                            search: (prev) => ({ ...prev, tasks }),
+                            replace: true,
+                          })
+                        }
+                      />
+                    </LinkHighlightProvider>
+                  </Details>
+                ) : null}*/}
+                {backlinks.size > 0 ? (
+                  <Details className="print:hidden">
+                    <Details.Summary>Backlinks</Details.Summary>
+                    <LinkHighlightProvider href={`/notes/${noteId}`}>
+                      <NoteList
+                        baseQuery={`link:"${noteId}" -id:"${noteId}"`}
+                        query={query ?? ""}
+                        view={view}
+                        onQueryChange={(query) =>
+                          navigate({
+                            search: (prev) => ({ ...prev, query }),
+                            replace: true,
+                          })
+                        }
+                        onViewChange={(view) =>
+                          navigate({
+                            search: (prev) => ({ ...prev, view }),
+                            replace: true,
+                          })
+                        }
+                      />
+                    </LinkHighlightProvider>
+                  </Details>
+                ) : null}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </PageLayout>
+        </PageLayout>
+      </Panel>
+      {showCalendarSidebar ? (
+        <>
+          <PanelResizeHandle className="w-px shrink-0 bg-border-secondary" />
+          <Panel defaultSize={30} minSize={20} maxSize={40} className="print:hidden">
+            <div className="p-4">
+              <div>Calendar placeholder</div>
+            </div>
+          </Panel>
+        </>
+      ) : null}
+    </PanelGroup>
   )
 }
 

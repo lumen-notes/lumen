@@ -12,13 +12,20 @@ import {
 } from "../utils/date"
 import { Button } from "./button"
 import { IconButton } from "./icon-button"
-import { ChevronLeftIcon16, ChevronRightIcon16, SidebarCollapsedIcon16 } from "./icons"
+import {
+  ChevronLeftIcon16,
+  ChevronRightIcon16,
+  SidebarCollapsedIcon16,
+  SidebarIcon16,
+} from "./icons"
 
 type CalendarHeaderProps = {
   noteId: string
+  onToggleCalendar?: () => void
+  calendarOpen?: boolean
 }
 
-export function CalendarHeader({ noteId }: CalendarHeaderProps) {
+export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: CalendarHeaderProps) {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false })
   const isWeekly = isValidWeekString(noteId)
@@ -46,10 +53,11 @@ export function CalendarHeader({ noteId }: CalendarHeaderProps) {
           mode: searchParams.mode ?? "read",
           query: undefined,
           view: searchParams.view === "list" ? "list" : "grid",
+          calendar: searchParams.calendar ?? undefined,
         },
       })
     },
-    [isWeekly, noteId, navigate, searchParams.mode, searchParams.view],
+    [isWeekly, noteId, navigate, searchParams.mode, searchParams.view, searchParams.calendar],
   )
 
   const navigateToCurrentPeriod = React.useCallback(() => {
@@ -61,9 +69,18 @@ export function CalendarHeader({ noteId }: CalendarHeaderProps) {
         mode: searchParams.mode ?? "read",
         query: undefined,
         view: searchParams.view === "list" ? "list" : "grid",
+        calendar: searchParams.calendar ?? undefined,
       },
     })
-  }, [isWeekly, thisWeekString, todayString, navigate, searchParams.mode, searchParams.view])
+  }, [
+    isWeekly,
+    thisWeekString,
+    todayString,
+    navigate,
+    searchParams.mode,
+    searchParams.view,
+    searchParams.calendar,
+  ])
 
   return (
     <div className="flex items-start justify-between gap-4">
@@ -88,8 +105,15 @@ export function CalendarHeader({ noteId }: CalendarHeaderProps) {
           >
             <ChevronRightIcon16 />
           </IconButton>
-          <IconButton aria-label="Show calendar">
-            <SidebarCollapsedIcon16 className="-scale-x-100" />
+          <IconButton
+            aria-label={calendarOpen ? "Hide calendar" : "Show calendar"}
+            onClick={onToggleCalendar}
+          >
+            {calendarOpen ? (
+              <SidebarIcon16 className="-scale-x-100" />
+            ) : (
+              <SidebarCollapsedIcon16 className="-scale-x-100" />
+            )}
           </IconButton>
         </div>
       </div>

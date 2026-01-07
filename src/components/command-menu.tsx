@@ -120,6 +120,7 @@ export function CommandMenu() {
               mode: getHasDailyNote() ? "read" : "write",
               query: undefined,
               view: "grid",
+              calendar: true,
             },
           })
         },
