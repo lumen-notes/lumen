@@ -41,9 +41,7 @@ function addUpdatedTimestamp(content: string): string {
 }
 
 export function useMoveTask() {
-  const getMarkdownFiles = useAtomCallback(
-    React.useCallback((get) => get(markdownFilesAtom), []),
-  )
+  const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const githubRepo = useAtomValue(githubRepoAtom)
   const send = useSetAtom(globalStateMachineAtom)
   const navigate = useNavigate()
