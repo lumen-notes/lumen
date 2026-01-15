@@ -453,7 +453,7 @@ function Code({ className, inline, children, ...props }: CodeProps) {
   return (
     <div className="pre-container relative">
       <pre className="!pe-12 print:whitespace-pre-wrap">
-        <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1 print:hidden">
+        <div className="absolute end-2 top-2 rounded coarse:end-1 coarse:top-1 print:hidden">
           <CopyButton text={children.toString()} />
         </div>
         <SyntaxHighlighter language={language}>{children}</SyntaxHighlighter>
@@ -510,9 +510,9 @@ function extractListItemElements(children: React.ReactNode): {
   return { checkbox, content, nestedLists }
 }
 
-function ListItem({ node, children, ordered, ...props }: LiProps) {
+function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
-  const isTask = props.className?.includes("task-list-item")
+  const isTask = className?.includes("task-list-item")
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
   const { checkbox, content, nestedLists } = React.useMemo(
@@ -521,14 +521,8 @@ function ListItem({ node, children, ordered, ...props }: LiProps) {
   )
 
   return (
-    <li {...props}>
-      <div
-        className={cx(
-          "flex p-1.5 gap-1.5",
-          isTask && onChange && "hover:bg-bg-hover relative pr-10 rounded-lg group",
-          isMenuOpen && "bg-bg-hover",
-        )}
-      >
+    <li {...props} className={cx(isMenuOpen && "bg-bg-secondary rounded-lg", className)}>
+      <div className={cx("flex p-1.5 gap-1.5", isTask && onChange && "relative pr-10 group")}>
         <div className="size-7 shrink-0 grid place-items-center">
           {isTask ? (
             <Checkbox
