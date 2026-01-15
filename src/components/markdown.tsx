@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router"
+import { addDays } from "date-fns"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
@@ -10,6 +11,8 @@ import remarkMath from "remark-math"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
+import { useMoveTask } from "../hooks/task"
+import { formatDate, toDateString } from "../utils/date"
 import { remarkEmbed } from "../remark-plugins/embed"
 import { remarkPriority } from "../remark-plugins/priority"
 import { remarkTag } from "../remark-plugins/tag"
@@ -31,7 +34,14 @@ import { DropdownMenu } from "./dropdown-menu"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import { IconButton } from "./icon-button"
-import { ErrorIcon16, MoreIcon16, TrashIcon16 } from "./icons"
+import {
+  CalendarDateIcon16,
+  CopyIcon16,
+  CutIcon16,
+  ErrorIcon16,
+  MoreIcon16,
+  TrashIcon16,
+} from "./icons"
 import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"
@@ -49,11 +59,13 @@ export type MarkdownProps = {
   fontSize?: "small" | "large"
   onChange?: (value: string) => void
   emptyText?: string
+  noteId?: string
 }
 
 const MarkdownContext = React.createContext<{
   markdown: string
   onChange?: (value: string) => void
+  noteId?: string
 }>({
   markdown: "",
 })
@@ -66,6 +78,7 @@ export const Markdown = React.memo(
     fontSize = "large",
     onChange,
     emptyText = "Empty",
+    noteId,
   }: MarkdownProps) => {
     const { online } = useNetworkState()
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
@@ -88,9 +101,10 @@ export const Markdown = React.memo(
     const contextValue = React.useMemo(
       () => ({
         markdown: body,
-        onChange: (value: string) => onChange?.(children.replace(body, value)),
+        onChange: onChange ? (value: string) => onChange(children.replace(body, value)) : undefined,
+        noteId,
       }),
-      [body, children, onChange],
+      [body, children, onChange, noteId],
     )
 
     return (
@@ -511,19 +525,99 @@ function extractListItemElements(children: React.ReactNode): {
 }
 
 function ListItem({ node, children, ordered, className, ...props }: LiProps) {
-  const { markdown, onChange } = React.useContext(MarkdownContext)
+  const { markdown, onChange, noteId } = React.useContext(MarkdownContext)
   const isTask = className?.includes("task-list-item")
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const moveTask = useMoveTask()
 
   const { checkbox, content, nestedLists } = React.useMemo(
     () => extractListItemElements(children),
     [children],
   )
 
+  const handleMoveTo = React.useCallback(
+    (targetNoteId: string) => {
+      if (!node.position || !noteId) return
+      moveTask({
+        sourceNoteId: noteId,
+        targetNoteId,
+        sourceMarkdown: markdown,
+        nodeStart: node.position.start.offset ?? 0,
+        nodeEnd: node.position.end.offset ?? 0,
+      })
+    },
+    [markdown, moveTask, node.position, noteId],
+  )
+
+  // Memoize date options to avoid recalculating on every render
+  const dateOptions = React.useMemo(() => {
+    const now = new Date()
+    const today = now
+    const tomorrow = addDays(now, 1)
+    const todayId = toDateString(today)
+    const tomorrowId = toDateString(tomorrow)
+
+    type DateOption = {
+      label: string
+      icon: React.ReactNode
+      targetId: string
+      trailingText: string
+    }
+
+    const options: DateOption[] = []
+
+    // Today/Tomorrow: only show if not already on that note
+    if (noteId !== todayId) {
+      options.push({
+        label: "Today",
+        icon: <CalendarDateIcon16 date={today.getDate()} />,
+        targetId: todayId,
+        trailingText: formatDate(todayId),
+      })
+    }
+    if (noteId !== tomorrowId) {
+      options.push({
+        label: "Tomorrow",
+        icon: <CalendarDateIcon16 date={tomorrow.getDate()} />,
+        targetId: tomorrowId,
+        trailingText: formatDate(tomorrowId),
+      })
+    }
+
+    return options
+  }, [noteId])
+
+  // Get the task line text for copy/cut operations
+  const getTaskLine = React.useCallback(() => {
+    if (!node.position) return ""
+    let start = node.position.start.offset ?? 0
+    while (start > 0 && markdown[start - 1] !== "\n") {
+      start--
+    }
+    const end = node.position.end.offset ?? 0
+    return markdown.slice(start, end).trim()
+  }, [markdown, node.position])
+
+  const deleteTask = React.useCallback(() => {
+    if (!node.position) return
+    let start = node.position.start.offset ?? 0
+    while (start > 0 && markdown[start - 1] !== "\n") {
+      start--
+    }
+    const end = node.position.end.offset ?? 0
+    const endWithNewline = markdown[end] === "\n" ? end + 1 : end
+    onChange?.(markdown.slice(0, start) + markdown.slice(endWithNewline))
+  }, [markdown, node.position, onChange])
+
   return (
-    <li {...props} className={cx(isMenuOpen && "bg-bg-secondary rounded-lg", className)}>
-      <div className={cx("flex p-1.5 gap-1.5", isTask && onChange && "relative pr-10 group")}>
-        <div className="size-7 shrink-0 grid place-items-center">
+    <li {...props} className={cx(isMenuOpen && "bg-bg-selection rounded-lg", className)}>
+      <div
+        className={cx("flex p-1.5 gap-1.5", {
+          "relative pr-10 coarse:pr-12 group/task": isTask && onChange,
+          "hover:bg-bg-hover rounded-lg": isTask && onChange && !isMenuOpen,
+        })}
+      >
+        <div className="size-7 coarse:size-9 shrink-0 grid place-items-center">
           {isTask ? (
             <Checkbox
               key={String(checkbox?.checked)}
@@ -561,7 +655,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
             </svg>
           )}
         </div>
-        <div className="first-child:mt-0 last-child:mt-0 grow">{content}</div>
+        <div className="first-child:mt-0 last-child:mt-0 grow coarse:py-1">{content}</div>
         {isTask && onChange ? (
           <div className="absolute top-1 right-1">
             <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
@@ -570,29 +664,53 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   <IconButton
                     aria-label="Task actions"
                     disableTooltip
-                    className={cx("opacity-0 group-hover:opacity-100", isMenuOpen && "opacity-100")}
+                    className={cx(
+                      "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100 coarse:opacity-100",
+                      isMenuOpen && "opacity-100",
+                    )}
                   >
                     <MoreIcon16 />
                   </IconButton>
                 }
               />
               <DropdownMenu.Content align="end" width={280}>
+                {noteId && dateOptions.length > 0 ? (
+                  <>
+                    <DropdownMenu.Group>
+                      <DropdownMenu.GroupLabel>Move to</DropdownMenu.GroupLabel>
+                      {dateOptions.map((option) => (
+                        <DropdownMenu.Item
+                          key={option.targetId}
+                          icon={option.icon}
+                          onClick={() => handleMoveTo(option.targetId)}
+                          trailingVisual={
+                            <span className="text-text-secondary">{option.trailingText}</span>
+                          }
+                        >
+                          {option.label}
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Group>
+                    <DropdownMenu.Separator />
+                  </>
+                ) : null}
                 <DropdownMenu.Item
-                  variant="danger"
-                  icon={<TrashIcon16 />}
+                  icon={<CopyIcon16 />}
+                  onClick={() => navigator.clipboard.writeText(getTaskLine())}
+                >
+                  Copy task
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<CutIcon16 />}
                   onClick={() => {
-                    if (!node.position) return
-                    // Find line start to include leading whitespace
-                    let start = node.position.start.offset ?? 0
-                    while (start > 0 && markdown[start - 1] !== "\n") {
-                      start--
-                    }
-                    const end = node.position.end.offset ?? 0
-                    // Remove trailing newline if present to avoid blank lines
-                    const endWithNewline = markdown[end] === "\n" ? end + 1 : end
-                    onChange?.(markdown.slice(0, start) + markdown.slice(endWithNewline))
+                    navigator.clipboard.writeText(getTaskLine())
+                    deleteTask()
                   }}
                 >
+                  Cut task
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item variant="danger" icon={<TrashIcon16 />} onClick={deleteTask}>
                   Delete task
                 </DropdownMenu.Item>
               </DropdownMenu.Content>

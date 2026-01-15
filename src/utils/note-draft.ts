@@ -42,30 +42,41 @@ export function setNoteDraft({
   githubRepo,
   noteId,
   value,
+  immediate = false,
 }: {
   githubRepo: GitHubRepository | null
   noteId: NoteId
   value: string
+  immediate?: boolean
 }) {
   if (typeof window === "undefined" || !window.localStorage) return
 
   try {
     const key = getNoteStorageKey({ githubRepo, noteId })
-    // Debounce writes to reduce pressure on localStorage
+
+    // Cancel any pending debounced write
     const existingTimerId = draftWriteTimers.get(key)
     if (existingTimerId !== undefined) {
       window.clearTimeout(existingTimerId)
+      draftWriteTimers.delete(key)
     }
-    const timeoutId = window.setTimeout(() => {
-      try {
-        window.localStorage.setItem(key, value)
-      } catch {
-        // Ignore storage errors (e.g., private mode restrictions)
-      } finally {
-        draftWriteTimers.delete(key)
-      }
-    }, DRAFT_DEBOUNCE_MS)
-    draftWriteTimers.set(key, timeoutId)
+
+    if (immediate) {
+      // Write immediately without debounce
+      window.localStorage.setItem(key, value)
+    } else {
+      // Debounce writes to reduce pressure on localStorage
+      const timeoutId = window.setTimeout(() => {
+        try {
+          window.localStorage.setItem(key, value)
+        } catch {
+          // Ignore storage errors (e.g., private mode restrictions)
+        } finally {
+          draftWriteTimers.delete(key)
+        }
+      }, DRAFT_DEBOUNCE_MS)
+      draftWriteTimers.set(key, timeoutId)
+    }
   } catch {
     // Ignore storage errors (e.g., private mode restrictions)
   }
