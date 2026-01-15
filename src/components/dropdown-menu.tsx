@@ -113,7 +113,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         className={cx(
           "group flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-hover focus:outline-none active:bg-bg-active coarse:h-10",
           "eink:focus:bg-text eink:focus:text-bg",
-          "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:active:bg-transparent",
+          "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:focus:bg-transparent data-[disabled]:active:bg-transparent",
           className,
         )}
         // eslint-disable-next-line jsx-a11y/anchor-has-content -- content is provided via children
