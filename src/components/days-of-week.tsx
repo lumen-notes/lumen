@@ -35,7 +35,7 @@ function Day({ date }: { date: string }) {
           query: undefined,
           view: "grid",
         }}
-        className="focus-ring aspect-[5/3] rounded-[calc(var(--border-radius-base)+6px)] border border-dashed border-border-secondary xbg-bg-card p-4 font-content hover:border-border"
+        className="focus-ring aspect-[5/3] rounded-[calc(var(--border-radius-base)+6px)] border border-dashed border-border-secondary p-4 font-content hover:border-border"
       >
         <div className="flex flex-col gap-0.5 text-text-secondary">
           <span className="text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
