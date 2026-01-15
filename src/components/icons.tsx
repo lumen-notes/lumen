@@ -415,6 +415,14 @@ export function ChevronRightIcon16(props: IconProps) {
   return <ChevronLeftIcon16 {...props} className={cx("-scale-x-100", props.className)} />
 }
 
+export function ChevronUpIcon16(props: IconProps) {
+  return <ChevronLeftIcon16 {...props} className={cx("rotate-90", props.className)} />
+}
+
+export function ChevronDownIcon16(props: IconProps) {
+  return <ChevronLeftIcon16 {...props} className={cx("-rotate-90", props.className)} />
+}
+
 export function ChevronRightIcon12(props: IconProps) {
   return (
     <Icon size={12} {...props}>

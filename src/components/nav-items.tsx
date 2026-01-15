@@ -90,7 +90,6 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                   mode: hasDailyNote ? "read" : "write",
                   query: undefined,
                   view: "grid",
-                  calendar: true,
                 }}
                 activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
                 icon={<CalendarDateIcon16 date={today.getDate()} />}

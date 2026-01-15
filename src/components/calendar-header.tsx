@@ -12,26 +12,21 @@ import {
 } from "../utils/date"
 import { Button } from "./button"
 import { IconButton } from "./icon-button"
-import {
-  ChevronLeftIcon16,
-  ChevronRightIcon16,
-  SidebarCollapsedIcon16,
-  SidebarIcon16,
-} from "./icons"
+import { CalendarFillIcon16, CalendarIcon16, ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
 
 type CalendarHeaderProps = {
-  noteId: string
-  onToggleCalendar?: () => void
-  calendarOpen?: boolean
+  activeNoteId: string
 }
 
-export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: CalendarHeaderProps) {
+export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false })
-  const isWeekly = isValidWeekString(noteId)
+  const isWeekly = isValidWeekString(activeNoteId)
 
-  const primaryText = isWeekly ? formatWeek(noteId) : formatDate(noteId)
-  const secondaryText = isWeekly ? formatWeekDistance(noteId) : formatDateDistance(noteId)
+  const primaryText = isWeekly ? formatWeek(activeNoteId) : formatDate(activeNoteId)
+  const secondaryText = isWeekly
+    ? formatWeekDistance(activeNoteId)
+    : formatDateDistance(activeNoteId)
 
   const today = startOfToday()
   const todayString = toDateString(today)
@@ -39,7 +34,7 @@ export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: Calen
 
   const navigateByInterval = React.useCallback(
     (direction: "previous" | "next") => {
-      const date = parseISO(noteId)
+      const date = parseISO(activeNoteId)
       const increment = direction === "next" ? 1 : -1
 
       const target = isWeekly
@@ -57,7 +52,7 @@ export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: Calen
         },
       })
     },
-    [isWeekly, noteId, navigate, searchParams.mode, searchParams.view, searchParams.calendar],
+    [isWeekly, activeNoteId, navigate, searchParams.mode, searchParams.view, searchParams.calendar],
   )
 
   const navigateToCurrentPeriod = React.useCallback(() => {
@@ -84,15 +79,18 @@ export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: Calen
 
   return (
     <div className="flex items-start justify-between gap-4">
-      <div className="flex flex-col gap-1">
-        <span className="font-bold text-text text-xl leading-8 tracking-[-0.01em]">
-          {primaryText}
-        </span>
-        <span className="text-lg text-text-secondary">{secondaryText}</span>
+      <div className="flex flex-col">
+        <span className="font-bold text-text text-lg leading-8">{primaryText}</span>
+        <span className="text-text-secondary">{secondaryText}</span>
       </div>
       <div className="flex gap-2">
-        <Button onClick={navigateToCurrentPeriod}>{isWeekly ? "This week" : "Today"}</Button>
-        <div className="flex">
+        <Button
+          onClick={navigateToCurrentPeriod}
+          disabled={isWeekly ? activeNoteId === thisWeekString : activeNoteId === todayString}
+        >
+          {isWeekly ? "This week" : "Today"}
+        </Button>
+        <div className="flex rounded bg-bg-secondary">
           <IconButton
             aria-label={isWeekly ? "Previous week" : "Previous day"}
             onClick={() => navigateByInterval("previous")}
@@ -104,16 +102,6 @@ export function CalendarHeader({ noteId, onToggleCalendar, calendarOpen }: Calen
             onClick={() => navigateByInterval("next")}
           >
             <ChevronRightIcon16 />
-          </IconButton>
-          <IconButton
-            aria-label={calendarOpen ? "Hide calendar" : "Show calendar"}
-            onClick={onToggleCalendar}
-          >
-            {calendarOpen ? (
-              <SidebarIcon16 className="-scale-x-100" />
-            ) : (
-              <SidebarCollapsedIcon16 className="-scale-x-100" />
-            )}
           </IconButton>
         </div>
       </div>

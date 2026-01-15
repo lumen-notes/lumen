@@ -75,7 +75,7 @@ export function PageHeader({ title, icon, className, actions }: PageHeaderProps)
           </div>
         ) : null}
         {sidebar === "collapsed" && icon ? (
-          <div role="separator" className="h-5 w-px bg-border-secondary hidden sm:block" />
+          <div role="separator" className="h-5 w-px bg-border hidden sm:block" />
         ) : null}
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
           {icon ? (
