@@ -247,8 +247,8 @@ function CalendarItem({
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          // hasNotes && isActive && "after:bg-text-tertiary",
-          hasNotes && "after:bg-border",
+          hasNotes && isActive && "after:bg-text-tertiary",
+          hasNotes && !isActive && "after:bg-border",
         )}
       >
         <div className="flex flex-col items-center gap-1 @[3rem]:flex-row @[3rem]:gap-2 coarse:gap-2">
