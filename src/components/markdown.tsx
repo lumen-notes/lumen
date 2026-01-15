@@ -27,9 +27,11 @@ import { removeTemplateFrontmatter } from "../utils/remove-template-frontmatter"
 import { Checkbox } from "./checkbox"
 import { CopyButton } from "./copy-button"
 import { Details } from "./details"
+import { DropdownMenu } from "./dropdown-menu"
 import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
-import { ErrorIcon16 } from "./icons"
+import { IconButton } from "./icon-button"
+import { ErrorIcon16, MoreIcon16, TrashIcon16 } from "./icons"
 import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"
@@ -449,7 +451,7 @@ function Code({ className, inline, children, ...props }: CodeProps) {
   const language = className?.replace("language-", "")
 
   return (
-    <div className="relative">
+    <div className="pre-container relative">
       <pre className="!pe-12 print:whitespace-pre-wrap">
         <div className="absolute end-2 top-2 rounded bg-bg-code-block coarse:end-1 coarse:top-1 print:hidden">
           <CopyButton text={children.toString()} />
@@ -460,49 +462,157 @@ function Code({ className, inline, children, ...props }: CodeProps) {
   )
 }
 
-function ListItem({ node, ...props }: LiProps) {
-  if (props.className?.includes("task-list-item")) {
-    return <TaskListItem node={node} {...props} />
+function extractListItemElements(children: React.ReactNode): {
+  checkbox: { checked: boolean } | null
+  content: React.ReactNode
+  nestedLists: React.ReactElement[]
+} {
+  let checkbox: { checked: boolean } | null = null
+  const nestedLists: React.ReactElement[] = []
+
+  function removeCheckboxFromChildren(children: React.ReactNode): React.ReactNode {
+    return React.Children.map(children, (child) => {
+      if (!React.isValidElement(child)) return child
+
+      if (child.type === "input") {
+        checkbox = { checked: (child.props as { checked?: boolean }).checked ?? false }
+        return null
+      }
+
+      return child
+    })
   }
-  return <li {...props} />
+
+  const content = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child
+
+    // Extract checkbox from direct child
+    if (child.type === "input") {
+      checkbox = { checked: (child.props as { checked?: boolean }).checked ?? false }
+      return null
+    }
+
+    // Extract nested lists (ul or ol)
+    if (child.type === "ul" || child.type === "ol") {
+      nestedLists.push(child)
+      return null
+    }
+
+    // Check inside p tags for checkbox (multi-paragraph case)
+    if (child.type === "p" && child.props.children) {
+      const newChildren = removeCheckboxFromChildren(child.props.children)
+      return React.cloneElement(child, {}, newChildren)
+    }
+
+    return child
+  })
+
+  return { checkbox, content, nestedLists }
 }
 
-function TaskListItem({ node, children, ...props }: LiProps) {
+function ListItem({ node, children, ordered, ...props }: LiProps) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
+  const isTask = props.className?.includes("task-list-item")
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
-  // Filter out native checkbox input and extract checked state
-  const childArray = React.Children.toArray(children)
-  const checkboxChild = childArray.find(
-    (child) => React.isValidElement(child) && child.type === "input",
-  ) as React.ReactElement<{ checked?: boolean }> | undefined
-  const checked = checkboxChild?.props?.checked
-  const filteredChildren = childArray.filter((child) => child !== checkboxChild)
+  const { checkbox, content, nestedLists } = React.useMemo(
+    () => extractListItemElements(children),
+    [children],
+  )
 
   return (
     <li {...props}>
-      <Checkbox
-        key={String(checked)}
-        defaultChecked={checked}
-        disabled={!onChange}
-        onMouseDown={(event) => {
-          // Prevent double-click from propagating
-          if (event.detail > 1) {
-            event.stopPropagation()
-          }
-        }}
-        onCheckedChange={(newChecked) => {
-          if (!node.position) return
+      <div
+        className={cx(
+          "flex p-1.5 gap-1.5",
+          isTask && onChange && "hover:bg-bg-hover relative pr-10 rounded-lg group",
+          isMenuOpen && "bg-bg-hover",
+        )}
+      >
+        <div className="size-7 shrink-0 grid place-items-center">
+          {isTask ? (
+            <Checkbox
+              key={String(checkbox?.checked)}
+              defaultChecked={checkbox?.checked}
+              disabled={!onChange}
+              onMouseDown={(event) => {
+                // Prevent double-click from propagating
+                if (event.detail > 1) {
+                  event.stopPropagation()
+                }
+              }}
+              onCheckedChange={(newChecked) => {
+                if (!node.position) return
 
-          // Update the corresponding checkbox in the markdown string
-          const newValue =
-            markdown.slice(0, node.position.start.offset) +
-            (newChecked ? "- [x]" : "- [ ]") +
-            markdown.slice((node.position.start.offset ?? 0) + 5)
+                // Update the corresponding checkbox in the markdown string
+                const newValue =
+                  markdown.slice(0, node.position.start.offset) +
+                  (newChecked ? "- [x]" : "- [ ]") +
+                  markdown.slice((node.position.start.offset ?? 0) + 5)
 
-          onChange?.(newValue)
-        }}
-      />
-      {filteredChildren}
+                onChange?.(newValue)
+              }}
+            />
+          ) : ordered ? (
+            <span className="list-item-number text-text-secondary justify-self-end" />
+          ) : (
+            <svg
+              width="4"
+              height="4"
+              viewBox="0 0 4 4"
+              fill="currentColor"
+              className="text-text-secondary"
+            >
+              <circle cx="2" cy="2" r="2" />
+            </svg>
+          )}
+        </div>
+        <div className="first-child:mt-0 last-child:mt-0 grow">{content}</div>
+        {isTask && onChange ? (
+          <div className="absolute top-1 right-1">
+            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton
+                    aria-label="Task actions"
+                    disableTooltip
+                    className={cx("opacity-0 group-hover:opacity-100", isMenuOpen && "opacity-100")}
+                  >
+                    <MoreIcon16 />
+                  </IconButton>
+                }
+              />
+              <DropdownMenu.Content align="end" width={280}>
+                <DropdownMenu.Item
+                  variant="danger"
+                  icon={<TrashIcon16 />}
+                  onClick={() => {
+                    if (!node.position) return
+                    // Find line start to include leading whitespace
+                    let start = node.position.start.offset ?? 0
+                    while (start > 0 && markdown[start - 1] !== "\n") {
+                      start--
+                    }
+                    const end = node.position.end.offset ?? 0
+                    // Remove trailing newline if present to avoid blank lines
+                    const endWithNewline = markdown[end] === "\n" ? end + 1 : end
+                    onChange?.(markdown.slice(0, start) + markdown.slice(endWithNewline))
+                  }}
+                >
+                  Delete task
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          </div>
+        ) : null}
+      </div>
+      {nestedLists.length > 0 && (
+        <div className="[&_:is(ul,ol)]:!m-0 pl-7">
+          {nestedLists.map((list, index) => (
+            <React.Fragment key={index}>{list}</React.Fragment>
+          ))}
+        </div>
+      )}
     </li>
   )
 }
