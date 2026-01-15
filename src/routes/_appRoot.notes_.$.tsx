@@ -60,15 +60,12 @@ import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
-import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
 import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
 import {
   formatDate,
-  formatDateDistance,
   formatWeek,
-  formatWeekDistance,
   isValidDateString,
   isValidWeekString,
 } from "../utils/date"
@@ -108,21 +105,6 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned"),
 )
 
-function PageTitle({ note }: { note: Note }) {
-  if (note.type === "daily" || note.type === "weekly") {
-    return (
-      <span className="font-content space-x-3">
-        <span>{note.displayName}</span>
-        <span className="font-normal text-text-secondary">
-          {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
-        </span>
-      </span>
-    )
-  }
-
-  return <span className="font-content">{note.displayName}</span>
-}
-
 function RouteComponent() {
   const { _splat: noteId } = Route.useParams()
   const isSignedOut = useAtomValue(isSignedOutAtom)
@@ -151,7 +133,7 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, tasks, content: defaultContent, calendar } = Route.useSearch()
+  const { mode, query, view, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -167,7 +149,6 @@ function NotePage() {
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
   const searchNotes = useSearchNotes()
-  const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
     const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
@@ -276,19 +257,6 @@ function NotePage() {
       switchToReading()
     }
   }, [mode, switchToWriting, switchToReading])
-
-  const toggleCalendarSidebar = React.useCallback(() => {
-    navigate({
-      search: (prev) => {
-        if (prev.calendar) {
-          const { calendar: _, ...rest } = prev
-          return rest
-        }
-        return { ...prev, calendar: true }
-      },
-      replace: true,
-    })
-  }, [navigate])
 
   // Value refs
   // These refs allow us to access the latest values of these variables inside callbacks and effects

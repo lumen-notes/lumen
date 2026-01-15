@@ -19,7 +19,7 @@ import { useSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "../utils/date"
 import { IconButton } from "./icon-button"
-import { ChevronDownIcon16, ChevronUpIcon16, UndoIcon16, CalendarIcon16 } from "./icons"
+import { ChevronDownIcon16, ChevronUpIcon16, UndoIcon16 } from "./icons"
 
 export function Calendar({
   activeNoteId,

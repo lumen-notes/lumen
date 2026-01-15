@@ -12,7 +12,7 @@ import {
 } from "../utils/date"
 import { Button } from "./button"
 import { IconButton } from "./icon-button"
-import { CalendarFillIcon16, CalendarIcon16, ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
+import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
 
 type CalendarHeaderProps = {
   activeNoteId: string
