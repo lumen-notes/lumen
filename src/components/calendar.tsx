@@ -68,7 +68,7 @@ export function Calendar({
   }, [activeWeekStart])
 
   return (
-    <div className={cx("ring-1 ring-border-secondary p-2 rounded-xl", className)}>
+    <div className={cx("card-1 p-2 !rounded-xl", className)}>
       <div className="flex flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
           <span className="font-content px-2">
@@ -239,15 +239,15 @@ function CalendarItem({
         }}
         aria-label={ariaLabel}
         className={cx(
-          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-hover active:bg-bg-active",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text @container hover:bg-bg-hover active:bg-bg-active",
 
           // Underline the active day
           isActive &&
-            "bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
+            "font-bold bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-text-tertiary",
+          hasNotes && isActive && "after:bg-text",
           hasNotes && !isActive && "after:bg-border",
         )}
       >
@@ -259,9 +259,9 @@ function CalendarItem({
             className={cx(
               isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
               // Outline the current day
-              isToday && "shadow-[inset_0_0_0_1px_currentColor]",
+              isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
               // Make outline bolder if current day is active
-              // isToday && isActive && "bg-text text-bg",
+              isToday && isActive && "bg-text text-bg",
             )}
           >
             {number}
