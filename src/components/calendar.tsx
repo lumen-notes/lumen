@@ -72,7 +72,8 @@ export function Calendar({
       <div className="flex flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
           <span className="font-content px-2">
-            {MONTH_NAMES[displayedWeekStart.getMonth()]} {displayedWeekStart.getFullYear()}
+            <span className="font-bold">{MONTH_NAMES[displayedWeekStart.getMonth()]}</span>{" "}
+            {displayedWeekStart.getFullYear()}
           </span>
           <div className="flex">
             {canReset ? (
@@ -245,7 +246,7 @@ function CalendarItem({
             "bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
           // Show a dot if the date has notes
           hasNotes &&
-            "after:pointer-events-none after:absolute after:bottom-1.5 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+            "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
           // hasNotes && isActive && "after:bg-text-tertiary",
           hasNotes && "after:bg-border",
         )}
