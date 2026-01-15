@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { CodeProps, LiProps, Position } from "react-markdown/lib/ast-to-react"
+import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
 import { useNetworkState } from "react-use"
 import rehypeKatex from "rehype-katex"
 import rehypeRaw from "rehype-raw"
@@ -243,7 +243,6 @@ function MarkdownContent({ children, className }: { children: string; className?
       components={{
         a: Anchor,
         img: Image,
-        input: CheckboxInput,
         li: ListItem,
         // Delegate rendering of the <pre> element to the Code component
         pre: ({ children }) => <>{children}</>,
@@ -461,52 +460,50 @@ function Code({ className, inline, children, ...props }: CodeProps) {
   )
 }
 
-export const TaskListItemContext = React.createContext<{
-  position?: Position
-} | null>(null)
-
-function ListItem({ node, ordered, index, ...props }: LiProps) {
-  const isTaskListItem = props.className?.includes("task-list-item")
-
-  if (isTaskListItem) {
-    return (
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      <TaskListItemContext.Provider value={{ position: node.position }}>
-        <li {...props} />
-      </TaskListItemContext.Provider>
-    )
+function ListItem({ node, ...props }: LiProps) {
+  if (props.className?.includes("task-list-item")) {
+    return <TaskListItem node={node} {...props} />
   }
-
   return <li {...props} />
 }
 
-function CheckboxInput({ checked }: { checked?: boolean }) {
+function TaskListItem({ node, children, ...props }: LiProps) {
   const { markdown, onChange } = React.useContext(MarkdownContext)
-  const { position } = React.useContext(TaskListItemContext) ?? {}
+
+  // Filter out native checkbox input and extract checked state
+  const childArray = React.Children.toArray(children)
+  const checkboxChild = childArray.find(
+    (child) => React.isValidElement(child) && child.type === "input",
+  ) as React.ReactElement<{ checked?: boolean }> | undefined
+  const checked = checkboxChild?.props?.checked
+  const filteredChildren = childArray.filter((child) => child !== checkboxChild)
 
   return (
-    <Checkbox
-      key={String(checked)}
-      defaultChecked={checked}
-      disabled={!onChange}
-      onMouseDown={(event) => {
-        // Prevent double-click from propagating
-        if (event.detail > 1) {
-          event.stopPropagation()
-        }
-      }}
-      onCheckedChange={(newChecked) => {
-        if (!position) return
+    <li {...props}>
+      <Checkbox
+        key={String(checked)}
+        defaultChecked={checked}
+        disabled={!onChange}
+        onMouseDown={(event) => {
+          // Prevent double-click from propagating
+          if (event.detail > 1) {
+            event.stopPropagation()
+          }
+        }}
+        onCheckedChange={(newChecked) => {
+          if (!node.position) return
 
-        // Update the corresponding checkbox in the markdown string
-        const newValue =
-          markdown.slice(0, position.start.offset) +
-          (newChecked ? "- [x]" : "- [ ]") +
-          markdown.slice((position.start.offset ?? 0) + 5)
+          // Update the corresponding checkbox in the markdown string
+          const newValue =
+            markdown.slice(0, node.position.start.offset) +
+            (newChecked ? "- [x]" : "- [ ]") +
+            markdown.slice((node.position.start.offset ?? 0) + 5)
 
-        onChange?.(newValue)
-      }}
-    />
+          onChange?.(newValue)
+        }}
+      />
+      {filteredChildren}
+    </li>
   )
 }
 
