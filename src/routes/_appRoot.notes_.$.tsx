@@ -725,7 +725,7 @@ function NotePage() {
           >
             {isDailyNote || isWeeklyNote ? (
               <div className="print-hidden flex flex-col gap-8">
-                <Calendar activeNoteId={noteId ?? ""} />
+                <Calendar className="-m-2" activeNoteId={noteId ?? ""} />
                 <CalendarHeader activeNoteId={noteId ?? ""} />
               </div>
             ) : null}

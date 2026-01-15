@@ -48,11 +48,10 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
           mode: searchParams.mode ?? "read",
           query: undefined,
           view: searchParams.view === "list" ? "list" : "grid",
-          calendar: searchParams.calendar ?? undefined,
         },
       })
     },
-    [isWeekly, activeNoteId, navigate, searchParams.mode, searchParams.view, searchParams.calendar],
+    [isWeekly, activeNoteId, navigate, searchParams.mode, searchParams.view],
   )
 
   const navigateToCurrentPeriod = React.useCallback(() => {
@@ -64,23 +63,16 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
         mode: searchParams.mode ?? "read",
         query: undefined,
         view: searchParams.view === "list" ? "list" : "grid",
-        calendar: searchParams.calendar ?? undefined,
       },
     })
-  }, [
-    isWeekly,
-    thisWeekString,
-    todayString,
-    navigate,
-    searchParams.mode,
-    searchParams.view,
-    searchParams.calendar,
-  ])
+  }, [isWeekly, thisWeekString, todayString, navigate, searchParams.mode, searchParams.view])
 
   return (
     <div className="flex items-start justify-between gap-4">
-      <div className="flex flex-col">
-        <span className="font-bold text-text text-lg leading-8">{primaryText}</span>
+      <div className="flex flex-col min-w-0">
+        <span className="font-bold text-text text-lg leading-8 truncate coarse:leading-10">
+          {primaryText}
+        </span>
         <span className="text-text-secondary">{secondaryText}</span>
       </div>
       <div className="flex gap-2">

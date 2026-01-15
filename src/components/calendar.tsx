@@ -68,12 +68,11 @@ export function Calendar({
   }, [activeWeekStart])
 
   return (
-    <div className={cx("border-b border-border-secondary", className)}>
-      <div className="-mb-px flex flex-col gap-2 overflow-hidden pb-2">
+    <div className={cx("ring-1 ring-border-secondary p-2 rounded-xl", className)}>
+      <div className="flex flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
-          <span className="font-content">
-            <span className="font-bold">{MONTH_NAMES[displayedWeekStart.getMonth()]}</span>{" "}
-            <span>{displayedWeekStart.getFullYear()}</span>
+          <span className="font-content px-2">
+            {MONTH_NAMES[displayedWeekStart.getMonth()]} {displayedWeekStart.getFullYear()}
           </span>
           <div className="flex">
             {canReset ? (
@@ -243,12 +242,12 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
+            "bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1.5 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-text",
-          hasNotes && !isActive && "after:bg-border",
+          // hasNotes && isActive && "after:bg-text-tertiary",
+          hasNotes && "after:bg-border",
         )}
       >
         <div className="flex flex-col items-center gap-1 @[3rem]:flex-row @[3rem]:gap-2 coarse:gap-2">
@@ -259,9 +258,9 @@ function CalendarItem({
             className={cx(
               isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
               // Outline the current day
-              isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
+              isToday && "shadow-[inset_0_0_0_1px_currentColor]",
               // Make outline bolder if current day is active
-              isToday && isActive && "bg-text text-bg",
+              // isToday && isActive && "bg-text text-bg",
             )}
           >
             {number}
