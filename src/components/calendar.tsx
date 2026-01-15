@@ -68,7 +68,12 @@ export function Calendar({
   }, [activeWeekStart])
 
   return (
-    <div className={cx("bg-bg-code-block px-2 pt-2 rounded-xl", className)}>
+    <div
+      className={cx(
+        "xbg-bg-code-block ring-1 ring-border-secondary px-2 pt-2 rounded-xl",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-2 overflow-hidden pb-2">
         <div className="flex items-center justify-between">
           <span className="font-content px-2">

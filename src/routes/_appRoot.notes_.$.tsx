@@ -63,12 +63,7 @@ import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
-import {
-  formatDate,
-  formatWeek,
-  isValidDateString,
-  isValidWeekString,
-} from "../utils/date"
+import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
@@ -735,7 +730,7 @@ function NotePage() {
           >
             {isDailyNote || isWeeklyNote ? (
               <div className="print-hidden flex flex-col gap-8">
-                <Calendar activeNoteId={noteId ?? ""} />
+                <Calendar className="-m-2" activeNoteId={noteId ?? ""} />
                 <CalendarHeader activeNoteId={noteId ?? ""} />
               </div>
             ) : null}
@@ -764,7 +759,11 @@ function NotePage() {
                     </h1>
                   ) : null
                 }
-                <Markdown noteId={noteId} onChange={setEditorValue} emptyText="Empty note (double-click to edit)">
+                <Markdown
+                  noteId={noteId}
+                  onChange={setEditorValue}
+                  emptyText="Empty note (double-click to edit)"
+                >
                   {editorValue}
                 </Markdown>
               </div>
