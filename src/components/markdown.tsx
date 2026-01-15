@@ -610,7 +610,10 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   }, [markdown, node.position, onChange])
 
   return (
-    <li {...props} className={cx(isMenuOpen && "bg-bg-selection rounded-lg", className)}>
+    <li
+      {...props}
+      className={cx("transition-colors rounded-lg", isMenuOpen && "bg-bg-selection ", className)}
+    >
       <div
         className={cx("flex p-1.5 gap-1.5", {
           "relative pr-10 coarse:pr-12 group/task": isTask && onChange,
@@ -672,7 +675,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   </IconButton>
                 }
               />
-              <DropdownMenu.Content align="end" width={280}>
+              <DropdownMenu.Content align="end" width={280} sideOffset={8} alignOffset={-4}>
                 {noteId && dateOptions.length > 0 ? (
                   <>
                     <DropdownMenu.Group>
