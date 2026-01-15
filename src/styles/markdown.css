@@ -23,11 +23,11 @@
   margin-block-end: 0;
 }
 
-.markdown :is(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote) {
+.markdown :where(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote, .pre-container) {
   margin-block: calc(var(--font-size-base) * 1.25);
 }
 
-.markdown li :is(h1, h2, h3, h4, h5, h6, p, pre, ul, ol, table, blockquote) {
+.markdown li :where(h1, h2, h3, h4, h5, h6, p, pre, table, blockquote, .pre-container) {
   margin-block: calc(var(--font-size-base) * 0.5);
 }
 
@@ -93,54 +93,20 @@
   border-color: var(--color-border-secondary);
 }
 
-.markdown ul {
-  list-style-type: disc;
-}
-
 .markdown ol {
-  list-style-type: decimal;
-}
-
-.markdown ul,
-.markdown ol {
-  padding-inline-start: calc(var(--font-size-base) * 2);
-}
-
-.markdown ul ul,
-.markdown ul ol,
-.markdown ol ul,
-.markdown ol ol {
-  margin-block-start: calc(var(--font-size-base) * 0.5) !important;
-  margin-block-end: calc(var(--font-size-base) * 0.5);
+  counter-reset: list-item;
 }
 
 .markdown li {
-  margin-block: calc(var(--font-size-base) * 0.5);
+  counter-increment: list-item;
+}
+
+.markdown .list-item-number::before {
+  content: counter(list-item) ".";
 }
 
 .markdown li.task-list-item {
-  position: relative;
   list-style-type: none;
-}
-
-.markdown li [type="checkbox"],
-.markdown li [role="checkbox"] {
-  position: absolute;
-  left: -0.75em;
-  margin-block-start: 0.33em;
-  transform: translateX(-100%);
-}
-
-@media (pointer: coarse) {
-  .markdown li [type="checkbox"],
-  .markdown li [role="checkbox"] {
-    margin-block-start: 0.2em;
-  }
-}
-
-.markdown ::marker {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
 }
 
 .markdown table {
