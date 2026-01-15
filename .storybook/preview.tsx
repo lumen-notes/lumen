@@ -1,6 +1,24 @@
 import { Tooltip } from "@base-ui/react/tooltip"
+import {
+  RouterProvider,
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router"
 import React from "react"
 import "../src/styles/index.css"
+
+// Create a minimal router for Storybook
+const rootRoute = createRootRoute()
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: () => null,
+})
+const routeTree = rootRoute.addChildren([indexRoute])
+const memoryHistory = createMemoryHistory({ initialEntries: ["/"] })
+const storybookRouter = createRouter({ routeTree, history: memoryHistory })
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -33,9 +51,11 @@ export const decorators = [
     }, [context.globals.theme])
 
     return (
-      <Tooltip.Provider>
-        <Story />
-      </Tooltip.Provider>
+      <RouterProvider router={storybookRouter}>
+        <Tooltip.Provider>
+          <Story />
+        </Tooltip.Provider>
+      </RouterProvider>
     )
   },
 ]
