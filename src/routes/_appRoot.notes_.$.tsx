@@ -76,7 +76,6 @@ type RouteSearch = {
   view: "grid" | "list"
   tasks?: string | undefined
   content?: string
-  calendar?: boolean
 }
 
 export const Route = createFileRoute("/_appRoot/notes_/$")({
@@ -87,10 +86,6 @@ export const Route = createFileRoute("/_appRoot/notes_/$")({
       view: search.view === "list" ? "list" : "grid",
       tasks: typeof search.tasks === "string" ? search.tasks : undefined,
       content: typeof search.content === "string" ? search.content : undefined,
-      calendar:
-        "calendar" in search && search.calendar !== "false" && search.calendar !== "0"
-          ? true
-          : undefined,
     }
   },
   component: RouteComponent,
@@ -730,7 +725,7 @@ function NotePage() {
           >
             {isDailyNote || isWeeklyNote ? (
               <div className="print-hidden flex flex-col gap-8">
-                <Calendar className="-m-2" activeNoteId={noteId ?? ""} />
+                <Calendar activeNoteId={noteId ?? ""} />
                 <CalendarHeader activeNoteId={noteId ?? ""} />
               </div>
             ) : null}

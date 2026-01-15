@@ -68,15 +68,10 @@ export function Calendar({
   }, [activeWeekStart])
 
   return (
-    <div
-      className={cx(
-        "xbg-bg-code-block ring-1 ring-border-secondary px-2 pt-2 rounded-xl",
-        className,
-      )}
-    >
-      <div className="flex flex-col gap-2 overflow-hidden pb-2">
+    <div className={cx("border-b border-border-secondary", className)}>
+      <div className="-mb-px flex flex-col gap-2 overflow-hidden pb-2">
         <div className="flex items-center justify-between">
-          <span className="font-content px-2">
+          <span className="font-content">
             <span className="font-bold">{MONTH_NAMES[displayedWeekStart.getMonth()]}</span>{" "}
             <span>{displayedWeekStart.getFullYear()}</span>
           </span>
@@ -248,12 +243,11 @@ function CalendarItem({
 
           // Underline the active day
           isActive &&
-            "text-text bg-bg-hover before:pointer-events-none xbefore:absolute xbefore:-bottom-2 xbefore:h-[3px] xeink:before:h-[4px] xbefore:w-full xbefore:bg-text xbefore:rounded-sm xbefore:content-['']",
-
+            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1.5 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-border",
+          hasNotes && isActive && "after:bg-text",
           hasNotes && !isActive && "after:bg-border",
         )}
       >
