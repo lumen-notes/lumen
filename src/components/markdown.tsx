@@ -614,7 +614,6 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
       <div
         className={cx("flex p-1.5 gap-1.5", {
           "relative pr-10 coarse:pr-12 group/task": isTask && onChange,
-          "hover:bg-bg-hover rounded-lg": isTask && onChange && !isMenuOpen,
         })}
       >
         <div className="size-7 coarse:size-9 shrink-0 grid place-items-center">
@@ -663,7 +662,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                 render={
                   <IconButton
                     aria-label="Task actions"
-                    disableTooltip
+                    tooltipSide="top"
                     className={cx(
                       "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100 coarse:opacity-100",
                       isMenuOpen && "opacity-100",
