@@ -764,7 +764,7 @@ function NotePage() {
                     </h1>
                   ) : null
                 }
-                <Markdown noteId={noteId} onChange={setEditorValue} emptyText="Empty note">
+                <Markdown noteId={noteId} onChange={setEditorValue} emptyText="Empty note (double-click to edit)">
                   {editorValue}
                 </Markdown>
               </div>
