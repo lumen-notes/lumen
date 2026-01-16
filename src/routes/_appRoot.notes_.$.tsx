@@ -13,16 +13,16 @@ import useResizeObserver from "use-resize-observer"
 import { z } from "zod/v3"
 import { Button } from "../components/button"
 import { Calendar } from "../components/calendar"
+import { CalendarHeader } from "../components/calendar-header"
 import { DaysOfWeek } from "../components/days-of-week"
 import { Details } from "../components/details"
+import { DraftIndicator } from "../components/draft-indicator"
 import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import {
-  WidthFixedIcon16,
   CopyIcon16,
   EditIcon16,
   ExternalLinkIcon16,
-  WidthFullIcon16,
   GlobeIcon16,
   MoreIcon16,
   NoteIcon16,
@@ -33,16 +33,16 @@ import {
   ShareIcon16,
   TrashIcon16,
   UndoIcon16,
+  WidthFixedIcon16,
+  WidthFullIcon16,
 } from "../components/icons"
-import { DraftIndicator } from "../components/draft-indicator"
 import { InsertTemplateDialog, removeFrontmatterComments } from "../components/insert-template"
-import { PageLayout } from "../components/page-layout"
 import { LinkHighlightProvider } from "../components/link-highlight-provider"
 import { Markdown } from "../components/markdown"
 import { NoteEditor } from "../components/note-editor"
 import { NoteFavicon } from "../components/note-favicon"
 import { NoteList } from "../components/note-list"
-import { TaskList } from "../components/task-list"
+import { PageLayout } from "../components/page-layout"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
@@ -58,21 +58,12 @@ import {
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
 import { useEditorSettings } from "../hooks/editor-settings"
-import { useIsScrolled } from "../hooks/is-scrolled"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
-import { useSearchTasks } from "../hooks/search-tasks"
 import { useValueRef } from "../hooks/value-ref"
-import { /* Font, */ Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
+import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
 import { cx } from "../utils/cx"
-import {
-  formatDate,
-  formatDateDistance,
-  formatWeek,
-  formatWeekDistance,
-  isValidDateString,
-  isValidWeekString,
-} from "../utils/date"
+import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { parseNote } from "../utils/parse-note"
@@ -104,22 +95,6 @@ const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.cloned"),
 )
 
-function PageTitle({ note }: { note: Note }) {
-  if (note.type === "daily" || note.type === "weekly") {
-    return (
-      <span className="font-content">
-        <span>{note.displayName}</span>
-        <span className="mx-2 font-normal text-text-secondary">·</span>
-        <span className="font-normal text-text-secondary">
-          {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
-        </span>
-      </span>
-    )
-  }
-
-  return <span className="font-content">{note.displayName}</span>
-}
-
 function RouteComponent() {
   const { _splat: noteId } = Route.useParams()
   const isSignedOut = useAtomValue(isSignedOutAtom)
@@ -145,16 +120,10 @@ function renderTemplate(template: Template, args: Record<string, unknown> = {}) 
   return text
 }
 
-// const fontDisplayNames: Record<Font, string> = {
-//   sans: "Sans serif",
-//   serif: "Serif",
-//   handwriting: "Handwriting",
-// }
-
 function NotePage() {
   // Router
   const { _splat: noteId } = Route.useParams()
-  const { mode, query, view, tasks, content: defaultContent } = Route.useSearch()
+  const { mode, query, view, content: defaultContent } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   // Global state
@@ -170,15 +139,11 @@ function NotePage() {
   const isDailyNote = isValidDateString(noteId ?? "")
   const isWeeklyNote = isValidWeekString(noteId ?? "")
   const searchNotes = useSearchNotes()
-  const searchTasks = useSearchTasks()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
     const notes = searchNotes(`link:"${noteId}" -id:"${noteId}"`)
     return new Map<NoteId, Note>(notes.map((note) => [note.id, note]))
   }, [noteId, searchNotes])
-  const backlinkTasks = React.useMemo(() => {
-    return searchTasks(`link:"${noteId}" -note:"${noteId}"`)
-  }, [noteId, searchTasks])
 
   // Editor state
   const editorRef = React.useRef<ReactCodeMirrorRef>(null)
@@ -247,21 +212,6 @@ function NotePage() {
     },
     [isSignedOut, noteId, note, saveNote, githubRepo],
   )
-
-  // const updateFont = React.useCallback(
-  //   (font: Font | null) => {
-  //     if (!noteId) return
-
-  //     const newContent = updateFrontmatterValue({
-  //       content: editorValue,
-  //       properties: { font },
-  //     })
-
-  //     setEditorValue(newContent)
-  //     handleSave(newContent)
-  //   },
-  //   [noteId, editorValue, setEditorValue, handleSave],
-  // )
 
   const updateWidth = React.useCallback(
     (width: Width) => {
@@ -502,30 +452,10 @@ function NotePage() {
     })
   }, [handleSaveRef, editorValueRef, switchToReadingRef, isDraftRef])
 
-  const { isScrolled, topSentinelProps } = useIsScrolled()
-
-  const shouldShowPageTitle =
-    (!parsedNote.title && parsedNote.displayName === noteId) ||
-    isScrolled ||
-    isDailyNote ||
-    isWeeklyNote
-
   return (
     <PageLayout
-      title={
-        shouldShowPageTitle ? (
-          <span className={cx("truncate", !note ? "font-normal italic text-text-secondary" : "")}>
-            <PageTitle note={parsedNote} />
-          </span>
-        ) : null
-      }
-      icon={
-        isDraft ? (
-          <DraftIndicator />
-        ) : shouldShowPageTitle ? (
-          <NoteFavicon note={parsedNote} />
-        ) : null
-      }
+      title={`${noteId}.md`}
+      icon={isDraft ? <DraftIndicator /> : <NoteFavicon note={parsedNote} />}
       actions={
         <div className="flex items-center gap-2">
           {(!note && editorValue) || isDraft ? (
@@ -622,33 +552,6 @@ function NotePage() {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-
-                {/* <DropdownMenu.Group>
-                  <DropdownMenu.GroupLabel>Font</DropdownMenu.GroupLabel>
-                  <DropdownMenu.Item
-                    className={`font-${defaultFont}`}
-                    icon={<span className={`font-${defaultFont}`}>Aa</span>}
-                    selected={parsedFont === null}
-                    onClick={() => updateFont(null)}
-                  >
-                    Default{" "}
-                    <span className="text-text-secondary eink:text-current">
-                      ({fontDisplayNames[defaultFont]})
-                    </span>
-                  </DropdownMenu.Item>
-                  {Object.entries(fontDisplayNames).map(([fontKey, displayName]) => (
-                    <DropdownMenu.Item
-                      key={fontKey}
-                      className={`font-${fontKey}`}
-                      icon={<span className={`font-${fontKey}`}>Aa</span>}
-                      selected={parsedFont === fontKey}
-                      onClick={() => updateFont(fontKey as Font)}
-                    >
-                      {displayName}
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Group>
-                <DropdownMenu.Separator /> */}
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
@@ -813,7 +716,6 @@ function NotePage() {
           }
         }}
       >
-        <div {...topSentinelProps} />
         <div className="p-5 lg:p-10">
           <div
             className={cx(
@@ -822,11 +724,14 @@ function NotePage() {
             )}
           >
             {isDailyNote || isWeeklyNote ? (
-              <Calendar className="print:hidden" activeNoteId={noteId ?? ""} />
+              <div className="print-hidden flex flex-col gap-8">
+                <Calendar className="-m-2" activeNoteId={noteId ?? ""} />
+                <CalendarHeader activeNoteId={noteId ?? ""} />
+              </div>
             ) : null}
 
             {mode === "read" && (
-              <div>
+              <div className="min-h-[240px]">
                 {parsedNote?.frontmatter?.gist_id ? (
                   <div className="mb-5 print:hidden">
                     <PillButton
@@ -849,7 +754,11 @@ function NotePage() {
                     </h1>
                   ) : null
                 }
-                <Markdown noteId={noteId} onChange={setEditorValue} emptyText="Empty note">
+                <Markdown
+                  noteId={noteId}
+                  onChange={setEditorValue}
+                  emptyText="Empty note (double-click to edit)"
+                >
                   {editorValue}
                 </Markdown>
               </div>
@@ -857,7 +766,7 @@ function NotePage() {
             <div
               hidden={mode !== "write"}
               className={cx(
-                "min-h-[160px]",
+                "min-h-[240px]",
                 isDraggingFile &&
                   "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
               )}
@@ -895,23 +804,6 @@ function NotePage() {
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteId ?? ""} />
-              </Details>
-            ) : null}
-            {backlinkTasks.length > 0 ? (
-              <Details className="print:hidden">
-                <Details.Summary>Tasks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <TaskList
-                    baseQuery={`link:"${noteId}" -note:"${noteId}"`}
-                    query={tasks ?? ""}
-                    onQueryChange={(tasks) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, tasks }),
-                        replace: true,
-                      })
-                    }
-                  />
-                </LinkHighlightProvider>
               </Details>
             ) : null}
             {backlinks.size > 0 ? (

@@ -158,7 +158,11 @@ export const Markdown = React.memo(
               ) : null}
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
-                  {title ? <MarkdownContent>{title}</MarkdownContent> : null}
+                  {title ? (
+                    <MarkdownContent className="[&_h1]:[text-box-trim:trim-start]">
+                      {title}
+                    </MarkdownContent>
+                  ) : null}
                   {!hideFrontmatter && !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
@@ -647,13 +651,13 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
             <span className="list-item-number text-text-secondary justify-self-end" />
           ) : (
             <svg
-              width="4"
-              height="4"
-              viewBox="0 0 4 4"
+              width="6"
+              height="6"
+              viewBox="0 0 6 6"
               fill="currentColor"
               className="text-text-secondary"
             >
-              <circle cx="2" cy="2" r="2" />
+              <circle cx="3" cy="3" r="3" />
             </svg>
           )}
         </div>
@@ -721,7 +725,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
         ) : null}
       </div>
       {nestedLists.length > 0 && (
-        <div className="[&_:is(ul,ol)]:!m-0 pl-7">
+        <div className="[&_:is(ul,ol)]:!m-0 pl-7 coarse:pl-6">
           {nestedLists.map((list, index) => (
             <React.Fragment key={index}>{list}</React.Fragment>
           ))}

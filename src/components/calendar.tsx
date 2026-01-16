@@ -12,22 +12,14 @@ import {
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
-import { Link, useSearch, useNavigate } from "@tanstack/react-router"
+import { Link, useSearch } from "@tanstack/react-router"
 import { datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
-import {
-  DAY_NAMES,
-  MONTH_NAMES,
-  formatWeek,
-  toDateString,
-  toWeekString,
-  isValidWeekString,
-} from "../utils/date"
+import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "../utils/date"
 import { IconButton } from "./icon-button"
-import { ChevronLeftIcon16, ChevronRightIcon16 } from "./icons"
-import { Button } from "./button"
+import { ChevronDownIcon16, ChevronUpIcon16, UndoIcon16 } from "./icons"
 
 export function Calendar({
   activeNoteId,
@@ -36,90 +28,92 @@ export function Calendar({
   activeNoteId: string
   className?: string
 }) {
-  const navigate = useNavigate()
-  const searchParams = useSearch({ strict: false })
   const date = parseISO(activeNoteId)
 
-  const isWeeklyNote = isValidWeekString(activeNoteId)
+  // Local state for the displayed week (independent of activeNoteId)
+  const [displayedWeekStart, setDisplayedWeekStart] = React.useState(() =>
+    isMonday(date) ? date : previousMonday(date),
+  )
 
-  const startOfWeek = React.useMemo(() => (isMonday(date) ? date : previousMonday(date)), [date])
+  // Sync displayed week when activeNoteId changes (adjust state during render)
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevActiveNoteId, setPrevActiveNoteId] = React.useState(activeNoteId)
+  if (activeNoteId !== prevActiveNoteId) {
+    setPrevActiveNoteId(activeNoteId)
+    const newDate = parseISO(activeNoteId)
+    setDisplayedWeekStart(isMonday(newDate) ? newDate : previousMonday(newDate))
+  }
 
-  const endOfWeek = React.useMemo(() => nextSunday(startOfWeek), [startOfWeek])
+  const endOfWeek = React.useMemo(() => nextSunday(displayedWeekStart), [displayedWeekStart])
 
   const daysOfWeek = React.useMemo(
-    () => eachDayOfInterval({ start: startOfWeek, end: endOfWeek }),
-    [startOfWeek, endOfWeek],
+    () => eachDayOfInterval({ start: displayedWeekStart, end: endOfWeek }),
+    [displayedWeekStart, endOfWeek],
   )
 
-  const navigateByInterval = React.useCallback(
-    (direction: "previous" | "next") => {
-      const increment = direction === "next" ? 1 : -1
+  const navigateByWeek = React.useCallback((direction: "previous" | "next") => {
+    const increment = direction === "next" ? 1 : -1
+    setDisplayedWeekStart((prev) => addWeeks(prev, increment))
+  }, [])
 
-      // Navigate by week for weekly notes, by day for daily notes
-      const target = isWeeklyNote
-        ? toWeekString(addWeeks(date, increment))
-        : toDateString(addDays(date, increment))
-
-      navigate({
-        to: "/notes/$",
-        params: { _splat: target },
-        search: {
-          mode: searchParams.mode ?? "read",
-          query: undefined,
-          view: searchParams.view === "list" ? "list" : "grid",
-        },
-      })
-    },
-    [isWeeklyNote, date, navigate, searchParams.mode, searchParams.view],
+  // Check if displayed week differs from active note's week
+  const activeWeekStart = React.useMemo(
+    () => (isMonday(date) ? date : previousMonday(date)),
+    [date],
   )
+  const canReset = toWeekString(displayedWeekStart) !== toWeekString(activeWeekStart)
+
+  const resetToActiveWeek = React.useCallback(() => {
+    setDisplayedWeekStart(activeWeekStart)
+  }, [activeWeekStart])
 
   return (
-    <div className={cx("border-b border-border-secondary", className)}>
-      <div className="-mb-px flex flex-col gap-2 overflow-hidden pb-2">
+    <div className={cx("card-1 p-2 !rounded-xl", className)}>
+      <div className="flex flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
-          <span className="font-content text-lg">
-            <span className="font-bold">{MONTH_NAMES[startOfWeek.getMonth()]}</span>{" "}
-            <span>{startOfWeek.getFullYear()}</span>
+          <span className="font-content px-2">
+            <span className="font-bold">{MONTH_NAMES[displayedWeekStart.getMonth()]}</span>{" "}
+            {displayedWeekStart.getFullYear()}
           </span>
-          <div className="flex gap-px rounded bg-bg-secondary">
-            <IconButton
-              aria-label={isWeeklyNote ? "Previous week" : "Previous day"}
-              onClick={() => navigateByInterval("previous")}
-            >
-              <ChevronLeftIcon16 />
+          <div className="flex">
+            {canReset ? (
+              <IconButton aria-label="Back to selected week" onClick={resetToActiveWeek}>
+                <UndoIcon16 />
+              </IconButton>
+            ) : null}
+
+            <IconButton aria-label="Previous week" onClick={() => navigateByWeek("previous")}>
+              <ChevronUpIcon16 />
             </IconButton>
-            <Button
-              className="bg-transparent hover:bg-bg-hover active:bg-bg-active"
-              onClick={() => {
-                const today = new Date()
-                navigate({
-                  to: "/notes/$",
-                  params: { _splat: toDateString(today) },
-                  search: {
-                    mode: searchParams.mode ?? "read",
-                    query: undefined,
-                    view: searchParams.view === "list" ? "list" : "grid",
-                  },
-                })
-              }}
-            >
-              Today
-            </Button>
-            <IconButton
-              aria-label={isWeeklyNote ? "Next week" : "Next day"}
-              onClick={() => navigateByInterval("next")}
-            >
-              <ChevronRightIcon16 />
+            <IconButton aria-label="Next week" onClick={() => navigateByWeek("next")}>
+              <ChevronDownIcon16 />
             </IconButton>
+            {/*<DropdownMenu>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton aria-label="Layout">
+                    <CalendarIcon16 />
+                  </IconButton>
+                }
+              />
+              <DropdownMenu.Content align="end" width={160}>
+                <DropdownMenu.Item onClick={() => setLayout("week")} selected={layout === "week"}>
+                  Week
+                </DropdownMenu.Item>
+                <DropdownMenu.Item onClick={() => setLayout("month")} selected={layout === "month"}>
+                  Month
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>*/}
           </div>
         </div>
         <div className="grid">
-          <RovingFocusGroup.Root orientation="horizontal" className="flex">
+          <RovingFocusGroup.Root orientation="horizontal" className="flex gap-1.5 items-center">
             <CalendarWeek
-              startOfWeek={startOfWeek}
-              isActive={toWeekString(startOfWeek) === activeNoteId}
+              startOfWeek={displayedWeekStart}
+              isActive={toWeekString(displayedWeekStart) === activeNoteId}
             />
-            <div role="separator" className="mx-2 my-4 w-px flex-shrink-0 bg-border-secondary" />
+            <div role="separator" className="h-8 w-px flex-shrink-0 bg-border" />
             {daysOfWeek.map((date) => (
               <CalendarDate
                 key={date.toISOString()}
@@ -245,16 +239,15 @@ function CalendarItem({
         }}
         aria-label={ariaLabel}
         className={cx(
-          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text-secondary @container hover:bg-bg-hover active:bg-bg-active",
+          "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text @container hover:bg-bg-hover active:bg-bg-active",
 
           // Underline the active day
           isActive &&
-            "font-bold text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
-
+            "font-bold bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-text",
+          hasNotes && isActive && "after:bg-text-secondary",
           hasNotes && !isActive && "after:bg-border",
         )}
       >

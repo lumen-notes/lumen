@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { addDays, eachDayOfInterval, parseISO } from "date-fns"
 import { useMemo } from "react"
 import { useNoteById } from "../hooks/note"
-import { DAY_NAMES, toDateString } from "../utils/date"
+import { formatDate, formatDateDistance, toDateString } from "../utils/date"
 import { NotePreviewCard } from "./note-preview-card"
 
 export function DaysOfWeek({ week }: { week: string }) {
@@ -23,7 +23,6 @@ export function DaysOfWeek({ week }: { week: string }) {
 
 function Day({ date }: { date: string }) {
   const note = useNoteById(date)
-  const dayName = DAY_NAMES[new Date(date).getUTCDay()]
 
   if (!note) {
     // Placeholder
@@ -36,9 +35,14 @@ function Day({ date }: { date: string }) {
           query: undefined,
           view: "grid",
         }}
-        className="focus-ring aspect-[5/3] rounded-[calc(var(--border-radius-base)+6px)] border border-dashed border-border-secondary bg-bg-card p-3 font-content italic text-text-secondary hover:border-border grid place-items-center"
+        className="focus-ring aspect-[5/3] rounded-[calc(var(--border-radius-base)+6px)] border border-dashed border-border-secondary p-4 font-content hover:border-border"
       >
-        {dayName}
+        <div className="flex flex-col gap-0.5 text-text-secondary">
+          <span className="text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
+            {formatDate(date)}
+          </span>
+          <span>{formatDateDistance(date)}</span>
+        </div>
       </Link>
     )
   }

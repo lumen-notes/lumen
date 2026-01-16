@@ -8,14 +8,14 @@ import { IconButton } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, SidebarCollapsedIcon16 } from "./icons"
 import { NewNoteButton } from "./new-note-button"
 
-export type AppHeaderProps = {
+export type PageHeaderProps = {
   title: React.ReactNode
   icon?: React.ReactNode
   className?: string
   actions?: React.ReactNode
 }
 
-export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
+export function PageHeader({ title, icon, className, actions }: PageHeaderProps) {
   const router = useRouter()
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
   const createNewNote = useCreateNewNote()
@@ -45,7 +45,7 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
         {sidebar === "collapsed" ? (
           <div className="hidden items-center sm:flex">
             <IconButton
-              aria-label="Expand sidebar"
+              aria-label="Show sidebar"
               shortcut={["⌘", "B"]}
               tooltipAlign="start"
               size="small"
@@ -75,13 +75,13 @@ export function AppHeader({ title, icon, className, actions }: AppHeaderProps) {
           </div>
         ) : null}
         {sidebar === "collapsed" && icon ? (
-          <div role="separator" className="h-5 w-px bg-border-secondary hidden sm:block" />
+          <div role="separator" className="h-5 w-px bg-border hidden sm:block" />
         ) : null}
         <div className="flex w-0 flex-grow items-center gap-3 px-2">
           {icon ? (
             <div className="flex size-icon flex-shrink-0 text-text-secondary">{icon}</div>
           ) : null}
-          <div className="truncate font-bold">{title}</div>
+          <div className="truncate">{title}</div>
         </div>
         <div className="flex items-center gap-2 justify-self-end">
           {actions ? <div className="flex items-center">{actions}</div> : null}

@@ -85,11 +85,11 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       }
     >
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
-        <div className={cx("mb-1 flex items-baseline gap-2.5 font-content")}>
-          <span className="truncate font-bold text-[calc(var(--font-size-xl)*0.66)]">
+        <div className="mb-1 shrink-0 flex flex-col gap-0.5">
+          <span className="font-bold text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
             {note.displayName}
           </span>
-          <span className="truncate text-sm italic text-text-secondary">
+          <span className="text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
           </span>
         </div>

@@ -12,10 +12,10 @@ import {
   voiceAssistantEnabledAtom,
 } from "../global-state"
 import { cx } from "../utils/cx"
-import { AppHeader, AppHeaderProps } from "./app-header"
+import { PageHeader, PageHeaderProps } from "./page-header"
 import { VoiceConversationBar } from "./voice-conversation"
 
-type PageLayoutProps = AppHeaderProps & {
+type PageLayoutProps = PageHeaderProps & {
   className?: string
   disableGuard?: boolean
   floatingActions?: React.ReactNode
@@ -41,7 +41,7 @@ export function PageLayout({
 
   return (
     <div className={cx("grid grid-rows-[auto_1fr] overflow-hidden", className)}>
-      <AppHeader
+      <PageHeader
         {...props}
         actions={isRepoCloned || isSignedOut || disableGuard ? actions : undefined}
         className="print:hidden"

@@ -22,7 +22,7 @@ export function Sidebar() {
         )}
       >
         <IconButton
-          aria-label="Collapse sidebar"
+          aria-label="Hide sidebar"
           shortcut={["⌘", "B"]}
           tooltipAlign="start"
           size="small"
