@@ -759,8 +759,7 @@ function NotePage() {
                   onChange={setEditorValue}
                   emptyText={
                     <>
-                      Empty note (double{" "}
-                      <span className="coarse:hidden">click</span>
+                      Empty note (double <span className="coarse:hidden">click</span>
                       <span className="hidden coarse:inline">tap</span> to edit)
                     </>
                   }
