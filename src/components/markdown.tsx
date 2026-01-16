@@ -64,10 +64,14 @@ export type MarkdownProps = {
 
 const MarkdownContext = React.createContext<{
   markdown: string
+  markdownBody: string
+  markdownBodyStartOffset: number
   onChange?: (value: string) => void
   noteId?: string
 }>({
   markdown: "",
+  markdownBody: "",
+  markdownBodyStartOffset: 0,
 })
 
 export const Markdown = React.memo(
@@ -87,24 +91,57 @@ export const Markdown = React.memo(
       [frontmatter],
     )
 
+    const contentStartOffset = React.useMemo(() => {
+      if (content === children) return 0
+
+      const match = children.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+      if (!match) return 0
+
+      const rawContent = match[2] ?? ""
+      const trimmedLeading = rawContent.length - rawContent.trimStart().length
+      return children.length - rawContent.length + trimmedLeading
+    }, [children, content])
+
     // Split the content into title and body so we can display
     // the frontmatter below the title but above the body.
-    const [title, body] = React.useMemo(() => {
-      return content.startsWith("# ")
-        ? // Grab the first line as the title and remove it from the body
-          [content.split("\n")[0], content.replace(content.split("\n")[0], "").trim()]
-        : ["", content]
+    const { title, body, bodyStartOffset } = React.useMemo(() => {
+      if (!content.startsWith("# ")) {
+        return { title: "", body: content, bodyStartOffset: 0 }
+      }
+
+      const newlineIndex = content.indexOf("\n")
+      const titleLine = newlineIndex === -1 ? content : content.slice(0, newlineIndex)
+      const rawBody = newlineIndex === -1 ? "" : content.slice(newlineIndex + 1)
+      const trimmedLeading = rawBody.length - rawBody.trimStart().length
+      return {
+        title: titleLine,
+        body: rawBody.trim(),
+        bodyStartOffset: (newlineIndex === -1 ? content.length : newlineIndex + 1) + trimmedLeading,
+      }
     }, [content])
+
+    const markdownBodyStartOffset = React.useMemo(
+      () => contentStartOffset + bodyStartOffset,
+      [contentStartOffset, bodyStartOffset],
+    )
 
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter?.template)
 
     const contextValue = React.useMemo(
       () => ({
-        markdown: body,
-        onChange: onChange ? (value: string) => onChange(children.replace(body, value)) : undefined,
+        markdown: children,
+        markdownBody: body,
+        markdownBodyStartOffset,
+        onChange: onChange
+          ? (value: string) => {
+              const start = markdownBodyStartOffset
+              const end = markdownBodyStartOffset + body.length
+              onChange(children.slice(0, start) + value + children.slice(end))
+            }
+          : undefined,
         noteId,
       }),
-      [body, children, onChange, noteId],
+      [body, children, markdownBodyStartOffset, onChange, noteId],
     )
 
     return (
@@ -529,7 +566,8 @@ function extractListItemElements(children: React.ReactNode): {
 }
 
 function ListItem({ node, children, ordered, className, ...props }: LiProps) {
-  const { markdown, onChange, noteId } = React.useContext(MarkdownContext)
+  const { markdownBody, markdown, markdownBodyStartOffset, onChange, noteId } =
+    React.useContext(MarkdownContext)
   const isTask = className?.includes("task-list-item")
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const moveTask = useMoveTask()
@@ -542,15 +580,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const handleMoveTo = React.useCallback(
     (targetNoteId: string) => {
       if (!node.position || !noteId) return
+
       moveTask({
         sourceNoteId: noteId,
         targetNoteId,
         sourceMarkdown: markdown,
-        nodeStart: node.position.start.offset ?? 0,
-        nodeEnd: node.position.end.offset ?? 0,
+        nodeStart: markdownBodyStartOffset + (node.position.start.offset ?? 0),
+        nodeEnd: markdownBodyStartOffset + (node.position.end.offset ?? 0),
       })
     },
-    [markdown, moveTask, node.position, noteId],
+    [markdownBodyStartOffset, markdown, moveTask, node.position, noteId],
   )
 
   // Memoize date options to avoid recalculating on every render
@@ -595,23 +634,23 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const getTaskLine = React.useCallback(() => {
     if (!node.position) return ""
     let start = node.position.start.offset ?? 0
-    while (start > 0 && markdown[start - 1] !== "\n") {
+    while (start > 0 && markdownBody[start - 1] !== "\n") {
       start--
     }
     const end = node.position.end.offset ?? 0
-    return markdown.slice(start, end).trim()
-  }, [markdown, node.position])
+    return markdownBody.slice(start, end).trim()
+  }, [markdownBody, node.position])
 
   const deleteTask = React.useCallback(() => {
     if (!node.position) return
     let start = node.position.start.offset ?? 0
-    while (start > 0 && markdown[start - 1] !== "\n") {
+    while (start > 0 && markdownBody[start - 1] !== "\n") {
       start--
     }
     const end = node.position.end.offset ?? 0
-    const endWithNewline = markdown[end] === "\n" ? end + 1 : end
-    onChange?.(markdown.slice(0, start) + markdown.slice(endWithNewline))
-  }, [markdown, node.position, onChange])
+    const endWithNewline = markdownBody[end] === "\n" ? end + 1 : end
+    onChange?.(markdownBody.slice(0, start) + markdownBody.slice(endWithNewline))
+  }, [markdownBody, node.position, onChange])
 
   return (
     <li
@@ -643,11 +682,11 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
               onCheckedChange={(newChecked) => {
                 if (!node.position) return
 
-                // Update the corresponding checkbox in the markdown string
+                // Update the corresponding checkbox in the markdownBody string
                 const newValue =
-                  markdown.slice(0, node.position.start.offset) +
+                  markdownBody.slice(0, node.position.start.offset) +
                   (newChecked ? "- [x]" : "- [ ]") +
-                  markdown.slice((node.position.start.offset ?? 0) + 5)
+                  markdownBody.slice((node.position.start.offset ?? 0) + 5)
 
                 onChange?.(newValue)
               }}
