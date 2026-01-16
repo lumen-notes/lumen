@@ -247,7 +247,7 @@ function CalendarItem({
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-text",
+          hasNotes && isActive && "after:bg-text-secondary",
           hasNotes && !isActive && "after:bg-border",
         )}
       >
