@@ -757,7 +757,13 @@ function NotePage() {
                 <Markdown
                   noteId={noteId}
                   onChange={setEditorValue}
-                  emptyText="Empty note (double-click to edit)"
+                  emptyText={
+                    <>
+                      Empty note (double{" "}
+                      <span className="coarse:hidden">click</span>
+                      <span className="hidden coarse:inline">tap</span> to edit)
+                    </>
+                  }
                 >
                   {editorValue}
                 </Markdown>

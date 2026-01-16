@@ -58,7 +58,7 @@ export type MarkdownProps = {
   hideFrontmatter?: boolean
   fontSize?: "small" | "large"
   onChange?: (value: string) => void
-  emptyText?: string
+  emptyText?: React.ReactNode
   noteId?: string
 }
 
