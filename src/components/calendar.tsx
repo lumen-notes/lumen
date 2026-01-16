@@ -240,14 +240,11 @@ function CalendarItem({
         aria-label={ariaLabel}
         className={cx(
           "focus-ring relative flex w-full cursor-pointer justify-center rounded p-4 leading-4 text-text @container hover:bg-bg-hover active:bg-bg-active",
-
-          // Underline the active day
-          isActive &&
-            "font-bold bg-bg-secondary text-text before:pointer-events-none before:absolute before:-bottom-2 before:h-[3px] eink:before:h-[4px] before:w-full before:bg-text before:rounded-sm before:content-['']",
+          isActive && "font-bold bg-bg-secondary text-text eink:bg-text eink:text-bg",
           // Show a dot if the date has notes
           hasNotes &&
             "after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-          hasNotes && isActive && "after:bg-text-secondary",
+          hasNotes && isActive && "after:bg-text-secondary eink:after:bg-bg",
           hasNotes && !isActive && "after:bg-border",
         )}
       >
@@ -258,10 +255,8 @@ function CalendarItem({
           <span
             className={cx(
               isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
-              // Outline the current day
               isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
-              // Make outline bolder if current day is active
-              isToday && isActive && "bg-text text-bg",
+              isToday && isActive && "bg-text text-bg eink:bg-bg eink:text-text",
             )}
           >
             {number}
