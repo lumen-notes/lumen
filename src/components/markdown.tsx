@@ -616,7 +616,12 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   return (
     <li
       {...props}
-      className={cx("transition-colors rounded-lg", isMenuOpen && "bg-bg-selection ", className)}
+      className={cx(
+        "transition-colors rounded-lg",
+        isMenuOpen &&
+          "bg-bg-selection eink:bg-transparent eink:ring-1 eink:ring-border eink:ring-inset",
+        className,
+      )}
     >
       <div
         className={cx("flex p-1.5 gap-1.5", {
