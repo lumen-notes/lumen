@@ -1,3 +1,4 @@
+import type { StoryFn } from "@storybook/react"
 import { NotePreview } from "./note-preview"
 import { Note } from "../schema"
 
@@ -8,7 +9,7 @@ export default {
     layout: "centered",
   },
   decorators: [
-    (Story) => (
+    (Story: StoryFn) => (
       <div className="card-1 w-[300px]">
         <Story />
       </div>
@@ -36,7 +37,8 @@ const basicNote: Note = {
 
 const noteWithTags: Note = {
   id: "note-with-tags",
-  content: "---\ntags:\n  - book\n  - fiction\n---\n\n# Reading List\n\nBooks I want to read this year.",
+  content:
+    "---\ntags:\n  - book\n  - fiction\n---\n\n# Reading List\n\nBooks I want to read this year.",
   type: "note",
   displayName: "Reading List",
   frontmatter: { tags: ["book", "fiction"] },
@@ -140,7 +142,8 @@ export const WithBacklinks = {
 
 const noteWithTasks: Note = {
   id: "note-with-tasks",
-  content: "# Todo List\n\n- [x] First task\n- [x] Second task\n- [ ] Third task\n- [ ] Fourth task\n- [ ] Fifth task",
+  content:
+    "# Todo List\n\n- [x] First task\n- [x] Second task\n- [ ] Third task\n- [ ] Fourth task\n- [ ] Fifth task",
   type: "note",
   displayName: "Todo List",
   frontmatter: {},
@@ -153,11 +156,51 @@ const noteWithTasks: Note = {
   dates: [],
   tags: [],
   tasks: [
-    { completed: true, text: "First task", links: [], tags: [], date: null, priority: null, startOffset: 0 },
-    { completed: true, text: "Second task", links: [], tags: [], date: null, priority: null, startOffset: 0 },
-    { completed: false, text: "Third task", links: [], tags: [], date: null, priority: null, startOffset: 0 },
-    { completed: false, text: "Fourth task", links: [], tags: [], date: null, priority: null, startOffset: 0 },
-    { completed: false, text: "Fifth task", links: [], tags: [], date: null, priority: null, startOffset: 0 },
+    {
+      completed: true,
+      text: "First task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    },
+    {
+      completed: true,
+      text: "Second task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    },
+    {
+      completed: false,
+      text: "Third task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    },
+    {
+      completed: false,
+      text: "Fourth task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    },
+    {
+      completed: false,
+      text: "Fifth task",
+      links: [],
+      tags: [],
+      date: null,
+      priority: null,
+      startOffset: 0,
+    },
   ],
   backlinks: [],
 }
