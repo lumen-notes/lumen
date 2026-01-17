@@ -156,7 +156,11 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
           {resolvedFrontmatter?.gist_id ? (
             <Label icon={<GlobeIcon12 className="text-border-focus" />}>Published</Label>
           ) : null}
-          {birthdayLabel ? <Label icon="🎂">{birthdayLabel}</Label> : null}
+          {birthdayLabel ? (
+            <Label icon="🎂" className="bg-bg-highlight text-text-highlight">
+              {birthdayLabel}
+            </Label>
+          ) : null}
           {/*{note.tasks.length > 0 ? (
             <Label
               icon={

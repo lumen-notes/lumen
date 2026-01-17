@@ -187,7 +187,7 @@ function CalendarWeek({
   const label = formatWeek(weekString)
   const existingNote = useNoteById(weekString)
   const backlinks = useBacklinksForId(weekString)
-  const hasNotes = backlinks.length > 0 || Boolean(existingNote)
+  const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const anchorRef = React.useContext(CalendarContainerContext)
 
   // Create note object for hover card (fallback if note doesn't exist)
@@ -233,7 +233,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
   const dateString = toDateString(date)
   const existingNote = useNoteById(dateString)
   const backlinks = useBacklinksForId(dateString)
-  const hasNotes = backlinks.length > 0 || Boolean(existingNote)
+  const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()
@@ -424,7 +424,7 @@ function MonthWeekRow({
 
   const existingNote = useNoteById(weekString)
   const backlinks = useBacklinksForId(weekString)
-  const hasWeekNotes = backlinks.length > 0 || Boolean(existingNote)
+  const hasWeekNotes = Boolean(existingNote) || backlinks.length > 0
 
   const daysOfWeek = React.useMemo(() => {
     const endOfWeek = addDays(mondayOfWeek, 6)
@@ -522,7 +522,7 @@ function MonthDateCell({
   const dateString = toDateString(date)
   const existingNote = useNoteById(dateString)
   const backlinks = useBacklinksForId(dateString)
-  const hasNotes = backlinks.length > 0 || Boolean(existingNote)
+  const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
   const day = date.getDate()

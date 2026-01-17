@@ -640,6 +640,27 @@ export const notesAtom = atom((get) => {
   return notes
 })
 
+export const backlinksIndexAtom = atom((get) => {
+  const notes = get(notesAtom)
+  const index: Map<NoteId, NoteId[]> = new Map()
+
+  for (const note of notes.values()) {
+    if (note.links.length === 0) continue
+    const uniqueTargets = new Set(note.links)
+    for (const targetId of uniqueTargets) {
+      if (targetId === note.id) continue
+      const backlinks = index.get(targetId)
+      if (backlinks) {
+        backlinks.push(note.id)
+      } else {
+        index.set(targetId, [note.id])
+      }
+    }
+  }
+
+  return index
+})
+
 export const sortedNotesAtom = atom((get) => {
   const notes = get(notesAtom)
 

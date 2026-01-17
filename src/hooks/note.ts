@@ -1,11 +1,28 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { githubRepoAtom, githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
+import {
+  backlinksIndexAtom,
+  githubRepoAtom,
+  githubUserAtom,
+  globalStateMachineAtom,
+  notesAtom,
+} from "../global-state"
 import { Note, NoteId } from "../schema"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
+
+const EMPTY_BACKLINKS: NoteId[] = []
+
+const shallowEqualBacklinks = (a: NoteId[], b: NoteId[]) => {
+  if (a === b) return true
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
+}
 
 export function useNoteById(id: NoteId | undefined) {
   const noteAtom = React.useMemo(
@@ -20,20 +37,11 @@ export function useNoteById(id: NoteId | undefined) {
 export function useBacklinksForId(id: NoteId | undefined) {
   const backlinksAtom = React.useMemo(
     () =>
-      selectAtom(notesAtom, (notes) => {
-        if (!id) return []
-        // If note exists, use its backlinks
-        const existingNote = notes.get(id)
-        if (existingNote) return existingNote.backlinks
-        // Otherwise, compute backlinks from all notes that link to this ID
-        const backlinks: NoteId[] = []
-        for (const note of notes.values()) {
-          if (note.links.includes(id)) {
-            backlinks.push(note.id)
-          }
-        }
-        return backlinks
-      }),
+      selectAtom(
+        backlinksIndexAtom,
+        (index) => (id ? index.get(id) ?? EMPTY_BACKLINKS : EMPTY_BACKLINKS),
+        shallowEqualBacklinks,
+      ),
     [id],
   )
   return useAtomValue(backlinksAtom)
