@@ -24,7 +24,9 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
   const isWeekly = isValidWeekString(activeNoteId)
 
   const primaryText = isWeekly ? formatWeek(activeNoteId) : formatDate(activeNoteId)
-  const secondaryText = isWeekly ? formatWeekDistance(activeNoteId) : formatDateDistance(activeNoteId)
+  const secondaryText = isWeekly
+    ? formatWeekDistance(activeNoteId)
+    : formatDateDistance(activeNoteId)
 
   const today = startOfToday()
   const todayString = toDateString(today)

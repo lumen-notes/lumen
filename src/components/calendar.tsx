@@ -18,13 +18,22 @@ import { calendarLayoutAtom } from "../global-state"
 import { useBacklinksForId, useNoteById } from "../hooks/note"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
-import { DAY_NAMES, MONTH_NAMES, formatDate, formatWeek, toDateString, toWeekString } from "../utils/date"
+import {
+  DAY_NAMES,
+  MONTH_NAMES,
+  formatDate,
+  formatWeek,
+  toDateString,
+  toWeekString,
+} from "../utils/date"
 import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
 import { ChevronDownIcon16, ChevronUpIcon16, MoreIcon16, UndoIcon16 } from "./icons"
 import { NoteHoverCard } from "./note-hover-card"
 
-const CalendarContainerContext = React.createContext<React.RefObject<HTMLDivElement | null> | null>(null)
+const CalendarContainerContext = React.createContext<React.RefObject<HTMLDivElement | null> | null>(
+  null,
+)
 
 export function Calendar({
   activeNoteId,
@@ -106,44 +115,50 @@ export function Calendar({
               <span className="font-bold">{MONTH_NAMES[displayDate.getMonth()]}</span>{" "}
               {displayDate.getFullYear()}
             </span>
-          <div className="flex">
-            {canReset ? (
-              <IconButton aria-label={`Back to selected ${periodLabel}`} onClick={resetToActive}>
-                <UndoIcon16 />
-              </IconButton>
-            ) : null}
+            <div className="flex">
+              {canReset ? (
+                <IconButton aria-label={`Back to selected ${periodLabel}`} onClick={resetToActive}>
+                  <UndoIcon16 />
+                </IconButton>
+              ) : null}
 
-            <IconButton aria-label={`Previous ${periodLabel}`} onClick={() => navigate("previous")}>
-              <ChevronUpIcon16 />
-            </IconButton>
-            <IconButton aria-label={`Next ${periodLabel}`} onClick={() => navigate("next")}>
-              <ChevronDownIcon16 />
-            </IconButton>
-            <DropdownMenu>
-              <DropdownMenu.Trigger
-                render={
-                  <IconButton aria-label="Calendar options" disableTooltip>
-                    <MoreIcon16 />
-                  </IconButton>
-                }
-              />
-              <DropdownMenu.Content align="end" width={160}>
-                <DropdownMenu.Group>
-                  <DropdownMenu.GroupLabel>Layout</DropdownMenu.GroupLabel>
-                  <DropdownMenu.Item onClick={() => setLayout("week")} selected={layout === "week"}>
-                    Week
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    onClick={() => setLayout("month")}
-                    selected={layout === "month"}
-                  >
-                    Month
-                  </DropdownMenu.Item>
-                </DropdownMenu.Group>
-              </DropdownMenu.Content>
-            </DropdownMenu>
+              <IconButton
+                aria-label={`Previous ${periodLabel}`}
+                onClick={() => navigate("previous")}
+              >
+                <ChevronUpIcon16 />
+              </IconButton>
+              <IconButton aria-label={`Next ${periodLabel}`} onClick={() => navigate("next")}>
+                <ChevronDownIcon16 />
+              </IconButton>
+              <DropdownMenu>
+                <DropdownMenu.Trigger
+                  render={
+                    <IconButton aria-label="Calendar options" disableTooltip>
+                      <MoreIcon16 />
+                    </IconButton>
+                  }
+                />
+                <DropdownMenu.Content align="end" width={160}>
+                  <DropdownMenu.Group>
+                    <DropdownMenu.GroupLabel>Layout</DropdownMenu.GroupLabel>
+                    <DropdownMenu.Item
+                      onClick={() => setLayout("week")}
+                      selected={layout === "week"}
+                    >
+                      Week
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      onClick={() => setLayout("month")}
+                      selected={layout === "month"}
+                    >
+                      Month
+                    </DropdownMenu.Item>
+                  </DropdownMenu.Group>
+                </DropdownMenu.Content>
+              </DropdownMenu>
+            </div>
           </div>
-        </div>
           {layout === "week" ? (
             <div className="grid pb-2 px-2">
               <div className="flex gap-1.5 items-center">
@@ -486,7 +501,17 @@ function MonthWeekRow({
   const weekNumberElement = isWeekActive ? (
     React.cloneElement(weekLink, {}, weekNumber)
   ) : (
-    <NoteHoverCard.Trigger render={weekLink} payload={{ note, anchor: anchorRef?.current, side: "bottom", sideOffset: 8, align: "start", transformOrigin: "top left" }}>
+    <NoteHoverCard.Trigger
+      render={weekLink}
+      payload={{
+        note,
+        anchor: anchorRef?.current,
+        side: "bottom",
+        sideOffset: 8,
+        align: "start",
+        transformOrigin: "top left",
+      }}
+    >
       {weekNumber}
     </NoteHoverCard.Trigger>
   )
@@ -601,7 +626,17 @@ function MonthDateCell({
 
   return (
     <div>
-      <NoteHoverCard.Trigger render={link} payload={{ note, anchor: anchorRef?.current, side: "bottom", sideOffset: 8, align: "start", transformOrigin: "top left" }}>
+      <NoteHoverCard.Trigger
+        render={link}
+        payload={{
+          note,
+          anchor: anchorRef?.current,
+          side: "bottom",
+          sideOffset: 8,
+          align: "start",
+          transformOrigin: "top left",
+        }}
+      >
         {content}
       </NoteHoverCard.Trigger>
     </div>

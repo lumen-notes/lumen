@@ -39,7 +39,7 @@ export function useBacklinksForId(id: NoteId | undefined) {
     () =>
       selectAtom(
         backlinksIndexAtom,
-        (index) => (id ? index.get(id) ?? EMPTY_BACKLINKS : EMPTY_BACKLINKS),
+        (index) => (id ? (index.get(id) ?? EMPTY_BACKLINKS) : EMPTY_BACKLINKS),
         shallowEqualBacklinks,
       ),
     [id],

@@ -4,14 +4,19 @@ import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
 import { Note, fontSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { formatDate, formatDateDistance, formatWeekDistance, isValidDateString } from "../utils/date"
+import {
+  formatDate,
+  formatDateDistance,
+  formatWeekDistance,
+  isValidDateString,
+} from "../utils/date"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { getNoteDraft } from "../utils/note-draft"
 import { DotIcon8, GlobeIcon12, LinkIcon12, TagIcon12 } from "./icons"
 import { Label } from "./label"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
-import { pluralize, withOrdinalSuffix } from "../utils/pluralize"
+import { withOrdinalSuffix } from "../utils/pluralize"
 
 const NUM_VISIBLE_TAGS = 4
 

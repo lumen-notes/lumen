@@ -16,7 +16,7 @@ type Payload = {
 
 function Provider({ children }: { children: React.ReactNode }) {
   return (
-    <PreviewCard.Root>
+    <PreviewCard.Root<Payload>>
       {({ payload }) => (
         <>
           {children}
@@ -66,7 +66,7 @@ function Trigger({
   children: React.ReactNode
 }) {
   return (
-    <PreviewCard.Trigger render={render} payload={payload}>
+    <PreviewCard.Trigger<Payload> render={render} payload={payload}>
       {children}
     </PreviewCard.Trigger>
   )
