@@ -194,7 +194,6 @@ export function NavItems({
           <ExternalLink
             href="https://github.com/lumen-notes/lumen/issues/new"
             icon={<MessageIcon16 />}
-            onNavigate={onNavigate}
           >
             Send feedback
           </ExternalLink>
@@ -255,13 +254,10 @@ function NavLink({
 function ExternalLink({
   className,
   icon,
-  onNavigate,
   children,
-  onClick,
   ...props
 }: ComponentPropsWithoutRef<"a"> & {
   icon: React.ReactNode
-  onNavigate?: () => void
 }) {
   const size = useContext(SizeContext)
 
@@ -271,10 +267,6 @@ function ExternalLink({
       data-size={size}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={(event) => {
-        onClick?.(event)
-        onNavigate?.()
-      }}
       {...props}
     >
       <span className="flex shrink-0">{icon}</span>
