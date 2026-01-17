@@ -8,11 +8,9 @@ import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { OpenAIKeyInput } from "../components/openai-key-input"
-// import { RadioGroup } from "../components/radio-group"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
-  // defaultFontAtom,
   epaperAtom,
   githubRepoAtom,
   githubUserAtom,
@@ -24,7 +22,6 @@ import {
   voiceAssistantEnabledAtom,
 } from "../global-state"
 import { Signature } from "../components/signature"
-// import { Font } from "../schema"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
@@ -37,21 +34,12 @@ export const Route = createFileRoute("/_appRoot/settings")({
 function RouteComponent() {
   return (
     <PageLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
-      <div className="p-4 pb-[50vh]">
+      <div className="p-4 pb-14">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
           <AppearanceSection />
-          {/* <FontSection /> */}
           <EditorSection />
           <AISection />
-          <a
-            href="https://colebemis.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="self-center p-8 text-border"
-          >
-            <Signature width={150} />
-          </a>
         </div>
       </div>
     </PageLayout>
@@ -81,7 +69,6 @@ function GitHubSection() {
   if (!githubUser) {
     return (
       <SettingsSection title="GitHub">
-        {/* TODO */}
         <div className="text-text-secondary">You're not signed in.</div>
       </SettingsSection>
     )
@@ -157,42 +144,6 @@ function AppearanceSection() {
     </SettingsSection>
   )
 }
-
-// function FontSection() {
-//   const [defaultFont, setDefaultFont] = useAtom(defaultFontAtom)
-
-//   return (
-//     <SettingsSection title="Default font">
-//       <RadioGroup
-//         aria-labelledby="font-label"
-//         value={defaultFont}
-//         defaultValue="sans"
-//         onValueChange={(value) => setDefaultFont(value as Font)}
-//         className="flex flex-col gap-3 coarse:gap-4"
-//         name="font"
-//       >
-//         <div className="flex items-center gap-2.5">
-//           <RadioGroup.Item id="font-sans" value="sans" />
-//           <label htmlFor="font-sans" className="select-none font-sans leading-4">
-//             Sans serif
-//           </label>
-//         </div>
-//         <div className="flex items-center gap-2.5">
-//           <RadioGroup.Item id="font-serif" value="serif" />
-//           <label htmlFor="font-serif" className="select-none font-serif leading-4">
-//             Serif
-//           </label>
-//         </div>
-//         <div className="flex items-center gap-2.5">
-//           <RadioGroup.Item id="font-handwriting" value="handwriting" />
-//           <label htmlFor="font-handwriting" className="select-none font-handwriting leading-4">
-//             Handwriting
-//           </label>
-//         </div>
-//       </RadioGroup>
-//     </SettingsSection>
-//   )
-// }
 
 function EditorSection() {
   const [vimMode, setVimMode] = useAtom(vimModeAtom)
