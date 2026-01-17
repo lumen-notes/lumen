@@ -265,21 +265,21 @@ export function TaskItem({
             <DropdownMenu.Group>
               <DropdownMenu.GroupLabel>Priority</DropdownMenu.GroupLabel>
               <DropdownMenu.Item
-                icon={<FlagFillIcon16 className="text-[var(--red-9)] eink:text-text" />}
+                icon={<FlagFillIcon16 className="text-[var(--red-9)] epaper:text-text" />}
                 selected={task.priority === 1}
                 onClick={() => onPriorityChange?.(1)}
               >
                 High
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                icon={<FlagFillIcon16 className="text-[var(--orange-9)] eink:text-text" />}
+                icon={<FlagFillIcon16 className="text-[var(--orange-9)] epaper:text-text" />}
                 selected={task.priority === 2}
                 onClick={() => onPriorityChange?.(2)}
               >
                 Medium
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                icon={<FlagFillIcon16 className="text-[var(--blue-9)] eink:text-text" />}
+                icon={<FlagFillIcon16 className="text-[var(--blue-9)] epaper:text-text" />}
                 selected={task.priority === 3}
                 onClick={() => onPriorityChange?.(3)}
               >

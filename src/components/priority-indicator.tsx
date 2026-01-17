@@ -14,7 +14,7 @@ export function PriorityIndicator({ level }: PriorityIndicatorProps) {
   return (
     <span
       className={cx(
-        "rounded-sm px-0.5 leading-4 eink:text-text eink:bg-transparent eink:px-0",
+        "rounded-sm px-0.5 leading-4 epaper:text-text epaper:bg-transparent epaper:px-0",
         colors[level],
       )}
     >

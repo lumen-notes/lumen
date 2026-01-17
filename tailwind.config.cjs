@@ -133,7 +133,7 @@ module.exports = {
     require("@tailwindcss/container-queries"),
     require("tailwindcss-animate"),
     plugin(function ({ addVariant }) {
-      addVariant("eink", '[data-theme="eink"] &')
+      addVariant("epaper", "[data-epaper] &")
     }),
   ],
 }

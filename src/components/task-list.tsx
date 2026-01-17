@@ -215,7 +215,7 @@ export function TaskList({
                               key={tag}
                               icon={<TagIcon16 />}
                               trailingVisual={
-                                <span className="text-text-secondary eink:text-current">
+                                <span className="text-text-secondary epaper:text-current">
                                   {frequency}
                                 </span>
                               }

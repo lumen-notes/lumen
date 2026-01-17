@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { useMemo } from "react"
 import { useBacklinksForId, useNoteById } from "../hooks/note"
 import { Note } from "../schema"
+import { cx } from "../utils/cx"
 import { formatWeek } from "../utils/date"
 import { NoteHoverCard } from "./note-hover-card"
 
@@ -39,7 +40,7 @@ export function WeekLink({ week, text, className }: WeekLinkProps) {
 
   const link = (
     <Link
-      className={className}
+      className={cx(!text && "text-text-secondary", className)}
       to="/notes/$"
       params={{ _splat: week }}
       search={{

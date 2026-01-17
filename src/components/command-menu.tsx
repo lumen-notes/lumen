@@ -465,7 +465,7 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
         <div className="grid h-4 w-4 place-items-center text-text-secondary">{icon}</div>
         <div className="grow truncate">{children}</div>
         {description ? <span className="shrink-0 text-text-secondary">{description}</span> : null}
-        <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
+        <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline epaper:[[aria-selected]_&]:text-bg">
           ⏎
         </span>
       </div>

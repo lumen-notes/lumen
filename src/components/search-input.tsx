@@ -48,7 +48,7 @@ export function SearchInput({
         ref={ref}
         className={cx(
           "focus-ring h-10 w-full rounded-lg bg-bg-secondary pl-10 [-webkit-appearance:none] [font-variant-numeric:inherit] placeholder:text-text-secondary coarse:h-12 coarse:pl-11 [&:not(:focus-visible)]:hover:ring-1 [&:not(:focus-visible)]:hover:ring-inset [&:not(:focus-visible)]:hover:ring-border-secondary",
-          "eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2",
+          "epaper:ring-1 epaper:ring-inset epaper:ring-border epaper:focus-visible:ring-2",
           value ? "pr-10 coarse:pr-12" : "pr-3 coarse:pr-4",
         )}
         type="search"

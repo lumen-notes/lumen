@@ -87,8 +87,8 @@ export function AssistantActivityIndicator({
       {state === "thinking" || state === "speaking" ? (
         <div
           className={cx(
-            "pointer-events-none absolute inset-0 ring-[calc(3px+9px*var(--volume))] ring-[var(--neutral-a4)] eink:ring-text rounded-full",
-            state === "thinking" && "animate-pulse eink:animate-none",
+            "pointer-events-none absolute inset-0 ring-[calc(3px+9px*var(--volume))] ring-[var(--neutral-a4)] epaper:ring-text rounded-full",
+            state === "thinking" && "animate-pulse epaper:animate-none",
           )}
           style={
             {

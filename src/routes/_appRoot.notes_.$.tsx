@@ -54,10 +54,10 @@ import {
   githubRepoAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
+  vimModeAtom,
   weeklyTemplateAtom,
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
-import { useEditorSettings } from "../hooks/editor-settings"
 import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
@@ -158,7 +158,7 @@ function NotePage() {
           ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
           : "",
   })
-  const [editorSettings] = useEditorSettings()
+  const vimMode = useAtomValue(vimModeAtom)
   const parsedNote = React.useMemo(
     () => parseNote(noteId ?? "", editorValue),
     [noteId, editorValue],
@@ -395,7 +395,7 @@ function NotePage() {
       event.preventDefault()
     },
     {
-      enabled: editorSettings.vimMode && mode === "read",
+      enabled: vimMode && mode === "read",
     },
   )
 

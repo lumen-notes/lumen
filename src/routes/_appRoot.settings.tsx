@@ -8,21 +8,22 @@ import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { OpenAIKeyInput } from "../components/openai-key-input"
-import { RadioGroup } from "../components/radio-group"
+// import { RadioGroup } from "../components/radio-group"
 import { RepoForm } from "../components/repo-form"
 import { Switch } from "../components/switch"
 import {
   // defaultFontAtom,
+  epaperAtom,
   githubRepoAtom,
   githubUserAtom,
   hasOpenAIKeyAtom,
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
-  themeAtom,
+  vimModeAtom,
   voiceAssistantEnabledAtom,
 } from "../global-state"
-import { useEditorSettings } from "../hooks/editor-settings"
+import { Signature } from "../components/signature"
 // import { Font } from "../schema"
 import { cx } from "../utils/cx"
 
@@ -39,30 +40,18 @@ function RouteComponent() {
       <div className="p-4 pb-[50vh]">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
-          <ThemeSection />
+          <AppearanceSection />
           {/* <FontSection /> */}
           <EditorSection />
           <AISection />
-          <p className="font-handwriting text-text-secondary text-center mt-2">
-            Made by{" "}
-            <a
-              className="link"
-              href="https://github.com/colebemis"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Cole Bemis
-            </a>{" "}
-            &amp;{" "}
-            <a
-              className="link whitespace-nowrap"
-              href="https://github.com/lumen-notes/lumen/graphs/contributors"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              friends
-            </a>
-          </p>
+          <a
+            href="https://colebemis.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="self-center p-8 text-border-secondary"
+          >
+            <Signature width={150} />
+          </a>
         </div>
       </div>
     </PageLayout>
@@ -154,32 +143,17 @@ function GitHubSection() {
   )
 }
 
-function ThemeSection() {
-  const [theme, setTheme] = useAtom(themeAtom)
+function AppearanceSection() {
+  const [epaper, setEpaper] = useAtom(epaperAtom)
 
   return (
-    <SettingsSection title="Theme">
-      <RadioGroup
-        aria-labelledby="theme-label"
-        value={theme}
-        defaultValue="default"
-        onValueChange={(value) => setTheme(value as "default" | "eink")}
-        className="flex flex-col gap-3 coarse:gap-4"
-        name="theme"
-      >
-        <div className="flex items-center gap-2.5">
-          <RadioGroup.Item id="theme-default" value="default" />
-          <label htmlFor="theme-default" className="select-none leading-4">
-            Default
-          </label>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <RadioGroup.Item id="theme-eink" value="eink" />
-          <label htmlFor="theme-eink" className="select-none leading-4">
-            E-ink
-          </label>
-        </div>
-      </RadioGroup>
+    <SettingsSection title="Appearance">
+      <div className="flex items-center gap-2.5 leading-4">
+        <Switch id="epaper" checked={epaper} onCheckedChange={setEpaper} />
+        <label htmlFor="epaper" className="select-none">
+          E-paper
+        </label>
+      </div>
     </SettingsSection>
   )
 }
@@ -221,41 +195,15 @@ function ThemeSection() {
 // }
 
 function EditorSection() {
-  const [editorSettings, setEditorSettings] = useEditorSettings()
+  const [vimMode, setVimMode] = useAtom(vimModeAtom)
 
   return (
     <SettingsSection title="Editor">
-      <div className="flex flex-col gap-3 leading-4 coarse:gap-4">
-        <div className="flex items-center gap-2.5">
-          <Switch
-            id="vim-mode"
-            defaultChecked={editorSettings.vimMode}
-            onCheckedChange={(checked) => setEditorSettings({ vimMode: checked })}
-          />
-          <label htmlFor="vim-mode" className="select-none">
-            Vim mode
-          </label>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <Switch
-            id="line-numbers"
-            defaultChecked={editorSettings.lineNumbers}
-            onCheckedChange={(checked) => setEditorSettings({ lineNumbers: checked })}
-          />
-          <label htmlFor="line-numbers" className="select-none">
-            Line numbers
-          </label>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <Switch
-            id="fold-gutter"
-            defaultChecked={editorSettings.foldGutter}
-            onCheckedChange={(checked) => setEditorSettings({ foldGutter: checked })}
-          />
-          <label htmlFor="fold-gutter" className="select-none">
-            Fold gutter
-          </label>
-        </div>
+      <div className="flex items-center gap-2.5 leading-4">
+        <Switch id="vim-mode" checked={vimMode} onCheckedChange={setVimMode} />
+        <label htmlFor="vim-mode" className="select-none">
+          Vim mode
+        </label>
       </div>
     </SettingsSection>
   )

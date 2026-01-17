@@ -123,7 +123,10 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                       params={{ _splat: note.id }}
                       search={{ mode: "read", query: undefined, view: "grid" }}
                       icon={
-                        <NoteFavicon note={note} className="eink:[[aria-current=page]_&]:text-bg" />
+                        <NoteFavicon
+                          note={note}
+                          className="epaper:[[aria-current=page]_&]:text-bg"
+                        />
                       }
                       className="w-0 flex-1"
                     >
