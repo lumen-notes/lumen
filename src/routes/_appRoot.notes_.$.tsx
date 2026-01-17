@@ -454,8 +454,35 @@ function NotePage() {
 
   return (
     <PageLayout
-      title={`${noteId}.md`}
-      icon={isDraft ? <DraftIndicator /> : <NoteFavicon note={parsedNote} />}
+      title={
+        <div className="flex items-center gap-1">
+          <span className="truncate">{noteId}.md</span>
+          {isDraft ? (
+            <DropdownMenu modal={false}>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton aria-label="Unsaved changes" size="small" className="px-1">
+                    <DraftIndicator />
+                  </IconButton>
+                }
+              />
+              <DropdownMenu.Content>
+                <DropdownMenu.Item
+                  icon={<UndoIcon16 />}
+                  variant="danger"
+                  onClick={() => {
+                    discardChanges()
+                    editorRef.current?.view?.focus()
+                  }}
+                >
+                  Discard changes
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          ) : null}
+        </div>
+      }
+      icon={<NoteFavicon note={parsedNote} />}
       actions={
         <div className="flex items-center gap-2">
           {(!note && editorValue) || isDraft ? (
@@ -537,21 +564,7 @@ function NotePage() {
                   </IconButton>
                 }
               />
-              <DropdownMenu.Content align="end" side="top">
-                {isDraft ? (
-                  <>
-                    <DropdownMenu.Item
-                      icon={<UndoIcon16 />}
-                      onClick={() => {
-                        discardChanges()
-                        editorRef.current?.view?.focus()
-                      }}
-                    >
-                      Discard changes
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                  </>
-                ) : null}
+              <DropdownMenu.Content align="end">
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
