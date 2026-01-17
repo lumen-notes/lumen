@@ -1,6 +1,6 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
 import { useSetAtom } from "jotai"
-import { forwardRef } from "react"
+import { forwardRef, useState } from "react"
 import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
 import { isCommandMenuOpenAtom } from "./command-menu"
@@ -12,11 +12,12 @@ export function NavBar() {
   const router = useRouter()
   const navigate = useNavigate()
   const setIsCommandMenuOpen = useSetAtom(isCommandMenuOpenAtom)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   return (
     <div className="border-t border-border-secondary">
       <div className="flex h-[var(--height-nav-bar)] items-stretch  p-2 [&>button]:h-full">
-        <Drawer.Root shouldScaleBackground={false}>
+        <Drawer.Root shouldScaleBackground={false} open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <Drawer.Trigger asChild>
             <NavButton aria-label="Open navigation menu">
               <MenuIcon16 />
@@ -27,7 +28,7 @@ export function NavBar() {
             <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay epaper:ring-2 epaper:ring-border rounded-t-[calc(var(--border-radius-base)+12px)]">
               <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-3 pb-[max(env(safe-area-inset-bottom),12px)]">
                 <Drawer.Title className="sr-only">Navigation</Drawer.Title>
-                <NavItems size="large" />
+                <NavItems size="large" onNavigate={() => setIsDrawerOpen(false)} />
               </div>
             </Drawer.Content>
           </Drawer.Portal>

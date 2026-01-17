@@ -28,8 +28,9 @@ import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 
 const SizeContext = createContext<"medium" | "large">("medium")
+const OnNavigateContext = createContext<(() => void) | undefined>(undefined)
 
-export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
+export function NavItems({ size = "medium", onNavigate }: { size?: "medium" | "large"; onNavigate?: () => void }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const syncText = useSyncStatusText()
@@ -69,7 +70,8 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
 
   return (
     <SizeContext.Provider value={size}>
-      <div className="flex grow flex-col justify-between gap-6">
+      <OnNavigateContext.Provider value={onNavigate}>
+        <div className="flex grow flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
           <ul className="flex flex-col gap-1">
             <li>
@@ -187,7 +189,8 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
             Send feedback
           </ExternalLink>
         </div>
-      </div>
+        </div>
+      </OnNavigateContext.Provider>
     </SizeContext.Provider>
   )
 }
@@ -208,6 +211,7 @@ function NavLink({
   children: React.ReactNode
 }) {
   const size = useContext(SizeContext)
+  const onNavigate = useContext(OnNavigateContext)
 
   return (
     <Link
@@ -215,6 +219,7 @@ function NavLink({
       data-size={size}
       className={cx("nav-item", className)}
       aria-current={forceActive ? "page" : undefined}
+      onClick={() => onNavigate?.()}
       {...props}
     >
       {activeIcon ? (
