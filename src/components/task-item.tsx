@@ -178,7 +178,7 @@ export function TaskItem({
               id={noteId}
               text={noteLabel}
               className="link truncate @md:max-w-52"
-              hoverCardAlign="end"
+              previewCardAlign="end"
             />
           </div>
         ) : null}

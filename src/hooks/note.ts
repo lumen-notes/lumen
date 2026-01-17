@@ -16,6 +16,29 @@ export function useNoteById(id: NoteId | undefined) {
   return note
 }
 
+/** Get backlinks for any note ID, even if the note doesn't exist */
+export function useBacklinksForId(id: NoteId | undefined) {
+  const backlinksAtom = React.useMemo(
+    () =>
+      selectAtom(notesAtom, (notes) => {
+        if (!id) return []
+        // If note exists, use its backlinks
+        const existingNote = notes.get(id)
+        if (existingNote) return existingNote.backlinks
+        // Otherwise, compute backlinks from all notes that link to this ID
+        const backlinks: NoteId[] = []
+        for (const note of notes.values()) {
+          if (note.links.includes(id)) {
+            backlinks.push(note.id)
+          }
+        }
+        return backlinks
+      }),
+    [id],
+  )
+  return useAtomValue(backlinksAtom)
+}
+
 export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)

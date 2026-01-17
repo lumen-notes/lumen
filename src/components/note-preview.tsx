@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
 import { Note, fontSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { formatDateDistance, formatWeekDistance } from "../utils/date"
+import { formatDate, formatDateDistance, formatWeekDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { getNoteDraft } from "../utils/note-draft"
 import { DotIcon8, GlobeIcon12, TagIcon12 } from "./icons"
@@ -71,7 +71,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className="mb-1 shrink-0 flex flex-col gap-0.5">
           <span className="font-bold text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
-            {note.displayName}
+            {note.type === "daily" ? formatDate(note.id) : note.displayName}
           </span>
           <span className="text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
