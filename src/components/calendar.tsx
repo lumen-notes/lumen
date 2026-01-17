@@ -1,4 +1,3 @@
-import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import {
   addDays,
   addMonths,
@@ -102,11 +101,11 @@ export function Calendar({
     <CalendarContainerContext.Provider value={containerRef}>
       <div ref={containerRef} className={cx("card-1 overflow-hidden rounded-xl!", className)}>
         <div className="flex flex-col gap-2 overflow-hidden">
-        <div className="flex items-center justify-between pt-2 px-2">
-          <span className="font-content px-2">
-            <span className="font-bold">{MONTH_NAMES[displayDate.getMonth()]}</span>{" "}
-            {displayDate.getFullYear()}
-          </span>
+          <div className="flex items-center justify-between pt-2 px-2">
+            <span className="font-content px-2">
+              <span className="font-bold">{MONTH_NAMES[displayDate.getMonth()]}</span>{" "}
+              {displayDate.getFullYear()}
+            </span>
           <div className="flex">
             {canReset ? (
               <IconButton aria-label={`Back to selected ${periodLabel}`} onClick={resetToActive}>
@@ -145,30 +144,30 @@ export function Calendar({
             </DropdownMenu>
           </div>
         </div>
-        {layout === "week" ? (
-          <div className="grid pb-2 px-2">
-            <RovingFocusGroup.Root orientation="horizontal" className="flex gap-1.5 items-center">
-              <CalendarWeek
-                startOfWeek={displayedWeekStart}
-                isActive={toWeekString(displayedWeekStart) === activeNoteId}
-              />
-              <div role="separator" className="h-8 w-px shrink-0 bg-border-secondary" />
-              {daysOfWeek.map((day) => (
-                <CalendarDate
-                  key={day.toISOString()}
-                  date={day}
-                  isActive={toDateString(day) === activeNoteId}
+          {layout === "week" ? (
+            <div className="grid pb-2 px-2">
+              <div className="flex gap-1.5 items-center">
+                <CalendarWeek
+                  startOfWeek={displayedWeekStart}
+                  isActive={toWeekString(displayedWeekStart) === activeNoteId}
                 />
-              ))}
-            </RovingFocusGroup.Root>
-          </div>
-        ) : (
-          <MonthGrid
-            weeksInMonth={weeksInMonth}
-            displayedMonth={displayedMonthStart.getMonth()}
-            activeNoteId={activeNoteId}
-          />
-        )}
+                <div role="separator" className="h-8 w-px shrink-0 bg-border-secondary" />
+                {daysOfWeek.map((day) => (
+                  <CalendarDate
+                    key={day.toISOString()}
+                    date={day}
+                    isActive={toDateString(day) === activeNoteId}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <MonthGrid
+              weeksInMonth={weeksInMonth}
+              displayedMonth={displayedMonthStart.getMonth()}
+              activeNoteId={activeNoteId}
+            />
+          )}
         </div>
       </div>
     </CalendarContainerContext.Provider>
@@ -350,19 +349,23 @@ function CalendarItem({
 
   // Don't show hover card for active item since we're already viewing it
   if (isActive) {
-    return (
-      <RovingFocusGroup.Item asChild active={isActive}>
-        {React.cloneElement(link, {}, content)}
-      </RovingFocusGroup.Item>
-    )
+    return React.cloneElement(link, {}, content)
   }
 
   return (
-    <RovingFocusGroup.Item asChild active={isActive}>
-      <NoteHoverCard.Trigger render={link} payload={{ note, anchor, side: "bottom", sideOffset, align: "start", ...(anchor && { transformOrigin: "top left" }) }}>
-        {content}
-      </NoteHoverCard.Trigger>
-    </RovingFocusGroup.Item>
+    <NoteHoverCard.Trigger
+      render={link}
+      payload={{
+        note,
+        anchor,
+        side: "bottom",
+        sideOffset,
+        align: "start",
+        ...(anchor && { transformOrigin: "top left" }),
+      }}
+    >
+      {content}
+    </NoteHoverCard.Trigger>
   )
 }
 
