@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { addDays } from "date-fns"
+import { addDays, nextMonday } from "date-fns"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
@@ -624,6 +624,17 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
         icon: <CalendarDateIcon16 date={tomorrow.getDate()} />,
         targetId: tomorrowId,
         trailingText: formatDate(tomorrowId),
+      })
+    }
+
+    const monday = nextMonday(now)
+    const mondayId = toDateString(monday)
+    if (noteId !== mondayId) {
+      options.push({
+        label: "Next week",
+        icon: <CalendarDateIcon16 date={monday.getDate()} />,
+        targetId: mondayId,
+        trailingText: formatDate(mondayId),
       })
     }
 
