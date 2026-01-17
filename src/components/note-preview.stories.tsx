@@ -73,24 +73,6 @@ const publishedNote: Note = {
   backlinks: [],
 }
 
-export const Basic = {
-  args: {
-    note: basicNote,
-  },
-}
-
-export const WithTags = {
-  args: {
-    note: noteWithTags,
-  },
-}
-
-export const Published = {
-  args: {
-    note: publishedNote,
-  },
-}
-
 const noteWithManyTags: Note = {
   id: "note-with-many-tags",
   content:
@@ -110,12 +92,6 @@ const noteWithManyTags: Note = {
   backlinks: [],
 }
 
-export const WithManyTags = {
-  args: {
-    note: noteWithManyTags,
-  },
-}
-
 const noteWithBacklinks: Note = {
   id: "note-with-backlinks",
   content: "# Popular Note\n\nThis note is linked to by many other notes.",
@@ -132,12 +108,6 @@ const noteWithBacklinks: Note = {
   tags: [],
   tasks: [],
   backlinks: ["note-1", "note-2", "note-3", "note-4", "note-5", "note-6", "note-7", "note-8"],
-}
-
-export const WithBacklinks = {
-  args: {
-    note: noteWithBacklinks,
-  },
 }
 
 const noteWithTasks: Note = {
@@ -203,6 +173,36 @@ const noteWithTasks: Note = {
     },
   ],
   backlinks: [],
+}
+
+export const Basic = {
+  args: {
+    note: basicNote,
+  },
+}
+
+export const WithTags = {
+  args: {
+    note: noteWithTags,
+  },
+}
+
+export const Published = {
+  args: {
+    note: publishedNote,
+  },
+}
+
+export const WithManyTags = {
+  args: {
+    note: noteWithManyTags,
+  },
+}
+
+export const WithBacklinks = {
+  args: {
+    note: noteWithBacklinks,
+  },
 }
 
 export const WithTasks = {
