@@ -231,7 +231,9 @@ function NavLink({
       aria-current={forceActive ? "page" : undefined}
       onClick={(event) => {
         onClick?.(event)
-        onNavigate?.()
+        if (!event.defaultPrevented) {
+          onNavigate?.()
+        }
       }}
       {...props}
     >
