@@ -7,10 +7,8 @@ import {
   eachWeekOfInterval,
   endOfMonth,
   getISOWeek,
-  isMonday,
   nextSunday,
   parseISO,
-  previousMonday,
   startOfISOWeek,
   startOfMonth,
 } from "date-fns"
@@ -37,24 +35,19 @@ export function Calendar({
   const date = parseISO(activeNoteId)
   const [layout, setLayout] = useAtom(calendarLayoutAtom)
 
-  // Local state for the displayed week (independent of activeNoteId)
-  const [displayedWeekStart, setDisplayedWeekStart] = React.useState(() =>
-    isMonday(date) ? date : previousMonday(date),
-  )
+  // Local state for the displayed date anchor (independent of activeNoteId)
+  const [displayedDate, setDisplayedDate] = React.useState(() => date)
 
-  // Local state for the displayed month
-  const [displayedMonthStart, setDisplayedMonthStart] = React.useState(() => startOfMonth(date))
-
-  // Sync displayed week/month when activeNoteId changes (adjust state during render)
+  // Sync displayed date when activeNoteId changes (adjust state during render)
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   const [prevActiveNoteId, setPrevActiveNoteId] = React.useState(activeNoteId)
   if (activeNoteId !== prevActiveNoteId) {
     setPrevActiveNoteId(activeNoteId)
-    const newDate = parseISO(activeNoteId)
-    setDisplayedWeekStart(isMonday(newDate) ? newDate : previousMonday(newDate))
-    setDisplayedMonthStart(startOfMonth(newDate))
+    setDisplayedDate(date)
   }
 
+  const displayedWeekStart = React.useMemo(() => startOfISOWeek(displayedDate), [displayedDate])
+  const displayedMonthStart = React.useMemo(() => startOfMonth(displayedDate), [displayedDate])
   const endOfWeek = React.useMemo(() => nextSunday(displayedWeekStart), [displayedWeekStart])
 
   const daysOfWeek = React.useMemo(
@@ -64,19 +57,16 @@ export function Calendar({
 
   const navigateByWeek = React.useCallback((direction: "previous" | "next") => {
     const increment = direction === "next" ? 1 : -1
-    setDisplayedWeekStart((prev) => addWeeks(prev, increment))
+    setDisplayedDate((prev) => addWeeks(prev, increment))
   }, [])
 
   const navigateByMonth = React.useCallback((direction: "previous" | "next") => {
     const increment = direction === "next" ? 1 : -1
-    setDisplayedMonthStart((prev) => addMonths(prev, increment))
+    setDisplayedDate((prev) => addMonths(prev, increment))
   }, [])
 
   // Check if displayed week differs from active note's week
-  const activeWeekStart = React.useMemo(
-    () => (isMonday(date) ? date : previousMonday(date)),
-    [date],
-  )
+  const activeWeekStart = React.useMemo(() => startOfISOWeek(date), [date])
   const activeMonthStart = React.useMemo(() => startOfMonth(date), [date])
 
   const canResetWeek = toWeekString(displayedWeekStart) !== toWeekString(activeWeekStart)
@@ -86,12 +76,8 @@ export function Calendar({
   const canReset = layout === "week" ? canResetWeek : canResetMonth
 
   const resetToActive = React.useCallback(() => {
-    if (layout === "week") {
-      setDisplayedWeekStart(activeWeekStart)
-    } else {
-      setDisplayedMonthStart(activeMonthStart)
-    }
-  }, [layout, activeWeekStart, activeMonthStart])
+    setDisplayedDate(date)
+  }, [date])
 
   // Calculate weeks in displayed month for month view
   const weeksInMonth = React.useMemo(() => {
