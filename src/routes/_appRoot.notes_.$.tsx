@@ -672,7 +672,7 @@ function NotePage() {
         </div>
       }
       floatingActions={
-        <div className="card-2 flex gap-1.5 coarse:gap-2 !rounded-full p-1.5 coarse:p-2 sm:hidden print:hidden">
+        <div className="card-2 flex gap-1.5 coarse:gap-2 rounded-full! p-1.5 coarse:p-2 sm:hidden print:hidden">
           {(!note && editorValue) || isDraft ? (
             <Button
               disabled={isSignedOut}

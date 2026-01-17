@@ -37,7 +37,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type="button"
         className={cx(
-          "focus-ring inline-flex select-none items-center justify-center rounded text-text-secondary enabled:hover:bg-bg-hover enabled:active:bg-bg-active data-[popup-open]:bg-bg-hover",
+          "focus-ring inline-flex cursor-pointer select-none items-center justify-center rounded text-text-secondary enabled:hover:bg-bg-hover enabled:active:bg-bg-active data-[popup-open]:bg-bg-hover",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "coarse:h-10 coarse:px-3",
           size === "small" && "h-6 px-2",

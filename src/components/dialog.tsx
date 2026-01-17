@@ -20,7 +20,7 @@ const Content = React.forwardRef<HTMLDivElement, DialogContentProps>(
       <RadixDialog.Portal>
         <RadixDialog.Content
           className={cx(
-            "card-3 !rounded-xl fixed left-1/2 top-3 z-20 max-h-[75vh] w-[calc(100vw-24px)] max-w-md -translate-x-1/2 focus:outline-none sm:top-[10vh] overflow-hidden grid grid-rows-[auto_1fr]",
+            "card-3 rounded-xl! fixed left-1/2 top-3 z-20 max-h-[75vh] w-[calc(100vw-24px)] max-w-md -translate-x-1/2 focus:outline-hidden sm:top-[10vh] overflow-hidden grid grid-rows-[auto_1fr]",
             className,
           )}
           {...props}

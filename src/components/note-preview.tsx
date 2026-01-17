@@ -94,7 +94,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
           </span>
         </div>
       ) : null}
-      <div className="flex-grow overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_75%,transparent_100%)] eink:[mask-image:none] [&_*::-webkit-scrollbar]:hidden">
+      <div className="grow overflow-hidden [mask-image:linear-gradient(to_bottom,black_0%,black_75%,transparent_100%)] eink:[mask-image:none] [&_*::-webkit-scrollbar]:hidden">
         <div className="w-[152%] origin-top-left scale-[66%]">
           <Markdown hideFrontmatter emptyText="Empty note">
             {resolvedContent}

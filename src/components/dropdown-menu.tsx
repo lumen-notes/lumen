@@ -28,7 +28,7 @@ function Content({
       <Menu.Positioner side={side} sideOffset={sideOffset} align={align} alignOffset={alignOffset}>
         <Menu.Popup
           className={cx(
-            "card-2 z-20 grid place-items-stretch overflow-hidden rounded-lg print:hidden outline-none",
+            "card-2 z-20 grid place-items-stretch overflow-hidden rounded-lg print:hidden outline-hidden",
             "origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
             className,
           )}
@@ -81,7 +81,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <>
         <div
           className={cx(
-            "flex w-0 flex-grow items-center gap-3",
+            "flex w-0 grow items-center gap-3",
             variant === "danger" && "text-text-danger eink:group-focus:text-bg",
           )}
         >
@@ -95,7 +95,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
               {icon}
             </div>
           ) : null}
-          <span className="flex-grow truncate">{children}</span>
+          <span className="grow truncate">{children}</span>
         </div>
         {trailingVisual}
         {shortcut ? (
@@ -111,7 +111,7 @@ const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       <Menu.Item
         ref={ref}
         className={cx(
-          "group flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-none focus:bg-bg-hover focus:outline-none active:bg-bg-active coarse:h-10",
+          "group flex h-8 cursor-pointer select-none items-center gap-3 rounded px-3 outline-hidden focus:bg-bg-hover focus:outline-hidden active:bg-bg-active coarse:h-10",
           "eink:focus:bg-text eink:focus:text-bg",
           "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:focus:bg-transparent data-[disabled]:active:bg-transparent",
           className,

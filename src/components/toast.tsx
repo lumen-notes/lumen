@@ -9,7 +9,7 @@ type ToastProps = {
 export function Toast({ children, icon }: ToastProps) {
   return (
     <div
-      className={cx("card-3 flex items-center gap-3 !rounded-xl px-4 py-3 font-sans sm:max-w-sm")}
+      className={cx("card-3 flex items-center gap-3 rounded-xl! px-4 py-3 font-sans sm:max-w-sm")}
     >
       {icon ? <div className="flex text-text-secondary">{icon}</div> : null}
       <span className="text-pretty">{children}</span>

@@ -48,8 +48,8 @@ const Segment = React.forwardRef<HTMLButtonElement, SegmentedControlSegmentProps
           aria-current={selected ? "true" : "false"}
           className={cx(
             selected
-              ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:!bg-bg active:!bg-bg"
-              : "bg-transparent hover:!bg-bg-hover active:!bg-bg-active",
+              ? "cursor-default bg-bg ring-1 ring-inset ring-border hover:bg-bg! active:bg-bg!"
+              : "bg-transparent hover:bg-bg-hover! active:bg-bg-active!",
             className,
           )}
           {...props}

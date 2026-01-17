@@ -170,8 +170,8 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
           </FormControl>
         </div>
         {error ? (
-          <div className="flex items-start gap-2 text-text-danger [&_a::after]:!bg-text-danger [&_a]:![text-decoration-color:var(--color-text-danger)]">
-            <div className="grid h-5 flex-shrink-0 place-items-center">
+          <div className="flex items-start gap-2 text-text-danger [&_a::after]:bg-text-danger! [&_a]:[text-decoration-color:var(--color-text-danger)]!">
+            <div className="grid h-5 shrink-0 place-items-center">
               <ErrorIcon16 />
             </div>
             <pre className="whitespace-pre-wrap font-mono text-sm leading-5">{error.message}</pre>
@@ -186,7 +186,7 @@ export function RepoForm({ className, onSubmit, onCancel }: RepoFormProps) {
         ) : null}
         <Button
           type="submit"
-          className="relative w-full flex-grow"
+          className="relative w-full grow"
           variant="primary"
           disabled={isLoading}
         >

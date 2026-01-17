@@ -161,7 +161,7 @@ export function NoteList({
                 render={
                   <IconButton
                     aria-label="View"
-                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover data-[popup-open]:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+                    className="h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover! data-[popup-open]:bg-bg-secondary-hover! active:bg-bg-secondary-active! eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
                   >
                     {viewIcons[view]}
                   </IconButton>
@@ -309,10 +309,10 @@ export function NoteList({
                     >
                       <NoteFavicon note={note} className="mr-3 coarse:mr-4" />
                       {note.pinned ? (
-                        <PinFillIcon12 className="mr-2 coarse:mr-3 flex-shrink-0 text-text-pinned" />
+                        <PinFillIcon12 className="mr-2 coarse:mr-3 shrink-0 text-text-pinned" />
                       ) : null}
                       {note?.frontmatter?.gist_id ? (
-                        <GlobeIcon16 className="mr-2 coarse:mr-3 flex-shrink-0 text-border-focus" />
+                        <GlobeIcon16 className="mr-2 coarse:mr-3 shrink-0 text-border-focus" />
                       ) : null}
                       <span className="truncate text-text-secondary">
                         <span className="text-text">{note.displayName}</span>
@@ -341,7 +341,7 @@ function DiceButton({ disabled = false, onClick }: { disabled?: boolean; onClick
     <IconButton
       disabled={disabled}
       aria-label="Roll the dice"
-      className="group/dice h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:!bg-bg-secondary-hover active:!bg-bg-secondary-active eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
+      className="group/dice h-10 w-10 shrink-0 rounded-lg bg-bg-secondary hover:bg-bg-secondary-hover! active:bg-bg-secondary-active! eink:ring-1 eink:ring-inset eink:ring-border eink:focus-visible:ring-2 coarse:h-12 coarse:w-12"
       onClick={() => {
         setNumber(Math.floor(Math.random() * 6) + 1)
         onClick?.()

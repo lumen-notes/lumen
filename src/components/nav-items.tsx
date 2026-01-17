@@ -69,7 +69,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
 
   return (
     <SizeContext.Provider value={size}>
-      <div className="flex flex-grow flex-col justify-between gap-6">
+      <div className="flex grow flex-col justify-between gap-6">
         <div className="flex flex-col gap-2">
           <ul className="flex flex-col gap-1">
             <li>
@@ -215,11 +215,11 @@ function NavLink({
       {...props}
     >
       {activeIcon ? (
-        <span className="hidden flex-shrink-0 [[aria-current=page]>&]:flex">{activeIcon}</span>
+        <span className="hidden shrink-0 [[aria-current=page]>&]:flex">{activeIcon}</span>
       ) : null}
       <span
         className={cx(
-          "flex flex-shrink-0 text-text-secondary",
+          "flex shrink-0 text-text-secondary",
           activeIcon && "[[aria-current=page]>&]:hidden",
         )}
       >
@@ -248,7 +248,7 @@ function ExternalLink({
       rel="noopener noreferrer"
       {...props}
     >
-      <span className="flex flex-shrink-0">{icon}</span>
+      <span className="flex shrink-0">{icon}</span>
       <span className="truncate">{children}</span>
     </a>
   )

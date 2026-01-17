@@ -285,7 +285,7 @@ function MarkdownContent({ children, className }: { children: string; className?
 function BookCover({ isbn }: { isbn: string }) {
   return (
     <a
-      className="book-cover inline-block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus"
+      className="book-cover inline-block focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-border-focus"
       href={`https://openlibrary.org/isbn/${isbn}`}
       target="_blank"
       rel="noopener noreferrer"
@@ -434,7 +434,7 @@ function Image(props: React.ComponentPropsWithoutRef<"img">) {
         search={{
           path: props.src,
         }}
-        className={cx("block w-fit !no-underline", props.className)}
+        className={cx("block w-fit no-underline!", props.className)}
         style={props.style}
       >
         <FilePreview path={props.src} alt={props.alt} width={props.width} height={props.height} />
@@ -470,7 +470,7 @@ function Code({ className, inline, children, ...props }: CodeProps) {
 
   return (
     <div className="pre-container relative">
-      <pre className="!pe-12 print:whitespace-pre-wrap">
+      <pre className="pe-12! print:whitespace-pre-wrap">
         <div className="absolute end-2 top-2 rounded coarse:end-1 coarse:top-1 print:hidden">
           <CopyButton text={children.toString()} />
         </div>
@@ -725,7 +725,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
         ) : null}
       </div>
       {nestedLists.length > 0 && (
-        <div className="[&_:is(ul,ol)]:!m-0 pl-7 coarse:pl-6">
+        <div className="[&_:is(ul,ol)]:m-0! pl-7 coarse:pl-6">
           {nestedLists.map((list, index) => (
             <React.Fragment key={index}>{list}</React.Fragment>
           ))}

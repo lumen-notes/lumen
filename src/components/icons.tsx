@@ -11,7 +11,7 @@ function Icon({ size, className, ...props }: IconProps & { size: number }) {
       fill="currentColor"
       aria-hidden="true"
       className={cx(
-        "flex-shrink-0 overflow-visible",
+        "shrink-0 overflow-visible",
         // data-eink=show
         "[&_[data-eink=show]]:hidden eink:[&_[data-eink=show]]:inline",
         // data-eink=hide
