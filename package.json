@@ -160,7 +160,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.8.0",
     "http-server": "^14.1.1",
-    "patch-package": "^6.4.7",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.34",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.2.1",
