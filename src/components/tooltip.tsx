@@ -29,7 +29,7 @@ function Content({
         <BaseTooltip.Popup
           className={cx(
             "card-2 z-20 px-2.5 py-2 leading-none text-text",
-            "origin-[var(--transform-origin)] transition-[transform,scale,opacity] data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+            "origin-[var(--transform-origin)] transition-[transform,scale,opacity] epaper:transition-none data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
             className,
           )}
         >

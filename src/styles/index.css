@@ -50,11 +50,7 @@ body:has([data-resizing="true"]) * {
 /* Link */
 
 @utility link {
-  @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
-}
-
-.link:hover {
-  @apply decoration-solid;
+  @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px] hover:decoration-solid;
 }
 
 /* .link-external {
@@ -76,24 +72,24 @@ body:has([data-resizing="true"]) * {
 
 @utility card {
   @apply rounded-lg border-0 ring-1 ring-[var(--neutral-a3)] dark:ring-inset;
-  /* Undo ring-inset for eink theme */
+  /* Undo ring-inset for e-paper theme */
   /* Reference: https://github.com/tailwindlabs/tailwindcss/discussions/3016#discussioncomment-8797920 */
-  @apply eink:dark:[--tw-ring-inset:_] eink:ring-border;
+  @apply epaper:dark:[--tw-ring-inset:_] epaper:ring-border;
 }
 
 @utility card-1 {
   @apply card bg-bg-card shadow-sm;
-  @apply eink:shadow-none;
+  @apply epaper:shadow-none;
 }
 
 @utility card-2 {
   @apply card bg-bg-overlay-backdrop shadow-lg backdrop-blur-lg;
-  @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
+  @apply epaper:bg-bg-overlay epaper:shadow-none epaper:ring-2 epaper:backdrop-blur-none;
 }
 
 @utility card-3 {
   @apply card bg-bg-overlay-backdrop shadow-2xl backdrop-blur-xl;
-  @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
+  @apply epaper:bg-bg-overlay epaper:shadow-none epaper:ring-2 epaper:backdrop-blur-none;
 }
 
 /* Nav item */
@@ -108,7 +104,7 @@ body:has([data-resizing="true"]) * {
 
 .nav-item[aria-current] {
   @apply bg-bg-secondary font-bold text-text;
-  @apply eink:bg-text eink:text-bg;
+  @apply epaper:bg-text epaper:text-bg;
 }
 
 .nav-item[data-size="large"] {
@@ -132,8 +128,8 @@ body:has([data-resizing="true"]) * {
     animation-range: 0 32px;
   }
 
-  /* Disable scroll mask for eink */
-  [data-theme="eink"] .scroll-mask {
+  /* Disable scroll mask for e-paper */
+  [data-epaper] .scroll-mask {
     mask-image: none;
     -webkit-mask-image: none;
     animation: none;

@@ -1,7 +1,6 @@
 import { PreviewCard } from "@base-ui/react/preview-card"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
-import { ErrorIcon16 } from "./icons"
 import { NotePreview } from "./note-preview"
 
 type Payload = {
@@ -14,13 +13,19 @@ type Payload = {
   transformOrigin?: string
 }
 
-function Provider({ children }: { children: React.ReactNode }) {
+function Provider({
+  children,
+  container,
+}: {
+  children: React.ReactNode
+  container?: HTMLElement | null
+}) {
   return (
     <PreviewCard.Root<Payload>>
       {({ payload }) => (
         <>
           {children}
-          <PreviewCard.Portal>
+          <PreviewCard.Portal container={container}>
             <PreviewCard.Positioner
               side={payload?.side ?? "bottom"}
               sideOffset={payload?.sideOffset ?? 4}
@@ -30,8 +35,8 @@ function Provider({ children }: { children: React.ReactNode }) {
             >
               <PreviewCard.Popup
                 className={cx(
-                  "card-2 z-20 w-96 rounded-[calc(var(--border-radius-base)+6px)]! print:hidden",
-                  "transition-[transform,scale,opacity]",
+                  "card-2 z-30 w-96 rounded-[calc(var(--border-radius-base)+6px)]! print:hidden",
+                  "transition-[transform,scale,opacity] epaper:transition-none",
                   "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
                   "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
                 )}
@@ -42,10 +47,7 @@ function Provider({ children }: { children: React.ReactNode }) {
                 {payload?.note ? (
                   <NotePreview note={payload.note} />
                 ) : (
-                  <span className="flex items-center gap-2 p-4 text-text-danger">
-                    <ErrorIcon16 />
-                    Note not found
-                  </span>
+                  <div className="p-4 text-text-secondary">Note not found</div>
                 )}
               </PreviewCard.Popup>
             </PreviewCard.Positioner>

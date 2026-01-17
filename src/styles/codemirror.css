@@ -73,7 +73,7 @@
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected] {
   @apply bg-bg-secondary text-text;
-  @apply eink:bg-text eink:text-bg;
+  @apply epaper:bg-text epaper:text-bg;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul > li .cm-completionDetail {
@@ -105,7 +105,7 @@
 }
 
 .cm-editor .cm-wikilink {
-  @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5 eink:outline-dotted eink:outline-1 eink:outline-offset-[-1px];
+  @apply -mx-0.5 rounded-sm bg-bg-tertiary px-0.5 epaper:outline-dotted epaper:outline-1 epaper:outline-offset-[-1px];
 }
 
 .cm-editor .cm-wikilink:hover {
@@ -113,7 +113,7 @@
 }
 
 .cm-wikilinks-enabled .cm-editor .cm-wikilink {
-  @apply underline decoration-dotted decoration-1 underline-offset-[3px] ring-0 eink:outline-0;
+  @apply underline decoration-dotted decoration-1 underline-offset-[3px] ring-0 epaper:outline-0;
 }
 
 .cm-wikilinks-enabled .cm-editor .cm-wikilink:hover {
@@ -121,7 +121,7 @@
 }
 
 .cm-editor .cm-priority {
-  @apply rounded-sm px-0.5 eink:bg-transparent eink:px-0 eink:text-text;
+  @apply rounded-sm px-0.5 epaper:bg-transparent epaper:px-0 epaper:text-text;
 }
 
 .cm-editor .cm-priority-1 {

@@ -20,8 +20,8 @@ export function Dice({
         "--shadow-large": "calc(var(--x-amount) * 4px) calc(var(--y-amount) * 4px) 6px -1px",
       }}
       className={cx(
-        "flex rotate-[var(--angle)] rounded-[2.5px] eink:rounded-none bg-bg text-text transition-[transform,translate,rotate,box-shadow] duration-150 will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]",
-        "eink:ring-1 eink:ring-inset eink:ring-border eink:dark:bg-transparent eink:dark:text-text",
+        "flex rotate-[var(--angle)] rounded-[2.5px] epaper:rounded-none bg-bg text-text transition-[transform,translate,rotate,box-shadow] duration-150 will-change-transform [box-shadow:var(--shadow-large)_rgb(0,0,0,0.1),var(--shadow-small)_rgb(0,0,0,0.1),0_0_0_1px_var(--color-border-secondary)] motion-reduce:transition-none dark:bg-text-secondary dark:text-bg dark:[box-shadow:inset_calc(var(--x-amount)*1px)_calc(var(--y-amount)*1px)_0_var(--color-border),var(--shadow-large)_rgb(0,0,0,0.2),var(--shadow-small)_rgb(0,0,0,0.2)]",
+        "epaper:ring-1 epaper:ring-inset epaper:ring-border epaper:dark:bg-transparent epaper:dark:text-text",
         className,
       )}
     >

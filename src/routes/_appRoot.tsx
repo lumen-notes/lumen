@@ -14,11 +14,11 @@ import {
   voiceConversationMachineAtom,
 } from "../components/voice-conversation"
 import {
+  epaperAtom,
   globalStateMachineAtom,
   notesAtom,
   tagsAtom,
   templatesAtom,
-  themeAtom,
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
@@ -231,11 +231,11 @@ function RouteComponent() {
     }
   }, [navigate, searchNotesRef, getNotes, getTemplates, getTags, sendVoiceConversation])
 
-  // Set the theme
-  const theme = useAtomValue(themeAtom)
+  // Set the e-paper mode
+  const epaper = useAtomValue(epaperAtom)
   React.useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme)
-  }, [theme])
+    document.documentElement.toggleAttribute("data-epaper", epaper)
+  }, [epaper])
 
   // Apply overflow classes to parent elements
   React.useEffect(() => {

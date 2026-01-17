@@ -669,7 +669,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
       className={cx(
         "transition-colors rounded-lg",
         isMenuOpen &&
-          "bg-bg-selection eink:bg-transparent eink:ring-1 eink:ring-border eink:ring-inset",
+          "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
         className,
       )}
     >
