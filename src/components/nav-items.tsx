@@ -29,7 +29,13 @@ const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString
 
 const SizeContext = createContext<"medium" | "large">("medium")
 
-export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
+export function NavItems({
+  size = "medium",
+  onNavigate,
+}: {
+  size?: "medium" | "large"
+  onNavigate?: () => void
+}) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const syncText = useSyncStatusText()
@@ -78,6 +84,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                 search={{ query: undefined, view: "grid" }}
                 activeIcon={<NoteFillIcon16 />}
                 icon={<NoteIcon16 />}
+                onNavigate={onNavigate}
               >
                 Notes
               </NavLink>
@@ -94,6 +101,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                 activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
                 icon={<CalendarDateIcon16 date={today.getDate()} />}
                 forceActive={isCalendarActive}
+                onNavigate={onNavigate}
               >
                 Calendar
               </NavLink>
@@ -104,6 +112,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                 search={{ query: undefined, sort: "name", view: "list" }}
                 activeIcon={<TagFillIcon16 />}
                 icon={<TagIcon16 />}
+                onNavigate={onNavigate}
               >
                 Tags
               </NavLink>
@@ -129,6 +138,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
                         />
                       }
                       className="w-0 flex-1"
+                      onNavigate={onNavigate}
                     >
                       {note.displayName}
                     </NavLink>
@@ -170,6 +180,7 @@ export function NavItems({ size = "medium" }: { size?: "medium" | "large" }) {
             activeIcon={<SettingsFillIcon16 />}
             icon={<SettingsIcon16 />}
             className="text-text-secondary"
+            onNavigate={onNavigate}
           >
             Settings
           </NavLink>
@@ -198,13 +209,16 @@ function NavLink({
   icon,
   includeSearch = false,
   forceActive = false,
+  onNavigate,
   children,
+  onClick,
   ...props
 }: LinkComponentProps<"a"> & {
   activeIcon?: React.ReactNode
   icon: React.ReactNode
   includeSearch?: boolean
   forceActive?: boolean
+  onNavigate?: () => void
   children: React.ReactNode
 }) {
   const size = useContext(SizeContext)
@@ -215,6 +229,12 @@ function NavLink({
       data-size={size}
       className={cx("nav-item", className)}
       aria-current={forceActive ? "page" : undefined}
+      onClick={(event) => {
+        onClick?.(event)
+        if (!event.defaultPrevented) {
+          onNavigate?.()
+        }
+      }}
       {...props}
     >
       {activeIcon ? (
