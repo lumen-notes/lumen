@@ -21,7 +21,6 @@ import {
   vimModeAtom,
   voiceAssistantEnabledAtom,
 } from "../global-state"
-import { Signature } from "../components/signature"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
