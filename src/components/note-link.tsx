@@ -9,16 +9,16 @@ export type NoteLinkProps = {
   id: string
   text?: string
   className?: string
-  previewCardAlign?: "start" | "center" | "end"
-  previewCardAlignOffset?: number
+  hoverCardAlign?: "start" | "center" | "end"
+  hoverCardAlignOffset?: number
 }
 
 export function NoteLink({
   id,
   text,
   className,
-  previewCardAlign = "start",
-  previewCardAlignOffset,
+  hoverCardAlign = "start",
+  hoverCardAlignOffset,
 }: NoteLinkProps) {
   const note = useNoteById(id)
 
@@ -42,8 +42,8 @@ export function NoteLink({
       }
       payload={{
         note: note ?? null,
-        align: previewCardAlign,
-        alignOffset: previewCardAlignOffset,
+        align: hoverCardAlign,
+        alignOffset: hoverCardAlignOffset,
       }}
     >
       {text || id}
