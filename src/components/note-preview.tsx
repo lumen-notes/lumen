@@ -6,10 +6,11 @@ import { cx } from "../utils/cx"
 import { formatDateDistance, formatWeekDistance } from "../utils/date"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { getNoteDraft } from "../utils/note-draft"
-import { DraftIndicator } from "./draft-indicator"
-import { GlobeIcon16 } from "./icons"
+import { DotIcon8, GlobeIcon12, TagIcon12 } from "./icons"
+import { Label } from "./label"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
+import { pluralize } from "../utils/pluralize"
 
 const NUM_VISIBLE_TAGS = 4
 
@@ -47,34 +48,17 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
   }, [resolvedFrontmatter?.font, defaultFont])
 
   const frontmatterTags = useMemo(() => {
-    const tagsArray =
-      Array.isArray(resolvedFrontmatter?.tags) &&
+    return Array.isArray(resolvedFrontmatter?.tags) &&
       (resolvedFrontmatter.tags as unknown[]).every((tag) => typeof tag === "string")
-        ? (resolvedFrontmatter.tags as string[])
-        : []
-
-    const frontmatterTags = new Set<string>()
-
-    // Expand nested tags (e.g. "foo/bar/baz" => "foo", "foo/bar", "foo/bar/baz")
-    tagsArray.forEach((tag) =>
-      tag.split("/").forEach((_, index) => {
-        frontmatterTags.add(
-          tag
-            .split("/")
-            .slice(0, index + 1)
-            .join("/"),
-        )
-      }),
-    )
-
-    return Array.from(frontmatterTags)
+      ? (resolvedFrontmatter.tags as string[])
+      : []
   }, [resolvedFrontmatter?.tags])
 
   return (
     <div
       {...{ inert: "" }}
       className={cx(
-        "flex aspect-[5/3] w-full flex-col gap-1.5 overflow-hidden p-4 [contain:layout_paint]",
+        "flex aspect-[5/3] w-full flex-col gap-2 overflow-hidden p-4 [contain:layout_paint]",
         className,
       )}
       style={
@@ -102,30 +86,48 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
         </div>
       </div>
       {!hideProperties ? (
-        <div className="flex flex-wrap pr-10 font-content [column-gap:8px] [row-gap:4px] empty:hidden coarse:pr-12">
-          {resolvedFrontmatter?.gist_id ? (
-            <div className="flex items-center self-stretch">
-              <GlobeIcon16 className="text-border-focus" />
-            </div>
+        <div className="flex flex-wrap gap-x-1.5 gap-y-2 pr-10 font-content empty:hidden coarse:pr-12">
+          {isDraft ? (
+            <Label icon={<DotIcon8 className="text-text-pending" />}>Unsaved</Label>
           ) : null}
-          {isDraft ? <DraftIndicator /> : null}
-          {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
-            <div
-              key={tag}
-              className={cx(
-                "-mx-[3px] flex items-center rounded-sm px-[3px] text-sm",
-                highlightedHrefs.includes(`/tags/${tag}`)
-                  ? "bg-bg-highlight text-text-highlight"
-                  : "text-text-secondary",
-              )}
+          {resolvedFrontmatter?.gist_id ? (
+            <Label icon={<GlobeIcon12 className="text-border-focus" />}>Published</Label>
+          ) : null}
+          {/*{note.tasks.length > 0 ? (
+            <Label
+              icon={
+                <ProgressRing
+                  size={14}
+                  value={note.tasks.filter((t) => t.completed).length / note.tasks.length}
+                  strokeWidth={2}
+                />
+              }
             >
-              #{tag}
-            </div>
+              {note.tasks.filter((t) => t.completed).length}/{note.tasks.length}
+            </Label>
+          ) : null}*/}
+          {note.backlinks.length > 0 ? (
+            <Label>{pluralize(note.backlinks.length, "backlink")}</Label>
+          ) : null}
+          {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
+            <Label
+              key={tag}
+              icon={<TagIcon12 />}
+              className={
+                highlightedHrefs.some((href) => {
+                  if (!href.startsWith("/tags/")) return false
+                  const highlightedTag = href.slice(6)
+                  return tag === highlightedTag || tag.startsWith(`${highlightedTag}/`)
+                })
+                  ? "bg-bg-highlight text-text-highlight"
+                  : undefined
+              }
+            >
+              {tag}
+            </Label>
           ))}
           {frontmatterTags.length > NUM_VISIBLE_TAGS ? (
-            <div className="flex  items-center rounded-full text-sm text-text-secondary">
-              +{frontmatterTags.length - NUM_VISIBLE_TAGS}
-            </div>
+            <Label icon={<TagIcon12 />}>+{frontmatterTags.length - NUM_VISIBLE_TAGS}</Label>
           ) : null}
         </div>
       ) : null}
