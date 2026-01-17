@@ -34,7 +34,6 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 ### Other
 
 - `npm run benchmark` - Run performance benchmarks
-- `npm run dev:netlify` - Start development with Netlify Edge Functions
 
 ## Architecture
 
@@ -67,7 +66,8 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 - **Editor**: CodeMirror 6 with custom extensions
 - **State**: XState + Jotai
 - **Git**: isomorphic-git + lightning-fs
-- **UI Components**: Radix UI primitives
+- **Routing**: TanStack Router (file-based)
+- **UI Components**: Radix UI primitives + Base UI
 - **Markdown**: Unified/remark ecosystem
 
 ### File Structure
