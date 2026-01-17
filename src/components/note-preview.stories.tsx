@@ -18,7 +18,7 @@ export default {
 }
 
 const basicNote: Note = {
-  id: "sample-note",
+  id: "basic-note",
   content: "# Sample Note\n\nThis is a simple note with some content.",
   type: "note",
   displayName: "Sample Note",
