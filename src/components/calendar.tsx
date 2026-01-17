@@ -599,7 +599,7 @@ function MonthDateCell({
         isActive && "font-bold bg-[var(--neutral-a3)] epaper:bg-text epaper:text-bg",
         hasNotes &&
           "after:pointer-events-none after:absolute after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
-        hasNotes && isToday && "after:bottom-1",
+        hasNotes && isToday && "after:bottom-[6px]",
         hasNotes && !isToday && "after:bottom-2",
         hasNotes && isActive && "after:bg-text-secondary epaper:after:bg-bg",
         hasNotes && !isActive && "after:bg-border",

@@ -48,7 +48,7 @@ function RouteComponent() {
             href="https://colebemis.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="self-center p-8 text-border-secondary"
+            className="self-center p-8 text-border"
           >
             <Signature width={150} />
           </a>
