@@ -79,43 +79,43 @@ export function NavItems({
         <div className="flex flex-col gap-2">
           <ul className="flex flex-col gap-1">
             <li>
-                <NavLink
-                  to="/"
-                  search={{ query: undefined, view: "grid" }}
-                  activeIcon={<NoteFillIcon16 />}
-                  icon={<NoteIcon16 />}
-                  onNavigate={onNavigate}
-                >
-                  Notes
-                </NavLink>
+              <NavLink
+                to="/"
+                search={{ query: undefined, view: "grid" }}
+                activeIcon={<NoteFillIcon16 />}
+                icon={<NoteIcon16 />}
+                onNavigate={onNavigate}
+              >
+                Notes
+              </NavLink>
             </li>
             <li>
-                <NavLink
-                  to="/notes/$"
-                  params={{ _splat: todayString }}
-                  search={{
-                    mode: hasDailyNote ? "read" : "write",
-                    query: undefined,
-                    view: "grid",
-                  }}
-                  activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
-                  icon={<CalendarDateIcon16 date={today.getDate()} />}
-                  forceActive={isCalendarActive}
-                  onNavigate={onNavigate}
-                >
-                  Calendar
-                </NavLink>
+              <NavLink
+                to="/notes/$"
+                params={{ _splat: todayString }}
+                search={{
+                  mode: hasDailyNote ? "read" : "write",
+                  query: undefined,
+                  view: "grid",
+                }}
+                activeIcon={<CalendarDateFillIcon16 date={today.getDate()} />}
+                icon={<CalendarDateIcon16 date={today.getDate()} />}
+                forceActive={isCalendarActive}
+                onNavigate={onNavigate}
+              >
+                Calendar
+              </NavLink>
             </li>
             <li>
-                <NavLink
-                  to="/tags"
-                  search={{ query: undefined, sort: "name", view: "list" }}
-                  activeIcon={<TagFillIcon16 />}
-                  icon={<TagIcon16 />}
-                  onNavigate={onNavigate}
-                >
-                  Tags
-                </NavLink>
+              <NavLink
+                to="/tags"
+                search={{ query: undefined, sort: "name", view: "list" }}
+                activeIcon={<TagFillIcon16 />}
+                icon={<TagIcon16 />}
+                onNavigate={onNavigate}
+              >
+                Tags
+              </NavLink>
             </li>
           </ul>
           {pinnedNotes.length > 0 ? (
