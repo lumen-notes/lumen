@@ -1,3 +1,5 @@
+@config "../../tailwind.config.cjs";
+
 @import "./fonts.css";
 @import "./variables.css";
 @import "./markdown.css";
@@ -5,9 +7,7 @@
 @import "./cmdk.css";
 @import "./prism.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 body {
   @apply bg-bg font-sans text-base font-normal text-text print:bg-[white];
@@ -43,13 +43,13 @@ body:has([data-resizing="true"]) * {
 }
 
 /* Focus styles for buttons, inputs, etc. */
-.focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
+@utility focus-ring {
+  @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-border-focus;
 }
 
 /* Link */
 
-.link {
+@utility link {
   @apply focus-ring rounded-sm underline decoration-text-secondary decoration-dotted decoration-1 underline-offset-[3px];
 }
 
@@ -74,24 +74,24 @@ body:has([data-resizing="true"]) * {
 
 /* Card */
 
-.card {
+@utility card {
   @apply rounded-lg border-0 ring-1 ring-[var(--neutral-a3)] dark:ring-inset;
   /* Undo ring-inset for eink theme */
   /* Reference: https://github.com/tailwindlabs/tailwindcss/discussions/3016#discussioncomment-8797920 */
   @apply eink:dark:[--tw-ring-inset:_] eink:ring-border;
 }
 
-.card-1 {
-  @apply card bg-bg-card shadow;
+@utility card-1 {
+  @apply card bg-bg-card shadow-sm;
   @apply eink:shadow-none;
 }
 
-.card-2 {
+@utility card-2 {
   @apply card bg-bg-overlay-backdrop shadow-lg backdrop-blur-lg;
   @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
 }
 
-.card-3 {
+@utility card-3 {
   @apply card bg-bg-overlay-backdrop shadow-2xl backdrop-blur-xl;
   @apply eink:bg-bg-overlay eink:shadow-none eink:ring-2 eink:backdrop-blur-none;
 }

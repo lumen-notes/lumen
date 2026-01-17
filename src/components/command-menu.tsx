@@ -255,7 +255,7 @@ export function CommandMenu() {
         }
       }}
     >
-      <div className="card-3 overflow-hidden !rounded-xl">
+      <div className="card-3 overflow-hidden rounded-xl!">
         <Command.Input
           placeholder="Search or jump to…"
           value={query}
@@ -463,10 +463,8 @@ function CommandItem({ children, value, icon, description, onSelect }: CommandIt
     <Command.Item value={value} onSelect={onSelect}>
       <div className="flex items-center gap-3">
         <div className="grid h-4 w-4 place-items-center text-text-secondary">{icon}</div>
-        <div className="flex-grow truncate">{children}</div>
-        {description ? (
-          <span className="flex-shrink-0 text-text-secondary">{description}</span>
-        ) : null}
+        <div className="grow truncate">{children}</div>
+        {description ? <span className="shrink-0 text-text-secondary">{description}</span> : null}
         <span className="hidden leading-none text-text-secondary [[aria-selected]_&]:inline eink:[[aria-selected]_&]:text-bg">
           ⏎
         </span>
@@ -493,11 +491,9 @@ function NoteItem({
     >
       <span className="flex items-center gap-2 truncate">
         {!hidePinIcon && note.pinned ? (
-          <PinFillIcon12 className="flex-shrink-0 text-text-pinned" />
+          <PinFillIcon12 className="shrink-0 text-text-pinned" />
         ) : null}
-        {note?.frontmatter?.gist_id ? (
-          <GlobeIcon16 className="flex-shrink-0 text-border-focus" />
-        ) : null}
+        {note?.frontmatter?.gist_id ? <GlobeIcon16 className="shrink-0 text-border-focus" /> : null}
         <span className="truncate">{note.displayName}</span>
       </span>
     </CommandItem>

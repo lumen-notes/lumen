@@ -130,7 +130,7 @@ export function CheatsheetDialog() {
 
           {/* Block elements */}
           <CheatsheetItem>
-            <div className="flex-grow max-w-[10ch]">
+            <div className="grow max-w-[10ch]">
               <Markdown>---</Markdown>
             </div>
             <code className="text-text-secondary">---</code>

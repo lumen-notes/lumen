@@ -37,7 +37,7 @@ export function PropertyKeyEditor({ name, onChange }: PropertyKeyEditorProps) {
           autoFocus
           type="text"
           defaultValue={name}
-          className="w-full rounded px-2 py-0.5 bg-transparent coarse:px-3 coarse:py-1.5 outline-none ring-2 ring-inset ring-border-focus"
+          className="w-full rounded px-2 py-0.5 bg-transparent coarse:px-3 coarse:py-1.5 outline-hidden ring-2 ring-inset ring-border-focus"
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"

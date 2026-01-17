@@ -68,7 +68,7 @@ export function Calendar({
   }, [activeWeekStart])
 
   return (
-    <div className={cx("card-1 p-2 !rounded-xl", className)}>
+    <div className={cx("card-1 p-2 rounded-xl!", className)}>
       <div className="flex flex-col gap-2 overflow-hidden">
         <div className="flex items-center justify-between">
           <span className="font-content px-2">
@@ -113,7 +113,7 @@ export function Calendar({
               startOfWeek={displayedWeekStart}
               isActive={toWeekString(displayedWeekStart) === activeNoteId}
             />
-            <div role="separator" className="h-8 w-px flex-shrink-0 bg-border" />
+            <div role="separator" className="h-8 w-px shrink-0 bg-border" />
             {daysOfWeek.map((date) => (
               <CalendarDate
                 key={date.toISOString()}

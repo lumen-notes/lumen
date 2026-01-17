@@ -269,8 +269,8 @@ function RouteComponent() {
       data-vaul-drawer-wrapper=""
     >
       {error ? (
-        <div className="flex flex-shrink-0 items-start gap-2 border-b border-border-secondary px-4 py-2 text-text-danger">
-          <div className="grid h-6 flex-shrink-0 place-items-center">
+        <div className="flex shrink-0 items-start gap-2 border-b border-border-secondary px-4 py-2 text-text-danger">
+          <div className="grid h-6 shrink-0 place-items-center">
             <ErrorIcon16 />
           </div>
           <pre className="whitespace-pre-wrap pt-0.5 font-mono">{error.message}</pre>

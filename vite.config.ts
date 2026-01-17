@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite"
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite"
 import react from "@vitejs/plugin-react"
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label"
@@ -11,11 +12,10 @@ import { VitePWA } from "vite-plugin-pwa"
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    tailwindcss(),
     TanStackRouterVite(),
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     visualizer({ filename: "dist/stats.html" }) as unknown as PluginOption,
-    // Fixes isomorphic-git Buffer error
-    // https://github.com/isomorphic-git/isomorphic-git/issues/1753
     VitePWA({
       strategies: "generateSW",
       registerType: "prompt",
@@ -51,6 +51,8 @@ export default defineConfig({
         type: "module",
       },
     }),
+    // Fixes isomorphic-git Buffer error
+    // https://github.com/isomorphic-git/isomorphic-git/issues/1753
     nodePolyfills(),
   ],
 })

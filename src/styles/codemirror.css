@@ -3,7 +3,7 @@
 }
 
 .cm-editor.cm-editor.cm-focused {
-  @apply outline-none;
+  @apply outline-hidden;
 }
 
 .cm-editor .cm-content {
@@ -33,7 +33,7 @@
 }
 
 .cm-editor .cm-fat-cursor {
-  @apply bg-border-focus !text-bg;
+  @apply bg-border-focus text-bg!;
 }
 
 /* Hide the cursor when the editor is not focused */
@@ -51,11 +51,11 @@
 
 .cm-editor .cm-vim-panel,
 .cm-editor .cm-vim-panel span {
-  @apply !font-mono;
+  @apply font-mono!;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete {
-  @apply card-2 max-w-sm border-0 !bg-bg-overlay p-1 !backdrop-blur-none;
+  @apply card-2 max-w-sm border-0 bg-bg-overlay! p-1 backdrop-blur-none!;
 }
 
 .cm-editor .cm-tooltip.cm-tooltip-autocomplete > ul {

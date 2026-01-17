@@ -84,7 +84,7 @@ export function ShareDialog({
       <Dialog.Content title="Share">
         <div className="grid gap-4">
           <div
-            className="card-1 !bg-bg-overlay"
+            className="card-1 bg-bg-overlay!"
             style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
           >
             <NotePreview note={strippedNote} hideProperties />

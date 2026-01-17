@@ -9,7 +9,7 @@ export function WebsiteFavicon({ url, className, ...props }: WebsiteFaviconProps
     <img
       aria-hidden
       alt=""
-      className={cx("inline-block size-icon !rounded-none object-contain", className)}
+      className={cx("inline-block size-icon rounded-none! object-contain", className)}
       src={`https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(
         url,
       )}&size=32`}

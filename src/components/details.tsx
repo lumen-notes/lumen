@@ -14,7 +14,7 @@ function Root({
   return (
     <details
       open={defaultOpen}
-      className={cx("group/details space-y-3 coarse:space-y-4", className)}
+      className={cx("group/details flex flex-col gap-3 coarse:gap-4", className)}
     >
       {children}
     </details>
@@ -31,7 +31,7 @@ function Summary({ children, className }: { children: React.ReactNode; className
   return (
     <summary
       className={cx(
-        "group/summary -m-3 coarse:-m-4 font-sans inline-flex cursor-pointer list-none self-start rounded p-3 coarse:p-4 outline-none [&::-webkit-details-marker]:hidden",
+        "group/summary -m-3 coarse:-m-4 font-sans inline-flex cursor-pointer list-none self-start rounded p-3 coarse:p-4 outline-hidden [&::-webkit-details-marker]:hidden",
         className,
       )}
       onMouseDown={stopPropagationOnDoubleClick}

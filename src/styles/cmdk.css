@@ -7,7 +7,7 @@
 }
 
 [cmdk-input] {
-  @apply w-full bg-transparent px-5 py-4 text-lg leading-none outline-none;
+  @apply w-full bg-transparent px-5 py-4 text-lg leading-none outline-hidden;
 }
 
 [cmdk-input]::placeholder {

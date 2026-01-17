@@ -90,7 +90,7 @@ export function VoiceConversationBar() {
             : "idle"
       }
     >
-      <div className="!rounded-full card-2 p-1.5 coarse:p-2 flex items-center">
+      <div className="rounded-full! card-2 p-1.5 coarse:p-2 flex items-center">
         <AnimatePresence initial={false}>
           {state.matches("active.ready") ? (
             <motion.div
@@ -115,10 +115,10 @@ export function VoiceConversationBar() {
                   shortcut={["⌘", "⇧", "M"]}
                   tooltipSideOffset={12}
                   className={cx(
-                    "!text-[#fff] eink:!bg-text eink:!text-bg rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2 overflow-hidden",
+                    "text-[#fff]! eink:bg-text! eink:text-bg! rounded-full h-8 coarse:h-12 px-2 coarse:px-4 transition-colors mr-1.5 coarse:mr-2 overflow-hidden",
                     state.matches("active.ready.mic.muted")
-                      ? "!bg-[var(--red-9)] hover:!bg-[var(--red-10)]"
-                      : "!bg-[var(--green-9)] hover:!bg-[var(--green-10)]",
+                      ? "bg-[var(--red-9)]! hover:bg-[var(--red-10)]!"
+                      : "bg-[var(--green-9)]! hover:bg-[var(--green-10)]!",
                   )}
                   onClick={() => {
                     if (state.matches("active.ready.mic.muted")) {
@@ -228,7 +228,7 @@ export function FloatingConversationInput() {
           tabIndex={0}
           spellCheck={false}
           className={cx(
-            "fixed z-30 max-w-xs translate-x-4 translate-y-4 rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] outline-none selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
+            "fixed z-30 max-w-xs translate-x-4 translate-y-4 rounded-[18px] bg-[var(--cyan-9)] py-2 pl-4 pr-6 leading-5 text-[#fff] outline-hidden selection:bg-[rgba(255,255,255,0.2)] selection:text-[#fff] empty:before:text-[rgba(255,255,255,0.8)] empty:before:content-[attr(data-placeholder)]",
             "eink:bg-text eink:text-bg eink:shadow-none eink:selection:bg-bg eink:selection:text-text eink:empty:before:text-bg",
           )}
           style={{

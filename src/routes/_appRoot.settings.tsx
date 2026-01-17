@@ -101,7 +101,7 @@ function GitHubSection() {
   return (
     <SettingsSection title="GitHub">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex w-0 flex-grow flex-col gap-1">
+        <div className="flex w-0 grow flex-col gap-1">
           <span className="text-sm leading-4 text-text-secondary">Account</span>
           <span className="flex items-center gap-2 leading-4">
             {online ? <GitHubAvatar login={githubUser.login} size={16} /> : null}
@@ -109,7 +109,7 @@ function GitHubSection() {
           </span>
         </div>
         <Button
-          className="flex-shrink-0"
+          className="shrink-0"
           onClick={() => {
             signOut()
             navigate({ to: "/", search: { query: undefined, view: "grid" } })
@@ -133,7 +133,7 @@ function GitHubSection() {
         ) : null}
         {isRepoCloned && !isEditingRepo && githubRepo ? (
           <div className="flex items-center justify-between gap-4">
-            <div className="flex w-0 flex-grow flex-col items-start gap-1">
+            <div className="flex w-0 grow flex-col items-start gap-1">
               <span className="text-sm leading-4 text-text-secondary">Repository</span>
               <a
                 href={`https://github.com/${githubRepo.owner}/${githubRepo.name}`}
@@ -144,7 +144,7 @@ function GitHubSection() {
                 {githubRepo.owner}/{githubRepo.name}
               </a>
             </div>
-            <Button className="flex-shrink-0" onClick={() => setIsEditingRepo(true)}>
+            <Button className="shrink-0" onClick={() => setIsEditingRepo(true)}>
               Change
             </Button>
           </div>

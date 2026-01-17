@@ -110,7 +110,7 @@ export function InsertTemplateDialog() {
             </Button>
             {error ? (
               <div className="flex items-start gap-2 text-text-danger">
-                <div className="grid h-5 flex-shrink-0 place-items-center">
+                <div className="grid h-5 shrink-0 place-items-center">
                   <ErrorIcon16 />
                 </div>
                 <pre className="whitespace-pre-wrap font-mono">{error.message}</pre>

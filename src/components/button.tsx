@@ -15,7 +15,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type="button"
         className={cx(
-          "focus-ring inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded leading-4",
+          "focus-ring inline-flex cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap rounded leading-4",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "coarse:h-10 coarse:px-4",
           variant === "secondary" &&
