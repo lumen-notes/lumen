@@ -104,18 +104,12 @@ export function Calendar({
           </span>
           <div className="flex">
             {canReset ? (
-              <IconButton
-                aria-label={`Back to selected ${periodLabel}`}
-                onClick={resetToActive}
-              >
+              <IconButton aria-label={`Back to selected ${periodLabel}`} onClick={resetToActive}>
                 <UndoIcon16 />
               </IconButton>
             ) : null}
 
-            <IconButton
-              aria-label={`Previous ${periodLabel}`}
-              onClick={() => navigate("previous")}
-            >
+            <IconButton aria-label={`Previous ${periodLabel}`} onClick={() => navigate("previous")}>
               <ChevronUpIcon16 />
             </IconButton>
             <IconButton aria-label={`Next ${periodLabel}`} onClick={() => navigate("next")}>
@@ -135,7 +129,10 @@ export function Calendar({
                   <DropdownMenu.Item onClick={() => setLayout("week")} selected={layout === "week"}>
                     Week
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => setLayout("month")} selected={layout === "month"}>
+                  <DropdownMenu.Item
+                    onClick={() => setLayout("month")}
+                    selected={layout === "month"}
+                  >
                     Month
                   </DropdownMenu.Item>
                 </DropdownMenu.Group>
@@ -326,25 +323,25 @@ function MonthView({
   return (
     <div className="@container">
       <div className="grid grid-cols-8 @[448px]:grid-cols-[48px_repeat(7,1fr)]">
-      {/* Day labels header */}
-      <div className="col-span-8 grid grid-cols-subgrid border-b border-[var(--neutral-a3)]">
-        <div className="flex h-8 items-center justify-center text-text-secondary">W</div>
-        {SHORT_DAY_LABELS.map((day) => (
-          <div key={day} className="flex h-8 items-center justify-center text-text-secondary">
-            {day}
-          </div>
+        {/* Day labels header */}
+        <div className="col-span-8 grid grid-cols-subgrid border-b border-[var(--neutral-a3)]">
+          <div className="flex h-8 items-center justify-center text-text-secondary">W</div>
+          {SHORT_DAY_LABELS.map((day) => (
+            <div key={day} className="flex h-8 items-center justify-center text-text-secondary">
+              {day}
+            </div>
+          ))}
+        </div>
+        {/* Week rows */}
+        {weeksInMonth.map((weekStart, index) => (
+          <MonthWeekRow
+            key={weekStart.toISOString()}
+            weekStart={weekStart}
+            displayedMonth={displayedMonth}
+            activeNoteId={activeNoteId}
+            isLastRow={index === weeksInMonth.length - 1}
+          />
         ))}
-      </div>
-      {/* Week rows */}
-      {weeksInMonth.map((weekStart, index) => (
-        <MonthWeekRow
-          key={weekStart.toISOString()}
-          weekStart={weekStart}
-          displayedMonth={displayedMonth}
-          activeNoteId={activeNoteId}
-          isLastRow={index === weeksInMonth.length - 1}
-        />
-      ))}
       </div>
     </div>
   )
