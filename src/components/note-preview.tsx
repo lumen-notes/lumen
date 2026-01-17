@@ -1,16 +1,22 @@
+import { useMatch } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
 import { Note, fontSchema } from "../schema"
 import { cx } from "../utils/cx"
-import { formatDateDistance, formatWeekDistance } from "../utils/date"
+import {
+  formatDate,
+  formatDateDistance,
+  formatWeekDistance,
+  isValidDateString,
+} from "../utils/date"
 import { parseFrontmatter } from "../utils/frontmatter"
 import { getNoteDraft } from "../utils/note-draft"
-import { DotIcon8, GlobeIcon12, TagIcon12 } from "./icons"
+import { DotIcon8, GlobeIcon12, LinkIcon12, TagIcon12 } from "./icons"
 import { Label } from "./label"
 import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
-import { pluralize } from "../utils/pluralize"
+import { withOrdinalSuffix } from "../utils/pluralize"
 
 const NUM_VISIBLE_TAGS = 4
 
@@ -54,6 +60,68 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       : []
   }, [resolvedFrontmatter?.tags])
 
+  // Get current route's note ID
+  const noteMatch = useMatch({ from: "/_appRoot/notes_/$", shouldThrow: false })
+  const currentNoteId = noteMatch?.params._splat
+
+  // Compute birthday label
+  const birthdayLabel = useMemo(() => {
+    // Only show when viewing a daily note
+    if (!currentNoteId || !isValidDateString(currentNoteId)) {
+      return null
+    }
+
+    const birthday = resolvedFrontmatter?.birthday
+
+    // Validate birthday format: Date, "MM-DD" string, or "YYYY-MM-DD" string
+    const isDate = birthday instanceof Date
+    const isMonthDayString = typeof birthday === "string" && /^\d{2}-\d{2}$/.test(birthday)
+    const isDateString = typeof birthday === "string" && isValidDateString(birthday)
+
+    if (!(isDate || isMonthDayString || isDateString)) {
+      return null
+    }
+
+    // Extract month, day, and optionally year from birthday
+    let birthYear: number | null = null
+    let birthMonth: number
+    let birthDay: number
+
+    if (isDate) {
+      birthYear = birthday.getUTCFullYear()
+      birthMonth = birthday.getUTCMonth() + 1
+      birthDay = birthday.getUTCDate()
+    } else if (isDateString) {
+      const [y, m, d] = (birthday as string).split("-").map(Number)
+      birthYear = y
+      birthMonth = m
+      birthDay = d
+    } else {
+      // MM-DD format
+      const [m, d] = (birthday as string).split("-").map(Number)
+      birthMonth = m
+      birthDay = d
+    }
+
+    // Extract month and day from current daily note
+    const [currentYear, currentMonth, currentDay] = currentNoteId.split("-").map(Number)
+
+    // Check if month/day matches
+    if (birthMonth !== currentMonth || birthDay !== currentDay) {
+      return null
+    }
+
+    // Calculate age if birth year is available
+    if (birthYear !== null) {
+      const age = currentYear - birthYear
+      if (age > 0) {
+        return `${withOrdinalSuffix(age)} birthday`
+      }
+    }
+
+    return "Birthday"
+  }, [currentNoteId, resolvedFrontmatter?.birthday])
+
   return (
     <div
       {...{ inert: "" }}
@@ -71,7 +139,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className="mb-1 shrink-0 flex flex-col gap-0.5">
           <span className="font-bold text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
-            {note.displayName}
+            {note.type === "daily" ? formatDate(note.id) : note.displayName}
           </span>
           <span className="text-text-secondary">
             {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
@@ -93,6 +161,11 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
           {resolvedFrontmatter?.gist_id ? (
             <Label icon={<GlobeIcon12 className="text-border-focus" />}>Published</Label>
           ) : null}
+          {birthdayLabel ? (
+            <Label icon="🎂" className="bg-bg-highlight text-text-highlight">
+              {birthdayLabel}
+            </Label>
+          ) : null}
           {/*{note.tasks.length > 0 ? (
             <Label
               icon={
@@ -107,7 +180,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
             </Label>
           ) : null}*/}
           {note.backlinks.length > 0 ? (
-            <Label>{pluralize(note.backlinks.length, "backlink")}</Label>
+            <Label icon={<LinkIcon12 />}>{note.backlinks.length}</Label>
           ) : null}
           {frontmatterTags.slice(0, NUM_VISIBLE_TAGS).map((tag) => (
             <Label

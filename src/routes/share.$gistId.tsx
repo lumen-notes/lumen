@@ -8,6 +8,7 @@ import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import { EditIcon16, ExternalLinkIcon16, LinkIcon16, MoreIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
+import { NoteHoverCard } from "../components/note-hover-card"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { fontSchema } from "../schema"
@@ -104,89 +105,96 @@ function RouteComponent() {
   }
 
   return (
-    <div className="p-5 md:p-16">
-      <div className="max-w-3xl mx-auto flex flex-col gap-5">
-        <div className="flex items-center gap-2 justify-between h-8 coarse:h-10 print:hidden">
-          <div className="flex items-center gap-2 truncate">
-            <img src={gist.owner?.avatar_url} alt="" aria-hidden className="size-5 rounded-full" />
-            <span className="truncate">
-              <a
-                href={`https://github.com/${gist.owner?.login}`}
-                className="link"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                {gist.owner?.login}
-              </a>
-              {gist.updated_at ? (
-                <>
-                  {" "}
-                  <span className="text-text-secondary truncate">
-                    updated{" "}
-                    {formatDistance(new Date(gist.updated_at), new Date(), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                </>
-              ) : null}
-            </span>
-          </div>
-          <DropdownMenu>
-            <DropdownMenu.Trigger
-              render={
-                <IconButton aria-label="Options" disableTooltip>
-                  <MoreIcon16 />
-                </IconButton>
-              }
-            />
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item
-                icon={<LinkIcon16 />}
-                onClick={() => {
-                  copy(window.location.href)
-                }}
-              >
-                Copy link
-              </DropdownMenu.Item>
-              {githubUser && userNote ? (
+    <NoteHoverCard.Provider>
+      <div className="p-5 md:p-16">
+        <div className="max-w-3xl mx-auto flex flex-col gap-5">
+          <div className="flex items-center gap-2 justify-between h-8 coarse:h-10 print:hidden">
+            <div className="flex items-center gap-2 truncate">
+              <img
+                src={gist.owner?.avatar_url}
+                alt=""
+                aria-hidden
+                className="size-5 rounded-full"
+              />
+              <span className="truncate">
+                <a
+                  href={`https://github.com/${gist.owner?.login}`}
+                  className="link"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {gist.owner?.login}
+                </a>
+                {gist.updated_at ? (
+                  <>
+                    {" "}
+                    <span className="text-text-secondary truncate">
+                      updated{" "}
+                      {formatDistance(new Date(gist.updated_at), new Date(), {
+                        addSuffix: true,
+                      })}
+                    </span>
+                  </>
+                ) : null}
+              </span>
+            </div>
+            <DropdownMenu>
+              <DropdownMenu.Trigger
+                render={
+                  <IconButton aria-label="Options" disableTooltip>
+                    <MoreIcon16 />
+                  </IconButton>
+                }
+              />
+              <DropdownMenu.Content align="end">
                 <DropdownMenu.Item
-                  icon={<EditIcon16 />}
+                  icon={<LinkIcon16 />}
                   onClick={() => {
-                    navigate({
-                      to: "/notes/$",
-                      params: { _splat: userNote.id },
-                      search: { mode: "write", query: undefined, view: "grid" },
-                    })
+                    copy(window.location.href)
                   }}
                 >
-                  Edit
+                  Copy link
                 </DropdownMenu.Item>
-              ) : null}
-              <DropdownMenu.Item
-                icon={<ExternalLinkIcon16 />}
-                href={gist.html_url}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Open in GitHub
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu>
-        </div>
-        <div
-          className="flex flex-col gap-2"
-          style={
-            {
-              "--font-family-content": `var(--font-family-${resolvedFont})`,
-              "--font-family-mono": `var(--font-family-${resolvedFont}-mono)`,
-            } as React.CSSProperties
-          }
-        >
-          <Markdown hideFrontmatter emptyText="Empty note">
-            {content}
-          </Markdown>
+                {githubUser && userNote ? (
+                  <DropdownMenu.Item
+                    icon={<EditIcon16 />}
+                    onClick={() => {
+                      navigate({
+                        to: "/notes/$",
+                        params: { _splat: userNote.id },
+                        search: { mode: "write", query: undefined, view: "grid" },
+                      })
+                    }}
+                  >
+                    Edit
+                  </DropdownMenu.Item>
+                ) : null}
+                <DropdownMenu.Item
+                  icon={<ExternalLinkIcon16 />}
+                  href={gist.html_url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Open in GitHub
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu>
+          </div>
+          <div
+            className="flex flex-col gap-2"
+            style={
+              {
+                "--font-family-content": `var(--font-family-${resolvedFont})`,
+                "--font-family-mono": `var(--font-family-${resolvedFont}-mono)`,
+              } as React.CSSProperties
+            }
+          >
+            <Markdown hideFrontmatter emptyText="Empty note">
+              {content}
+            </Markdown>
+          </div>
         </div>
       </div>
-    </div>
+    </NoteHoverCard.Provider>
   )
 }

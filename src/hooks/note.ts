@@ -1,11 +1,28 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
-import { githubRepoAtom, githubUserAtom, globalStateMachineAtom, notesAtom } from "../global-state"
+import {
+  backlinksIndexAtom,
+  githubRepoAtom,
+  githubUserAtom,
+  globalStateMachineAtom,
+  notesAtom,
+} from "../global-state"
 import { Note, NoteId } from "../schema"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
+
+const EMPTY_BACKLINKS: NoteId[] = []
+
+const shallowEqualBacklinks = (a: NoteId[], b: NoteId[]) => {
+  if (a === b) return true
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
+}
 
 export function useNoteById(id: NoteId | undefined) {
   const noteAtom = React.useMemo(
@@ -14,6 +31,20 @@ export function useNoteById(id: NoteId | undefined) {
   )
   const note = useAtomValue(noteAtom)
   return note
+}
+
+/** Get backlinks for any note ID, even if the note doesn't exist */
+export function useBacklinksForId(id: NoteId | undefined) {
+  const backlinksAtom = React.useMemo(
+    () =>
+      selectAtom(
+        backlinksIndexAtom,
+        (index) => (id ? (index.get(id) ?? EMPTY_BACKLINKS) : EMPTY_BACKLINKS),
+        shallowEqualBacklinks,
+      ),
+    [id],
+  )
+  return useAtomValue(backlinksAtom)
 }
 
 export function useSaveNote() {

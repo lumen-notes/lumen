@@ -1,9 +1,10 @@
-import * as HoverCard from "@radix-ui/react-hover-card"
 import { Link } from "@tanstack/react-router"
-import { useNoteById } from "../hooks/note"
+import { useMemo } from "react"
+import { useBacklinksForId, useNoteById } from "../hooks/note"
+import { Note } from "../schema"
 import { cx } from "../utils/cx"
-import { formatDate, formatDateDistance, isDateWithinWeek } from "../utils/date"
-import { NotePreview } from "./note-preview"
+import { formatDate } from "../utils/date"
+import { NoteHoverCard } from "./note-hover-card"
 
 type DateLinkProps = {
   date: string
@@ -12,46 +13,49 @@ type DateLinkProps = {
 }
 
 export function DateLink({ date, text, className }: DateLinkProps) {
-  const note = useNoteById(date)
-  const isNearby = isDateWithinWeek(date)
+  const existingNote = useNoteById(date)
+  const backlinks = useBacklinksForId(date)
 
-  // For nearby dates: show relative in link, absolute in tooltip
-  // For distant dates: show absolute in link, relative in tooltip
-  const linkText = text || (isNearby ? formatDateDistance(date) : formatDate(date))
-  const tooltipText = isNearby ? formatDate(date) : formatDateDistance(date)
+  // Create a minimal note object if no note exists
+  const note: Note = useMemo(() => {
+    if (existingNote) return existingNote
+    return {
+      id: date,
+      content: "",
+      type: "daily",
+      displayName: formatDate(date),
+      frontmatter: {},
+      title: "",
+      url: null,
+      alias: null,
+      pinned: false,
+      updatedAt: null,
+      links: [],
+      dates: [],
+      tags: [],
+      tasks: [],
+      backlinks,
+    }
+  }, [existingNote, date, backlinks])
+
+  const linkText = text || formatDate(date)
+
+  const link = (
+    <Link
+      className={cx(!text && "text-text-secondary", className)}
+      to="/notes/$"
+      params={{ _splat: date }}
+      search={{
+        mode: existingNote ? "read" : "write",
+        query: undefined,
+        view: "grid",
+      }}
+    />
+  )
 
   return (
-    <HoverCard.Root>
-      <HoverCard.Trigger asChild>
-        <Link
-          className={cx(!text && "text-text-secondary", className)}
-          to="/notes/$"
-          params={{ _splat: date }}
-          search={{
-            mode: note ? "read" : "write",
-            query: undefined,
-            view: "grid",
-          }}
-        >
-          {linkText}
-        </Link>
-      </HoverCard.Trigger>
-      <HoverCard.Portal>
-        <HoverCard.Content
-          side="bottom"
-          sideOffset={4}
-          align={note ? "start" : "center"}
-          className="card-2 z-20 animate-in fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:data-[side=bottom]:slide-out-to-top-2 data-[state=closed]:data-[side=left]:slide-out-to-right-2 data-[state=closed]:data-[side=right]:slide-out-to-left-2 data-[state=closed]:data-[side=top]:slide-out-to-bottom-2"
-        >
-          {note ? (
-            <div className="w-96">
-              <NotePreview note={note} />
-            </div>
-          ) : (
-            <div className="p-2 leading-none text-text-secondary">{tooltipText}</div>
-          )}
-        </HoverCard.Content>
-      </HoverCard.Portal>
-    </HoverCard.Root>
+    <NoteHoverCard.Trigger render={link} payload={{ note, align: "start" }}>
+      {linkText}
+    </NoteHoverCard.Trigger>
   )
 }
