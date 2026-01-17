@@ -804,6 +804,8 @@ export const defaultFontAtom = atomWithStorage<Font>("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
+export const calendarLayoutAtom = atomWithStorage<"week" | "month">("calendar-layout", "week")
+
 // -----------------------------------------------------------------------------
 // AI
 // -----------------------------------------------------------------------------

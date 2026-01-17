@@ -1,25 +1,31 @@
 import * as RovingFocusGroup from "@radix-ui/react-roving-focus"
 import {
   addDays,
+  addMonths,
   addWeeks,
   eachDayOfInterval,
+  eachWeekOfInterval,
+  endOfMonth,
   getISOWeek,
   isMonday,
   nextSunday,
   parseISO,
   previousMonday,
+  startOfISOWeek,
+  startOfMonth,
 } from "date-fns"
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import React from "react"
 import { Link, useSearch } from "@tanstack/react-router"
-import { datesAtom, notesAtom } from "../global-state"
+import { calendarLayoutAtom, datesAtom, notesAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
 import { DAY_NAMES, MONTH_NAMES, formatWeek, toDateString, toWeekString } from "../utils/date"
+import { DropdownMenu } from "./dropdown-menu"
 import { IconButton } from "./icon-button"
-import { ChevronDownIcon16, ChevronUpIcon16, UndoIcon16 } from "./icons"
+import { ChevronDownIcon16, ChevronUpIcon16, MoreIcon16, UndoIcon16 } from "./icons"
 
 export function Calendar({
   activeNoteId,
@@ -29,19 +35,24 @@ export function Calendar({
   className?: string
 }) {
   const date = parseISO(activeNoteId)
+  const [layout, setLayout] = useAtom(calendarLayoutAtom)
 
   // Local state for the displayed week (independent of activeNoteId)
   const [displayedWeekStart, setDisplayedWeekStart] = React.useState(() =>
     isMonday(date) ? date : previousMonday(date),
   )
 
-  // Sync displayed week when activeNoteId changes (adjust state during render)
+  // Local state for the displayed month
+  const [displayedMonthStart, setDisplayedMonthStart] = React.useState(() => startOfMonth(date))
+
+  // Sync displayed week/month when activeNoteId changes (adjust state during render)
   // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   const [prevActiveNoteId, setPrevActiveNoteId] = React.useState(activeNoteId)
   if (activeNoteId !== prevActiveNoteId) {
     setPrevActiveNoteId(activeNoteId)
     const newDate = parseISO(activeNoteId)
     setDisplayedWeekStart(isMonday(newDate) ? newDate : previousMonday(newDate))
+    setDisplayedMonthStart(startOfMonth(newDate))
   }
 
   const endOfWeek = React.useMemo(() => nextSunday(displayedWeekStart), [displayedWeekStart])
@@ -56,73 +67,120 @@ export function Calendar({
     setDisplayedWeekStart((prev) => addWeeks(prev, increment))
   }, [])
 
+  const navigateByMonth = React.useCallback((direction: "previous" | "next") => {
+    const increment = direction === "next" ? 1 : -1
+    setDisplayedMonthStart((prev) => addMonths(prev, increment))
+  }, [])
+
   // Check if displayed week differs from active note's week
   const activeWeekStart = React.useMemo(
     () => (isMonday(date) ? date : previousMonday(date)),
     [date],
   )
-  const canReset = toWeekString(displayedWeekStart) !== toWeekString(activeWeekStart)
+  const activeMonthStart = React.useMemo(() => startOfMonth(date), [date])
 
-  const resetToActiveWeek = React.useCallback(() => {
-    setDisplayedWeekStart(activeWeekStart)
-  }, [activeWeekStart])
+  const canResetWeek = toWeekString(displayedWeekStart) !== toWeekString(activeWeekStart)
+  const canResetMonth =
+    displayedMonthStart.getMonth() !== activeMonthStart.getMonth() ||
+    displayedMonthStart.getFullYear() !== activeMonthStart.getFullYear()
+  const canReset = layout === "week" ? canResetWeek : canResetMonth
+
+  const resetToActive = React.useCallback(() => {
+    if (layout === "week") {
+      setDisplayedWeekStart(activeWeekStart)
+    } else {
+      setDisplayedMonthStart(activeMonthStart)
+    }
+  }, [layout, activeWeekStart, activeMonthStart])
+
+  // Calculate weeks in displayed month for month view
+  const weeksInMonth = React.useMemo(() => {
+    const monthEnd = endOfMonth(displayedMonthStart)
+    return eachWeekOfInterval(
+      { start: displayedMonthStart, end: monthEnd },
+      { weekStartsOn: 1 }, // Monday
+    )
+  }, [displayedMonthStart])
+
+  // Display date for header
+  const displayDate = layout === "week" ? displayedWeekStart : displayedMonthStart
+
+  const navigate = layout === "week" ? navigateByWeek : navigateByMonth
+  const periodLabel = layout === "week" ? "week" : "month"
 
   return (
-    <div className={cx("card-1 p-2 rounded-xl!", className)}>
+    <div className={cx("card-1 overflow-hidden rounded-xl!", className)}>
       <div className="flex flex-col gap-2 overflow-hidden">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-2 px-2">
           <span className="font-content px-2">
-            <span className="font-bold">{MONTH_NAMES[displayedWeekStart.getMonth()]}</span>{" "}
-            {displayedWeekStart.getFullYear()}
+            <span className="font-bold">{MONTH_NAMES[displayDate.getMonth()]}</span>{" "}
+            {displayDate.getFullYear()}
           </span>
           <div className="flex">
             {canReset ? (
-              <IconButton aria-label="Back to selected week" onClick={resetToActiveWeek}>
+              <IconButton
+                aria-label={`Back to selected ${periodLabel}`}
+                onClick={resetToActive}
+              >
                 <UndoIcon16 />
               </IconButton>
             ) : null}
 
-            <IconButton aria-label="Previous week" onClick={() => navigateByWeek("previous")}>
+            <IconButton
+              aria-label={`Previous ${periodLabel}`}
+              onClick={() => navigate("previous")}
+            >
               <ChevronUpIcon16 />
             </IconButton>
-            <IconButton aria-label="Next week" onClick={() => navigateByWeek("next")}>
+            <IconButton aria-label={`Next ${periodLabel}`} onClick={() => navigate("next")}>
               <ChevronDownIcon16 />
             </IconButton>
-            {/*<DropdownMenu>
+            <DropdownMenu>
               <DropdownMenu.Trigger
                 render={
-                  <IconButton aria-label="Layout">
-                    <CalendarIcon16 />
+                  <IconButton aria-label="Calendar options" disableTooltip>
+                    <MoreIcon16 />
                   </IconButton>
                 }
               />
               <DropdownMenu.Content align="end" width={160}>
-                <DropdownMenu.Item onClick={() => setLayout("week")} selected={layout === "week"}>
-                  Week
-                </DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => setLayout("month")} selected={layout === "month"}>
-                  Month
-                </DropdownMenu.Item>
+                <DropdownMenu.Group>
+                  <DropdownMenu.GroupLabel>Layout</DropdownMenu.GroupLabel>
+                  <DropdownMenu.Item onClick={() => setLayout("week")} selected={layout === "week"}>
+                    Week
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => setLayout("month")} selected={layout === "month"}>
+                    Month
+                  </DropdownMenu.Item>
+                </DropdownMenu.Group>
               </DropdownMenu.Content>
-            </DropdownMenu>*/}
+            </DropdownMenu>
           </div>
         </div>
-        <div className="grid">
-          <RovingFocusGroup.Root orientation="horizontal" className="flex gap-1.5 items-center">
-            <CalendarWeek
-              startOfWeek={displayedWeekStart}
-              isActive={toWeekString(displayedWeekStart) === activeNoteId}
-            />
-            <div role="separator" className="h-8 w-px shrink-0 bg-border" />
-            {daysOfWeek.map((date) => (
-              <CalendarDate
-                key={date.toISOString()}
-                date={date}
-                isActive={toDateString(date) === activeNoteId}
+        {layout === "week" ? (
+          <div className="grid pb-2 px-2">
+            <RovingFocusGroup.Root orientation="horizontal" className="flex gap-1.5 items-center">
+              <CalendarWeek
+                startOfWeek={displayedWeekStart}
+                isActive={toWeekString(displayedWeekStart) === activeNoteId}
               />
-            ))}
-          </RovingFocusGroup.Root>
-        </div>
+              <div role="separator" className="h-8 w-px shrink-0 bg-border-secondary" />
+              {daysOfWeek.map((day) => (
+                <CalendarDate
+                  key={day.toISOString()}
+                  date={day}
+                  isActive={toDateString(day) === activeNoteId}
+                />
+              ))}
+            </RovingFocusGroup.Root>
+          </div>
+        ) : (
+          <MonthView
+            weeksInMonth={weeksInMonth}
+            displayedMonth={displayedMonthStart.getMonth()}
+            activeNoteId={activeNoteId}
+          />
+        )}
       </div>
     </div>
   )
@@ -254,8 +312,8 @@ function CalendarItem({
           <span className="hidden @[3rem]:inline">{name}</span>
           <span
             className={cx(
-              isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem]",
-              isToday && !isActive && "shadow-[inset_0_0_0_1px_currentColor]",
+              isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem] leading-[1.2]",
+              isToday && !isActive && "shadow-[inset_0_0_0_1px_var(--color-text-secondary)]",
               isToday && isActive && "bg-text text-bg eink:bg-bg eink:text-text",
             )}
           >
@@ -264,5 +322,194 @@ function CalendarItem({
         </div>
       </Link>
     </RovingFocusGroup.Item>
+  )
+}
+
+// Short day labels for month view header (Monday first)
+const SHORT_DAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+
+function MonthView({
+  weeksInMonth,
+  displayedMonth,
+  activeNoteId,
+}: {
+  weeksInMonth: Date[]
+  displayedMonth: number
+  activeNoteId: string
+}) {
+  return (
+    <div className="@container">
+      <div className="grid grid-cols-8 @[448px]:grid-cols-[48px_repeat(7,1fr)]">
+      {/* Day labels header */}
+      <div className="col-span-8 grid grid-cols-subgrid border-b border-[var(--neutral-a3)]">
+        <div className="flex h-8 items-center justify-center text-text-secondary">W</div>
+        {SHORT_DAY_LABELS.map((day) => (
+          <div key={day} className="flex h-8 items-center justify-center text-text-secondary">
+            {day}
+          </div>
+        ))}
+      </div>
+      {/* Week rows */}
+      {weeksInMonth.map((weekStart, index) => (
+        <MonthWeekRow
+          key={weekStart.toISOString()}
+          weekStart={weekStart}
+          displayedMonth={displayedMonth}
+          activeNoteId={activeNoteId}
+          isLastRow={index === weeksInMonth.length - 1}
+        />
+      ))}
+      </div>
+    </div>
+  )
+}
+
+function MonthWeekRow({
+  weekStart,
+  displayedMonth,
+  activeNoteId,
+  isLastRow,
+}: {
+  weekStart: Date
+  displayedMonth: number
+  activeNoteId: string
+  isLastRow: boolean
+}) {
+  // Get the Monday of this week (weekStart should already be Monday from eachWeekOfInterval)
+  const mondayOfWeek = startOfISOWeek(weekStart)
+  const weekString = toWeekString(mondayOfWeek)
+  const weekNumber = getISOWeek(mondayOfWeek)
+  const label = formatWeek(weekString)
+
+  const note = useNoteById(weekString)
+  const searchNotes = useSearchNotes()
+
+  const hasBacklinks = React.useMemo(
+    () => searchNotes(`link:"${weekString}" -id:"${weekString}"`).length > 0,
+    [weekString, searchNotes],
+  )
+
+  const daysOfWeek = React.useMemo(() => {
+    const endOfWeek = addDays(mondayOfWeek, 6)
+    return eachDayOfInterval({ start: mondayOfWeek, end: endOfWeek })
+  }, [mondayOfWeek])
+
+  const daysOfWeekStrings = React.useMemo(() => daysOfWeek.map(toDateString), [daysOfWeek])
+
+  const hasDailyNotesAtom = React.useMemo(
+    () =>
+      selectAtom(notesAtom, (notes) => {
+        return daysOfWeekStrings.some((date) => Boolean(notes.get(date)))
+      }),
+    [daysOfWeekStrings],
+  )
+
+  const hasWeekNotes = useAtomValue(hasDailyNotesAtom) || hasBacklinks || Boolean(note)
+  const searchParams = useSearch({ strict: false })
+  const isWeekActive = weekString === activeNoteId
+
+  return (
+    <div
+      className={cx(
+        "col-span-8 grid grid-cols-subgrid divide-x divide-[var(--neutral-a3)]",
+        !isLastRow && "border-b border-[var(--neutral-a3)]",
+      )}
+    >
+      {/* Week number link */}
+      <div>
+        <Link
+          to="/notes/$"
+          params={{ _splat: weekString }}
+          search={{
+            mode: searchParams.mode ?? "read",
+            query: undefined,
+            view: searchParams.view === "list" ? "list" : "grid",
+          }}
+          aria-label={label}
+          className={cx(
+            "focus-ring relative flex h-12 items-center justify-center text-text-secondary -m-px",
+            !isWeekActive && "hover:bg-[var(--neutral-a2)] active:bg-[var(--neutral-a3)]",
+            isWeekActive && "font-bold bg-[var(--neutral-a3)] text-text eink:bg-text eink:text-bg",
+            hasWeekNotes &&
+              "after:pointer-events-none after:absolute after:bottom-2 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+            hasWeekNotes && isWeekActive && "after:bg-text-secondary eink:after:bg-bg",
+            hasWeekNotes && !isWeekActive && "after:bg-border",
+          )}
+        >
+          {weekNumber}
+        </Link>
+      </div>
+      {/* Date cells */}
+      {daysOfWeek.map((day, index) => (
+        <MonthDateCell
+          key={day.toISOString()}
+          date={day}
+          isOutsideMonth={day.getMonth() !== displayedMonth}
+          isActive={toDateString(day) === activeNoteId}
+        />
+      ))}
+    </div>
+  )
+}
+
+function MonthDateCell({
+  date,
+  isOutsideMonth = false,
+  isActive = false,
+}: {
+  date: Date
+  isOutsideMonth?: boolean
+  isActive?: boolean
+}) {
+  const dateString = toDateString(date)
+  const note = useNoteById(dateString)
+  const hasBacklinksAtom = React.useMemo(
+    () => selectAtom(datesAtom, (dates) => dates[dateString]?.length > 0),
+    [dateString],
+  )
+  const hasNotes = useAtomValue(hasBacklinksAtom) || Boolean(note)
+  const dayName = DAY_NAMES[date.getDay()]
+  const monthName = MONTH_NAMES[date.getMonth()]
+  const day = date.getDate()
+  const year = date.getFullYear()
+  const label = `${dayName}, ${monthName} ${day}, ${year}`
+  const isToday = dateString === toDateString(new Date())
+  const searchParams = useSearch({ strict: false })
+
+  return (
+    <div>
+      <Link
+        to="/notes/$"
+        params={{ _splat: dateString }}
+        search={{
+          mode: searchParams.mode ?? "read",
+          query: undefined,
+          view: searchParams.view === "list" ? "list" : "grid",
+        }}
+        aria-label={label}
+        className={cx(
+          "focus-ring relative flex h-12 items-center justify-center -m-px",
+          isOutsideMonth && !isActive ? "text-text-tertiary" : "text-text",
+          !isActive && "hover:bg-[var(--neutral-a2)] active:bg-[var(--neutral-a3)]",
+          isActive && "font-bold bg-[var(--neutral-a3)] eink:bg-text eink:text-bg",
+          hasNotes &&
+            "after:pointer-events-none after:absolute after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:content-['']",
+          hasNotes && isToday && "after:bottom-1",
+          hasNotes && !isToday && "after:bottom-2",
+          hasNotes && isActive && "after:bg-text-secondary eink:after:bg-bg",
+          hasNotes && !isActive && "after:bg-border",
+        )}
+      >
+        <span
+          className={cx(
+            isToday && "-mx-1 -my-[0.125rem] rounded-sm px-1 py-[0.125rem] leading-[1.2]",
+            isToday && !isActive && "shadow-[inset_0_0_0_1px_var(--color-text-secondary)]",
+            isToday && isActive && "bg-text text-bg eink:bg-bg eink:text-text",
+          )}
+        >
+          {day}
+        </span>
+      </Link>
+    </div>
   )
 }
