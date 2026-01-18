@@ -7,7 +7,7 @@ pinned: true
 
 # 👋 Welcome to Lumen
 
-Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) markdown note-taking app backed by git.
+Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app.
 
 Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
