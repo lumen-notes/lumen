@@ -11,7 +11,7 @@ Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) note-taking
 
 Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
-- 🌱 **Plant**: Capture notes that are seamlessly synced to a GitHub repository of your choice as markdown files. Your data is never locked in.
+- 🌱 **Plant**: Capture notes in markdown files that are synced to a GitHub repository of your choice. Your data is never locked in.
 - 🌿 **Grow**: Connect your notes with links and tags. Lumen makes it easy to explore and discover new connections.
 - 🧑‍🌾 **Harvest**: Access your notes from any device, even offline. Use Lumen's flexible search syntax to find what you're looking for.
 
