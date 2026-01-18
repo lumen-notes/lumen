@@ -19,14 +19,8 @@ import { fs, fsWipe } from "./utils/fs"
 import {
   REPO_DIR,
   getRemoteOriginUrl,
-  gitAdd,
-  gitClone,
-  gitCommit,
-  gitPull,
-  gitPush,
-  gitRemove,
-  isRepoSynced,
 } from "./utils/git"
+import { worker } from "./utils/git-worker-client"
 import { parseNote } from "./utils/parse-note"
 import { removeTemplateFrontmatter } from "./utils/remove-template-frontmatter"
 import { getSampleMarkdownFiles } from "./utils/sample-markdown-files"
@@ -359,7 +353,7 @@ function createGlobalStateMachine() {
         cloneRepo: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
-          await gitClone(event.githubRepo, context.githubUser)
+          await worker.git.clone({ repo: event.githubRepo, user: context.githubUser })
 
           return {
             markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
@@ -368,7 +362,7 @@ function createGlobalStateMachine() {
         pull: async (context) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
-          await gitPull(context.githubUser)
+          await worker.git.pull({ user: context.githubUser })
 
           return {
             markdownFiles: await getMarkdownFilesFromFs(REPO_DIR),
@@ -377,10 +371,11 @@ function createGlobalStateMachine() {
         push: async (context) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
-          await gitPush(context.githubUser)
+          await worker.git.push({ user: context.githubUser })
         },
         checkStatus: async () => {
-          return { isSynced: await isRepoSynced() }
+          const result = await worker.git.status({})
+          return { isSynced: result.isSynced }
         },
         writeFiles: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
@@ -413,10 +408,10 @@ function createGlobalStateMachine() {
           })
 
           // Stage files
-          await gitAdd(Object.keys(markdownFiles))
+          await worker.git.add({ filePaths: Object.keys(markdownFiles) })
 
           // Commit files
-          await gitCommit(commitMessage)
+          await worker.git.commit({ message: commitMessage })
         },
         deleteFile: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
@@ -427,10 +422,10 @@ function createGlobalStateMachine() {
           await fs.promises.unlink(`${REPO_DIR}/${filepath}`)
 
           // Stage deletion
-          await gitRemove(filepath)
+          await worker.git.remove({ filePath: filepath })
 
           // Commit deletion
-          await gitCommit(`Delete ${filepath}`)
+          await worker.git.commit({ message: `Delete ${filepath}` })
         },
       },
       actions: {

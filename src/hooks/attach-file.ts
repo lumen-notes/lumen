@@ -4,7 +4,8 @@ import React from "react"
 import { fileCache } from "../components/file-preview"
 import { githubRepoAtom, githubUserAtom } from "../global-state"
 import { fs, writeFile } from "../utils/fs"
-import { REPO_DIR, gitAdd, gitCommit } from "../utils/git"
+import { REPO_DIR } from "../utils/git"
+import { worker } from "../utils/git-worker-client"
 
 export const UPLOADS_DIR = "/uploads"
 
@@ -46,10 +47,10 @@ export function useAttachFile() {
             const relativePath = path.replace(/^\//, "")
 
             // Stage file
-            await gitAdd([relativePath])
+            await worker.git.add({ filePaths: [relativePath] })
 
             // Commit file
-            await gitCommit(`Update ${relativePath}`)
+            await worker.git.commit({ message: `Update ${relativePath}` })
           })
           .catch((error) => {
             console.error(error)
