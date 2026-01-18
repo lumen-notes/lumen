@@ -1,18 +1,19 @@
 export function getSampleMarkdownFiles() {
   return {
-    "README.md": `---
+    "readme.md": `---
+tags: [lumen/welcome]
 pinned: true
 ---
 
 # 👋 Welcome to Lumen
 
-This is Lumen, a free, [open-source](https://github.com/lumen-notes/lumen) note-taking app for capturing and organizing your thoughts.
+Lumen is a free, [open-source](https://github.com/lumen-notes/lumen) markdown note-taking app backed by git.
 
 Think of Lumen as your _private knowledge garden_. It's where you plant, grow, and harvest ideas.
 
-- 🌱 **Plant** — Capture notes that are seamlessly synced to a GitHub repository of your choice as markdown files. Your data is never locked in.
-- 🌿 **Grow** — Connect your notes with links and tags. Lumen makes it easy to explore and discover new connections.
-- 🧑‍🌾 **Harvest** — Access your notes from any device, even offline. Use Lumen's flexible search syntax to find what you're looking for.
+- 🌱 **Plant**: Capture notes that are seamlessly synced to a GitHub repository of your choice as markdown files. Your data is never locked in.
+- 🌿 **Grow**: Connect your notes with links and tags. Lumen makes it easy to explore and discover new connections.
+- 🧑‍🌾 **Harvest**: Access your notes from any device, even offline. Use Lumen's flexible search syntax to find what you're looking for.
 
 ---
 
