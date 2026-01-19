@@ -1,7 +1,19 @@
 /// <reference lib="deno.ns" />
 
 import type { Config, Context } from "https://edge.netlify.com"
-import { getHtmlEscaped } from "../../src/utils/escape-html.ts"
+
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Escapes <, >, &, ", and ' characters.
+ */
+function getHtmlEscaped(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
 
 /**
  * This edge function enhances social media sharing for shared notes.

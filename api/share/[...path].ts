@@ -1,4 +1,15 @@
-import { getHtmlEscaped } from "../../src/utils/escape-html"
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Escapes <, >, &, ", and ' characters.
+ */
+function getHtmlEscaped(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
 
 /**
  * This function enhances social media sharing for shared notes.
