@@ -1,4 +1,4 @@
-import { escapeHtml } from "../../src/utils/escape-html"
+import { getEscapedHtml } from "../../src/utils/escape-html"
 
 /**
  * This function enhances social media sharing for shared notes.
@@ -39,10 +39,10 @@ async function handle(request: Request): Promise<Response> {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = escapeHtml(noteTitle || gist.description || "Untitled")
+    const pageTitle = getEscapedHtml(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = escapeHtml(gist?.owner?.login || "Lumen")
-    const escapedNoteContent = escapeHtml(noteContent)
+    const siteName = getEscapedHtml(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = getEscapedHtml(noteContent)
     const html = `<!doctype html>
 <html>
   <head>
@@ -52,7 +52,7 @@ async function handle(request: Request): Promise<Response> {
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
-    <meta property="og:url" content="${escapeHtml(url.href)}" />
+    <meta property="og:url" content="${getEscapedHtml(url.href)}" />
     <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />

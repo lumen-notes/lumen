@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 
 import type { Config, Context } from "https://edge.netlify.com"
-import { escapeHtml } from "../../src/utils/escape-html.ts"
+import { getEscapedHtml } from "../../src/utils/escape-html.ts"
 
 /**
  * This edge function enhances social media sharing for shared notes.
@@ -43,10 +43,10 @@ export default async (request: Request, context: Context) => {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = escapeHtml(noteTitle || gist.description || "Untitled")
+    const pageTitle = getEscapedHtml(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = escapeHtml(gist?.owner?.login || "Lumen")
-    const escapedNoteContent = escapeHtml(noteContent)
+    const siteName = getEscapedHtml(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = getEscapedHtml(noteContent)
     const html = `<!doctype html>
 <html>
   <head>
@@ -56,7 +56,7 @@ export default async (request: Request, context: Context) => {
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
-    <meta property="og:url" content="${escapeHtml(url.href)}" />
+    <meta property="og:url" content="${getEscapedHtml(url.href)}" />
     <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />

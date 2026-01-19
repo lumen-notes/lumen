@@ -2,7 +2,7 @@
  * Escapes HTML entities to prevent XSS attacks.
  * Escapes <, >, &, ", and ' characters.
  */
-export function escapeHtml(text: string): string {
+export function getEscapedHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
