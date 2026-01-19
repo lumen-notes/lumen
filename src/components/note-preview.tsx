@@ -18,7 +18,7 @@ import { useLinkHighlight } from "./link-highlight-provider"
 import { Markdown } from "./markdown"
 import { withOrdinalSuffix } from "../utils/pluralize"
 
-const NUM_VISIBLE_TAGS = 4
+const NUM_VISIBLE_TAGS = 3
 
 type NotePreviewProps = {
   note: Note

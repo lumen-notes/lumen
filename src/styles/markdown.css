@@ -94,15 +94,15 @@
 }
 
 .markdown ol {
-  counter-reset: list-item;
+  counter-reset: ol-item;
 }
 
-.markdown li {
-  counter-increment: list-item;
+.markdown ol > li {
+  counter-increment: ol-item;
 }
 
 .markdown .list-item-number::before {
-  content: counter(list-item) ".";
+  content: counter(ol-item) ".";
 }
 
 .markdown li.task-list-item {
