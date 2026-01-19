@@ -1,3 +1,5 @@
+import { escapeHtml } from "./escape-html"
+
 /**
  * This function enhances social media sharing for shared notes.
  * It detects when a bot (like social media crawlers) accesses a shared note URL,
@@ -37,9 +39,10 @@ async function handle(request: Request): Promise<Response> {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = noteTitle || gist.description || "Untitled"
+    const pageTitle = escapeHtml(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = gist?.owner?.login || "Lumen"
+    const siteName = escapeHtml(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = escapeHtml(noteContent)
     const html = `<!doctype html>
 <html>
   <head>
@@ -49,14 +52,14 @@ async function handle(request: Request): Promise<Response> {
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
-    <meta property="og:url" content="${url.href}" />
+    <meta property="og:url" content="${escapeHtml(url.href)}" />
     <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
   </head>
   <body>
-    <pre>${noteContent}</pre>
+    <pre>${escapedNoteContent}</pre>
   </body>
 </html>`
 
