@@ -59,6 +59,7 @@ export default async (request: Request, context: Context) => {
     const pageDescription = "Shared note"
     const siteName = getHtmlEscaped(gist?.owner?.login || "Lumen")
     const escapedNoteContent = getHtmlEscaped(noteContent)
+    const escapedUrl = getHtmlEscaped(url.href)
     const html = `<!doctype html>
 <html>
   <head>
@@ -68,7 +69,7 @@ export default async (request: Request, context: Context) => {
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
-    <meta property="og:url" content="${getHtmlEscaped(url.href)}" />
+    <meta property="og:url" content="${escapedUrl}" />
     <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
