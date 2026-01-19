@@ -1,4 +1,4 @@
-import { escapeHtml } from "./escape-html"
+import { escapeHtml } from "../../src/utils/escape-html"
 
 /**
  * This function enhances social media sharing for shared notes.

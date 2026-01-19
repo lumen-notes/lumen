@@ -1,7 +1,7 @@
 /// <reference lib="deno.ns" />
 
 import type { Config, Context } from "https://edge.netlify.com"
-import { escapeHtml } from "../../api/share/escape-html.ts"
+import { escapeHtml } from "../../src/utils/escape-html.ts"
 
 /**
  * This edge function enhances social media sharing for shared notes.
