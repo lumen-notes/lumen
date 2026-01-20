@@ -3,19 +3,6 @@
 import type { Config, Context } from "https://edge.netlify.com"
 
 /**
- * Escapes HTML entities to prevent XSS attacks.
- * Escapes <, >, &, ", and ' characters.
- */
-function getHtmlEscaped(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-}
-
-/**
  * This edge function enhances social media sharing for shared notes.
  * It detects when a bot (like social media crawlers) accesses a shared note URL,
  * fetches the corresponding note content, and generates optimized HTML with
@@ -322,6 +309,19 @@ function getNoteTitle(content: string) {
   const match = content.trim().match(titleRegex)
 
   return match?.[1] || ""
+}
+
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Escapes <, >, &, ", and ' characters.
+ */
+function getHtmlEscaped(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }
 
 export const config: Config = { path: "/share/*" }

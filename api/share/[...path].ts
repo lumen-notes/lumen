@@ -1,17 +1,4 @@
 /**
- * Escapes HTML entities to prevent XSS attacks.
- * Escapes <, >, &, ", and ' characters.
- */
-function getHtmlEscaped(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-}
-
-/**
  * This function enhances social media sharing for shared notes.
  * It detects when a bot (like social media crawlers) accesses a shared note URL,
  * fetches the corresponding note content, and generates optimized HTML with
@@ -359,4 +346,17 @@ function getRequestUrl(request: Request): URL {
     const proto = request.headers.get("x-forwarded-proto") ?? "http"
     return new URL(request.url, `${proto}://${host}`)
   }
+}
+
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Escapes <, >, &, ", and ' characters.
+ */
+function getHtmlEscaped(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }
