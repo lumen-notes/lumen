@@ -733,7 +733,7 @@ function NotePage() {
           <div
             className={cx(
               "flex flex-col gap-8 pb-[50vh]",
-              resolvedWidth === "fixed" && "mx-auto max-w-3xl",
+              resolvedWidth === "fixed" && "mx-auto max-w-[700px]",
             )}
           >
             {isDailyNote || isWeeklyNote ? (

@@ -137,7 +137,7 @@ const GroupLabel = React.forwardRef<HTMLDivElement, Menu.GroupLabel.Props>(
     <Menu.GroupLabel
       ref={ref}
       className={cx(
-        "flex h-8 select-none items-center px-3 text-sm text-text-secondary coarse:pt-2",
+        "flex h-8 select-none items-center px-3 text-sm text-text-secondary coarse:h-9",
         className,
       )}
       {...props}

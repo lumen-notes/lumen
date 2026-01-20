@@ -24,7 +24,7 @@ const iconsBySize = Object.entries(icons).reduce(
 
 export const All = {
   render: (args: { showNames: boolean }) => (
-    <div className={cx("flex flex-col gap-8 p-8", !args.showNames && "mx-auto max-w-3xl")}>
+    <div className={cx("flex flex-col gap-8 p-8", !args.showNames && "mx-auto max-w-[700px]")}>
       {Object.entries(iconsBySize).map(([size, icons]) => (
         <div key={size} className="flex flex-col gap-6">
           <h3 className="text-base font-bold">

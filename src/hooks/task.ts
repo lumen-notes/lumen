@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
@@ -44,7 +43,6 @@ export function useMoveTask() {
   const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const githubRepo = useAtomValue(githubRepoAtom)
   const send = useSetAtom(globalStateMachineAtom)
-  const navigate = useNavigate()
 
   return React.useCallback(
     (params: {
@@ -98,14 +96,7 @@ export function useMoveTask() {
           commitMessage: `Move task from ${sourceNoteId}.md to ${targetNoteId}.md`,
         })
       }
-
-      // Navigate to target note
-      navigate({
-        to: "/notes/$",
-        params: { _splat: targetNoteId },
-        search: { mode: "read", query: undefined, view: "grid" },
-      })
     },
-    [getMarkdownFiles, githubRepo, navigate, send],
+    [getMarkdownFiles, githubRepo, send],
   )
 }
