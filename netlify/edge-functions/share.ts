@@ -42,10 +42,10 @@ export default async (request: Request, context: Context) => {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = getHtmlEscaped(noteTitle || gist.description || "Untitled")
+    const pageTitle = getSanitizedText(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = getHtmlEscaped(gist?.owner?.login || "Lumen")
-    const escapedNoteContent = getHtmlEscaped(noteContent)
+    const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = getSanitizedText(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
     const html = `<!doctype html>
 <html>
@@ -312,8 +312,18 @@ function getNoteTitle(content: string) {
 }
 
 /**
+ * Removes dangerous HTML characters to prevent XSS attacks.
+ * Removes <, >, &, ", and ' characters for cleaner previews.
+ * Since previews only display text, removing these characters
+ * is safer and produces cleaner output than HTML entities.
+ */
+function getSanitizedText(text: string): string {
+  return text.replace(/[<>&"']/g, "")
+}
+
+/**
  * Escapes HTML entities to prevent XSS attacks.
- * Escapes <, >, &, ", and ' characters.
+ * Used for URLs which must preserve all characters.
  */
 function getHtmlEscaped(text: string): string {
   return text
