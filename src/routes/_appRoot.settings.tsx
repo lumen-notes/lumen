@@ -3,12 +3,13 @@ import { useAtom, useAtomValue } from "jotai"
 import { useState } from "react"
 import { useNetworkState } from "react-use"
 import { Button } from "../components/button"
-import { PageLayout } from "../components/page-layout"
 import { useSignOut } from "../components/github-auth"
 import { GitHubAvatar } from "../components/github-avatar"
 import { LoadingIcon16, SettingsIcon16 } from "../components/icons"
 import { OpenAIKeyInput } from "../components/openai-key-input"
+import { PageLayout } from "../components/page-layout"
 import { RepoForm } from "../components/repo-form"
+import { Signature } from "../components/signature"
 import { Switch } from "../components/switch"
 import {
   epaperAtom,
@@ -33,12 +34,20 @@ export const Route = createFileRoute("/_appRoot/settings")({
 function RouteComponent() {
   return (
     <PageLayout title="Settings" icon={<SettingsIcon16 />} disableGuard>
-      <div className="p-4 pb-14">
+      <div className="p-4 pb-6">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
           <AppearanceSection />
           <EditorSection />
           <AISection />
+          <a
+            href="https://colebemis.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-4 text-text-tertiary self-center"
+          >
+            <Signature width={100} />
+          </a>
         </div>
       </div>
     </PageLayout>
