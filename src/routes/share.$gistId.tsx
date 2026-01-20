@@ -115,7 +115,12 @@ function RouteComponent() {
   return (
     <NoteHoverCard.Provider>
       <div className="p-5 md:p-16">
-        <div className={cx("flex flex-col gap-5", resolvedWidth === "fixed" && "max-w-[700px] mx-auto")}>
+        <div
+          className={cx(
+            "flex flex-col gap-5",
+            resolvedWidth === "fixed" && "max-w-[700px] mx-auto",
+          )}
+        >
           <div className="flex items-center gap-2 justify-between h-8 coarse:h-10 print:hidden">
             <div className="flex items-center gap-2 truncate">
               <img
