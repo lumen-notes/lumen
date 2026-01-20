@@ -37,9 +37,11 @@ async function handle(request: Request): Promise<Response> {
 
     const noteContent = getNoteContent(gist)
     const noteTitle = getNoteTitle(noteContent)
-    const pageTitle = noteTitle || gist.description || "Untitled"
+    const pageTitle = getSanitizedText(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = gist?.owner?.login || "Lumen"
+    const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = getSanitizedText(noteContent)
+    const escapedUrl = getHtmlEscaped(url.href)
     const html = `<!doctype html>
 <html>
   <head>
@@ -49,14 +51,14 @@ async function handle(request: Request): Promise<Response> {
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${pageTitle}" />
     <meta property="og:description" content="${pageDescription}" />
-    <meta property="og:url" content="${url.href}" />
+    <meta property="og:url" content="${escapedUrl}" />
     <meta property="og:site_name" content="${siteName}" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
   </head>
   <body>
-    <pre>${noteContent}</pre>
+    <pre>${escapedNoteContent}</pre>
   </body>
 </html>`
 
@@ -344,4 +346,27 @@ function getRequestUrl(request: Request): URL {
     const proto = request.headers.get("x-forwarded-proto") ?? "http"
     return new URL(request.url, `${proto}://${host}`)
   }
+}
+
+/**
+ * Removes dangerous HTML characters to prevent XSS attacks.
+ * Removes <, >, &, ", and ' characters for cleaner previews.
+ * Since previews only display text, removing these characters
+ * is safer and produces cleaner output than HTML entities.
+ */
+function getSanitizedText(text: string): string {
+  return text.replace(/[<>&"']/g, "")
+}
+
+/**
+ * Escapes HTML entities to prevent XSS attacks.
+ * Used for URLs which must preserve all characters.
+ */
+function getHtmlEscaped(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }
