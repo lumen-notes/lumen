@@ -11,8 +11,9 @@ import { Markdown } from "../components/markdown"
 import { NoteHoverCard } from "../components/note-hover-card"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
-import { fontSchema } from "../schema"
+import { fontSchema, widthSchema } from "../schema"
 import { getLeadingEmoji, removeLeadingEmoji } from "../utils/emoji"
+import { cx } from "../utils/cx"
 import { parseNote } from "../utils/parse-note"
 
 export const Route = createFileRoute("/share/$gistId")({
@@ -96,6 +97,13 @@ function RouteComponent() {
     return parsedFont || "sans"
   }, [note?.frontmatter?.font])
 
+  // Resolve width (frontmatter width or default)
+  const resolvedWidth = React.useMemo(() => {
+    const frontmatterWidth = note?.frontmatter?.width
+    const parseResult = widthSchema.safeParse(frontmatterWidth)
+    return parseResult.success ? parseResult.data : "fixed"
+  }, [note?.frontmatter?.width])
+
   if (!gist || !note) {
     return (
       <div className="w-full h-[100svh] grid place-content-center text-text-secondary">
@@ -107,7 +115,7 @@ function RouteComponent() {
   return (
     <NoteHoverCard.Provider>
       <div className="p-5 md:p-16">
-        <div className="max-w-3xl mx-auto flex flex-col gap-5">
+        <div className={cx("flex flex-col gap-5", resolvedWidth === "fixed" && "max-w-[700px] mx-auto")}>
           <div className="flex items-center gap-2 justify-between h-8 coarse:h-10 print:hidden">
             <div className="flex items-center gap-2 truncate">
               <img
