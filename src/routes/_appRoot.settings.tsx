@@ -40,14 +40,22 @@ function RouteComponent() {
           <AppearanceSection />
           <EditorSection />
           <AISection />
-          <a
-            href="https://colebemis.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-4 text-text-tertiary self-center"
-          >
-            <Signature width={100} />
-          </a>
+          <div className="p-5 text-text-tertiary self-center flex flex-col gap-2 items-center">
+            <span className="text-sm">
+              Made by{" "}
+              <a
+                className="link decoration-text-tertiary"
+                href="https://colebemis.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Cole Bemis
+              </a>
+            </span>
+            <a href="https://colebemis.com" target="_blank" rel="noopener noreferrer">
+              <Signature width={100} />
+            </a>
+          </div>
         </div>
       </div>
     </PageLayout>
