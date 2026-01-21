@@ -33,6 +33,7 @@ import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
 import { formatDate, formatDateDistance } from "../utils/date"
+import { generateNoteId } from "../utils/note-id"
 import { useInsertTemplate } from "./insert-template"
 
 type NoteEditorProps = {
@@ -396,7 +397,7 @@ function useNoteCompletion() {
         label: `Create new note "${query}"`,
         apply: (view, completion, from, to) => {
           const note = {
-            id: Date.now().toString(),
+            id: generateNoteId(),
             content: `# ${query}`,
           }
 

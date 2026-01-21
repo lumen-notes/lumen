@@ -3,6 +3,7 @@ import { useSetAtom } from "jotai"
 import { forwardRef, useState } from "react"
 import { Drawer } from "vaul"
 import { cx } from "../utils/cx"
+import { generateNoteId } from "../utils/note-id"
 import { isCommandMenuOpenAtom } from "./command-menu"
 import { IconButton, IconButtonProps } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, ComposeIcon16, SearchIcon16 } from "./icons"
@@ -52,7 +53,7 @@ export function NavBar() {
           onClick={() =>
             navigate({
               to: "/notes/$",
-              params: { _splat: `${Date.now()}` },
+              params: { _splat: generateNoteId() },
               search: {
                 mode: "write",
                 query: undefined,

@@ -22,6 +22,7 @@ import {
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
+import { generateNoteId } from "../utils/note-id"
 import { notificationSound, playSound } from "../utils/sounds"
 
 export const Route = createFileRoute("/_appRoot")({
@@ -104,7 +105,7 @@ function RouteComponent() {
         execute: async () => {
           await navigate({
             to: "/notes/$",
-            params: { _splat: `${Date.now()}` },
+            params: { _splat: generateNoteId() },
             search: {
               mode: "write",
               query: undefined,
