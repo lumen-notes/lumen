@@ -84,9 +84,7 @@ export function useSaveNote() {
   return saveNote
 }
 
-type RenameNoteResult =
-  | { success: true }
-  | { success: false; reason: "duplicate" | "no-op" }
+type RenameNoteResult = { success: true } | { success: false; reason: "duplicate" | "no-op" }
 
 export function useRenameNote() {
   const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
