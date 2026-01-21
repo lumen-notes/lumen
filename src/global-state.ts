@@ -52,7 +52,11 @@ type Event =
   | { type: "SELECT_REPO"; githubRepo: GitHubRepository }
   | { type: "SYNC" }
   | { type: "SYNC_DEBOUNCED" }
-  | { type: "WRITE_FILES"; markdownFiles: Record<string, string>; commitMessage?: string }
+  | {
+      type: "WRITE_FILES"
+      markdownFiles: Record<string, string | null>
+      commitMessage?: string
+    }
   | { type: "DELETE_FILE"; filepath: string }
 
 function createGlobalStateMachine() {
@@ -385,13 +389,16 @@ function createGlobalStateMachine() {
         writeFiles: async (context, event) => {
           if (!context.githubUser) throw new Error("Not signed in")
 
-          const {
-            markdownFiles,
-            commitMessage = `Update ${Object.keys(markdownFiles).join(" ")}`,
-          } = event
+          const entries = Object.entries(event.markdownFiles)
+          const filesToWrite = entries.filter(([, content]) => content !== null)
+          const filesToDelete = entries.filter(([, content]) => content === null)
+          const fileList = entries.map(([filepath]) => filepath)
+          const commitMessage = event.commitMessage ?? `Update ${fileList.join(" ") || "notes"}`
 
           // Write files to file system
-          Object.entries(markdownFiles).forEach(async ([filepath, content]) => {
+          for (const [filepath, content] of filesToWrite) {
+            if (content === null) continue
+
             // Create directories if needed
             const dirPath = filepath.split("/").slice(0, -1).join("/")
             if (dirPath) {
@@ -410,10 +417,26 @@ function createGlobalStateMachine() {
 
             // Write file
             await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
-          })
+          }
+
+          // Delete files from file system
+          for (const [filepath] of filesToDelete) {
+            await fs.promises.unlink(`${REPO_DIR}/${filepath}`).catch(() => null)
+          }
 
           // Stage files
-          await gitAdd(Object.keys(markdownFiles))
+          const filesToAdd = filesToWrite.map(([filepath]) => filepath)
+          if (filesToAdd.length > 0) {
+            await gitAdd(filesToAdd)
+          }
+
+          for (const [filepath] of filesToDelete) {
+            try {
+              await gitRemove(filepath)
+            } catch {
+              // Ignore if the file isn't tracked
+            }
+          }
 
           // Commit files
           await gitCommit(commitMessage)
@@ -476,19 +499,28 @@ function createGlobalStateMachine() {
           localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(event.data.markdownFiles))
         },
         mergeMarkdownFiles: assign({
-          markdownFiles: (context, event) => ({
-            ...context.markdownFiles,
-            ...event.markdownFiles,
-          }),
+          markdownFiles: (context, event) => {
+            const merged = { ...context.markdownFiles }
+            for (const [filepath, content] of Object.entries(event.markdownFiles)) {
+              if (content === null) {
+                delete merged[filepath]
+              } else {
+                merged[filepath] = content
+              }
+            }
+            return merged
+          },
         }),
         mergeMarkdownFilesLocalStorage: (context, event) => {
-          localStorage.setItem(
-            MARKDOWN_FILES_STORAGE_KEY,
-            JSON.stringify({
-              ...context.markdownFiles,
-              ...event.markdownFiles,
-            }),
-          )
+          const merged = { ...context.markdownFiles }
+          for (const [filepath, content] of Object.entries(event.markdownFiles)) {
+            if (content === null) {
+              delete merged[filepath]
+            } else {
+              merged[filepath] = content
+            }
+          }
+          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(merged))
         },
         deleteMarkdownFile: assign({
           markdownFiles: (context, event) => {

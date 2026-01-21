@@ -6,12 +6,15 @@ import {
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
+  markdownFilesAtom,
   notesAtom,
 } from "../global-state"
 import { Note, NoteId } from "../schema"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
+import { updateWikilinks } from "../utils/update-wikilinks"
+import { isValidNoteId } from "../utils/note-id"
 
 const EMPTY_BACKLINKS: NoteId[] = []
 
@@ -80,6 +83,73 @@ export function useSaveNote() {
   )
 
   return saveNote
+}
+
+type RenameNoteResult =
+  | { success: true }
+  | { success: false; reason: "duplicate" | "invalid" | "no-op" }
+
+export function useRenameNote() {
+  const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
+  const send = useSetAtom(globalStateMachineAtom)
+
+  return React.useCallback(
+    (params: { oldName: string; newName: string; content: string }): RenameNoteResult => {
+      const { oldName, newName, content } = params
+
+      const markdownFiles = getMarkdownFiles()
+      const oldFilepath = `${oldName}.md`
+      const newFilepath = `${newName}.md`
+
+      // Guard against no-op renames
+      if (!oldName || !newName || oldName === newName) {
+        return { success: false, reason: "no-op" }
+      }
+
+      if (!isValidNoteId(newName)) {
+        return { success: false, reason: "invalid" }
+      }
+
+      // Prevent overwriting an existing file
+      if (newFilepath !== oldFilepath && markdownFiles[newFilepath]) {
+        return { success: false, reason: "duplicate" }
+      }
+
+      const oldFileExists = Object.prototype.hasOwnProperty.call(markdownFiles, oldFilepath)
+
+      const updatedMarkdownFiles: Record<string, string | null> = {}
+
+      // Update wikilinks in all other notes
+      for (const [filepath, content] of Object.entries(markdownFiles)) {
+        if (filepath === oldFilepath) continue
+        const newContent = updateWikilinks({ fileContent: content, oldId: oldName, newId: newName })
+        if (newContent !== content) {
+          updatedMarkdownFiles[filepath] = newContent
+        }
+      }
+
+      // Write the renamed file and mark the old path for deletion
+      updatedMarkdownFiles[newFilepath] = updateWikilinks({
+        fileContent: content,
+        oldId: oldName,
+        newId: newName,
+      })
+      if (oldFileExists) {
+        updatedMarkdownFiles[oldFilepath] = null
+      }
+
+      if (Object.keys(updatedMarkdownFiles).length > 0) {
+        send({
+          type: "WRITE_FILES",
+          markdownFiles: updatedMarkdownFiles,
+          commitMessage: `Rename note ${oldName} to ${newName}`,
+        })
+      }
+
+      return { success: true }
+    },
+    [getMarkdownFiles, send],
+  )
 }
 
 export function useDeleteNote() {
