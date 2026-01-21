@@ -14,6 +14,7 @@ import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
 import { updateWikilinks } from "../utils/update-wikilinks"
+import { isValidWikilinkId } from "../utils/wikilink-id"
 
 const EMPTY_BACKLINKS: NoteId[] = []
 
@@ -84,7 +85,9 @@ export function useSaveNote() {
   return saveNote
 }
 
-type RenameNoteResult = { success: true } | { success: false; reason: "duplicate" | "no-op" }
+type RenameNoteResult =
+  | { success: true }
+  | { success: false; reason: "duplicate" | "invalid" | "no-op" }
 
 export function useRenameNote() {
   const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
@@ -101,6 +104,10 @@ export function useRenameNote() {
       // Guard against no-op renames
       if (!oldName || !newName || oldName === newName) {
         return { success: false, reason: "no-op" }
+      }
+
+      if (!isValidWikilinkId(newName)) {
+        return { success: false, reason: "invalid" }
       }
 
       // Prevent overwriting an existing file

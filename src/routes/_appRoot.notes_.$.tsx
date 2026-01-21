@@ -253,6 +253,11 @@ function NotePage() {
       switch (result.reason) {
         case "no-op":
           return
+        case "invalid":
+          window.alert(
+            "Note IDs can only use letters, numbers, spaces, and - _ . ~ ! $ & ' ( ) * + , ; @ { }",
+          )
+          return
         case "duplicate":
           window.alert(`A file named "${newNoteId}.md" already exists.`)
           return
