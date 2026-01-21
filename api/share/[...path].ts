@@ -60,8 +60,8 @@ async function handle(request: Request): Promise<Response> {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
-    ${ogImageUrl ? `<meta name="twitter:image" content="${escapedImageUrl}" />` : ""}
     ${ogImageUrl ? `<meta property="og:image" content="${escapedImageUrl}" />` : ""}
+    ${ogImageUrl ? `<meta name="twitter:image" content="${escapedImageUrl}" />` : ""}
   </head>
   <body>
     <pre>${escapedNoteContent}</pre>
