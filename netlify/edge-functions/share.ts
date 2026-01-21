@@ -41,7 +41,7 @@ export default async (request: Request, context: Context) => {
     }
 
     const noteMarkdown = getNoteMarkdown(gist)
-    const noteContent = getNoteContent(gist)
+    const noteContent = removeFrontmatter(noteMarkdown)
     const noteTitle = getNoteTitle(noteContent)
     const frontmatter = parseFrontmatter(noteMarkdown)
     const ogImageUrl = getOgImageUrl(frontmatter)
@@ -283,24 +283,7 @@ type File = {
   content?: string
 }
 
-function getNoteContent(gist: { files: Record<string, File> }) {
-  // We need to locate a markdown file within the gist to use as the note content
-  // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
-  const readmeFile = Object.values(gist.files as Record<string, File>).find(
-    (file) => file?.filename?.toLowerCase() === "readme.md",
-  )
-  const markdownFile =
-    readmeFile ||
-    Object.values(gist.files as Record<string, File>).find((file) => file?.type === "text/markdown")
-
-  const content = removeFrontmatter(markdownFile?.content || "")
-
-  return content
-}
-
 function getNoteMarkdown(gist: { files: Record<string, File> }): string {
-  // We need to locate a markdown file within the gist to use as the note content
-  // If there's a README.md file, we use that. Otherwise, we use the first markdown file we find
   const readmeFile = Object.values(gist.files as Record<string, File>).find(
     (file) => file?.filename?.toLowerCase() === "readme.md",
   )
@@ -345,20 +328,16 @@ function parseFrontmatter(markdown: string): Record<string, string> {
   const frontmatterYaml = match[1]
   const result: Record<string, string> = {}
 
-  // Simple regex-based parser for key-value pairs
-  // Handles: key: value, key: "value", key: 'value'
   const lines = frontmatterYaml.split("\n")
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith("#")) continue
 
-    // Match key: value patterns
     const keyValueMatch = trimmed.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.+)$/)
     if (keyValueMatch) {
       const key = keyValueMatch[1]
       let value = keyValueMatch[2].trim()
 
-      // Remove quotes if present
       if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1)
       }
@@ -377,14 +356,11 @@ function extractImageUrl(value: string): string | null {
   const trimmed = value.trim()
   if (!trimmed) return null
 
-  // Check for markdown image syntax: ![alt](url) or ![alt text](url)
   const markdownImageMatch = trimmed.match(/^!\[.*?\]\((.*?)\)$/)
   if (markdownImageMatch) {
     return markdownImageMatch[1].trim()
   }
 
-  // If it's already a URL, return it
-  // Basic URL validation (starts with http:// or https://)
   if (/^https?:\/\//.test(trimmed)) {
     return trimmed
   }
@@ -397,7 +373,6 @@ function extractImageUrl(value: string): string | null {
  * Prioritizes the 'image' property, then falls back to ISBN-based book cover.
  */
 function getOgImageUrl(frontmatter: Record<string, string>): string | null {
-  // First, check for explicit image property
   if (frontmatter.image && typeof frontmatter.image === "string") {
     const imageUrl = extractImageUrl(frontmatter.image)
     if (imageUrl) {
@@ -405,7 +380,6 @@ function getOgImageUrl(frontmatter: Record<string, string>): string | null {
     }
   }
 
-  // Then, check for ISBN and use Open Library cover image
   if (frontmatter.isbn && typeof frontmatter.isbn === "string") {
     const isbn = frontmatter.isbn.trim().replace(/[-\s]/g, "")
     if (isbn) {

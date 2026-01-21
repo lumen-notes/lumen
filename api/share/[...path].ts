@@ -36,7 +36,7 @@ async function handle(request: Request): Promise<Response> {
     }
 
     const noteMarkdown = getNoteMarkdown(gist)
-    const noteContent = getNoteContent(gist)
+    const noteContent = removeFrontmatter(noteMarkdown)
     const noteTitle = getNoteTitle(noteContent)
     const frontmatter = parseFrontmatter(noteMarkdown)
     const ogImageUrl = getOgImageUrl(frontmatter)
@@ -311,19 +311,6 @@ type File = {
   filename?: string
   type?: string
   content?: string
-}
-
-function getNoteContent(gist: { files: Record<string, File> }) {
-  const readmeFile = Object.values(gist.files as Record<string, File>).find(
-    (file) => file?.filename?.toLowerCase() === "readme.md",
-  )
-  const markdownFile =
-    readmeFile ||
-    Object.values(gist.files as Record<string, File>).find((file) => file?.type === "text/markdown")
-
-  const content = removeFrontmatter(markdownFile?.content || "")
-
-  return content
 }
 
 function getNoteMarkdown(gist: { files: Record<string, File> }): string {
