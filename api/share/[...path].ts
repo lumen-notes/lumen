@@ -380,20 +380,17 @@ function parseFrontmatter(markdown: string): Record<string, string> {
 }
 
 /**
- * Extracts URL from markdown image syntax (e.g., ![alt](url) or just url)
+ * Extracts URL from markdown image syntax
  */
 function extractImageUrl(value: string): string | null {
   const trimmed = value.trim()
   if (!trimmed) return null
 
-  // Check for markdown image syntax: ![alt](url) or ![alt text](url)
   const markdownImageMatch = trimmed.match(/^!\[.*?\]\((.*?)\)$/)
   if (markdownImageMatch) {
     return markdownImageMatch[1].trim()
   }
 
-  // If it's already a URL, return it
-  // Basic URL validation (starts with http:// or https://)
   if (/^https?:\/\//.test(trimmed)) {
     return trimmed
   }
