@@ -81,6 +81,18 @@ runTests([
     input: `[[foo.bar]]`,
     output: `<p><wikilink id="foo.bar" text="" /></p>`,
   },
+  {
+    input: `[[foo/bar]]`,
+    output: `<p><wikilink id="foo/bar" text="" /></p>`,
+  },
+  {
+    input: `[[foo/bar|my link]]`,
+    output: `<p><wikilink id="foo/bar" text="my link" /></p>`,
+  },
+  {
+    input: `[[path/to/note]]`,
+    output: `<p><wikilink id="path/to/note" text="" /></p>`,
+  },
 
   // Invalid wikilinks
   {

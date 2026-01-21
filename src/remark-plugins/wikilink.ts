@@ -151,7 +151,8 @@ function isFilenameChar(code: Code): boolean {
     code === codes.atSign ||
     code === codes.leftCurlyBrace ||
     code === codes.rightCurlyBrace ||
-    code === codes.space
+    code === codes.space ||
+    code === codes.slash
   )
 }
 
