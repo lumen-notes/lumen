@@ -266,7 +266,7 @@ function NotePage() {
           window.alert(`"${newNoteId}.md" already exists.`)
           return
         default:
-          assertNever(result.reason)
+          result.reason satisfies never
       }
       return
     }
@@ -913,10 +913,6 @@ function NotePage() {
       </div>
     </PageLayout>
   )
-}
-
-function assertNever(value: never): never {
-  throw new Error(`Unhandled rename reason: ${String(value)}`)
 }
 
 function useEditorValue({
