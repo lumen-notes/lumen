@@ -258,8 +258,8 @@ function NotePage() {
           {
             const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
             const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
-            const suffix = invalidList ? ` contains invalid characters: ${invalidList}` : ""
-            window.alert(`"${newNoteId}.md"${suffix}`)
+            const suffix = invalidList ? `: ${invalidList}` : ""
+            window.alert(`"${newNoteId}.md" contains invalid characters${suffix}`)
           }
           return
         case "duplicate":
