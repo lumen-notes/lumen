@@ -50,7 +50,7 @@ export default async (request: Request, context: Context) => {
     const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
     const escapedNoteContent = getSanitizedText(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
-    const ogImageMeta = ogImageUrl ? `    <meta property="og:image" content="${getHtmlEscaped(ogImageUrl)}" />\n    <meta name="twitter:image" content="${getHtmlEscaped(ogImageUrl)}" />\n` : ""
+    const escapedImageUrl = ogImageUrl ? getHtmlEscaped(ogImageUrl) : ""
     const html = `<!doctype html>
 <html>
   <head>
@@ -62,9 +62,11 @@ export default async (request: Request, context: Context) => {
     <meta property="og:description" content="${pageDescription}" />
     <meta property="og:url" content="${escapedUrl}" />
     <meta property="og:site_name" content="${siteName}" />
-${ogImageMeta}    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
+    ${ogImageUrl ? `<meta property="og:image" content="${escapedImageUrl}" />` : ""}
+    ${ogImageUrl ? `<meta name="twitter:image" content="${escapedImageUrl}" />` : ""}
   </head>
   <body>
     <pre>${escapedNoteContent}</pre>

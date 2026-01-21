@@ -45,7 +45,7 @@ async function handle(request: Request): Promise<Response> {
     const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
     const escapedNoteContent = getSanitizedText(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
-    const ogImageMeta = ogImageUrl ? `    <meta property="og:image" content="${getHtmlEscaped(ogImageUrl)}" />\n    <meta name="twitter:image" content="${getHtmlEscaped(ogImageUrl)}" />\n` : ""
+    const escapedImageUrl = ogImageUrl ? getHtmlEscaped(ogImageUrl) : ""
     const html = `<!doctype html>
 <html>
   <head>
@@ -57,9 +57,11 @@ async function handle(request: Request): Promise<Response> {
     <meta property="og:description" content="${pageDescription}" />
     <meta property="og:url" content="${escapedUrl}" />
     <meta property="og:site_name" content="${siteName}" />
-${ogImageMeta}    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="${pageTitle}" />
     <meta name="twitter:description" content="${pageDescription}" />
+    ${ogImageUrl ? `<meta name="twitter:image" content="${escapedImageUrl}" />` : ""}
+    ${ogImageUrl ? `<meta property="og:image" content="${escapedImageUrl}" />` : ""}
   </head>
   <body>
     <pre>${escapedNoteContent}</pre>
@@ -368,20 +370,17 @@ function parseFrontmatter(markdown: string): Record<string, string> {
   const frontmatterYaml = match[1]
   const result: Record<string, string> = {}
 
-  // Simple regex-based parser for key-value pairs
-  // Handles: key: value, key: "value", key: 'value'
   const lines = frontmatterYaml.split("\n")
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith("#")) continue
 
-    // Match key: value patterns
+
     const keyValueMatch = trimmed.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.+)$/)
     if (keyValueMatch) {
       const key = keyValueMatch[1]
       let value = keyValueMatch[2].trim()
 
-      // Remove quotes if present
       if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1)
       }
@@ -417,10 +416,9 @@ function extractImageUrl(value: string): string | null {
 
 /**
  * Gets the og:image URL from frontmatter.
- * Prioritizes the 'image' property, then falls back to ISBN-based book cover.
+ * Prioritizes the 'image' property, then falls back to ISBN-based cover image.
  */
 function getOgImageUrl(frontmatter: Record<string, string>): string | null {
-  // First, check for explicit image property
   if (frontmatter.image && typeof frontmatter.image === "string") {
     const imageUrl = extractImageUrl(frontmatter.image)
     if (imageUrl) {
@@ -428,7 +426,6 @@ function getOgImageUrl(frontmatter: Record<string, string>): string | null {
     }
   }
 
-  // Then, check for ISBN and use Open Library cover image
   if (frontmatter.isbn && typeof frontmatter.isbn === "string") {
     const isbn = frontmatter.isbn.trim().replace(/[-\s]/g, "")
     if (isbn) {
