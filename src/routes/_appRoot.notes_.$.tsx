@@ -66,6 +66,7 @@ import { cx } from "../utils/cx"
 import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
+import { getInvalidNoteIdCharacters } from "../utils/note-id"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
@@ -254,12 +255,15 @@ function NotePage() {
         case "no-op":
           return
         case "invalid":
-          window.alert(
-            "Note IDs can only use letters, numbers, spaces, and - _ . ~ ! $ & ' ( ) * + , ; @ { }",
-          )
+          {
+            const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
+            const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
+            const suffix = invalidList ? ` contains invalid characters: ${invalidList}` : ""
+            window.alert(`"${newNoteId}.md"${suffix}`)
+          }
           return
         case "duplicate":
-          window.alert(`A file named "${newNoteId}.md" already exists.`)
+          window.alert(`"${newNoteId}.md" already exists.`)
           return
         default:
           assertNever(result.reason)

@@ -14,7 +14,7 @@ import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
 import { updateWikilinks } from "../utils/update-wikilinks"
-import { isValidWikilinkId } from "../utils/wikilink-id"
+import { isValidNoteId } from "../utils/note-id"
 
 const EMPTY_BACKLINKS: NoteId[] = []
 
@@ -106,7 +106,7 @@ export function useRenameNote() {
         return { success: false, reason: "no-op" }
       }
 
-      if (!isValidWikilinkId(newName)) {
+      if (!isValidNoteId(newName)) {
         return { success: false, reason: "invalid" }
       }
 
