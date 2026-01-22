@@ -1,8 +1,5 @@
 # Lumen
 
-A simple note-taking app for capturing and organizing your thoughts
+A free, open-source note-taking app that syncs with markdown files in your GitHub repository
 
 [uselumen.com](https://uselumen.com)
-
-> [!WARNING]
-> Work in progress. Expect breaking changes. Follow [@uselumen.com](https://bsky.app/profile/uselumen.com) on Bluesky for updates.
