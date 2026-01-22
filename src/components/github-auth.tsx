@@ -23,11 +23,19 @@ export function SignInButton(props: ButtonProps) {
           return
         }
 
-        window.location.href = urlcat("https://github.com/login/oauth/authorize", {
+        const authUrl = urlcat("https://github.com/login/oauth/authorize", {
           client_id: import.meta.env.VITE_GITHUB_CLIENT_ID,
           state: window.location.href,
           scope: "repo,gist,user:email",
         })
+
+        // Open in new tab if in iframe (GitHub doesn't load inside iframes)
+        const isInIframe = window.self !== window.top
+        if (isInIframe) {
+          window.open(authUrl, "_blank", "noopener")
+        } else {
+          window.location.href = authUrl
+        }
 
         props.onClick?.(event)
       }}

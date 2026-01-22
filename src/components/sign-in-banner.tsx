@@ -12,8 +12,8 @@ export function SignInBanner() {
   return (
     <div className="flex shrink-0 flex-col justify-between gap-3 border-b border-border-secondary p-4 text-text sm:flex-row sm:items-center sm:p-2 print:hidden">
       <span className="sm:px-2">
-        Lumen is in <span className="italic">read-only</span> mode.
-        <span className="hidden md:inline"> Sign in to start writing notes.</span>
+        Lumen is in demo mode.
+        <span className="hidden md:inline"> Sign in to write your own notes.</span>
       </span>
       <SignInButton />
     </div>
