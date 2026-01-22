@@ -12,6 +12,7 @@ import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { Note } from "../schema"
 import { formatDate, formatDateDistance, toDateString } from "../utils/date"
+import { generateNoteId } from "../utils/note-id"
 import { pluralize } from "../utils/pluralize"
 import {
   CalendarDateIcon16,
@@ -419,7 +420,7 @@ export function CommandMenu() {
                 icon={<PlusIcon16 />}
                 onSelect={handleSelect(() => {
                   const note = {
-                    id: Date.now().toString(),
+                    id: generateNoteId(),
                     content: `# ${deferredQuery}`,
                   }
 

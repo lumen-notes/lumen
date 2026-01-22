@@ -58,7 +58,7 @@ import {
   weeklyTemplateAtom,
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
-import { useDeleteNote, useNoteById, useSaveNote } from "../hooks/note"
+import { useDeleteNote, useNoteById, useRenameNote, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
@@ -66,6 +66,7 @@ import { cx } from "../utils/cx"
 import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
+import { getInvalidNoteIdCharacters } from "../utils/note-id"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
@@ -194,6 +195,7 @@ function NotePage() {
 
   // Actions
   const deleteNote = useDeleteNote()
+  const renameNote = useRenameNote()
   const attachFile = useAttachFile()
 
   const handleSave = React.useCallback(
@@ -228,6 +230,57 @@ function NotePage() {
     },
     [noteId, editorValue, setEditorValue, handleSave],
   )
+
+  const handleRename = React.useCallback(() => {
+    if (!noteId) return
+
+    const oldNoteId = noteId
+    const newNoteIdRaw = window.prompt("Rename file", oldNoteId)
+    if (!newNoteIdRaw) return
+
+    const newNoteIdTrimmed = newNoteIdRaw.trim()
+    if (!newNoteIdTrimmed) return
+
+    const newNoteId = newNoteIdTrimmed.replace(/\.md$/i, "").trim()
+    if (!newNoteId || newNoteId === oldNoteId) return
+
+    const result = renameNote({
+      oldName: oldNoteId,
+      newName: newNoteId,
+      content: editorValue,
+    })
+
+    if (!result.success) {
+      switch (result.reason) {
+        case "no-op":
+          return
+        case "invalid":
+          {
+            const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
+            const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
+            const suffix = invalidList ? `: ${invalidList}` : ""
+            window.alert(`"${newNoteId}.md" contains invalid characters${suffix}`)
+          }
+          return
+        case "duplicate":
+          window.alert(`"${newNoteId}.md" already exists.`)
+          return
+        default:
+          result.reason satisfies never
+      }
+      return
+    }
+
+    clearNoteDraft({ githubRepo, noteId: oldNoteId })
+    clearNoteDraft({ githubRepo, noteId: newNoteId })
+
+    navigate({
+      to: "/notes/$",
+      params: { _splat: newNoteId },
+      search: (prev) => ({ ...prev, content: undefined }),
+      replace: true,
+    })
+  }, [noteId, renameNote, editorValue, githubRepo, navigate])
 
   const switchToWriting = React.useCallback(() => {
     navigate({ search: (prev) => ({ ...prev, mode: "write" }), replace: true })
@@ -598,6 +651,13 @@ function NotePage() {
                 </DropdownMenu.Item>
                 <DropdownMenu.Item icon={<CopyIcon16 />} onClick={() => copy(noteId ?? "")}>
                   Copy ID
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  icon={<EditIcon16 />}
+                  disabled={isSignedOut}
+                  onClick={handleRename}
+                >
+                  Rename file
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item

@@ -1,5 +1,6 @@
 import { useLocation, useMatch, useNavigate } from "@tanstack/react-router"
 import { useCallback } from "react"
+import { generateNoteId } from "../utils/note-id"
 import { parseQuery } from "../utils/search"
 
 function useTagsFromRoute() {
@@ -26,7 +27,7 @@ export function useCreateNewNote() {
   const tags = useTagsFromRoute()
 
   return useCallback(() => {
-    const noteId = `${Date.now()}`
+    const noteId = generateNoteId()
 
     // Add tags to the note
     let content = ""
