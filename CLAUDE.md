@@ -95,6 +95,11 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 - Prettier configuration: no semicolons, trailing commas, 100 character line length
 - ESLint rules enforced for TypeScript, React, and accessibility
 
+### Before Committing
+
+- Run `npm run format` to format code
+- Run `npm run lint` to check for errors
+
 ### Git Integration
 
 - The app operates on a Git repository stored in the browser's filesystem
