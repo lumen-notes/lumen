@@ -400,20 +400,13 @@ function extractImageUrl(value: string): string | null {
 
 /**
  * Gets the og:image URL from frontmatter.
- * Prioritizes the 'image' property, then falls back to ISBN-based cover image.
+ * Returns the URL from the 'image' property if present.
  */
 function getOgImageUrl(frontmatter: Record<string, string>): string | null {
   if (frontmatter.image && typeof frontmatter.image === "string") {
     const imageUrl = extractImageUrl(frontmatter.image)
     if (imageUrl) {
       return imageUrl
-    }
-  }
-
-  if (frontmatter.isbn && typeof frontmatter.isbn === "string") {
-    const isbn = frontmatter.isbn.trim().replace(/[-\s]/g, "")
-    if (isbn) {
-      return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`
     }
   }
 
