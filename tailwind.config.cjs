@@ -10,6 +10,7 @@ module.exports = {
   theme: {
     extend: {
       screens: {
+        "no-hover": { raw: "(hover: none)" },
         coarse: { raw: "(pointer: coarse)" },
         fine: { raw: "(pointer: fine)" },
         "2x": { raw: "(min-resolution: 192dpi)" },

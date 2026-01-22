@@ -35,7 +35,7 @@ function Provider({
             >
               <PreviewCard.Popup
                 className={cx(
-                  "card-2 z-30 w-96 rounded-[calc(var(--border-radius-base)+6px)]! print:hidden",
+                  "card-2 z-30 w-96 rounded-[calc(var(--border-radius-base)+6px)]! print:hidden no-hover:hidden",
                   "transition-[transform,scale,opacity] epaper:transition-none",
                   "data-[ending-style]:scale-95 data-[ending-style]:opacity-0",
                   "data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
