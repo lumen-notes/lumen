@@ -1,4 +1,6 @@
 import { PreviewCard } from "@base-ui/react/preview-card"
+import React from "react"
+import { useIsTouchDevice } from "../hooks/use-is-touch-device"
 import { Note } from "../schema"
 import { cx } from "../utils/cx"
 import { NotePreview } from "./note-preview"
@@ -67,6 +69,13 @@ function Trigger({
   payload: Payload
   children: React.ReactNode
 }) {
+  const isTouchDevice = useIsTouchDevice()
+
+  // On touch devices, skip the preview card and just render the link
+  if (isTouchDevice) {
+    return React.cloneElement(render, {}, children)
+  }
+
   return (
     <PreviewCard.Trigger<Payload> render={render} payload={payload}>
       {children}
