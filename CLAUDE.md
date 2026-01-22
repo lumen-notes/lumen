@@ -80,7 +80,6 @@ Lumen is a simple note-taking web application built with React and TypeScript. I
 - `src/remark-plugins/` - Custom remark plugins for markdown processing
 - `src/styles/` - CSS files and styling
 - `api/` - Vercel Functions
-- `netlify/edge-functions/` - Netlify Edge Functions (legacy)
 
 ## Development Notes
 
