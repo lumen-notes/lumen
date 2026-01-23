@@ -60,7 +60,7 @@ export const Route = createFileRoute("/share/$gistId")({
   head: ({ loaderData }) => {
     const { gist, note } = loaderData
     const title = note?.title || gist?.description || note?.displayName || "Lumen"
-    const emoji = getLeadingEmoji(title) || "📄"
+    const emoji = getLeadingEmoji(title) || "📝"
     return {
       meta: [{ title: removeLeadingEmoji(title) }],
       links: [

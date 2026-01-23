@@ -42,15 +42,16 @@ async function handle(request: Request): Promise<Response> {
     const noteTitle = getNoteTitle(noteContent)
     const frontmatter = parseFrontmatter(noteMarkdown)
     const ogImageUrl = getOgImageUrl(frontmatter)
-    const pageTitle = getSanitizedText(noteTitle || gist.description || "Untitled")
+    const fullTitle = noteTitle || gist.description || "Untitled"
+    const leadingEmoji = getLeadingEmoji(fullTitle)
+    const titleWithoutEmoji = leadingEmoji ? fullTitle.slice(leadingEmoji.length).trim() : fullTitle
+    const pageTitle = getSanitizedText(titleWithoutEmoji || "Untitled")
     const pageDescription = "Shared note"
     const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
     const escapedNoteContent = getSanitizedText(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
     const escapedImageUrl = ogImageUrl ? getHtmlEscaped(ogImageUrl) : ""
-    const fullTitle = noteTitle || gist.description || "Untitled"
-    const leadingEmoji = getLeadingEmoji(fullTitle) || "📄"
-    const faviconHref = getFaviconHref(leadingEmoji)
+    const faviconHref = getFaviconHref(leadingEmoji || "📝")
     const html = `<!doctype html>
 <html>
   <head>
