@@ -121,4 +121,48 @@ More text
     const result = transformUploadUrls({ content: input, gistId, gistOwner })
     expect(result.uploadPaths).toEqual(["/uploads/image.png"])
   })
+
+  it("should transform plain upload path in image frontmatter", () => {
+    const input = `---
+image: /uploads/cover.png
+---
+
+Some content`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toContain(
+      `image: https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/cover.png`,
+    )
+    expect(result.uploadPaths).toContain("/uploads/cover.png")
+  })
+
+  it("should not transform external URL in image frontmatter", () => {
+    const input = `---
+image: https://example.com/image.png
+---
+
+Some content`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toContain("image: https://example.com/image.png")
+    expect(result.uploadPaths).toEqual([])
+  })
+
+  it("should handle both image frontmatter and content images", () => {
+    const input = `---
+image: /uploads/cover.png
+---
+
+Here's a content image: ![Alt](/uploads/content.png)`
+    const result = transformUploadUrls({ content: input, gistId, gistOwner })
+
+    expect(result.content).toContain(
+      `image: https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/cover.png`,
+    )
+    expect(result.content).toContain(
+      `![Alt](https://gist.githubusercontent.com/${gistOwner}/${gistId}/raw/content.png)`,
+    )
+    expect(result.uploadPaths).toContain("/uploads/cover.png")
+    expect(result.uploadPaths).toContain("/uploads/content.png")
+  })
 })
