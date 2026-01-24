@@ -12,6 +12,7 @@ export async function POST(request: Request): Promise<Response> {
       })
     }
 
+    // Fetch GitHub user to validate token and get canonical GitHub id and login
     const userResponse = await fetch("https://api.github.com/user", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -36,15 +37,28 @@ export async function POST(request: Request): Promise<Response> {
       throw new Error("Invalid GitHub user response")
     }
 
-    const { error } = await supabase
+    // Upsert user record and get user id
+    const { data: user, error: userError } = await supabase
       .from("users")
       .upsert(
         { github_id, github_login, last_active_at: new Date().toISOString() },
         { onConflict: "github_id" },
       )
+      .select("id")
+      .single()
 
-    if (error) {
-      throw error
+    if (userError) {
+      throw userError
+    }
+
+    // Log the `opened_app` event
+    const userAgent = request.headers.get("user-agent")
+    const { error: activityError } = await supabase
+      .from("activity")
+      .insert({ user_id: user.id, type: "opened_app", user_agent: userAgent })
+
+    if (activityError) {
+      throw activityError
     }
 
     return new Response(JSON.stringify({ success: true }), {
