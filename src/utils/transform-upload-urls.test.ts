@@ -138,13 +138,13 @@ Some content`
 
   it("should not transform external URL in image frontmatter", () => {
     const input = `---
-image: https://example.com/image.png
+image: https://example.com/uploads/image.png
 ---
 
 Some content`
     const result = transformUploadUrls({ content: input, gistId, gistOwner })
 
-    expect(result.content).toContain("image: https://example.com/image.png")
+    expect(result.content).toContain("image: https://example.com/uploads/image.png")
     expect(result.uploadPaths).toEqual([])
   })
 
