@@ -1,5 +1,3 @@
-import emojiRegex from "emoji-regex"
-
 /**
  * This function enhances social media sharing for shared notes.
  * It detects when a bot (like social media crawlers) accesses a shared note URL,
@@ -42,21 +40,17 @@ async function handle(request: Request): Promise<Response> {
     const noteTitle = getNoteTitle(noteContent)
     const frontmatter = parseFrontmatter(noteMarkdown)
     const ogImageUrl = getOgImageUrl(frontmatter)
-    const fullTitle = noteTitle || gist.description || "Untitled"
-    const leadingEmoji = getLeadingEmoji(fullTitle)
-    const titleWithoutEmoji = leadingEmoji ? fullTitle.slice(leadingEmoji.length).trim() : fullTitle
-    const pageTitle = getSanitizedText(titleWithoutEmoji || "Untitled")
+    const pageTitle = getSanitizedText(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
     const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
     const escapedNoteContent = getSanitizedText(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
     const escapedImageUrl = ogImageUrl ? getHtmlEscaped(ogImageUrl) : ""
-    const faviconHref = getFaviconHref(leadingEmoji || "📝")
     const html = `<!doctype html>
 <html>
   <head>
     <title>${pageTitle}</title>
-    <link rel="icon" href="${faviconHref}" />
+    <link rel="icon" href="/favicon-production.svg" type="image/svg+xml" />
     <meta charset="utf-8" />
     <meta name="description" content="${pageDescription}" />
     <meta property="og:type" content="article" />
@@ -453,27 +447,4 @@ function getHtmlEscaped(text: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;")
-}
-
-/**
- * Extracts the leading emoji from a string.
- * Returns the first emoji if it appears at the start of the string, otherwise null.
- */
-function getLeadingEmoji(str: string): string | null {
-  const regex = emojiRegex()
-  const matches = [...str.matchAll(regex)]
-
-  if (matches.length > 0 && matches[0].index === 0) {
-    return matches[0][0]
-  }
-
-  return null
-}
-
-/**
- * Creates a data URI for an SVG favicon containing the emoji.
- */
-function getFaviconHref(emoji: string): string {
-  const encodedEmoji = encodeURIComponent(emoji)
-  return `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${encodedEmoji}</text></svg>`
 }
