@@ -40,7 +40,7 @@ function RouteComponent() {
           <AppearanceSection />
           <EditorSection />
           <AISection />
-          <div className="p-5 text-text-tertiary self-center flex flex-col gap-2 items-center">
+          <div className="p-5 text-text-tertiary self-center flex flex-col gap-3 items-center">
             <span className="text-sm">
               Made by{" "}
               <a
@@ -50,6 +50,15 @@ function RouteComponent() {
                 rel="noopener noreferrer"
               >
                 Cole Bemis
+              </a>{" "}
+              &{" "}
+              <a
+                className="link decoration-text-tertiary"
+                href="https://github.com/lumen-notes/lumen/graphs/contributors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                friends
               </a>
             </span>
             <a href="https://colebemis.com" target="_blank" rel="noopener noreferrer">
