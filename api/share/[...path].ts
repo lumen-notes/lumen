@@ -369,13 +369,15 @@ function parseFrontmatter(markdown: string): Record<string, string> {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith("#")) continue
 
-
     const keyValueMatch = trimmed.match(/^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.+)$/)
     if (keyValueMatch) {
       const key = keyValueMatch[1]
       let value = keyValueMatch[2].trim()
 
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
         value = value.slice(1, -1)
       }
 
