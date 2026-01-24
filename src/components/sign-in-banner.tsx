@@ -11,8 +11,7 @@ export function SignInBanner() {
   if (isInIframe && document.referrer) {
     try {
       const referrerHost = new URL(document.referrer).hostname
-      isEmbeddedInLumen =
-        referrerHost === "uselumen.com" || referrerHost.endsWith(".uselumen.com")
+      isEmbeddedInLumen = referrerHost === "uselumen.com" || referrerHost.endsWith(".uselumen.com")
     } catch {
       // Ignore invalid referrer strings
     }
