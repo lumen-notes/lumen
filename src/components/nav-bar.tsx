@@ -30,7 +30,7 @@ export function NavBar() {
           </Drawer.Trigger>
           <Drawer.Portal>
             <Drawer.Overlay className="fixed inset-0 bg-gradient-to-t from-[#000000] to-[#00000000] epaper:bg-none" />
-            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay epaper:ring-2 epaper:ring-border rounded-t-[calc(var(--border-radius-base)+12px)]">
+            <Drawer.Content className="fixed bottom-0 left-0 right-0 flex h-[80%] flex-col bg-bg-overlay epaper:ring-2 epaper:ring-border rounded-t-[calc(var(--border-radius-base)+12px)] outline-none">
               <div className="grid flex-1 scroll-py-2 grid-rows-[auto_1fr] overflow-y-auto p-3 pb-[max(env(safe-area-inset-bottom),12px)]">
                 <Drawer.Title className="sr-only">Navigation</Drawer.Title>
                 <NavItems size="large" onNavigate={() => setIsDrawerOpen(false)} />
