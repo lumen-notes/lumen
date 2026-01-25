@@ -144,6 +144,28 @@ describe("moveListItemUp", () => {
     const result = moveListItemUp(content, 18, 26)
     expect(result).toBe("- Item 1\n- Item 3\n- Item 2\n")
   })
+
+  it("moves nested items within their parent", () => {
+    // "- Parent\n  - Child 1\n  - Child 2\n"
+    //  0        9           21          33
+    const content = "- Parent\n  - Child 1\n  - Child 2\n"
+    // "  - Child 2" starts at offset 21, the "- " is at 23
+    const result = moveListItemUp(content, 23, 32)
+    expect(result).toBe("- Parent\n  - Child 2\n  - Child 1\n")
+  })
+
+  it("does not move nested item above parent", () => {
+    const content = "- Parent\n  - Child 1\n  - Child 2\n"
+    // "  - Child 1" starts at offset 9, the "- " is at 11
+    const result = moveListItemUp(content, 11, 20)
+    expect(result).toBeNull()
+  })
+
+  it("moves checked and unchecked tasks", () => {
+    const content = "- [x] Done\n- [ ] Todo\n"
+    const result = moveListItemUp(content, 11, 21)
+    expect(result).toBe("- [ ] Todo\n- [x] Done\n")
+  })
 })
 
 describe("moveListItemDown", () => {
@@ -182,41 +204,13 @@ describe("moveListItemDown", () => {
     const result = moveListItemDown(content, 9, 17)
     expect(result).toBe("- Item 1\n- Item 3\n- Item 2\n")
   })
-})
 
-describe("nested list reordering", () => {
-  it("moves nested items within their parent", () => {
-    // "- Parent\n  - Child 1\n  - Child 2\n"
-    //  0        9           21          33
-    const content = "- Parent\n  - Child 1\n  - Child 2\n"
-    // "  - Child 2" starts at offset 21, the "- " is at 23
-    const result = moveListItemUp(content, 23, 32)
-    expect(result).toBe("- Parent\n  - Child 2\n  - Child 1\n")
-  })
-
-  it("does not move nested item above parent", () => {
-    const content = "- Parent\n  - Child 1\n  - Child 2\n"
-    // "  - Child 1" starts at offset 9, the "- " is at 11
-    const result = moveListItemUp(content, 11, 20)
-    expect(result).toBeNull()
-  })
-})
-
-describe("task list items", () => {
   it("moves task items correctly", () => {
     const content = "- [ ] Task 1\n- [ ] Task 2\n"
     const result = moveListItemDown(content, 0, 12)
     expect(result).toBe("- [ ] Task 2\n- [ ] Task 1\n")
   })
 
-  it("moves checked and unchecked tasks", () => {
-    const content = "- [x] Done\n- [ ] Todo\n"
-    const result = moveListItemUp(content, 11, 21)
-    expect(result).toBe("- [ ] Todo\n- [x] Done\n")
-  })
-})
-
-describe("trailing content edge cases", () => {
   it("preserves empty lines and trailing content after moving", () => {
     // Before: bar, blah, fooobar, then empty line, then "hi there"
     const content = "- [ ] bar\n- [ ] blah\n- [ ] fooobar\n\nhi there\n"
