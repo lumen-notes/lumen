@@ -15,7 +15,9 @@ export const Default: StoryObj<{ defaultOpen: boolean }> = {
   render: (args) => (
     <Details defaultOpen={args.defaultOpen}>
       <Details.Summary>Details</Details.Summary>
-      <div className="card-1 p-4">Peekaboo!</div>
+      <Details.Content>
+        <div className="card-1 p-4">Peekaboo!</div>
+      </Details.Content>
     </Details>
   ),
   args: {

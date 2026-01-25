@@ -203,28 +203,30 @@ export const Markdown = React.memo(
                   {!hideFrontmatter && !isObjectEmpty(visibleFrontmatter) ? (
                     <Details>
                       <Details.Summary>Properties</Details.Summary>
-                      <div className="-mx-2 coarse:-mx-3">
-                        <Frontmatter
-                          frontmatter={visibleFrontmatter}
-                          onKeyChange={(oldKey, newKey) =>
-                            onChange?.(
-                              updateFrontmatterKey({
-                                content: children,
-                                oldKey,
-                                newKey,
-                              }),
-                            )
-                          }
-                          onValueChange={(key, newValue) =>
-                            onChange?.(
-                              updateFrontmatterValue({
-                                content: children,
-                                properties: { [key]: newValue },
-                              }),
-                            )
-                          }
-                        />
-                      </div>
+                      <Details.Content>
+                        <div className="-mx-2 coarse:-mx-3">
+                          <Frontmatter
+                            frontmatter={visibleFrontmatter}
+                            onKeyChange={(oldKey, newKey) =>
+                              onChange?.(
+                                updateFrontmatterKey({
+                                  content: children,
+                                  oldKey,
+                                  newKey,
+                                }),
+                              )
+                            }
+                            onValueChange={(key, newValue) =>
+                              onChange?.(
+                                updateFrontmatterValue({
+                                  content: children,
+                                  properties: { [key]: newValue },
+                                }),
+                              )
+                            }
+                          />
+                        </div>
+                      </Details.Content>
                     </Details>
                   ) : null}
                 </div>

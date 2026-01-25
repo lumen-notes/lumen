@@ -881,31 +881,35 @@ function NotePage() {
             {isWeeklyNote ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
-                <DaysOfWeek week={noteId ?? ""} />
+                <Details.Content>
+                  <DaysOfWeek week={noteId ?? ""} />
+                </Details.Content>
               </Details>
             ) : null}
             {backlinks.size > 0 ? (
               <Details className="print:hidden">
                 <Details.Summary>Backlinks</Details.Summary>
-                <LinkHighlightProvider href={`/notes/${noteId}`}>
-                  <NoteList
-                    baseQuery={`link:"${noteId}" -id:"${noteId}"`}
-                    query={query ?? ""}
-                    view={view}
-                    onQueryChange={(query) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, query }),
-                        replace: true,
-                      })
-                    }
-                    onViewChange={(view) =>
-                      navigate({
-                        search: (prev) => ({ ...prev, view }),
-                        replace: true,
-                      })
-                    }
-                  />
-                </LinkHighlightProvider>
+                <Details.Content>
+                  <LinkHighlightProvider href={`/notes/${noteId}`}>
+                    <NoteList
+                      baseQuery={`link:"${noteId}" -id:"${noteId}"`}
+                      query={query ?? ""}
+                      view={view}
+                      onQueryChange={(query) =>
+                        navigate({
+                          search: (prev) => ({ ...prev, query }),
+                          replace: true,
+                        })
+                      }
+                      onViewChange={(view) =>
+                        navigate({
+                          search: (prev) => ({ ...prev, view }),
+                          replace: true,
+                        })
+                      }
+                    />
+                  </LinkHighlightProvider>
+                </Details.Content>
               </Details>
             ) : null}
           </div>
