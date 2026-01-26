@@ -4,7 +4,12 @@ import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
-import { calendarNotesDirectoryAtom, globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
+import {
+  calendarNotesDirectoryAtom,
+  globalStateMachineAtom,
+  notesAtom,
+  pinnedNotesAtom,
+} from "../global-state"
 import { useBuildCalendarNoteId, useIsCalendarNoteId } from "../hooks/config"
 import { buildCalendarNoteId } from "../utils/config"
 import { cx } from "../utils/cx"

@@ -8,7 +8,14 @@ import {
   loadConfigAtom,
   setConfigAtom,
 } from "../global-state"
-import { Config, CONFIG_FILE_PATH, normalizeDirectoryPath, serializeConfig, buildCalendarNoteId, isCalendarNoteId } from "../utils/config"
+import {
+  Config,
+  CONFIG_FILE_PATH,
+  normalizeDirectoryPath,
+  serializeConfig,
+  buildCalendarNoteId,
+  isCalendarNoteId,
+} from "../utils/config"
 
 export function useConfig() {
   return useAtomValue(configAtom)

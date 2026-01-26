@@ -7,7 +7,13 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
-import { calendarNotesDirectoryAtom, githubRepoAtom, notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
+import {
+  calendarNotesDirectoryAtom,
+  githubRepoAtom,
+  notesAtom,
+  pinnedNotesAtom,
+  tagSearcherAtom,
+} from "../global-state"
 import { useBuildCalendarNoteId } from "../hooks/config"
 import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"

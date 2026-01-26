@@ -233,8 +233,8 @@ function NotesSection() {
           </div>
         )}
         <span className="mt-1 text-xs leading-4 text-text-tertiary">
-          Directory where daily and weekly notes are stored (e.g., 2025-01-26.md).
-          Leave empty to use the repository root.
+          Directory where daily and weekly notes are stored (e.g., 2025-01-26.md). Leave empty to
+          use the repository root.
         </span>
       </div>
     </SettingsSection>

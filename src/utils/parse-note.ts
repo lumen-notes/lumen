@@ -199,7 +199,7 @@ function _parseNote(id: NoteId, content: string, calendarNotesDir?: string): Not
 
   // Extract basename for date/week formatting (handles paths like "journal/2026-01-26")
   const basename = getCalendarNoteBasename(id)
-  
+
   // Check if the note is a valid calendar note (checks both basename and directory prefix)
   const isCalendarNote = isCalendarNoteId(id, calendarNotesDir)
 

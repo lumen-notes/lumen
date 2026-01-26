@@ -823,7 +823,8 @@ function NotePage() {
                 {
                   // When printing a daily or weekly note without a title,
                   // insert the date or week number as the title
-                  (parsedNote?.type === "daily" || parsedNote?.type === "weekly") && !note?.title ? (
+                  (parsedNote?.type === "daily" || parsedNote?.type === "weekly") &&
+                  !note?.title ? (
                     <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
                       {parsedNote?.type === "daily"
                         ? formatDate(noteBasename, { alwaysIncludeYear: true })

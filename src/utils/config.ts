@@ -36,7 +36,7 @@ export function serializeConfig(config: Config): string {
   return JSON.stringify(config, null, 2)
 }
 
-/** 
+/**
  * Normalize a directory path:
  * - Remove leading/trailing slashes
  * - Return empty string for root
@@ -46,10 +46,10 @@ export function normalizeDirectoryPath(path: string | undefined): string {
   return path.replace(/^\/+|\/+$/g, "")
 }
 
-/** 
+/**
  * Check if a note ID represents a calendar note (daily or weekly).
  * Checks the basename (last path segment) for date/week patterns.
- * 
+ *
  * When calendarNotesDir is provided:
  * - If empty string: note must be at root (no path separator)
  * - If non-empty: note must be inside that directory
@@ -58,22 +58,22 @@ export function normalizeDirectoryPath(path: string | undefined): string {
 export function isCalendarNoteId(noteId: string, calendarNotesDir?: string): boolean {
   const basename = noteId.split("/").pop() || noteId
   const hasCalendarBasename = isValidDateString(basename) || isValidWeekString(basename)
-  
+
   if (!hasCalendarBasename) {
     return false
   }
-  
+
   // If no directory config provided, just check the basename
   if (calendarNotesDir === undefined) {
     return true
   }
-  
+
   // Check if the note is in the correct directory
   if (calendarNotesDir === "") {
     // No directory configured - note must be at root (no slashes)
     return !noteId.includes("/")
   }
-  
+
   // Directory is configured - note must be inside it
   const expectedPrefix = `${calendarNotesDir}/`
   return noteId.startsWith(expectedPrefix) && noteId.slice(expectedPrefix.length) === basename
@@ -91,10 +91,7 @@ export function getCalendarNoteBasename(noteId: string): string {
  * Build a calendar note ID with the configured directory.
  * e.g., ("2026-01-26", "journal") -> "journal/2026-01-26"
  */
-export function buildCalendarNoteId(
-  dateOrWeek: string,
-  calendarNotesDir: string
-): string {
+export function buildCalendarNoteId(dateOrWeek: string, calendarNotesDir: string): string {
   if (calendarNotesDir) {
     return `${calendarNotesDir}/${dateOrWeek}`
   }
