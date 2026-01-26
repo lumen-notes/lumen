@@ -29,6 +29,7 @@ import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
 import { isSignedOutAtom, tagsAtom, templatesAtom, vimModeAtom } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
+import { useBuildCalendarNoteId } from "../hooks/config"
 import { useSaveNote } from "../hooks/note"
 import { useStableSearchNotes } from "../hooks/search-notes"
 import { cx } from "../utils/cx"
@@ -135,6 +136,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
     }, [])
 
     // Completions
+    const dateCompletion = useDateCompletion()
     const noteCompletion = useNoteCompletion()
     const tagSyntaxCompletion = useTagSyntaxCompletion() // #tag
     const tagPropertyCompletion = useTagPropertyCompletion() // tags: [tag]
@@ -194,6 +196,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       onPaste, // TODO
       onEnter,
       vimMode,
+      dateCompletion,
       noteCompletion,
       tagPropertyCompletion,
       tagSyntaxCompletion,
@@ -259,50 +262,60 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
   },
 )
 
-function dateCompletion(context: CompletionContext): CompletionResult | null {
-  const word = context.matchBefore(/\[\[[^\]|^|]*/)
+function useDateCompletion() {
+  const buildCalendarNoteId = useBuildCalendarNoteId()
 
-  if (!word) {
-    return null
-  }
+  const dateCompletion = React.useCallback(
+    (context: CompletionContext): CompletionResult | null => {
+      const word = context.matchBefore(/\[\[[^\]|^|]*/)
 
-  // "[[<query>" -> "<query>"
-  const query = word.text.replace(/^\[\[/, "")
+      if (!word) {
+        return null
+      }
 
-  if (!query) {
-    return null
-  }
+      // "[[<query>" -> "<query>"
+      const query = word.text.replace(/^\[\[/, "")
 
-  const date = parseDate(query)
+      if (!query) {
+        return null
+      }
 
-  if (!date) {
-    return null
-  }
+      const date = parseDate(query)
 
-  const year = String(date.getFullYear()).padStart(4, "0")
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const dateString = `${year}-${month}-${day}`
+      if (!date) {
+        return null
+      }
 
-  return {
-    from: word.from,
-    options: [
-      {
-        label: formatDate(dateString),
-        detail: formatDateDistance(dateString),
-        apply: (view, completion, from, to) => {
-          const text = `[[${dateString}]]`
+      const year = String(date.getFullYear()).padStart(4, "0")
+      const month = String(date.getMonth() + 1).padStart(2, "0")
+      const day = String(date.getDate()).padStart(2, "0")
+      const dateString = `${year}-${month}-${day}`
+      const noteId = buildCalendarNoteId(dateString)
 
-          const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
-          view.dispatch({
-            changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
-            selection: { anchor: from + text.length },
-          })
-        },
-      },
-    ],
-    filter: false,
-  }
+      return {
+        from: word.from,
+        options: [
+          {
+            label: formatDate(dateString),
+            detail: formatDateDistance(dateString),
+            apply: (view, completion, from, to) => {
+              const text = `[[${noteId}]]`
+
+              const hasClosingBrackets = view.state.sliceDoc(to, to + 2) === "]]"
+              view.dispatch({
+                changes: { from, to: hasClosingBrackets ? to + 2 : to, insert: text },
+                selection: { anchor: from + text.length },
+              })
+            },
+          },
+        ],
+        filter: false,
+      }
+    },
+    [buildCalendarNoteId],
+  )
+
+  return dateCompletion
 }
 
 /**
