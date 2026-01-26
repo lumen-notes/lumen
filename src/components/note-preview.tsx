@@ -2,6 +2,7 @@ import { useMatch } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
+import { useIsCalendarNoteId } from "../hooks/config"
 import { Note, fontSchema } from "../schema"
 import { getCalendarNoteBasename } from "../utils/config"
 import { cx } from "../utils/cx"
@@ -31,6 +32,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
   const highlightedHrefs = useLinkHighlight()
   const defaultFont = useAtomValue(defaultFontAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const isCalendarNoteId = useIsCalendarNoteId()
 
   // Prefer a local draft if it exists (unsaved changes)
   const { resolvedContent, isDraft } = useMemo(() => {
@@ -67,9 +69,13 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
 
   // Compute birthday label
   const birthdayLabel = useMemo(() => {
-    // Only show when viewing a daily note
-    const currentNoteBasename = getCalendarNoteBasename(currentNoteId ?? "")
-    if (!currentNoteId || !isValidDateString(currentNoteBasename)) {
+    // Only show when viewing a daily note (must be in configured calendar directory)
+    if (!currentNoteId || !isCalendarNoteId(currentNoteId)) {
+      return null
+    }
+    const currentNoteBasename = getCalendarNoteBasename(currentNoteId)
+    // Must be a daily note (date pattern), not a weekly note
+    if (!isValidDateString(currentNoteBasename)) {
       return null
     }
 
@@ -122,7 +128,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
     }
 
     return "Birthday"
-  }, [currentNoteId, resolvedFrontmatter?.birthday])
+  }, [currentNoteId, isCalendarNoteId, resolvedFrontmatter?.birthday])
 
   return (
     <div

@@ -191,19 +191,19 @@ function _parseNote(id: NoteId, content: string): Note {
     )
   }
 
-  // Determine the type of the note
-  if (isValidDateString(id)) {
+  // Extract basename for date/week formatting (handles paths like "journal/2026-01-26")
+  const basename = getCalendarNoteBasename(id)
+
+  // Determine the type of the note (use basename to handle directory prefixes)
+  if (isValidDateString(basename)) {
     type = "daily"
     // Add the daily note's date to its dates array
-    dates.add(id)
-  } else if (isValidWeekString(id)) {
+    dates.add(basename)
+  } else if (isValidWeekString(basename)) {
     type = "weekly"
   } else if (templateSchema.omit({ body: true }).safeParse(frontmatter.template).success) {
     type = "template"
   }
-
-  // Extract basename for date/week formatting (handles paths like "journal/2026-01-26")
-  const basename = getCalendarNoteBasename(id)
 
   switch (type) {
     case "daily":
