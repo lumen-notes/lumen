@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai"
 import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
 import { Note, fontSchema } from "../schema"
+import { getCalendarNoteBasename } from "../utils/config"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -67,7 +68,8 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
   // Compute birthday label
   const birthdayLabel = useMemo(() => {
     // Only show when viewing a daily note
-    if (!currentNoteId || !isValidDateString(currentNoteId)) {
+    const currentNoteBasename = getCalendarNoteBasename(currentNoteId ?? "")
+    if (!currentNoteId || !isValidDateString(currentNoteBasename)) {
       return null
     }
 
@@ -104,7 +106,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
     }
 
     // Extract month and day from current daily note
-    const [currentYear, currentMonth, currentDay] = currentNoteId.split("-").map(Number)
+    const [currentYear, currentMonth, currentDay] = currentNoteBasename.split("-").map(Number)
 
     // Check if month/day matches
     if (birthMonth !== currentMonth || birthDay !== currentDay) {

@@ -62,6 +62,7 @@ import { useDeleteNote, useNoteById, useRenameNote, useSaveNote } from "../hooks
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
+import { getCalendarNoteBasename } from "../utils/config"
 import { cx } from "../utils/cx"
 import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
@@ -137,8 +138,9 @@ function NotePage() {
 
   // Note data
   const note = useNoteById(noteId)
-  const isDailyNote = isValidDateString(noteId ?? "")
-  const isWeeklyNote = isValidWeekString(noteId ?? "")
+  const noteBasename = getCalendarNoteBasename(noteId ?? "")
+  const isDailyNote = isValidDateString(noteBasename)
+  const isWeeklyNote = isValidWeekString(noteBasename)
   const searchNotes = useSearchNotes()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
@@ -154,9 +156,9 @@ function NotePage() {
     defaultValue: defaultContent
       ? defaultContent
       : isDailyNote && dailyTemplate
-        ? renderTemplate(dailyTemplate, { date: noteId ?? "" })
+        ? renderTemplate(dailyTemplate, { date: noteBasename })
         : isWeeklyNote && weeklyTemplate
-          ? renderTemplate(weeklyTemplate, { week: noteId ?? "" })
+          ? renderTemplate(weeklyTemplate, { week: noteBasename })
           : "",
   })
   const vimMode = useAtomValue(vimModeAtom)
@@ -822,8 +824,8 @@ function NotePage() {
                   (isDailyNote || isWeeklyNote) && !note?.title ? (
                     <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
                       {isDailyNote
-                        ? formatDate(noteId ?? "", { alwaysIncludeYear: true })
-                        : formatWeek(noteId ?? "")}
+                        ? formatDate(noteBasename, { alwaysIncludeYear: true })
+                        : formatWeek(noteBasename)}
                     </h1>
                   ) : null
                 }
@@ -881,7 +883,7 @@ function NotePage() {
             {isWeeklyNote ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
-                <DaysOfWeek week={noteId ?? ""} />
+                <DaysOfWeek week={noteBasename} />
               </Details>
             ) : null}
             {backlinks.size > 0 ? (
