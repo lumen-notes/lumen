@@ -63,9 +63,9 @@ import { useDeleteNote, useNoteById, useRenameNote, useSaveNote } from "../hooks
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { Note, NoteId, Template, Width, fontSchema, widthSchema } from "../schema"
-import { getCalendarNoteBasename } from "../utils/config"
+import { getCalendarNoteBasename, isCalendarNoteId } from "../utils/config"
 import { cx } from "../utils/cx"
-import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
+import { formatDate, formatWeek } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
 import { getInvalidNoteIdCharacters } from "../utils/note-id"
@@ -141,8 +141,8 @@ function NotePage() {
   // Note data
   const note = useNoteById(noteId)
   const noteBasename = getCalendarNoteBasename(noteId ?? "")
-  const isDailyNote = isValidDateString(noteBasename)
-  const isWeeklyNote = isValidWeekString(noteBasename)
+  // Check if this note ID is a calendar note based on basename AND directory config
+  const isCalendarNote = isCalendarNoteId(noteId ?? "", calendarNotesDir)
   const searchNotes = useSearchNotes()
   const saveNote = useSaveNote()
   const backlinks = React.useMemo(() => {
@@ -157,10 +157,10 @@ function NotePage() {
     note,
     defaultValue: defaultContent
       ? defaultContent
-      : isDailyNote && dailyTemplate
-        ? renderTemplate(dailyTemplate, { date: noteBasename })
-        : isWeeklyNote && weeklyTemplate
-          ? renderTemplate(weeklyTemplate, { week: noteBasename })
+      : isCalendarNote && noteBasename.includes("-W") && weeklyTemplate
+        ? renderTemplate(weeklyTemplate, { week: noteBasename })
+        : isCalendarNote && !noteBasename.includes("-W") && dailyTemplate
+          ? renderTemplate(dailyTemplate, { date: noteBasename })
           : "",
   })
   const vimMode = useAtomValue(vimModeAtom)
@@ -800,7 +800,7 @@ function NotePage() {
               resolvedWidth === "fixed" && "mx-auto max-w-[700px]",
             )}
           >
-            {isDailyNote || isWeeklyNote ? (
+            {parsedNote?.type === "daily" || parsedNote?.type === "weekly" ? (
               <div className="print-hidden flex flex-col gap-8">
                 <Calendar className="-m-2" activeNoteId={noteId ?? ""} />
                 <CalendarHeader activeNoteId={noteId ?? ""} />
@@ -823,9 +823,9 @@ function NotePage() {
                 {
                   // When printing a daily or weekly note without a title,
                   // insert the date or week number as the title
-                  (isDailyNote || isWeeklyNote) && !note?.title ? (
+                  (parsedNote?.type === "daily" || parsedNote?.type === "weekly") && !note?.title ? (
                     <h1 className="mb-4 hidden font-content text-xl font-bold leading-[1.4] print:block">
-                      {isDailyNote
+                      {parsedNote?.type === "daily"
                         ? formatDate(noteBasename, { alwaysIncludeYear: true })
                         : formatWeek(noteBasename)}
                     </h1>
@@ -882,7 +882,7 @@ function NotePage() {
                 minHeight={160}
               />
             </div>
-            {isWeeklyNote ? (
+            {parsedNote?.type === "weekly" ? (
               <Details className="print:hidden">
                 <Details.Summary>Days</Details.Summary>
                 <DaysOfWeek week={noteBasename} />
