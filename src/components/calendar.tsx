@@ -17,6 +17,7 @@ import { Link, useSearch } from "@tanstack/react-router"
 import { calendarLayoutAtom } from "../global-state"
 import { useBacklinksForId, useNoteById } from "../hooks/note"
 import { Note } from "../schema"
+import { getCalendarNoteBasename } from "../utils/config"
 import { cx } from "../utils/cx"
 import {
   DAY_NAMES,
@@ -42,7 +43,9 @@ export function Calendar({
   activeNoteId: string
   className?: string
 }) {
-  const date = parseISO(activeNoteId)
+  // Extract the date/week part from the noteId (handles paths like "journal/2025-01-26")
+  const activeBasename = getCalendarNoteBasename(activeNoteId)
+  const date = parseISO(activeBasename)
   const [layout, setLayout] = useAtom(calendarLayoutAtom)
 
   // Local state for the displayed date anchor (independent of activeNoteId)
@@ -164,14 +167,14 @@ export function Calendar({
               <div className="flex gap-1.5 items-center">
                 <CalendarWeek
                   startOfWeek={displayedWeekStart}
-                  isActive={toWeekString(displayedWeekStart) === activeNoteId}
+                  isActive={toWeekString(displayedWeekStart) === activeBasename}
                 />
                 <div role="separator" className="h-8 w-px shrink-0 bg-border-secondary" />
                 {daysOfWeek.map((day) => (
                   <CalendarDate
                     key={day.toISOString()}
                     date={day}
-                    isActive={toDateString(day) === activeNoteId}
+                    isActive={toDateString(day) === activeBasename}
                   />
                 ))}
               </div>
@@ -180,7 +183,7 @@ export function Calendar({
             <MonthGrid
               weeksInMonth={weeksInMonth}
               displayedMonth={displayedMonthStart.getMonth()}
-              activeNoteId={activeNoteId}
+              activeBasename={activeBasename}
             />
           )}
         </div>
@@ -390,11 +393,11 @@ const SHORT_DAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
 function MonthGrid({
   weeksInMonth,
   displayedMonth,
-  activeNoteId,
+  activeBasename,
 }: {
   weeksInMonth: Date[]
   displayedMonth: number
-  activeNoteId: string
+  activeBasename: string
 }) {
   return (
     <div className="@container">
@@ -414,7 +417,7 @@ function MonthGrid({
             key={weekStart.toISOString()}
             weekStart={weekStart}
             displayedMonth={displayedMonth}
-            activeNoteId={activeNoteId}
+            activeBasename={activeBasename}
             isLastRow={index === weeksInMonth.length - 1}
           />
         ))}
@@ -426,12 +429,12 @@ function MonthGrid({
 function MonthWeekRow({
   weekStart,
   displayedMonth,
-  activeNoteId,
+  activeBasename,
   isLastRow,
 }: {
   weekStart: Date
   displayedMonth: number
-  activeNoteId: string
+  activeBasename: string
   isLastRow: boolean
 }) {
   // Get the Monday of this week (weekStart should already be Monday from eachWeekOfInterval)
@@ -450,7 +453,7 @@ function MonthWeekRow({
   }, [mondayOfWeek])
 
   const searchParams = useSearch({ strict: false })
-  const isWeekActive = weekString === activeNoteId
+  const isWeekActive = weekString === activeBasename
   const anchorRef = React.useContext(CalendarContainerContext)
 
   // Create note object for hover card (fallback if note doesn't exist)
@@ -531,7 +534,7 @@ function MonthWeekRow({
           key={day.toISOString()}
           date={day}
           isOutsideMonth={day.getMonth() !== displayedMonth}
-          isActive={toDateString(day) === activeNoteId}
+          isActive={toDateString(day) === activeBasename}
         />
       ))}
     </div>
