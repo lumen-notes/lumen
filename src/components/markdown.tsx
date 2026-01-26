@@ -13,6 +13,12 @@ import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
 import { useMoveTask } from "../hooks/task"
 import { formatDate, toDateString } from "../utils/date"
+import {
+  canMoveListItemUp,
+  canMoveListItemDown,
+  moveListItemUp,
+  moveListItemDown,
+} from "../utils/reorder-list-item"
 import { remarkEmbed } from "../remark-plugins/embed"
 import { remarkPriority } from "../remark-plugins/priority"
 import { remarkTag } from "../remark-plugins/tag"
@@ -35,6 +41,8 @@ import { FilePreview } from "./file-preview"
 import { GitHubAvatar } from "./github-avatar"
 import { IconButton } from "./icon-button"
 import {
+  ArrowDownIcon16,
+  ArrowUpIcon16,
   CalendarDateIcon16,
   CopyIcon16,
   CutIcon16,
@@ -663,6 +671,36 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     onChange?.(markdownBody.slice(0, start) + markdownBody.slice(endWithNewline))
   }, [markdownBody, node.position, onChange])
 
+  const nodeStart = node.position?.start.offset
+  const nodeEnd = node.position?.end.offset
+  const hasNodePosition = nodeStart != null && nodeEnd != null
+
+  const canMoveUp = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemUp(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
+  const canMoveDown = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemDown(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
+  const handleMoveUp = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemUp(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
+  const handleMoveDown = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemDown(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
   return (
     <li
       {...props}
@@ -751,6 +789,28 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                           {option.label}
                         </DropdownMenu.Item>
                       ))}
+                    </DropdownMenu.Group>
+                    <DropdownMenu.Separator />
+                  </>
+                ) : null}
+                {canMoveUp || canMoveDown ? (
+                  <>
+                    <DropdownMenu.Group>
+                      <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
+                      <DropdownMenu.Item
+                        icon={<ArrowUpIcon16 />}
+                        onClick={handleMoveUp}
+                        disabled={!canMoveUp}
+                      >
+                        Move up
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<ArrowDownIcon16 />}
+                        onClick={handleMoveDown}
+                        disabled={!canMoveDown}
+                      >
+                        Move down
+                      </DropdownMenu.Item>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                   </>

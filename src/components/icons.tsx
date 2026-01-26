@@ -396,6 +396,14 @@ export function ArrowRightIcon16(props: IconProps) {
   return <ArrowLeftIcon16 {...props} className={cx("-scale-x-100", props.className)} />
 }
 
+export function ArrowUpIcon16(props: IconProps) {
+  return <ArrowLeftIcon16 {...props} className={cx("rotate-90", props.className)} />
+}
+
+export function ArrowDownIcon16(props: IconProps) {
+  return <ArrowLeftIcon16 {...props} className={cx("-rotate-90", props.className)} />
+}
+
 export function ChevronLeftIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
