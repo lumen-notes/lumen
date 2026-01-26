@@ -8,7 +8,7 @@ import {
   loadConfigAtom,
   setConfigAtom,
 } from "../global-state"
-import { Config, CONFIG_FILE_PATH, normalizeDirectoryPath, serializeConfig } from "../utils/config"
+import { Config, CONFIG_FILE_PATH, normalizeDirectoryPath, serializeConfig, buildCalendarNoteId } from "../utils/config"
 
 export function useConfig() {
   return useAtomValue(configAtom)
@@ -16,6 +16,18 @@ export function useConfig() {
 
 export function useCalendarNotesDirectory() {
   return useAtomValue(calendarNotesDirectoryAtom)
+}
+
+/**
+ * Returns a function to build calendar note IDs with the configured directory.
+ * e.g., with directory "journal": buildId("2026-01-26") -> "journal/2026-01-26"
+ */
+export function useBuildCalendarNoteId() {
+  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  return React.useCallback(
+    (dateOrWeek: string) => buildCalendarNoteId(dateOrWeek, calendarNotesDir),
+    [calendarNotesDir],
+  )
 }
 
 /** Load config from filesystem when repo is cloned */

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import {
   DEFAULT_CONFIG,
-  getNoteFilepath,
-  getNoteIdFromFilepath,
+  buildCalendarNoteId,
+  getCalendarNoteBasename,
   isCalendarNoteId,
   normalizeDirectoryPath,
   parseConfigFromJson,
@@ -76,6 +76,11 @@ describe("isCalendarNoteId", () => {
     expect(isCalendarNoteId("2025-W52")).toBe(true)
   })
 
+  it("returns true for calendar notes with directory prefix", () => {
+    expect(isCalendarNoteId("journal/2025-01-26")).toBe(true)
+    expect(isCalendarNoteId("notes/daily/2025-W04")).toBe(true)
+  })
+
   it("returns false for regular note IDs", () => {
     expect(isCalendarNoteId("my-note")).toBe(false)
     expect(isCalendarNoteId("some/path/note")).toBe(false)
@@ -88,56 +93,27 @@ describe("isCalendarNoteId", () => {
   })
 })
 
-describe("getNoteFilepath", () => {
-  it("returns simple filepath for non-calendar notes", () => {
-    expect(getNoteFilepath("my-note", "")).toBe("my-note.md")
-    expect(getNoteFilepath("my-note", "journal")).toBe("my-note.md")
-    expect(getNoteFilepath("nested/note", "journal")).toBe("nested/note.md")
+describe("getCalendarNoteBasename", () => {
+  it("returns the date/week part from a simple ID", () => {
+    expect(getCalendarNoteBasename("2025-01-26")).toBe("2025-01-26")
+    expect(getCalendarNoteBasename("2025-W04")).toBe("2025-W04")
   })
 
-  it("returns simple filepath for calendar notes when no directory configured", () => {
-    expect(getNoteFilepath("2025-01-26", "")).toBe("2025-01-26.md")
-    expect(getNoteFilepath("2025-W04", "")).toBe("2025-W04.md")
-  })
-
-  it("prepends directory for calendar notes when configured", () => {
-    expect(getNoteFilepath("2025-01-26", "journal")).toBe("journal/2025-01-26.md")
-    expect(getNoteFilepath("2025-W04", "daily")).toBe("daily/2025-W04.md")
-    expect(getNoteFilepath("2025-01-26", "notes/calendar")).toBe("notes/calendar/2025-01-26.md")
+  it("returns the date/week part from a path ID", () => {
+    expect(getCalendarNoteBasename("journal/2025-01-26")).toBe("2025-01-26")
+    expect(getCalendarNoteBasename("notes/daily/2025-W04")).toBe("2025-W04")
   })
 })
 
-describe("getNoteIdFromFilepath", () => {
-  it("returns ID without .md extension", () => {
-    expect(getNoteIdFromFilepath("my-note.md", "")).toBe("my-note")
-    expect(getNoteIdFromFilepath("nested/note.md", "")).toBe("nested/note")
+describe("buildCalendarNoteId", () => {
+  it("returns the date string when no directory is configured", () => {
+    expect(buildCalendarNoteId("2025-01-26", "")).toBe("2025-01-26")
+    expect(buildCalendarNoteId("2025-W04", "")).toBe("2025-W04")
   })
 
-  it("returns calendar note ID when no directory configured", () => {
-    expect(getNoteIdFromFilepath("2025-01-26.md", "")).toBe("2025-01-26")
-    expect(getNoteIdFromFilepath("2025-W04.md", "")).toBe("2025-W04")
-  })
-
-  it("strips directory prefix for calendar notes in configured directory", () => {
-    expect(getNoteIdFromFilepath("journal/2025-01-26.md", "journal")).toBe("2025-01-26")
-    expect(getNoteIdFromFilepath("daily/2025-W04.md", "daily")).toBe("2025-W04")
-    expect(getNoteIdFromFilepath("notes/calendar/2025-01-26.md", "notes/calendar")).toBe(
-      "2025-01-26",
-    )
-  })
-
-  it("does not strip prefix for non-calendar files in calendar directory", () => {
-    expect(getNoteIdFromFilepath("journal/my-note.md", "journal")).toBe("journal/my-note")
-    expect(getNoteIdFromFilepath("journal/readme.md", "journal")).toBe("journal/readme")
-  })
-
-  it("does not strip prefix for files in subdirectories of calendar directory", () => {
-    expect(getNoteIdFromFilepath("journal/sub/2025-01-26.md", "journal")).toBe(
-      "journal/sub/2025-01-26",
-    )
-  })
-
-  it("does not strip prefix for calendar files not in configured directory", () => {
-    expect(getNoteIdFromFilepath("other/2025-01-26.md", "journal")).toBe("other/2025-01-26")
+  it("prepends directory when configured", () => {
+    expect(buildCalendarNoteId("2025-01-26", "journal")).toBe("journal/2025-01-26")
+    expect(buildCalendarNoteId("2025-W04", "daily")).toBe("daily/2025-W04")
+    expect(buildCalendarNoteId("2025-01-26", "notes/calendar")).toBe("notes/calendar/2025-01-26")
   })
 })

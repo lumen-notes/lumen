@@ -19,7 +19,6 @@ import {
   Config,
   CONFIG_FILE_PATH,
   DEFAULT_CONFIG,
-  getNoteIdFromFilepath,
   normalizeDirectoryPath,
   parseConfigFromJson,
   serializeConfig,
@@ -717,13 +716,12 @@ export const githubRepoAtom = selectAtom(
 
 export const notesAtom = atom((get) => {
   const markdownFiles = get(markdownFilesAtom)
-  const calendarNotesDir = get(calendarNotesDirectoryAtom)
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
   for (const filepath in markdownFiles) {
-    // Derive note ID, considering the calendar notes directory
-    const id = getNoteIdFromFilepath(filepath, calendarNotesDir)
+    // Note ID is just the filepath without .md extension
+    const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
     notes.set(id, parseNote(id, content))
   }
