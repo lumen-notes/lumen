@@ -12,7 +12,9 @@ function isListItemLine(line: string): boolean {
   return LIST_ITEM_REGEX.test(line)
 }
 
-/** Get the full list item block boundaries (including nested content) */
+/**
+ * Get the full list item block boundaries (including nested content)
+ */
 export function getListItemBlock(
   content: string,
   nodeStartOffset: number,
@@ -89,7 +91,9 @@ export function getListItemBlock(
   return { start: lineStart, end: lineEnd, indent }
 }
 
-/** Find the previous list item at the same indentation level */
+/**
+ * Find the previous list item at the same indentation level
+ */
 export function findPreviousListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.start - 1
 
@@ -169,7 +173,9 @@ export function findPreviousListItem(content: string, block: ListItemBlock): Lis
   return null
 }
 
-/** Find the next list item at the same indentation level */
+/**
+ * Find the next list item at the same indentation level
+ */
 export function findNextListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.end
 
@@ -247,7 +253,9 @@ export function findNextListItem(content: string, block: ListItemBlock): ListIte
   return null
 }
 
-/** Check if a list item can be moved up */
+/**
+ * Checks if a list item can be moved up
+ */
 export function canMoveListItemUp(
   content: string,
   nodeStartOffset: number,
@@ -258,7 +266,9 @@ export function canMoveListItemUp(
   return findPreviousListItem(content, block) !== null
 }
 
-/** Check if a list item can be moved down */
+/**
+ * Checks if a list item can be moved down
+ */
 export function canMoveListItemDown(
   content: string,
   nodeStartOffset: number,
@@ -269,8 +279,10 @@ export function canMoveListItemDown(
   return findNextListItem(content, block) !== null
 }
 
-/** Move a list item up (swap with previous item) */
-/** Returns the new content, or null if the item can't be moved */
+/**
+ * Move a list item up (swap with previous item)
+ * Returns the new content, or null if the item can't be moved
+ */
 export function moveListItemUp(
   content: string,
   nodeStartOffset: number,
@@ -295,8 +307,10 @@ export function moveListItemUp(
   )
 }
 
-/** Move a list item down (swap with next item) */
-/** Returns the new content, or null if the item can't be moved */
+/**
+ * Move a list item down (swap with next item)
+ * Returns the new content, or null if the item can't be moved
+ */
 export function moveListItemDown(
   content: string,
   nodeStartOffset: number,
