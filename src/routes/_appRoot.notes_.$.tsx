@@ -58,6 +58,7 @@ import {
   weeklyTemplateAtom,
 } from "../global-state"
 import { useAttachFile } from "../hooks/attach-file"
+import { useCalendarNotesDirectory } from "../hooks/config"
 import { useDeleteNote, useNoteById, useRenameNote, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
@@ -134,6 +135,7 @@ function NotePage() {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const defaultFont = useAtomValue(defaultFontAtom)
+  const calendarNotesDir = useCalendarNotesDirectory()
   const { online } = useNetworkState()
 
   // Note data
@@ -163,8 +165,8 @@ function NotePage() {
   })
   const vimMode = useAtomValue(vimModeAtom)
   const parsedNote = React.useMemo(
-    () => parseNote(noteId ?? "", editorValue),
-    [noteId, editorValue],
+    () => parseNote(noteId ?? "", editorValue, calendarNotesDir),
+    [noteId, editorValue, calendarNotesDir],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
 

@@ -3,6 +3,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import {
   backlinksIndexAtom,
+  calendarNotesDirectoryAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -54,6 +55,7 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
@@ -76,13 +78,13 @@ export function useSaveNote() {
       if (typeof frontmatter.gist_id === "string" && githubUser && githubRepo) {
         await updateGist({
           gistId: frontmatter.gist_id,
-          note: parseNote(id ?? "", contentWithTimestamp),
+          note: parseNote(id ?? "", contentWithTimestamp, calendarNotesDir),
           githubUser,
           githubRepo,
         })
       }
     },
-    [send, githubUser, githubRepo],
+    [send, githubUser, githubRepo, calendarNotesDir],
   )
 
   return saveNote

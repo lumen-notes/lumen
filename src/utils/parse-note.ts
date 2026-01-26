@@ -11,7 +11,7 @@ import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { Note, NoteId, NoteType, Task, Template, templateSchema } from "../schema"
-import { getCalendarNoteBasename } from "./config"
+import { getCalendarNoteBasename, isCalendarNoteId } from "./config"
 import {
   formatDate,
   formatWeek,
@@ -24,13 +24,19 @@ import { removeLeadingEmoji } from "./emoji"
 import { hasVisibleFrontmatter, parseFrontmatter } from "./frontmatter"
 import { getTaskContent, getTaskDate, getTaskLinks, getTaskPriority, getTaskTags } from "./task"
 
-/** Extracts metadata from markdown content to construct a Note object. */
+/** Extracts metadata from markdown content to construct a Note object.
+ * @param id - The note ID (filepath without .md extension)
+ * @param content - The markdown content of the note
+ * @param calendarNotesDir - Optional. The configured calendar notes directory.
+ *   When provided, note type detection requires matching directory prefix.
+ *   When undefined, only basename is checked (backward compatible).
+ */
 export const parseNote =
   // We memoize this function because it's called a lot and it's expensive.
   // We're intentionally sacrificing memory usage for runtime performance.
   memoize(_parseNote)
 
-function _parseNote(id: NoteId, content: string): Note {
+function _parseNote(id: NoteId, content: string, calendarNotesDir?: string): Note {
   let type: NoteType = "note"
   let displayName = ""
   let title = ""
@@ -193,13 +199,17 @@ function _parseNote(id: NoteId, content: string): Note {
 
   // Extract basename for date/week formatting (handles paths like "journal/2026-01-26")
   const basename = getCalendarNoteBasename(id)
+  
+  // Check if the note is a valid calendar note (checks both basename and directory prefix)
+  const isCalendarNote = isCalendarNoteId(id, calendarNotesDir)
 
-  // Determine the type of the note (use basename to handle directory prefixes)
-  if (isValidDateString(basename)) {
+  // Determine the type of the note
+  // Only mark as daily/weekly if it's in the correct calendar notes directory
+  if (isCalendarNote && isValidDateString(basename)) {
     type = "daily"
     // Add the daily note's date to its dates array
     dates.add(basename)
-  } else if (isValidWeekString(basename)) {
+  } else if (isCalendarNote && isValidWeekString(basename)) {
     type = "weekly"
   } else if (templateSchema.omit({ body: true }).safeParse(frontmatter.template).success) {
     type = "template"

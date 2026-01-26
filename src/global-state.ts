@@ -718,6 +718,8 @@ export const githubRepoAtom = selectAtom(
 
 export const notesAtom = atom((get) => {
   const markdownFiles = get(markdownFilesAtom)
+  const config = get(configAtom)
+  const calendarNotesDir = normalizeDirectoryPath(config.calendarNotesDirectory)
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
@@ -725,7 +727,7 @@ export const notesAtom = atom((get) => {
     // Note ID is just the filepath without .md extension
     const id = filepath.replace(/\.md$/, "")
     const content = markdownFiles[filepath]
-    notes.set(id, parseNote(id, content))
+    notes.set(id, parseNote(id, content, calendarNotesDir))
   }
 
   // Derive backlinks

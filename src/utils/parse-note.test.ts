@@ -2,6 +2,53 @@ import { describe, expect, test } from "vitest"
 import { isNoteEmpty, parseNote } from "./parse-note"
 
 describe("parseNote", () => {
+  describe("note type detection with calendarNotesDir", () => {
+    test("detects daily note when in correct directory", () => {
+      const note = parseNote("journal/2026-01-26", "# Test", "journal")
+      expect(note.type).toBe("daily")
+    })
+
+    test("does NOT detect daily note when missing required prefix", () => {
+      const note = parseNote("2026-01-26", "# Test", "journal")
+      expect(note.type).toBe("note")
+    })
+
+    test("does NOT detect daily note when in wrong directory", () => {
+      const note = parseNote("other/2026-01-26", "# Test", "journal")
+      expect(note.type).toBe("note")
+    })
+
+    test("detects daily note at root when no directory configured", () => {
+      const note = parseNote("2026-01-26", "# Test", "")
+      expect(note.type).toBe("daily")
+    })
+
+    test("does NOT detect daily note in subdirectory when root expected", () => {
+      const note = parseNote("journal/2026-01-26", "# Test", "")
+      expect(note.type).toBe("note")
+    })
+
+    test("detects weekly note when in correct directory", () => {
+      const note = parseNote("journal/2026-W04", "# Test", "journal")
+      expect(note.type).toBe("weekly")
+    })
+
+    test("does NOT detect weekly note when missing required prefix", () => {
+      const note = parseNote("2026-W04", "# Test", "journal")
+      expect(note.type).toBe("note")
+    })
+
+    test("backward compatible: detects daily note when calendarNotesDir undefined", () => {
+      const note = parseNote("2026-01-26", "# Test")
+      expect(note.type).toBe("daily")
+    })
+
+    test("backward compatible: detects daily note in subdir when calendarNotesDir undefined", () => {
+      const note = parseNote("journal/2026-01-26", "# Test")
+      expect(note.type).toBe("daily")
+    })
+  })
+
   test("stores task markdown, links, and tags", () => {
     const tasks = parseNote("1234", "- [ ] Review [[project-alpha]] plan #ops").tasks
 
