@@ -49,10 +49,34 @@ export function normalizeDirectoryPath(path: string | undefined): string {
 /** 
  * Check if a note ID represents a calendar note (daily or weekly).
  * Checks the basename (last path segment) for date/week patterns.
+ * 
+ * When calendarNotesDir is provided:
+ * - If empty string: note must be at root (no path separator)
+ * - If non-empty: note must be inside that directory
+ * When calendarNotesDir is undefined, only checks the basename pattern.
  */
-export function isCalendarNoteId(noteId: string): boolean {
+export function isCalendarNoteId(noteId: string, calendarNotesDir?: string): boolean {
   const basename = noteId.split("/").pop() || noteId
-  return isValidDateString(basename) || isValidWeekString(basename)
+  const hasCalendarBasename = isValidDateString(basename) || isValidWeekString(basename)
+  
+  if (!hasCalendarBasename) {
+    return false
+  }
+  
+  // If no directory config provided, just check the basename
+  if (calendarNotesDir === undefined) {
+    return true
+  }
+  
+  // Check if the note is in the correct directory
+  if (calendarNotesDir === "") {
+    // No directory configured - note must be at root (no slashes)
+    return !noteId.includes("/")
+  }
+  
+  // Directory is configured - note must be inside it
+  const expectedPrefix = `${calendarNotesDir}/`
+  return noteId.startsWith(expectedPrefix) && noteId.slice(expectedPrefix.length) === basename
 }
 
 /**

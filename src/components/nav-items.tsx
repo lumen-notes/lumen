@@ -5,8 +5,8 @@ import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { calendarNotesDirectoryAtom, globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
-import { useBuildCalendarNoteId } from "../hooks/config"
-import { buildCalendarNoteId, isCalendarNoteId } from "../utils/config"
+import { useBuildCalendarNoteId, useIsCalendarNoteId } from "../hooks/config"
+import { buildCalendarNoteId } from "../utils/config"
 import { cx } from "../utils/cx"
 import { toDateString } from "../utils/date"
 import { CheatsheetDialog } from "./cheatsheet-dialog"
@@ -55,10 +55,11 @@ export function NavItems({
 
   const today = new Date()
   const todayNoteId = buildId(toDateString(today))
+  const isCalendarNote = useIsCalendarNoteId()
 
   // Calendar link is active when viewing any daily or weekly note
   const noteId = pathname.startsWith("/notes/") ? decodeURIComponent(pathname.slice(7)) : ""
-  const isCalendarActive = isCalendarNoteId(noteId)
+  const isCalendarActive = isCalendarNote(noteId)
 
   // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
   const {

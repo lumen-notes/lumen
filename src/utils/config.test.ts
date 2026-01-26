@@ -66,30 +66,66 @@ describe("normalizeDirectoryPath", () => {
 })
 
 describe("isCalendarNoteId", () => {
-  it("returns true for valid date strings", () => {
-    expect(isCalendarNoteId("2025-01-26")).toBe(true)
-    expect(isCalendarNoteId("2000-12-31")).toBe(true)
+  describe("without directory parameter (backward compatible)", () => {
+    it("returns true for valid date strings", () => {
+      expect(isCalendarNoteId("2025-01-26")).toBe(true)
+      expect(isCalendarNoteId("2000-12-31")).toBe(true)
+    })
+
+    it("returns true for valid week strings", () => {
+      expect(isCalendarNoteId("2025-W04")).toBe(true)
+      expect(isCalendarNoteId("2025-W52")).toBe(true)
+    })
+
+    it("returns true for calendar notes with directory prefix", () => {
+      expect(isCalendarNoteId("journal/2025-01-26")).toBe(true)
+      expect(isCalendarNoteId("notes/daily/2025-W04")).toBe(true)
+    })
+
+    it("returns false for regular note IDs", () => {
+      expect(isCalendarNoteId("my-note")).toBe(false)
+      expect(isCalendarNoteId("some/path/note")).toBe(false)
+      expect(isCalendarNoteId("1706313600000")).toBe(false)
+    })
+
+    it("returns false for invalid dates", () => {
+      expect(isCalendarNoteId("2025-13-01")).toBe(false) // Invalid month
+      expect(isCalendarNoteId("2025-1-26")).toBe(false) // Missing leading zero
+    })
   })
 
-  it("returns true for valid week strings", () => {
-    expect(isCalendarNoteId("2025-W04")).toBe(true)
-    expect(isCalendarNoteId("2025-W52")).toBe(true)
+  describe("with empty directory (root only)", () => {
+    it("returns true for date notes at root", () => {
+      expect(isCalendarNoteId("2025-01-26", "")).toBe(true)
+      expect(isCalendarNoteId("2025-W04", "")).toBe(true)
+    })
+
+    it("returns false for date notes in directories", () => {
+      expect(isCalendarNoteId("journal/2025-01-26", "")).toBe(false)
+      expect(isCalendarNoteId("notes/2025-W04", "")).toBe(false)
+    })
   })
 
-  it("returns true for calendar notes with directory prefix", () => {
-    expect(isCalendarNoteId("journal/2025-01-26")).toBe(true)
-    expect(isCalendarNoteId("notes/daily/2025-W04")).toBe(true)
-  })
+  describe("with configured directory", () => {
+    it("returns true for date notes in configured directory", () => {
+      expect(isCalendarNoteId("journal/2025-01-26", "journal")).toBe(true)
+      expect(isCalendarNoteId("journal/2025-W04", "journal")).toBe(true)
+    })
 
-  it("returns false for regular note IDs", () => {
-    expect(isCalendarNoteId("my-note")).toBe(false)
-    expect(isCalendarNoteId("some/path/note")).toBe(false)
-    expect(isCalendarNoteId("1706313600000")).toBe(false)
-  })
+    it("returns false for date notes at root when directory is configured", () => {
+      expect(isCalendarNoteId("2025-01-26", "journal")).toBe(false)
+      expect(isCalendarNoteId("2025-W04", "journal")).toBe(false)
+    })
 
-  it("returns false for invalid dates", () => {
-    expect(isCalendarNoteId("2025-13-01")).toBe(false) // Invalid month
-    expect(isCalendarNoteId("2025-1-26")).toBe(false) // Missing leading zero
+    it("returns false for date notes in wrong directory", () => {
+      expect(isCalendarNoteId("other/2025-01-26", "journal")).toBe(false)
+      expect(isCalendarNoteId("notes/daily/2025-W04", "journal")).toBe(false)
+    })
+
+    it("handles nested directory paths", () => {
+      expect(isCalendarNoteId("notes/daily/2025-01-26", "notes/daily")).toBe(true)
+      expect(isCalendarNoteId("notes/2025-01-26", "notes/daily")).toBe(false)
+    })
   })
 })
 

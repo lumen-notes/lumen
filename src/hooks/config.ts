@@ -8,7 +8,7 @@ import {
   loadConfigAtom,
   setConfigAtom,
 } from "../global-state"
-import { Config, CONFIG_FILE_PATH, normalizeDirectoryPath, serializeConfig, buildCalendarNoteId } from "../utils/config"
+import { Config, CONFIG_FILE_PATH, normalizeDirectoryPath, serializeConfig, buildCalendarNoteId, isCalendarNoteId } from "../utils/config"
 
 export function useConfig() {
   return useAtomValue(configAtom)
@@ -26,6 +26,17 @@ export function useBuildCalendarNoteId() {
   const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
   return React.useCallback(
     (dateOrWeek: string) => buildCalendarNoteId(dateOrWeek, calendarNotesDir),
+    [calendarNotesDir],
+  )
+}
+
+/**
+ * Returns a function to check if a note ID is a calendar note (with directory config).
+ */
+export function useIsCalendarNoteId() {
+  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  return React.useCallback(
+    (noteId: string) => isCalendarNoteId(noteId, calendarNotesDir),
     [calendarNotesDir],
   )
 }

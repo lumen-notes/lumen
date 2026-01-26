@@ -15,6 +15,7 @@ import { useAtom } from "jotai"
 import React from "react"
 import { Link, useSearch } from "@tanstack/react-router"
 import { calendarLayoutAtom } from "../global-state"
+import { useBuildCalendarNoteId } from "../hooks/config"
 import { useBacklinksForId, useNoteById } from "../hooks/note"
 import { Note } from "../schema"
 import { getCalendarNoteBasename } from "../utils/config"
@@ -43,6 +44,7 @@ export function Calendar({
   activeNoteId: string
   className?: string
 }) {
+  const buildId = useBuildCalendarNoteId()
   // Extract the date/week part from the noteId (handles paths like "journal/2025-01-26")
   const activeBasename = getCalendarNoteBasename(activeNoteId)
   const date = parseISO(activeBasename)
@@ -167,14 +169,14 @@ export function Calendar({
               <div className="flex gap-1.5 items-center">
                 <CalendarWeek
                   startOfWeek={displayedWeekStart}
-                  isActive={toWeekString(displayedWeekStart) === activeBasename}
+                  isActive={buildId(toWeekString(displayedWeekStart)) === activeNoteId}
                 />
                 <div role="separator" className="h-8 w-px shrink-0 bg-border-secondary" />
                 {daysOfWeek.map((day) => (
                   <CalendarDate
                     key={day.toISOString()}
                     date={day}
-                    isActive={toDateString(day) === activeBasename}
+                    isActive={buildId(toDateString(day)) === activeNoteId}
                   />
                 ))}
               </div>
@@ -183,7 +185,7 @@ export function Calendar({
             <MonthGrid
               weeksInMonth={weeksInMonth}
               displayedMonth={displayedMonthStart.getMonth()}
-              activeBasename={activeBasename}
+              activeNoteId={activeNoteId}
             />
           )}
         </div>
@@ -199,11 +201,13 @@ function CalendarWeek({
   startOfWeek: Date
   isActive?: boolean
 }) {
+  const buildId = useBuildCalendarNoteId()
   const weekString = toWeekString(startOfWeek)
+  const weekNoteId = buildId(weekString)
   const weekNumber = getISOWeek(startOfWeek)
   const label = formatWeek(weekString)
-  const existingNote = useNoteById(weekString)
-  const backlinks = useBacklinksForId(weekString)
+  const existingNote = useNoteById(weekNoteId)
+  const backlinks = useBacklinksForId(weekNoteId)
   const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const anchorRef = React.useContext(CalendarContainerContext)
 
@@ -211,7 +215,7 @@ function CalendarWeek({
   const note: Note = React.useMemo(() => {
     if (existingNote) return existingNote
     return {
-      id: weekString,
+      id: weekNoteId,
       content: "",
       type: "weekly",
       displayName: formatWeek(weekString),
@@ -227,12 +231,12 @@ function CalendarWeek({
       tasks: [],
       backlinks,
     }
-  }, [existingNote, weekString, backlinks])
+  }, [existingNote, weekNoteId, weekString, backlinks])
 
   return (
     <CalendarItem
-      key={weekString}
-      id={weekString}
+      key={weekNoteId}
+      id={weekNoteId}
       aria-label={label}
       name="Week"
       shortName="W"
@@ -247,9 +251,11 @@ function CalendarWeek({
 }
 
 function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boolean }) {
+  const buildId = useBuildCalendarNoteId()
   const dateString = toDateString(date)
-  const existingNote = useNoteById(dateString)
-  const backlinks = useBacklinksForId(dateString)
+  const dateNoteId = buildId(dateString)
+  const existingNote = useNoteById(dateNoteId)
+  const backlinks = useBacklinksForId(dateNoteId)
   const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
@@ -262,7 +268,7 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
   const note: Note = React.useMemo(() => {
     if (existingNote) return existingNote
     return {
-      id: dateString,
+      id: dateNoteId,
       content: "",
       type: "daily",
       displayName: formatDate(dateString),
@@ -278,12 +284,12 @@ function CalendarDate({ date, isActive = false }: { date: Date; isActive?: boole
       tasks: [],
       backlinks,
     }
-  }, [existingNote, dateString, backlinks])
+  }, [existingNote, dateNoteId, dateString, backlinks])
 
   return (
     <CalendarItem
       key={date.toISOString()}
-      id={dateString}
+      id={dateNoteId}
       aria-label={label}
       name={dayName.slice(0, 3)}
       shortName={dayName.slice(0, 2)}
@@ -393,11 +399,11 @@ const SHORT_DAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
 function MonthGrid({
   weeksInMonth,
   displayedMonth,
-  activeBasename,
+  activeNoteId,
 }: {
   weeksInMonth: Date[]
   displayedMonth: number
-  activeBasename: string
+  activeNoteId: string
 }) {
   return (
     <div className="@container">
@@ -417,7 +423,7 @@ function MonthGrid({
             key={weekStart.toISOString()}
             weekStart={weekStart}
             displayedMonth={displayedMonth}
-            activeBasename={activeBasename}
+            activeNoteId={activeNoteId}
             isLastRow={index === weeksInMonth.length - 1}
           />
         ))}
@@ -429,22 +435,24 @@ function MonthGrid({
 function MonthWeekRow({
   weekStart,
   displayedMonth,
-  activeBasename,
+  activeNoteId,
   isLastRow,
 }: {
   weekStart: Date
   displayedMonth: number
-  activeBasename: string
+  activeNoteId: string
   isLastRow: boolean
 }) {
+  const buildId = useBuildCalendarNoteId()
   // Get the Monday of this week (weekStart should already be Monday from eachWeekOfInterval)
   const mondayOfWeek = startOfISOWeek(weekStart)
   const weekString = toWeekString(mondayOfWeek)
+  const weekNoteId = buildId(weekString)
   const weekNumber = getISOWeek(mondayOfWeek)
   const label = formatWeek(weekString)
 
-  const existingNote = useNoteById(weekString)
-  const backlinks = useBacklinksForId(weekString)
+  const existingNote = useNoteById(weekNoteId)
+  const backlinks = useBacklinksForId(weekNoteId)
   const hasWeekNotes = Boolean(existingNote) || backlinks.length > 0
 
   const daysOfWeek = React.useMemo(() => {
@@ -453,14 +461,14 @@ function MonthWeekRow({
   }, [mondayOfWeek])
 
   const searchParams = useSearch({ strict: false })
-  const isWeekActive = weekString === activeBasename
+  const isWeekActive = weekNoteId === activeNoteId
   const anchorRef = React.useContext(CalendarContainerContext)
 
   // Create note object for hover card (fallback if note doesn't exist)
   const note: Note = React.useMemo(() => {
     if (existingNote) return existingNote
     return {
-      id: weekString,
+      id: weekNoteId,
       content: "",
       type: "weekly",
       displayName: formatWeek(weekString),
@@ -476,12 +484,12 @@ function MonthWeekRow({
       tasks: [],
       backlinks,
     }
-  }, [existingNote, weekString, backlinks])
+  }, [existingNote, weekNoteId, weekString, backlinks])
 
   const weekLink = (
     <Link
       to="/notes/$"
-      params={{ _splat: weekString }}
+      params={{ _splat: weekNoteId }}
       search={{
         mode: searchParams.mode ?? "read",
         query: undefined,
@@ -534,7 +542,7 @@ function MonthWeekRow({
           key={day.toISOString()}
           date={day}
           isOutsideMonth={day.getMonth() !== displayedMonth}
-          isActive={toDateString(day) === activeBasename}
+          activeNoteId={activeNoteId}
         />
       ))}
     </div>
@@ -544,15 +552,18 @@ function MonthWeekRow({
 function MonthDateCell({
   date,
   isOutsideMonth = false,
-  isActive = false,
+  activeNoteId,
 }: {
   date: Date
   isOutsideMonth?: boolean
-  isActive?: boolean
+  activeNoteId: string
 }) {
+  const buildId = useBuildCalendarNoteId()
   const dateString = toDateString(date)
-  const existingNote = useNoteById(dateString)
-  const backlinks = useBacklinksForId(dateString)
+  const dateNoteId = buildId(dateString)
+  const isActive = dateNoteId === activeNoteId
+  const existingNote = useNoteById(dateNoteId)
+  const backlinks = useBacklinksForId(dateNoteId)
   const hasNotes = Boolean(existingNote) || backlinks.length > 0
   const dayName = DAY_NAMES[date.getDay()]
   const monthName = MONTH_NAMES[date.getMonth()]
@@ -567,7 +578,7 @@ function MonthDateCell({
   const note: Note = React.useMemo(() => {
     if (existingNote) return existingNote
     return {
-      id: dateString,
+      id: dateNoteId,
       content: "",
       type: "daily",
       displayName: formatDate(dateString),
@@ -583,12 +594,12 @@ function MonthDateCell({
       tasks: [],
       backlinks,
     }
-  }, [existingNote, dateString, backlinks])
+  }, [existingNote, dateNoteId, dateString, backlinks])
 
   const link = (
     <Link
       to="/notes/$"
-      params={{ _splat: dateString }}
+      params={{ _splat: dateNoteId }}
       search={{
         mode: searchParams.mode ?? "read",
         query: undefined,
