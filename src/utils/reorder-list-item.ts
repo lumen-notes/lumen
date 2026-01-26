@@ -13,7 +13,7 @@ function isListItemLine(line: string): boolean {
 }
 
 /**
- * Get the full list item block boundaries (including nested content).
+ * Get the full list item block boundaries (including nested content)
  */
 export function getListItemBlock(
   content: string,
@@ -92,7 +92,7 @@ export function getListItemBlock(
 }
 
 /**
- * Find the previous list item at the same indentation level.
+ * Find the previous list item at the same indentation level
  */
 export function findPreviousListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.start - 1
@@ -174,7 +174,7 @@ export function findPreviousListItem(content: string, block: ListItemBlock): Lis
 }
 
 /**
- * Find the next list item at the same indentation level.
+ * Find the next list item at the same indentation level
  */
 export function findNextListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.end
@@ -254,7 +254,7 @@ export function findNextListItem(content: string, block: ListItemBlock): ListIte
 }
 
 /**
- * Check if a list item can be moved up.
+ * Check if a list item can be moved up
  */
 export function canMoveListItemUp(
   content: string,
@@ -267,7 +267,7 @@ export function canMoveListItemUp(
 }
 
 /**
- * Check if a list item can be moved down.
+ * Check if a list item can be moved down
  */
 export function canMoveListItemDown(
   content: string,
