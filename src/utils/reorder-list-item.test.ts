@@ -166,6 +166,18 @@ describe("moveListItemUp", () => {
     const result = moveListItemUp(content, 11, 21)
     expect(result).toBe("- [ ] Todo\n- [x] Done\n")
   })
+
+  it("preserves blank lines between loose list items when moving up", () => {
+    const content = "- Item 1\n\n- Item 2\n"
+    const result = moveListItemUp(content, 10, 18)
+    expect(result).toBe("- Item 2\n\n- Item 1\n")
+  })
+
+  it("moves items with + list markers", () => {
+    const content = "+ Item 1\n+ Item 2\n"
+    const result = moveListItemUp(content, 9, 17)
+    expect(result).toBe("+ Item 2\n+ Item 1\n")
+  })
 })
 
 describe("moveListItemDown", () => {
@@ -209,6 +221,24 @@ describe("moveListItemDown", () => {
     const content = "- [ ] Task 1\n- [ ] Task 2\n"
     const result = moveListItemDown(content, 0, 12)
     expect(result).toBe("- [ ] Task 2\n- [ ] Task 1\n")
+  })
+
+  it("moves items with * list markers", () => {
+    const content = "* Item 1\n* Item 2\n"
+    const result = moveListItemDown(content, 0, 8)
+    expect(result).toBe("* Item 2\n* Item 1\n")
+  })
+
+  it("moves ordered list items", () => {
+    const content = "1. Item 1\n2. Item 2\n"
+    const result = moveListItemDown(content, 0, 9)
+    expect(result).toBe("2. Item 2\n1. Item 1\n")
+  })
+
+  it("preserves blank lines between loose list items when moving down", () => {
+    const content = "- Item 1\n\n- Item 2\n"
+    const result = moveListItemDown(content, 0, 8)
+    expect(result).toBe("- Item 2\n\n- Item 1\n")
   })
 
   it("preserves empty lines and trailing content after moving", () => {

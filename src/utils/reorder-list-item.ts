@@ -8,6 +8,12 @@ type ListItemBlock = {
   indent: number
 }
 
+const LIST_ITEM_REGEX = /^\s*(?:[-+*]|\d+[.)])\s+/
+
+function isListItemLine(line: string): boolean {
+  return LIST_ITEM_REGEX.test(line)
+}
+
 /**
  * Get the full list item block boundaries (including nested content).
  */
@@ -110,12 +116,12 @@ export function findPreviousListItem(content: string, block: ListItemBlock): Lis
     const lineIndent = line.length - line.trimStart().length
 
     // If we hit a non-empty, non-list line at same or lower indentation, list is broken
-    if (line.trim() !== "" && !/^\s*-\s/.test(line) && lineIndent <= block.indent) {
+    if (line.trim() !== "" && !isListItemLine(line) && lineIndent <= block.indent) {
       return null
     }
 
     // Found a list item at same indentation
-    if (lineIndent === block.indent && /^\s*-\s/.test(line)) {
+    if (lineIndent === block.indent && isListItemLine(line)) {
       // Find end of this item (only include empty lines if followed by nested content)
       let itemEnd = searchPos + 1
       if (itemEnd < content.length && content[itemEnd] === "\n") {
@@ -193,12 +199,12 @@ export function findNextListItem(content: string, block: ListItemBlock): ListIte
     const lineIndent = line.length - line.trimStart().length
 
     // If we hit a non-empty, non-list line at same or lower indentation, list is broken
-    if (line.trim() !== "" && !/^\s*-\s/.test(line) && lineIndent <= block.indent) {
+    if (line.trim() !== "" && !isListItemLine(line) && lineIndent <= block.indent) {
       return null
     }
 
     // Found a list item at same indentation
-    if (lineIndent === block.indent && /^\s*-\s/.test(line)) {
+    if (lineIndent === block.indent && isListItemLine(line)) {
       // Find end of this item (only include empty lines if followed by nested content)
       let itemEnd = lineEndPos < content.length ? lineEndPos + 1 : lineEndPos
       while (itemEnd < content.length) {
@@ -292,8 +298,15 @@ export function moveListItemUp(
 
   const currentContent = content.slice(block.start, block.end)
   const prevContent = content.slice(prevItem.start, prevItem.end)
+  const separator = content.slice(prevItem.end, block.start)
 
-  return content.slice(0, prevItem.start) + currentContent + prevContent + content.slice(block.end)
+  return (
+    content.slice(0, prevItem.start) +
+    currentContent +
+    separator +
+    prevContent +
+    content.slice(block.end)
+  )
 }
 
 /**
@@ -313,6 +326,13 @@ export function moveListItemDown(
 
   const currentContent = content.slice(block.start, block.end)
   const nextContent = content.slice(nextItem.start, nextItem.end)
+  const separator = content.slice(block.end, nextItem.start)
 
-  return content.slice(0, block.start) + nextContent + currentContent + content.slice(nextItem.end)
+  return (
+    content.slice(0, block.start) +
+    nextContent +
+    separator +
+    currentContent +
+    content.slice(nextItem.end)
+  )
 }
