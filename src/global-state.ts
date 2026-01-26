@@ -112,7 +112,7 @@ function createGlobalStateMachine() {
             src: "resolveUser",
             onDone: {
               target: "signedIn",
-              actions: "setGitHubUser",
+              actions: ["setGitHubUser", "setGitHubUserLocalStorage"],
             },
             onError: "signedOut",
           },
@@ -129,7 +129,7 @@ function createGlobalStateMachine() {
           on: {
             SIGN_IN: {
               target: "signedIn",
-              actions: ["setGitHubUser"],
+              actions: ["setGitHubUser", "setGitHubUserLocalStorage"],
             },
           },
         },
@@ -311,12 +311,6 @@ function createGlobalStateMachine() {
             const idNumberRaw = id ? Number(id) : undefined
             const idNumber = Number.isFinite(idNumberRaw) ? idNumberRaw : undefined
 
-            // Save user metadata to localStorage
-            localStorage.setItem(
-              GITHUB_USER_STORAGE_KEY,
-              JSON.stringify({ token, id: idNumber, login, name, email }),
-            )
-
             // Remove user metadata from URL
             searchParams.delete("user_token")
             searchParams.delete("user_id")
@@ -461,14 +455,27 @@ function createGlobalStateMachine() {
           githubUser: (_, event) => {
             switch (event.type) {
               case "SIGN_IN":
-                // Save to localStorage when signing in directly (e.g., with PAT)
-                localStorage.setItem(GITHUB_USER_STORAGE_KEY, JSON.stringify(event.githubUser))
                 return event.githubUser
               case "done.invoke.global.resolvingUser:invocation[0]":
                 return event.data.githubUser
+              default:
+                return null
             }
           },
         }),
+        setGitHubUserLocalStorage: (_, event) => {
+          switch (event.type) {
+            case "SIGN_IN":
+              localStorage.setItem(GITHUB_USER_STORAGE_KEY, JSON.stringify(event.githubUser))
+              break
+            case "done.invoke.global.resolvingUser:invocation[0]":
+              localStorage.setItem(
+                GITHUB_USER_STORAGE_KEY,
+                JSON.stringify(event.data.githubUser),
+              )
+              break
+          }
+        },
         clearGitHubUser: assign({
           githubUser: null,
         }),
