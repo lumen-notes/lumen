@@ -42,6 +42,11 @@ export function NavBar() {
             </Drawer.Content>
           </Drawer.Portal>
         </Drawer.Root>
+        {syncText ? (
+          <NavButton aria-label={typeof syncText === "string" ? syncText : "Sync"} onClick={() => send({ type: "SYNC" })}>
+            <SyncStatusIcon />
+          </NavButton>
+        ) : null}
         <NavButton aria-label="Go back" onClick={() => router.history.back()}>
           <ArrowLeftIcon16 />
         </NavButton>
@@ -51,11 +56,6 @@ export function NavBar() {
         <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
           <SearchIcon16 />
         </NavButton>
-        {syncText ? (
-          <NavButton aria-label={typeof syncText === "string" ? syncText : "Sync"} onClick={() => send({ type: "SYNC" })}>
-            <SyncStatusIcon />
-          </NavButton>
-        ) : null}
         <NavButton
           aria-label="New note"
           shortcut={["⌘", "⇧", "O"]}
