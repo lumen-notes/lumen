@@ -671,32 +671,35 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     onChange?.(markdownBody.slice(0, start) + markdownBody.slice(endWithNewline))
   }, [markdownBody, node.position, onChange])
 
-  const nodeStart = node.position?.start.offset ?? 0
-  const nodeEnd = node.position?.end.offset ?? 0
+  const nodeStart = node.position?.start.offset
+  const nodeEnd = node.position?.end.offset
+  const hasNodePosition = nodeStart != null && nodeEnd != null
 
   const canMoveUp = React.useMemo(
-    () => canMoveListItemUp(markdownBody, nodeStart, nodeEnd),
-    [markdownBody, nodeStart, nodeEnd],
+    () => (hasNodePosition ? canMoveListItemUp(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
   )
 
   const canMoveDown = React.useMemo(
-    () => canMoveListItemDown(markdownBody, nodeStart, nodeEnd),
-    [markdownBody, nodeStart, nodeEnd],
+    () => (hasNodePosition ? canMoveListItemDown(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
   )
 
   const handleMoveUp = React.useCallback(() => {
-    const result = moveListItemUp(markdownBody, nodeStart, nodeEnd)
+    if (!hasNodePosition) return
+    const result = moveListItemUp(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
       onChange?.(result)
     }
-  }, [markdownBody, nodeStart, nodeEnd, onChange])
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
 
   const handleMoveDown = React.useCallback(() => {
-    const result = moveListItemDown(markdownBody, nodeStart, nodeEnd)
+    if (!hasNodePosition) return
+    const result = moveListItemDown(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
       onChange?.(result)
     }
-  }, [markdownBody, nodeStart, nodeEnd, onChange])
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
 
   return (
     <li

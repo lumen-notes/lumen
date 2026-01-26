@@ -94,6 +94,13 @@ describe("canMoveListItemUp", () => {
     const content = "- Item 1\n- Item 2\n"
     expect(canMoveListItemUp(content, 0, 8)).toBe(false)
   })
+
+  it("returns false when previous item is in a different parent list", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- B1")
+    const end = content.indexOf("\n", start)
+    expect(canMoveListItemUp(content, start, end)).toBe(false)
+  })
 })
 
 describe("canMoveListItemDown", () => {
@@ -105,6 +112,13 @@ describe("canMoveListItemDown", () => {
   it("returns false for the last item", () => {
     const content = "- Item 1\n- Item 2\n"
     expect(canMoveListItemDown(content, 9, 17)).toBe(false)
+  })
+
+  it("returns false when next item is in a different parent list", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- A1")
+    const end = content.indexOf("\n", start)
+    expect(canMoveListItemDown(content, start, end)).toBe(false)
   })
 })
 
@@ -177,6 +191,14 @@ describe("moveListItemUp", () => {
     const content = "+ Item 1\n+ Item 2\n"
     const result = moveListItemUp(content, 9, 17)
     expect(result).toBe("+ Item 2\n+ Item 1\n")
+  })
+
+  it("does not move a nested item above its parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- B1")
+    const end = content.indexOf("\n", start)
+    const result = moveListItemUp(content, start, end)
+    expect(result).toBeNull()
   })
 })
 
@@ -254,5 +276,13 @@ describe("moveListItemDown", () => {
     const content = "- Item 1\n- Item 2\n\nParagraph\n"
     const result = moveListItemDown(content, 0, 8)
     expect(result).toBe("- Item 2\n- Item 1\n\nParagraph\n")
+  })
+
+  it("does not move a nested item below its parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- A1")
+    const end = content.indexOf("\n", start)
+    const result = moveListItemDown(content, start, end)
+    expect(result).toBeNull()
   })
 })

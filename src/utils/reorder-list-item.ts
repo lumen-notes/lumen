@@ -118,6 +118,11 @@ export function findPreviousListItem(content: string, block: ListItemBlock): Lis
       return null
     }
 
+    // If we hit a list item with lower indentation, we've reached the parent boundary
+    if (isListItemLine(line) && lineIndent < block.indent) {
+      return null
+    }
+
     // Found a list item at same indentation
     if (lineIndent === block.indent && isListItemLine(line)) {
       // Find end of this item (only include empty lines if followed by nested content)
@@ -198,6 +203,11 @@ export function findNextListItem(content: string, block: ListItemBlock): ListIte
 
     // If we hit a non-empty, non-list line at same or lower indentation, list is broken
     if (line.trim() !== "" && !isListItemLine(line) && lineIndent <= block.indent) {
+      return null
+    }
+
+    // If we hit a list item with lower indentation, we've reached the parent boundary
+    if (isListItemLine(line) && lineIndent < block.indent) {
       return null
     }
 
