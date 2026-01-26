@@ -1,6 +1,4 @@
-/**
- * Pure utility functions for reordering list items in markdown content
- */
+// Utility functions for reordering list items in markdown content
 
 type ListItemBlock = {
   start: number
