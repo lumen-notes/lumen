@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router"
 import { useNoteById } from "../hooks/note"
-import { isValidDateString, isValidWeekString } from "../utils/date"
+import { getCalendarNoteBasename, isCalendarNoteId } from "../utils/config"
+import { isValidWeekString } from "../utils/date"
 import { DateLink } from "./date-link"
 import { NoteHoverCard } from "./note-hover-card"
 import { WeekLink } from "./week-link"
@@ -22,12 +23,13 @@ export function NoteLink({
 }: NoteLinkProps) {
   const note = useNoteById(id)
 
-  if (isValidDateString(id)) {
-    return <DateLink date={id} text={text} className={className} />
-  }
-
-  if (isValidWeekString(id)) {
-    return <WeekLink week={id} text={text} className={className} />
+  // Check if this is a calendar note (e.g., "2025-01-26" or "journal/2025-01-26")
+  if (isCalendarNoteId(id)) {
+    const basename = getCalendarNoteBasename(id)
+    if (isValidWeekString(basename)) {
+      return <WeekLink noteId={id} text={text} className={className} />
+    }
+    return <DateLink noteId={id} text={text} className={className} />
   }
 
   return (
