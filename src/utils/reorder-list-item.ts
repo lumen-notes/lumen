@@ -1,5 +1,5 @@
 /**
- * Pure utility functions for reordering list items in markdown content.
+ * Pure utility functions for reordering list items in markdown content
  */
 
 type ListItemBlock = {
