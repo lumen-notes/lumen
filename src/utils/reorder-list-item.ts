@@ -14,7 +14,7 @@ type ListItemBlock = {
 export function getListItemBlock(
   content: string,
   nodeStartOffset: number,
-  nodeEndOffset: number
+  nodeEndOffset: number,
 ): ListItemBlock | null {
   if (nodeStartOffset < 0 || nodeEndOffset > content.length) return null
 
@@ -42,7 +42,7 @@ export function getListItemBlock(
     }
 
     const nextLine = content.slice(lineEnd, nextLineEnd)
-    
+
     // Empty line - look ahead to see if there's nested content after
     if (nextLine.trim() === "") {
       // Look ahead past empty lines to find next non-empty line
@@ -75,7 +75,7 @@ export function getListItemBlock(
     }
 
     const nextLineIndent = nextLine.length - nextLine.trimStart().length
-    
+
     // If indentation is greater, it's nested content
     if (nextLineIndent > indent) {
       lineEnd = nextLineEnd < content.length ? nextLineEnd + 1 : nextLineEnd
@@ -90,10 +90,7 @@ export function getListItemBlock(
 /**
  * Find the previous list item at the same indentation level.
  */
-export function findPreviousListItem(
-  content: string,
-  block: ListItemBlock
-): ListItemBlock | null {
+export function findPreviousListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.start - 1
 
   // Skip trailing newlines
@@ -113,7 +110,7 @@ export function findPreviousListItem(
     const lineIndent = line.length - line.trimStart().length
 
     // If we hit a non-empty, non-list line at same or lower indentation, list is broken
-    if (line.trim() !== "" && !(/^\s*-\s/.test(line)) && lineIndent <= block.indent) {
+    if (line.trim() !== "" && !/^\s*-\s/.test(line) && lineIndent <= block.indent) {
       return null
     }
 
@@ -130,7 +127,7 @@ export function findPreviousListItem(
           nextLineEnd++
         }
         const nextLine = content.slice(itemEnd, nextLineEnd)
-        
+
         // Empty line - look ahead to see if there's nested content after
         if (nextLine.trim() === "") {
           let lookAhead = nextLineEnd < content.length ? nextLineEnd + 1 : nextLineEnd
@@ -156,7 +153,7 @@ export function findPreviousListItem(
           }
           continue
         }
-        
+
         const nextLineIndent = nextLine.length - nextLine.trimStart().length
         if (nextLineIndent > block.indent) {
           itemEnd = nextLineEnd < content.length ? nextLineEnd + 1 : nextLineEnd
@@ -175,10 +172,7 @@ export function findPreviousListItem(
 /**
  * Find the next list item at the same indentation level.
  */
-export function findNextListItem(
-  content: string,
-  block: ListItemBlock
-): ListItemBlock | null {
+export function findNextListItem(content: string, block: ListItemBlock): ListItemBlock | null {
   let searchPos = block.end
 
   while (searchPos < content.length) {
@@ -199,7 +193,7 @@ export function findNextListItem(
     const lineIndent = line.length - line.trimStart().length
 
     // If we hit a non-empty, non-list line at same or lower indentation, list is broken
-    if (line.trim() !== "" && !(/^\s*-\s/.test(line)) && lineIndent <= block.indent) {
+    if (line.trim() !== "" && !/^\s*-\s/.test(line) && lineIndent <= block.indent) {
       return null
     }
 
@@ -213,7 +207,7 @@ export function findNextListItem(
           nextLineEnd++
         }
         const nextLine = content.slice(itemEnd, nextLineEnd)
-        
+
         // Empty line - look ahead to see if there's nested content after
         if (nextLine.trim() === "") {
           let lookAhead = nextLineEnd < content.length ? nextLineEnd + 1 : nextLineEnd
@@ -239,7 +233,7 @@ export function findNextListItem(
           }
           continue
         }
-        
+
         const nextLineIndent = nextLine.length - nextLine.trimStart().length
         if (nextLineIndent > block.indent) {
           itemEnd = nextLineEnd < content.length ? nextLineEnd + 1 : nextLineEnd
@@ -261,7 +255,7 @@ export function findNextListItem(
 export function canMoveListItemUp(
   content: string,
   nodeStartOffset: number,
-  nodeEndOffset: number
+  nodeEndOffset: number,
 ): boolean {
   const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
   if (!block) return false
@@ -274,7 +268,7 @@ export function canMoveListItemUp(
 export function canMoveListItemDown(
   content: string,
   nodeStartOffset: number,
-  nodeEndOffset: number
+  nodeEndOffset: number,
 ): boolean {
   const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
   if (!block) return false
@@ -288,7 +282,7 @@ export function canMoveListItemDown(
 export function moveListItemUp(
   content: string,
   nodeStartOffset: number,
-  nodeEndOffset: number
+  nodeEndOffset: number,
 ): string | null {
   const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
   if (!block) return null
@@ -299,12 +293,7 @@ export function moveListItemUp(
   const currentContent = content.slice(block.start, block.end)
   const prevContent = content.slice(prevItem.start, prevItem.end)
 
-  return (
-    content.slice(0, prevItem.start) +
-    currentContent +
-    prevContent +
-    content.slice(block.end)
-  )
+  return content.slice(0, prevItem.start) + currentContent + prevContent + content.slice(block.end)
 }
 
 /**
@@ -314,7 +303,7 @@ export function moveListItemUp(
 export function moveListItemDown(
   content: string,
   nodeStartOffset: number,
-  nodeEndOffset: number
+  nodeEndOffset: number,
 ): string | null {
   const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
   if (!block) return null
@@ -325,10 +314,5 @@ export function moveListItemDown(
   const currentContent = content.slice(block.start, block.end)
   const nextContent = content.slice(nextItem.start, nextItem.end)
 
-  return (
-    content.slice(0, block.start) +
-    nextContent +
-    currentContent +
-    content.slice(nextItem.end)
-  )
+  return content.slice(0, block.start) + nextContent + currentContent + content.slice(nextItem.end)
 }

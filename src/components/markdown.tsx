@@ -676,12 +676,12 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
 
   const canMoveUp = React.useMemo(
     () => canMoveListItemUp(markdownBody, nodeStart, nodeEnd),
-    [markdownBody, nodeStart, nodeEnd]
+    [markdownBody, nodeStart, nodeEnd],
   )
 
   const canMoveDown = React.useMemo(
     () => canMoveListItemDown(markdownBody, nodeStart, nodeEnd),
-    [markdownBody, nodeStart, nodeEnd]
+    [markdownBody, nodeStart, nodeEnd],
   )
 
   const handleMoveUp = React.useCallback(() => {
@@ -790,7 +790,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-                {(canMoveUp || canMoveDown) ? (
+                {canMoveUp || canMoveDown ? (
                   <>
                     <DropdownMenu.Group>
                       <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
