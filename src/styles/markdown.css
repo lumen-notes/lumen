@@ -27,6 +27,10 @@
   margin-block: calc(var(--font-size-base) * 1.25);
 }
 
+.markdown .pre-container {
+  min-width: 0;
+}
+
 .markdown li :where(h1, h2, h3, h4, h5, h6, p, pre, table, blockquote, .pre-container) {
   margin-block: calc(var(--font-size-base) * 0.5);
 }
