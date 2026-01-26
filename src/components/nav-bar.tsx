@@ -2,18 +2,22 @@ import { useNavigate, useRouter } from "@tanstack/react-router"
 import { useSetAtom } from "jotai"
 import { forwardRef, useState } from "react"
 import { Drawer } from "vaul"
+import { globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { generateNoteId } from "../utils/note-id"
 import { isCommandMenuOpenAtom } from "./command-menu"
 import { IconButton, IconButtonProps } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, ComposeIcon16, SearchIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
+import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 
 export function NavBar() {
   const router = useRouter()
   const navigate = useNavigate()
   const setIsCommandMenuOpen = useSetAtom(isCommandMenuOpenAtom)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const syncText = useSyncStatusText()
+  const send = useSetAtom(globalStateMachineAtom)
 
   return (
     <div className="border-t border-border-secondary">
@@ -47,6 +51,11 @@ export function NavBar() {
         <NavButton aria-label="Open command menu" onClick={() => setIsCommandMenuOpen(true)}>
           <SearchIcon16 />
         </NavButton>
+        {syncText ? (
+          <NavButton aria-label={typeof syncText === "string" ? syncText : "Sync"} onClick={() => send({ type: "SYNC" })}>
+            <SyncStatusIcon />
+          </NavButton>
+        ) : null}
         <NavButton
           aria-label="New note"
           shortcut={["⌘", "⇧", "O"]}
