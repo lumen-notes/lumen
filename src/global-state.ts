@@ -469,10 +469,7 @@ function createGlobalStateMachine() {
               localStorage.setItem(GITHUB_USER_STORAGE_KEY, JSON.stringify(event.githubUser))
               break
             case "done.invoke.global.resolvingUser:invocation[0]":
-              localStorage.setItem(
-                GITHUB_USER_STORAGE_KEY,
-                JSON.stringify(event.data.githubUser),
-              )
+              localStorage.setItem(GITHUB_USER_STORAGE_KEY, JSON.stringify(event.data.githubUser))
               break
           }
         },
