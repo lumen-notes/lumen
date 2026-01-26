@@ -59,6 +59,11 @@
   font-size: var(--font-size-lg);
 }
 
+.markdown .pre-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 .markdown pre {
   overflow: auto;
   border-radius: var(--border-radius-lg);
