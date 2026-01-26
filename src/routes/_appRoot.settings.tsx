@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import { useAtom, useAtomValue } from "jotai"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useNetworkState } from "react-use"
 import { Button } from "../components/button"
 import { useSignOut } from "../components/github-auth"
@@ -22,6 +22,7 @@ import {
   vimModeAtom,
   voiceAssistantEnabledAtom,
 } from "../global-state"
+import { useCalendarNotesDirectory, useConfig, useSaveConfig } from "../hooks/config"
 import { cx } from "../utils/cx"
 
 export const Route = createFileRoute("/_appRoot/settings")({
@@ -37,6 +38,7 @@ function RouteComponent() {
       <div className="p-4 pb-6">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
+          <NotesSection />
           <AppearanceSection />
           <EditorSection />
           <AISection />
@@ -150,6 +152,90 @@ function GitHubSection() {
             </Button>
           </div>
         ) : null}
+      </div>
+    </SettingsSection>
+  )
+}
+
+function NotesSection() {
+  const isRepoCloned = useAtomValue(isRepoClonedAtom)
+  const config = useConfig()
+  const calendarNotesDir = useCalendarNotesDirectory()
+  const saveConfig = useSaveConfig()
+  const [isEditing, setIsEditing] = useState(false)
+  const [inputValue, setInputValue] = useState(calendarNotesDir)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Don't show this section if no repo is cloned
+  if (!isRepoCloned) {
+    return null
+  }
+
+  const handleSave = () => {
+    saveConfig({
+      ...config,
+      calendarNotesDirectory: inputValue.trim() || undefined,
+    })
+    setIsEditing(false)
+  }
+
+  const handleCancel = () => {
+    setInputValue(calendarNotesDir)
+    setIsEditing(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSave()
+    } else if (e.key === "Escape") {
+      handleCancel()
+    }
+  }
+
+  return (
+    <SettingsSection title="Notes">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm leading-4 text-text-secondary">Calendar notes directory</span>
+        {isEditing ? (
+          <div className="flex items-center gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              className="flex-1 rounded border border-border-secondary bg-bg-secondary px-2 py-1 text-sm leading-5 outline-none focus:border-border-focus"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="e.g., journal or daily"
+              autoFocus
+            />
+            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleCancel}>Cancel</Button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-4">
+            <span className="leading-5 text-text-primary">
+              {calendarNotesDir ? (
+                <code className="rounded bg-bg-secondary px-1.5 py-0.5 text-sm">
+                  {calendarNotesDir}/
+                </code>
+              ) : (
+                <span className="text-text-secondary">Repository root</span>
+              )}
+            </span>
+            <Button
+              onClick={() => {
+                setInputValue(calendarNotesDir)
+                setIsEditing(true)
+              }}
+            >
+              Change
+            </Button>
+          </div>
+        )}
+        <span className="mt-1 text-xs leading-4 text-text-tertiary">
+          Directory where daily and weekly notes are stored (e.g., 2025-01-26.md).
+          Leave empty to use the repository root.
+        </span>
       </div>
     </SettingsSection>
   )

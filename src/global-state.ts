@@ -15,6 +15,15 @@ import {
   githubUserSchema,
   templateSchema,
 } from "./schema"
+import {
+  Config,
+  CONFIG_FILE_PATH,
+  DEFAULT_CONFIG,
+  getNoteIdFromFilepath,
+  normalizeDirectoryPath,
+  parseConfigFromJson,
+  serializeConfig,
+} from "./utils/config"
 import { fs, fsWipe } from "./utils/fs"
 import {
   REPO_DIR,
@@ -38,6 +47,7 @@ import { startTimer } from "./utils/timer"
 
 const GITHUB_USER_STORAGE_KEY = "github_user" as const
 const MARKDOWN_FILES_STORAGE_KEY = "markdown_files" as const
+const CONFIG_STORAGE_KEY = "lumen_config" as const
 
 type Context = {
   githubUser: GitHubUser | null
@@ -627,6 +637,67 @@ export const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) =>
 )
 
 // -----------------------------------------------------------------------------
+// Config
+// -----------------------------------------------------------------------------
+
+/** Get cached config from localStorage */
+function getConfigFromLocalStorage(): Config {
+  try {
+    const stored = localStorage.getItem(CONFIG_STORAGE_KEY)
+    if (stored) {
+      return parseConfigFromJson(stored)
+    }
+  } catch {
+    // Ignore errors
+  }
+  return DEFAULT_CONFIG
+}
+
+/** Save config to localStorage */
+function setConfigToLocalStorage(config: Config) {
+  localStorage.setItem(CONFIG_STORAGE_KEY, serializeConfig(config))
+}
+
+/** Primitive atom to hold the config state */
+const configPrimitiveAtom = atom<Config>(getConfigFromLocalStorage())
+
+/** Read-only atom for consuming the config */
+export const configAtom = atom((get) => get(configPrimitiveAtom))
+
+/** Writable atom for updating the config */
+export const setConfigAtom = atom(null, (get, set, config: Config) => {
+  set(configPrimitiveAtom, config)
+  setConfigToLocalStorage(config)
+})
+
+/** Helper atom for the calendar notes directory (normalized) */
+export const calendarNotesDirectoryAtom = atom((get) => {
+  const config = get(configAtom)
+  return normalizeDirectoryPath(config.calendarNotesDirectory)
+})
+
+/** Function to read config from filesystem and update the atom */
+export async function loadConfigFromFs(): Promise<Config> {
+  try {
+    const configPath = `${REPO_DIR}/${CONFIG_FILE_PATH}`
+    const content = await fs.promises.readFile(configPath, "utf8")
+    // fs.promises.readFile can return string or Uint8Array
+    const contentStr = typeof content === "string" ? content : new TextDecoder().decode(content)
+    return parseConfigFromJson(contentStr)
+  } catch {
+    // Config file doesn't exist, return default
+    return DEFAULT_CONFIG
+  }
+}
+
+/** Atom to trigger config loading from filesystem */
+export const loadConfigAtom = atom(null, async (get, set) => {
+  const config = await loadConfigFromFs()
+  set(configPrimitiveAtom, config)
+  setConfigToLocalStorage(config)
+})
+
+// -----------------------------------------------------------------------------
 // GitHub
 // -----------------------------------------------------------------------------
 
@@ -646,11 +717,13 @@ export const githubRepoAtom = selectAtom(
 
 export const notesAtom = atom((get) => {
   const markdownFiles = get(markdownFilesAtom)
+  const calendarNotesDir = get(calendarNotesDirectoryAtom)
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes
   for (const filepath in markdownFiles) {
-    const id = filepath.replace(/\.md$/, "")
+    // Derive note ID, considering the calendar notes directory
+    const id = getNoteIdFromFilepath(filepath, calendarNotesDir)
     const content = markdownFiles[filepath]
     notes.set(id, parseNote(id, content))
   }

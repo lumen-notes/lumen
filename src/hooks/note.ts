@@ -3,6 +3,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import {
   backlinksIndexAtom,
+  calendarNotesDirectoryAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -10,11 +11,12 @@ import {
   notesAtom,
 } from "../global-state"
 import { Note, NoteId } from "../schema"
+import { getNoteFilepath, getNoteIdFromFilepath } from "../utils/config"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
+import { isValidNoteId } from "../utils/note-id"
 import { parseNote } from "../utils/parse-note"
 import { updateWikilinks } from "../utils/update-wikilinks"
-import { isValidNoteId } from "../utils/note-id"
 
 const EMPTY_BACKLINKS: NoteId[] = []
 
@@ -54,6 +56,7 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
@@ -63,9 +66,12 @@ export function useSaveNote() {
         properties: { updated_at: new Date() },
       })
 
+      // Determine the correct filepath based on whether this is a calendar note
+      const filepath = getNoteFilepath(id, calendarNotesDir)
+
       send({
         type: "WRITE_FILES",
-        markdownFiles: { [`${id}.md`]: contentWithTimestamp },
+        markdownFiles: { [filepath]: contentWithTimestamp },
       })
 
       // If the note has a gist ID, update the gist
@@ -79,7 +85,7 @@ export function useSaveNote() {
         })
       }
     },
-    [send, githubUser, githubRepo],
+    [send, githubUser, githubRepo, calendarNotesDir],
   )
 
   return saveNote
@@ -91,15 +97,19 @@ type RenameNoteResult =
 
 export function useRenameNote() {
   const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
+  const getCalendarNotesDir = useAtomCallback(
+    React.useCallback((get) => get(calendarNotesDirectoryAtom), []),
+  )
   const send = useSetAtom(globalStateMachineAtom)
 
   return React.useCallback(
     (params: { oldName: string; newName: string; content: string }): RenameNoteResult => {
       const { oldName, newName, content } = params
+      const calendarNotesDir = getCalendarNotesDir()
 
       const markdownFiles = getMarkdownFiles()
-      const oldFilepath = `${oldName}.md`
-      const newFilepath = `${newName}.md`
+      const oldFilepath = getNoteFilepath(oldName, calendarNotesDir)
+      const newFilepath = getNoteFilepath(newName, calendarNotesDir)
 
       // Guard against no-op renames
       if (!oldName || !newName || oldName === newName) {
@@ -120,10 +130,14 @@ export function useRenameNote() {
       const updatedMarkdownFiles: Record<string, string | null> = {}
 
       // Update wikilinks in all other notes
-      for (const [filepath, content] of Object.entries(markdownFiles)) {
+      for (const [filepath, fileContent] of Object.entries(markdownFiles)) {
         if (filepath === oldFilepath) continue
-        const newContent = updateWikilinks({ fileContent: content, oldId: oldName, newId: newName })
-        if (newContent !== content) {
+        const newContent = updateWikilinks({
+          fileContent,
+          oldId: oldName,
+          newId: newName,
+        })
+        if (newContent !== fileContent) {
           updatedMarkdownFiles[filepath] = newContent
         }
       }
@@ -148,13 +162,14 @@ export function useRenameNote() {
 
       return { success: true }
     },
-    [getMarkdownFiles, send],
+    [getMarkdownFiles, getCalendarNotesDir, send],
   )
 }
 
 export function useDeleteNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
   const getNoteById = useAtomCallback(
     React.useCallback((get, set, id: NoteId) => {
       const notes = get(notesAtom)
@@ -173,9 +188,10 @@ export function useDeleteNote() {
         })
       }
 
-      send({ type: "DELETE_FILE", filepath: `${id}.md` })
+      const filepath = getNoteFilepath(id, calendarNotesDir)
+      send({ type: "DELETE_FILE", filepath })
     },
-    [send, githubUser, getNoteById],
+    [send, githubUser, calendarNotesDir, getNoteById],
   )
 
   return deleteNote
