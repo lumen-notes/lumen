@@ -11,6 +11,7 @@ import { priority, priorityFromMarkdown } from "../remark-plugins/priority"
 import { tag, tagFromMarkdown } from "../remark-plugins/tag"
 import { wikilink, wikilinkFromMarkdown } from "../remark-plugins/wikilink"
 import { Note, NoteId, NoteType, Task, Template, templateSchema } from "../schema"
+import { getCalendarNoteBasename } from "./config"
 import {
   formatDate,
   formatWeek,
@@ -201,14 +202,17 @@ function _parseNote(id: NoteId, content: string): Note {
     type = "template"
   }
 
+  // Extract basename for date/week formatting (handles paths like "journal/2026-01-26")
+  const basename = getCalendarNoteBasename(id)
+
   switch (type) {
     case "daily":
       // Fallback to the formatted date if there's no title
-      displayName = title ? removeLeadingEmoji(title) : formatDate(id)
+      displayName = title ? removeLeadingEmoji(title) : formatDate(basename)
       break
     case "weekly":
       // Fallback to the formatted week if there's no title
-      displayName = title ? removeLeadingEmoji(title) : formatWeek(id)
+      displayName = title ? removeLeadingEmoji(title) : formatWeek(basename)
       break
     case "template":
       displayName = `${(frontmatter.template as Template).name} template`

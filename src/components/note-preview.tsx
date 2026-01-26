@@ -141,10 +141,10 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className="mb-1 shrink-0 flex flex-col gap-0.5">
           <span className="font-bold text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
-            {note.type === "daily" ? formatDate(note.id) : note.displayName}
+            {note.type === "daily" ? formatDate(getCalendarNoteBasename(note.id)) : note.displayName}
           </span>
           <span className="text-text-secondary">
-            {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
+            {note.type === "daily" ? formatDateDistance(getCalendarNoteBasename(note.id)) : formatWeekDistance(getCalendarNoteBasename(note.id))}
           </span>
         </div>
       ) : null}
