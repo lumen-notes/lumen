@@ -200,6 +200,21 @@ describe("moveListItemUp", () => {
     const result = moveListItemUp(content, start, end)
     expect(result).toBeNull()
   })
+
+  it("handles content without trailing newline - move last up", () => {
+    // No trailing newline at end of content
+    const content = "- [ ] Task 1\n- [ ] Task 2"
+    // "- [ ] Task 2" starts at position 13
+    const result = moveListItemUp(content, 13, 25)
+    expect(result).toBe("- [ ] Task 2\n- [ ] Task 1")
+  })
+
+  it("handles three items without trailing newline - move last up", () => {
+    const content = "- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3"
+    // "- [ ] Task 3" starts at position 26
+    const result = moveListItemUp(content, 26, 38)
+    expect(result).toBe("- [ ] Task 1\n- [ ] Task 3\n- [ ] Task 2")
+  })
 })
 
 describe("moveListItemDown", () => {
@@ -284,5 +299,18 @@ describe("moveListItemDown", () => {
     const end = content.indexOf("\n", start)
     const result = moveListItemDown(content, start, end)
     expect(result).toBeNull()
+  })
+
+  it("handles content without trailing newline - move first down", () => {
+    // No trailing newline at end of content
+    const content = "- [ ] Task 1\n- [ ] Task 2"
+    const result = moveListItemDown(content, 0, 12)
+    expect(result).toBe("- [ ] Task 2\n- [ ] Task 1")
+  })
+
+  it("handles three items without trailing newline - move middle down", () => {
+    const content = "- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3"
+    const result = moveListItemDown(content, 13, 25)
+    expect(result).toBe("- [ ] Task 1\n- [ ] Task 3\n- [ ] Task 2")
   })
 })
