@@ -11,8 +11,8 @@ import {
 
 describe("parseConfigFromJson", () => {
   it("parses valid config", () => {
-    const json = JSON.stringify({ calendarNotesDirectory: "journal" })
-    expect(parseConfigFromJson(json)).toEqual({ calendarNotesDirectory: "journal" })
+    const json = JSON.stringify({ calendarNotesDir: "journal" })
+    expect(parseConfigFromJson(json)).toEqual({ calendarNotesDir: "journal" })
   })
 
   it("returns default config for invalid JSON", () => {
@@ -24,14 +24,14 @@ describe("parseConfigFromJson", () => {
   })
 
   it("ignores unknown properties", () => {
-    const json = JSON.stringify({ calendarNotesDirectory: "daily", unknownProp: "value" })
-    expect(parseConfigFromJson(json)).toEqual({ calendarNotesDirectory: "daily" })
+    const json = JSON.stringify({ calendarNotesDir: "daily", unknownProp: "value" })
+    expect(parseConfigFromJson(json)).toEqual({ calendarNotesDir: "daily" })
   })
 })
 
 describe("serializeConfig", () => {
   it("serializes config to JSON", () => {
-    const config = { calendarNotesDirectory: "journal" }
+    const config = { calendarNotesDir: "journal" }
     const json = serializeConfig(config)
     expect(JSON.parse(json)).toEqual(config)
   })

@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import {
-  calendarNotesDirectoryAtom,
+  calendarNotesDirAtom,
   configAtom,
   globalStateMachineAtom,
   isRepoClonedAtom,
@@ -22,7 +22,7 @@ export function useConfig() {
 }
 
 export function useCalendarNotesDirectory() {
-  return useAtomValue(calendarNotesDirectoryAtom)
+  return useAtomValue(calendarNotesDirAtom)
 }
 
 /**
@@ -30,7 +30,7 @@ export function useCalendarNotesDirectory() {
  * e.g., with directory "journal": buildId("2026-01-26") -> "journal/2026-01-26"
  */
 export function useBuildCalendarNoteId() {
-  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
   return React.useCallback(
     (dateOrWeek: string) => buildCalendarNoteId(dateOrWeek, calendarNotesDir),
     [calendarNotesDir],
@@ -41,7 +41,7 @@ export function useBuildCalendarNoteId() {
  * Returns a function to check if a note ID is a calendar note (with directory config).
  */
 export function useIsCalendarNoteId() {
-  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
   return React.useCallback(
     (noteId: string) => isCalendarNoteId(noteId, calendarNotesDir),
     [calendarNotesDir],
@@ -71,7 +71,7 @@ export function useSaveConfig() {
       // Normalize the config before saving
       const normalizedConfig: Config = {
         ...config,
-        calendarNotesDirectory: normalizeDirectoryPath(config.calendarNotesDirectory) || undefined,
+        calendarNotesDir: normalizeDirectoryPath(config.calendarNotesDir) || undefined,
       }
 
       // Update the config atom (and localStorage)

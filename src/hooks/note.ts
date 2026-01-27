@@ -3,7 +3,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import {
   backlinksIndexAtom,
-  calendarNotesDirectoryAtom,
+  calendarNotesDirAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -55,7 +55,7 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
-  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {

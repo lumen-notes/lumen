@@ -174,7 +174,7 @@ function NotesSection() {
   const handleSave = () => {
     saveConfig({
       ...config,
-      calendarNotesDirectory: inputValue.trim() || undefined,
+      calendarNotesDir: inputValue.trim() || undefined,
     })
     setIsEditing(false)
   }

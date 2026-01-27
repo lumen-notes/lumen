@@ -5,7 +5,7 @@ import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import {
-  calendarNotesDirectoryAtom,
+  calendarNotesDirAtom,
   globalStateMachineAtom,
   notesAtom,
   pinnedNotesAtom,
@@ -49,7 +49,7 @@ export function NavItems({
   onNavigate?: () => void
 }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
-  const calendarNotesDir = useAtomValue(calendarNotesDirectoryAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
   const hasDailyNoteAtom = hasDailyNoteAtomForDir(calendarNotesDir)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const syncText = useSyncStatusText()

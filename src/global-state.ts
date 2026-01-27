@@ -672,9 +672,9 @@ export const setConfigAtom = atom(null, (get, set, config: Config) => {
 })
 
 /** Helper atom for the calendar notes directory (normalized) */
-export const calendarNotesDirectoryAtom = atom((get) => {
+export const calendarNotesDirAtom = atom((get) => {
   const config = get(configAtom)
-  return normalizeDirectoryPath(config.calendarNotesDirectory)
+  return normalizeDirectoryPath(config.calendarNotesDir)
 })
 
 /** Function to read config from filesystem and update the atom */
@@ -719,7 +719,7 @@ export const githubRepoAtom = selectAtom(
 export const notesAtom = atom((get) => {
   const markdownFiles = get(markdownFilesAtom)
   const config = get(configAtom)
-  const calendarNotesDir = normalizeDirectoryPath(config.calendarNotesDirectory)
+  const calendarNotesDir = normalizeDirectoryPath(config.calendarNotesDir)
   const notes: Map<NoteId, Note> = new Map()
 
   // Parse notes

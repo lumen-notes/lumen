@@ -4,13 +4,13 @@ import { isValidDateString, isValidWeekString } from "./date"
 // Schema for the config stored in .lumen/config.json
 export const configSchema = z.object({
   // Directory for calendar notes (daily/weekly). Empty string or undefined means repo root.
-  calendarNotesDirectory: z.string().optional(),
+  calendarNotesDir: z.string().optional(),
 })
 
 export type Config = z.infer<typeof configSchema>
 
 export const DEFAULT_CONFIG: Config = {
-  calendarNotesDirectory: undefined,
+  calendarNotesDir: undefined,
 }
 
 export const CONFIG_FILE_PATH = ".lumen/config.json"

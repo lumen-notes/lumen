@@ -8,7 +8,7 @@ import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
 import {
-  calendarNotesDirectoryAtom,
+  calendarNotesDirAtom,
   githubRepoAtom,
   notesAtom,
   pinnedNotesAtom,
@@ -43,7 +43,7 @@ export const isCommandMenuOpenAtom = atom(false)
 // Check if daily note exists, considering calendar notes directory
 const hasDailyNoteAtom = atom((get) => {
   const notes = get(notesAtom)
-  const calendarNotesDir = get(calendarNotesDirectoryAtom)
+  const calendarNotesDir = get(calendarNotesDirAtom)
   const todayId = buildCalendarNoteId(toDateString(new Date()), calendarNotesDir)
   return notes.has(todayId)
 })
