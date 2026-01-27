@@ -4,9 +4,16 @@ import { selectAtom } from "jotai/utils"
 import { ComponentPropsWithoutRef, createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
-import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
+import {
+  calendarNotesDirAtom,
+  globalStateMachineAtom,
+  notesAtom,
+  pinnedNotesAtom,
+} from "../global-state"
+import { useBuildCalendarNoteId, useIsCalendarNoteId } from "../hooks/config"
+import { buildCalendarNoteId } from "../utils/config"
 import { cx } from "../utils/cx"
-import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
+import { toDateString } from "../utils/date"
 import { CheatsheetDialog } from "./cheatsheet-dialog"
 import { Dialog } from "./dialog"
 import {
@@ -25,7 +32,12 @@ import {
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
 
-const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
+// Check if today's daily note exists (accounting for calendar notes directory)
+const hasDailyNoteAtomForDir = (calendarNotesDir: string) =>
+  selectAtom(notesAtom, (notes) => {
+    const todayId = buildCalendarNoteId(toDateString(new Date()), calendarNotesDir)
+    return notes.has(todayId)
+  })
 
 const SizeContext = createContext<"medium" | "large">("medium")
 
@@ -37,18 +49,22 @@ export function NavItems({
   onNavigate?: () => void
 }) {
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
+  const hasDailyNoteAtom = hasDailyNoteAtomForDir(calendarNotesDir)
   const hasDailyNote = useAtomValue(hasDailyNoteAtom)
   const syncText = useSyncStatusText()
   const send = useSetAtom(globalStateMachineAtom)
   const { online } = useNetworkState()
   const { pathname } = useLocation()
+  const buildId = useBuildCalendarNoteId()
 
   const today = new Date()
-  const todayString = toDateString(today)
+  const todayNoteId = buildId(toDateString(today))
+  const isCalendarNote = useIsCalendarNoteId()
 
   // Calendar link is active when viewing any daily or weekly note
-  const noteId = pathname.startsWith("/notes/") ? pathname.slice(7) : ""
-  const isCalendarActive = isValidDateString(noteId) || isValidWeekString(noteId)
+  const noteId = pathname.startsWith("/notes/") ? decodeURIComponent(pathname.slice(7)) : ""
+  const isCalendarActive = isCalendarNote(noteId)
 
   // Reference: https://vite-pwa-org.netlify.app/frameworks/react.html#prompt-for-update
   const {
@@ -92,7 +108,7 @@ export function NavItems({
             <li>
               <NavLink
                 to="/notes/$"
-                params={{ _splat: todayString }}
+                params={{ _splat: todayNoteId }}
                 search={{
                   mode: hasDailyNote ? "read" : "write",
                   query: undefined,

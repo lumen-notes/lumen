@@ -1,6 +1,8 @@
 import { addDays, addWeeks, parseISO, startOfToday } from "date-fns"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import React from "react"
+import { useBuildCalendarNoteId } from "../hooks/config"
+import { getCalendarNoteBasename, isCalendarNoteId } from "../utils/config"
 import {
   formatDate,
   formatDateDistance,
@@ -21,29 +23,31 @@ type CalendarHeaderProps = {
 export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
   const navigate = useNavigate()
   const searchParams = useSearch({ strict: false })
-  const isWeekly = isValidWeekString(activeNoteId)
+  const buildId = useBuildCalendarNoteId()
 
-  const primaryText = isWeekly ? formatWeek(activeNoteId) : formatDate(activeNoteId)
-  const secondaryText = isWeekly
-    ? formatWeekDistance(activeNoteId)
-    : formatDateDistance(activeNoteId)
+  // Get the basename (date/week part) for formatting
+  const basename = getCalendarNoteBasename(activeNoteId)
+  const isWeekly = isValidWeekString(basename)
+
+  const primaryText = isWeekly ? formatWeek(basename) : formatDate(basename)
+  const secondaryText = isWeekly ? formatWeekDistance(basename) : formatDateDistance(basename)
 
   const today = startOfToday()
-  const todayString = toDateString(today)
-  const thisWeekString = toWeekString(today)
+  const todayNoteId = buildId(toDateString(today))
+  const thisWeekNoteId = buildId(toWeekString(today))
 
   const navigateByInterval = React.useCallback(
     (direction: "previous" | "next") => {
-      const date = parseISO(activeNoteId)
+      const date = parseISO(basename)
       const increment = direction === "next" ? 1 : -1
 
-      const target = isWeekly
+      const targetBasename = isWeekly
         ? toWeekString(addWeeks(date, increment))
         : toDateString(addDays(date, increment))
 
       navigate({
         to: "/notes/$",
-        params: { _splat: target },
+        params: { _splat: buildId(targetBasename) },
         search: {
           mode: searchParams.mode ?? "read",
           query: undefined,
@@ -51,11 +55,11 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
         },
       })
     },
-    [isWeekly, activeNoteId, navigate, searchParams.mode, searchParams.view],
+    [isWeekly, basename, navigate, searchParams.mode, searchParams.view, buildId],
   )
 
   const navigateToCurrentPeriod = React.useCallback(() => {
-    const target = isWeekly ? thisWeekString : todayString
+    const target = isWeekly ? thisWeekNoteId : todayNoteId
     navigate({
       to: "/notes/$",
       params: { _splat: target },
@@ -65,7 +69,7 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
         view: searchParams.view === "list" ? "list" : "grid",
       },
     })
-  }, [isWeekly, thisWeekString, todayString, navigate, searchParams.mode, searchParams.view])
+  }, [isWeekly, thisWeekNoteId, todayNoteId, navigate, searchParams.mode, searchParams.view])
 
   return (
     <div className="flex items-start justify-between gap-4">
@@ -78,7 +82,7 @@ export function CalendarHeader({ activeNoteId }: CalendarHeaderProps) {
       <div className="flex gap-2">
         <Button
           onClick={navigateToCurrentPeriod}
-          disabled={isWeekly ? activeNoteId === thisWeekString : activeNoteId === todayString}
+          disabled={isWeekly ? activeNoteId === thisWeekNoteId : activeNoteId === todayNoteId}
         >
           {isWeekly ? "This week" : "Today"}
         </Button>

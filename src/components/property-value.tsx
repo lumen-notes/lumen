@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { isToday } from "date-fns"
 import { useCallback, useRef, useState } from "react"
 import { z } from "zod"
+import { useBuildCalendarNoteId } from "../hooks/config"
 import {
   formatDate,
   formatDateDistance,
@@ -23,6 +24,7 @@ type PropertyValueProps = {
 }
 
 export function PropertyValue({ property: [key, value], onChange }: PropertyValueProps) {
+  const buildCalendarNoteId = useBuildCalendarNoteId()
   // Special keys
   switch (key) {
     case "isbn":
@@ -131,7 +133,7 @@ export function PropertyValue({ property: [key, value], onChange }: PropertyValu
     const dateString = toDateStringUtc(value)
     return (
       <div>
-        <DateLink className="link" date={dateString} />
+        <DateLink className="link" noteId={buildCalendarNoteId(dateString)} />
       </div>
     )
   }

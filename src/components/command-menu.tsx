@@ -7,7 +7,14 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useDebounce } from "use-debounce"
-import { githubRepoAtom, notesAtom, pinnedNotesAtom, tagSearcherAtom } from "../global-state"
+import {
+  calendarNotesDirAtom,
+  githubRepoAtom,
+  notesAtom,
+  pinnedNotesAtom,
+  tagSearcherAtom,
+} from "../global-state"
+import { useBuildCalendarNoteId } from "../hooks/config"
 import { useNoteById, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
 import { Note } from "../schema"
@@ -29,9 +36,17 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 
+import { buildCalendarNoteId } from "../utils/config"
+
 export const isCommandMenuOpenAtom = atom(false)
 
-const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
+// Check if daily note exists, considering calendar notes directory
+const hasDailyNoteAtom = atom((get) => {
+  const notes = get(notesAtom)
+  const calendarNotesDir = get(calendarNotesDirAtom)
+  const todayId = buildCalendarNoteId(toDateString(new Date()), calendarNotesDir)
+  return notes.has(todayId)
+})
 
 export function CommandMenu() {
   const navigate = useNavigate()
@@ -41,6 +56,7 @@ export function CommandMenu() {
   const saveNote = useSaveNote()
   const pinnedNotes = useAtomValue(pinnedNotesAtom)
   const getHasDailyNote = useAtomCallback(useCallback((get) => get(hasDailyNoteAtom), []))
+  const buildCalendarNoteId = useBuildCalendarNoteId()
   const [isOpen, setIsOpen] = useAtom(isCommandMenuOpenAtom)
 
   // Get the current note if we're on a note page.
@@ -115,7 +131,7 @@ export function CommandMenu() {
           navigate({
             to: "/notes/$",
             params: {
-              _splat: toDateString(new Date()),
+              _splat: buildCalendarNoteId(toDateString(new Date())),
             },
             search: {
               mode: getHasDailyNote() ? "read" : "write",
@@ -326,7 +342,7 @@ export function CommandMenu() {
                   navigate({
                     to: "/notes/$",
                     params: {
-                      _splat: dateString,
+                      _splat: buildCalendarNoteId(dateString),
                     },
                     search: {
                       mode: "read",

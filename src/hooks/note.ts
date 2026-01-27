@@ -3,6 +3,7 @@ import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
 import {
   backlinksIndexAtom,
+  calendarNotesDirAtom,
   githubRepoAtom,
   githubUserAtom,
   globalStateMachineAtom,
@@ -12,9 +13,9 @@ import {
 import { Note, NoteId } from "../schema"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
+import { isValidNoteId } from "../utils/note-id"
 import { parseNote } from "../utils/parse-note"
 import { updateWikilinks } from "../utils/update-wikilinks"
-import { isValidNoteId } from "../utils/note-id"
 
 const EMPTY_BACKLINKS: NoteId[] = []
 
@@ -54,6 +55,7 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const calendarNotesDir = useAtomValue(calendarNotesDirAtom)
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
@@ -63,9 +65,12 @@ export function useSaveNote() {
         properties: { updated_at: new Date() },
       })
 
+      // Filepath is just the note ID with .md extension
+      const filepath = `${id}.md`
+
       send({
         type: "WRITE_FILES",
-        markdownFiles: { [`${id}.md`]: contentWithTimestamp },
+        markdownFiles: { [filepath]: contentWithTimestamp },
       })
 
       // If the note has a gist ID, update the gist
@@ -73,13 +78,13 @@ export function useSaveNote() {
       if (typeof frontmatter.gist_id === "string" && githubUser && githubRepo) {
         await updateGist({
           gistId: frontmatter.gist_id,
-          note: parseNote(id ?? "", contentWithTimestamp),
+          note: parseNote(id ?? "", contentWithTimestamp, calendarNotesDir),
           githubUser,
           githubRepo,
         })
       }
     },
-    [send, githubUser, githubRepo],
+    [send, githubUser, githubRepo, calendarNotesDir],
   )
 
   return saveNote
@@ -120,10 +125,14 @@ export function useRenameNote() {
       const updatedMarkdownFiles: Record<string, string | null> = {}
 
       // Update wikilinks in all other notes
-      for (const [filepath, content] of Object.entries(markdownFiles)) {
+      for (const [filepath, fileContent] of Object.entries(markdownFiles)) {
         if (filepath === oldFilepath) continue
-        const newContent = updateWikilinks({ fileContent: content, oldId: oldName, newId: newName })
-        if (newContent !== content) {
+        const newContent = updateWikilinks({
+          fileContent,
+          oldId: oldName,
+          newId: newName,
+        })
+        if (newContent !== fileContent) {
           updatedMarkdownFiles[filepath] = newContent
         }
       }
@@ -173,7 +182,8 @@ export function useDeleteNote() {
         })
       }
 
-      send({ type: "DELETE_FILE", filepath: `${id}.md` })
+      const filepath = `${id}.md`
+      send({ type: "DELETE_FILE", filepath })
     },
     [send, githubUser, getNoteById],
   )

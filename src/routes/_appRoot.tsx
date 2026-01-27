@@ -20,6 +20,7 @@ import {
   tagsAtom,
   templatesAtom,
 } from "../global-state"
+import { useLoadConfigOnMount } from "../hooks/config"
 import { useSearchNotes } from "../hooks/search-notes"
 import { useValueRef } from "../hooks/value-ref"
 import { generateNoteId } from "../utils/note-id"
@@ -52,6 +53,9 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { online } = useNetworkState()
   const rootRef = React.useRef<HTMLDivElement>(null)
+
+  // Load config from filesystem when repo is cloned
+  useLoadConfigOnMount()
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {

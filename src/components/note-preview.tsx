@@ -2,7 +2,9 @@ import { useMatch } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
 import { useMemo } from "react"
 import { defaultFontAtom, githubRepoAtom } from "../global-state"
+import { useIsCalendarNoteId } from "../hooks/config"
 import { Note, fontSchema } from "../schema"
+import { getCalendarNoteBasename } from "../utils/config"
 import { cx } from "../utils/cx"
 import {
   formatDate,
@@ -30,6 +32,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
   const highlightedHrefs = useLinkHighlight()
   const defaultFont = useAtomValue(defaultFontAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const isCalendarNoteId = useIsCalendarNoteId()
 
   // Prefer a local draft if it exists (unsaved changes)
   const { resolvedContent, isDraft } = useMemo(() => {
@@ -66,8 +69,13 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
 
   // Compute birthday label
   const birthdayLabel = useMemo(() => {
-    // Only show when viewing a daily note
-    if (!currentNoteId || !isValidDateString(currentNoteId)) {
+    // Only show when viewing a daily note (must be in configured calendar directory)
+    if (!currentNoteId || !isCalendarNoteId(currentNoteId)) {
+      return null
+    }
+    const currentNoteBasename = getCalendarNoteBasename(currentNoteId)
+    // Must be a daily note (date pattern), not a weekly note
+    if (!isValidDateString(currentNoteBasename)) {
       return null
     }
 
@@ -104,7 +112,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
     }
 
     // Extract month and day from current daily note
-    const [currentYear, currentMonth, currentDay] = currentNoteId.split("-").map(Number)
+    const [currentYear, currentMonth, currentDay] = currentNoteBasename.split("-").map(Number)
 
     // Check if month/day matches
     if (birthMonth !== currentMonth || birthDay !== currentDay) {
@@ -120,7 +128,7 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
     }
 
     return "Birthday"
-  }, [currentNoteId, resolvedFrontmatter?.birthday])
+  }, [currentNoteId, isCalendarNoteId, resolvedFrontmatter?.birthday])
 
   return (
     <div
@@ -139,10 +147,14 @@ export function NotePreview({ note, className, hideProperties }: NotePreviewProp
       {(note.type === "daily" || note.type === "weekly") && !note.title ? (
         <div className="mb-1 shrink-0 flex flex-col gap-0.5">
           <span className="font-bold text-[calc(var(--font-size-xl)*0.66)] [text-box-trim:trim-start]">
-            {note.type === "daily" ? formatDate(note.id) : note.displayName}
+            {note.type === "daily"
+              ? formatDate(getCalendarNoteBasename(note.id))
+              : note.displayName}
           </span>
           <span className="text-text-secondary">
-            {note.type === "daily" ? formatDateDistance(note.id) : formatWeekDistance(note.id)}
+            {note.type === "daily"
+              ? formatDateDistance(getCalendarNoteBasename(note.id))
+              : formatWeekDistance(getCalendarNoteBasename(note.id))}
           </span>
         </div>
       ) : null}
