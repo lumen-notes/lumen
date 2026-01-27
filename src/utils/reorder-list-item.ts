@@ -308,11 +308,26 @@ export function moveListItemUp(
   const prevContent = content.slice(prevItem.start, prevItem.end)
   const separator = content.slice(prevItem.end, block.start)
 
+  // Handle case where currentContent doesn't end with a newline (last item in file without trailing newline)
+  // We need to ensure proper separation after swapping
+  let adjustedCurrentContent = currentContent
+  let adjustedPrevContent = prevContent
+
+  if (!currentContent.endsWith("\n")) {
+    // currentContent was the last item without trailing newline
+    // Add newline after it, and remove the trailing newline from prevContent if it has one
+    // (so prevContent, which becomes last, preserves the original "no trailing newline" behavior)
+    adjustedCurrentContent = currentContent + "\n"
+    if (prevContent.endsWith("\n")) {
+      adjustedPrevContent = prevContent.slice(0, -1)
+    }
+  }
+
   return (
     content.slice(0, prevItem.start) +
-    currentContent +
+    adjustedCurrentContent +
     separator +
-    prevContent +
+    adjustedPrevContent +
     content.slice(block.end)
   )
 }
@@ -336,11 +351,26 @@ export function moveListItemDown(
   const nextContent = content.slice(nextItem.start, nextItem.end)
   const separator = content.slice(block.end, nextItem.start)
 
+  // Handle case where nextContent doesn't end with a newline (last item in file without trailing newline)
+  // We need to ensure proper separation after swapping
+  let adjustedNextContent = nextContent
+  let adjustedCurrentContent = currentContent
+
+  if (!nextContent.endsWith("\n")) {
+    // nextContent was the last item without trailing newline
+    // Add newline after it, and remove the trailing newline from currentContent if it has one
+    // (so currentContent, which becomes last, preserves the original "no trailing newline" behavior)
+    adjustedNextContent = nextContent + "\n"
+    if (currentContent.endsWith("\n")) {
+      adjustedCurrentContent = currentContent.slice(0, -1)
+    }
+  }
+
   return (
     content.slice(0, block.start) +
-    nextContent +
+    adjustedNextContent +
     separator +
-    currentContent +
+    adjustedCurrentContent +
     content.slice(nextItem.end)
   )
 }
