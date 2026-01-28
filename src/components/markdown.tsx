@@ -827,34 +827,44 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   <>
                     <DropdownMenu.Group>
                       <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
-                      <DropdownMenu.Item
-                        icon={<ArrowUpIcon16 />}
-                        onClick={handleMoveToTop}
-                        disabled={!canMoveToTop}
-                      >
-                        Move to top
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        icon={<ArrowUpIcon16 />}
-                        onClick={handleMoveUp}
-                        disabled={!canMoveUp}
-                      >
-                        Move up
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        icon={<ArrowDownIcon16 />}
-                        onClick={handleMoveDown}
-                        disabled={!canMoveDown}
-                      >
-                        Move down
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        icon={<ArrowDownIcon16 />}
-                        onClick={handleMoveToBottom}
-                        disabled={!canMoveToBottom}
-                      >
-                        Move to bottom
-                      </DropdownMenu.Item>
+                      <div className="grid grid-cols-2 gap-1 px-1 pb-1">
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveUp}
+                          disabled={!canMoveUp}
+                        >
+                          <ArrowUpIcon16 className="text-text-secondary" />
+                          <span>Up</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveToTop}
+                          disabled={!canMoveToTop}
+                        >
+                          <ArrowUpIcon16 className="text-text-secondary" />
+                          <span>Top</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveDown}
+                          disabled={!canMoveDown}
+                        >
+                          <ArrowDownIcon16 className="text-text-secondary" />
+                          <span>Down</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveToBottom}
+                          disabled={!canMoveToBottom}
+                        >
+                          <ArrowDownIcon16 className="text-text-secondary" />
+                          <span>Bottom</span>
+                        </button>
+                      </div>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                   </>
