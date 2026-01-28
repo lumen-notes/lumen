@@ -11,7 +11,7 @@ import remarkMath from "remark-math"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById } from "../hooks/note"
-import { useMoveTask } from "../hooks/task"
+import { useMoveTask, useReorderTask } from "../hooks/task"
 import { formatDate, toDateString } from "../utils/date"
 import {
   canMoveListItemUp,
@@ -76,6 +76,7 @@ const MarkdownContext = React.createContext<{
   markdownBodyStartOffset: number
   onChange?: (value: string) => void
   noteId?: string
+  noteTitle?: string
 }>({
   markdown: "",
   markdownBody: "",
@@ -93,6 +94,7 @@ export const Markdown = React.memo(
     noteId,
   }: MarkdownProps) => {
     const { online } = useNetworkState()
+    const note = useNoteById(noteId)
     const { frontmatter, content } = React.useMemo(() => parseFrontmatter(children), [children])
     const visibleFrontmatter = React.useMemo(
       () => getVisibleFrontmatter(frontmatter),
@@ -148,8 +150,9 @@ export const Markdown = React.memo(
             }
           : undefined,
         noteId,
+        noteTitle: note?.displayName ?? noteId,
       }),
-      [body, children, markdownBodyStartOffset, onChange, noteId],
+      [body, children, markdownBodyStartOffset, onChange, noteId, note?.displayName],
     )
 
     return (
@@ -574,11 +577,12 @@ function extractListItemElements(children: React.ReactNode): {
 }
 
 function ListItem({ node, children, ordered, className, ...props }: LiProps) {
-  const { markdownBody, markdown, markdownBodyStartOffset, onChange, noteId } =
+  const { markdownBody, markdown, markdownBodyStartOffset, onChange, noteId, noteTitle } =
     React.useContext(MarkdownContext)
   const isTask = className?.includes("task-list-item")
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const moveTask = useMoveTask()
+  const reorderTask = useReorderTask()
 
   const { checkbox, content, nestedLists } = React.useMemo(
     () => extractListItemElements(children),
@@ -686,20 +690,32 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   )
 
   const handleMoveUp = React.useCallback(() => {
-    if (!hasNodePosition) return
+    if (!hasNodePosition || !onChange || !noteId) return
     const result = moveListItemUp(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
-      onChange?.(result)
+      reorderTask({
+        noteId,
+        noteTitle: noteTitle ?? noteId,
+        previousContent: markdownBody,
+        newContent: result,
+        onChange,
+      })
     }
-  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange, noteId, noteTitle, reorderTask])
 
   const handleMoveDown = React.useCallback(() => {
-    if (!hasNodePosition) return
+    if (!hasNodePosition || !onChange || !noteId) return
     const result = moveListItemDown(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
-      onChange?.(result)
+      reorderTask({
+        noteId,
+        noteTitle: noteTitle ?? noteId,
+        previousContent: markdownBody,
+        newContent: result,
+        onChange,
+      })
     }
-  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange, noteId, noteTitle, reorderTask])
 
   return (
     <li

@@ -96,3 +96,26 @@ export type TaskWithNote = Task & {
 export const widthSchema = z.enum(["fixed", "full"])
 
 export type Width = z.infer<typeof widthSchema>
+
+// Undo system types
+export type UndoableOperation =
+  | {
+      type: "DELETE_NOTE"
+      filepath: string
+      content: string
+      noteTitle: string
+    }
+  | {
+      type: "MOVE_TASK"
+      sourceFilepath: string
+      targetFilepath: string
+      sourceContent: string
+      targetContent: string
+      taskText: string
+    }
+  | {
+      type: "REORDER_TASK"
+      filepath: string
+      previousContent: string
+      noteTitle: string
+    }

@@ -23,6 +23,7 @@ import {
 } from "./icons"
 import { NotePreview } from "./note-preview"
 import { ShareDialog } from "./share-dialog"
+import { toast } from "./toast"
 
 const isResolvingRepoAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedIn.resolvingRepo"),
@@ -167,6 +168,10 @@ const _NotePreviewCard = React.memo(function NoteCard({ id }: NoteCardProps) {
                   }
 
                   deleteNote(id)
+                  toast({
+                    message: `Deleted "${note.displayName}". Press Ctrl+Z to undo.`,
+                    icon: <TrashIcon16 />,
+                  })
                 }}
               >
                 Delete

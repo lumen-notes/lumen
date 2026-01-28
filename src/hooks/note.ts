@@ -9,7 +9,7 @@ import {
   markdownFilesAtom,
   notesAtom,
 } from "../global-state"
-import { Note, NoteId } from "../schema"
+import { Note, NoteId, UndoableOperation } from "../schema"
 import { parseFrontmatter, updateFrontmatterValue } from "../utils/frontmatter"
 import { deleteGist, updateGist } from "../utils/gist"
 import { parseNote } from "../utils/parse-note"
@@ -155,6 +155,7 @@ export function useRenameNote() {
 export function useDeleteNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
+  const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const getNoteById = useAtomCallback(
     React.useCallback((get, set, id: NoteId) => {
       const notes = get(notesAtom)
@@ -164,8 +165,23 @@ export function useDeleteNote() {
 
   const deleteNote = React.useCallback(
     async (id: NoteId) => {
-      // If the note has a gist ID, delete the gist
       const note = getNoteById(id)
+      const markdownFiles = getMarkdownFiles()
+      const filepath = `${id}.md`
+      const content = markdownFiles[filepath]
+
+      // Push to undo stack before deleting (only if content exists)
+      if (content) {
+        const undoOperation: UndoableOperation = {
+          type: "DELETE_NOTE",
+          filepath,
+          content,
+          noteTitle: note?.displayName ?? id,
+        }
+        send({ type: "PUSH_UNDO", operation: undoOperation })
+      }
+
+      // If the note has a gist ID, delete the gist
       if (typeof note?.frontmatter.gist_id === "string" && githubUser?.token) {
         await deleteGist({
           githubToken: githubUser.token,
@@ -173,9 +189,9 @@ export function useDeleteNote() {
         })
       }
 
-      send({ type: "DELETE_FILE", filepath: `${id}.md` })
+      send({ type: "DELETE_FILE", filepath })
     },
-    [send, githubUser, getNoteById],
+    [send, githubUser, getMarkdownFiles, getNoteById],
   )
 
   return deleteNote

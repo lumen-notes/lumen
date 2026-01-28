@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, useNavigate, useRouter } from "@tanstack/react-router"
+import { Toaster } from "sonner"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom, useAtomCallback } from "jotai/utils"
 import React from "react"
@@ -21,6 +22,7 @@ import {
   templatesAtom,
 } from "../global-state"
 import { useSearchNotes } from "../hooks/search-notes"
+import { useUndoKeyboardShortcut } from "../hooks/undo"
 import { useValueRef } from "../hooks/value-ref"
 import { generateNoteId } from "../utils/note-id"
 import { notificationSound, playSound } from "../utils/sounds"
@@ -52,6 +54,9 @@ function RouteComponent() {
   const navigate = useNavigate()
   const { online } = useNetworkState()
   const rootRef = React.useRef<HTMLDivElement>(null)
+
+  // Register global undo keyboard shortcut (Ctrl/Cmd+Z)
+  useUndoKeyboardShortcut()
 
   // Sync when the app becomes visible again
   useEvent("visibilitychange", () => {
@@ -282,7 +287,7 @@ function RouteComponent() {
       </AppLayout>
       <FloatingConversationInput />
       <CommandMenu />
-      {/* <Toaster toastOptions={{ duration: 2000 }} /> */}
+      <Toaster toastOptions={{ duration: 3000 }} />
       <DevBar />
     </div>
   )

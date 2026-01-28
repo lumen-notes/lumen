@@ -46,6 +46,7 @@ import { PageLayout } from "../components/page-layout"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
+import { toast } from "../components/toast"
 import { Tooltip } from "../components/tooltip"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
@@ -705,6 +706,10 @@ function NotePage() {
 
                     if (note) {
                       deleteNote(note.id)
+                      toast({
+                        message: `Deleted "${note.displayName}". Press Ctrl+Z to undo.`,
+                        icon: <TrashIcon16 />,
+                      })
                     }
 
                     // Go home

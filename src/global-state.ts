@@ -12,6 +12,7 @@ import {
   Note,
   NoteId,
   Template,
+  UndoableOperation,
   githubUserSchema,
   templateSchema,
 } from "./schema"
@@ -39,11 +40,16 @@ import { startTimer } from "./utils/timer"
 const GITHUB_USER_STORAGE_KEY = "github_user" as const
 const MARKDOWN_FILES_STORAGE_KEY = "markdown_files" as const
 
+const MAX_UNDO_STACK_SIZE = 10
+
 type Context = {
   githubUser: GitHubUser | null
   githubRepo: GitHubRepository | null
   markdownFiles: Record<string, string>
   error: Error | null
+  undoStack: UndoableOperation[]
+  /** Temporary storage for the operation currently being undone */
+  currentUndoOperation: UndoableOperation | null
 }
 
 type Event =
@@ -58,6 +64,8 @@ type Event =
       commitMessage?: string
     }
   | { type: "DELETE_FILE"; filepath: string }
+  | { type: "PUSH_UNDO"; operation: UndoableOperation }
+  | { type: "UNDO" }
 
 function createGlobalStateMachine() {
   return createMachine(
@@ -96,6 +104,9 @@ function createGlobalStateMachine() {
           deleteFile: {
             data: void
           }
+          undoFiles: {
+            data: void
+          }
         }
       },
       predictableActionArguments: true,
@@ -105,6 +116,8 @@ function createGlobalStateMachine() {
         githubRepo: null,
         markdownFiles: {},
         error: null,
+        undoStack: [],
+        currentUndoOperation: null,
       },
       states: {
         resolvingUser: {
@@ -182,6 +195,22 @@ function createGlobalStateMachine() {
                       on: {
                         WRITE_FILES: "writingFiles",
                         DELETE_FILE: "deletingFile",
+                        PUSH_UNDO: { actions: "pushUndo" },
+                        UNDO: { target: "undoing", cond: "hasUndoOperations" },
+                      },
+                    },
+                    undoing: {
+                      entry: ["performUndo", "performUndoLocalStorage"],
+                      invoke: {
+                        src: "undoFiles",
+                        onDone: {
+                          target: "idle",
+                          actions: raise("SYNC_DEBOUNCED"),
+                        },
+                        onError: {
+                          target: "idle",
+                          actions: "setError",
+                        },
                       },
                     },
                     writingFiles: {
@@ -296,6 +325,7 @@ function createGlobalStateMachine() {
       guards: {
         isOffline: () => !navigator.onLine,
         isSynced: (_, event) => event.data.isSynced,
+        hasUndoOperations: (context) => context.undoStack.length > 0,
       },
       services: {
         resolveUser: async () => {
@@ -449,6 +479,62 @@ function createGlobalStateMachine() {
           // Commit deletion
           await gitCommit(`Delete ${filepath}`)
         },
+        undoFiles: async (context) => {
+          if (!context.githubUser) throw new Error("Not signed in")
+
+          const operation = context.currentUndoOperation
+          if (!operation) return
+
+          const filesToWrite: [string, string][] = []
+          let commitMessage = "Undo"
+
+          switch (operation.type) {
+            case "DELETE_NOTE":
+              filesToWrite.push([operation.filepath, operation.content])
+              commitMessage = `Undo: Restore ${operation.filepath}`
+              break
+            case "MOVE_TASK":
+              filesToWrite.push([operation.sourceFilepath, operation.sourceContent])
+              filesToWrite.push([operation.targetFilepath, operation.targetContent])
+              commitMessage = `Undo: Move task back to ${operation.sourceFilepath}`
+              break
+            case "REORDER_TASK":
+              filesToWrite.push([operation.filepath, operation.previousContent])
+              commitMessage = `Undo: Reorder task in ${operation.filepath}`
+              break
+          }
+
+          // Write files to file system
+          for (const [filepath, content] of filesToWrite) {
+            // Create directories if needed
+            const dirPath = filepath.split("/").slice(0, -1).join("/")
+            if (dirPath) {
+              let currentPath = REPO_DIR
+              const segments = dirPath.split("/")
+
+              for (const segment of segments) {
+                currentPath = `${currentPath}/${segment}`
+                const stats = await fs.promises.stat(currentPath).catch(() => null)
+                const exists = stats !== null
+                if (!exists) {
+                  await fs.promises.mkdir(currentPath)
+                }
+              }
+            }
+
+            // Write file
+            await fs.promises.writeFile(`${REPO_DIR}/${filepath}`, content, "utf8")
+          }
+
+          // Stage files
+          const filePaths = filesToWrite.map(([filepath]) => filepath)
+          if (filePaths.length > 0) {
+            await gitAdd(filePaths)
+          }
+
+          // Commit files
+          await gitCommit(commitMessage)
+        },
       },
       actions: {
         setGitHubUser: assign({
@@ -561,6 +647,43 @@ function createGlobalStateMachine() {
             }).catch(() => {})
           }
         },
+        pushUndo: assign({
+          undoStack: (context, event) => {
+            if (event.type !== "PUSH_UNDO") return context.undoStack
+            return [event.operation, ...context.undoStack].slice(0, MAX_UNDO_STACK_SIZE)
+          },
+        }),
+        performUndo: assign({
+          currentUndoOperation: (context) => context.undoStack[0] ?? null,
+          undoStack: (context) => context.undoStack.slice(1),
+          markdownFiles: (context) => {
+            const [operation] = context.undoStack
+            if (!operation) return context.markdownFiles
+
+            const merged = { ...context.markdownFiles }
+
+            switch (operation.type) {
+              case "DELETE_NOTE":
+                // Restore the deleted file
+                merged[operation.filepath] = operation.content
+                break
+              case "MOVE_TASK":
+                // Restore both files to their previous state
+                merged[operation.sourceFilepath] = operation.sourceContent
+                merged[operation.targetFilepath] = operation.targetContent
+                break
+              case "REORDER_TASK":
+                // Restore the file to its previous state
+                merged[operation.filepath] = operation.previousContent
+                break
+            }
+
+            return merged
+          },
+        }),
+        performUndoLocalStorage: (context) => {
+          localStorage.setItem(MARKDOWN_FILES_STORAGE_KEY, JSON.stringify(context.markdownFiles))
+        },
       },
     },
   )
@@ -631,6 +754,16 @@ export const isRepoClonedAtom = selectAtom(globalStateMachineAtom, (state) =>
 export const isSignedOutAtom = selectAtom(globalStateMachineAtom, (state) =>
   state.matches("signedOut"),
 )
+
+// -----------------------------------------------------------------------------
+// Undo
+// -----------------------------------------------------------------------------
+
+export const undoStackAtom = selectAtom(globalStateMachineAtom, (state) => state.context.undoStack)
+
+export const canUndoAtom = selectAtom(undoStackAtom, (stack) => stack.length > 0)
+
+export const lastUndoOperationAtom = selectAtom(undoStackAtom, (stack) => stack[0] ?? null)
 
 // -----------------------------------------------------------------------------
 // GitHub

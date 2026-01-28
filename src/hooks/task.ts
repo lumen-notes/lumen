@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { useAtomCallback } from "jotai/utils"
 import React from "react"
 import { githubRepoAtom, globalStateMachineAtom, markdownFilesAtom } from "../global-state"
+import { UndoableOperation } from "../schema"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { getNoteDraft, setNoteDraft } from "../utils/note-draft"
 
@@ -39,6 +40,36 @@ function addUpdatedTimestamp(content: string): string {
   })
 }
 
+export function useReorderTask() {
+  const send = useSetAtom(globalStateMachineAtom)
+
+  return React.useCallback(
+    (params: {
+      noteId: string
+      noteTitle: string
+      previousContent: string
+      newContent: string
+      onChange: (content: string) => void
+    }) => {
+      const { noteId, noteTitle, previousContent, newContent, onChange } = params
+      const filepath = `${noteId}.md`
+
+      // Push to undo stack before making changes
+      const undoOperation: UndoableOperation = {
+        type: "REORDER_TASK",
+        filepath,
+        previousContent,
+        noteTitle,
+      }
+      send({ type: "PUSH_UNDO", operation: undoOperation })
+
+      // Apply the change
+      onChange(newContent)
+    },
+    [send],
+  )
+}
+
 export function useMoveTask() {
   const getMarkdownFiles = useAtomCallback(React.useCallback((get) => get(markdownFilesAtom), []))
   const githubRepo = useAtomValue(githubRepoAtom)
@@ -69,8 +100,23 @@ export function useMoveTask() {
 
       // Build target content (use draft if exists, else saved file)
       const markdownFiles = getMarkdownFiles()
-      const targetBaseContent = targetDraft ?? markdownFiles[`${targetNoteId}.md`] ?? ""
+      const sourceFilepath = `${sourceNoteId}.md`
+      const targetFilepath = `${targetNoteId}.md`
+      const originalSourceContent = markdownFiles[sourceFilepath] ?? ""
+      const originalTargetContent = markdownFiles[targetFilepath] ?? ""
+      const targetBaseContent = targetDraft ?? originalTargetContent
       const newTargetContent = appendTaskToNote(targetBaseContent, taskLine)
+
+      // Push to undo stack before making changes
+      const undoOperation: UndoableOperation = {
+        type: "MOVE_TASK",
+        sourceFilepath,
+        targetFilepath,
+        sourceContent: originalSourceContent,
+        targetContent: originalTargetContent,
+        taskText: taskLine,
+      }
+      send({ type: "PUSH_UNDO", operation: undoOperation })
 
       // Update drafts for dirty files (immediate write since we navigate after)
       if (sourceHasDraft) {
@@ -83,10 +129,10 @@ export function useMoveTask() {
       // Save clean files only
       const filesToSave: Record<string, string> = {}
       if (!sourceHasDraft) {
-        filesToSave[`${sourceNoteId}.md`] = addUpdatedTimestamp(newSourceContent)
+        filesToSave[sourceFilepath] = addUpdatedTimestamp(newSourceContent)
       }
       if (!targetHasDraft) {
-        filesToSave[`${targetNoteId}.md`] = addUpdatedTimestamp(newTargetContent)
+        filesToSave[targetFilepath] = addUpdatedTimestamp(newTargetContent)
       }
 
       if (Object.keys(filesToSave).length > 0) {
