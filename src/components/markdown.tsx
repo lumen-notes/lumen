@@ -16,8 +16,12 @@ import { formatDate, toDateString } from "../utils/date"
 import {
   canMoveListItemUp,
   canMoveListItemDown,
+  canMoveListItemToTop,
+  canMoveListItemToBottom,
   moveListItemUp,
   moveListItemDown,
+  moveListItemToTop,
+  moveListItemToBottom,
 } from "../utils/reorder-list-item"
 import { remarkEmbed } from "../remark-plugins/embed"
 import { remarkPriority } from "../remark-plugins/priority"
@@ -685,6 +689,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     [hasNodePosition, markdownBody, nodeStart, nodeEnd],
   )
 
+  const canMoveToTop = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemToTop(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
+  const canMoveToBottom = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemToBottom(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
   const handleMoveUp = React.useCallback(() => {
     if (!hasNodePosition) return
     const result = moveListItemUp(markdownBody, nodeStart!, nodeEnd!)
@@ -696,6 +710,22 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const handleMoveDown = React.useCallback(() => {
     if (!hasNodePosition) return
     const result = moveListItemDown(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
+  const handleMoveToTop = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemToTop(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
+  const handleMoveToBottom = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemToBottom(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
       onChange?.(result)
     }
@@ -793,10 +823,17 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-                {canMoveUp || canMoveDown ? (
+                {canMoveUp || canMoveDown || canMoveToTop || canMoveToBottom ? (
                   <>
                     <DropdownMenu.Group>
                       <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
+                      <DropdownMenu.Item
+                        icon={<ArrowUpIcon16 />}
+                        onClick={handleMoveToTop}
+                        disabled={!canMoveToTop}
+                      >
+                        Move to top
+                      </DropdownMenu.Item>
                       <DropdownMenu.Item
                         icon={<ArrowUpIcon16 />}
                         onClick={handleMoveUp}
@@ -810,6 +847,13 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                         disabled={!canMoveDown}
                       >
                         Move down
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<ArrowDownIcon16 />}
+                        onClick={handleMoveToBottom}
+                        disabled={!canMoveToBottom}
+                      >
+                        Move to bottom
                       </DropdownMenu.Item>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />

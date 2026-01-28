@@ -264,6 +264,72 @@ export function findNextListItem(content: string, block: ListItemBlock): ListIte
 }
 
 /**
+ * Finds the first list item at the same indentation level
+ */
+export function findFirstListItem(content: string, block: ListItemBlock): ListItemBlock | null {
+  let firstItem: ListItemBlock | null = null
+  let currentBlock = block
+
+  // Keep finding previous items until we can't anymore
+  let prevItem = findPreviousListItem(content, currentBlock)
+  while (prevItem !== null) {
+    firstItem = prevItem
+    currentBlock = prevItem
+    prevItem = findPreviousListItem(content, currentBlock)
+  }
+
+  return firstItem
+}
+
+/**
+ * Finds the last list item at the same indentation level
+ */
+export function findLastListItem(content: string, block: ListItemBlock): ListItemBlock | null {
+  let lastItem: ListItemBlock | null = null
+  let currentBlock = block
+
+  // Keep finding next items until we can't anymore
+  let nextItem = findNextListItem(content, currentBlock)
+  while (nextItem !== null) {
+    lastItem = nextItem
+    currentBlock = nextItem
+    nextItem = findNextListItem(content, currentBlock)
+  }
+
+  return lastItem
+}
+
+/**
+ * Checks if a list item can be moved to the top (has at least 2 items above)
+ */
+export function canMoveListItemToTop(
+  content: string,
+  nodeStartOffset: number,
+  nodeEndOffset: number,
+): boolean {
+  const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
+  if (!block) return false
+  // Can move to top if there's a previous item (and it's not already at top)
+  const prevItem = findPreviousListItem(content, block)
+  return prevItem !== null
+}
+
+/**
+ * Checks if a list item can be moved to the bottom (has at least 2 items below)
+ */
+export function canMoveListItemToBottom(
+  content: string,
+  nodeStartOffset: number,
+  nodeEndOffset: number,
+): boolean {
+  const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
+  if (!block) return false
+  // Can move to bottom if there's a next item (and it's not already at bottom)
+  const nextItem = findNextListItem(content, block)
+  return nextItem !== null
+}
+
+/**
  * Checks if a list item can be moved up
  */
 export function canMoveListItemUp(
@@ -372,5 +438,122 @@ export function moveListItemDown(
     separator +
     adjustedCurrentContent +
     content.slice(nextItem.end)
+  )
+}
+
+/**
+ * Moves a list item to the top of its list (before the first item at the same level)
+ * Returns the new content, or null if the item can't be moved
+ */
+export function moveListItemToTop(
+  content: string,
+  nodeStartOffset: number,
+  nodeEndOffset: number,
+): string | null {
+  const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
+  if (!block) return null
+
+  const firstItem = findFirstListItem(content, block)
+  if (!firstItem) return null
+
+  const currentContent = content.slice(block.start, block.end)
+
+  // Detect separator pattern between items (for loose lists, this includes blank lines)
+  const secondItem = findNextListItem(content, firstItem)
+  const separator = secondItem ? content.slice(firstItem.end, secondItem.start) : ""
+
+  // Get all items from first to before current (including any separators between them)
+  const itemsBeforeCurrent = content.slice(firstItem.start, block.start)
+
+  // Handle trailing newline and separator cases
+  let adjustedCurrentContent = currentContent
+  let adjustedItemsBeforeCurrent = itemsBeforeCurrent
+
+  if (!currentContent.endsWith("\n")) {
+    // Current was last item without trailing newline
+    adjustedCurrentContent = currentContent + "\n"
+    // Remove trailing newline from items before since the moved item will now be last
+    if (adjustedItemsBeforeCurrent.endsWith("\n")) {
+      adjustedItemsBeforeCurrent = adjustedItemsBeforeCurrent.slice(0, -1)
+    }
+  } else if (separator.length > 0) {
+    // For loose lists: add separator after current, remove trailing separator from items before
+    adjustedCurrentContent = currentContent + separator
+    // Remove the trailing separator from itemsBeforeCurrent
+    if (itemsBeforeCurrent.endsWith(separator + "\n") || itemsBeforeCurrent.endsWith(separator)) {
+      const trimLength = itemsBeforeCurrent.endsWith(separator + "\n")
+        ? separator.length + 1
+        : separator.length
+      adjustedItemsBeforeCurrent = itemsBeforeCurrent.slice(
+        0,
+        itemsBeforeCurrent.length - trimLength,
+      )
+      // Ensure it ends with a newline
+      if (!adjustedItemsBeforeCurrent.endsWith("\n")) {
+        adjustedItemsBeforeCurrent += "\n"
+      }
+    }
+  }
+
+  const afterContent = content.slice(block.end)
+
+  return (
+    content.slice(0, firstItem.start) +
+    adjustedCurrentContent +
+    adjustedItemsBeforeCurrent +
+    afterContent
+  )
+}
+
+/**
+ * Moves a list item to the bottom of its list (after the last item at the same level)
+ * Returns the new content, or null if the item can't be moved
+ */
+export function moveListItemToBottom(
+  content: string,
+  nodeStartOffset: number,
+  nodeEndOffset: number,
+): string | null {
+  const block = getListItemBlock(content, nodeStartOffset, nodeEndOffset)
+  if (!block) return null
+
+  const lastItem = findLastListItem(content, block)
+  if (!lastItem) return null
+
+  const currentContent = content.slice(block.start, block.end)
+  const lastContent = content.slice(lastItem.start, lastItem.end)
+
+  // Detect separator pattern between items (for loose lists, this includes blank lines)
+  const nextItem = findNextListItem(content, block)
+  const separator = nextItem ? content.slice(block.end, nextItem.start) : ""
+
+  // Get the content from after current block to end of last item (all items that should come before current)
+  const itemsAfterCurrent = content.slice(block.end, lastItem.end)
+
+  // Handle case where last item doesn't end with newline
+  let adjustedCurrentContent = currentContent
+  let adjustedItemsAfterCurrent = itemsAfterCurrent
+
+  if (!lastContent.endsWith("\n")) {
+    // Last item has no trailing newline, so moved item shouldn't either
+    if (adjustedCurrentContent.endsWith("\n")) {
+      adjustedCurrentContent = adjustedCurrentContent.slice(0, -1)
+    }
+    // Add newline to items after so there's separation before moved item
+    adjustedItemsAfterCurrent = itemsAfterCurrent + "\n"
+  } else if (separator.length > 0) {
+    // For loose lists: remove leading separator from itemsAfterCurrent and add separator before moved item
+    if (itemsAfterCurrent.startsWith(separator)) {
+      adjustedItemsAfterCurrent = itemsAfterCurrent.slice(separator.length)
+    }
+    // Add separator before the moved item (after the last item that's now second-to-last)
+    adjustedItemsAfterCurrent = adjustedItemsAfterCurrent + separator
+  }
+
+  return (
+    content.slice(0, block.start) +
+    adjustedItemsAfterCurrent +
+    adjustedCurrentContent +
+    content.slice(lastItem.end)
   )
 }
