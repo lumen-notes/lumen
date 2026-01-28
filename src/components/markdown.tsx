@@ -827,42 +827,48 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   <>
                     <DropdownMenu.Group>
                       <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
-                      <div className="grid grid-cols-2 gap-1 px-1 pb-1">
+                      <div className="flex gap-1 px-1 pb-1">
                         <button
                           type="button"
-                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
-                          onClick={handleMoveUp}
-                          disabled={!canMoveUp}
-                        >
-                          <ArrowUpIcon16 className="text-text-secondary" />
-                          <span>Up</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveToTop}
                           disabled={!canMoveToTop}
+                          title="Move to top"
                         >
-                          <ArrowUpIcon16 className="text-text-secondary" />
-                          <span>Top</span>
+                          <ArrowUpIcon16 />
+                          <ArrowUpIcon16 className="-ml-2.5" />
+                          <span className="sr-only">Move to top</span>
                         </button>
                         <button
                           type="button"
-                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveUp}
+                          disabled={!canMoveUp}
+                          title="Move up"
+                        >
+                          <ArrowUpIcon16 />
+                          <span className="sr-only">Move up</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveDown}
                           disabled={!canMoveDown}
+                          title="Move down"
                         >
-                          <ArrowDownIcon16 className="text-text-secondary" />
-                          <span>Down</span>
+                          <ArrowDownIcon16 />
+                          <span className="sr-only">Move down</span>
                         </button>
                         <button
                           type="button"
-                          className="flex items-center gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveToBottom}
                           disabled={!canMoveToBottom}
+                          title="Move to bottom"
                         >
-                          <ArrowDownIcon16 className="text-text-secondary" />
-                          <span>Bottom</span>
+                          <ArrowDownIcon16 />
+                          <ArrowDownIcon16 className="-ml-2.5" />
+                          <span className="sr-only">Move to bottom</span>
                         </button>
                       </div>
                     </DropdownMenu.Group>
