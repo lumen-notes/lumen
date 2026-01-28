@@ -3,10 +3,16 @@ import {
   getListItemBlock,
   findPreviousListItem,
   findNextListItem,
+  findFirstListItem,
+  findLastListItem,
   canMoveListItemUp,
   canMoveListItemDown,
+  canMoveListItemToTop,
+  canMoveListItemToBottom,
   moveListItemUp,
   moveListItemDown,
+  moveListItemToTop,
+  moveListItemToBottom,
 } from "./reorder-list-item"
 
 describe("getListItemBlock", () => {
@@ -312,5 +318,252 @@ describe("moveListItemDown", () => {
     const content = "- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3"
     const result = moveListItemDown(content, 13, 25)
     expect(result).toBe("- [ ] Task 1\n- [ ] Task 3\n- [ ] Task 2")
+  })
+})
+
+describe("findFirstListItem", () => {
+  it("finds the first item when current is last", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const block = { start: 18, end: 27, indent: 0 }
+    const first = findFirstListItem(content, block)
+    expect(first).toEqual({ start: 0, end: 9, indent: 0 })
+  })
+
+  it("finds the first item when current is middle", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const block = { start: 9, end: 18, indent: 0 }
+    const first = findFirstListItem(content, block)
+    expect(first).toEqual({ start: 0, end: 9, indent: 0 })
+  })
+
+  it("returns null when current is first", () => {
+    const content = "- Item 1\n- Item 2\n"
+    const block = { start: 0, end: 9, indent: 0 }
+    const first = findFirstListItem(content, block)
+    expect(first).toBeNull()
+  })
+
+  it("finds first nested item within parent", () => {
+    const content = "- Parent\n  - Child 1\n  - Child 2\n  - Child 3\n"
+    // "  - Child 3" starts at 33
+    const block = { start: 33, end: 45, indent: 2 }
+    const first = findFirstListItem(content, block)
+    expect(first).toEqual({ start: 9, end: 21, indent: 2 })
+  })
+})
+
+describe("findLastListItem", () => {
+  it("finds the last item when current is first", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const block = { start: 0, end: 9, indent: 0 }
+    const last = findLastListItem(content, block)
+    expect(last).toEqual({ start: 18, end: 27, indent: 0 })
+  })
+
+  it("finds the last item when current is middle", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const block = { start: 9, end: 18, indent: 0 }
+    const last = findLastListItem(content, block)
+    expect(last).toEqual({ start: 18, end: 27, indent: 0 })
+  })
+
+  it("returns null when current is last", () => {
+    const content = "- Item 1\n- Item 2\n"
+    const block = { start: 9, end: 18, indent: 0 }
+    const last = findLastListItem(content, block)
+    expect(last).toBeNull()
+  })
+
+  it("finds last nested item within parent", () => {
+    const content = "- Parent\n  - Child 1\n  - Child 2\n  - Child 3\n"
+    // "  - Child 1" starts at 9
+    const block = { start: 9, end: 21, indent: 2 }
+    const last = findLastListItem(content, block)
+    expect(last).toEqual({ start: 33, end: 45, indent: 2 })
+  })
+})
+
+describe("canMoveListItemToTop", () => {
+  it("returns true when there are items above", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    expect(canMoveListItemToTop(content, 18, 26)).toBe(true)
+  })
+
+  it("returns true when item is second", () => {
+    const content = "- Item 1\n- Item 2\n"
+    expect(canMoveListItemToTop(content, 9, 17)).toBe(true)
+  })
+
+  it("returns false for the first item", () => {
+    const content = "- Item 1\n- Item 2\n"
+    expect(canMoveListItemToTop(content, 0, 8)).toBe(false)
+  })
+
+  it("returns false when nested item is first in its parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- B1")
+    const end = content.indexOf("\n", start)
+    expect(canMoveListItemToTop(content, start, end)).toBe(false)
+  })
+})
+
+describe("canMoveListItemToBottom", () => {
+  it("returns true when there are items below", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    expect(canMoveListItemToBottom(content, 0, 8)).toBe(true)
+  })
+
+  it("returns true when item is second to last", () => {
+    const content = "- Item 1\n- Item 2\n"
+    expect(canMoveListItemToBottom(content, 0, 8)).toBe(true)
+  })
+
+  it("returns false for the last item", () => {
+    const content = "- Item 1\n- Item 2\n"
+    expect(canMoveListItemToBottom(content, 9, 17)).toBe(false)
+  })
+
+  it("returns false when nested item is last in its parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- A1")
+    const end = content.indexOf("\n", start)
+    expect(canMoveListItemToBottom(content, start, end)).toBe(false)
+  })
+})
+
+describe("moveListItemToTop", () => {
+  it("moves the last item to top", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const result = moveListItemToTop(content, 18, 26)
+    expect(result).toBe("- Item 3\n- Item 1\n- Item 2\n")
+  })
+
+  it("moves the middle item to top", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const result = moveListItemToTop(content, 9, 17)
+    expect(result).toBe("- Item 2\n- Item 1\n- Item 3\n")
+  })
+
+  it("returns null for the first item", () => {
+    const content = "- Item 1\n- Item 2\n"
+    const result = moveListItemToTop(content, 0, 8)
+    expect(result).toBeNull()
+  })
+
+  it("moves item with nested content to top", () => {
+    const content = "- Item 1\n- Item 2\n  - Nested\n- Item 3\n"
+    // "- Item 3" starts at 29
+    const result = moveListItemToTop(content, 29, 37)
+    expect(result).toBe("- Item 3\n- Item 1\n- Item 2\n  - Nested\n")
+  })
+
+  it("moves nested items within their parent to top", () => {
+    const content = "- Parent\n  - Child 1\n  - Child 2\n  - Child 3\n"
+    // "  - Child 3" starts at 33, the "- " is at 35
+    const result = moveListItemToTop(content, 35, 44)
+    expect(result).toBe("- Parent\n  - Child 3\n  - Child 1\n  - Child 2\n")
+  })
+
+  it("does not move nested item above parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- B1")
+    const end = content.indexOf("\n", start)
+    const result = moveListItemToTop(content, start, end)
+    expect(result).toBeNull()
+  })
+
+  it("moves checked and unchecked tasks", () => {
+    const content = "- [x] Done 1\n- [x] Done 2\n- [ ] Todo\n"
+    const result = moveListItemToTop(content, 26, 36)
+    expect(result).toBe("- [ ] Todo\n- [x] Done 1\n- [x] Done 2\n")
+  })
+
+  it("handles content without trailing newline - move last to top", () => {
+    const content = "- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3"
+    const result = moveListItemToTop(content, 26, 38)
+    expect(result).toBe("- [ ] Task 3\n- [ ] Task 1\n- [ ] Task 2")
+  })
+
+  it("preserves blank lines between loose list items", () => {
+    const content = "- Item 1\n\n- Item 2\n\n- Item 3\n"
+    const result = moveListItemToTop(content, 20, 28)
+    expect(result).toBe("- Item 3\n\n- Item 1\n\n- Item 2\n")
+  })
+
+  it("handles four items - move last to top", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n- Item 4\n"
+    const result = moveListItemToTop(content, 27, 35)
+    expect(result).toBe("- Item 4\n- Item 1\n- Item 2\n- Item 3\n")
+  })
+})
+
+describe("moveListItemToBottom", () => {
+  it("moves the first item to bottom", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const result = moveListItemToBottom(content, 0, 8)
+    expect(result).toBe("- Item 2\n- Item 3\n- Item 1\n")
+  })
+
+  it("moves the middle item to bottom", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n"
+    const result = moveListItemToBottom(content, 9, 17)
+    expect(result).toBe("- Item 1\n- Item 3\n- Item 2\n")
+  })
+
+  it("returns null for the last item", () => {
+    const content = "- Item 1\n- Item 2\n"
+    const result = moveListItemToBottom(content, 9, 17)
+    expect(result).toBeNull()
+  })
+
+  it("moves item with nested content to bottom", () => {
+    const content = "- Item 1\n  - Nested\n- Item 2\n- Item 3\n"
+    const result = moveListItemToBottom(content, 0, 8)
+    expect(result).toBe("- Item 2\n- Item 3\n- Item 1\n  - Nested\n")
+  })
+
+  it("moves nested items within their parent to bottom", () => {
+    const content = "- Parent\n  - Child 1\n  - Child 2\n  - Child 3\n"
+    // "  - Child 1" starts at 9, the "- " is at 11
+    const result = moveListItemToBottom(content, 11, 20)
+    expect(result).toBe("- Parent\n  - Child 2\n  - Child 3\n  - Child 1\n")
+  })
+
+  it("does not move nested item below parent", () => {
+    const content = "- A\n  - A1\n- B\n  - B1\n"
+    const start = content.indexOf("- A1")
+    const end = content.indexOf("\n", start)
+    const result = moveListItemToBottom(content, start, end)
+    expect(result).toBeNull()
+  })
+
+  it("moves checked and unchecked tasks", () => {
+    const content = "- [ ] Todo\n- [x] Done 1\n- [x] Done 2\n"
+    const result = moveListItemToBottom(content, 0, 10)
+    expect(result).toBe("- [x] Done 1\n- [x] Done 2\n- [ ] Todo\n")
+  })
+
+  it("handles content without trailing newline - move first to bottom", () => {
+    const content = "- [ ] Task 1\n- [ ] Task 2\n- [ ] Task 3"
+    const result = moveListItemToBottom(content, 0, 12)
+    expect(result).toBe("- [ ] Task 2\n- [ ] Task 3\n- [ ] Task 1")
+  })
+
+  it("preserves blank lines between loose list items", () => {
+    const content = "- Item 1\n\n- Item 2\n\n- Item 3\n"
+    const result = moveListItemToBottom(content, 0, 8)
+    expect(result).toBe("- Item 2\n\n- Item 3\n\n- Item 1\n")
+  })
+
+  it("handles four items - move first to bottom", () => {
+    const content = "- Item 1\n- Item 2\n- Item 3\n- Item 4\n"
+    const result = moveListItemToBottom(content, 0, 8)
+    expect(result).toBe("- Item 2\n- Item 3\n- Item 4\n- Item 1\n")
+  })
+
+  it("preserves trailing content after list", () => {
+    const content = "- [ ] bar\n- [ ] blah\n- [ ] fooobar\n\nhi there\n"
+    const result = moveListItemToBottom(content, 0, 9)
+    expect(result).toBe("- [ ] blah\n- [ ] fooobar\n- [ ] bar\n\nhi there\n")
   })
 })

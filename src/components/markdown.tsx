@@ -16,8 +16,12 @@ import { formatDate, toDateString } from "../utils/date"
 import {
   canMoveListItemUp,
   canMoveListItemDown,
+  canMoveListItemToTop,
+  canMoveListItemToBottom,
   moveListItemUp,
   moveListItemDown,
+  moveListItemToTop,
+  moveListItemToBottom,
 } from "../utils/reorder-list-item"
 import { remarkEmbed } from "../remark-plugins/embed"
 import { remarkPriority } from "../remark-plugins/priority"
@@ -685,6 +689,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     [hasNodePosition, markdownBody, nodeStart, nodeEnd],
   )
 
+  const canMoveToTop = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemToTop(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
+  const canMoveToBottom = React.useMemo(
+    () => (hasNodePosition ? canMoveListItemToBottom(markdownBody, nodeStart!, nodeEnd!) : false),
+    [hasNodePosition, markdownBody, nodeStart, nodeEnd],
+  )
+
   const handleMoveUp = React.useCallback(() => {
     if (!hasNodePosition) return
     const result = moveListItemUp(markdownBody, nodeStart!, nodeEnd!)
@@ -696,6 +710,22 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const handleMoveDown = React.useCallback(() => {
     if (!hasNodePosition) return
     const result = moveListItemDown(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
+  const handleMoveToTop = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemToTop(markdownBody, nodeStart!, nodeEnd!)
+    if (result !== null) {
+      onChange?.(result)
+    }
+  }, [hasNodePosition, markdownBody, nodeStart, nodeEnd, onChange])
+
+  const handleMoveToBottom = React.useCallback(() => {
+    if (!hasNodePosition) return
+    const result = moveListItemToBottom(markdownBody, nodeStart!, nodeEnd!)
     if (result !== null) {
       onChange?.(result)
     }
@@ -793,24 +823,54 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
-                {canMoveUp || canMoveDown ? (
+                {canMoveUp || canMoveDown || canMoveToTop || canMoveToBottom ? (
                   <>
                     <DropdownMenu.Group>
                       <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
-                      <DropdownMenu.Item
-                        icon={<ArrowUpIcon16 />}
-                        onClick={handleMoveUp}
-                        disabled={!canMoveUp}
-                      >
-                        Move up
-                      </DropdownMenu.Item>
-                      <DropdownMenu.Item
-                        icon={<ArrowDownIcon16 />}
-                        onClick={handleMoveDown}
-                        disabled={!canMoveDown}
-                      >
-                        Move down
-                      </DropdownMenu.Item>
+                      <div className="flex gap-1 px-1 pb-1">
+                        <button
+                          type="button"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveToTop}
+                          disabled={!canMoveToTop}
+                          title="Move to top"
+                        >
+                          <ArrowUpIcon16 />
+                          <ArrowUpIcon16 className="-ml-2.5" />
+                          <span className="sr-only">Move to top</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveUp}
+                          disabled={!canMoveUp}
+                          title="Move up"
+                        >
+                          <ArrowUpIcon16 />
+                          <span className="sr-only">Move up</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveDown}
+                          disabled={!canMoveDown}
+                          title="Move down"
+                        >
+                          <ArrowDownIcon16 />
+                          <span className="sr-only">Move down</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          onClick={handleMoveToBottom}
+                          disabled={!canMoveToBottom}
+                          title="Move to bottom"
+                        >
+                          <ArrowDownIcon16 />
+                          <ArrowDownIcon16 className="-ml-2.5" />
+                          <span className="sr-only">Move to bottom</span>
+                        </button>
+                      </div>
                     </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                   </>
