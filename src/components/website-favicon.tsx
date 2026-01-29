@@ -5,7 +5,13 @@ type WebsiteFaviconProps = React.ComponentPropsWithoutRef<"img"> & {
   size?: 16 | 32 | 64 | 128 | 256
 }
 
-export function WebsiteFavicon({ url, size = 16, className, style, ...props }: WebsiteFaviconProps) {
+export function WebsiteFavicon({
+  url,
+  size = 16,
+  className,
+  style,
+  ...props
+}: WebsiteFaviconProps) {
   return (
     <img
       aria-hidden
