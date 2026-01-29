@@ -25,6 +25,7 @@ import { remarkTag } from "../remark-plugins/tag"
 import { remarkWikilink } from "../remark-plugins/wikilink"
 import { templateSchema } from "../schema"
 import { cx } from "../utils/cx"
+import { getLeadingEmoji } from "../utils/emoji"
 import {
   getVisibleFrontmatter,
   parseFrontmatter,
@@ -135,6 +136,25 @@ export const Markdown = React.memo(
 
     const parsedTemplate = templateSchema.omit({ body: true }).safeParse(frontmatter?.template)
 
+    // Extract URL from title if the entire title is a single link (e.g. "# [Google](https://google.com)")
+    // This matches the logic in parse-note.ts
+    const titleUrl = React.useMemo(() => {
+      if (!title) return null
+      // Match: # [text](url) where the entire title content is a single link
+      const match = title.match(/^#\s*\[.*?\]\((https?:\/\/[^)]+)\)$/)
+      return match ? match[1] : null
+    }, [title])
+
+    // Determine the URL to use for favicon: frontmatter.url takes priority, then title link
+    const url = typeof frontmatter?.url === "string" ? frontmatter.url : titleUrl
+
+    // Show favicon when we have a URL,
+    // but not when we're already showing a book cover, avatar, or leading emoji
+    const hasBookCover = frontmatter?.isbn && online
+    const hasAvatar = typeof frontmatter?.github === "string" && online
+    const hasLeadingEmoji = title ? getLeadingEmoji(title.replace(/^#\s*/, "")) !== null : false
+    const showFavicon = online && url && !hasBookCover && !hasAvatar && !hasLeadingEmoji
+
     const contextValue = React.useMemo(
       () => ({
         markdown: children,
@@ -203,6 +223,9 @@ export const Markdown = React.memo(
               ) : null}
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-5 empty:hidden">
+                  {showFavicon && url ? (
+                    <WebsiteFavicon url={url} size={32} className="align-baseline" />
+                  ) : null}
                   {title ? (
                     <MarkdownContent className="[&_h1]:[text-box-trim:trim-start]">
                       {title}
@@ -378,14 +401,6 @@ const anchorUrlSchema = z.union([z.string().url(), z.tuple([z.string().url()])])
 
 function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
-  const [isFirst, setIsFirst] = React.useState(false)
-  const { online } = useNetworkState()
-
-  React.useLayoutEffect(() => {
-    if (ref.current) {
-      setIsFirst(checkIsFirst(ref.current))
-    }
-  }, [])
 
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {
@@ -439,12 +454,6 @@ function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
         props.className,
       )}
     >
-      {isFirst && online ? (
-        <WebsiteFavicon
-          url={props.href ?? ""}
-          className="mr-2 [h1>a>&]:inline-block hidden align-baseline"
-        />
-      ) : null}
       {children}
     </a>
   )
@@ -884,12 +893,4 @@ function NoteEmbed({ id }: NoteEmbedProps) {
       </div>
     </div>
   )
-}
-
-/**
- * Checks if the given element is the first child of its parent.
- * If there is a text node before the element, it is NOT considered the first child.
- */
-function checkIsFirst(element: HTMLElement) {
-  return element.previousSibling === null
 }
