@@ -2,6 +2,24 @@ import { describe, expect, test } from "vitest"
 import { isNoteEmpty, parseNote } from "./parse-note"
 
 describe("parseNote", () => {
+  test("extracts url from frontmatter", () => {
+    const note = parseNote("1234", "---\nurl: https://example.com\n---\n# Title")
+    expect(note.url).toBe("https://example.com")
+  })
+
+  test("extracts url from link in title", () => {
+    const note = parseNote("1234", "# [Title](https://example.com)")
+    expect(note.url).toBe("https://example.com")
+  })
+
+  test("frontmatter url takes priority over link in title", () => {
+    const note = parseNote(
+      "1234",
+      "---\nurl: https://frontmatter.com\n---\n# [Title](https://title.com)",
+    )
+    expect(note.url).toBe("https://frontmatter.com")
+  })
+
   test("stores task markdown, links, and tags", () => {
     const tasks = parseNote("1234", "- [ ] Review [[project-alpha]] plan #ops").tasks
 
