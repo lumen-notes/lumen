@@ -247,6 +247,11 @@ function _parseNote(id: NoteId, content: string): Note {
     }
   }
 
+  // Check frontmatter for url (takes priority over link in title)
+  if (typeof frontmatter.url === "string") {
+    url = frontmatter.url
+  }
+
   return {
     id,
     content,
