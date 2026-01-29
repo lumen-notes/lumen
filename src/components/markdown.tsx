@@ -827,35 +827,37 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                 ) : null}
                 {canMoveUp || canMoveDown || canMoveToTop || canMoveToBottom ? (
                   <>
-                    <DropdownMenu.Item
-                      icon={<ArrowUpIcon16 />}
-                      onClick={handleMoveUp}
-                      disabled={!canMoveUp}
-                    >
-                      Move up
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<ArrowDownIcon16 />}
-                      onClick={handleMoveDown}
-                      disabled={!canMoveDown}
-                    >
-                      Move down
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator />
-                    <DropdownMenu.Item
-                      icon={<ArrowUpToLineIcon16 />}
-                      onClick={handleMoveToTop}
-                      disabled={!canMoveToTop}
-                    >
-                      Move to top
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      icon={<ArrowDownToLineIcon16 />}
-                      onClick={handleMoveToBottom}
-                      disabled={!canMoveToBottom}
-                    >
-                      Move to bottom
-                    </DropdownMenu.Item>
+                    <DropdownMenu.Group>
+                      <DropdownMenu.GroupLabel>Reorder</DropdownMenu.GroupLabel>
+                      <DropdownMenu.Item
+                        icon={<ArrowUpToLineIcon16 />}
+                        onClick={handleMoveToTop}
+                        disabled={!canMoveToTop}
+                      >
+                        Move to top
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<ArrowUpIcon16 />}
+                        onClick={handleMoveUp}
+                        disabled={!canMoveUp}
+                      >
+                        Move up
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<ArrowDownIcon16 />}
+                        onClick={handleMoveDown}
+                        disabled={!canMoveDown}
+                      >
+                        Move down
+                      </DropdownMenu.Item>
+                      <DropdownMenu.Item
+                        icon={<ArrowDownToLineIcon16 />}
+                        onClick={handleMoveToBottom}
+                        disabled={!canMoveToBottom}
+                      >
+                        Move to bottom
+                      </DropdownMenu.Item>
+                    </DropdownMenu.Group>
                     <DropdownMenu.Separator />
                   </>
                 ) : null}
