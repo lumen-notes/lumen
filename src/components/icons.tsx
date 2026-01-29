@@ -404,6 +404,26 @@ export function ArrowDownIcon16(props: IconProps) {
   return <ArrowLeftIcon16 {...props} className={cx("-rotate-90", props.className)} />
 }
 
+export function ArrowLeftToLineIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path d="M0.75 1.50037C1.16421 1.50037 1.5 1.83615 1.5 2.25037V13.2504C1.49979 13.6644 1.16409 14.0004 0.75 14.0004C0.335929 14.0003 0.000206973 13.6644 0 13.2504L0 2.25037C0 1.83616 0.335802 1.50038 0.75 1.50037ZM8.21973 2.22009C8.51262 1.92721 8.98738 1.9272 9.28027 2.22009C9.57299 2.513 9.5731 2.9878 9.28027 3.28064L5.56055 7.00037H15.25C15.6642 7.00038 16 7.33616 16 7.75037C15.9998 8.16441 15.6641 8.50035 15.25 8.50037H5.56055L9.28027 12.2201C9.57299 12.513 9.5731 12.9878 9.28027 13.2806C8.98742 13.5733 8.51257 13.5733 8.21973 13.2806L3.21973 8.28064C3.07916 8.14007 3.00009 7.94915 3 7.75037C3 7.55154 3.07919 7.36073 3.21973 7.22009L8.21973 2.22009Z" />
+    </Icon>
+  )
+}
+
+export function ArrowRightToLineIcon16(props: IconProps) {
+  return <ArrowLeftToLineIcon16 {...props} className={cx("-scale-x-100", props.className)} />
+}
+
+export function ArrowUpToLineIcon16(props: IconProps) {
+  return <ArrowLeftToLineIcon16 {...props} className={cx("rotate-90", props.className)} />
+}
+
+export function ArrowDownToLineIcon16(props: IconProps) {
+  return <ArrowLeftToLineIcon16 {...props} className={cx("-rotate-90", props.className)} />
+}
+
 export function ChevronLeftIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>
