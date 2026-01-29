@@ -46,7 +46,9 @@ import { GitHubAvatar } from "./github-avatar"
 import { IconButton } from "./icon-button"
 import {
   ArrowDownIcon16,
+  ArrowDownToLineIcon16,
   ArrowUpIcon16,
+  ArrowUpToLineIcon16,
   CalendarDateIcon16,
   CopyIcon16,
   CutIcon16,
@@ -841,14 +843,14 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator />
                     <DropdownMenu.Item
-                      icon={<ArrowUpIcon16 />}
+                      icon={<ArrowUpToLineIcon16 />}
                       onClick={handleMoveToTop}
                       disabled={!canMoveToTop}
                     >
                       Move to top
                     </DropdownMenu.Item>
                     <DropdownMenu.Item
-                      icon={<ArrowDownIcon16 />}
+                      icon={<ArrowDownToLineIcon16 />}
                       onClick={handleMoveToBottom}
                       disabled={!canMoveToBottom}
                     >
