@@ -2,9 +2,10 @@ import copy from "copy-to-clipboard"
 import { useAtomValue } from "jotai"
 import React from "react"
 import { useNetworkState } from "react-use"
-import { githubUserAtom } from "../global-state"
+import { githubUserAtom, notesAtom } from "../global-state"
 import { Note } from "../schema"
 import { createGist, deleteGist } from "../utils/gist"
+import { inlineNoteEmbeds } from "../utils/inline-note-embeds"
 import { stripWikilinks } from "../utils/strip-wikilinks"
 import { Button } from "./button"
 import { Dialog } from "./dialog"
@@ -36,6 +37,7 @@ export function ShareDialog({
   onOpenChange,
 }: ShareDialogProps) {
   const githubUser = useAtomValue(githubUserAtom)
+  const notes = useAtomValue(notesAtom)
   const { online } = useNetworkState()
   const gistId = note.frontmatter.gist_id as string | undefined
   const shareLink = gistId ? `${window.location.origin}/share/${gistId}` : ""
@@ -45,23 +47,25 @@ export function ShareDialog({
   const timeoutRef = React.useRef<number | null>(null)
 
   const strippedNote = React.useMemo(() => {
-    // Strip wikilinks from the note content so the note preview
-    // matches the published note (we strip wikilinks when publishing)
-    return { ...note, content: stripWikilinks(note.content) }
-  }, [note])
+    // Process note content so the preview matches the published note:
+    // 1. Inline note embeds as blockquotes
+    // 2. Strip wikilinks
+    const contentWithEmbeds = inlineNoteEmbeds(note.content, notes)
+    return { ...note, content: stripWikilinks(contentWithEmbeds) }
+  }, [note, notes])
 
   const handlePublish = React.useCallback(async () => {
     if (!githubUser) return
 
     setIsPublishing(true)
-    const gist = await createGist({ note, githubUser })
+    const gist = await createGist({ note, githubUser, notes })
     setIsPublishing(false)
 
     // TODO: Handle error
     if (!gist?.id) return
 
     onPublish(gist.id)
-  }, [githubUser, note, onPublish])
+  }, [githubUser, note, notes, onPublish])
 
   const handleUnpublish = React.useCallback(async () => {
     if (!githubUser?.token || !gistId) return
