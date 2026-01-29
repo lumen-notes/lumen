@@ -48,6 +48,8 @@ import {
   ArrowDownIcon16,
   ArrowUpIcon16,
   CalendarDateIcon16,
+  ChevronDownIcon16,
+  ChevronUpIcon16,
   CopyIcon16,
   CutIcon16,
   ErrorIcon16,
@@ -830,44 +832,42 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                       <div className="flex gap-1 px-1 pb-1">
                         <button
                           type="button"
-                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex h-8 flex-1 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveToTop}
                           disabled={!canMoveToTop}
                           title="Move to top"
                         >
                           <ArrowUpIcon16 />
-                          <ArrowUpIcon16 className="-ml-2.5" />
                           <span className="sr-only">Move to top</span>
                         </button>
                         <button
                           type="button"
-                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex h-8 flex-1 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveUp}
                           disabled={!canMoveUp}
                           title="Move up"
                         >
-                          <ArrowUpIcon16 />
+                          <ChevronUpIcon16 />
                           <span className="sr-only">Move up</span>
                         </button>
                         <button
                           type="button"
-                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex h-8 flex-1 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveDown}
                           disabled={!canMoveDown}
                           title="Move down"
                         >
-                          <ArrowDownIcon16 />
+                          <ChevronDownIcon16 />
                           <span className="sr-only">Move down</span>
                         </button>
                         <button
                           type="button"
-                          className="flex size-8 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
+                          className="flex h-8 flex-1 items-center justify-center rounded text-text-secondary hover:bg-bg-hover active:bg-bg-active disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={handleMoveToBottom}
                           disabled={!canMoveToBottom}
                           title="Move to bottom"
                         >
                           <ArrowDownIcon16 />
-                          <ArrowDownIcon16 className="-ml-2.5" />
                           <span className="sr-only">Move to bottom</span>
                         </button>
                       </div>
