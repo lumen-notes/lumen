@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { addDays, nextMonday } from "date-fns"
+import { addDays, isWeekend, nextMonday, nextSaturday } from "date-fns"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
@@ -611,8 +611,8 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     const now = new Date()
     const today = now
     const tomorrow = addDays(now, 1)
-    const todayId = toDateString(today)
-    const tomorrowId = toDateString(tomorrow)
+    const saturday = nextSaturday(now)
+    const monday = nextMonday(now)
 
     type DateOption = {
       label: string
@@ -621,38 +621,44 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
       trailingText: string
     }
 
-    const options: DateOption[] = []
-
-    // Today/Tomorrow: only show if not already on that note
-    if (noteId !== todayId) {
-      options.push({
+    const options: DateOption[] = [
+      {
         label: "Today",
         icon: <CalendarDateIcon16 date={today.getDate()} />,
-        targetId: todayId,
-        trailingText: formatDate(todayId),
-      })
-    }
-    if (noteId !== tomorrowId) {
-      options.push({
+        targetId: toDateString(today),
+        trailingText: formatDate(toDateString(today)),
+      },
+      {
         label: "Tomorrow",
         icon: <CalendarDateIcon16 date={tomorrow.getDate()} />,
-        targetId: tomorrowId,
-        trailingText: formatDate(tomorrowId),
-      })
-    }
-
-    const monday = nextMonday(now)
-    const mondayId = toDateString(monday)
-    if (noteId !== mondayId) {
-      options.push({
+        targetId: toDateString(tomorrow),
+        trailingText: formatDate(toDateString(tomorrow)),
+      },
+      {
+        label: isWeekend(now) ? "Next weekend" : "This weekend",
+        icon: <CalendarDateIcon16 date={saturday.getDate()} />,
+        targetId: toDateString(saturday),
+        trailingText: formatDate(toDateString(saturday)),
+      },
+      {
         label: "Next week",
         icon: <CalendarDateIcon16 date={monday.getDate()} />,
-        targetId: mondayId,
-        trailingText: formatDate(mondayId),
-      })
-    }
+        targetId: toDateString(monday),
+        trailingText: formatDate(toDateString(monday)),
+      },
+    ]
 
-    return options
+    // Filter out current note and duplicates, then sort by date
+    const seen = new Set<string>()
+    const sortedOptions = options
+      .filter((option) => {
+        if (option.targetId === noteId || seen.has(option.targetId)) return false
+        seen.add(option.targetId)
+        return true
+      })
+      .sort((a, b) => a.targetId.localeCompare(b.targetId))
+
+    return sortedOptions
   }, [noteId])
 
   // Get the task line text for copy/cut operations
