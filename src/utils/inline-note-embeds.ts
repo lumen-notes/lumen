@@ -17,6 +17,7 @@ export function inlineNoteEmbeds(content: string, notes: Map<NoteId, Note>, maxD
   return inlineNoteEmbedsRecursive(content, notes, 0, maxDepth, new Set())
 }
 
+const EMBED_BEFORE_REGEX = /!\[\[[^\]]+\]\]\s*$/
 const TABLE_ROW_REGEX = /^\s*\|.*\|\s*$/
 
 function inlineNoteEmbedsRecursive(
@@ -86,6 +87,7 @@ function inlineNoteEmbedsRecursive(
         : linePrefixAfterQuote
 
       const hasContentBefore = /\S/.test(prefixAfterStructure)
+      const hasEmbedBefore = EMBED_BEFORE_REGEX.test(linePrefix)
       const hasContentAfter = /\S/.test(lineSuffix)
       const contextPrefix = `${quotePrefix}${indentPrefix}`
       const continuationPrefix = hasContentAfter ? contextPrefix : ""
@@ -111,7 +113,8 @@ function inlineNoteEmbedsRecursive(
           replacementText = noteContent.replace(/\s*\n\s*/g, " ").trim()
         } else {
           const blockquoteContent = contentToBlockquote(noteContent, contextPrefix)
-          const breakBefore = hasContentBefore ? `\n${contextPrefix}\n` : ""
+          const breakBefore =
+            hasContentBefore && !hasEmbedBefore ? `\n${contextPrefix}\n` : ""
           const breakAfter = hasContentAfter ? `\n${continuationPrefix}\n` : ""
           replacementText = `${breakBefore}${blockquoteContent}${breakAfter}${continuationPrefix}`
 

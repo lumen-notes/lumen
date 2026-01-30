@@ -52,9 +52,15 @@ After the embed.`
 
   it("should handle multiline content in embeds", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("note1", createNote("note1", `Line 1
+    notes.set(
+      "note1",
+      createNote(
+        "note1",
+        `Line 1
 Line 2
-Line 3`))
+Line 3`,
+      ),
+    )
 
     const input = "![[note1]]"
     const expected = `> Line 1
@@ -126,8 +132,14 @@ ${indent}after`
 
   it("should inline embeds inside table rows", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("note1", createNote("note1", `Row 1
-Row 2`))
+    notes.set(
+      "note1",
+      createNote(
+        "note1",
+        `Row 1
+Row 2`,
+      ),
+    )
 
     const input = "| ![[note1]] |"
     const expected = "| Row 1 Row 2 |"
