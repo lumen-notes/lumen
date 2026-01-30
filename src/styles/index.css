@@ -145,6 +145,67 @@ body:has([data-resizing="true"]) * {
   }
 }
 
+/* Dropdown scroll mask - fades both top and bottom */
+
+@supports (animation-timeline: scroll()) {
+  @property --dropdown-mask-top {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @property --dropdown-mask-bottom {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  .dropdown-scroll-mask {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--dropdown-mask-top),
+      black calc(100% - var(--dropdown-mask-bottom)),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--dropdown-mask-top),
+      black calc(100% - var(--dropdown-mask-bottom)),
+      transparent
+    );
+    animation: dropdown-mask-fade both linear;
+    animation-timeline: scroll(self);
+  }
+
+  @keyframes dropdown-mask-fade {
+    0% {
+      --dropdown-mask-top: 0px;
+      --dropdown-mask-bottom: 16px;
+    }
+    10% {
+      --dropdown-mask-top: 16px;
+      --dropdown-mask-bottom: 16px;
+    }
+    90% {
+      --dropdown-mask-top: 16px;
+      --dropdown-mask-bottom: 16px;
+    }
+    100% {
+      --dropdown-mask-top: 16px;
+      --dropdown-mask-bottom: 0px;
+    }
+  }
+
+  /* Disable for e-paper theme */
+  [data-epaper] .dropdown-scroll-mask {
+    mask-image: none;
+    -webkit-mask-image: none;
+    animation: none;
+  }
+}
+
 /* Book cover */
 
 .book-cover {

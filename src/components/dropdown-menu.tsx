@@ -34,7 +34,9 @@ function Content({
           )}
           style={{ width }}
         >
-          <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
+          <div className="dropdown-scroll-mask grid max-h-[60svh] scroll-py-1 overflow-auto p-1">
+            {children}
+          </div>
         </Menu.Popup>
       </Menu.Positioner>
     </Menu.Portal>
