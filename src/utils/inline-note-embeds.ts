@@ -112,7 +112,7 @@ function inlineNoteEmbedsRecursive(
           const blockquotePrefix = `${quotePrefix}${indentPrefix}`
           const blockquoteContent = contentToBlockquote(noteContent, blockquotePrefix)
           const breakBefore = hasContentBefore ? "\n" : ""
-          const breakAfter = hasContentAfter ? "\n" : ""
+          const breakAfter = hasContentAfter ? `\n${continuationPrefix}\n` : ""
           replacementText = `${breakBefore}${blockquoteContent}${breakAfter}${continuationPrefix}`
 
           if (hasContentBefore) {

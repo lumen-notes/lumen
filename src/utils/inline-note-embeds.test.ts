@@ -70,6 +70,7 @@ Line 3`))
     const input = "Before ![[note1]] after"
     const expected = `Before
 > Inline content
+
 after`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
@@ -81,6 +82,7 @@ after`
     const input = "- Task ![[note1]] after"
     const expected = `- Task
   > List content
+${"  "}
   after`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
