@@ -10,6 +10,16 @@ import { inlineNoteEmbeds } from "./inline-note-embeds"
 import { stripWikilinks } from "./strip-wikilinks"
 import { transformUploadUrls } from "./transform-upload-urls"
 
+/**
+ * Prepares note content for publishing as a gist:
+ * 1. Inlines note embeds as blockquotes
+ * 2. Strips wikilinks to plain text
+ */
+export function prepareNoteForGist(content: string, notes: Map<NoteId, Note>): string {
+  const contentWithInlineEmbeds = inlineNoteEmbeds(content, notes)
+  return stripWikilinks(contentWithInlineEmbeds)
+}
+
 export async function createGist({
   note,
   githubUser,
@@ -22,9 +32,7 @@ export async function createGist({
   const filename = `${note.id}.md`
 
   try {
-    // Process content: inline embeds first, then strip wikilinks
-    const contentWithEmbeds = inlineNoteEmbeds(note.content, notes)
-    const processedContent = stripWikilinks(contentWithEmbeds)
+    const content = prepareNoteForGist(note.content, notes)
 
     const response = await request("POST /gists", {
       headers: {
@@ -33,7 +41,7 @@ export async function createGist({
       public: false,
       files: {
         [filename]: {
-          content: processedContent,
+          content,
         },
       },
     })
@@ -65,13 +73,11 @@ export async function updateGist({
   const gistDir = `/tmp/gist-${gistId}`
 
   try {
-    // Process content: inline embeds first, then strip wikilinks
-    const contentWithEmbeds = inlineNoteEmbeds(note.content, notes)
-    const contentWithoutWikilinks = stripWikilinks(contentWithEmbeds)
+    const content = prepareNoteForGist(note.content, notes)
 
     // Transform upload URLs and get the list of referenced files
     const { content: transformedContent, uploadPaths } = transformUploadUrls({
-      content: contentWithoutWikilinks,
+      content,
       gistId,
       gistOwner: githubUser.login,
     })

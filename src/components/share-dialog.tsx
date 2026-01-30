@@ -4,9 +4,7 @@ import React from "react"
 import { useNetworkState } from "react-use"
 import { githubUserAtom, notesAtom } from "../global-state"
 import { Note } from "../schema"
-import { createGist, deleteGist } from "../utils/gist"
-import { inlineNoteEmbeds } from "../utils/inline-note-embeds"
-import { stripWikilinks } from "../utils/strip-wikilinks"
+import { createGist, deleteGist, prepareNoteForGist } from "../utils/gist"
 import { Button } from "./button"
 import { Dialog } from "./dialog"
 import { FormControl } from "./form-control"
@@ -47,11 +45,8 @@ export function ShareDialog({
   const timeoutRef = React.useRef<number | null>(null)
 
   const strippedNote = React.useMemo(() => {
-    // Process note content so the preview matches the published note:
-    // 1. Inline note embeds as blockquotes
-    // 2. Strip wikilinks
-    const contentWithEmbeds = inlineNoteEmbeds(note.content, notes)
-    return { ...note, content: stripWikilinks(contentWithEmbeds) }
+    // Process note content so the preview matches the published note
+    return { ...note, content: prepareNoteForGist(note.content, notes) }
   }, [note, notes])
 
   const handlePublish = React.useCallback(async () => {

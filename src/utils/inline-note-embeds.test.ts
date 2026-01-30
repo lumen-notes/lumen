@@ -29,8 +29,7 @@ describe("inlineNoteEmbeds", () => {
     notes.set("note1", createNote("note1", "This is the embedded content"))
 
     const input = "Here is an embed:\n\n![[note1]]\n\nAfter the embed."
-    const expected =
-      "Here is an embed:\n\n> This is the embedded content\n\nAfter the embed."
+    const expected = "Here is an embed:\n\n> This is the embedded content\n\nAfter the embed."
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -52,6 +51,24 @@ describe("inlineNoteEmbeds", () => {
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
+  it("should move inline embeds onto their own line", () => {
+    const notes = new Map<NoteId, Note>()
+    notes.set("note1", createNote("note1", "Inline content"))
+
+    const input = "Before ![[note1]] after"
+    const expected = "Before\n> Inline content\nafter"
+    expect(inlineNoteEmbeds(input, notes)).toBe(expected)
+  })
+
+  it("should keep inline embeds inside list items", () => {
+    const notes = new Map<NoteId, Note>()
+    notes.set("note1", createNote("note1", "List content"))
+
+    const input = "- Task ![[note1]] after"
+    const expected = "- Task\n  > List content\n  after"
+    expect(inlineNoteEmbeds(input, notes)).toBe(expected)
+  })
+
   it("should remove embeds that reference non-existent notes", () => {
     const notes = new Map<NoteId, Note>()
 
@@ -70,12 +87,28 @@ describe("inlineNoteEmbeds", () => {
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
+  it("should separate multiple embeds on the same line", () => {
+    const notes = new Map<NoteId, Note>()
+    notes.set("note1", createNote("note1", "Content 1"))
+    notes.set("note2", createNote("note2", "Content 2"))
+
+    const input = "![[note1]] ![[note2]]"
+    const expected = "> Content 1\n\n> Content 2"
+    expect(inlineNoteEmbeds(input, notes)).toBe(expected)
+  })
+
+  it("should inline embeds inside table rows", () => {
+    const notes = new Map<NoteId, Note>()
+    notes.set("note1", createNote("note1", "Row 1\nRow 2"))
+
+    const input = "| ![[note1]] |"
+    const expected = "| Row 1 Row 2 |"
+    expect(inlineNoteEmbeds(input, notes)).toBe(expected)
+  })
+
   it("should strip frontmatter from embedded notes", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set(
-      "note1",
-      createNote("note1", "---\ntitle: Test\ntags: [foo]\n---\n\nActual content"),
-    )
+    notes.set("note1", createNote("note1", "---\ntitle: Test\ntags: [foo]\n---\n\nActual content"))
 
     const input = "![[note1]]"
     const expected = "> Actual content"
@@ -84,11 +117,11 @@ describe("inlineNoteEmbeds", () => {
 
   it("should handle recursive embeds", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("parent", createNote("parent", "Parent has ![[child]]"))
+    notes.set("parent", createNote("parent", "Parent content\n\n![[child]]"))
     notes.set("child", createNote("child", "Child content"))
 
     const input = "![[parent]]"
-    const expected = "> Parent has > Child content"
+    const expected = "> Parent content\n> \n> > Child content"
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -136,7 +169,7 @@ describe("inlineNoteEmbeds", () => {
 
   it("should handle embeds with only frontmatter", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("frontmatter-only", createNote("frontmatter-only", "---\ntitle: Test\n---"))
+    notes.set("frontmatter-only", createNote("frontmatter-only", "---\ntitle: Test\n---\n"))
 
     const input = "Before ![[frontmatter-only]] after"
     const expected = "Before  after"
