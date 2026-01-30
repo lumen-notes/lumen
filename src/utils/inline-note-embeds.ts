@@ -89,6 +89,7 @@ function inlineNoteEmbedsRecursive(
       const hasContentBefore = /\S/.test(prefixAfterStructure)
       const hasEmbedBefore = EMBED_BEFORE_REGEX.test(linePrefix)
       const hasContentAfter = /\S/.test(lineSuffix)
+      const suffixStartsWithEmbed = lineSuffix.trimStart().startsWith("![[")
       const contextPrefix = `${quotePrefix}${indentPrefix}`
       const continuationPrefix = hasContentAfter ? contextPrefix : ""
 
@@ -113,8 +114,7 @@ function inlineNoteEmbedsRecursive(
           replacementText = noteContent.replace(/\s*\n\s*/g, " ").trim()
         } else {
           const blockquoteContent = contentToBlockquote(noteContent, contextPrefix)
-          const breakBefore =
-            hasContentBefore && !hasEmbedBefore ? `\n${contextPrefix}\n` : ""
+          const breakBefore = hasContentBefore && !hasEmbedBefore ? `\n${contextPrefix}\n` : ""
           const breakAfter = hasContentAfter ? `\n${continuationPrefix}\n` : ""
           replacementText = `${breakBefore}${blockquoteContent}${breakAfter}${continuationPrefix}`
 
@@ -124,7 +124,7 @@ function inlineNoteEmbedsRecursive(
             }
           }
 
-          if (hasContentAfter) {
+          if (hasContentAfter && !suffixStartsWithEmbed) {
             const whitespaceMatch = lineSuffix.match(/^\s+/)
             if (whitespaceMatch) {
               replacementEnd += whitespaceMatch[0].length
