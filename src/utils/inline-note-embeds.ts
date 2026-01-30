@@ -61,6 +61,7 @@ function inlineNoteEmbedsRecursive(
     const embeddedNote = notes.get(noteId)
 
     let replacementText = ""
+    let replacementStart = startOffset
     let replacementEnd = endOffset
 
     if (embeddedNote && !visitedNotes.has(noteId)) {
@@ -114,6 +115,12 @@ function inlineNoteEmbedsRecursive(
           const breakAfter = hasContentAfter ? "\n" : ""
           replacementText = `${breakBefore}${blockquoteContent}${breakAfter}${continuationPrefix}`
 
+          if (hasContentBefore) {
+            while (replacementStart > lineStart && /[ \t]/.test(content[replacementStart - 1])) {
+              replacementStart -= 1
+            }
+          }
+
           if (hasContentAfter) {
             const whitespaceMatch = lineSuffix.match(/^\s+/)
             if (whitespaceMatch) {
@@ -126,7 +133,7 @@ function inlineNoteEmbedsRecursive(
 
     // Add the replacement to our list
     replacements.push({
-      start: startOffset,
+      start: replacementStart,
       end: replacementEnd,
       text: replacementText,
     })
