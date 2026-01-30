@@ -87,7 +87,8 @@ function inlineNoteEmbedsRecursive(
 
       const hasContentBefore = /\S/.test(prefixAfterStructure)
       const hasContentAfter = /\S/.test(lineSuffix)
-      const continuationPrefix = hasContentAfter ? `${quotePrefix}${indentPrefix}` : ""
+      const contextPrefix = `${quotePrefix}${indentPrefix}`
+      const continuationPrefix = hasContentAfter ? contextPrefix : ""
 
       // Mark this note as visited to prevent infinite loops
       const newVisitedNotes = new Set(visitedNotes)
@@ -109,9 +110,8 @@ function inlineNoteEmbedsRecursive(
         if (isTableRow) {
           replacementText = noteContent.replace(/\s*\n\s*/g, " ").trim()
         } else {
-          const blockquotePrefix = `${quotePrefix}${indentPrefix}`
-          const blockquoteContent = contentToBlockquote(noteContent, blockquotePrefix)
-          const breakBefore = hasContentBefore ? "\n" : ""
+          const blockquoteContent = contentToBlockquote(noteContent, contextPrefix)
+          const breakBefore = hasContentBefore ? `\n${contextPrefix}\n` : ""
           const breakAfter = hasContentAfter ? `\n${continuationPrefix}\n` : ""
           replacementText = `${breakBefore}${blockquoteContent}${breakAfter}${continuationPrefix}`
 
