@@ -28,8 +28,16 @@ describe("inlineNoteEmbeds", () => {
     const notes = new Map<NoteId, Note>()
     notes.set("note1", createNote("note1", "This is the embedded content"))
 
-    const input = "Here is an embed:\n\n![[note1]]\n\nAfter the embed."
-    const expected = "Here is an embed:\n\n> This is the embedded content\n\nAfter the embed."
+    const input = `Here is an embed:
+
+![[note1]]
+
+After the embed.`
+    const expected = `Here is an embed:
+
+> This is the embedded content
+
+After the embed.`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -44,10 +52,14 @@ describe("inlineNoteEmbeds", () => {
 
   it("should handle multiline content in embeds", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("note1", createNote("note1", "Line 1\nLine 2\nLine 3"))
+    notes.set("note1", createNote("note1", `Line 1
+Line 2
+Line 3`))
 
     const input = "![[note1]]"
-    const expected = "> Line 1\n> Line 2\n> Line 3"
+    const expected = `> Line 1
+> Line 2
+> Line 3`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -56,7 +68,9 @@ describe("inlineNoteEmbeds", () => {
     notes.set("note1", createNote("note1", "Inline content"))
 
     const input = "Before ![[note1]] after"
-    const expected = "Before\n> Inline content\nafter"
+    const expected = `Before
+> Inline content
+after`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -65,7 +79,9 @@ describe("inlineNoteEmbeds", () => {
     notes.set("note1", createNote("note1", "List content"))
 
     const input = "- Task ![[note1]] after"
-    const expected = "- Task\n  > List content\n  after"
+    const expected = `- Task
+  > List content
+  after`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -82,8 +98,12 @@ describe("inlineNoteEmbeds", () => {
     notes.set("note1", createNote("note1", "Content 1"))
     notes.set("note2", createNote("note2", "Content 2"))
 
-    const input = "![[note1]]\n\n![[note2]]"
-    const expected = "> Content 1\n\n> Content 2"
+    const input = `![[note1]]
+
+![[note2]]`
+    const expected = `> Content 1
+
+> Content 2`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
@@ -93,13 +113,16 @@ describe("inlineNoteEmbeds", () => {
     notes.set("note2", createNote("note2", "Content 2"))
 
     const input = "![[note1]] ![[note2]]"
-    const expected = "> Content 1\n\n> Content 2"
+    const expected = `> Content 1
+
+> Content 2`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
   it("should inline embeds inside table rows", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("note1", createNote("note1", "Row 1\nRow 2"))
+    notes.set("note1", createNote("note1", `Row 1
+Row 2`))
 
     const input = "| ![[note1]] |"
     const expected = "| Row 1 Row 2 |"
@@ -108,7 +131,18 @@ describe("inlineNoteEmbeds", () => {
 
   it("should strip frontmatter from embedded notes", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("note1", createNote("note1", "---\ntitle: Test\ntags: [foo]\n---\n\nActual content"))
+    notes.set(
+      "note1",
+      createNote(
+        "note1",
+        `---
+title: Test
+tags: [foo]
+---
+
+Actual content`,
+      ),
+    )
 
     const input = "![[note1]]"
     const expected = "> Actual content"
@@ -117,11 +151,21 @@ describe("inlineNoteEmbeds", () => {
 
   it("should handle recursive embeds", () => {
     const notes = new Map<NoteId, Note>()
-    notes.set("parent", createNote("parent", "Parent content\n\n![[child]]"))
+    notes.set(
+      "parent",
+      createNote(
+        "parent",
+        `Parent content
+
+![[child]]`,
+      ),
+    )
     notes.set("child", createNote("child", "Child content"))
 
     const input = "![[parent]]"
-    const expected = "> Parent content\n> \n> > Child content"
+    const expected = `> Parent content
+> 
+> > Child content`
     expect(inlineNoteEmbeds(input, notes)).toBe(expected)
   })
 
