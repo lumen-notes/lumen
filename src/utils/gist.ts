@@ -2,17 +2,38 @@ import LightningFS from "@isomorphic-git/lightning-fs"
 import { request } from "@octokit/request"
 import git from "isomorphic-git"
 import http from "isomorphic-git/http/web"
-import { GitHubRepository, GitHubUser, Note } from "../schema"
+import { GitHubRepository, GitHubUser, Note, NoteId } from "../schema"
 import { readFile } from "./fs"
 import { REPO_DIR } from "./git"
 import { isTrackedWithGitLfs, resolveGitLfsPointer } from "./git-lfs"
+import { inlineNoteEmbeds } from "./inline-note-embeds"
 import { stripWikilinks } from "./strip-wikilinks"
 import { transformUploadUrls } from "./transform-upload-urls"
 
-export async function createGist({ note, githubUser }: { note: Note; githubUser: GitHubUser }) {
+/**
+ * Prepares note content for publishing as a gist:
+ * 1. Inlines note embeds as blockquotes
+ * 2. Strips wikilinks to plain text
+ */
+export function prepareNoteForGist(content: string, notes: Map<NoteId, Note>): string {
+  const contentWithInlineEmbeds = inlineNoteEmbeds(content, notes)
+  return stripWikilinks(contentWithInlineEmbeds)
+}
+
+export async function createGist({
+  note,
+  githubUser,
+  notes,
+}: {
+  note: Note
+  githubUser: GitHubUser
+  notes: Map<NoteId, Note>
+}) {
   const filename = `${note.id}.md`
 
   try {
+    const content = prepareNoteForGist(note.content, notes)
+
     const response = await request("POST /gists", {
       headers: {
         authorization: `token ${githubUser.token}`,
@@ -20,7 +41,7 @@ export async function createGist({ note, githubUser }: { note: Note; githubUser:
       public: false,
       files: {
         [filename]: {
-          content: stripWikilinks(note.content),
+          content,
         },
       },
     })
@@ -40,19 +61,23 @@ export async function updateGist({
   note,
   githubUser,
   githubRepo,
+  notes,
 }: {
   gistId: string
   note: Note
   githubUser: GitHubUser
   githubRepo: GitHubRepository
+  notes: Map<NoteId, Note>
 }) {
   const filename = `${note.id}.md`
   const gistDir = `/tmp/gist-${gistId}`
 
   try {
+    const content = prepareNoteForGist(note.content, notes)
+
     // Transform upload URLs and get the list of referenced files
     const { content: transformedContent, uploadPaths } = transformUploadUrls({
-      content: stripWikilinks(note.content),
+      content,
       gistId,
       gistOwner: githubUser.login,
     })

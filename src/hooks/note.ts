@@ -54,6 +54,7 @@ export function useSaveNote() {
   const send = useSetAtom(globalStateMachineAtom)
   const githubUser = useAtomValue(githubUserAtom)
   const githubRepo = useAtomValue(githubRepoAtom)
+  const getNotes = useAtomCallback(React.useCallback((get) => get(notesAtom), []))
 
   const saveNote = React.useCallback(
     async ({ id, content }: Pick<Note, "id" | "content">) => {
@@ -76,10 +77,11 @@ export function useSaveNote() {
           note: parseNote(id ?? "", contentWithTimestamp),
           githubUser,
           githubRepo,
+          notes: getNotes(),
         })
       }
     },
-    [send, githubUser, githubRepo],
+    [send, githubUser, githubRepo, getNotes],
   )
 
   return saveNote
