@@ -44,7 +44,7 @@ export function ShareDialog({
   const [linkCopied, setLinkCopied] = React.useState(false)
   const timeoutRef = React.useRef<number | null>(null)
 
-  const strippedNote = React.useMemo(() => {
+  const processedNote = React.useMemo(() => {
     // Process note content so the preview matches the published note
     return { ...note, content: prepareNoteForGist(note.content, notes) }
   }, [note, notes])
@@ -86,7 +86,7 @@ export function ShareDialog({
             className="card-1 bg-bg-overlay!"
             style={{ "--font-family-content": "var(--font-family-serif)" } as React.CSSProperties}
           >
-            <NotePreview note={strippedNote} hideProperties />
+            <NotePreview note={processedNote} hideProperties />
           </div>
           {gistId ? (
             <>
