@@ -54,7 +54,11 @@ export async function GET(request: Request): Promise<Response> {
   }
 }
 
-/** Uploads a file to Git LFS storage. */
+/**
+ * Uploads a file to Git LFS storage.
+ * @deprecated Use /git-lfs-upload-info and /git-lfs-verify for direct browser uploads.
+ * This endpoint is limited to ~3.4MB due to Vercel's body size limit.
+ */
 export async function POST(request: Request): Promise<Response> {
   try {
     const { repo, content, oid, size } = (await request.json()) as LfsUploadRequest
