@@ -121,7 +121,7 @@ export async function uploadToGitLfsServer({
   const repo = `${githubRepo.owner}/${githubRepo.name}`
 
   // Step 1: Get upload URL from Vercel (small request, no file content)
-  const uploadInfoResponse = await fetch(`/git-lfs-file?action=get-upload-info`, {
+  const uploadInfoResponse = await fetch(`/git-lfs-upload-info`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${githubUser.token}`,
@@ -160,7 +160,7 @@ export async function uploadToGitLfsServer({
   }
 
   // Step 3: Verify the upload through Vercel (small request)
-  const verifyResponse = await fetch(`/git-lfs-file?action=verify`, {
+  const verifyResponse = await fetch(`/git-lfs-verify`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${githubUser.token}`,
