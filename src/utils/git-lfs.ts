@@ -134,7 +134,7 @@ export async function uploadToGitLfsServer({
     throw new Error("Unable to get upload info from Git LFS server")
   }
 
-  const uploadInfo: UploadInfo = await uploadInfoResponse.json()
+  const uploadInfo = (await uploadInfoResponse.json()) as UploadInfo
 
   // If the file already exists in LFS storage, we're done
   if (uploadInfo.exists) {
