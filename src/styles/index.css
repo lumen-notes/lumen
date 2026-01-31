@@ -154,18 +154,18 @@ body:has([data-resizing="true"]) * {
   @keyframes scroll-mask {
     0% {
       --scroll-mask-top: 0px;
-      --scroll-mask-bottom: 16px;
+      --scroll-mask-bottom: 32px;
     }
     10% {
-      --scroll-mask-top: 16px;
-      --scroll-mask-bottom: 16px;
+      --scroll-mask-top: 32px;
+      --scroll-mask-bottom: 32px;
     }
     90% {
-      --scroll-mask-top: 16px;
-      --scroll-mask-bottom: 16px;
+      --scroll-mask-top: 32px;
+      --scroll-mask-bottom: 32px;
     }
     100% {
-      --scroll-mask-top: 16px;
+      --scroll-mask-top: 32px;
       --scroll-mask-bottom: 0px;
     }
   }
