@@ -128,7 +128,7 @@ body:has([data-resizing="true"]) * {
 
   /* Shared mask gradient and timeline */
   .scroll-mask,
-  .scroll-mask-both {
+  .scroll-mask-top {
     mask-image: linear-gradient(
       to bottom,
       transparent,
@@ -146,27 +146,12 @@ body:has([data-resizing="true"]) * {
     animation-timeline: scroll(self);
   }
 
-  /* Top-only fade - pixel-based range */
-  .scroll-mask {
-    animation: scroll-mask-top forwards;
-    animation-range: 0 32px;
-  }
-
-  @keyframes scroll-mask-top {
-    from {
-      --scroll-mask-top: 0px;
-    }
-    to {
-      --scroll-mask-top: 32px;
-    }
-  }
-
   /* Top and bottom fade - percentage-based range */
-  .scroll-mask-both {
-    animation: scroll-mask-both both linear;
+  .scroll-mask {
+    animation: scroll-mask forwards linear;
   }
 
-  @keyframes scroll-mask-both {
+  @keyframes scroll-mask {
     0% {
       --scroll-mask-top: 0px;
       --scroll-mask-bottom: 16px;
@@ -185,8 +170,23 @@ body:has([data-resizing="true"]) * {
     }
   }
 
+  /* Top-only fade - pixel-based range */
+  .scroll-mask-top {
+    animation: scroll-mask-top forwards;
+    animation-range: 0 32px;
+  }
+
+  @keyframes scroll-mask-top {
+    from {
+      --scroll-mask-top: 0px;
+    }
+    to {
+      --scroll-mask-top: 32px;
+    }
+  }
+
   /* Disable for e-paper theme */
-  [data-epaper] :is(.scroll-mask, .scroll-mask-both) {
+  [data-epaper] :is(.scroll-mask, .scroll-mask-top) {
     mask-image: none;
     -webkit-mask-image: none;
     animation: none;
