@@ -49,7 +49,7 @@ export function PageLayout({
           className="print:hidden"
         />
         <div className="relative grid overflow-hidden">
-          <main className="relative isolate overflow-auto [scrollbar-gutter:stable] scroll-mask">
+          <main className="scroll-mask-top relative isolate overflow-auto [scrollbar-gutter:stable]">
             {isRepoNotCloned && !disableGuard ? (
               <div className="flex h-full flex-col items-center">
                 <div className="mx-auto w-full max-w-lg p-4 pb-8 md:pb-14">

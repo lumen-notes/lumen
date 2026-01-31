@@ -114,34 +114,75 @@ body:has([data-resizing="true"]) * {
 /* Scroll mask */
 
 @supports (animation-timeline: scroll()) {
-  @property --mask-height {
+  @property --scroll-mask-top {
     syntax: "<length>";
     inherits: false;
     initial-value: 0px;
   }
 
-  .scroll-mask {
-    mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
-    animation: mask-height-grow forwards;
+  @property --scroll-mask-bottom {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  /* Shared mask gradient and timeline */
+  .scroll-mask,
+  .scroll-mask-top {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--scroll-mask-top),
+      black calc(100% - var(--scroll-mask-bottom)),
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--scroll-mask-top),
+      black calc(100% - var(--scroll-mask-bottom)),
+      transparent
+    );
     animation-timeline: scroll(self);
+  }
+
+  /* Top and bottom fade - pixel-based range */
+  .scroll-mask {
+    animation:
+      scroll-mask-top forwards linear,
+      scroll-mask-bottom forwards linear;
+    animation-range: 0 32px, calc(100% - 32px) 100%;
+  }
+
+  /* Top-only fade - pixel-based range */
+  .scroll-mask-top {
+    animation: scroll-mask-top forwards;
     animation-range: 0 32px;
   }
 
-  /* Disable scroll mask for e-paper */
-  [data-epaper] .scroll-mask {
+  @keyframes scroll-mask-top {
+    from {
+      --scroll-mask-top: 0px;
+    }
+    to {
+      --scroll-mask-top: 32px;
+    }
+  }
+
+  @keyframes scroll-mask-bottom {
+    from {
+      --scroll-mask-bottom: 32px;
+    }
+    to {
+      --scroll-mask-bottom: 0px;
+    }
+  }
+
+  /* Disable for e-paper theme */
+  [data-epaper] :is(.scroll-mask, .scroll-mask-top) {
     mask-image: none;
     -webkit-mask-image: none;
     animation: none;
-  }
-
-  @keyframes mask-height-grow {
-    from {
-      --mask-height: 0px;
-    }
-    to {
-      --mask-height: 32px;
-    }
   }
 }
 
