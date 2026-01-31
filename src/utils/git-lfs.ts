@@ -100,7 +100,13 @@ size ${size}
 `
 }
 
-/** Upload file to GitHub's Git LFS server */
+type UploadInfo = {
+  exists: boolean
+  upload?: { href: string; header: Record<string, string> }
+  verify?: { href: string; header: Record<string, string> }
+}
+
+/** Upload file to GitHub's Git LFS server using direct browser-to-GitHub upload. */
 export async function uploadToGitLfsServer({
   content,
   githubUser,
@@ -110,25 +116,61 @@ export async function uploadToGitLfsServer({
   githubUser: GitHubUser
   githubRepo: GitHubRepository
 }) {
-  const base64Content = Buffer.from(content).toString("base64")
   const oid = await getOid(content)
   const size = content.byteLength
+  const repo = `${githubRepo.owner}/${githubRepo.name}`
 
-  const response = await fetch(`/git-lfs-file`, {
+  // Step 1: Get upload URL from Vercel (small request, no file content)
+  const uploadInfoResponse = await fetch(`/git-lfs-file?action=get-upload-info`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${githubUser.token}`,
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      repo: `${githubRepo.owner}/${githubRepo.name}`,
-      content: base64Content,
-      oid,
-      size,
-    }),
+    body: JSON.stringify({ repo, oid, size }),
   })
 
-  if (!response.ok) {
-    throw new Error("Unable to upload file to Git LFS server")
+  if (!uploadInfoResponse.ok) {
+    throw new Error("Unable to get upload info from Git LFS server")
+  }
+
+  const uploadInfo: UploadInfo = await uploadInfoResponse.json()
+
+  // If the file already exists in LFS storage, we're done
+  if (uploadInfo.exists) {
+    return
+  }
+
+  if (!uploadInfo.upload) {
+    throw new Error("No upload URL returned from Git LFS server")
+  }
+
+  // Step 2: Upload binary directly to GitHub's LFS CDN (bypasses Vercel's body limit)
+  const uploadResponse = await fetch(uploadInfo.upload.href, {
+    method: "PUT",
+    headers: {
+      ...uploadInfo.upload.header,
+      "Content-Type": "application/octet-stream",
+    },
+    body: content,
+  })
+
+  if (!uploadResponse.ok) {
+    throw new Error("Unable to upload file to Git LFS storage")
+  }
+
+  // Step 3: Verify the upload through Vercel (small request)
+  const verifyResponse = await fetch(`/git-lfs-file?action=verify`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${githubUser.token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ repo, oid, size }),
+  })
+
+  if (!verifyResponse.ok) {
+    throw new Error("Unable to verify Git LFS upload")
   }
 }
 
