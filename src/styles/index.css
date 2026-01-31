@@ -114,92 +114,79 @@ body:has([data-resizing="true"]) * {
 /* Scroll mask */
 
 @supports (animation-timeline: scroll()) {
-  @property --mask-height {
+  @property --scroll-mask-top {
     syntax: "<length>";
     inherits: false;
     initial-value: 0px;
   }
 
-  .scroll-mask {
-    mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black var(--mask-height));
-    animation: mask-height-grow forwards;
-    animation-timeline: scroll(self);
-    animation-range: 0 32px;
-  }
-
-  /* Disable scroll mask for e-paper */
-  [data-epaper] .scroll-mask {
-    mask-image: none;
-    -webkit-mask-image: none;
-    animation: none;
-  }
-
-  @keyframes mask-height-grow {
-    from {
-      --mask-height: 0px;
-    }
-    to {
-      --mask-height: 32px;
-    }
-  }
-}
-
-/* Dropdown scroll mask - fades both top and bottom */
-
-@supports (animation-timeline: scroll()) {
-  @property --dropdown-mask-top {
+  @property --scroll-mask-bottom {
     syntax: "<length>";
     inherits: false;
     initial-value: 0px;
   }
 
-  @property --dropdown-mask-bottom {
-    syntax: "<length>";
-    inherits: false;
-    initial-value: 0px;
-  }
-
-  .dropdown-scroll-mask {
+  /* Shared mask gradient and timeline */
+  .scroll-mask,
+  .scroll-mask-both {
     mask-image: linear-gradient(
       to bottom,
       transparent,
-      black var(--dropdown-mask-top),
-      black calc(100% - var(--dropdown-mask-bottom)),
+      black var(--scroll-mask-top),
+      black calc(100% - var(--scroll-mask-bottom)),
       transparent
     );
     -webkit-mask-image: linear-gradient(
       to bottom,
       transparent,
-      black var(--dropdown-mask-top),
-      black calc(100% - var(--dropdown-mask-bottom)),
+      black var(--scroll-mask-top),
+      black calc(100% - var(--scroll-mask-bottom)),
       transparent
     );
-    animation: dropdown-mask-fade both linear;
     animation-timeline: scroll(self);
   }
 
-  @keyframes dropdown-mask-fade {
+  /* Top-only fade - pixel-based range */
+  .scroll-mask {
+    animation: scroll-mask-top forwards;
+    animation-range: 0 32px;
+  }
+
+  @keyframes scroll-mask-top {
+    from {
+      --scroll-mask-top: 0px;
+    }
+    to {
+      --scroll-mask-top: 32px;
+    }
+  }
+
+  /* Top and bottom fade - percentage-based range */
+  .scroll-mask-both {
+    animation: scroll-mask-both both linear;
+  }
+
+  @keyframes scroll-mask-both {
     0% {
-      --dropdown-mask-top: 0px;
-      --dropdown-mask-bottom: 16px;
+      --scroll-mask-top: 0px;
+      --scroll-mask-bottom: 16px;
     }
     10% {
-      --dropdown-mask-top: 16px;
-      --dropdown-mask-bottom: 16px;
+      --scroll-mask-top: 16px;
+      --scroll-mask-bottom: 16px;
     }
     90% {
-      --dropdown-mask-top: 16px;
-      --dropdown-mask-bottom: 16px;
+      --scroll-mask-top: 16px;
+      --scroll-mask-bottom: 16px;
     }
     100% {
-      --dropdown-mask-top: 16px;
-      --dropdown-mask-bottom: 0px;
+      --scroll-mask-top: 16px;
+      --scroll-mask-bottom: 0px;
     }
   }
 
   /* Disable for e-paper theme */
-  [data-epaper] .dropdown-scroll-mask {
+  [data-epaper] :is(.scroll-mask, .scroll-mask-both) {
     mask-image: none;
     -webkit-mask-image: none;
     animation: none;
