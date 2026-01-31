@@ -146,28 +146,12 @@ body:has([data-resizing="true"]) * {
     animation-timeline: scroll(self);
   }
 
-  /* Top and bottom fade - percentage-based range */
+  /* Top and bottom fade - pixel-based range */
   .scroll-mask {
-    animation: scroll-mask forwards linear;
-  }
-
-  @keyframes scroll-mask {
-    0% {
-      --scroll-mask-top: 0px;
-      --scroll-mask-bottom: 32px;
-    }
-    10% {
-      --scroll-mask-top: 32px;
-      --scroll-mask-bottom: 32px;
-    }
-    90% {
-      --scroll-mask-top: 32px;
-      --scroll-mask-bottom: 32px;
-    }
-    100% {
-      --scroll-mask-top: 32px;
-      --scroll-mask-bottom: 0px;
-    }
+    animation:
+      scroll-mask-top forwards linear,
+      scroll-mask-bottom forwards linear;
+    animation-range: 0 32px, calc(100% - 32px) 100%;
   }
 
   /* Top-only fade - pixel-based range */
@@ -182,6 +166,15 @@ body:has([data-resizing="true"]) * {
     }
     to {
       --scroll-mask-top: 32px;
+    }
+  }
+
+  @keyframes scroll-mask-bottom {
+    from {
+      --scroll-mask-bottom: 32px;
+    }
+    to {
+      --scroll-mask-bottom: 0px;
     }
   }
 
