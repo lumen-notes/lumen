@@ -68,7 +68,7 @@ export async function resolveGitLfsPointer({
   const text = await file.text()
 
   const response = await fetch(
-    `/git-lfs-file?repo=${githubRepo.owner}/${githubRepo.name}&pointer=${text}`,
+    `/api/git-lfs-file?repo=${githubRepo.owner}/${githubRepo.name}&pointer=${text}`,
     {
       headers: {
         Authorization: `Bearer ${githubUser.token}`,
@@ -121,7 +121,7 @@ export async function uploadToGitLfsServer({
   const repo = `${githubRepo.owner}/${githubRepo.name}`
 
   // Step 1: Get upload URL from Vercel (small request, no file content)
-  const uploadInfoResponse = await fetch(`/git-lfs-upload-info`, {
+  const uploadInfoResponse = await fetch(`/api/git-lfs-upload-info`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${githubUser.token}`,
@@ -160,13 +160,18 @@ export async function uploadToGitLfsServer({
   }
 
   // Step 3: Verify the upload through Vercel (small request)
-  const verifyResponse = await fetch(`/git-lfs-verify`, {
+  // Pass verify info from step 1 to avoid redundant batch API call
+  const verifyResponse = await fetch(`/api/git-lfs-verify`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${githubUser.token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ repo, oid, size }),
+    body: JSON.stringify({
+      oid,
+      size,
+      verifyUrl: uploadInfo.verify?.href,
+      verifyHeader: uploadInfo.verify?.header,
+    }),
   })
 
   if (!verifyResponse.ok) {
