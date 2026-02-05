@@ -1,56 +1,29 @@
 // Reference: https://github.com/git-lfs/git-lfs/blob/main/docs/api/batch.md
 
 type LfsVerifyRequest = {
-  repo: string
   oid: string
   size: number
+  verifyUrl?: string
+  verifyHeader?: Record<string, string>
 }
 
 /** Verifies that an upload to GitHub's LFS storage completed successfully. */
 export async function POST(request: Request): Promise<Response> {
   try {
-    const { repo, oid, size } = (await request.json()) as LfsVerifyRequest
-    const authorization = request.headers.get("authorization")
+    const { oid, size, verifyUrl, verifyHeader } = (await request.json()) as LfsVerifyRequest
 
-    if (
-      typeof repo !== "string" ||
-      typeof oid !== "string" ||
-      typeof size !== "number" ||
-      !authorization
-    ) {
+    if (typeof oid !== "string" || typeof size !== "number") {
       throw new Error("Invalid request")
     }
 
-    // Get the verify URL from batch API
-    const batchResponse = await fetch(`https://github.com/${repo}.git/info/lfs/objects/batch`, {
-      method: "POST",
-      headers: {
-        Accept: "application/vnd.git-lfs+json",
-        "Content-Type": "application/vnd.git-lfs+json",
-        Authorization: authorization,
-      },
-      body: JSON.stringify({
-        operation: "upload",
-        transfers: ["basic"],
-        objects: [{ oid, size }],
-      }),
-    })
-
-    if (!batchResponse.ok) {
-      throw new Error("Unable to get verify info from Git LFS")
-    }
-
-    const json = await batchResponse.json()
-    const verify = json.objects[0].actions?.verify
-
-    if (!verify) {
-      // No verify action needed (object might already exist)
+    // If no verify URL provided, the object might already exist or verification not needed
+    if (!verifyUrl) {
       return new Response("OK", { status: 200 })
     }
 
-    const verifyResponse = await fetch(verify.href, {
+    const verifyResponse = await fetch(verifyUrl, {
       method: "POST",
-      headers: verify.header,
+      headers: verifyHeader,
       body: JSON.stringify({ oid, size }),
     })
 

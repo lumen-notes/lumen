@@ -44,7 +44,7 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         sourcemap: true,
         // Do not cache function routes
-        navigateFallbackDenylist: [/cors-proxy/, /file-proxy/, /git-lfs-file/, /github-auth/],
+        navigateFallbackDenylist: [/cors-proxy/, /file-proxy/, /git-lfs/, /github-auth/],
       },
       devOptions: {
         enabled: process.env.NODE_ENV === "development",
