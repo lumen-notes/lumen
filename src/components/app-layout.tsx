@@ -1,9 +1,10 @@
-import { useAtomValue } from "jotai"
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
+import { useAtom, useAtomValue } from "jotai"
+import { useHotkeys } from "react-hotkeys-hook"
+import { Group, Panel, Separator, useDefaultLayout } from "react-resizable-panels"
 import { useMedia } from "react-use"
 import { isHelpPanelOpenAtom, sidebarAtom } from "../global-state"
 import { cx } from "../utils/cx"
-import { HelpPanelDrawer, HelpPanelSidebar } from "./help-panel"
+import { HelpDrawer, HelpSidebar } from "./help-panel"
 import { NavBar } from "./nav-bar"
 import { Sidebar } from "./sidebar"
 import { SignInBanner } from "./sign-in-banner"
@@ -15,8 +16,27 @@ type AppLayoutProps = {
 
 export function AppLayout({ className, children }: AppLayoutProps) {
   const sidebar = useAtomValue(sidebarAtom)
-  const isHelpPanelOpen = useAtomValue(isHelpPanelOpenAtom)
+  const [isHelpPanelOpen, setHelpPanel] = useAtom(isHelpPanelOpenAtom)
   const isWideViewport = useMedia("(min-width: 1024px)")
+  const showHelpSidebar = isHelpPanelOpen && isWideViewport
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: "app-layout",
+    panelIds: showHelpSidebar ? ["content", "help"] : ["content"],
+    storage: window.localStorage,
+  })
+
+  // Toggle help panel with Cmd/Ctrl + /
+  useHotkeys(
+    "mod+/",
+    () => {
+      setHelpPanel((prev) => !prev)
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
 
   return (
     <div className={cx("flex grow flex-col overflow-hidden print:overflow-visible", className)}>
@@ -27,25 +47,36 @@ export function AppLayout({ className, children }: AppLayoutProps) {
             <Sidebar />
           </div>
         ) : null}
-        <PanelGroup direction="horizontal" autoSaveId="app-layout" className="grow overflow-hidden">
-          <Panel className="grid grid-rows-[1fr_auto] overflow-hidden" order={1}>
+        <Group
+          orientation="horizontal"
+          className="grow overflow-hidden"
+          defaultLayout={defaultLayout}
+          onLayoutChanged={onLayoutChanged}
+        >
+          <Panel id="content" className="grid grid-rows-[1fr_auto] overflow-hidden">
             {children}
             <div className="sm:hidden print:hidden">
               <NavBar />
             </div>
           </Panel>
-          {isHelpPanelOpen && isWideViewport ? (
+          {showHelpSidebar ? (
             <>
-              <PanelResizeHandle className="relative w-px bg-border-secondary transition-colors duration-0 hover:delay-50 hover:bg-border data-[resize-handle-active]:bg-border print:hidden">
+              <Separator className="relative w-px bg-border-secondary print:hidden outline-none">
                 <div className="absolute inset-y-0 -left-1.5 -right-1.5 z-10" />
-              </PanelResizeHandle>
-              <Panel className="print:hidden" order={2} defaultSize={25} minSize={25} maxSize={50}>
-                <HelpPanelSidebar />
+              </Separator>
+              <Panel
+                id="help"
+                className="print:hidden"
+                defaultSize="30%"
+                minSize="25%"
+                maxSize="40%"
+              >
+                <HelpSidebar />
               </Panel>
             </>
           ) : null}
-        </PanelGroup>
-        {!isWideViewport ? <HelpPanelDrawer /> : null}
+        </Group>
+        {!isWideViewport ? <HelpDrawer /> : null}
       </div>
     </div>
   )

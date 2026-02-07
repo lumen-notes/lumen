@@ -1,17 +1,23 @@
 import { Link, LinkComponentProps, useLocation } from "@tanstack/react-router"
-import { useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
-import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
+import {
+  globalStateMachineAtom,
+  isHelpPanelOpenAtom,
+  notesAtom,
+  pinnedNotesAtom,
+} from "../global-state"
 import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
 import { HelpPanelToggle } from "./help-panel"
-import { Keys } from "./keys"
 import {
   CalendarDateFillIcon16,
   CalendarDateIcon16,
+  CircleQuestionMarkFillIcon16,
+  CircleQuestionMarkIcon16,
   NoteFillIcon16,
   NoteIcon16,
   OfflineIcon16,
@@ -22,6 +28,7 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
+import { Keys } from "./keys"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 
@@ -182,7 +189,7 @@ export function NavItems({
           >
             Settings
           </NavLink>
-          <HelpPanelToggle className="nav-item text-text-secondary" size={size} />
+          <HelpNavItem size={size} />
         </div>
       </div>
     </SizeContext.Provider>
@@ -196,7 +203,6 @@ function NavLink({
   includeSearch = false,
   forceActive = false,
   onNavigate,
-  shortcut,
   children,
   onClick,
   ...props
@@ -206,7 +212,6 @@ function NavLink({
   includeSearch?: boolean
   forceActive?: boolean
   onNavigate?: () => void
-  shortcut?: string[]
   children: React.ReactNode
 }) {
   const size = useContext(SizeContext)
@@ -215,7 +220,7 @@ function NavLink({
     <Link
       activeOptions={{ exact: true, includeSearch }}
       data-size={size}
-      className={cx("nav-item group", className)}
+      className={cx("nav-item", className)}
       aria-current={forceActive ? "page" : undefined}
       onClick={(event) => {
         onClick?.(event)
@@ -237,11 +242,24 @@ function NavLink({
         {icon}
       </span>
       <span className="truncate">{children}</span>
-      {shortcut ? (
-        <div className="ml-auto [&_*]:text-text-tertiary hidden coarse:!hidden group-hover:flex group-focus-visible:flex [[aria-current=page]>&]:flex">
-          <Keys keys={shortcut} />
-        </div>
-      ) : null}
     </Link>
+  )
+}
+
+export function HelpNavItem({ size }: { size: "medium" | "large" }) {
+  const [isOpen, setIsOpen] = useAtom(isHelpPanelOpenAtom)
+  return (
+    <button
+      className="nav-item text-text-secondary group"
+      data-size={size}
+      aria-pressed={isOpen}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      {isOpen ? <CircleQuestionMarkFillIcon16 /> : <CircleQuestionMarkIcon16 />}
+      Help
+      <div className="ml-auto hidden coarse:hidden! group-hover:flex group-focus-visible:flex in-aria-pressed:flex">
+        <Keys keys={["⌘", "/"]} className="text-text-tertiary epaper:in-aria-pressed:text-bg" />
+      </div>
+    </button>
   )
 }

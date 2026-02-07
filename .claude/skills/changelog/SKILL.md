@@ -23,8 +23,8 @@ Analyze the diff and identify changes that affect the user. Ignore internal refa
 
 Categorize each change:
 
-- **Added** - new features
-- **Changed** - changes in existing functionality
+- **New** - new features
+- **Improved** - changes in existing functionality
 - **Deprecated** - soon-to-be removed features
 - **Removed** - removed features
 - **Fixed** - bug fixes
@@ -40,27 +40,27 @@ Each entry should:
 - Focus on outcomes and impact, not implementation details. Skip sub-features and internal specifics (e.g. don't mention specific icons added, individual links moved, or UI patterns used).
 - Use plain language, not technical jargon.
 - One bullet per feature. A bullet can have multiple sentences if needed, but don't split a single feature into multiple bullets.
-- Use "Changed" (not "Added") when replacing or converting existing functionality into a new form (e.g. converting a dialog into a panel).
+- Use "Improved" (not "New") when replacing or converting existing functionality into a new form (e.g. converting a dialog into a panel).
 - Avoid em dashes. Use periods or commas instead.
 
 ### 4. Update CHANGELOG.md
 
-Use today's date (YYYY-MM-DD) as the section heading. More recent dates go at the top (below the `# Changelog` title).
+Use the current ISO week (YYYY-Www, e.g. 2026-W06) as the section heading. To get the current week, run `date +%G-W%V`. More recent weeks go at the top (below the `# Changelog` title).
 
-Only include category subheadings (Added, Changed, etc.) that have entries.
+Only include category subheadings (New, Improved, etc.) that have entries.
 
-**If today's date heading already exists**: merge intelligently — add new bullets under existing category subheadings, create new subheadings as needed, skip duplicate entries.
+**If this week's heading already exists**: merge intelligently — add new bullets under existing category subheadings, create new subheadings as needed, skip duplicate entries.
 
-**If today's date heading does not exist**: create a new `## YYYY-MM-DD` section at the top (below the title).
+**If this week's heading does not exist**: create a new `## YYYY-Www` section at the top (below the title).
 
 Format:
 
 ```markdown
 # Changelog
 
-## 2026-02-06
+## 2026-W06
 
-### Added
+### New
 
 - You can now export notes as PDF from the share menu.
 
@@ -68,9 +68,9 @@ Format:
 
 - Fixed a bug where tags with special characters weren't searchable.
 
-## 2026-01-15
+## 2026-W03
 
-### Changed
+### Improved
 
 - The sidebar now remembers your scroll position between sessions.
 ```
