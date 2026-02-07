@@ -41,7 +41,7 @@ function RouteComponent() {
           <EditorSection />
           <AISection />
           <div className="p-5 text-text-tertiary self-center flex flex-col gap-3 items-center">
-            <span className="text-sm">
+            <span className="text-sm font-handwriting">
               Made by{" "}
               <a
                 className="link decoration-text-tertiary"
