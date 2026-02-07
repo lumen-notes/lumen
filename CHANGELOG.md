@@ -2,6 +2,10 @@
 
 ## 2026-W06
 
+### New
+
+- Hovering a footnote reference now shows a preview of the footnote content.
+
 ### Improved
 
 - Cheatsheet dialog replaced with a help panel. The help panel appears as a right sidebar on wide viewports and a bottom drawer on narrow viewports. Toggle it with ⌘/.
