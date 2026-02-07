@@ -12,7 +12,6 @@ import {
 } from "../global-state"
 import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
-import { HelpPanelToggle } from "./help-panel"
 import {
   CalendarDateFillIcon16,
   CalendarDateIcon16,
