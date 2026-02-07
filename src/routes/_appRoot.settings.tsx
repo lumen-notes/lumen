@@ -62,7 +62,7 @@ function RouteComponent() {
               </a>
             </span>
             <a href="https://colebemis.com" target="_blank" rel="noopener noreferrer">
-              <Signature width={100} />
+              <Signature width={120} />
             </a>
           </div>
         </div>
