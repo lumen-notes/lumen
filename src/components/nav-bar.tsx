@@ -8,6 +8,7 @@ import { isCommandMenuOpenAtom } from "./command-menu"
 import { IconButton, IconButtonProps } from "./icon-button"
 import { ArrowLeftIcon16, ArrowRightIcon16, MenuIcon16, ComposeIcon16, SearchIcon16 } from "./icons"
 import { NavItems } from "./nav-items"
+import { SignInBanner } from "./sign-in-banner"
 
 export function NavBar() {
   const router = useRouter()
@@ -17,6 +18,7 @@ export function NavBar() {
 
   return (
     <div className="border-t border-border-secondary">
+      <SignInBanner />
       <div className="flex h-(--height-nav-bar) items-stretch  p-2 [&>button]:h-full">
         <Drawer.Root
           open={isDrawerOpen}

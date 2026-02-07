@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai"
 import { SignInButton } from "./github-auth"
 import { isSignedOutAtom } from "../global-state"
+import { cx } from "../utils/cx"
 
-export function SignInBanner() {
+export function SignInBanner({ className }: { className?: string }) {
   const isSignedOut = useAtomValue(isSignedOutAtom)
 
   if (!isSignedOut) {
@@ -10,7 +11,12 @@ export function SignInBanner() {
   }
 
   return (
-    <div className="flex shrink-0 flex-col justify-between sm:border-t border-border-secondary gap-4 p-4 pt-2 text-text sm:flex-row items-center sm:p-2 print:hidden">
+    <div
+      className={cx(
+        "flex shrink-0 flex-col justify-between gap-4 p-4 text-text sm:flex-row items-center sm:p-2 print:hidden",
+        className,
+      )}
+    >
       <span className="sm:px-2 text-text-secondary text-balance text-center sm:text-left font-handwriting">
         These are demo notes. Sign in to write your own.
       </span>

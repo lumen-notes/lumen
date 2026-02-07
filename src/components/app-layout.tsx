@@ -77,7 +77,7 @@ export function AppLayout({ className, children }: AppLayoutProps) {
         </Group>
         {!isWideViewport ? <HelpDrawer /> : null}
       </div>
-      <SignInBanner />
+      <SignInBanner className="hidden sm:flex border-t border-border-secondary" />
     </div>
   )
 }
