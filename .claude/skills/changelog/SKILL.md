@@ -30,16 +30,18 @@ Categorize each change:
 - **Fixed** - bug fixes
 - **Security** - vulnerability fixes
 
-A large diff may warrant many entries — both across categories and within a single category when there are distinct changes. A small internal refactor may warrant none — if there are no user-facing changes, inform the user and stop.
+If there are no user-facing changes, inform the user and stop.
 
 ### 3. Write entries
 
 Each entry should:
 
-- Be written for humans — describe what the user can now do or what changed from their perspective
-- Focus on outcomes and impact, not implementation details
-- Use plain language, not technical jargon
-- Be a single concise sentence
+- Be written for humans. Describe what the user can now do or what changed from their perspective.
+- Focus on outcomes and impact, not implementation details. Skip sub-features and internal specifics (e.g. don't mention specific icons added, individual links moved, or UI patterns used).
+- Use plain language, not technical jargon.
+- One bullet per feature. A bullet can have multiple sentences if needed, but don't split a single feature into multiple bullets.
+- Use "Changed" (not "Added") when replacing or converting existing functionality into a new form (e.g. converting a dialog into a panel).
+- Avoid em dashes. Use periods or commas instead.
 
 ### 4. Update CHANGELOG.md
 
