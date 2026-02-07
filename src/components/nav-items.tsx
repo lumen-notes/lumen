@@ -1,19 +1,17 @@
 import { Link, LinkComponentProps, useLocation } from "@tanstack/react-router"
 import { useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { ComponentPropsWithoutRef, createContext, useContext } from "react"
+import { createContext, useContext } from "react"
 import { useNetworkState } from "react-use"
 import { useRegisterSW } from "virtual:pwa-register/react"
 import { globalStateMachineAtom, notesAtom, pinnedNotesAtom } from "../global-state"
 import { cx } from "../utils/cx"
 import { isValidDateString, isValidWeekString, toDateString } from "../utils/date"
-import { CheatsheetDialog } from "./cheatsheet-dialog"
-import { Dialog } from "./dialog"
+import { HelpPanelToggle } from "./help-panel"
+import { Keys } from "./keys"
 import {
-  BookIcon16,
   CalendarDateFillIcon16,
   CalendarDateIcon16,
-  MessageIcon16,
   NoteFillIcon16,
   NoteIcon16,
   OfflineIcon16,
@@ -184,19 +182,7 @@ export function NavItems({
           >
             Settings
           </NavLink>
-          <Dialog>
-            <Dialog.Trigger className="nav-item text-text-secondary" data-size={size}>
-              <BookIcon16 />
-              Cheatsheet
-            </Dialog.Trigger>
-            <CheatsheetDialog />
-          </Dialog>
-          <ExternalLink
-            href="https://github.com/lumen-notes/lumen/issues/new"
-            icon={<MessageIcon16 />}
-          >
-            Send feedback
-          </ExternalLink>
+          <HelpPanelToggle className="nav-item text-text-secondary" size={size} />
         </div>
       </div>
     </SizeContext.Provider>
@@ -210,6 +196,7 @@ function NavLink({
   includeSearch = false,
   forceActive = false,
   onNavigate,
+  shortcut,
   children,
   onClick,
   ...props
@@ -219,6 +206,7 @@ function NavLink({
   includeSearch?: boolean
   forceActive?: boolean
   onNavigate?: () => void
+  shortcut?: string[]
   children: React.ReactNode
 }) {
   const size = useContext(SizeContext)
@@ -227,7 +215,7 @@ function NavLink({
     <Link
       activeOptions={{ exact: true, includeSearch }}
       data-size={size}
-      className={cx("nav-item", className)}
+      className={cx("nav-item group", className)}
       aria-current={forceActive ? "page" : undefined}
       onClick={(event) => {
         onClick?.(event)
@@ -249,30 +237,11 @@ function NavLink({
         {icon}
       </span>
       <span className="truncate">{children}</span>
+      {shortcut ? (
+        <div className="ml-auto [&_*]:text-text-tertiary hidden coarse:!hidden group-hover:flex group-focus-visible:flex [[aria-current=page]>&]:flex">
+          <Keys keys={shortcut} />
+        </div>
+      ) : null}
     </Link>
-  )
-}
-
-function ExternalLink({
-  className,
-  icon,
-  children,
-  ...props
-}: ComponentPropsWithoutRef<"a"> & {
-  icon: React.ReactNode
-}) {
-  const size = useContext(SizeContext)
-
-  return (
-    <a
-      className={cx("nav-item text-text-secondary", className)}
-      data-size={size}
-      target="_blank"
-      rel="noopener noreferrer"
-      {...props}
-    >
-      <span className="flex shrink-0">{icon}</span>
-      <span className="truncate">{children}</span>
-    </a>
   )
 }

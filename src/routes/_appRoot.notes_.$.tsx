@@ -556,7 +556,7 @@ function NotePage() {
               <Tooltip.Trigger
                 render={
                   <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
-                    Read
+                    View
                   </SegmentedControl.Segment>
                 }
               />
@@ -568,7 +568,7 @@ function NotePage() {
               <Tooltip.Trigger
                 render={
                   <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
-                    Write
+                    Edit
                   </SegmentedControl.Segment>
                 }
               />

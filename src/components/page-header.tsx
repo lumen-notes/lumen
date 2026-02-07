@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import { useAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
-import { sidebarAtom } from "../global-state"
+import { isHelpPanelOpenAtom, sidebarAtom } from "../global-state"
 import { useCreateNewNote } from "../hooks/create-new-note"
 import { cx } from "../utils/cx"
 import { IconButton } from "./icon-button"
@@ -18,6 +18,7 @@ export type PageHeaderProps = {
 export function PageHeader({ title, icon, className, actions }: PageHeaderProps) {
   const router = useRouter()
   const [sidebar, setSidebar] = useAtom(sidebarAtom)
+  const [, setHelpPanel] = useAtom(isHelpPanelOpenAtom)
   const createNewNote = useCreateNewNote()
 
   // Toggle sidebar with Cmd/Ctrl + B
@@ -38,6 +39,19 @@ export function PageHeader({ title, icon, className, actions }: PageHeaderProps)
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
+
+  // Toggle help panel with Cmd/Ctrl + /
+  useHotkeys(
+    "mod+/",
+    () => {
+      setHelpPanel((prev) => !prev)
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
+    },
+  )
 
   return (
     <div className={cx("@container/header", className)}>

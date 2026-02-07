@@ -865,6 +865,8 @@ export const defaultFontAtom = atomWithStorage<Font>("font", "sans")
 
 export const sidebarAtom = atomWithStorage<"expanded" | "collapsed">("sidebar", "expanded")
 
+export const isHelpPanelOpenAtom = atomWithStorage<boolean>("help-panel", false)
+
 export const calendarLayoutAtom = atomWithStorage<"week" | "month">("calendar-layout", "week")
 
 // -----------------------------------------------------------------------------
