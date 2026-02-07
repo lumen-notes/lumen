@@ -40,7 +40,8 @@ Each entry should:
 - Focus on outcomes and impact, not implementation details. Skip sub-features and internal specifics (e.g. don't mention specific icons added, individual links moved, or UI patterns used).
 - Use plain language, not technical jargon.
 - One bullet per feature. A bullet can have multiple sentences if needed, but don't split a single feature into multiple bullets.
-- Use "Improved" (not "New") when replacing or converting existing functionality into a new form (e.g. converting a dialog into a panel).
+- Use "New" only for entirely new capabilities. If the feature already exists in any form, it's "Improved".
+- Within each category, order entries by user impact (most impactful first).
 - Avoid em dashes. Use periods or commas instead.
 
 ### 4. Update CHANGELOG.md
