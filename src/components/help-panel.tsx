@@ -140,7 +140,7 @@ function HelpPanelContent({
 
           <HelpSection title="Note shortcuts">
             <HelpItem>
-              <span>Toggle view/edit</span>
+              <span>Toggle editing</span>
               <Keys keys={["⌘", "E"]} />
             </HelpItem>
             <HelpItem>
