@@ -127,7 +127,7 @@ function HelpPanelContent({
               <Keys keys={["⌘", "B"]} />
             </HelpItem>
             <HelpItem>
-              <span>Toggle help</span>
+              <span>Toggle help panel</span>
               <Keys keys={["⌘", "/"]} />
             </HelpItem>
             {online && openaiKey && voiceAssistantEnabled && (
