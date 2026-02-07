@@ -14,7 +14,7 @@ export function Sidebar() {
   const { isScrolled, topSentinelProps } = useIsScrolled()
 
   return (
-    <div className="grid w-56 shrink-0 grid-rows-[auto_1fr] overflow-hidden border-r border-border-secondary">
+    <div className="grid grid-rows-[auto_1fr] overflow-hidden h-full border-r border-border-secondary">
       <div
         className={cx(
           "flex w-full justify-between border-b p-2",

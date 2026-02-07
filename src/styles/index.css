@@ -102,7 +102,8 @@ body:has([data-resizing="true"]) * {
   @apply focus-ring hover:bg-bg-hover active:bg-bg-active;
 }
 
-.nav-item[aria-current] {
+.nav-item[aria-current],
+.nav-item[aria-pressed="true"] {
   @apply bg-bg-secondary font-bold text-text;
   @apply epaper:bg-text epaper:text-bg;
 }

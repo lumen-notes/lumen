@@ -552,30 +552,42 @@ function NotePage() {
           ) : null}
 
           <SegmentedControl aria-label="Mode" size="small" className="hidden sm:flex">
-            <Tooltip open={mode === "read" ? false : undefined}>
-              <Tooltip.Trigger
-                render={
-                  <SegmentedControl.Segment selected={mode === "read"} onClick={switchToReading}>
-                    Read
-                  </SegmentedControl.Segment>
-                }
-              />
-              <Tooltip.Content side="bottom" className="text-text-secondary">
-                {toggleModeShortcut}
-              </Tooltip.Content>
-            </Tooltip>
-            <Tooltip open={mode === "write" ? false : undefined}>
-              <Tooltip.Trigger
-                render={
-                  <SegmentedControl.Segment selected={mode === "write"} onClick={switchToWriting}>
-                    Write
-                  </SegmentedControl.Segment>
-                }
-              />
-              <Tooltip.Content side="bottom" className="text-text-secondary">
-                {toggleModeShortcut}
-              </Tooltip.Content>
-            </Tooltip>
+            {mode === "read" ? (
+              <SegmentedControl.Segment selected onClick={switchToReading}>
+                View
+              </SegmentedControl.Segment>
+            ) : (
+              <Tooltip>
+                <Tooltip.Trigger
+                  render={
+                    <SegmentedControl.Segment onClick={switchToReading}>
+                      View
+                    </SegmentedControl.Segment>
+                  }
+                />
+                <Tooltip.Content side="bottom" className="text-text-secondary">
+                  {toggleModeShortcut}
+                </Tooltip.Content>
+              </Tooltip>
+            )}
+            {mode === "write" ? (
+              <SegmentedControl.Segment selected onClick={switchToWriting}>
+                Edit
+              </SegmentedControl.Segment>
+            ) : (
+              <Tooltip>
+                <Tooltip.Trigger
+                  render={
+                    <SegmentedControl.Segment onClick={switchToWriting}>
+                      Edit
+                    </SegmentedControl.Segment>
+                  }
+                />
+                <Tooltip.Content side="bottom" className="text-text-secondary">
+                  {toggleModeShortcut}
+                </Tooltip.Content>
+              </Tooltip>
+            )}
           </SegmentedControl>
           <div className="flex items-center">
             <IconButton
