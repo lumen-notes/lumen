@@ -40,7 +40,6 @@ export function AppLayout({ className, children }: AppLayoutProps) {
 
   return (
     <div className={cx("flex grow flex-col overflow-hidden print:overflow-visible", className)}>
-      <SignInBanner />
       <div className="flex grow overflow-hidden">
         {sidebar === "expanded" ? (
           <div className="hidden w-56 shrink-0 sm:grid print:hidden">
@@ -78,6 +77,7 @@ export function AppLayout({ className, children }: AppLayoutProps) {
         </Group>
         {!isWideViewport ? <HelpDrawer /> : null}
       </div>
+      <SignInBanner />
     </div>
   )
 }
