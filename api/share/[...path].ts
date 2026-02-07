@@ -40,10 +40,10 @@ async function handle(request: Request): Promise<Response> {
     const noteTitle = getNoteTitle(noteContent)
     const frontmatter = parseFrontmatter(noteMarkdown)
     const ogImageUrl = getOgImageUrl(frontmatter)
-    const pageTitle = getSanitizedText(noteTitle || gist.description || "Untitled")
+    const pageTitle = getHtmlEscaped(noteTitle || gist.description || "Untitled")
     const pageDescription = "Shared note"
-    const siteName = getSanitizedText(gist?.owner?.login || "Lumen")
-    const escapedNoteContent = getSanitizedText(noteContent)
+    const siteName = getHtmlEscaped(gist?.owner?.login || "Lumen")
+    const escapedNoteContent = getHtmlEscaped(noteContent)
     const escapedUrl = getHtmlEscaped(url.href)
     const escapedImageUrl = ogImageUrl ? getHtmlEscaped(ogImageUrl) : ""
     const html = `<!doctype html>
@@ -424,16 +424,6 @@ function getRequestUrl(request: Request): URL {
     const proto = request.headers.get("x-forwarded-proto") ?? "http"
     return new URL(request.url, `${proto}://${host}`)
   }
-}
-
-/**
- * Removes dangerous HTML characters to prevent XSS attacks.
- * Removes <, >, &, ", and ' characters for cleaner previews.
- * Since previews only display text, removing these characters
- * is safer and produces cleaner output than HTML entities.
- */
-function getSanitizedText(text: string): string {
-  return text.replace(/[<>&"']/g, "")
 }
 
 /**
