@@ -10,7 +10,7 @@ export function SignInBanner() {
   }
 
   return (
-    <div className="flex shrink-0 flex-col justify-between bg-bg-secondary gap-4 p-4 text-text sm:flex-row items-center sm:p-2 print:hidden">
+    <div className="flex shrink-0 flex-col justify-between sm:border-t border-border-secondary gap-4 p-4 pt-2 text-text sm:flex-row items-center sm:p-2 print:hidden">
       <span className="sm:px-2 text-text-secondary text-balance text-center sm:text-left font-handwriting">
         These are demo notes. Sign in to write your own.
       </span>
