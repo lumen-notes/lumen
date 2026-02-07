@@ -31,7 +31,7 @@ export function NoteLink({
   }
 
   return (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={
         <Link
           className={className}
@@ -40,13 +40,11 @@ export function NoteLink({
           search={{ mode: "read", query: undefined, view: "grid" }}
         />
       }
-      payload={{
-        note: note ?? null,
-        align: hoverCardAlign,
-        alignOffset: hoverCardAlignOffset,
-      }}
+      note={note ?? null}
+      align={hoverCardAlign}
+      alignOffset={hoverCardAlignOffset}
     >
       {text || id}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 }

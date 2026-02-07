@@ -368,19 +368,17 @@ function CalendarItem({
   }
 
   return (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={link}
-      payload={{
-        note,
-        anchor,
-        side: "bottom",
-        sideOffset,
-        align: "start",
-        ...(anchor && { transformOrigin: "top left" }),
-      }}
+      note={note}
+      anchor={anchor}
+      side="bottom"
+      sideOffset={sideOffset}
+      align="start"
+      transformOrigin={anchor ? "top left" : undefined}
     >
       {content}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 }
 
@@ -501,19 +499,17 @@ function MonthWeekRow({
   const weekNumberElement = isWeekActive ? (
     React.cloneElement(weekLink, {}, weekNumber)
   ) : (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={weekLink}
-      payload={{
-        note,
-        anchor: anchorRef?.current,
-        side: "bottom",
-        sideOffset: 8,
-        align: "start",
-        transformOrigin: "top left",
-      }}
+      note={note}
+      anchor={anchorRef?.current}
+      side="bottom"
+      sideOffset={8}
+      align="start"
+      transformOrigin="top left"
     >
       {weekNumber}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 
   return (
@@ -626,19 +622,17 @@ function MonthDateCell({
 
   return (
     <div>
-      <NoteHoverCard.Trigger
+      <NoteHoverCard
         render={link}
-        payload={{
-          note,
-          anchor: anchorRef?.current,
-          side: "bottom",
-          sideOffset: 8,
-          align: "start",
-          transformOrigin: "top left",
-        }}
+        note={note}
+        anchor={anchorRef?.current}
+        side="bottom"
+        sideOffset={8}
+        align="start"
+        transformOrigin="top left"
       >
         {content}
-      </NoteHoverCard.Trigger>
+      </NoteHoverCard>
     </div>
   )
 }

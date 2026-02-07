@@ -8,7 +8,7 @@ import { DropdownMenu } from "../components/dropdown-menu"
 import { IconButton } from "../components/icon-button"
 import { EditIcon16, ExternalLinkIcon16, LinkIcon16, MoreIcon16 } from "../components/icons"
 import { Markdown } from "../components/markdown"
-import { NoteHoverCard } from "../components/note-hover-card"
+import { HoverCard } from "../components/hover-card"
 import { githubUserAtom } from "../global-state"
 import { useNoteById } from "../hooks/note"
 import { fontSchema, widthSchema } from "../schema"
@@ -114,7 +114,7 @@ function RouteComponent() {
   }
 
   return (
-    <NoteHoverCard.Provider>
+    <HoverCard.Provider>
       <div className="p-5 md:p-16">
         <div
           className={cx(
@@ -209,6 +209,6 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-    </NoteHoverCard.Provider>
+    </HoverCard.Provider>
   )
 }
