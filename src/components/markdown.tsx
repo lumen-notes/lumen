@@ -58,7 +58,6 @@ import {
   TrashIcon16,
 } from "./icons"
 import { FootnoteRefLink } from "./footnote-ref-link"
-import { HoverCard } from "./hover-card"
 import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"

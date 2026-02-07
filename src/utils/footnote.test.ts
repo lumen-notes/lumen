@@ -32,6 +32,21 @@ describe("getFootnoteContent", () => {
     expect(getFootnoteContent(markdown, "1")).toBeNull()
   })
 
+  it("should match footnote ids case-insensitively and with collapsed whitespace", () => {
+    const markdown = "[^My Note]: Footnote content"
+    expect(getFootnoteContent(markdown, "my note")).toBe("Footnote content")
+  })
+
+  it("should match percent-encoded footnote ids from rendered links", () => {
+    const markdown = "[^My Note]: Footnote content"
+    expect(getFootnoteContent(markdown, "my%20note")).toBe("Footnote content")
+  })
+
+  it("should handle missing space after the definition colon", () => {
+    const markdown = "[^1]:Footnote content"
+    expect(getFootnoteContent(markdown, "1")).toBe("Footnote content")
+  })
+
   it("should handle named footnote ids", () => {
     const markdown = "[^note]: Named footnote content"
     expect(getFootnoteContent(markdown, "note")).toBe("Named footnote content")
