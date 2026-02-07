@@ -370,14 +370,12 @@ function CalendarItem({
   return (
     <NoteHoverCard.Trigger
       render={link}
-      payload={{
-        note,
-        anchor,
-        side: "bottom",
-        sideOffset,
-        align: "start",
-        ...(anchor && { transformOrigin: "top left" }),
-      }}
+      note={note}
+      anchor={anchor}
+      side="bottom"
+      sideOffset={sideOffset}
+      align="start"
+      transformOrigin={anchor ? "top left" : undefined}
     >
       {content}
     </NoteHoverCard.Trigger>
@@ -503,14 +501,12 @@ function MonthWeekRow({
   ) : (
     <NoteHoverCard.Trigger
       render={weekLink}
-      payload={{
-        note,
-        anchor: anchorRef?.current,
-        side: "bottom",
-        sideOffset: 8,
-        align: "start",
-        transformOrigin: "top left",
-      }}
+      note={note}
+      anchor={anchorRef?.current}
+      side="bottom"
+      sideOffset={8}
+      align="start"
+      transformOrigin="top left"
     >
       {weekNumber}
     </NoteHoverCard.Trigger>
@@ -628,14 +624,12 @@ function MonthDateCell({
     <div>
       <NoteHoverCard.Trigger
         render={link}
-        payload={{
-          note,
-          anchor: anchorRef?.current,
-          side: "bottom",
-          sideOffset: 8,
-          align: "start",
-          transformOrigin: "top left",
-        }}
+        note={note}
+        anchor={anchorRef?.current}
+        side="bottom"
+        sideOffset={8}
+        align="start"
+        transformOrigin="top left"
       >
         {content}
       </NoteHoverCard.Trigger>

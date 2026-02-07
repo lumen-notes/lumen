@@ -57,6 +57,8 @@ import {
   MoreIcon16,
   TrashIcon16,
 } from "./icons"
+import { FootnoteRefLink } from "./footnote-ref-link"
+import { HoverCard } from "./hover-card"
 import { NoteLink } from "./note-link"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"
@@ -77,7 +79,7 @@ export type MarkdownProps = {
   noteId?: string
 }
 
-const MarkdownContext = React.createContext<{
+export const MarkdownContext = React.createContext<{
   markdown: string
   markdownBody: string
   markdownBodyStartOffset: number
@@ -288,7 +290,7 @@ function isObjectEmpty(obj: Record<string, unknown>) {
   return Object.keys(obj).length === 0
 }
 
-function MarkdownContent({ children, className }: { children: string; className?: string }) {
+export function MarkdownContent({ children, className }: { children: string; className?: string }) {
   return (
     <ReactMarkdown
       className={cx("markdown", className)}
@@ -407,6 +409,20 @@ const anchorUrlSchema = z.union([z.string().url(), z.tuple([z.string().url()])])
 
 function Anchor(props: React.ComponentPropsWithoutRef<"a">) {
   const ref = React.useRef<HTMLAnchorElement>(null)
+
+  // Render footnote references with a preview hover card
+  if (props.href?.startsWith("#user-content-fn-")) {
+    return (
+      <FootnoteRefLink href={props.href} className={props.className}>
+        {props.children}
+      </FootnoteRefLink>
+    )
+  }
+
+  // Render other anchor links (e.g. footnote back-refs) as plain links
+  if (props.href?.startsWith("#")) {
+    return <a {...props} />
+  }
 
   // Transform upload link
   if (props.href?.startsWith(UPLOADS_DIR)) {

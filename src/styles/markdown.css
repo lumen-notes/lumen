@@ -152,3 +152,7 @@
 .markdown .katex-html {
   display: none;
 }
+
+.markdown [id^="user-content-fn-"] {
+  color: var(--color-text-secondary);
+}

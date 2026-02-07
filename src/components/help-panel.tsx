@@ -4,7 +4,7 @@ import { isHelpPanelOpenAtom } from "../global-state"
 import { IconButton } from "./icon-button"
 import { XIcon16 } from "./icons"
 import { Markdown } from "./markdown"
-import { NoteHoverCard } from "./note-hover-card"
+import { HoverCard } from "./hover-card"
 
 function HelpSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -65,7 +65,7 @@ function HelpContent({
   size?: "small" | "medium"
 }) {
   return (
-    <NoteHoverCard.Provider container={null}>
+    <HoverCard.Provider container={null}>
       <div className="grid grid-rows-[auto_1fr] overflow-hidden h-full">
         <header className="flex items-center gap-2 px-2 py-2">
           <div className="flex w-0 grow items-center gap-3 px-2">
@@ -144,7 +144,7 @@ function HelpContent({
           </HelpSection>
         </div>
       </div>
-    </NoteHoverCard.Provider>
+    </HoverCard.Provider>
   )
 }
 

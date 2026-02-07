@@ -54,7 +54,7 @@ export function DateLink({ date, text, className }: DateLinkProps) {
   )
 
   return (
-    <NoteHoverCard.Trigger render={link} payload={{ note, align: "start" }}>
+    <NoteHoverCard.Trigger render={link} note={note} align="start">
       {linkText}
     </NoteHoverCard.Trigger>
   )

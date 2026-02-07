@@ -14,7 +14,7 @@ import {
 import { cx } from "../utils/cx"
 import { PageHeader, PageHeaderProps } from "./page-header"
 import { VoiceConversationBar } from "./voice-conversation"
-import { NoteHoverCard } from "./note-hover-card"
+import { HoverCard } from "./hover-card"
 
 type PageLayoutProps = PageHeaderProps & {
   className?: string
@@ -41,7 +41,7 @@ export function PageLayout({
   const { online } = useNetworkState()
 
   return (
-    <NoteHoverCard.Provider>
+    <HoverCard.Provider>
       <div className={cx("grid grid-rows-[auto_1fr] overflow-hidden", className)}>
         <PageHeader
           {...props}
@@ -82,6 +82,6 @@ export function PageLayout({
           </div>
         </div>
       </div>
-    </NoteHoverCard.Provider>
+    </HoverCard.Provider>
   )
 }

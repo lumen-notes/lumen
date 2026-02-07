@@ -52,7 +52,7 @@ export function WeekLink({ week, text, className }: WeekLinkProps) {
   )
 
   return (
-    <NoteHoverCard.Trigger render={link} payload={{ note, align: "center" }}>
+    <NoteHoverCard.Trigger render={link} note={note} align="center">
       {text || formatWeek(week)}
     </NoteHoverCard.Trigger>
   )
