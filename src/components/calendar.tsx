@@ -368,7 +368,7 @@ function CalendarItem({
   }
 
   return (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={link}
       note={note}
       anchor={anchor}
@@ -378,7 +378,7 @@ function CalendarItem({
       transformOrigin={anchor ? "top left" : undefined}
     >
       {content}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 }
 
@@ -499,7 +499,7 @@ function MonthWeekRow({
   const weekNumberElement = isWeekActive ? (
     React.cloneElement(weekLink, {}, weekNumber)
   ) : (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={weekLink}
       note={note}
       anchor={anchorRef?.current}
@@ -509,7 +509,7 @@ function MonthWeekRow({
       transformOrigin="top left"
     >
       {weekNumber}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 
   return (
@@ -622,7 +622,7 @@ function MonthDateCell({
 
   return (
     <div>
-      <NoteHoverCard.Trigger
+      <NoteHoverCard
         render={link}
         note={note}
         anchor={anchorRef?.current}
@@ -632,7 +632,7 @@ function MonthDateCell({
         transformOrigin="top left"
       >
         {content}
-      </NoteHoverCard.Trigger>
+      </NoteHoverCard>
     </div>
   )
 }

@@ -2,17 +2,7 @@ import { Note } from "../schema"
 import { HoverCard } from "./hover-card"
 import { NotePreview } from "./note-preview"
 
-function Trigger({
-  render,
-  note,
-  children,
-  side,
-  sideOffset,
-  align,
-  alignOffset,
-  anchor,
-  transformOrigin,
-}: {
+export type NoteHoverCardProps = {
   render: React.ReactElement
   note: Note | null
   children: React.ReactNode
@@ -22,7 +12,19 @@ function Trigger({
   alignOffset?: number
   anchor?: Element | null
   transformOrigin?: string
-}) {
+}
+
+export function NoteHoverCard({
+  render,
+  note,
+  children,
+  side,
+  sideOffset,
+  align,
+  alignOffset,
+  anchor,
+  transformOrigin,
+}: NoteHoverCardProps) {
   return (
     <HoverCard.Trigger
       render={render}
@@ -45,5 +47,3 @@ function Trigger({
     </HoverCard.Trigger>
   )
 }
-
-export const NoteHoverCard = Object.assign({}, { Trigger })

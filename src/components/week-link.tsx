@@ -52,8 +52,8 @@ export function WeekLink({ week, text, className }: WeekLinkProps) {
   )
 
   return (
-    <NoteHoverCard.Trigger render={link} note={note} align="center">
+    <NoteHoverCard render={link} note={note} align="center">
       {text || formatWeek(week)}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 }

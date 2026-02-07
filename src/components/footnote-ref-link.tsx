@@ -31,7 +31,10 @@ export function FootnoteRefLink({
 
   return (
     <HoverCard.Trigger
-      render={<a href={href} className={cx("text-text-secondary px-0.5", className)} />}
+      render={
+        // eslint-disable-next-line jsx-a11y/anchor-has-content
+        <a href={href} className={cx("text-text-secondary px-0.5", className)} />
+      }
       payload={{
         content: <MarkdownContent>{content}</MarkdownContent>,
         popupClassName: "max-w-80 rounded-lg py-2.5 px-4",

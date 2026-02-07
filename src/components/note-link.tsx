@@ -31,7 +31,7 @@ export function NoteLink({
   }
 
   return (
-    <NoteHoverCard.Trigger
+    <NoteHoverCard
       render={
         <Link
           className={className}
@@ -45,6 +45,6 @@ export function NoteLink({
       alignOffset={hoverCardAlignOffset}
     >
       {text || id}
-    </NoteHoverCard.Trigger>
+    </NoteHoverCard>
   )
 }
