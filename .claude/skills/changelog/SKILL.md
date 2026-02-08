@@ -21,6 +21,8 @@ git diff main...HEAD
 
 Analyze the diff and identify changes that affect the user. Ignore internal refactors, code style changes, and developer-only changes (test infrastructure, CI config, etc.) unless they have user-facing impact.
 
+Also skip minor polish changes that users wouldn't notice or care about (e.g. small spacing tweaks, cosmetic adjustments, moving elements slightly). Only include changes that meaningfully affect the user's experience or workflow.
+
 Categorize each change:
 
 - **New** - new features
@@ -36,13 +38,14 @@ If there are no user-facing changes, inform the user and stop.
 
 Each entry should:
 
-- Be written for humans. Describe what the user can now do or what changed from their perspective.
+- Be written for humans. Describe what changed AND why the user should care. Lead with a concise statement of what changed, then explain the benefit. For example: "Cheatsheet dialog replaced with a help panel that stays open while you work, so you can reference shortcuts without interrupting what you're doing." Not: "Cheatsheet dialog replaced with a help panel."
 - Focus on outcomes and impact, not implementation details. Skip sub-features and internal specifics (e.g. don't mention specific icons added, individual links moved, or UI patterns used).
 - Use plain language, not technical jargon.
 - One bullet per feature. A bullet can have multiple sentences if needed, but don't split a single feature into multiple bullets.
 - Use "New" only for entirely new capabilities. If the feature already exists in any form, it's "Improved".
 - Within each category, order entries by user impact (most impactful first).
 - Avoid em dashes. Use periods or commas instead.
+- Vary sentence structure when it reads naturally, but don't sacrifice clarity for variety. "Now" is fine when it signals a change clearly.
 
 ### 4. Update CHANGELOG.md
 
@@ -63,7 +66,7 @@ Format:
 
 ### New
 
-- You can now export notes as PDF from the share menu.
+- You can now export notes as PDF from the share menu, so you can share or print them with formatting intact.
 
 ### Fixed
 
@@ -73,7 +76,7 @@ Format:
 
 ### Improved
 
-- The sidebar now remembers your scroll position between sessions.
+- The sidebar now remembers your scroll position between sessions, so you don't lose your place when navigating away.
 ```
 
 ### 5. Commit
