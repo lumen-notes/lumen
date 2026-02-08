@@ -6,6 +6,7 @@ import { getLeadingEmoji } from "../utils/emoji"
 import { EmojiFavicon } from "./emoji-favicon"
 import { GitHubAvatar } from "./github-avatar"
 import { CalendarDateIcon16, CalendarIcon16, NoteIcon16, NoteTemplateIcon16 } from "./icons"
+import { getImdbId } from "../utils/imdb"
 import { WebsiteFavicon } from "./website-favicon"
 
 type NoteFaviconProps = React.ComponentPropsWithoutRef<"span"> & {
@@ -47,6 +48,20 @@ export const NoteFavicon = React.memo(
     // URL
     if (note.url && online) {
       icon = <WebsiteFavicon data-testid="favicon-url" url={note.url} />
+    }
+
+    // IMDb poster
+    const imdbId = getImdbId(note.url)
+    if (imdbId && online) {
+      icon = (
+        <img
+          data-testid="favicon-imdb"
+          className="inline-block aspect-[3/4] h-icon object-cover rounded-[2px]! epaper:rounded-none! bg-bg-secondary"
+          src={`/api/tmdb-poster?imdbId=${imdbId}&size=w92`}
+          alt=""
+          aria-hidden
+        />
+      )
     }
 
     // Book
