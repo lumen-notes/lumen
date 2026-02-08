@@ -14,7 +14,7 @@ function Root({
   return (
     <details
       open={defaultOpen}
-      className={cx("group/details flex flex-col gap-3 coarse:gap-4", className)}
+      className={cx("group/details flex flex-col open:gap-3 open:coarse:gap-4", className)}
     >
       {children}
     </details>

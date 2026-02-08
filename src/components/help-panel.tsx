@@ -2,22 +2,25 @@ import { useAtom } from "jotai"
 import { Drawer } from "vaul"
 import { isHelpPanelOpenAtom } from "../global-state"
 import { IconButton } from "./icon-button"
-import { XIcon16 } from "./icons"
+import { CircleQuestionMarkIcon16, XIcon16 } from "./icons"
 import { Markdown } from "./markdown"
+import { Details } from "./details"
 import { HoverCard } from "./hover-card"
 
 function HelpSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2 min-w-0 p-4">
-      <div className="text-sm text-text-secondary h-4 flex items-center">{title}</div>
-      <ul className="flex flex-col">{children}</ul>
+    <div className="min-w-0 p-4">
+      <Details>
+        <Details.Summary>{title}</Details.Summary>
+        <ul className="flex flex-col gap-1">{children}</ul>
+      </Details>
     </div>
   )
 }
 
 function HelpItem({ children }: { children: React.ReactNode }) {
   return (
-    <li className="flex items-center justify-between h-9 gap-3 *:first:min-w-0 *:first:truncate *:last:shrink-0">
+    <li className="flex items-center justify-between h-8 group-data-[size=medium]/help:h-10 gap-3 *:first:min-w-0 *:first:truncate *:last:shrink-0">
       {children}
     </li>
   )
@@ -66,9 +69,10 @@ function HelpContent({
 }) {
   return (
     <HoverCard.Provider container={null}>
-      <div className="grid grid-rows-[auto_1fr] overflow-hidden h-full">
+      <div className="grid grid-rows-[auto_1fr] overflow-hidden h-full group/help" data-size={size}>
         <header className="flex items-center gap-2 px-2 py-2">
           <div className="flex w-0 grow items-center gap-3 px-2">
+            <CircleQuestionMarkIcon16 className="shrink-0 text-text-secondary" />
             <div className="truncate">Help</div>
           </div>
           <IconButton aria-label="Close" shortcut={["⌘", "/"]} size={size} onClick={onClose}>
@@ -76,7 +80,7 @@ function HelpContent({
           </IconButton>
         </header>
 
-        <div className="overflow-auto scroll-mask grid divide-y divide-border-secondary">
+        <div className="overflow-auto scroll-mask grid content-start divide-y divide-border-secondary">
           <HelpSection title="Links">
             <HelpLink href="https://github.com/lumen-notes/lumen/issues/new">
               Send feedback
