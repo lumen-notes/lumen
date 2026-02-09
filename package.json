@@ -62,7 +62,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "ejs": "^3.1.10",
-    "emoji-regex": "^10.4.0",
+    "emoji-regex": "^10.6.0",
     "fast-fuzzy": "^1.11.2",
     "fast-memoize": "^2.5.2",
     "howler": "^2.2.4",
