@@ -50,7 +50,7 @@ async function handle(request: Request): Promise<Response> {
 <html>
   <head>
     <title>${pageTitle}</title>
-    <link rel="icon" href="/favicon-production.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta charset="utf-8" />
     <meta name="description" content="${pageDescription}" />
     <meta property="og:type" content="article" />
