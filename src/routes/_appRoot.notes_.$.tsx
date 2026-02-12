@@ -793,6 +793,7 @@ function NotePage() {
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
         ref={containerRef}
+        className="@container"
         onMouseDown={(event) => {
           // Double click to edit
           if (mode === "read" && event.detail > 1) {
@@ -801,7 +802,7 @@ function NotePage() {
           }
         }}
       >
-        <div className="p-5 lg:p-10">
+        <div className="p-5 @[640px]:p-10">
           <div
             className={cx(
               "flex flex-col gap-8 pb-[50vh]",
