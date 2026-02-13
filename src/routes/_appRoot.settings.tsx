@@ -19,6 +19,7 @@ import {
   isCloningRepoAtom,
   isRepoClonedAtom,
   isRepoNotClonedAtom,
+  promptToNameFilesAtom,
   vimModeAtom,
   voiceAssistantEnabledAtom,
 } from "../global-state"
@@ -37,6 +38,7 @@ function RouteComponent() {
       <div className="p-4 pb-6">
         <div className="mx-auto flex max-w-xl flex-col gap-6">
           <GitHubSection />
+          <FileManagementSection />
           <AppearanceSection />
           <EditorSection />
           <AISection />
@@ -150,6 +152,30 @@ function GitHubSection() {
             </Button>
           </div>
         ) : null}
+      </div>
+    </SettingsSection>
+  )
+}
+
+function FileManagementSection() {
+  const [promptToName, setPromptToName] = useAtom(promptToNameFilesAtom)
+
+  return (
+    <SettingsSection title="File Management">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2.5 leading-4">
+          <Switch 
+            id="prompt-naming" 
+            checked={promptToName} 
+            onCheckedChange={setPromptToName} 
+          />
+          <label htmlFor="prompt-naming" className="select-none">
+            Prompt for file name on first save
+          </label>
+        </div>
+        <p className="text-xs text-text-secondary ml-[42px] italic">
+          If disabled, notes will be named automatically based on current time.
+        </p>
       </div>
     </SettingsSection>
   )
