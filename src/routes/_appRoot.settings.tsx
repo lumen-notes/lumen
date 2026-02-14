@@ -41,7 +41,7 @@ function RouteComponent() {
           <EditorSection />
           <AISection />
           <div className="p-5 text-text-tertiary self-center flex flex-col gap-3 items-center">
-            <span className="text-sm font-handwriting">
+            <span className="text-sm">
               Made by{" "}
               <a
                 className="link decoration-text-tertiary"
@@ -62,7 +62,7 @@ function RouteComponent() {
               </a>
             </span>
             <a href="https://colebemis.com" target="_blank" rel="noopener noreferrer">
-              <Signature width={120} />
+              <Signature width={100} />
             </a>
           </div>
         </div>
