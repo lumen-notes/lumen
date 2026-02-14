@@ -1,19 +1,66 @@
 import { useChat } from "@ai-sdk/react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import React from "react"
 import { SignInButton } from "../components/github-auth"
 import { Markdown } from "../components/markdown"
-import { isSignedOutAtom } from "../global-state"
+import { githubRepoAtom, globalStateMachineAtom } from "../global-state"
 import { cx } from "../utils/cx"
+import { RepoForm } from "../components/repo-form"
+import { LoadingIcon16 } from "../components/icons"
 
-export const Route = createFileRoute("/_appRoot/chat")({
+type PageState = "loading" | "signIn" | "selectRepo" | "cloning" | "ready"
+
+const pageStateAtom = selectAtom(globalStateMachineAtom, (state): PageState => {
+  if (state.matches("signedIn.cloned")) return "ready"
+  if (state.matches("signedIn.cloningRepo")) return "cloning"
+  if (state.matches("signedIn.notCloned")) return "selectRepo"
+  if (state.matches("signedOut")) return "signIn"
+  return "loading"
+})
+
+export const Route = createFileRoute("/ai")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const isSignedOut = useAtomValue(isSignedOutAtom)
-  return <div className="overflow-auto p-4">{isSignedOut ? <SignInButton /> : <Chat />}</div>
+  const pageState = useAtomValue(pageStateAtom)
+  const githubRepo = useAtomValue(githubRepoAtom)
+
+  switch (pageState) {
+    case "loading":
+      return null
+
+    case "signIn":
+      return (
+        <div className="p-4">
+          <SignInButton className="w-full" />
+        </div>
+      )
+
+    case "selectRepo":
+      return (
+        <div className="p-4">
+          <RepoForm />
+        </div>
+      )
+
+    case "cloning":
+      return (
+        <div className="flex items-center gap-2 p-4 leading-4 text-text-secondary">
+          <LoadingIcon16 />
+          {githubRepo ? `Cloning ${githubRepo.owner}/${githubRepo.name}…` : "Cloning…"}
+        </div>
+      )
+
+    case "ready":
+      return (
+        <div className="overflow-auto p-4">
+          <Chat />
+        </div>
+      )
+  }
 }
 
 function Chat() {
