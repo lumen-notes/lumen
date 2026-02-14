@@ -60,6 +60,21 @@ function MarkdownSyntaxItem({ syntax }: { syntax: string }) {
   )
 }
 
+function SearchSyntaxItem({
+  syntax,
+  description,
+}: {
+  syntax: string
+  description: string
+}) {
+  return (
+    <li className="flex flex-col gap-0.5 py-1.5">
+      <code className="text-text">{syntax}</code>
+      <span className="text-text-secondary text-sm">{description}</span>
+    </li>
+  )
+}
+
 function HelpContent({
   onClose,
   size = "small",
@@ -124,6 +139,29 @@ function HelpContent({
               <span>Save and view</span>
               <Keys keys={["⌘", "⏎"]} />
             </HelpItem>
+          </HelpSection>
+
+          <HelpSection title="Search syntax">
+            <SearchSyntaxItem syntax="tag:work" description="Notes with tag" />
+            <SearchSyntaxItem syntax="-tag:archive" description="Exclude notes with tag" />
+            <SearchSyntaxItem syntax="tag:work,personal" description="Multiple values (OR)" />
+            <SearchSyntaxItem
+              syntax='title:"My Note"'
+              description="Exact title (quotes for spaces)"
+            />
+            <SearchSyntaxItem syntax="type:daily" description="Note type (note, daily, weekly)" />
+            <SearchSyntaxItem syntax="link:note-id" description="Notes linking to ID" />
+            <SearchSyntaxItem syntax="backlink:note-id" description="Notes linked from ID" />
+            <SearchSyntaxItem syntax="date:2024-01-15" description="Notes with date" />
+            <SearchSyntaxItem syntax="date:>=today" description="Date with range operator" />
+            <SearchSyntaxItem syntax="date:next+week" description="Natural language dates" />
+            <SearchSyntaxItem syntax="tags:>=2" description="Count filters (>=, <=, >, <)" />
+            <SearchSyntaxItem syntax="has:tags" description="Has property" />
+            <SearchSyntaxItem syntax="no:backlinks" description="Missing property" />
+            <SearchSyntaxItem syntax="priority:high" description="Frontmatter field" />
+            <SearchSyntaxItem syntax="sort:title" description="Sort results" />
+            <SearchSyntaxItem syntax="sort:updated_at:desc" description="Sort with direction" />
+            <SearchSyntaxItem syntax="sort:tags,title" description="Multiple sort keys" />
           </HelpSection>
 
           <HelpSection title="Formatting">
