@@ -164,17 +164,13 @@ function FileManagementSection() {
     <SettingsSection title="File Management">
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2.5 leading-4">
-          <Switch 
-            id="prompt-naming" 
-            checked={promptToName} 
-            onCheckedChange={setPromptToName} 
-          />
+          <Switch id="prompt-naming" checked={promptToName} onCheckedChange={setPromptToName} />
           <label htmlFor="prompt-naming" className="select-none">
-            Prompt for file name on first save
+            Name new files on first save
           </label>
         </div>
         <p className="text-xs text-text-secondary ml-[42px] italic">
-          If disabled, notes will be named automatically based on current time.
+          If disabled, files are automatically saved with current time.
         </p>
       </div>
     </SettingsSection>
