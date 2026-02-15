@@ -46,7 +46,6 @@ import { PageLayout } from "../components/page-layout"
 import { PillButton } from "../components/pill-button"
 import { SegmentedControl } from "../components/segmented-control"
 import { ShareDialog } from "../components/share-dialog"
-import { TextInput } from "../components/text-input"
 import { Tooltip } from "../components/tooltip"
 import { Tool, voiceConversationMachineAtom } from "../components/voice-conversation"
 import {
@@ -183,6 +182,7 @@ function NotePage() {
   const parsedWidthResult = widthSchema.safeParse(frontmatterWidth)
   const resolvedWidth = parsedWidthResult.success ? parsedWidthResult.data : "fixed"
 
+  // Handle for programmatic control of filename editing
   const editableFilenameRef = React.useRef<EditableFilenameHandle>(null)
 
   // Set the font
