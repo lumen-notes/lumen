@@ -869,6 +869,8 @@ export const isHelpPanelOpenAtom = atomWithStorage<boolean>("help-panel", false)
 
 export const calendarLayoutAtom = atomWithStorage<"week" | "month">("calendar-layout", "week")
 
+export const promptToNameFilesAtom = atomWithStorage<boolean>("prompt-to-name-files", true)
+
 // -----------------------------------------------------------------------------
 // AI
 // -----------------------------------------------------------------------------
@@ -880,6 +882,3 @@ export const openaiKeyAtom = atomWithStorage<string>(OPENAI_KEY_STORAGE_KEY, "")
 export const hasOpenAIKeyAtom = selectAtom(openaiKeyAtom, (key) => key !== "")
 
 export const voiceAssistantEnabledAtom = atomWithStorage<boolean>("voice_assistant_enabled", false)
-
-
-export const promptToNameFilesAtom = atomWithStorage('prompt-to-name-files', true);
