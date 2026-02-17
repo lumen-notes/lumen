@@ -95,7 +95,7 @@ export const EditableFilename = forwardRef<EditableFilenameHandle, EditableFilen
                 handleCancel()
               }
             }}
-            className="h-7 min-w-0 flex-grow text-sm font-bold sm:max-w-[300px]"
+            className="h-7 min-w-0 grow text-sm sm:max-w-[300px]"
           />
           <span className="shrink-0 select-none text-text-secondary">.md</span>
         </div>
@@ -111,10 +111,9 @@ export const EditableFilename = forwardRef<EditableFilenameHandle, EditableFilen
               disabled={isSignedOut}
               aria-label={`Rename note: ${noteId}`}
               className={cx(
-                "truncate text-left font-bold transition-colors outline-none",
+                "truncate text-left font-bold transition-colors focus-ring",
                 !isSignedOut &&
-                  "cursor-text hover:bg-black/5 dark:hover:bg-white/5 rounded px-1 -mx-1",
-                "focus-visible:ring-2 focus-visible:ring-blue-500",
+                  "cursor-text hover:bg-black/5 dark:hover:bg-white/5 rounded px-1 mx-1",
               )}
               onDoubleClick={(e) => {
                 e.preventDefault()
