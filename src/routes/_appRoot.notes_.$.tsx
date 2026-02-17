@@ -54,6 +54,7 @@ import {
   githubRepoAtom,
   globalStateMachineAtom,
   isSignedOutAtom,
+  markdownFilesAtom,
   vimModeAtom,
   weeklyTemplateAtom,
 } from "../global-state"
@@ -66,10 +67,11 @@ import { cx } from "../utils/cx"
 import { formatDate, formatWeek, isValidDateString, isValidWeekString } from "../utils/date"
 import { updateFrontmatterValue } from "../utils/frontmatter"
 import { clearNoteDraft, getNoteDraft, setNoteDraft } from "../utils/note-draft"
-import { getInvalidNoteIdCharacters } from "../utils/note-id"
+import { getInvalidNoteIdCharacters, isValidNoteId } from "../utils/note-id"
 import { parseNote } from "../utils/parse-note"
 import { pluralize } from "../utils/pluralize"
 import { notificationSound, playSound } from "../utils/sounds"
+import { EditableFilename, EditableFilenameHandle } from "../components/editable-filename"
 
 type RouteSearch = {
   mode: "read" | "write"
@@ -133,6 +135,7 @@ function NotePage() {
   const dailyTemplate = useAtomValue(dailyTemplateAtom)
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const defaultFont = useAtomValue(defaultFontAtom)
+  const markdownFiles = useAtomValue(markdownFilesAtom)
   const { online } = useNetworkState()
 
   // Note data
@@ -177,6 +180,9 @@ function NotePage() {
   const parsedWidthResult = widthSchema.safeParse(frontmatterWidth)
   const resolvedWidth = parsedWidthResult.success ? parsedWidthResult.data : "fixed"
 
+  // Handle for programmatic control of filename editing
+  const editableFilenameRef = React.useRef<EditableFilenameHandle>(null)
+
   // Set the font
   React.useEffect(() => {
     document.documentElement.style.setProperty(
@@ -197,6 +203,62 @@ function NotePage() {
   const deleteNote = useDeleteNote()
   const renameNote = useRenameNote()
   const attachFile = useAttachFile()
+
+  const normalizeNoteId = React.useCallback((rawName: string) => {
+    return rawName.trim().replace(/\.md$/i, "").trim()
+  }, [])
+
+  const attemptRename = React.useCallback(
+    (rawName: string): boolean => {
+      if (!noteId) return false
+
+      const newNoteId = normalizeNoteId(rawName)
+
+      if (!newNoteId || newNoteId === noteId) {
+        return true
+      }
+
+      const result = renameNote({
+        oldName: noteId,
+        newName: newNoteId,
+        content: editorValue,
+      })
+
+      if (!result.success) {
+        switch (result.reason) {
+          case "no-op":
+            return true
+          case "invalid":
+            {
+              const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
+              const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
+              const suffix = invalidList ? `: ${invalidList}` : ""
+              window.alert(`"${newNoteId}.md" contains invalid characters${suffix}`)
+            }
+            return false
+          case "duplicate":
+            window.alert(`"${newNoteId}.md" already exists.`)
+            return false
+          default:
+            result.reason satisfies never
+        }
+        return false
+      }
+
+      clearNoteDraft({ githubRepo, noteId })
+      clearNoteDraft({ githubRepo, noteId: newNoteId })
+
+      navigate({
+        to: "/notes/$",
+        params: { _splat: newNoteId },
+        search: (prev) => ({ ...prev, content: undefined }),
+        replace: true,
+      })
+
+      return true
+    },
+    [noteId, normalizeNoteId, renameNote, editorValue, githubRepo, navigate],
+  )
 
   const handleSave = React.useCallback(
     (value: string) => {
@@ -230,57 +292,6 @@ function NotePage() {
     },
     [noteId, editorValue, setEditorValue, handleSave],
   )
-
-  const handleRename = React.useCallback(() => {
-    if (!noteId) return
-
-    const oldNoteId = noteId
-    const newNoteIdRaw = window.prompt("Rename file", oldNoteId)
-    if (!newNoteIdRaw) return
-
-    const newNoteIdTrimmed = newNoteIdRaw.trim()
-    if (!newNoteIdTrimmed) return
-
-    const newNoteId = newNoteIdTrimmed.replace(/\.md$/i, "").trim()
-    if (!newNoteId || newNoteId === oldNoteId) return
-
-    const result = renameNote({
-      oldName: oldNoteId,
-      newName: newNoteId,
-      content: editorValue,
-    })
-
-    if (!result.success) {
-      switch (result.reason) {
-        case "no-op":
-          return
-        case "invalid":
-          {
-            const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
-            const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
-            const suffix = invalidList ? `: ${invalidList}` : ""
-            window.alert(`"${newNoteId}.md" contains invalid characters${suffix}`)
-          }
-          return
-        case "duplicate":
-          window.alert(`"${newNoteId}.md" already exists.`)
-          return
-        default:
-          result.reason satisfies never
-      }
-      return
-    }
-
-    clearNoteDraft({ githubRepo, noteId: oldNoteId })
-    clearNoteDraft({ githubRepo, noteId: newNoteId })
-
-    navigate({
-      to: "/notes/$",
-      params: { _splat: newNoteId },
-      search: (prev) => ({ ...prev, content: undefined }),
-      replace: true,
-    })
-  }, [noteId, renameNote, editorValue, githubRepo, navigate])
 
   const switchToWriting = React.useCallback(() => {
     navigate({ search: (prev) => ({ ...prev, mode: "write" }), replace: true })
@@ -509,7 +520,12 @@ function NotePage() {
     <PageLayout
       title={
         <div className="flex items-center gap-1">
-          <span className="truncate">{noteId}.md</span>
+          <EditableFilename
+            ref={editableFilenameRef}
+            noteId={noteId ?? ""}
+            isSignedOut={isSignedOut}
+            onRename={attemptRename}
+          />
           {isDraft ? (
             <DropdownMenu modal={false}>
               <DropdownMenu.Trigger
@@ -667,7 +683,7 @@ function NotePage() {
                 <DropdownMenu.Item
                   icon={<EditIcon16 />}
                   disabled={isSignedOut}
-                  onClick={handleRename}
+                  onClick={() => editableFilenameRef.current?.startRename()}
                 >
                   Rename file
                 </DropdownMenu.Item>
