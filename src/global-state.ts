@@ -869,8 +869,6 @@ export const isHelpPanelOpenAtom = atomWithStorage<boolean>("help-panel", false)
 
 export const calendarLayoutAtom = atomWithStorage<"week" | "month">("calendar-layout", "week")
 
-export const promptToNameFilesAtom = atomWithStorage<boolean>("prompt-to-name-files", true)
-
 // -----------------------------------------------------------------------------
 // AI
 // -----------------------------------------------------------------------------

@@ -55,7 +55,6 @@ import {
   globalStateMachineAtom,
   isSignedOutAtom,
   markdownFilesAtom,
-  promptToNameFilesAtom,
   vimModeAtom,
   weeklyTemplateAtom,
 } from "../global-state"
@@ -137,7 +136,6 @@ function NotePage() {
   const weeklyTemplate = useAtomValue(weeklyTemplateAtom)
   const defaultFont = useAtomValue(defaultFontAtom)
   const markdownFiles = useAtomValue(markdownFilesAtom)
-  const promptToNameFiles = useAtomValue(promptToNameFilesAtom)
   const { online } = useNetworkState()
 
   // Note data
@@ -269,46 +267,6 @@ function NotePage() {
       // New notes shouldn't be saved if the editor is empty
       if (!note && !value) return
 
-      if (!note && value && promptToNameFiles && !isDailyNote && !isWeeklyNote) {
-        const rawName = window.prompt("Name this file", noteId)
-
-        if (rawName === null) return
-
-        const newNoteId = normalizeNoteId(rawName)
-
-        if (!newNoteId) {
-          return
-        }
-
-        if (newNoteId !== noteId) {
-          if (!isValidNoteId(newNoteId)) {
-            const invalidCharacters = Array.from(new Set(getInvalidNoteIdCharacters(newNoteId)))
-            const invalidList = invalidCharacters.map((char) => `"${char}"`).join(", ")
-            const suffix = invalidList ? `: ${invalidList}` : ""
-            window.alert(`"${newNoteId}.md" contains invalid characters${suffix}`)
-            return
-          }
-
-          if (markdownFiles[`${newNoteId}.md`]) {
-            window.alert(`"${newNoteId}.md" already exists.`)
-            return
-          }
-
-          saveNote({ id: newNoteId, content: value })
-          clearNoteDraft({ githubRepo, noteId })
-          clearNoteDraft({ githubRepo, noteId: newNoteId })
-
-          navigate({
-            to: "/notes/$",
-            params: { _splat: newNoteId },
-            search: (prev) => ({ ...prev, content: undefined }),
-            replace: true,
-          })
-
-          return
-        }
-      }
-
       // Only save if the content has changed
       if (value !== note?.content) {
         saveNote({ id: noteId, content: value })
@@ -316,19 +274,7 @@ function NotePage() {
 
       clearNoteDraft({ githubRepo, noteId })
     },
-    [
-      isSignedOut,
-      noteId,
-      note,
-      promptToNameFiles,
-      isDailyNote,
-      isWeeklyNote,
-      normalizeNoteId,
-      markdownFiles,
-      saveNote,
-      githubRepo,
-      navigate,
-    ],
+    [isSignedOut, noteId, note, saveNote, githubRepo],
   )
 
   const updateWidth = React.useCallback(
