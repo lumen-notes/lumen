@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router"
-import { addDays, isWeekend, nextMonday, nextSaturday } from "date-fns"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
@@ -10,9 +9,9 @@ import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
-import { useNoteById } from "../hooks/note"
+import { useNoteById, useSaveNote } from "../hooks/note"
 import { useMoveTask } from "../hooks/task"
-import { formatDate, toDateString } from "../utils/date"
+import { generateNoteId } from "../utils/note-id"
 import {
   canMoveListItemUp,
   canMoveListItemDown,
@@ -47,10 +46,10 @@ import { GitHubAvatar } from "./github-avatar"
 import { IconButton } from "./icon-button"
 import {
   ArrowDownIcon16,
+  ArrowDownRightIcon16,
   ArrowDownToLineIcon16,
   ArrowUpIcon16,
   ArrowUpToLineIcon16,
-  CalendarDateIcon16,
   CopyIcon16,
   CutIcon16,
   ErrorIcon16,
@@ -59,6 +58,7 @@ import {
 } from "./icons"
 import { FootnoteRefLink } from "./footnote-ref-link"
 import { NoteLink } from "./note-link"
+import { NotePickerPopover, NotePickerDialog } from "./note-picker"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"
 import { PropertyKeyEditor } from "./property-key"
@@ -634,8 +634,12 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const { markdownBody, markdown, markdownBodyStartOffset, onChange, noteId } =
     React.useContext(MarkdownContext)
   const isTask = className?.includes("task-list-item")
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const [isMoveMenuOpen, setIsMoveMenuOpen] = React.useState(false)
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = React.useState(false)
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = React.useState(false)
+  const isMenuOpen = isMoveMenuOpen || isMoreMenuOpen || isMoveDialogOpen
   const moveTask = useMoveTask()
+  const saveNote = useSaveNote()
 
   const { checkbox, content, nestedLists } = React.useMemo(
     () => extractListItemElements(children),
@@ -656,61 +660,6 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     },
     [markdownBodyStartOffset, markdown, moveTask, node.position, noteId],
   )
-
-  // Memoize date options to avoid recalculating on every render
-  const dateOptions = React.useMemo(() => {
-    const now = new Date()
-    const today = now
-    const tomorrow = addDays(now, 1)
-    const saturday = nextSaturday(now)
-    const monday = nextMonday(now)
-
-    type DateOption = {
-      label: string
-      icon: React.ReactNode
-      targetId: string
-      trailingText: string
-    }
-
-    const options: DateOption[] = [
-      {
-        label: "Today",
-        icon: <CalendarDateIcon16 date={today.getDate()} />,
-        targetId: toDateString(today),
-        trailingText: formatDate(toDateString(today)),
-      },
-      {
-        label: "Tomorrow",
-        icon: <CalendarDateIcon16 date={tomorrow.getDate()} />,
-        targetId: toDateString(tomorrow),
-        trailingText: formatDate(toDateString(tomorrow)),
-      },
-      {
-        label: isWeekend(now) ? "Next weekend" : "This weekend",
-        icon: <CalendarDateIcon16 date={saturday.getDate()} />,
-        targetId: toDateString(saturday),
-        trailingText: formatDate(toDateString(saturday)),
-      },
-      {
-        label: "Next week",
-        icon: <CalendarDateIcon16 date={monday.getDate()} />,
-        targetId: toDateString(monday),
-        trailingText: formatDate(toDateString(monday)),
-      },
-    ]
-
-    // Filter out current note and duplicates, then sort by date
-    const seen = new Set<string>()
-    const sortedOptions = options
-      .filter((option) => {
-        if (option.targetId === noteId || seen.has(option.targetId)) return false
-        seen.add(option.targetId)
-        return true
-      })
-      .sort((a, b) => a.targetId.localeCompare(b.targetId))
-
-    return sortedOptions
-  }, [noteId])
 
   // Get the task line text for copy/cut operations
   const getTaskLine = React.useCallback(() => {
@@ -733,6 +682,20 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     const endWithNewline = markdownBody[end] === "\n" ? end + 1 : end
     onChange?.(markdownBody.slice(0, start) + markdownBody.slice(endWithNewline))
   }, [markdownBody, node.position, onChange])
+
+  const handleCreateNote = React.useCallback(
+    async (title: string) => {
+      const id = generateNoteId()
+      const content = `# ${title}\n\n${getTaskLine()}`
+
+      // Create new note with task content
+      await saveNote({ id, content })
+
+      // Delete task from this note
+      deleteTask()
+    },
+    [getTaskLine, saveNote, deleteTask],
+  )
 
   const nodeStart = node.position?.start.offset
   const nodeEnd = node.position?.end.offset
@@ -794,15 +757,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     <li
       {...props}
       className={cx(
-        "transition-[background-color] rounded-lg",
+        "rounded-lg",
         isMenuOpen &&
           "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
         className,
       )}
     >
       <div
-        className={cx("flex p-1.5 gap-1.5", {
-          "relative pr-10 coarse:pr-12 group/task": isTask && onChange,
+        className={cx("flex p-1.5 gap-1.5 rounded-lg", {
+          "relative pr-10 sm:fine:pr-[74px] coarse:pr-12 group/task": isTask && onChange,
+          "hover:bg-bg-hover": isTask && !isMenuOpen,
         })}
       >
         <div className="size-7 coarse:size-9 shrink-0 grid place-items-center">
@@ -845,12 +809,39 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
         </div>
         <div className="first-child:mt-0 last-child:mt-0 grow coarse:py-1">{content}</div>
         {isTask && onChange ? (
-          <div className="absolute top-1 right-1">
-            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
+          <div className="absolute top-1 right-1 flex gap-0.5">
+            <NotePickerPopover
+              open={isMoveMenuOpen}
+              onOpenChange={setIsMoveMenuOpen}
+              placeholder="Move to…"
+              exclude={noteId ? [noteId] : []}
+              onSelect={(targetNoteId) => {
+                handleMoveTo(targetNoteId)
+                setIsMoveMenuOpen(false)
+              }}
+              onCreateNote={(title) => {
+                handleCreateNote(title)
+                setIsMoveMenuOpen(false)
+              }}
+              trigger={
+                <IconButton
+                  aria-label="Move to…"
+                  tooltipSide="top"
+                  className={cx(
+                    "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100",
+                    isMenuOpen && "opacity-100",
+                    "hidden sm:fine:inline-flex coarse:hidden!",
+                  )}
+                >
+                  <ArrowDownRightIcon16 />
+                </IconButton>
+              }
+            />
+            <DropdownMenu open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen} modal={false}>
               <DropdownMenu.Trigger
                 render={
                   <IconButton
-                    aria-label="Task actions"
+                    aria-label="More actions"
                     tooltipSide="top"
                     className={cx(
                       "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100 coarse:opacity-100",
@@ -861,27 +852,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   </IconButton>
                 }
               />
-              <DropdownMenu.Content align="end" width={280} sideOffset={8} alignOffset={-4}>
-                {noteId && dateOptions.length > 0 ? (
-                  <>
-                    <DropdownMenu.Group>
-                      <DropdownMenu.GroupLabel>Move to</DropdownMenu.GroupLabel>
-                      {dateOptions.map((option) => (
-                        <DropdownMenu.Item
-                          key={option.targetId}
-                          icon={option.icon}
-                          onClick={() => handleMoveTo(option.targetId)}
-                          trailingVisual={
-                            <span className="text-text-secondary">{option.trailingText}</span>
-                          }
-                        >
-                          {option.label}
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Group>
-                    <DropdownMenu.Separator />
-                  </>
-                ) : null}
+              <DropdownMenu.Content align="end" width={280} sideOffset={8}>
+                <div className="sm:fine:hidden">
+                  <DropdownMenu.Item
+                    icon={<ArrowDownRightIcon16 />}
+                    onClick={() => setIsMoveDialogOpen(true)}
+                  >
+                    Move to…
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator />
+                </div>
                 {canMoveUp || canMoveDown || canMoveToTop || canMoveToBottom ? (
                   <>
                     <DropdownMenu.Group>
@@ -939,6 +919,20 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
+            <NotePickerDialog
+              open={isMoveDialogOpen}
+              onOpenChange={setIsMoveDialogOpen}
+              placeholder="Move to…"
+              exclude={noteId ? [noteId] : []}
+              onSelect={(targetNoteId) => {
+                handleMoveTo(targetNoteId)
+                setIsMoveDialogOpen(false)
+              }}
+              onCreateNote={(title) => {
+                handleCreateNote(title)
+                setIsMoveDialogOpen(false)
+              }}
+            />
           </div>
         ) : null}
       </div>

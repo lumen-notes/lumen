@@ -4,7 +4,7 @@
 @import "./variables.css";
 @import "./markdown.css";
 @import "./codemirror.css";
-@import "./cmdk.css";
+@import "./command-menu.css";
 @import "./prism.css";
 
 @import "tailwindcss";
