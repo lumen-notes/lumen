@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router"
-import { addDays, isWeekend, nextMonday, nextSaturday } from "date-fns"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { CodeProps, LiProps } from "react-markdown/lib/ast-to-react"
@@ -12,7 +11,6 @@ import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
 import { useNoteById, useSaveNote } from "../hooks/note"
 import { useMoveTask } from "../hooks/task"
-import { formatDate, toDateString } from "../utils/date"
 import { generateNoteId } from "../utils/note-id"
 import {
   canMoveListItemUp,
@@ -52,7 +50,6 @@ import {
   ArrowDownToLineIcon16,
   ArrowUpIcon16,
   ArrowUpToLineIcon16,
-  CalendarDateIcon16,
   CopyIcon16,
   CutIcon16,
   ErrorIcon16,
@@ -664,61 +661,6 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     [markdownBodyStartOffset, markdown, moveTask, node.position, noteId],
   )
 
-  // Memoize date options to avoid recalculating on every render
-  const dateOptions = React.useMemo(() => {
-    const now = new Date()
-    const today = now
-    const tomorrow = addDays(now, 1)
-    const saturday = nextSaturday(now)
-    const monday = nextMonday(now)
-
-    type DateOption = {
-      label: string
-      icon: React.ReactNode
-      targetId: string
-      trailingText: string
-    }
-
-    const options: DateOption[] = [
-      {
-        label: "Today",
-        icon: <CalendarDateIcon16 date={today.getDate()} />,
-        targetId: toDateString(today),
-        trailingText: formatDate(toDateString(today)),
-      },
-      {
-        label: "Tomorrow",
-        icon: <CalendarDateIcon16 date={tomorrow.getDate()} />,
-        targetId: toDateString(tomorrow),
-        trailingText: formatDate(toDateString(tomorrow)),
-      },
-      {
-        label: isWeekend(now) ? "Next weekend" : "This weekend",
-        icon: <CalendarDateIcon16 date={saturday.getDate()} />,
-        targetId: toDateString(saturday),
-        trailingText: formatDate(toDateString(saturday)),
-      },
-      {
-        label: "Next week",
-        icon: <CalendarDateIcon16 date={monday.getDate()} />,
-        targetId: toDateString(monday),
-        trailingText: formatDate(toDateString(monday)),
-      },
-    ]
-
-    // Filter out current note and duplicates, then sort by date
-    const seen = new Set<string>()
-    const sortedOptions = options
-      .filter((option) => {
-        if (option.targetId === noteId || seen.has(option.targetId)) return false
-        seen.add(option.targetId)
-        return true
-      })
-      .sort((a, b) => a.targetId.localeCompare(b.targetId))
-
-    return sortedOptions
-  }, [noteId])
-
   // Get the task line text for copy/cut operations
   const getTaskLine = React.useCallback(() => {
     if (!node.position) return ""
@@ -816,7 +758,8 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
       {...props}
       className={cx(
         "rounded-lg",
-        isMenuOpen && "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
+        isMenuOpen &&
+          "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
         className,
       )}
     >

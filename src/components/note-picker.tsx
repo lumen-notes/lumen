@@ -53,7 +53,10 @@ export function NotePicker({
           label: formatDate(id),
           icon: <CalendarDateIcon16 date={new Date(id).getUTCDate()} />,
           description: formatDateDistance(id),
-          onSelect: () => { onSelect(id); onClose() },
+          onSelect: () => {
+            onSelect(id)
+            onClose()
+          },
         })
       }
     }
@@ -66,7 +69,10 @@ export function NotePicker({
         label: formatDate(dateString),
         icon: <CalendarDateIcon16 date={parsedDate?.getDate()} />,
         description: formatDateDistance(dateString),
-        onSelect: () => { onSelect(dateString); onClose() },
+        onSelect: () => {
+          onSelect(dateString)
+          onClose()
+        },
       })
     }
 
@@ -78,15 +84,24 @@ export function NotePicker({
     for (const note of searchResults) {
       result.push({
         value: note.id,
-        label: note.pinned ? <span className="inline-flex gap-2 items-center">{note.displayName}</span> : note.displayName,
+        label: note.pinned ? (
+          <span className="inline-flex gap-2 items-center">{note.displayName}</span>
+        ) : (
+          note.displayName
+        ),
         icon: <NoteFavicon note={note} />,
         description:
-          note.type === "daily"
-            ? formatDateDistance(note.id)
-            : note.type === "weekly"
-              ? formatWeekDistance(note.id)
-              : note.pinned ? <PinFillIcon12 className="text-text-pinned" /> : null,
-        onSelect: () => { onSelect(note.id); onClose() },
+          note.type === "daily" ? (
+            formatDateDistance(note.id)
+          ) : note.type === "weekly" ? (
+            formatWeekDistance(note.id)
+          ) : note.pinned ? (
+            <PinFillIcon12 className="text-text-pinned" />
+          ) : null,
+        onSelect: () => {
+          onSelect(note.id)
+          onClose()
+        },
       })
     }
 
@@ -95,7 +110,10 @@ export function NotePicker({
         value: "__create__",
         label: `Create new note "${deferredQuery}"`,
         icon: <ComposeIcon16 />,
-        onSelect: () => { onCreateNote(deferredQuery); onClose() },
+        onSelect: () => {
+          onCreateNote(deferredQuery)
+          onClose()
+        },
       })
     }
 
@@ -117,6 +135,7 @@ export function NotePicker({
         placeholder={placeholder}
         value={query}
         onValueChange={setQuery}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus
         className={cx(
           "placeholder:text-text-tertiary w-full outline-none border-b border-border-secondary",
