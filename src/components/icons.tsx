@@ -424,6 +424,21 @@ export function ArrowDownToLineIcon16(props: IconProps) {
   return <ArrowLeftToLineIcon16 {...props} className={cx("-rotate-90", props.className)} />
 }
 
+export function ArrowDownRightIcon16(props: IconProps) {
+  return (
+    <Icon size={16} {...props}>
+      <path
+        data-epaper="hide"
+        d="M11.7799 13.78C11.487 14.0728 11.0122 14.0729 10.7193 13.78C10.4269 13.4871 10.4266 13.0122 10.7193 12.7194L13.4391 9.99971H3.9996C2.61911 9.99946 1.49963 8.88024 1.4996 7.49971V3.24971C1.49981 2.83582 1.83572 2.49995 2.2496 2.49971C2.66368 2.49971 2.99939 2.83567 2.9996 3.24971V7.49971C2.99963 8.05182 3.44754 8.49946 3.9996 8.49971H13.4391L10.7193 5.77998C10.4269 5.48706 10.4266 5.01219 10.7193 4.71943C11.0121 4.42668 11.4869 4.42696 11.7799 4.71943L15.7799 8.71943C16.0728 9.01233 16.0728 9.48709 15.7799 9.77998L11.7799 13.78Z"
+      />
+      <path
+        data-epaper="show"
+        d="M10.1895 13.2503L13.4395 10.0003H1.5V2.50027H3V8.50027H13.4395L10.1895 5.25027L11.25 4.18973L16.3105 9.25027L11.25 14.3108L10.1895 13.2503Z"
+      />
+    </Icon>
+  )
+}
+
 export function ChevronLeftIcon16(props: IconProps) {
   return (
     <Icon size={16} {...props}>

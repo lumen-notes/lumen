@@ -10,9 +10,10 @@ import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
 import { z } from "zod"
 import { UPLOADS_DIR } from "../hooks/attach-file"
-import { useNoteById } from "../hooks/note"
+import { useNoteById, useSaveNote } from "../hooks/note"
 import { useMoveTask } from "../hooks/task"
 import { formatDate, toDateString } from "../utils/date"
+import { generateNoteId } from "../utils/note-id"
 import {
   canMoveListItemUp,
   canMoveListItemDown,
@@ -47,6 +48,7 @@ import { GitHubAvatar } from "./github-avatar"
 import { IconButton } from "./icon-button"
 import {
   ArrowDownIcon16,
+  ArrowDownRightIcon16,
   ArrowDownToLineIcon16,
   ArrowUpIcon16,
   ArrowUpToLineIcon16,
@@ -59,6 +61,7 @@ import {
 } from "./icons"
 import { FootnoteRefLink } from "./footnote-ref-link"
 import { NoteLink } from "./note-link"
+import { NotePickerPopover, NotePickerDialog } from "./note-picker"
 import { PillButton } from "./pill-button"
 import { PriorityIndicator } from "./priority-indicator"
 import { PropertyKeyEditor } from "./property-key"
@@ -634,8 +637,12 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
   const { markdownBody, markdown, markdownBodyStartOffset, onChange, noteId } =
     React.useContext(MarkdownContext)
   const isTask = className?.includes("task-list-item")
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const [isMoveMenuOpen, setIsMoveMenuOpen] = React.useState(false)
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = React.useState(false)
+  const [isMoveDialogOpen, setIsMoveDialogOpen] = React.useState(false)
+  const isMenuOpen = isMoveMenuOpen || isMoreMenuOpen || isMoveDialogOpen
   const moveTask = useMoveTask()
+  const saveNote = useSaveNote()
 
   const { checkbox, content, nestedLists } = React.useMemo(
     () => extractListItemElements(children),
@@ -734,6 +741,20 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     onChange?.(markdownBody.slice(0, start) + markdownBody.slice(endWithNewline))
   }, [markdownBody, node.position, onChange])
 
+  const handleCreateNote = React.useCallback(
+    async (title: string) => {
+      const id = generateNoteId()
+      const content = `# ${title}\n\n${getTaskLine()}`
+
+      // Create new note with task content
+      await saveNote({ id, content })
+
+      // Delete task from this note
+      deleteTask()
+    },
+    [getTaskLine, saveNote, deleteTask],
+  )
+
   const nodeStart = node.position?.start.offset
   const nodeEnd = node.position?.end.offset
   const hasNodePosition = nodeStart != null && nodeEnd != null
@@ -794,15 +815,15 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     <li
       {...props}
       className={cx(
-        "transition-[background-color] rounded-lg",
-        isMenuOpen &&
-          "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
+        "rounded-lg",
+        isMenuOpen && "bg-bg-selection epaper:bg-transparent epaper:ring-1 epaper:ring-border epaper:ring-inset",
         className,
       )}
     >
       <div
-        className={cx("flex p-1.5 gap-1.5", {
-          "relative pr-10 coarse:pr-12 group/task": isTask && onChange,
+        className={cx("flex p-1.5 gap-1.5 rounded-lg", {
+          "relative pr-10 @[640px]:fine:pr-[74px] coarse:pr-12 group/task": isTask && onChange,
+          "hover:bg-bg-hover": isTask && !isMenuOpen,
         })}
       >
         <div className="size-7 coarse:size-9 shrink-0 grid place-items-center">
@@ -845,12 +866,39 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
         </div>
         <div className="first-child:mt-0 last-child:mt-0 grow coarse:py-1">{content}</div>
         {isTask && onChange ? (
-          <div className="absolute top-1 right-1">
-            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen} modal={false}>
+          <div className="absolute top-1 right-1 flex gap-0.5">
+            <NotePickerPopover
+              open={isMoveMenuOpen}
+              onOpenChange={setIsMoveMenuOpen}
+              placeholder="Move to…"
+              exclude={noteId ? [noteId] : []}
+              onSelect={(targetNoteId) => {
+                handleMoveTo(targetNoteId)
+                setIsMoveMenuOpen(false)
+              }}
+              onCreateNote={(title) => {
+                handleCreateNote(title)
+                setIsMoveMenuOpen(false)
+              }}
+              trigger={
+                <IconButton
+                  aria-label="Move to"
+                  tooltipSide="top"
+                  className={cx(
+                    "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100",
+                    isMenuOpen && "opacity-100",
+                    "hidden @[640px]:inline-flex coarse:hidden! coarse:pointer-events-none",
+                  )}
+                >
+                  <ArrowDownRightIcon16 />
+                </IconButton>
+              }
+            />
+            <DropdownMenu open={isMoreMenuOpen} onOpenChange={setIsMoreMenuOpen} modal={false}>
               <DropdownMenu.Trigger
                 render={
                   <IconButton
-                    aria-label="Task actions"
+                    aria-label="More actions"
                     tooltipSide="top"
                     className={cx(
                       "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100 coarse:opacity-100",
@@ -861,27 +909,16 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   </IconButton>
                 }
               />
-              <DropdownMenu.Content align="end" width={280} sideOffset={8} alignOffset={-4}>
-                {noteId && dateOptions.length > 0 ? (
-                  <>
-                    <DropdownMenu.Group>
-                      <DropdownMenu.GroupLabel>Move to</DropdownMenu.GroupLabel>
-                      {dateOptions.map((option) => (
-                        <DropdownMenu.Item
-                          key={option.targetId}
-                          icon={option.icon}
-                          onClick={() => handleMoveTo(option.targetId)}
-                          trailingVisual={
-                            <span className="text-text-secondary">{option.trailingText}</span>
-                          }
-                        >
-                          {option.label}
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Group>
-                    <DropdownMenu.Separator />
-                  </>
-                ) : null}
+              <DropdownMenu.Content align="end" width={280} sideOffset={8}>
+                <div className="block fine:@[640px]:hidden">
+                  <DropdownMenu.Item
+                    icon={<ArrowDownRightIcon16 />}
+                    onClick={() => setIsMoveDialogOpen(true)}
+                  >
+                    Move to
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Separator />
+                </div>
                 {canMoveUp || canMoveDown || canMoveToTop || canMoveToBottom ? (
                   <>
                     <DropdownMenu.Group>
@@ -939,6 +976,20 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
+            <NotePickerDialog
+              open={isMoveDialogOpen}
+              onOpenChange={setIsMoveDialogOpen}
+              placeholder="Move to…"
+              exclude={noteId ? [noteId] : []}
+              onSelect={(targetNoteId) => {
+                handleMoveTo(targetNoteId)
+                setIsMoveDialogOpen(false)
+              }}
+              onCreateNote={(title) => {
+                handleCreateNote(title)
+                setIsMoveDialogOpen(false)
+              }}
+            />
           </div>
         ) : null}
       </div>

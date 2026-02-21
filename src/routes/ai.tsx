@@ -96,7 +96,7 @@ function Chat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask AI…"
-          className="px-4 py-2 bg-bg-secondary w-full leading-7 placeholder:text-text-tertiary focus-ring rounded-xl"
+          className="px-4 py-2 card-1 w-full leading-7 placeholder:text-text-tertiary focus-ring rounded-xl"
         />
       </form>
     </div>

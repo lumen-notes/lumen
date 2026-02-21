@@ -1,3 +1,4 @@
+/* Command Menu Styles - scoped to command menu component */
 [cmdk-overlay] {
   @apply fixed inset-0 z-20;
 }
@@ -6,37 +7,37 @@
   @apply fixed left-1/2 top-3 z-20 w-[calc(100vw-24px)] max-w-2xl -translate-x-1/2 sm:top-[10vh];
 }
 
-[cmdk-input] {
+[cmdk-dialog] [cmdk-input] {
   @apply w-full bg-transparent px-5 py-4 text-lg leading-none outline-hidden;
 }
 
-[cmdk-input]::placeholder {
+[cmdk-dialog] [cmdk-input]::placeholder {
   @apply text-text-tertiary;
 }
 
-[cmdk-list] {
+[cmdk-dialog] [cmdk-list] {
   @apply max-h-[min(400px,42vh)] overflow-y-auto overflow-x-hidden;
   scroll-padding-block-start: 8px;
   scroll-padding-block-end: 8px;
 }
 
-[cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
+[cmdk-dialog] [cmdk-list]:has([cmdk-list-sizer]:not(:empty)) {
   @apply border-t border-border-secondary p-2;
 }
 
-[cmdk-group-heading] {
+[cmdk-dialog] [cmdk-group-heading] {
   @apply flex h-8 items-center px-3 text-sm text-text-secondary;
 }
 
-[cmdk-group]:not(:first-child) {
+[cmdk-dialog] [cmdk-group]:not(:first-child) {
   @apply mt-2;
 }
 
-[cmdk-item] {
+[cmdk-dialog] [cmdk-item] {
   @apply cursor-default rounded px-3 py-3 leading-4;
 }
 
-[cmdk-item][aria-selected] {
+[cmdk-dialog] [cmdk-item][aria-selected] {
   @apply bg-bg-secondary;
   @apply epaper:bg-text epaper:text-bg epaper:[&_svg]:text-bg;
 }

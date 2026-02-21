@@ -121,7 +121,7 @@
   --font-weight-bold: 600;
 
   /* Border radii */
-  --border-radius-base: 7px;
+  --border-radius-base: 8px;
   --border-radius-sm: calc(var(--border-radius-base) - 4px);
   --border-radius-lg: calc(var(--border-radius-base) + 4px);
   --border-radius-xl: calc(var(--border-radius-base) + 8px);
