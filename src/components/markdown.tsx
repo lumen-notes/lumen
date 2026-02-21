@@ -825,7 +825,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
               }}
               trigger={
                 <IconButton
-                  aria-label="Move to"
+                  aria-label="Move to…"
                   tooltipSide="top"
                   className={cx(
                     "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100",
@@ -858,7 +858,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                     icon={<ArrowDownRightIcon16 />}
                     onClick={() => setIsMoveDialogOpen(true)}
                   >
-                    Move to
+                    Move to…
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator />
                 </div>

@@ -4,7 +4,7 @@
 
 ### Improved
 
-- You can now quickly move a task to any note, not just the predefined date shortcuts (Today, Tomorrow, Next week). Click the "Move to" button on a task and search for a note by name, use natural language dates like "friday" or "next month", or create a new note right from the picker.
+- Move tasks to any note, not just Today/Tomorrow/Next week. The "Move to" button now lets you search across your notes, use natural dates ("friday", "next month", "in 2 weeks"), or create a new note on the fly.
 
 ## 2026-W06
 
