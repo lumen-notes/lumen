@@ -765,7 +765,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
     >
       <div
         className={cx("flex p-1.5 gap-1.5 rounded-lg", {
-          "relative pr-10 @[640px]:fine:pr-[74px] coarse:pr-12 group/task": isTask && onChange,
+          "relative fine:pr-[74px] coarse:pr-12 group/task": isTask && onChange,
           "hover:bg-bg-hover": isTask && !isMenuOpen,
         })}
       >
@@ -830,7 +830,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                   className={cx(
                     "opacity-0 group-hover/task:opacity-100 focus-visible:opacity-100",
                     isMenuOpen && "opacity-100",
-                    "hidden @[640px]:inline-flex coarse:hidden! coarse:pointer-events-none",
+                    "hidden fine:inline-flex coarse:hidden!",
                   )}
                 >
                   <ArrowDownRightIcon16 />
@@ -853,7 +853,7 @@ function ListItem({ node, children, ordered, className, ...props }: LiProps) {
                 }
               />
               <DropdownMenu.Content align="end" width={280} sideOffset={8}>
-                <div className="block fine:@[640px]:hidden">
+                <div className="block fine:hidden coarse:block">
                   <DropdownMenu.Item
                     icon={<ArrowDownRightIcon16 />}
                     onClick={() => setIsMoveDialogOpen(true)}
