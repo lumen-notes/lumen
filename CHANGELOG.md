@@ -4,7 +4,7 @@
 
 ### Improved
 
-- Move tasks to any note, not just Today/Tomorrow/Next week. The "Move to" button now lets you search across your notes, use natural dates ("friday", "next month", "in 2 weeks"), or create a new note on the fly.
+- Move tasks to any note, not just Today/Tomorrow/Next week. The "Move to" menu now lets you search across your notes, use natural dates ("friday", "next month", "in 2 weeks"), or create a new note on the fly.
 
 ## 2026-W06
 
