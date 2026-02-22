@@ -17,7 +17,7 @@ export function SignInBanner({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className="px-2 text-text-secondary text-balance text-center sm:text-left font-handwriting">
+      <span className="px-2 text-text-secondary text-balance text-center sm:text-left">
         These are demo notes. Sign in to write your own.
       </span>
       <SignInButton className="w-full sm:w-auto" />

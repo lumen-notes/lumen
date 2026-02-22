@@ -27,7 +27,6 @@ import {
 } from "./icons"
 import { NoteFavicon } from "./note-favicon"
 import { SyncStatusIcon, useSyncStatusText } from "./sync-status"
-import { Keys } from "./keys"
 
 const hasDailyNoteAtom = selectAtom(notesAtom, (notes) => notes.has(toDateString(new Date())))
 
@@ -249,16 +248,13 @@ export function HelpNavItem({ size }: { size: "medium" | "large" }) {
   const [isOpen, setIsOpen] = useAtom(isHelpPanelOpenAtom)
   return (
     <button
-      className="nav-item text-text-secondary group"
+      className="nav-item text-text-secondary"
       data-size={size}
       aria-pressed={isOpen}
       onClick={() => setIsOpen(!isOpen)}
     >
       {isOpen ? <CircleQuestionMarkFillIcon16 /> : <CircleQuestionMarkIcon16 />}
       Help
-      <div className="ml-auto hidden coarse:hidden! group-hover:flex group-focus-visible:flex in-aria-pressed:flex">
-        <Keys keys={["⌘", "/"]} className="text-text-tertiary epaper:in-aria-pressed:text-bg" />
-      </div>
     </button>
   )
 }
