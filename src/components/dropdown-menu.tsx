@@ -29,12 +29,12 @@ function Content({
         <Menu.Popup
           className={cx(
             "card-2 z-20 grid place-items-stretch overflow-hidden rounded-lg print:hidden outline-hidden",
-            "origin-[var(--transform-origin)] transition-[transform,scale,opacity] epaper:transition-none data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+            "origin-(--transform-origin) transition-[transform,scale,opacity] epaper:transition-none data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className,
           )}
           style={{ width }}
         >
-          <div className="grid max-h-[60svh] scroll-py-1 overflow-auto p-1">{children}</div>
+          <div className="grid max-h-[45svh] scroll-py-1 overflow-auto p-1">{children}</div>
         </Menu.Popup>
       </Menu.Positioner>
     </Menu.Portal>

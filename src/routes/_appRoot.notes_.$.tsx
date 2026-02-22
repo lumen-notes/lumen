@@ -508,31 +508,9 @@ function NotePage() {
   return (
     <PageLayout
       title={
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <span className="truncate">{noteId}.md</span>
-          {isDraft ? (
-            <DropdownMenu modal={false}>
-              <DropdownMenu.Trigger
-                render={
-                  <IconButton aria-label="Unsaved changes" size="small" className="px-1">
-                    <DraftIndicator />
-                  </IconButton>
-                }
-              />
-              <DropdownMenu.Content>
-                <DropdownMenu.Item
-                  icon={<UndoIcon16 />}
-                  variant="danger"
-                  onClick={() => {
-                    discardChanges()
-                    editorRef.current?.view?.focus()
-                  }}
-                >
-                  Discard changes
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu>
-          ) : null}
+          {isDraft ? <DraftIndicator /> : null}
         </div>
       }
       icon={<NoteFavicon note={parsedNote} />}
@@ -630,6 +608,20 @@ function NotePage() {
                 }
               />
               <DropdownMenu.Content align="end">
+                {isDraft ? (
+                  <>
+                    <DropdownMenu.Item
+                      icon={<UndoIcon16 />}
+                      onClick={() => {
+                        discardChanges()
+                        editorRef.current?.view?.focus()
+                      }}
+                    >
+                      Discard changes
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                  </>
+                ) : null}
                 {containerWidth > 800 && (
                   <>
                     <DropdownMenu.Group>
