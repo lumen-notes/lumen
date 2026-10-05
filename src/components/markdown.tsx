@@ -394,7 +394,7 @@ function BookCover({ isbn }: { isbn: string }) {
       <img
         src={`https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`}
         alt="Book cover"
-        className="aspect-[2/3] h-[120px] bg-bg-tertiary"
+        className="object-cover h-[120px] bg-bg-tertiary"
       />
     </a>
   )
