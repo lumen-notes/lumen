@@ -7,13 +7,16 @@ import { startTimer } from "./timer"
 export const REPO_DIR = "/repo"
 const DEFAULT_BRANCH = "main"
 
+function getCorsProxyUrl(): string {
+  return import.meta.env.DEV ? "https://cors.isomorphic-git.org" : "/cors-proxy"
+}
+
 export async function gitClone(repo: GitHubRepository, user: GitHubUser) {
   const options: Parameters<typeof git.clone>[0] = {
     fs,
     http,
     dir: REPO_DIR,
-    // corsProxy: "https://cors.isomorphic-git.org",
-    corsProxy: "/cors-proxy",
+    corsProxy: getCorsProxyUrl(),
     url: `https://github.com/${repo.owner}/${repo.name}`,
     ref: DEFAULT_BRANCH,
     singleBranch: true,
@@ -49,6 +52,7 @@ export async function gitPull(user: GitHubUser) {
     fs,
     http,
     dir: REPO_DIR,
+    corsProxy: getCorsProxyUrl(),
     singleBranch: true,
     onMessage: (message) => console.debug("onMessage", message),
     onProgress: (progress) => console.debug("onProgress", progress),
@@ -65,6 +69,7 @@ export async function gitPush(user: GitHubUser) {
     fs,
     http,
     dir: REPO_DIR,
+    corsProxy: getCorsProxyUrl(),
     onMessage: (message) => console.debug("onMessage", message),
     onProgress: (progress) => console.debug("onProgress", progress),
     onAuth: () => ({ username: user.login, password: user.token }),

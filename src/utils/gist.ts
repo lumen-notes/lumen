@@ -10,6 +10,10 @@ import { inlineNoteEmbeds } from "./inline-note-embeds"
 import { stripWikilinks } from "./strip-wikilinks"
 import { transformUploadUrls } from "./transform-upload-urls"
 
+function getCorsProxyUrl(): string {
+  return import.meta.env.DEV ? "https://cors.isomorphic-git.org" : "/cors-proxy"
+}
+
 /**
  * Prepares note content for publishing as a gist:
  * 1. Inlines note embeds as blockquotes
@@ -87,7 +91,7 @@ export async function updateGist({
       fs: gistFs,
       http,
       dir: gistDir,
-      corsProxy: "/cors-proxy",
+      corsProxy: getCorsProxyUrl(),
       url: `https://gist.github.com/${gistId}.git`,
       singleBranch: true,
       depth: 1,
@@ -163,6 +167,7 @@ export async function updateGist({
       fs: gistFs,
       http,
       dir: gistDir,
+      corsProxy: getCorsProxyUrl(),
       remote: "origin",
       onAuth: () => ({
         username: githubUser.login,
