@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-W44
+
+### Fixed
+
+- Vim mode and the e-paper theme stay on after a reload or a new sign-in. Lumen keeps the preference you already saved, so the editor and appearance you chose are still there when you come back.
+
 ## 2026-W08
 
 ### Improved
