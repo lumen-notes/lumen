@@ -66,15 +66,14 @@ function dropScreenshot(online: boolean) {
   const dataTransfer = new DataTransfer()
   dataTransfer.items.add(screenshotFile())
   const rect = view.contentDOM.getBoundingClientRect()
-  view.contentDOM.dispatchEvent(
-    new DragEvent("drop", {
-      bubbles: true,
-      cancelable: true,
-      clientX: rect.left + 8,
-      clientY: rect.top + 8,
-      dataTransfer,
-    }),
-  )
+  const event = new DragEvent("drop", {
+    bubbles: true,
+    cancelable: true,
+    clientX: rect.left + 8,
+    clientY: rect.top + 8,
+  })
+  Object.defineProperty(event, "dataTransfer", { value: dataTransfer })
+  view.contentDOM.dispatchEvent(event)
 
   return { view, pending }
 }
