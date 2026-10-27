@@ -2,7 +2,12 @@ import { Searcher } from "fast-fuzzy"
 import git, { WORKDIR } from "isomorphic-git"
 import { atom } from "jotai"
 import { atomWithMachine } from "jotai-xstate"
-import { atomWithStorage, selectAtom } from "jotai/utils"
+import {
+  atomWithStorage,
+  createJSONStorage,
+  selectAtom,
+  unstable_NO_STORAGE_VALUE,
+} from "jotai/utils"
 import { assign, createMachine, raise } from "xstate"
 import { z } from "zod"
 import {
@@ -857,9 +862,80 @@ export const taskSearcherAtom = atom((get) => {
 // UI state
 // -----------------------------------------------------------------------------
 
-export const epaperAtom = atomWithStorage<boolean>("epaper", false)
+type StringStorage = {
+  getItem: (key: string) => string | null
+  setItem: (key: string, value: string) => void
+  removeItem: (key: string) => void
+}
 
-export const vimModeAtom = atomWithStorage<boolean>("vim-mode", false)
+function browserStringStorage(): StringStorage {
+  if (typeof window === "undefined") {
+    return {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+    }
+  }
+  return window.localStorage
+}
+
+function atomWithBooleanStorage(key: string, readLegacy: () => boolean | undefined) {
+  const storage = createJSONStorage<boolean>(browserStringStorage)
+  return atomWithStorage<boolean>(key, false, {
+    getItem: (storageKey) => {
+      const stored = storage.getItem(storageKey)
+      if (stored !== unstable_NO_STORAGE_VALUE) return stored
+      const legacy = readLegacy()
+      if (legacy === undefined) return unstable_NO_STORAGE_VALUE
+      storage.setItem(storageKey, legacy)
+      return legacy
+    },
+    setItem: (storageKey, value) => storage.setItem(storageKey, value),
+    removeItem: (storageKey) => storage.removeItem(storageKey),
+    subscribe: storage.subscribe,
+  })
+}
+
+const legacyEditorSettingsSchema = z.object({
+  vimMode: z.boolean().optional(),
+})
+
+const legacyThemeSchema = z.enum(["eink", "default"])
+
+function readJson(value: string | null): unknown {
+  if (value == null || value === "") return undefined
+  try {
+    return JSON.parse(value) as unknown
+  } catch (error) {
+    if (error instanceof SyntaxError) return undefined
+    throw error
+  }
+}
+
+function readLegacyVimMode() {
+  const storage = browserStringStorage()
+  const settings = legacyEditorSettingsSchema.safeParse(
+    readJson(storage.getItem("editor_settings")),
+  )
+  if (settings.success && settings.data.vimMode !== undefined) return settings.data.vimMode
+
+  const vimMode = storage.getItem("vim_mode")
+  if (vimMode === "true") return true
+  if (vimMode === "false") return false
+  return undefined
+}
+
+function readLegacyEpaper() {
+  const stored = browserStringStorage().getItem("theme")
+  if (stored == null) return undefined
+  const theme = legacyThemeSchema.safeParse(readJson(stored) ?? stored)
+  if (!theme.success) return undefined
+  return theme.data === "eink"
+}
+
+export const epaperAtom = atomWithBooleanStorage("epaper", readLegacyEpaper)
+
+export const vimModeAtom = atomWithBooleanStorage("vim-mode", readLegacyVimMode)
 
 export const defaultFontAtom = atomWithStorage<Font>("font", "sans")
 
