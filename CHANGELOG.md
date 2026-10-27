@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-W44
+
+### Fixed
+
+- Dropping a file onto a note now adds it. If the drop cannot be saved, the note tells you why instead of ignoring it.
+
 ## 2026-W08
 
 ### Improved

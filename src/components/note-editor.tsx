@@ -24,6 +24,7 @@ import { ellipsisExtension } from "../codemirror-extensions/ellipsis"
 import { headingExtension } from "../codemirror-extensions/heading"
 import { priorityExtension } from "../codemirror-extensions/priority"
 import { indentedLineWrapExtension } from "../codemirror-extensions/indented-line-wrap"
+import { dropExtension } from "../codemirror-extensions/drop"
 import { pasteExtension } from "../codemirror-extensions/paste"
 import { spellcheckExtension } from "../codemirror-extensions/spellcheck"
 import { wikilinkExtension } from "../codemirror-extensions/wikilink"
@@ -46,6 +47,7 @@ type NoteEditorProps = {
   onChange?: (value: string) => void
   onStateChange?: (event: ViewUpdate) => void
   onPaste?: (event: ClipboardEvent, view: EditorView) => void
+  onAttachError?: (message: string | null) => void
   onEnter?: () => boolean
   disabled?: boolean
   indentWithTab?: boolean
@@ -97,13 +99,14 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
       onChange,
       onStateChange,
       onPaste,
+      onAttachError,
       onEnter,
       disabled = false,
       indentWithTab = true,
     },
     ref,
   ) => {
-    const attachFile = useAttachFile()
+    const attachFile = useAttachFile(onAttachError)
     const vimMode = useAtomValue(vimModeAtom)
     const navigate = useNavigate()
     const [isTooltipOpen, setIsTooltipOpen] = React.useState(false)
@@ -167,6 +170,7 @@ export const NoteEditor = React.forwardRef<ReactCodeMirrorRef, NoteEditorProps>(
         ellipsisExtension(),
         spellcheckExtension(),
         pasteExtension({ attachFile, onPaste }),
+        dropExtension({ attachFile }),
         indentedLineWrapExtension(),
         headingExtension(),
         priorityExtension(),

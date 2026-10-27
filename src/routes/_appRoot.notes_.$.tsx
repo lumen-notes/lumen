@@ -57,6 +57,7 @@ import {
   vimModeAtom,
   weeklyTemplateAtom,
 } from "../global-state"
+import { fileFromDrop } from "../codemirror-extensions/drop"
 import { useAttachFile } from "../hooks/attach-file"
 import { useDeleteNote, useNoteById, useRenameNote, useSaveNote } from "../hooks/note"
 import { useSearchNotes } from "../hooks/search-notes"
@@ -165,6 +166,7 @@ function NotePage() {
     [noteId, editorValue],
   )
   const [isDraggingFile, setIsDraggingFile] = React.useState(false)
+  const [attachError, setAttachError] = React.useState<string | null>(null)
 
   // Resolve font (frontmatter font or default)
   const frontmatterFont = parsedNote?.frontmatter?.font
@@ -196,7 +198,7 @@ function NotePage() {
   // Actions
   const deleteNote = useDeleteNote()
   const renameNote = useRenameNote()
-  const attachFile = useAttachFile()
+  const attachFile = useAttachFile(setAttachError)
 
   const handleSave = React.useCallback(
     (value: string) => {
@@ -853,8 +855,13 @@ function NotePage() {
                 isDraggingFile &&
                   "rounded-sm outline-dashed outline-2 outline-offset-8 outline-border",
               )}
+              onDragEnter={(event) => {
+                if (!event.dataTransfer.types.includes("Files")) return
+                event.preventDefault()
+                event.dataTransfer.dropEffect = "copy"
+                setIsDraggingFile(true)
+              }}
               onDragOver={(event) => {
-                // Show visual feedback when dragging files
                 if (event.dataTransfer.types.includes("Files")) {
                   event.preventDefault()
                   event.dataTransfer.dropEffect = "copy"
@@ -864,22 +871,33 @@ function NotePage() {
               onDragLeave={() => {
                 setIsDraggingFile(false)
               }}
-              onDrop={(event) => {
-                // Handle dropped files
-                if (event.dataTransfer.files.length > 0) {
-                  event.preventDefault()
-                  const file = event.dataTransfer.files[0]
-                  attachFile(file, editorRef.current?.view)
-                }
+              onDropCapture={(event) => {
                 setIsDraggingFile(false)
+                if (!event.dataTransfer.types.includes("Files")) return
+                const file = fileFromDrop(event)
+                if (!file) {
+                  event.preventDefault()
+                  setAttachError("Couldn't attach the file.")
+                  return
+                }
+                void attachFile(file, editorRef.current?.view, {
+                  x: event.clientX,
+                  y: event.clientY,
+                })
               }}
             >
+              {attachError ? (
+                <div role="alert" className="mb-2 text-text-danger">
+                  {attachError}
+                </div>
+              ) : null}
               <NoteEditor
                 ref={editorRef}
                 defaultValue={editorValue}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 onChange={setEditorValue}
+                onAttachError={setAttachError}
                 minHeight={160}
               />
             </div>
